@@ -48,7 +48,7 @@ import org.restlet.resource.Representation;
  * @author Jerome Louvel (contact@noelios.com) <a
  *         href="http://www.noelios.com">Noelios Consulting</a>
  */
-public class EncoderFilter extends Filter {
+public class Encoder extends Filter {
     /**
      * Indicates if the encoding should always occur, regardless of the size.
      */
@@ -87,7 +87,7 @@ public class EncoderFilter extends Filter {
      * @param context
      *            The context.
      */
-    public EncoderFilter(Context context) {
+    public Encoder(Context context) {
         this(context, false, true, ENCODE_ALL_SIZES,
                 getDefaultAcceptedMediaTypes(), getDefaultIgnoredMediaTypes());
     }
@@ -109,7 +109,7 @@ public class EncoderFilter extends Filter {
      * @param ignoredMediaTypes
      *            The media types that should be ignored.
      */
-    public EncoderFilter(Context context, boolean encodeInput,
+    public Encoder(Context context, boolean encodeInput,
             boolean encodeOutput, long minimumSize,
             List<MediaType> acceptedMediaTypes,
             List<MediaType> ignoredMediaTypes) {
@@ -250,7 +250,7 @@ public class EncoderFilter extends Filter {
         Encoding bestEncoding = getBestEncoding(client);
 
         if (bestEncoding != null) {
-            result = new EncoderRepresentation(bestEncoding, representation);
+            result = new EncodeRepresentation(bestEncoding, representation);
         }
 
         return result;
@@ -269,7 +269,7 @@ public class EncoderFilter extends Filter {
         Preference<Encoding> currentPref = null;
         float bestScore = 0F;
 
-        for (Iterator<Encoding> iter = EncoderRepresentation
+        for (Iterator<Encoding> iter = EncodeRepresentation
                 .getSupportedEncodings().iterator(); iter.hasNext();) {
             currentEncoding = iter.next();
 

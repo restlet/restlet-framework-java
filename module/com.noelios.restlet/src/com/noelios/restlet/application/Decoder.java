@@ -34,7 +34,7 @@ import org.restlet.resource.Representation;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class DecoderFilter extends Filter {
+public class Decoder extends Filter {
     /**
      * Indicates if the request entity should be decoded.
      */
@@ -51,7 +51,7 @@ public class DecoderFilter extends Filter {
      * @param context
      *            The context.
      */
-    public DecoderFilter(Context context) {
+    public Decoder(Context context) {
         this(context, true, false);
     }
 
@@ -65,7 +65,7 @@ public class DecoderFilter extends Filter {
      * @param decodeResponse
      *            Indicates if the response entity should be decoded.
      */
-    public DecoderFilter(Context context, boolean decodeRequest,
+    public Decoder(Context context, boolean decodeRequest,
             boolean decodeResponse) {
         super(context);
         this.decodeRequest = decodeRequest;
@@ -130,14 +130,14 @@ public class DecoderFilter extends Filter {
         Representation result = representation;
         Encoding currentEncoding = null;
 
-        for (Iterator<Encoding> iter = DecoderRepresentation
+        for (Iterator<Encoding> iter = DecodeRepresentation
                 .getSupportedEncodings().iterator(); (result == representation)
                 && iter.hasNext();) {
             currentEncoding = iter.next();
 
             if (!currentEncoding.equals(Encoding.IDENTITY)
                     && representation.getEncoding().equals(currentEncoding)) {
-                result = new DecoderRepresentation(representation);
+                result = new DecodeRepresentation(representation);
             }
         }
 

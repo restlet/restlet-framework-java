@@ -182,7 +182,7 @@ public class ApplicationHelper extends Helper {
      * @return The new decoder filter.
      */
     protected Filter createDecoderFilter(Application application) {
-        return new DecoderFilter(application.getContext(), true, false);
+        return new Decoder(application.getContext(), true, false);
     }
 
     /**

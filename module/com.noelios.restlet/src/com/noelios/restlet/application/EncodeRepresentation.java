@@ -39,7 +39,7 @@ import org.restlet.util.WrapperRepresentation;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class EncoderRepresentation extends WrapperRepresentation {
+public class EncodeRepresentation extends WrapperRepresentation {
     /** Indicates if the encoding can happen. */
     private boolean canEncode;
 
@@ -54,7 +54,7 @@ public class EncoderRepresentation extends WrapperRepresentation {
      * @param wrappedRepresentation
      *            The wrapped representation.
      */
-    public EncoderRepresentation(Encoding encoding,
+    public EncodeRepresentation(Encoding encoding,
             Representation wrappedRepresentation) {
         super(wrappedRepresentation);
         this.canEncode = getSupportedEncodings().contains(encoding);

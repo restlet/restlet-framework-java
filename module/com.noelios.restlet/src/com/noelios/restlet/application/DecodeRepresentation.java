@@ -40,7 +40,7 @@ import org.restlet.util.WrapperRepresentation;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class DecoderRepresentation extends WrapperRepresentation {
+public class DecodeRepresentation extends WrapperRepresentation {
     /** Indicates if the decoding can happen. */
     private boolean canDecode;
 
@@ -50,7 +50,7 @@ public class DecoderRepresentation extends WrapperRepresentation {
      * @param wrappedRepresentation
      *            The wrapped representation.
      */
-    public DecoderRepresentation(Representation wrappedRepresentation) {
+    public DecodeRepresentation(Representation wrappedRepresentation) {
         super(wrappedRepresentation);
         this.canDecode = getSupportedEncodings().contains(
                 wrappedRepresentation.getEncoding());
