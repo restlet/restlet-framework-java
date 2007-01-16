@@ -555,6 +555,16 @@
 		</sequential>
 	</macrodef>
 
+	<!-- Generate the module POM file -->
+	<macrodef name="pomModule">
+		<attribute name="name" />
+		<sequential>
+			<copy file="tmpl/poms/${mod-@{name}-package}.pom" tofile="${dist}/lib/poms/${mod-@{name}-id}.pom" overwrite="true" />
+			<replace file="${dist}/lib/poms/${mod-@{name}-id}.pom" token="@version-full@" value="${version-full}" />
+			<replace file="${dist}/lib/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${lib-@{name}-version}" />
+		</sequential>
+	</macrodef>
+
 	<!-- Check style of a module -->
 	<macrodef name="checkstyleModule">
 		<attribute name="name" />
@@ -768,6 +778,27 @@
 		<replace file="${docs}/changes.txt" token="@release-date@" value="${release-date}" />
 		<replace file="${docs}/changes.txt" token="@version-full@" value="${version-full}" />
 		<replace file="${docs}/changes.txt" token="@version-compact@" value="${version-compact}" />
+		
+		<!-- Generate the Maven POM files -->
+		<mkdir dir="${dist}/lib/poms"/>
+		<pomModule name="api" />
+		<pomModule name="ri" />
+		<pomModule name="asyncweb" />
+<!-- disabled for 1.0  <pomModule name="atom" /> -->
+		<pomModule name="fileupload" />
+		<pomModule name="freemarker" />
+		<pomModule name="httpclient" />
+		<pomModule name="javamail" />
+		<pomModule name="jdbc" />
+<!-- disabled for 1.0  <pomModule name="jetty5" /> -->
+		<pomModule name="jetty" />
+<!-- disabled for 1.0  <pomModule name="jmx" /> -->
+		<pomModule name="json" />
+		<pomModule name="net" />
+		<pomModule name="servlet" />
+		<pomModule name="simple" />
+		<pomModule name="spring" />
+		<pomModule name="velocity" />
 
 		<!-- Generate the NSIS files -->
 		<copy file="tmpl/common.nsh" todir="${temp}" overwrite="true" />

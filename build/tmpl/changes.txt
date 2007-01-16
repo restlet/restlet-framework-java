@@ -50,7 +50,9 @@ Changes log
  - The ServerServlet now allows easier customization of the creation of Application
    instances. Based on a patch from Valdis Rigdon.
  - Updated Spring framework to 2.0.2
-
+ - Added support for Maven POM generation. The distribution now contains a "lib/poms" directory.
+   Suggested by Turadg Aleahmad, Lars Heuer, Mike Moran, Mitchell Stewart and Vincent Lari.
+ 
 1.0 RC2 (2007-01-09)
 [Bugs fixed]
  - Fixed minor bug with the URI parsing (query sign "?" inside fragment). 

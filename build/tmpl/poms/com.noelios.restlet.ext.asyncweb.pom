@@ -1,0 +1,31 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.noelios.restlet</groupId>
+	<artifactId>ext-asyncweb</artifactId>
+	<version>@version-full@</version>
+	<dependencies>
+        <dependency>
+            <groupId>com.noelios.restlet</groupId>
+            <artifactId>restlet-impl</artifactId>
+				<version>@version-full@</version>
+        </dependency>
+        <dependency>
+            <groupId>org.safehaus.asyncweb</groupId>
+            <artifactId>asyncweb</artifactId>
+            <version>@lib-asyncweb-version@</version>
+        </dependency>
+	</dependencies>
+
+	<name>HTTP server connector</name>
+	<description>Integration with AsyncWeb.</description>
+	<licenses>
+		<license>
+			<name>CDDL license</name>
+			<url>http://www.opensource.org/licenses/cddl1.php</url>
+		</license>
+		<license>
+			<name>GPL license</name>
+			<url>http://www.opensource.org/licenses/gpl-license.php</url>
+		</license>
+  </licenses>
+</project>
