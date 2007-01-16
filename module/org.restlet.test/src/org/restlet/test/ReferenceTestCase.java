@@ -125,13 +125,19 @@ public class ReferenceTestCase extends RestletTestCase {
         testRef0("foo://info.example.com?fred", "foo", "info.example.com",
                 null, "fred", null);
         testRef0("*", null, null, "*", null, null);
-        testRef0("http://localhost?query", "http", "localhost", null, "query", null);
-        testRef0("http://localhost#?query", "http", "localhost", null, null, "?query");
-        testRef0("http://localhost/?query", "http", "localhost", "/", "query", null);
-        testRef0("http://localhost/#?query", "http", "localhost", "/", null, "?query");
-        testRef0("http://localhost/path#frag/ment", "http", "localhost", "/path", null, "frag/ment");
-        testRef0("http://localhost/path?qu/ery", "http", "localhost", "/path", "qu/ery", null);
-        
+        testRef0("http://localhost?query", "http", "localhost", null, "query",
+                null);
+        testRef0("http://localhost#?query", "http", "localhost", null, null,
+                "?query");
+        testRef0("http://localhost/?query", "http", "localhost", "/", "query",
+                null);
+        testRef0("http://localhost/#?query", "http", "localhost", "/", null,
+                "?query");
+        testRef0("http://localhost/path#frag/ment", "http", "localhost",
+                "/path", null, "frag/ment");
+        testRef0("http://localhost/path?qu/ery", "http", "localhost", "/path",
+                "qu/ery", null);
+
         // Test the resolution of relative references
         testRef1(base, uri01, uri101);
         testRef1(base, uri02, uri102);
@@ -187,28 +193,44 @@ public class ReferenceTestCase extends RestletTestCase {
         testRef2(base, uri120, uri20);
         testRef2(base, uri121, uri21);
         testRef2(base, uri123, uri23);
-        
+
         // Test the toString method with or without query/fragment
-        testRef3("http://localhost/path#fragment", true, true, "http://localhost/path#fragment");
-        testRef3("http://localhost/path#fragment", true, false, "http://localhost/path");
-        testRef3("http://localhost/path#fragment", false, true, "http://localhost/path#fragment");
-        testRef3("http://localhost/path#fragment", false, false, "http://localhost/path");
+        testRef3("http://localhost/path#fragment", true, true,
+                "http://localhost/path#fragment");
+        testRef3("http://localhost/path#fragment", true, false,
+                "http://localhost/path");
+        testRef3("http://localhost/path#fragment", false, true,
+                "http://localhost/path#fragment");
+        testRef3("http://localhost/path#fragment", false, false,
+                "http://localhost/path");
 
-        testRef3("http://localhost/path?query", true, true, "http://localhost/path?query");
-        testRef3("http://localhost/path?query", true, false, "http://localhost/path?query");
-        testRef3("http://localhost/path?query", false, true, "http://localhost/path");
-        testRef3("http://localhost/path?query", false, false, "http://localhost/path");
+        testRef3("http://localhost/path?query", true, true,
+                "http://localhost/path?query");
+        testRef3("http://localhost/path?query", true, false,
+                "http://localhost/path?query");
+        testRef3("http://localhost/path?query", false, true,
+                "http://localhost/path");
+        testRef3("http://localhost/path?query", false, false,
+                "http://localhost/path");
 
-        testRef3("http://localhost/path?query#fragment", true, true, "http://localhost/path?query#fragment");
-        testRef3("http://localhost/path?query#fragment", true, false, "http://localhost/path?query");
-        testRef3("http://localhost/path?query#fragment", false, true, "http://localhost/path#fragment");
-        testRef3("http://localhost/path?query#fragment", false, false, "http://localhost/path");
+        testRef3("http://localhost/path?query#fragment", true, true,
+                "http://localhost/path?query#fragment");
+        testRef3("http://localhost/path?query#fragment", true, false,
+                "http://localhost/path?query");
+        testRef3("http://localhost/path?query#fragment", false, true,
+                "http://localhost/path#fragment");
+        testRef3("http://localhost/path?query#fragment", false, false,
+                "http://localhost/path");
 
-        testRef3("http://localhost/path#fragment?query", true, true, "http://localhost/path#fragment?query");
-        testRef3("http://localhost/path#fragment?query", true, false, "http://localhost/path");
-        testRef3("http://localhost/path#fragment?query", false, true, "http://localhost/path#fragment?query");
-        testRef3("http://localhost/path#fragment?query", false, false, "http://localhost/path");
-        
+        testRef3("http://localhost/path#fragment?query", true, true,
+                "http://localhost/path#fragment?query");
+        testRef3("http://localhost/path#fragment?query", true, false,
+                "http://localhost/path");
+        testRef3("http://localhost/path#fragment?query", false, true,
+                "http://localhost/path#fragment?query");
+        testRef3("http://localhost/path#fragment?query", false, false,
+                "http://localhost/path");
+
     }
 
     /**
@@ -269,7 +291,8 @@ public class ReferenceTestCase extends RestletTestCase {
      * @param fragment
      * @param toString
      */
-    private void testRef3(String reference, boolean query, boolean fragment, String toString) {
+    private void testRef3(String reference, boolean query, boolean fragment,
+            String toString) {
         Reference ref = new Reference(reference);
         assertEquals(ref.toString(query, fragment), toString);
     }
@@ -339,10 +362,10 @@ public class ReferenceTestCase extends RestletTestCase {
         Reference ref = getDefaultReference();
         int port = 8080;
         ref.setHostPort(port);
-        assertEquals(port, ref.getHostPort().intValue());
+        assertEquals(port, ref.getHostPort());
         port = 9090;
         ref.setHostPort(port);
-        assertEquals(port, ref.getHostPort().intValue());
+        assertEquals(port, ref.getHostPort());
     }
 
     /**
