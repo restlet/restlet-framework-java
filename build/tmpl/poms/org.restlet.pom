@@ -1,8 +1,8 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.restlet</groupId>
-	<artifactId>restlet-api</artifactId>
-	<version>@version-full@</version>
+	<artifactId>@artifact-id@</artifactId>
+	<version>@version@</version>
 
 	<name>Restlet API</name>
 	<description>Lightweight REST framework</description>
@@ -15,7 +15,9 @@
 		</license>
 		<license>
 			<name>GPL license</name>
-			<url>http://www.opensource.org/licenses/gpl-license.php</url>
+			<url>
+				http://www.opensource.org/licenses/gpl-license.php
+			</url>
 		</license>
-  </licenses>
+	</licenses>
 </project>

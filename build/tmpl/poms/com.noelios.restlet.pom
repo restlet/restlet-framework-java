@@ -1,18 +1,21 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.noelios.restlet</groupId>
-	<artifactId>restlet-impl</artifactId>
-	<version>@version-full@</version>
+	<artifactId>@artifact-id@</artifactId>
+	<version>@version@</version>
 	<dependencies>
-        <dependency>
-            <groupId>org.restlet</groupId>
-            <artifactId>restlet-api</artifactId>
-            <version>@version-full@</version>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>@version@</version>
+		</dependency>
+	</dependencies>
 
 	<name>Reference Implementation</name>
-	<description>Noelios Restlet Engine is the reference implementation of the Restlet API</description>
+	<description>
+		Noelios Restlet Engine is the reference implementation of the
+		Restlet API
+	</description>
 	<url>http://www.restlet.org</url>
 	<inceptionYear>2005</inceptionYear>
 	<licenses>
@@ -22,7 +25,9 @@
 		</license>
 		<license>
 			<name>GPL license</name>
-			<url>http://www.opensource.org/licenses/gpl-license.php</url>
+			<url>
+				http://www.opensource.org/licenses/gpl-license.php
+			</url>
 		</license>
-  </licenses>
+	</licenses>
 </project>

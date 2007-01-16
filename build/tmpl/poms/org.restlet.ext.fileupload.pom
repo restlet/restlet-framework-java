@@ -1,20 +1,20 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.restlet</groupId>
-	<artifactId>ext-fileupload</artifactId>
-	<version>@version-full@</version>
+	<artifactId>@artifact-id@</artifactId>
+	<version>@version@</version>
 	<dependencies>
-        <dependency>
-            <groupId>org.restlet</groupId>
-            <artifactId>restlet-api</artifactId>
-				<version>@version-full@</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>@lib-fileupload-version@</version>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>@version@</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>@lib-fileupload-version@</version>
+		</dependency>
+	</dependencies>
 
 	<name>Multipart form handler</name>
 	<description>Integration with Apache FileUpload.</description>
@@ -25,7 +25,9 @@
 		</license>
 		<license>
 			<name>GPL license</name>
-			<url>http://www.opensource.org/licenses/gpl-license.php</url>
+			<url>
+				http://www.opensource.org/licenses/gpl-license.php
+			</url>
 		</license>
 	</licenses>
 </project>

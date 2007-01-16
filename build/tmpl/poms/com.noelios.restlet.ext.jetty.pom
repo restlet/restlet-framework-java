@@ -1,20 +1,20 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.noelios.restlet</groupId>
-	<artifactId>ext-jetty</artifactId>
-	<version>@version-full@</version>
+	<artifactId>@artifact-id@</artifactId>
+	<version>@version@</version>
 	<dependencies>
-        <dependency>
-            <groupId>com.noelios.restlet</groupId>
-            <artifactId>restlet-impl</artifactId>
-				<version>@version-full@</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jetty</artifactId>
-            <version>@lib-jetty6-version@</version>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.noelios.restlet</groupId>
+			<artifactId>com.noelios.restlet</artifactId>
+			<version>@version@</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty</artifactId>
+			<version>@lib-jetty-version@</version>
+		</dependency>
+	</dependencies>
 
 	<name>HTTP server connector</name>
 	<description>Integration with Jetty.</description>
@@ -25,7 +25,9 @@
 		</license>
 		<license>
 			<name>GPL license</name>
-			<url>http://www.opensource.org/licenses/gpl-license.php</url>
+			<url>
+				http://www.opensource.org/licenses/gpl-license.php
+			</url>
 		</license>
 	</licenses>
 </project>

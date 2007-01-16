@@ -560,8 +560,9 @@
 		<attribute name="name" />
 		<sequential>
 			<copy file="tmpl/poms/${mod-@{name}-package}.pom" tofile="${temp}/poms/${mod-@{name}-id}.pom" overwrite="true" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@version-full@" value="${version-full}" />
+			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@version@" value="${version-compact}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${lib-@{name}-version}" />
+			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-@{name}-id}" />
 		</sequential>
 	</macrodef>
 
@@ -785,6 +786,7 @@
 		<pomModule name="ri" />
 		<pomModule name="asyncweb" />
 <!-- disabled for 1.0  <pomModule name="atom" /> -->
+		<pomModule name="asyncweb" />
 		<pomModule name="fileupload" />
 		<pomModule name="freemarker" />
 		<pomModule name="httpclient" />

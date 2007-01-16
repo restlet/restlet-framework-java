@@ -1,20 +1,20 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.noelios.restlet</groupId>
-	<artifactId>ext-simple</artifactId>
-	<version>@version-full@</version>
+	<artifactId>@artifact-id@</artifactId>
+	<version>@version@</version>
 	<dependencies>
-        <dependency>
-            <groupId>com.noelios.restlet</groupId>
-            <artifactId>restlet-impl</artifactId>
-				<version>@version-full@</version>
-        </dependency>
-        <dependency>
-            <groupId>simple</groupId>
-            <artifactId>simple-core</artifactId>
-            <version>@lib-simple-version@</version>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.noelios.restlet</groupId>
+			<artifactId>com.noelios.restlet</artifactId>
+			<version>@version@</version>
+		</dependency>
+		<dependency>
+			<groupId>simple</groupId>
+			<artifactId>simple-core</artifactId>
+			<version>@lib-simple-version@</version>
+		</dependency>
+	</dependencies>
 
 	<name>HTTP server connector</name>
 	<description>Integration with Simple framework.</description>
@@ -25,7 +25,9 @@
 		</license>
 		<license>
 			<name>GPL license</name>
-			<url>http://www.opensource.org/licenses/gpl-license.php</url>
+			<url>
+				http://www.opensource.org/licenses/gpl-license.php
+			</url>
 		</license>
 	</licenses>
 </project>
