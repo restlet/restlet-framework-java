@@ -133,11 +133,12 @@ public class HttpClientConverter extends HttpConverter {
 
             if (hostRef.getHostDomain() != null) {
                 String host = hostRef.getHostDomain();
+                int hostRefPortValue = hostRef.getHostPort();
 
-                if ((hostRef.getHostPort() != null)
-                        && (hostRef.getHostPort() != request.getProtocol()
+                if ((hostRefPortValue != -1)
+                        && (hostRefPortValue != request.getProtocol()
                                 .getDefaultPort())) {
-                    host = host + ':' + hostRef.getHostPort();
+                    host = host + ':' + hostRefPortValue;
                 }
 
                 requestHeaders.add(HttpConstants.HEADER_HOST, host);

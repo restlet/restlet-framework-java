@@ -86,11 +86,11 @@ public class HostRoute extends Route {
             if (hostDomain == null)
                 hostDomain = "";
 
-            Integer basePortValue = request.getHostRef().getHostPort();
-            if (basePortValue == null)
+            int basePortValue = request.getHostRef().getHostPort();
+            if (basePortValue == -1)
                 basePortValue = request.getHostRef().getSchemeProtocol()
                         .getDefaultPort();
-            hostPort = basePortValue.toString();
+            hostPort = Integer.toString(basePortValue);
 
             hostScheme = request.getHostRef().getScheme();
             if (hostScheme == null)
@@ -101,11 +101,11 @@ public class HostRoute extends Route {
         if (resourceDomain == null)
             resourceDomain = "";
 
-        Integer resourcePortValue = request.getResourceRef().getHostPort();
-        if (resourcePortValue == null)
+        int resourcePortValue = request.getResourceRef().getHostPort();
+        if (resourcePortValue == -1)
             resourcePortValue = request.getResourceRef().getSchemeProtocol()
                     .getDefaultPort();
-        String resourcePort = resourcePortValue.toString();
+        String resourcePort = Integer.toString(resourcePortValue);
 
         String resourceScheme = request.getResourceRef().getScheme();
         if (resourceScheme == null)
