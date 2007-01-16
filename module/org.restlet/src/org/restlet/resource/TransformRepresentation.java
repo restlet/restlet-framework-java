@@ -36,8 +36,8 @@ public class TransformRepresentation extends OutputRepresentation {
     /**
      * Constructor.
      * 
-     * @param transformer
-     *            The parent transformer.
+     * @param context
+     *            The parent context.
      * @param source
      *            The source representation to transform.
      * @param transformSheet
