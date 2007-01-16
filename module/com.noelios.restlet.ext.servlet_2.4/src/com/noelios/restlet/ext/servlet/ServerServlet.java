@@ -42,29 +42,29 @@ import com.noelios.restlet.http.HttpServerHelper;
  * configuration for your Restlet webapp:
  * 
  * <pre>
- *                &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
- *                &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
- *                &lt;web-app&gt;
- *                	&lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- *                
- *                	&lt;!-- Your application class name --&gt;
- *                	&lt;context-param&gt;
- *                		&lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
- *                		&lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
- *                	&lt;/context-param&gt;
- *                
- *                	&lt;!-- Restlet adapter --&gt;
- *                	&lt;servlet&gt;
- *                		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *                		&lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
- *                	&lt;/servlet&gt;
- *                
- *                	&lt;!-- Catch all requests --&gt;
- *                	&lt;servlet-mapping&gt;
- *                		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *                		&lt;url-pattern&gt;/*&lt;/url-pattern&gt;
- *                	&lt;/servlet-mapping&gt;
- *                &lt;/web-app&gt;}
+ *                         &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+ *                         &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
+ *                         &lt;web-app&gt;
+ *                         	&lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
+ *                         
+ *                         	&lt;!-- Your application class name --&gt;
+ *                         	&lt;context-param&gt;
+ *                         		&lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ *                         		&lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
+ *                         	&lt;/context-param&gt;
+ *                         
+ *                         	&lt;!-- Restlet adapter --&gt;
+ *                         	&lt;servlet&gt;
+ *                         		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                         		&lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+ *                         	&lt;/servlet&gt;
+ *                         
+ *                         	&lt;!-- Catch all requests --&gt;
+ *                         	&lt;servlet-mapping&gt;
+ *                         		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                         		&lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+ *                         	&lt;/servlet-mapping&gt;
+ *                         &lt;/web-app&gt;}
  * </pre>
  * 
  * The enumeration of initParameters of your Servlet will be copied to the
@@ -222,6 +222,7 @@ public class ServerServlet extends HttpServlet {
      * @return The newly created Application or null if unable to create
      */
     protected Application createApplication(Context context) {
+        Application application = null;
         // Try to instantiate a new target application
         // First, find the application class name
         String applicationClassName = getInitParameter(NAME_APPLICATION_CLASS,
@@ -232,13 +233,29 @@ public class ServerServlet extends HttpServlet {
             try {
                 Class targetClass = Class.forName(applicationClassName);
 
-                // Create a new instance of the application class
-                return (Application) targetClass.getConstructor(Context.class)
-                        .newInstance(context);
+                try {
+                    // Create a new instance of the application class by
+                    // invoking the constructor with the Context parameter.
+                    application = (Application) targetClass.getConstructor(
+                            Context.class).newInstance(context);
+                } catch (NoSuchMethodException e) {
+                    log(
+                            "[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context. The empty constructor and the context setter wille used instead. "
+                                    + applicationClassName, e);
+                    // The constructor with the Context parameter does not
+                    // exist. Instantiate an application with the default
+                    // constructor then invoke the setContext method.
+                    application = (Application) targetClass.getConstructor()
+                            .newInstance();
+                    if (application != null) {
+                        application.setContext(context);
+                    }
+                }
             } catch (ClassNotFoundException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
                                 + applicationClassName, e);
+
             } catch (InstantiationException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
@@ -258,7 +275,7 @@ public class ServerServlet extends HttpServlet {
             }
         }
 
-        return null;
+        return application;
     }
 
     /**
