@@ -559,9 +559,9 @@
 	<macrodef name="pomModule">
 		<attribute name="name" />
 		<sequential>
-			<copy file="tmpl/poms/${mod-@{name}-package}.pom" tofile="${dist}/lib/poms/${mod-@{name}-id}.pom" overwrite="true" />
-			<replace file="${dist}/lib/poms/${mod-@{name}-id}.pom" token="@version-full@" value="${version-full}" />
-			<replace file="${dist}/lib/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${lib-@{name}-version}" />
+			<copy file="tmpl/poms/${mod-@{name}-package}.pom" tofile="${temp}/poms/${mod-@{name}-id}.pom" overwrite="true" />
+			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@version-full@" value="${version-full}" />
+			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${lib-@{name}-version}" />
 		</sequential>
 	</macrodef>
 
@@ -780,7 +780,7 @@
 		<replace file="${docs}/changes.txt" token="@version-compact@" value="${version-compact}" />
 		
 		<!-- Generate the Maven POM files -->
-		<mkdir dir="${dist}/lib/poms"/>
+		<mkdir dir="${temp}/poms"/>
 		<pomModule name="api" />
 		<pomModule name="ri" />
 		<pomModule name="asyncweb" />
@@ -1019,6 +1019,7 @@
 		<delete dir="${dist}" verbose="false" quiet="true" includeEmptyDirs="true" />
 		<mkdir dir="${dist}/bin" />
 		<mkdir dir="${dist}/lib" />
+		<mkdir dir="${dist}/lib/poms" />
 		<mkdir dir="${dist}/src" />
 
 		<!-- Increment the build number -->
@@ -1095,6 +1096,11 @@
 		<packageModule name="spring" />
 		<packageModule name="velocity" />
 		<packageModule name="example" />
+
+		<!-- Copy the POM files -->
+		<copy todir="${dist}/lib/poms">
+			<fileset dir="${temp}/poms" />
+		</copy>
 	</target>
 
 	<!-- PACKAGE-ZIP target (generation of final Zip file) -->
