@@ -560,6 +560,16 @@ public class Resource {
     }
 
     /**
+     * Sets the parent context.
+     * 
+     * @param context
+     *            The parent context.
+     */
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    /**
      * Sets the logger to use.
      * 
      * @param logger
@@ -581,6 +591,26 @@ public class Resource {
      */
     public void setNegotiateContent(boolean negotiateContent) {
         this.negotiateContent = negotiateContent;
+    }
+
+    /**
+     * Sets the request to handle.
+     * 
+     * @param request
+     *            The request to handle.
+     */
+    public void setRequest(Request request) {
+        this.request = request;
+    }
+
+    /**
+     * Sets the response to update.
+     * 
+     * @param response
+     *            The response to update.
+     */
+    public void setResponse(Response response) {
+        this.response = response;
     }
 
     /**
