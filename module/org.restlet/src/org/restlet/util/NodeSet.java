@@ -25,7 +25,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * DOM node set that implements the standard List interface for easier
+ * DOM nodes set that implements the standard List interface for easier
  * iteration.
  * 
  * @author Jerome Louvel (contact@noelios.com)

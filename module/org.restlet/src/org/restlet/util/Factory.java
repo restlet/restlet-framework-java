@@ -69,7 +69,7 @@ public abstract class Factory {
     private static ClassLoader classloader = Factory.class.getClassLoader();
 
     /**
-     * Returns a the class loader to use when creating instantiating
+     * Returns a class loader to use when creating instantiating
      * implementation classes. By default, it reused the classloader of this
      * Factory's class.
      */

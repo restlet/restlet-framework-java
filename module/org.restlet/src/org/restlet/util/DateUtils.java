@@ -162,7 +162,7 @@ public final class DateUtils {
                 try {
                     result = parser.parse(date);
                 } catch (ParseException e) {
-                    // Ignore error as the next format may work better
+                    // Ignores error as the next format may work better
                 }
             }
         }

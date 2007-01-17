@@ -132,8 +132,7 @@ public class Finder extends Restlet {
 
             if (!response.getStatus().equals(Status.SUCCESS_OK)) {
                 // Probably during the instantiation of the target resource, or
-                // earlier
-                // the status was changed from the default one. Don't go
+                // earlier the status was changed from the default one. Don't go
                 // further.
             } else if (target == null) {
                 // If the currrent status is a success but we couldn't find the

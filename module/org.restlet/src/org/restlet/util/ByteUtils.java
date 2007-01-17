@@ -73,7 +73,7 @@ public final class ByteUtils {
             final Representation representation) throws IOException {
         final Pipe pipe = Pipe.open();
 
-        // Create a thread that will handle the task of continuously
+        // Creates a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
         Thread writer = new Thread() {
             public void run() {
@@ -87,7 +87,7 @@ public final class ByteUtils {
             }
         };
 
-        // Start the writer thread
+        // Starts the writer thread
         writer.start();
         return pipe.source();
     }
@@ -117,7 +117,7 @@ public final class ByteUtils {
         if (representation != null) {
             final PipeStream pipe = new PipeStream();
 
-            // Create a thread that will handle the task of continuously
+            // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
             Thread writer = new Thread() {
                 public void run() {
@@ -132,7 +132,7 @@ public final class ByteUtils {
                 }
             };
 
-            // Start the writer thread
+            // Starts the writer thread
             writer.start();
             return pipe.getInputStream();
         } else {
@@ -174,7 +174,7 @@ public final class ByteUtils {
                 is.close();
                 result = sb.toString();
             } catch (Exception e) {
-                // Return an empty string
+                // Returns an empty string
             }
         }
 

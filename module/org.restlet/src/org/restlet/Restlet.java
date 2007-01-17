@@ -94,7 +94,7 @@ public class Restlet extends Uniform {
     }
 
     /**
-     * Initialize the Restlet by attemting to start it.
+     * Initialize the Restlet by attempting to start it.
      * 
      * @param request
      *            The request to handle.
