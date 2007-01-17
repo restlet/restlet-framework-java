@@ -30,6 +30,7 @@
 	<li><a href="#part09">Guarding access to sensitive resources</a></li>
 	<li><a href="#part10">URI rewriting and redirection</a></li>
 	<li><a href="#part11">Routers and hierarchical URIs</a></li>
+	<li><a href="#part12">Reaching target Resources</a></li>
 	<li><a href="#conclusion">Conclusion</a></li>
 </ol>
 
@@ -102,7 +103,7 @@ return a simple string representation "Hello World!" as plain text. Note
 that in a more realistic application, we would probably create a
 separate class extending the Restlet instead of relying on an anonymous
 inner class. Also, if you need to handle only a specific method, you
-should use Handler as your base class.</p>
+should use Finder as your base class.</p>
 <pre>
         // Creating a minimal Restlet returning "Hello World"
         Restlet restlet = new Restlet() {
@@ -293,16 +294,17 @@ the requested resource URI. If you are familiar with the Servlet API,
 the concept is similar to the <a
 	href="http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/Filter.html">Filter</a>
 interface. See below how we would modify the previous example to secure
-the access to the DirectoryHandler:</p>
+the access to the Directory:</p>
 <pre>
-		// Create a Guard
-		Guard guard = new Guard(getContext(),
-		        ChallengeScheme.HTTP_BASIC, "Tutorial");
-		guard.getAuthorizations().put("scott", "tiger");
-		
-		// Create a Directory able to return a deep hierarchy of files
-		Directory directory = new Directory(getContext(), ROOT_URI);
-		guard.setNext(directory);
+        // Create a Guard
+        Guard guard = new Guard(getContext(),
+                ChallengeScheme.HTTP_BASIC, "Tutorial");
+        guard.getAuthorizations().put("scott", "tiger");
+
+        // Create a Directory able to return a deep hierarchy of files
+        Directory directory = new Directory(getContext(), ROOT_URI);
+        guard.setNext(directory);
+        return guard;
 </pre>
 <p align="middle"><img src="images/tutorial09"
 	alt="Call handling flow" /><br />
@@ -401,7 +403,7 @@ formatting its target URIs.</p>
 <h3><a name="part11">11. Routers and hierarchical URIs</a></h3>
 <p>In addition to the Redirector, we have another tool to manage
 cool URIs: Routers. They are specialized Restlets that can have other
-Restlets (Handlers and Filters for example) attached to them and that
+Restlets (Finders and Filters for example) attached to them and that
 can automatically delegate calls based on a <a
 	href="http://bitworking.org/projects/URI-Templates/">URI template</a>.
 In general, you will set a Router as the root of your Application.</p>
@@ -437,22 +439,20 @@ anonymous ones we use here:</p>
         Application application = new Application(component.getContext()) {
             @Override
             public Restlet createRoot() {
-                // Create a root Router
+                // Create a root router
                 Router router = new Router(getContext());
 
-                // Attach a Guard to secure access to the chained directory
-                // handler
+                // Attach a guard to secure access to the directory
                 Guard guard = new Guard(getContext(),
                         ChallengeScheme.HTTP_BASIC, "Restlet tutorial");
                 guard.getAuthorizations().put("scott", "tiger");
                 router.attach("/docs/", guard);
 
-                // Create a Directory able to return a deep hierarchy of Web
-                // files
+                // Create a directory able to expose a hierarchy of files
                 Directory directory = new Directory(getContext(), ROOT_URI);
                 guard.setNext(directory);
 
-                // Create the Account Handler
+                // Create the account handler
                 Restlet account = new Restlet() {
                     @Override
                     public void handle(Request request, Response response) {
@@ -463,7 +463,7 @@ anonymous ones we use here:</p>
                     }
                 };
 
-                // Create the Orders Handler
+                // Create the orders handler
                 Restlet orders = new Restlet(getContext()) {
                     @Override
                     public void handle(Request request, Response response) {
@@ -474,7 +474,7 @@ anonymous ones we use here:</p>
                     }
                 };
 
-                // Create the Order Handler
+                // Create the order handler
                 Restlet order = new Restlet(getContext()) {
                     @Override
                     public void handle(Request request, Response response) {
@@ -487,7 +487,7 @@ anonymous ones we use here:</p>
                     }
                 };
 
-                // Attach the Handlers to the Router
+                // Attach the handlers to the root router
                 router.attach("/users/{user}", account);
                 router.attach("/users/{user}/orders", orders);
                 router.attach("/users/{user}/orders/{order}", order);
@@ -501,6 +501,13 @@ anonymous ones we use here:</p>
         component.getDefaultHost().attach("", application);
         component.start();
 </pre>
+
+<h3><a name="part12">12. Reaching target Resources</a></h3>
+<p>
+
+
+
+</p>
 
 <h3><a name="conclusion">Conclusion</a></h3>
 <p>We already covered many aspects of the framework. Before you move
@@ -538,7 +545,7 @@ Louvel</a> (<a target="_top" href="http://blog.noelios.com">blog</a>)<br />
 
 <br />
 
-<small> Last modified on 2007-01-14. Copyright &copy; 2005-2007
+<small> Last modified on 2007-01-17. Copyright &copy; 2005-2007
 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>.
 Restlet is a registered trademark of <a target="_top"
 	href="http://www.noelios.com">Noelios Consulting</a>. </small>

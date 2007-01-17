@@ -46,22 +46,20 @@ public class Part11 implements Constants {
         Application application = new Application(component.getContext()) {
             @Override
             public Restlet createRoot() {
-                // Create a root Router
+                // Create a root router
                 Router router = new Router(getContext());
 
-                // Attach a Guard to secure access to the chained directory
-                // handler
+                // Attach a guard to secure access to the directory
                 Guard guard = new Guard(getContext(),
                         ChallengeScheme.HTTP_BASIC, "Restlet tutorial");
                 guard.getAuthorizations().put("scott", "tiger");
                 router.attach("/docs/", guard);
 
-                // Create a Directory able to return a deep hierarchy of Web
-                // files
+                // Create a directory able to expose a hierarchy of files
                 Directory directory = new Directory(getContext(), ROOT_URI);
                 guard.setNext(directory);
 
-                // Create the Account Handler
+                // Create the account handler
                 Restlet account = new Restlet() {
                     @Override
                     public void handle(Request request, Response response) {
@@ -72,7 +70,7 @@ public class Part11 implements Constants {
                     }
                 };
 
-                // Create the Orders Handler
+                // Create the orders handler
                 Restlet orders = new Restlet(getContext()) {
                     @Override
                     public void handle(Request request, Response response) {
@@ -83,7 +81,7 @@ public class Part11 implements Constants {
                     }
                 };
 
-                // Create the Order Handler
+                // Create the order handler
                 Restlet order = new Restlet(getContext()) {
                     @Override
                     public void handle(Request request, Response response) {
@@ -96,7 +94,7 @@ public class Part11 implements Constants {
                     }
                 };
 
-                // Attach the Handlers to the Router
+                // Attach the handlers to the root router
                 router.attach("/users/{user}", account);
                 router.attach("/users/{user}/orders", orders);
                 router.attach("/users/{user}/orders/{order}", order);

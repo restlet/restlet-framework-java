@@ -26,11 +26,10 @@
 	<li><a href="#connector">Connector</a></li>
 	<li><a href="#context">Context</a></li>
 	<li><a href="#directory">Directory</a></li>
-	<li><a href="#dispatcher">Dispatcher</a></li>
 	<li><a href="#engine">Engine</a></li>
 	<li><a href="#filter">Filter</a></li>
+	<li><a href="finder">Finder</a></li>
 	<li><a href="#guard">Guard</a></li>
-	<li><a href="#handler">Handler</a></li>
 	<li><a href="#redirector">Redirector</a></li>
 	<li><a href="#representation">Representation</a></li>
 	<li><a href="#request">Request</a></li>
@@ -41,6 +40,7 @@
 	<li><a href="#router">Router</a></li>
 	<li><a href="#server">Server</a></li>
 	<li><a href="#transformer">Transformer</a></li>
+	<li><a href="#uniform">Uniform</a></li>
 	<li><a href="#virtual-host">Virtual Host</a></li>
 </ol>
 </p>
@@ -103,23 +103,6 @@ the one in Apache HTTP server) is used to select the best representation
 of a resource based on the available variants and on the client
 capabilities and preferences.</p>
 
-<h3><a name="dispatcher">Dispatcher</a></h3>
-
-<p>Base class exposing a uniform REST interface.<br />
-<br />
-"The central feature that distinguishes the REST architectural style
-from other network-based styles is its emphasis on a uniform interface
-between components. By applying the software engineering principle of
-generality to the component interface, the overall system architecture
-is simplified and the visibility of interactions is improved.
-Implementations are decoupled from the services they provide, which
-encourages independent evolvability." Roy T. Fielding<br />
-<br />
-It has many subclasses that focus on a specific ways to handle calls
-like filtering, routing or finding a target resource. The context
-property is typically provided by a parent component as a way to give
-access to features such as logging and client connectors.</p>
-
 <h3><a name="engine">Engine</a></h3>
 
 <p>A Restlet Engine is an implementation of the Restlet API. The
@@ -135,32 +118,26 @@ an attached Restlet. Also note that you can attach and detach targets
 while handling incoming calls as the filter is ensured to be
 thread-safe.</p>
 
-<h3><a name="guard">Guard</a></h3>
+<h3><a name="finder">Finder</a></h3>
 
-<p>Filter guarding the access to an attached Restlet.</p>
-
-<h3><a name="handler">Handler</a></h3>
-
-<p>Restlet capable of handling calls using a target resource. At
-this point in the processing, all the necessary information should be
-ready in order to find the resource that is the actual target of the
-request and to handle the required method on it.<br />
+<p>Restlet that can find the target resource that will concretely
+handle the request. Based on a given resource class, it is also able to
+instantiate the resource with the call's context, request and response
+without requiring the usage of a subclass. Once the target resource has
+been found, the call is automatically dispatched to the appropriate
+handle*() method (where the '*' character corresponds to the method
+name) if the corresponding allow*() method returns true.<br />
 <br />
-It is comparable to an HttpServlet class as it provides facility methods
-to handle the most common method names. The calls are then automatically
-dispatched to the appropriate handle*() method (where the '*' character
-corresponds to the method name).<br />
-<br />
-The handleGet(), handlePost(), handlePut(), handleDelete()n
-handleOptions() and handleHead() methods have a default implementation
-in this class, but the dispatching is dynamically done for all other
-methods. For example, if you want to support a MOVE method for a WebDAV
-server, you just have to add a handleMove(Resource, Request, Response)
-method in your subclass of Handler and it will be automatically be used
-at runtime.<br />
+For example, if you want to support a MOVE method for a WebDAV server,
+you just have to add a handleMove() method in your subclass of Resource
+and it will be automatically be used by the Finder instance at runtime.<br />
 <br />
 If no matching handle*() method is found, then a
 Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is returned.</p>
+
+<h3><a name="guard">Guard</a></h3>
+
+<p>Filter guarding the access to an attached Restlet.</p>
 
 <h3><a name="redirector">Redirector</a></h3>
 
@@ -272,6 +249,23 @@ implementation.</p>
 <p>Filter that can transform XML representations by applying an XSLT
 transform sheet.</p>
 
+<h3><a name="uniform">Uniform</a></h3>
+
+<p>Base class exposing a uniform REST interface.<br />
+<br />
+"The central feature that distinguishes the REST architectural style
+from other network-based styles is its emphasis on a uniform interface
+between components. By applying the software engineering principle of
+generality to the component interface, the overall system architecture
+is simplified and the visibility of interactions is improved.
+Implementations are decoupled from the services they provide, which
+encourages independent evolvability." Roy T. Fielding<br />
+<br />
+It has many subclasses that focus on a specific ways to handle calls
+like filtering, routing or finding a target resource. The context
+property is typically provided by a parent component as a way to give
+access to features such as logging and client connectors.</p>
+
 <h3><a name="virtual-host">Virtual Host</a></h3>
 
 <p>Router of calls from Server connectors to Restlets. The attached
@@ -290,7 +284,7 @@ Louvel</a> (<a target="_top" href="http://blog.noelios.com">blog</a>)<br />
 
 <br />
 
-<small> Last modified on 2006-12-18. Copyright &copy; 2005-2007
+<small> Last modified on 2007-01-16. Copyright &copy; 2005-2007
 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>.
 Restlet is a registered trademark of <a target="_top"
 	href="http://www.noelios.com">Noelios Consulting</a>. </small>

@@ -197,7 +197,7 @@ public class Resource {
      * 
      * @return The preferred variant.
      */
-    private Variant getPreferredVariant() {
+    public Variant getPreferredVariant() {
         Variant result = null;
         List<Variant> variants = getVariants();
 
