@@ -29,11 +29,13 @@ import org.restlet.Context;
 import org.restlet.data.Dimension;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
+import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.util.Series;
+import org.restlet.util.Template;
 
 /**
  * Intended conceptual target of a hypertext reference. "Any information that
@@ -167,6 +169,20 @@ public class Resource {
      */
     public void delete() {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+    }
+
+    /**
+     * Generates a reference based on a template URI. Note that you can leverage
+     * all the variables defined in the Template class as they will be resolved
+     * using the resource's request and response properties.
+     * 
+     * @param uriTemplate
+     *            The URI template to use for generation.
+     * @return The generated reference.
+     */
+    public Reference generateRef(String uriTemplate) {
+        Template tplt = new Template(getLogger(), uriTemplate);
+        return new Reference(tplt.format(getRequest(), getResponse()));
     }
 
     /**

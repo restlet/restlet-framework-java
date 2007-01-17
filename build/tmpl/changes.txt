@@ -40,6 +40,9 @@ Changes log
  - Added Filter.setNext() method taking a Resource class as parameter and automatically
    creating an associated Finder instance.
  - Added TransformRepresentation by refactoring private logic from Transformer.
+ - Added Resource.generateRef() to dynamically format URI templates into proper references.
+   Suggested by Yuri de Wit.
+ - Added the "o" variable in the Template variable list for the new Request.rootRef property.
  
 [Enhancements] 
  - The content negotiation algorithm is now more flexible about languages. It will try

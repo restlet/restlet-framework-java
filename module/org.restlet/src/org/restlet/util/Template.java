@@ -164,6 +164,11 @@ import org.restlet.data.Response;
  * <td>String</td>
  * </tr>
  * <tr>
+ * <td>request.rootRef</td>
+ * <td>o*</td>
+ * <td>Reference (see table below variable name sub-parts)</td>
+ * </tr>
+ * <tr>
  * <td>request.protocol</td>
  * <td>p</td>
  * <td>String</td>
@@ -1062,6 +1067,9 @@ public class Template {
                         if (request.getMethod() != null) {
                             result = request.getMethod().getName();
                         }
+                    } else if (variableName.startsWith("o")) {
+                        result = getReferenceContent(variableName.substring(1),
+                                request.getRootRef());
                     } else if (variableName.equals("p")) {
                         if (request.getProtocol() != null) {
                             result = request.getProtocol().getName();
