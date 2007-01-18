@@ -35,7 +35,7 @@ import org.restlet.util.WrapperList;
 /**
  * Descriptor for available representations of a resource. It contains all the
  * important metadata about a representation but is not able to actually serve
- * the representation's content itself. For this you need to use the
+ * the representation's content itself. For this, you need to use the
  * Representation subclass.
  * 
  * @author Jerome Louvel (contact@noelios.com)
@@ -45,6 +45,12 @@ public class Variant {
      * Inidicates that the size of the representation can't be known in advance.
      */
     public static final long UNKNOWN_SIZE = -1L;
+
+    /** The natural language(s) of the intended audience for this variant. */
+    private List<Language> languages;
+
+    /** The media type. */
+    private MediaType mediaType;
 
     /** The character set or null if not applicable. */
     private CharacterSet characterSet;
@@ -62,12 +68,6 @@ public class Variant {
 
     /** The expiration date. */
     private Date expirationDate;
-
-    /** The natural language(s) of the intended audience for this variant. */
-    private List<Language> languages;
-
-    /** The media type. */
-    private MediaType mediaType;
 
     /** The modification date. */
     private Date modificationDate;
