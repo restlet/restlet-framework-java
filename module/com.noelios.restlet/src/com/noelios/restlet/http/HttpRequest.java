@@ -140,6 +140,10 @@ public class HttpRequest extends Request {
                     .getValues(HttpConstants.HEADER_ACCEPT);
 
             // Parse the headers and update the call preferences
+
+            // Parse the Accept* headers. If an error occurs during the parsing
+            // of each header, the error is traced and we keep on with the other
+            // headers.
             try {
                 PreferenceUtils.parseCharacterSets(acceptCharset, result);
             } catch (Exception e) {
