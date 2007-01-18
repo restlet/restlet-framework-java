@@ -1008,9 +1008,16 @@ public class Template {
                         }
                     } else if (variableName.equals("ee")) {
                         if ((request.getEntity() != null)
-                                && (request.getEntity().getEncoding() != null)) {
-                            result = request.getEntity().getEncoding()
-                                    .getName();
+                                && (!request.getEntity().getEncodings().isEmpty())) {
+                            StringBuilder value = new StringBuilder();
+                            for (int i = 0; i < request.getEntity()
+                                    .getEncodings().size(); i++) {
+                                if (i > 0)
+                                    value.append(", ");
+                                value.append(request.getEntity().getEncodings()
+                                        .get(i).getName());
+                            }
+                            result = value.toString();
                         }
                     } else if (variableName.equals("eed")) {
                         if ((request.getEntity() != null)
@@ -1089,9 +1096,16 @@ public class Template {
                         }
                     } else if (variableName.equals("EE")) {
                         if ((response.getEntity() != null)
-                                && (response.getEntity().getEncoding() != null)) {
-                            result = response.getEntity().getEncoding()
-                                    .getName();
+                                && (!response.getEntity().getEncodings().isEmpty())) {
+                            StringBuilder value = new StringBuilder();
+                            for (int i = 0; i < response.getEntity()
+                                    .getEncodings().size(); i++) {
+                                if (i > 0)
+                                    value.append(", ");
+                                value.append(response.getEntity()
+                                        .getEncodings().get(i).getName());
+                            }
+                            result = value.toString();
                         }
                     } else if (variableName.equals("EED")) {
                         if ((response.getEntity() != null)

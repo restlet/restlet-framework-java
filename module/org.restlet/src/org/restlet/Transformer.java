@@ -63,11 +63,11 @@ public class Transformer extends Filter {
     private CharacterSet resultCharacterSet;
 
     /**
-     * The encoding of the result representation. The default value is null.
+     * The encodings of the result representation.
      */
-    private Encoding resultEncoding;
+    private List<Encoding> resultEncodings;
 
-    /** The language of the result representation. The default value is null. */
+    /** The languages of the result representation. */
     private List<Language> resultLanguages;
 
     /**
@@ -130,9 +130,24 @@ public class Transformer extends Filter {
      * null.
      * 
      * @return The encoding of the result representation.
+     * @deprecated use getResultEncodings instead.
      */
+    @Deprecated
     public Encoding getResultEncoding() {
-        return this.resultEncoding;
+        return (getResultEncodings().isEmpty() ? null : getResultEncodings()
+                .get(0));
+    }
+
+    /**
+     * Returns the encoding of the result representation. The default value is
+     * null.
+     * 
+     * @return The encoding of the result representation.
+     */
+    public List<Encoding> getResultEncodings() {
+        if (this.resultEncodings == null)
+            this.resultEncodings = new ArrayList<Encoding>();
+        return this.resultEncodings;
     }
 
     /**
@@ -190,9 +205,12 @@ public class Transformer extends Filter {
      * 
      * @param resultEncoding
      *            The encoding of the result representation.
+     * @deprecated use the getResultEncodings instead.
      */
+    @Deprecated
     public void setResultEncoding(Encoding resultEncoding) {
-        this.resultEncoding = resultEncoding;
+        getResultEncodings().clear();
+        getResultEncodings().add(resultEncoding);
     }
 
     /**
@@ -232,7 +250,10 @@ public class Transformer extends Filter {
         }
 
         result.setCharacterSet(getResultCharacterSet());
-        result.setEncoding(getResultEncoding());
+        if (this.resultEncodings != null) {
+            result.getEncodings().addAll(getResultEncodings());
+        }
+
         result.setMediaType(getResultMediaType());
         return result;
     }

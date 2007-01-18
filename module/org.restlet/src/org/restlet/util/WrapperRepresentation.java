@@ -82,9 +82,20 @@ public class WrapperRepresentation extends Representation {
      * Returns the encoding or null if identity encoding applies.
      * 
      * @return The encoding or null if identity encoding applies.
+     * @deprecated Use getEncodings instead.
      */
+    @Deprecated
     public Encoding getEncoding() {
         return getWrappedRepresentation().getEncoding();
+    }
+
+    /**
+     * Returns the list of encodings.
+     * 
+     * @return The list of encodings.
+     */
+    public List<Encoding> getEncodings() {
+        return getWrappedRepresentation().getEncodings();
     }
 
     /**
@@ -249,7 +260,10 @@ public class WrapperRepresentation extends Representation {
      * 
      * @param encoding
      *            The encoding or null if identity encoding applies.
+     * @deprecated Use getEncodings method in order to update the encodings
+     *             list.
      */
+    @Deprecated
     public void setEncoding(Encoding encoding) {
         getWrappedRepresentation().setEncoding(encoding);
     }

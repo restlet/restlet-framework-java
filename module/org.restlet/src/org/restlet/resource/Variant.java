@@ -55,8 +55,8 @@ public class Variant {
     /** The character set or null if not applicable. */
     private CharacterSet characterSet;
 
-    /** The encoding or null if not identity encoding applies. */
-    private Encoding encoding;
+    /** The additional content codings applied to the entity-body. */
+    private List<Encoding> encodings;
 
     /**
      * The expected size. Dynamic representations can have any size, but
@@ -95,7 +95,7 @@ public class Variant {
      */
     public Variant(MediaType mediaType) {
         this.characterSet = null;
-        this.encoding = null;
+        this.encodings = null;
         this.size = UNKNOWN_SIZE;
         this.expirationDate = null;
         this.languages = null;
@@ -118,9 +118,81 @@ public class Variant {
      * Returns the encoding or null if identity encoding applies.
      * 
      * @return The encoding or null if identity encoding applies.
+     * @deprecated Use the getEncodings method instead.
      */
+    @Deprecated
     public Encoding getEncoding() {
-        return this.encoding;
+        return (getEncodings().isEmpty() ? null : getEncodings().get(0));
+    }
+
+    /**
+     * Returns the list of encodings applied to the entity-body. An
+     * "IllegalArgumentException" exception is thrown when adding a null
+     * encoding to this list.
+     * 
+     * @return The list of encodings applied to the entity-body.
+     */
+    public List<Encoding> getEncodings() {
+        if (this.encodings == null) {
+            encodings = new WrapperList<Encoding>() {
+
+                @Override
+                public void add(int index, Encoding element) {
+                    if (element == null) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    } else {
+                        super.add(index, element);
+                    }
+                }
+
+                @Override
+                public boolean add(Encoding element) {
+                    if (element == null) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    } else {
+                        return super.add(element);
+                    }
+                }
+
+                @Override
+                public boolean addAll(Collection<? extends Encoding> elements) {
+                    boolean addNull = (elements == null);
+                    if (!addNull) {
+                        for (Iterator<? extends Encoding> iterator = elements
+                                .iterator(); !addNull && iterator.hasNext();) {
+                            addNull = (iterator.next() == null);
+                        }
+                    }
+                    if (addNull) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    } else {
+                        return super.addAll(elements);
+                    }
+                }
+
+                @Override
+                public boolean addAll(int index,
+                        Collection<? extends Encoding> elements) {
+                    boolean addNull = (elements == null);
+                    if (!addNull) {
+                        for (Iterator<? extends Encoding> iterator = elements
+                                .iterator(); !addNull && iterator.hasNext();) {
+                            addNull = (iterator.next() == null);
+                        }
+                    }
+                    if (addNull) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    } else {
+                        return super.addAll(index, elements);
+                    }
+                }
+            };
+        }
+        return this.encodings;
     }
 
     /**
@@ -146,7 +218,8 @@ public class Variant {
     }
 
     /**
-     * Returns the list of languages.
+     * Returns the list of languages. An "IllegalArgumentException" exception is
+     * thrown when adding a null language to this list.
      * 
      * @return The list of languages.
      */
@@ -265,9 +338,13 @@ public class Variant {
      * 
      * @param encoding
      *            The encoding or null if identity encoding applies.
+     * @deprecated Use getEncodings method in order to update the encodings
+     *             list.
      */
+    @Deprecated
     public void setEncoding(Encoding encoding) {
-        this.encoding = encoding;
+        getEncodings().clear();
+        getEncodings().add(encoding);
     }
 
     /**
