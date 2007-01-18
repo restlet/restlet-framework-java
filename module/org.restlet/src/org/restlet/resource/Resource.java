@@ -356,7 +356,8 @@ public class Resource {
         } else if (isNegotiateContent()) {
             Variant preferredVariant = getPreferredVariant();
 
-            // Update the variant dimensions used for content negotiation
+            // Set the variant dimensions used for content negotiation
+            getResponse().getDimensions().clear();
             getResponse().getDimensions().add(Dimension.CHARACTER_SET);
             getResponse().getDimensions().add(Dimension.ENCODING);
             getResponse().getDimensions().add(Dimension.LANGUAGE);
@@ -416,7 +417,6 @@ public class Resource {
                     getRequest().getMethod(), selectedVariant);
             if (status != null) {
                 getResponse().setStatus(status);
-                // TODO Must the entity be erased?
                 getResponse().setEntity(null);
             }
         }
