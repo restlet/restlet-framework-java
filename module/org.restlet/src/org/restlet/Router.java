@@ -153,24 +153,6 @@ public class Router extends Restlet {
     }
 
     /**
-     * Attaches a target Restlet to this router based on a given URI pattern. A
-     * new route will be added routing to the target when calls with a URI
-     * matching the pattern will be received.
-     * 
-     * @param uriPattern
-     *            The URI pattern that must match the relative part of the
-     *            resource URI.
-     * @param target
-     *            The target Restlet to attach.
-     * @return The created route.
-     */
-    public Route attach(String uriPattern, Restlet target) {
-        Route result = new Route(this, uriPattern, target);
-        getRoutes().add(result);
-        return result;
-    }
-
-    /**
      * Attaches a target Resource class to this router based on a given URI
      * pattern. A new route will be added routing to the target when calls with
      * a URI matching the pattern will be received.
@@ -187,17 +169,20 @@ public class Router extends Restlet {
     }
 
     /**
-     * Attaches a Restlet to this router as the default target to invoke when no
-     * route matches. It actually sets a default route that scores all calls to
-     * 1.0.
+     * Attaches a target Restlet to this router based on a given URI pattern. A
+     * new route will be added routing to the target when calls with a URI
+     * matching the pattern will be received.
      * 
-     * @param defaultTarget
-     *            The Restlet to use as the default target.
+     * @param uriPattern
+     *            The URI pattern that must match the relative part of the
+     *            resource URI.
+     * @param target
+     *            The target Restlet to attach.
      * @return The created route.
      */
-    public Route attachDefault(Restlet defaultTarget) {
-        Route result = new Route(this, "", defaultTarget);
-        setDefaultRoute(result);
+    public Route attach(String uriPattern, Restlet target) {
+        Route result = createRoute(uriPattern, target);
+        getRoutes().add(result);
         return result;
     }
 
@@ -212,6 +197,35 @@ public class Router extends Restlet {
      */
     public Route attachDefault(Class<? extends Resource> defaultTargetClass) {
         return attachDefault(new Finder(getContext(), defaultTargetClass));
+    }
+
+    /**
+     * Attaches a Restlet to this router as the default target to invoke when no
+     * route matches. It actually sets a default route that scores all calls to
+     * 1.0.
+     * 
+     * @param defaultTarget
+     *            The Restlet to use as the default target.
+     * @return The created route.
+     */
+    public Route attachDefault(Restlet defaultTarget) {
+        Route result = createRoute("", defaultTarget);
+        setDefaultRoute(result);
+        return result;
+    }
+
+    /**
+     * Creates a new route for the given URI pattern and target.
+     * 
+     * @param uriPattern
+     *            The URI pattern that must match the relative part of the
+     *            resource URI.
+     * @param target
+     *            The target Restlet to attach.
+     * @return The created route.
+     */
+    protected Route createRoute(String uriPattern, Restlet target) {
+        return new Route(this, uriPattern, target);
     }
 
     /**
@@ -358,15 +372,6 @@ public class Router extends Restlet {
     }
 
     /**
-     * Returns the routing mode.
-     * 
-     * @return The routing mode.
-     */
-    public int getRoutingMode() {
-        return this.routingMode;
-    }
-
-    /**
      * Returns the modifiable list of routes.
      * 
      * @return The modifiable list of routes.
@@ -375,6 +380,15 @@ public class Router extends Restlet {
         if (this.routes == null)
             this.routes = new RouteList();
         return this.routes;
+    }
+
+    /**
+     * Returns the routing mode.
+     * 
+     * @return The routing mode.
+     */
+    public int getRoutingMode() {
+        return this.routingMode;
     }
 
     /**

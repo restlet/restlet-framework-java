@@ -14,6 +14,7 @@ Changes log
  - Fixed bug in DomRepresentation when outputting an instance based on a XML representation.
  - Fixed bug in Jetty connector potentially trying to send a response twice. Reported by
    Diggory Briercliffe.
+ - VirtualHost now always set the rootRef, even if the attached Restlet isn't an Application.
    
 [API changes]
  - Added ReferenceList.getWebRepresentation() method, using exsiting logic from Directory.
@@ -43,6 +44,7 @@ Changes log
  - Added Resource.generateRef() to dynamically format URI templates into proper references.
    Suggested by Yuri de Wit.
  - Added the "o" variable in the Template variable list for the new Request.rootRef property.
+ - The creation of new Routes by a Router can now be customized via the protected createRoute() method.
  
 [Enhancements] 
  - The content negotiation algorithm is now more flexible about languages. It will try

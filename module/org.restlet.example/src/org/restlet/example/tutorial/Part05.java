@@ -36,13 +36,14 @@ public class Part05 {
         Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
 
-        // Create a new Restlet that will display some path information.
+        // Create a new tracing Restlet
         Restlet restlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
                 // Print the requested URI path
-                String message = "Resource URI:   " + request.getResourceRef()
-                        + '\n' + "Routed part:    "
+                String message = "Resource URI  : " + request.getResourceRef()
+                        + '\n' + "Root URI      : " + request.getRootRef()
+                        + '\n' + "Routed part   : "
                         + request.getResourceRef().getBaseRef() + '\n'
                         + "Remaining part: "
                         + request.getResourceRef().getRemainingPart();

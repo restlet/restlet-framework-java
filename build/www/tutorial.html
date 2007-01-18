@@ -23,7 +23,8 @@
 	<li><a href="#part02">Retrieving the content of a Web page</a></li>
 	<li><a href="#part03">Listening to Web browsers</a></li>
 	<li><a href="#part04">Overview of a REST architecture</a></li>
-	<li><a href="#part05">Components and Virtual Hosts</a></li>
+	<li><a href="#part05">Components, virtual hosts and
+	applications</a></li>
 	<li><a href="#part06">Serving static files</a></li>
 	<li><a href="#part07">Access logging</a></li>
 	<li><a href="#part08">Displaying error pages</a></li>
@@ -38,26 +39,26 @@
 
 <p>The Restlet framework is composed of two main parts. First, there
 is the "<a href="http://www.restlet.org/docs/api/">Restlet API</a>", a
-neutral API supporting the concepts of REST and a mechanism called
-Restlet facilitating the handling of REST uniform calls. This API must
-be supported by a "Restlet Implementation" before it can effectively be
-used. Multiple implementations could be provided (open source projects
-or commercial products).</p>
+neutral API supporting the concepts of REST and facilitating the
+handling of calls for both client-side and server-side applications.
+This API must be supported by a Restlet implementation before it can
+effectively be used. Multiple implementations could be provided (open
+source projects or commercial products).</p>
 <p align="middle"><img src="images/tutorial01"
 	alt="Framework structure" /></p>
 <p>This separation between the API and the implementation is similar
 to the one between the Servlet API and Web containers like Jetty or
-Tomcat, or between the JDBC API and actual JDBC drivers. Currently, the
-"<a href="http://www.restlet.org/docs/nre/">Noelios Restlet Engine</a>"
-(NRE) is available and acts as the reference implementation. When you
-download the Restlet framework, the API and the NRE come bundled
-together, ready to be used. If you need to use a different
+Tomcat, or between the JDBC API and concrete JDBC drivers. Currently,
+the "<a href="http://www.restlet.org/docs/nre/">Noelios Restlet
+Engine</a>" (NRE) is available and acts as the reference implementation.
+When you download the Restlet distribution, the API and the NRE come
+bundled together, ready to be used. If you need to use a different
 implementation just add the implementation JAR file to the classpath and
-remove the NRE JAR file named com.noelios.restlet.jar by default.</p>
+remove the NRE JAR file named com.noelios.restlet.jar.</p>
 <p>The registration is done automatically. See the <a
 	href="http://java.sun.com/j2se/1.5.0/docs/guide/jar/jar.html#Service%20Provider">JAR
 specification</a> for details. When an implementation is loaded, it
-automatically calls back the <code>org.restlet.Factory.setInstance()</code>
+automatically calls back the <code>org.restlet.util.Factory.setInstance()</code>
 method.</p>
 
 <h3><a name="part02">2. Retrieving the content of a Web page</a></h3>
@@ -78,8 +79,9 @@ existing resource and output it in the JVM console:</p>
 <p>Note that the example above uses a simplified way to issue calls
 via the generic Client class. A more flexible way is to create a new
 Request object and to ask the Client to handle it. The example below
-illustrate how to set some preferences in your call, like a referrer URI
-or the languages and media types you prefer to receive as a response:</p>
+illustrate how to set some preferences in your call, like a referrer
+URI. It could also be the languages and media types you prefer to
+receive as a response:</p>
 <pre>
         // Prepare the request
         Request request = new Request(Method.GET, "http://www.restlet.org");
@@ -98,12 +100,18 @@ or the languages and media types you prefer to receive as a response:</p>
 
 <p>Now, we want to see how the Restlet framework can listen to
 client requests and reply to them. We will use one of the NRE HTTP
-server connectors (supported by Mortbay's Jetty HTTP listener) and
-return a simple string representation "Hello World!" as plain text. Note
-that in a more realistic application, we would probably create a
-separate class extending the Restlet instead of relying on an anonymous
-inner class. Also, if you need to handle only a specific method, you
-should use Finder as your base class.</p>
+server connectors (such as the one based on Mortbay's Jetty) and return
+a simple string representation "Hello World!" as plain text. Note that
+in a more realistic application, we would probably create a separate
+class extending the Restlet instead of relying on an anonymous inner
+class.</p>
+
+<p>The Restlet class is similar to a Servlet and has provides
+somewhat limited help when handling calls in a RESTful applications. We
+will see later one that the framework provides many specialized
+subclasses as well as a Resource class that will be able to greatly
+abstract and simplify the handling process. For now, let's stick to a
+simple example:</p>
 <pre>
         // Creating a minimal Restlet returning "Hello World"
         Restlet restlet = new Restlet() {
@@ -122,16 +130,14 @@ Actually, any URI will work, try also <a target="_top"
 	href="http://localhost:8182/test/tutorial">http://localhost:8182/test/tutorial</a>.
 Note that if you test your server from a different machine, you need to
 replace "localhost" by either the IP address of your server or its
-domain name. The handler that we created is very primitive. We will see
-later how to take more advantage of the Restlet framework.</p>
+domain name if it has one defined.</p>
 
 <h3><a name="part04">4. Overview of a REST architecture</a></h3>
-<p>Let's step back a little bit and consider typical web
-architectures from a REST point of view. In the diagram below, ports
-represent the connector that enables the communication between
-components which are represented by the larger boxes. The links
-represents the particular protocol (HTTP, SMTP, etc.) used for the
-actual communication.</p>
+<p>Let's step back a little and consider typical web architectures
+from a REST point of view. In the diagram below, ports represent the
+connector that enables the communication between components which are
+represented by the larger boxes. The links represents the particular
+protocol (HTTP, SMTP, etc.) used for the actual communication.</p>
 <p align="middle"><img src="images/tutorial04"
 	alt="REST architecture" /></p>
 <p>Note that the same component can have any number of client and
@@ -140,46 +146,48 @@ server connector to respond to requests from the User Agent component,
 and client connectors to send requests to the Database Server, the Mail
 Server and the Web Server A.</p>
 
-<h3><a name="part05">5. Components and Virtual Hosts</a></h3>
+<h3><a name="part05">5. Components, virtual hosts and
+applications</a></h3>
 <p>In addition to supporting the standard REST software architecture
 elements as presented before, the Restlet framework also provides a set
-of classes that greatly simplify the hosting of complex applications
+of classes that greatly simplify the hosting of multiple applications
 within a single JVM. The goal is to provide a RESTful, portable and more
-flexible alternative to existing Servlet API. In the diagram below, we
-can see the three types of Restlets that are provided in order to manage
-these complex cases. Components can manage several Virtual Hosts and
-Applications. Virtual Hosts support flexible configuration where, for
-example, the same IP address is shared by several domain names, or where
-the same domain name is load-balanced across several IP addresses.
+flexible alternative to the existing Servlet API. In the diagram below,
+we can see the three types of Restlets that are provided in order to
+manage these complex cases. Components can manage several Virtual Hosts
+and Applications. Virtual Hosts support flexible configuration where,
+for example, the same IP address is shared by several domain names, or
+where the same domain name is load-balanced across several IP addresses.
 Finally, we use Applications to manage a set of related Restlets,
 Resources and Representations. In addition, Applications are ensured to
 be portable and reconfigurable over different Restlet implementations
-and with different virtual hosts, and they provide important services
-such as access logging and status page setting.
+and with different virtual hosts. In addition, they provide important
+services like access logging, automatic decoding of request entities,
+configurable status page setting and more!
 <p />
 <p align="middle"><img src="images/tutorial05"
 	alt="Restlet components, virtual hosts and applications" /></p>
 <p>In order to illustrate these classes, let's examine a simple
-example. Here we create a Component, then add an HTTP server to it,
-listening on port 8182. Then we create a simple trace Restlet and attach
-it to the defaut VirtualHost of the Component. This default host is
-catching any request that wasn't already routed to a declared
-VirtualHost (see the "hosts" property on Component for details). In a
-later example, we will also introduce the usage of the Application
-class. Note that for now you don't see any access log displayed in the
-console.</p>
+example. Here we create a Component, then add an HTTP server connector
+to it, listening on port 8182. Then we create a simple trace Restlet and
+attach it to the defaut VirtualHost of the Component. This default host
+is catching any request that wasn't already routed to a declared
+VirtualHost (see the Component.hosts property for details). In a later
+example, we will also introduce the usage of the Application class. Note
+that for now you don't see any access log displayed in the console.</p>
 <pre>
         // Create a new Restlet component and add a HTTP server connector to it
         Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
 
-        // Create a new Restlet that will display some path information.
+        // Create a new tracing Restlet
         Restlet restlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
                 // Print the requested URI path
                 String message = "Resource URI:   " + request.getResourceRef()
-                        + '\n' + "Routed part:    "
+                        + '\n' + "Root URI:    " + request.getRootRef() + '\n'
+                        + "Routed part:    "
                         + request.getResourceRef().getBaseRef() + '\n'
                         + "Remaining part: "
                         + request.getResourceRef().getRemainingPart();
@@ -403,8 +411,8 @@ formatting its target URIs.</p>
 <h3><a name="part11">11. Routers and hierarchical URIs</a></h3>
 <p>In addition to the Redirector, we have another tool to manage
 cool URIs: Routers. They are specialized Restlets that can have other
-Restlets (Finders and Filters for example) attached to them and that
-can automatically delegate calls based on a <a
+Restlets (Finders and Filters for example) attached to them and that can
+automatically delegate calls based on a <a
 	href="http://bitworking.org/projects/URI-Templates/">URI template</a>.
 In general, you will set a Router as the root of your Application.</p>
 <p>Here we want to explain how to handle the following URI patterns:</p>
@@ -503,11 +511,7 @@ anonymous ones we use here:</p>
 </pre>
 
 <h3><a name="part12">12. Reaching target Resources</a></h3>
-<p>
-
-
-
-</p>
+<p></p>
 
 <h3><a name="conclusion">Conclusion</a></h3>
 <p>We already covered many aspects of the framework. Before you move

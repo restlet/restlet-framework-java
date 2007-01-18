@@ -21,6 +21,9 @@ package org.restlet;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+
 /**
  * Router of calls from Server connectors to Restlets. The attached Restlets are
  * typically Applications.<br/><br/>
@@ -174,6 +177,19 @@ public class VirtualHost extends Router {
 
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
+    }
+
+    @Override
+    protected Route createRoute(String uriPattern, Restlet target) {
+        return new Route(this, uriPattern, target) {
+            @Override
+            protected void beforeHandle(Request request, Response response) {
+                super.beforeHandle(request, response);
+
+                // Set the request's root reference
+                request.setRootRef(request.getResourceRef().getBaseRef());
+            }
+        };
     }
 
     /**

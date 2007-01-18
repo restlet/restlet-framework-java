@@ -88,9 +88,6 @@ public class ApplicationHelper extends Helper {
      */
     public void handle(Request request, Response response) {
         if (getFirst() != null) {
-            // Set the request's root reference
-            request.setRootRef(request.getResourceRef().getBaseRef());
-
             // Dispatch the call to the first Restlet
             getFirst().handle(request, response);
         } else {
