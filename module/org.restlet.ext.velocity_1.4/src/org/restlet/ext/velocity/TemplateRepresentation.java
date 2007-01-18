@@ -33,10 +33,10 @@ import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
 
 /**
- * FreeMarker template representation. Useful for dynamic string-based
+ * Velocity template representation. Useful for dynamic string-based
  * representations.
  * 
- * @see <a href="http://freemarker.org/">FreeMarker home page</a>
+ * @see <a href="http://velocity.apache.org/">Velocity home page</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TemplateRepresentation extends OutputRepresentation {
@@ -53,7 +53,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param templateName
-     *            The FreeMarker template's name. The full path is resolved by
+     *            The Velocity template's name. The full path is resolved by
      *            the configuration.
      * @param mediaType
      *            The representation's media type.
@@ -66,10 +66,10 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param templateName
-     *            The FreeMarker template's name. The full path is resolved by
+     *            The Velocity template's name. The full path is resolved by
      *            the configuration.
      * @param dataModel
-     *            The FreeMarker template's data model.
+     *            The Velocity template's data model.
      * @param mediaType
      *            The representation's media type.
      */
