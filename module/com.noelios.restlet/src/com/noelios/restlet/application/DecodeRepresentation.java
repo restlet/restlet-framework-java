@@ -23,7 +23,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
@@ -36,13 +38,17 @@ import org.restlet.util.WrapperRepresentation;
 
 /**
  * Representation that decodes a wrapped representation if its encoding is
- * supported.
+ * supported.<br/>If at least one encoding of the wrapped representation is not
+ * supported, then the wrapped representation is not decoded.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class DecodeRepresentation extends WrapperRepresentation {
     /** Indicates if the decoding can happen. */
     private boolean canDecode;
+
+    /** List of encodings still applied to the decodeRepresentation */
+    private List<Encoding> wrappedEncodings;
 
     /**
      * Constructor.
@@ -52,8 +58,10 @@ public class DecodeRepresentation extends WrapperRepresentation {
      */
     public DecodeRepresentation(Representation wrappedRepresentation) {
         super(wrappedRepresentation);
-        this.canDecode = getSupportedEncodings().contains(
-                wrappedRepresentation.getEncoding());
+        this.canDecode = getSupportedEncodings().containsAll(
+                wrappedRepresentation.getEncodings());
+        wrappedEncodings = new ArrayList<Encoding>();
+        wrappedEncodings.addAll(wrappedRepresentation.getEncodings());
     }
 
     /**
@@ -69,7 +77,9 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * Returns the encoding or null if identity encoding applies.
      * 
      * @return The encoding or null if identity encoding applies.
+     * @deprecated use the getEncodings method instead
      */
+    @Deprecated
     public Encoding getEncoding() {
         if (canDecode()) {
             return null;
@@ -79,11 +89,26 @@ public class DecodeRepresentation extends WrapperRepresentation {
     }
 
     /**
+     * Returns the encodings applied to the entity.
+     * 
+     * @return The encodings applied to the entity.
+     */
+    public List<Encoding> getEncodings() {
+        if (canDecode()) {
+            return new ArrayList<Encoding>();
+        } else {
+            return wrappedEncodings;
+        }
+    }
+
+    /**
      * Sets the encoding or null if identity encoding applies.
      * 
      * @param encoding
      *            The encoding or null if identity encoding applies.
+     * @deprecated use the getEncodings method instead.
      */
+    @Deprecated
     public void setEncoding(Encoding encoding) {
         throw new IllegalArgumentException(
                 "The encoding can't be changed for a decoder representation");
@@ -112,15 +137,19 @@ public class DecodeRepresentation extends WrapperRepresentation {
         InputStream result = null;
 
         if (canDecode()) {
-            result = getDecodedStream(getWrappedRepresentation().getEncoding(),
-                    getWrappedRepresentation().getStream());
+            result = getWrappedRepresentation().getStream();
+            for (int i = wrappedEncodings.size() - 1; i >= 0; i--) {
+                if (!wrappedEncodings.get(i).equals(Encoding.IDENTITY)) {
+                    result = getDecodedStream(wrappedEncodings.get(i), result);
+                }
+            }
         }
 
         return result;
     }
 
     /**
-     * Returns a decoded stream for a given encoding and coded representation.
+     * Returns a decoded stream for a given encoding and coded stream.
      * 
      * @param encoding
      *            The encoding to use.
@@ -200,10 +229,15 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      */
     public long getSize() {
-        long result = -1;
+        long result = UNKNOWN_SIZE;
 
         if (canDecode()) {
-            if (getEncoding().equals(Encoding.IDENTITY)) {
+            boolean identity = true;
+            for (Iterator<Encoding> iter = getEncodings().iterator(); identity
+                    && iter.hasNext();) {
+                identity = (iter.next().equals(Encoding.IDENTITY));
+            }
+            if (identity) {
                 result = getWrappedRepresentation().getSize();
             }
         } else {

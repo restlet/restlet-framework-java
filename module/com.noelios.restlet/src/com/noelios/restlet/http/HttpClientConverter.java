@@ -264,9 +264,17 @@ public class HttpClientConverter extends HttpConverter {
                             request.getEntity().getMediaType().toString());
                 }
 
-                if (request.getEntity().getEncoding() != null) {
+                if (!request.getEntity().getEncodings().isEmpty()) {
+                    StringBuilder value = new StringBuilder();
+                    for (int i = 0; i < request.getEntity().getEncodings()
+                            .size(); i++) {
+                        if (i > 0)
+                            value.append(", ");
+                        value.append(request.getEntity().getEncodings().get(i)
+                                .getName());
+                    }
                     requestHeaders.add(HttpConstants.HEADER_CONTENT_ENCODING,
-                            request.getEntity().getEncoding().toString());
+                            value.toString());
                 }
 
                 if (!request.getEntity().getLanguages().isEmpty()) {

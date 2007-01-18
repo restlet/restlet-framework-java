@@ -193,12 +193,16 @@ public class Encoder extends Filter {
      * @return True if the call can be encoded.
      */
     public boolean canEncode(Representation representation) {
-        // Test the existance of the representation and that no existing
+        // Test the existence of the representation and that no existing
         // encoding applies
-        boolean result = ((representation != null) && (representation
-                .getEncoding() == null))
-                || ((representation != null) && representation.getEncoding()
-                        .equals(Encoding.IDENTITY));
+        boolean result = false;
+        if(representation != null){
+            boolean identity = true;
+            for (Iterator<Encoding> iter = representation.getEncodings().iterator(); identity && iter.hasNext();) {
+                identity = (iter.next().equals(Encoding.IDENTITY));
+            }
+            result = identity;
+        }
 
         if (result) {
             // Test the size of the representation

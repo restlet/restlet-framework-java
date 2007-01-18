@@ -174,10 +174,18 @@ public class HttpServerConverter extends HttpConverter {
                             .formatDate(entity.getExpirationDate(), false));
                 }
 
-                if ((entity.getEncoding() != null)
-                        && (!entity.getEncoding().equals(Encoding.IDENTITY))) {
-                    responseHeaders.add(HttpConstants.HEADER_CONTENT_ENCODING,
-                            entity.getEncoding().getName());
+                if (!entity.getEncodings().isEmpty()) {
+                    StringBuilder value = new StringBuilder();
+                    for (Encoding encoding : entity.getEncodings()) {
+                        if (!encoding.equals(Encoding.IDENTITY)) {
+                            if (value.length() > 0)
+                                value.append(", ");
+                            value.append(encoding.getName());
+                        }
+                        responseHeaders.add(
+                                HttpConstants.HEADER_CONTENT_ENCODING, value
+                                        .toString());
+                    }
                 }
 
                 if (!entity.getLanguages().isEmpty()) {

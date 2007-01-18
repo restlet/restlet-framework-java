@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 
 import org.restlet.Client;
+import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
@@ -257,9 +258,15 @@ public class FileClientHelper extends LocalClientHelper {
                                 request.getEntity().setMediaType(
                                         metadataService.getDefaultMediaType());
                             }
-                            if (request.getEntity().getEncoding() == null) {
-                                request.getEntity().setEncoding(
-                                        metadataService.getDefaultEncoding());
+                            if (request.getEntity().getEncodings().isEmpty()) {
+                                if (metadataService.getDefaultEncoding() != null
+                                        && !metadataService
+                                                .getDefaultEncoding().equals(
+                                                        Encoding.IDENTITY)) {
+                                    request.getEntity().getEncodings().add(
+                                            metadataService
+                                                    .getDefaultEncoding());
+                                }
                             }
                             // Update the URI
                             StringBuilder fileName = new StringBuilder(baseName);
@@ -277,13 +284,14 @@ public class FileClientHelper extends LocalClientHelper {
                                                     .getExtension(language));
                                 }
                             }
-                            if (metadataService.getExtension(request
-                                    .getEntity().getEncoding()) != null) {
-                                fileName.append("."
-                                        + metadataService.getExtension(request
-                                                .getEntity().getEncoding()));
+                            for (Encoding encoding : request.getEntity()
+                                    .getEncodings()) {
+                                if (metadataService.getExtension(encoding) != null) {
+                                    fileName.append("."
+                                            + metadataService
+                                                    .getExtension(encoding));
+                                }
                             }
-
                             file = new File(file.getParentFile(), fileName
                                     .toString());
                         }
@@ -527,7 +535,7 @@ public class FileClientHelper extends LocalClientHelper {
             updateMetadata(metadataService, fileName, rep);
             // "rep" contains the theorical correct metadata
             if (!representation.getLanguages().isEmpty()
-                    && !rep.getLanguages().contains(
+                    && !rep.getLanguages().containsAll(
                             representation.getLanguages())) {
                 result = false;
             }
@@ -536,8 +544,9 @@ public class FileClientHelper extends LocalClientHelper {
                             .equals(rep.getMediaType())) {
                 result = false;
             }
-            if (representation.getEncoding() != null
-                    && !representation.getEncoding().equals(rep.getEncoding())) {
+            if (!representation.getEncodings().isEmpty()
+                    && !rep.getEncodings().containsAll(
+                            representation.getEncodings())) {
                 result = false;
             }
         }

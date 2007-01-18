@@ -113,7 +113,7 @@ public class LocalClientHelper extends ClientHelper {
                     if (current instanceof CharacterSet)
                         representation.setCharacterSet((CharacterSet) current);
                     if (current instanceof Encoding)
-                        representation.setEncoding((Encoding) current);
+                        representation.getEncodings().add((Encoding) current);
                     if (current instanceof Language)
                         representation.getLanguages().add((Language) current);
                 }

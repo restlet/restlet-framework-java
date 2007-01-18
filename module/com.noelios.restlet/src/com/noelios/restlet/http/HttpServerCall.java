@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.restlet.Server;
@@ -39,6 +41,8 @@ import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.ReadableRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
+
+import com.noelios.restlet.util.HeaderReader;
 
 /**
  * Abstract HTTP server connector call.
@@ -105,8 +109,8 @@ public abstract class HttpServerCall extends HttpCall {
 
         if (((requestStream != null) || (requestChannel != null))) {
             // Extract the header values
-            Encoding contentEncoding = null;
-            Language contentLanguage = null;
+            List<Encoding> contentEncodings = new ArrayList<Encoding>();
+            List<Language> contentLanguages = new ArrayList<Language>();
             MediaType contentMediaType = null;
             CharacterSet contentCharacterSet = null;
             long contentLength = -1L;
@@ -114,10 +118,23 @@ public abstract class HttpServerCall extends HttpCall {
             for (Parameter header : getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_ENCODING)) {
-                    contentEncoding = Encoding.valueOf(header.getValue());
+                    HeaderReader hr = new HeaderReader(header.getValue());
+                    String value = hr.readValue();
+                    while (value != null) {
+                        Encoding encoding = Encoding.valueOf(value);
+                        if (!encoding.equals(Encoding.IDENTITY)) {
+                            result.getEncodings().add(encoding);
+                        }
+                        value = hr.readValue();
+                    }
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_LANGUAGE)) {
-                    contentLanguage = Language.valueOf(header.getValue());
+                    HeaderReader hr = new HeaderReader(header.getValue());
+                    String value = hr.readValue();
+                    while (value != null) {
+                        contentLanguages.add(Language.valueOf(value));
+                        value = hr.readValue();
+                    }
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_TYPE)) {
                     ContentType contentType = new ContentType(header.getValue());
@@ -142,12 +159,18 @@ public abstract class HttpServerCall extends HttpCall {
             }
 
             if (result != null) {
-                result.setEncoding(contentEncoding);
-                if (contentLanguage != null) {
-                    result.getLanguages().add(contentLanguage);
+                for (Encoding encoding : contentEncodings) {
+                    if (!encoding.equals(Encoding.IDENTITY)) {
+                        result.getEncodings().add(encoding);
+                    }
+                }
+
+                if (!contentLanguages.isEmpty()) {
+                    result.getLanguages().addAll(contentLanguages);
                 }
                 result.setCharacterSet(contentCharacterSet);
             }
+
         }
 
         return result;

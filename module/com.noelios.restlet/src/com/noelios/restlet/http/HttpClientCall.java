@@ -231,7 +231,15 @@ public class HttpClientCall extends HttpCall {
                                     false));
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_ENCODING)) {
-                    result.setEncoding(new Encoding(header.getValue()));
+                    HeaderReader hr = new HeaderReader(header.getValue());
+                    String value = hr.readValue();
+                    while (value != null) {
+                        Encoding encoding = new Encoding(value);
+                        if(!encoding.equals(Encoding.IDENTITY)){
+                            result.getEncodings().add(encoding);
+                        }
+                        value = hr.readValue();
+                    }
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_LANGUAGE)) {
                     HeaderReader hr = new HeaderReader(header.getValue());

@@ -112,14 +112,24 @@ public class Decoder extends Filter {
      * @return True if the call can be decoded.
      */
     public boolean canDecode(Representation representation) {
-        // Test the existance of the representation and that an encoding applies
-        return (representation != null)
-                && (representation.getEncoding() != null)
-                && !representation.getEncoding().equals(Encoding.IDENTITY);
+        // Test the existence of the representation and that at least an
+        // encoding applies.
+        boolean result = (representation != null)
+                && (!representation.getEncodings().isEmpty());
+
+        if (result) {
+            boolean found = false;
+            for (Iterator<Encoding> iter = representation.getEncodings()
+                    .iterator(); !found && iter.hasNext();) {
+                found = (!iter.next().equals(Encoding.IDENTITY));
+            }
+            result = found;
+        }
+        return result;
     }
 
     /**
-     * Decodes a given representation if its encoding is supported by NRE.
+     * Decodes a given representation if its encodings are supported by NRE.
      * 
      * @param representation
      *            The representation to encode.
@@ -128,17 +138,23 @@ public class Decoder extends Filter {
      */
     public Representation decode(Representation representation) {
         Representation result = representation;
-        Encoding currentEncoding = null;
 
-        for (Iterator<Encoding> iter = DecodeRepresentation
-                .getSupportedEncodings().iterator(); (result == representation)
+        // Check if all encodings of the representation are supported in order
+        // to avoid the creation of a useless decodeRepresentation object.
+        // False if an encoding is not supported
+        boolean supported = true;
+        // True if all representation's encodings are IDENTITY
+        boolean identityEncodings = true;
+        for (Iterator<Encoding> iter = representation.getEncodings().iterator(); supported
                 && iter.hasNext();) {
-            currentEncoding = iter.next();
+            Encoding encoding = iter.next();
+            supported = DecodeRepresentation.getSupportedEncodings().contains(
+                    encoding);
+            identityEncodings &= encoding.equals(Encoding.IDENTITY);
+        }
 
-            if (!currentEncoding.equals(Encoding.IDENTITY)
-                    && representation.getEncoding().equals(currentEncoding)) {
-                result = new DecodeRepresentation(representation);
-            }
+        if (supported && !identityEncodings) {
+            result = new DecodeRepresentation(representation);
         }
 
         return result;

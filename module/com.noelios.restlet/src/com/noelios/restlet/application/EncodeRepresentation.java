@@ -24,6 +24,8 @@ import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -32,10 +34,11 @@ import java.util.zip.ZipOutputStream;
 import org.restlet.data.Encoding;
 import org.restlet.resource.Representation;
 import org.restlet.util.ByteUtils;
+import org.restlet.util.WrapperList;
 import org.restlet.util.WrapperRepresentation;
 
 /**
- * Content that encodes a wrapped content.
+ * Content that encodes a wrapped content. Allows to apply only one encoding.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -45,6 +48,9 @@ public class EncodeRepresentation extends WrapperRepresentation {
 
     /** The encoding to apply. */
     private Encoding encoding;
+
+    /** The applied encodings. */
+    private List<Encoding> encodings;
 
     /**
      * Constructor.
@@ -58,6 +64,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
             Representation wrappedRepresentation) {
         super(wrappedRepresentation);
         this.canEncode = getSupportedEncodings().contains(encoding);
+        this.encodings = null;
         this.encoding = encoding;
     }
 
@@ -77,10 +84,10 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      */
     public long getSize() {
-        long result = -1;
+        long result = UNKNOWN_SIZE;
 
         if (canEncode()) {
-            if (getEncoding().equals(Encoding.IDENTITY)) {
+            if (this.encoding.equals(Encoding.IDENTITY)) {
                 result = getWrappedRepresentation().getSize();
             }
         } else {
@@ -91,27 +98,75 @@ public class EncodeRepresentation extends WrapperRepresentation {
     }
 
     /**
-     * Returns the encoding or null if identity encoding applies.
+     * Returns the applied encodings.
      * 
-     * @return The encoding or null if identity encoding applies.
+     * @return The applied encodings.
      */
-    public Encoding getEncoding() {
-        if (canEncode()) {
-            return this.encoding;
-        } else {
-            return getWrappedRepresentation().getEncoding();
-        }
-    }
+    public List<Encoding> getEncodings() {
+        if (this.encodings == null) {
+            encodings = new WrapperList<Encoding>() {
 
-    /**
-     * Sets the encoding or null if identity encoding applies.
-     * 
-     * @param encoding
-     *            The encoding or null if identity encoding applies.
-     */
-    public void setEncoding(Encoding encoding) {
-        this.canEncode = getSupportedEncodings().contains(encoding);
-        this.encoding = encoding;
+                @Override
+                public void add(int index, Encoding element) {
+                    if (element == null) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    } else {
+                        super.add(index, element);
+                    }
+                }
+
+                @Override
+                public boolean add(Encoding element) {
+                    if (element == null) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    } else {
+                        return super.add(element);
+                    }
+                }
+
+                @Override
+                public boolean addAll(Collection<? extends Encoding> elements) {
+                    boolean addNull = (elements == null);
+                    if (!addNull) {
+                        for (Iterator<? extends Encoding> iterator = elements
+                                .iterator(); !addNull && iterator.hasNext();) {
+                            addNull = (iterator.next() == null);
+                        }
+                    }
+                    if (addNull) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    } else {
+                        return super.addAll(elements);
+                    }
+                }
+
+                @Override
+                public boolean addAll(int index,
+                        Collection<? extends Encoding> elements) {
+                    boolean addNull = (elements == null);
+                    if (!addNull) {
+                        for (Iterator<? extends Encoding> iterator = elements
+                                .iterator(); !addNull && iterator.hasNext();) {
+                            addNull = (iterator.next() == null);
+                        }
+                    }
+                    if (addNull) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    } else {
+                        return super.addAll(index, elements);
+                    }
+                }
+            };
+            encodings.addAll(getWrappedRepresentation().getEncodings());
+            if (canEncode()) {
+                encodings.add(this.encoding);
+            }
+        }
+        return this.encodings;
     }
 
     /**
@@ -165,13 +220,13 @@ public class EncodeRepresentation extends WrapperRepresentation {
         if (canEncode()) {
             DeflaterOutputStream encoderOutputStream = null;
 
-            if (getEncoding().equals(Encoding.GZIP)) {
+            if (this.encoding.equals(Encoding.GZIP)) {
                 encoderOutputStream = new GZIPOutputStream(outputStream);
-            } else if (getEncoding().equals(Encoding.DEFLATE)) {
+            } else if (this.encoding.equals(Encoding.DEFLATE)) {
                 encoderOutputStream = new DeflaterOutputStream(outputStream);
-            } else if (getEncoding().equals(Encoding.ZIP)) {
+            } else if (this.encoding.equals(Encoding.ZIP)) {
                 encoderOutputStream = new ZipOutputStream(outputStream);
-            } else if (getEncoding().equals(Encoding.IDENTITY)) {
+            } else if (this.encoding.equals(Encoding.IDENTITY)) {
                 // Encoder unecessary for identity encoding
             }
 
