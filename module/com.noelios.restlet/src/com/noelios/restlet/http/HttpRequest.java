@@ -140,10 +140,26 @@ public class HttpRequest extends Request {
                     .getValues(HttpConstants.HEADER_ACCEPT);
 
             // Parse the headers and update the call preferences
-            PreferenceUtils.parseCharacterSets(acceptCharset, result);
-            PreferenceUtils.parseEncodings(acceptEncoding, result);
-            PreferenceUtils.parseLanguages(acceptLanguage, result);
-            PreferenceUtils.parseMediaTypes(acceptMediaType, result);
+            try {
+                PreferenceUtils.parseCharacterSets(acceptCharset, result);
+            } catch (Exception e) {
+                this.context.getLogger().log(Level.INFO, e.getMessage());
+            }
+            try {
+                PreferenceUtils.parseEncodings(acceptEncoding, result);
+            } catch (Exception e) {
+                this.context.getLogger().log(Level.INFO, e.getMessage());
+            }
+            try {
+                PreferenceUtils.parseLanguages(acceptLanguage, result);
+            } catch (Exception e) {
+                this.context.getLogger().log(Level.INFO, e.getMessage());
+            }
+            try {
+                PreferenceUtils.parseMediaTypes(acceptMediaType, result);
+            } catch (Exception e) {
+                this.context.getLogger().log(Level.INFO, e.getMessage());
+            }
 
             // Set other properties
             result.setAgent(getHttpCall().getRequestHeaders().getValues(
