@@ -50,8 +50,8 @@ public class RepresentationContext implements RequestContext {
      * @return The character encoding for the form.
      */
     public String getCharacterEncoding() {
-        if (this.multipartForm.getEncoding() != null) {
-            return this.multipartForm.getEncoding().getName();
+        if (!this.multipartForm.getEncodings().isEmpty()) {
+            return this.multipartForm.getEncodings().get(0).getName();
         } else {
             return null;
         }
