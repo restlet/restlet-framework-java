@@ -25,9 +25,13 @@ package org.restlet.data;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class Protocol extends Metadata {
+
+    /** Indicates that the port number is undefined. */
+    public static final int UNKNOWN_PORT = -1;
+
     /** All protocols wildcard. */
     public static final Protocol ALL = new Protocol("all", "ALL",
-            "Wildcard for all protocols", -1);
+            "Wildcard for all protocols", UNKNOWN_PORT);
 
     /**
      * AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS.
@@ -37,15 +41,15 @@ public final class Protocol extends Metadata {
 
     /** Class loader access protocol. */
     public static final Protocol CLAP = new Protocol("clap", "CLAP",
-            "Class Loader Access Protocol", -1);
+            "Class Loader Access Protocol", UNKNOWN_PORT);
 
     /** Local Web Archive access protocol. */
     public static final Protocol WAR = new Protocol("war", "WAR",
-            "Web Archive Access Protocol", -1);
+            "Web Archive Access Protocol", UNKNOWN_PORT);
 
     /** Local file system access protocol. */
     public static final Protocol FILE = new Protocol("file", "FILE",
-            "Local File System Protocol", -1);
+            "Local File System Protocol", UNKNOWN_PORT);
 
     /** FTP protocol. */
     public static final Protocol FTP = new Protocol("ftp", "FTP",
@@ -61,11 +65,11 @@ public final class Protocol extends Metadata {
 
     /** JAR protocol. */
     public static final Protocol JAR = new Protocol("jar", "JAR",
-            "Java ARchive", -1);
+            "Java ARchive", UNKNOWN_PORT);
 
     /** JDBC protocol. */
     public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
-            "Java DataBase Connectivity", -1);
+            "Java DataBase Connectivity", UNKNOWN_PORT);
 
     /** SMTP protocol. */
     public static final Protocol SMTP = new Protocol("smtp", "SMTP",
@@ -129,7 +133,7 @@ public final class Protocol extends Metadata {
      */
     public Protocol(final String schemeName) {
         this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase()
-                + " Protocol", -1);
+                + " Protocol", UNKNOWN_PORT);
     }
 
     /**

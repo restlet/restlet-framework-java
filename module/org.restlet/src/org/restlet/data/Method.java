@@ -34,17 +34,17 @@ public final class Method extends Metadata {
 
     public static final Method COPY = new Method(
             "COPY",
-            "Create a duplicate of the source resource, identified by the Request-URI, in the destination resource, identified by the URI in the Destination header",
+            "Creates a duplicate of the source resource, identified by the Request-URI, in the destination resource, identified by the URI in the Destination header",
             BASE_WEBDAV + "#METHOD_COPY");
 
     public static final Method DELETE = new Method(
             "DELETE",
-            "Request that the origin server delete the resource identified by the request URI",
+            "Requests that the origin server deletes the resource identified by the request URI",
             BASE_HTTP + "#sec9.7");
 
     public static final Method GET = new Method(
             "GET",
-            "Retrieve whatever information (in the form of an entity) is identified by the request URI",
+            "Retrieves whatever information (in the form of an entity) that is identified by the request URI",
             BASE_HTTP + "#sec9.3");
 
     public static final Method HEAD = new Method(
@@ -67,27 +67,27 @@ public final class Method extends Metadata {
 
     public static final Method OPTIONS = new Method(
             "OPTIONS",
-            "Request for information about the communication options available on the request/response chain identified by the URI",
+            "Requests for information about the communication options available on the request/response chain identified by the URI",
             BASE_HTTP + "#sec9.2");
 
     public static final Method POST = new Method(
             "POST",
-            "Request that the origin server accept the entity enclosed in the request as a new subordinate of the resource identified by the request URI",
+            "Requests that the origin server accepts the entity enclosed in the request as a new subordinate of the resource identified by the request URI",
             BASE_HTTP + "#sec9.5");
 
     public static final Method PROPFIND = new Method(
             "PROPFIND",
-            "Retrieve properties defined on the resource identified by the request URI",
+            "Retrieves properties defined on the resource identified by the request URI",
             BASE_WEBDAV + "#METHOD_PROPFIND");
 
     public static final Method PROPPATCH = new Method(
             "PROPPATCH",
-            "Process instructions specified in the request body to set and/or remove properties defined on the resource identified by the request URI",
+            "Processes instructions specified in the request body to set and/or remove properties defined on the resource identified by the request URI",
             BASE_WEBDAV + "#METHOD_PROPPATCH");
 
     public static final Method PUT = new Method(
             "PUT",
-            "Request that the enclosed entity be stored under the supplied request URI",
+            "Requests that the enclosed entity be stored under the supplied request URI",
             BASE_HTTP + "#sec9.6");
 
     public static final Method TRACE = new Method(
@@ -97,7 +97,7 @@ public final class Method extends Metadata {
 
     public static final Method UNLOCK = new Method(
             "UNLOCK",
-            "Remove the lock identified by the lock token from the request URI, and all other resources included in the lock",
+            "Removes the lock identified by the lock token from the request URI, and all other resources included in the lock",
             BASE_WEBDAV + "#METHOD_UNLOCK");
 
     /**

@@ -160,7 +160,7 @@ public class Parameter implements Comparable<Parameter> {
     }
 
     /**
-     * Encodes the parameter and append the result to the given buffer. Uses the
+     * Encodes the parameter and appends the result to the given buffer. Uses the
      * standard URI encoding mechanism.
      * 
      * @param buffer

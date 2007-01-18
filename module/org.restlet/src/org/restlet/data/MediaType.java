@@ -376,7 +376,7 @@ public final class MediaType extends Metadata {
     }
 
     /**
-     * Test the equality of two media type, with the possibility to ignore the
+     * Test the equality of two media types, with the possibility to ignore the
      * parameters.
      * 
      * @param obj

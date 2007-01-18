@@ -197,7 +197,7 @@ public class Reference {
             Integer hostPort, String path, String query, String fragment) {
         String host = hostName;
 
-        // Append the host port number
+        // Appends the host port number
         if (hostPort != null) {
             int defaultPort = Protocol.valueOf(scheme).getDefaultPort();
             if (hostPort != defaultPort) {

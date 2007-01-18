@@ -78,7 +78,7 @@ public abstract class Message {
      * </tr>
      * <tr>
      * <td>org.restlet.http.headers</td>
-     * <td>org.restlet.data.ParameterList</td>
+     * <td>org.restlet.data.Form</td>
      * <td>Server HTTP connectors must provide all request headers and client
      * HTTP connectors must provide all response headers, exactly as they were
      * received. In addition, developers can also use this attribute to specify
@@ -100,9 +100,9 @@ public abstract class Message {
     }
 
     /**
-     * Returns the metadata service.
+     * Returns the converter service.
      * 
-     * @return The metadata service.
+     * @return The converter service.
      */
     private ConverterService getConverterService() {
         ConverterService result = null;

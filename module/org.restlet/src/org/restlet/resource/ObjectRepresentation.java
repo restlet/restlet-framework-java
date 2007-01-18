@@ -63,7 +63,7 @@ public class ObjectRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Constructor;
+     * Constructor
      * 
      * @param object
      *            The serializable object.

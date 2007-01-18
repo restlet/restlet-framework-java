@@ -42,7 +42,7 @@ import org.restlet.util.WrapperList;
  */
 public class Variant {
     /**
-     * Inidicates that the size of the representation can't be known in advance.
+     * Indicates that the size of the representation can't be known in advance.
      */
     public static final long UNKNOWN_SIZE = -1L;
 

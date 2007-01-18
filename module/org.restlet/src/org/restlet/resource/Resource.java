@@ -220,7 +220,7 @@ public class Resource {
         if ((variants != null) && (!variants.isEmpty())) {
             Language language = null;
             // Compute the preferred variant. Get the default language
-            // preference from the Application (if any)
+            // preference from the Application (if any).
             Object app = getContext().getAttributes().get(
                     "org.restlet.application");
 

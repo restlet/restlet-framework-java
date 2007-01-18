@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Language used in representations and preferences. A language tag is composed
  * of one or more parts: A primary language tag and a possibly empty series of
- * subtags. When formatted as a string, parts are seperated by hyphens.
+ * subtags. When formatted as a string, parts are separated by hyphens.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

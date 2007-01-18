@@ -26,7 +26,7 @@ import org.restlet.util.Series;
 /**
  * Generic request sent by client connectors. It is then received by server
  * connectors and processed by Restlets. This request can also be processed by a
- * chain of Restlets, on the client or server sides. Requests are uniform across
+ * chain of Restlets, on both client and server sides. Requests are uniform across
  * all types of connectors, protocols and components.
  * 
  * @see org.restlet.data.Response

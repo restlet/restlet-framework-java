@@ -78,7 +78,7 @@ public class ReferenceList extends WrapperList<Reference> {
 
             String line = br.readLine();
 
-            // Check if the list reference is specified as the first comment
+            // Checks if the list reference is specified as the first comment.
             if ((line != null) && line.startsWith("#")) {
                 setIdentifier(new Reference(line.substring(1).trim()));
                 line = br.readLine();
