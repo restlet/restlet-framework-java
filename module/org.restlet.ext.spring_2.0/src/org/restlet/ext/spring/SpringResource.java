@@ -29,6 +29,7 @@ import org.springframework.core.io.AbstractResource;
  * Spring's notion of Resource is different from Restlet's one, actually it's
  * closer to Restlet's Representations.
  * 
+ * @see <a href="http://www.springframework.org/">Spring home page</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SpringResource extends AbstractResource {

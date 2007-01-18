@@ -49,7 +49,7 @@ public class SpringContext extends GenericApplicationContext {
      */
     private List<String> xmlConfigRefs;
 
-    /** Indicates if the context was already loaded. */
+    /** Indicates if the context has been already loaded. */
     private boolean loaded;
 
     /**
