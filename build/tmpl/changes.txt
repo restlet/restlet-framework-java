@@ -61,7 +61,8 @@ Changes log
  - Updated Spring framework to 2.0.2
  - Added support for Maven POM generation. The distribution now contains a "lib/poms" directory.
    Suggested by Turadg Aleahmad, Lars Heuer, Mike Moran, Mitchell Stewart and Vincent Lari.
- 
+ - Updated tutorial to cover the usage of Resources.
+  
 1.0 RC2 (2007-01-09)
 [Bugs fixed]
  - Fixed minor bug with the URI parsing (query sign "?" inside fragment). 

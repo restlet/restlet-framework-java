@@ -283,10 +283,10 @@ property.</p>
 
 <h3><a name="part09">9. Guarding access to sensitive resources</a></h3>
 <p>When you need to secure the access to some Restlets, several
-options are available. The most common way is to rely on cookies to
-identify clients (or client sessions) and to check a given user ID or
-session ID against your application state to determine if access should
-be granted. Restlets natively support cookies via the <a
+options are available. A common way is to rely on cookies to identify
+clients (or client sessions) and to check a given user ID or session ID
+against your application state to determine if access should be granted.
+Restlets natively support cookies via the <a
 	href="http://www.restlet.org/docs/api/org/restlet/data/Cookie.html">Cookie</a>
 and <a
 	href="http://www.restlet.org/docs/api/org/restlet/data/CookieSetting.html">CookieSetting</a>
@@ -295,11 +295,15 @@ objects accessible from a <a
 or a <a
 	href="http://www.restlet.org/docs/api/org/restlet/data/Response.html">Response</a>.
 </p>
-<p>Also, there is another way based on the standard HTTP
-authentication mechanism. The Restlet framework currently supports the
-basic HTTP authentication scheme via the GuardFilter. Filters are
-specialized Restlets that filter calls passed to them, without modifying
-the requested resource URI. If you are familiar with the Servlet API,
+<p>There is another way based on the standard HTTP authentication
+mechanism. The Noelios Restlet Engine currently accepts credentials sent
+and received in the Basic HTTP scheme and also the credentials sent in
+the Amazon Web Services scheme.</p>
+<p>When receiving a call, developers can use the parsed credentials
+available in Request.challengeResponse.identifier/secret via the Guard
+filter. Filters are specialized Restlets that can pre-process a call
+before invoking and attached Restlet or post-process a call after the
+attached Restlet returns it. If you are familiar with the Servlet API,
 the concept is similar to the <a
 	href="http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/Filter.html">Filter</a>
 interface. See below how we would modify the previous example to secure
@@ -308,7 +312,7 @@ the access to the Directory:</p>
         // Create a Guard
         Guard guard = new Guard(getContext(),
                 ChallengeScheme.HTTP_BASIC, "Tutorial");
-        guard.getAuthorizations().put("scott", "tiger");
+        guard.getSecrets().put("scott", "tiger");
 
         // Create a Directory able to return a deep hierarchy of files
         Directory directory = new Directory(getContext(), ROOT_URI);
@@ -318,11 +322,13 @@ the access to the Directory:</p>
 <p align="middle"><img src="images/tutorial09"
 	alt="Call handling flow" /><br />
 </p>
-<p>Note that the authorization decision is fully customizable via
-the authorize method. Any mechanism can be used to check whether the
-given credentials are valid. Here we simply hard-coded the only valid
-user and password. In order to test this authentication mechanism, let's
-use the client-side Restlet API:</p>
+<p>Note that the authentication and authorization decisions are
+fully customizable via the authenticate() and authorize() methods. Any
+custom mechanism can be used to check whether the given credentials are
+valid and whether the authenticated user is authorized to continue to
+the attached Restlet. Here we simply hard-coded a single user and
+password couple. In order to test, let's use the client-side Restlet
+API:</p>
 <pre>
         // Prepare the request
         Request request = new Request(Method.GET, "http://localhost:8182/");
@@ -357,23 +363,22 @@ launch the previous Restlet server before starting your client. Note
 that if you test your server from a different machine, you need to
 replace "localhost" by either the IP address of your server or its
 domain name when typing the URI in the browser. The server won't need
-any adjustment due to the usage of the HostRouter which accepts all
-types of URI by default.</p>
+any adjustment due to the usage of a VirtualHost which accepts all types
+of URIs by default.</p>
 
 <h3><a name="part10">10. URI rewriting and redirection</a></h3>
-<p>One of the advantages of the Restlet framework is the built-in
+<p>Another advantage of the Restlet framework is the built-in
 support for <a href="http://www.w3.org/Provider/Style/URI">cool URIs</a>.
-Another good description of the importance of proper URI design is given
-by Jacob Nielsen in his <a
-	href="http://www.useit.com/alertbox/990321.html">AlertBox</a>. The
-first tool available is the Redirector, which allows the rewriting of a
-cool URI to another URI, followed by an automatic redirection. Several
-types of redirection are supported, the external redirection via the
-client/browser, the internal redirection at the container level and the
-connector redirection for proxy-like behavior. In the example below, we
-will define a search service for our web site (named "mysite.org") based
-on Google. The "/search" relative URI identifies the search service,
-accepting some keywords via the "kwd" parameter:</p>
+A good description of the importance of proper URI design is given by
+Jacob Nielsen in his <a href="http://www.useit.com/alertbox/990321.html">AlertBox</a>.</p>
+<p>The first tool available is the Redirector, which allows the
+rewriting of a cool URI to another URI, followed by an automatic
+redirection. Several types of redirection are supported, the external
+redirection via the client/browser and the connector redirection for
+proxy-like behavior. In the example below, we will define a search
+service for our web site (named "mysite.org") based on Google. The
+"/search" relative URI identifies the search service, accepting some
+keywords via the "kwd" parameter:</p>
 <pre>
         // Create an application
         Application application = new Application(component.getContext()) {
@@ -424,14 +429,14 @@ In general, you will set a Router as the root of your Application.</p>
 	user</li>
 	<li>/users/{user}/orders/{order} to display a specific order</li>
 </ol>
-<p>The fact that these URIs contain some dynamic parts (variables
-between accolades) and that no file extension is used makes it harder to
-handle them in a typical Web container. With Restlets, you just need to
-attach target Restlets to a Router using the URI template. At runtime,
-the route that best matches the request URI will received the call and
-be able to invoke its attached Restlet. At the same time, the request's
-attributes map will be automatically updated with the value of the URI
-template variables!</p>
+<p>The fact that these URIs contain variable parts (between
+accolades) and that no file extension is used makes it harder to handle
+them in a typical Web container. Here, you just need to attach target
+Restlets to a Router using the URI template. At runtime, the route that
+best matches the request URI will received the call and be able to
+invoke its attached Restlet. At the same time, the request's attributes
+map will be automatically updated with the value of the URI template
+variables!</p>
 <p align="middle"><img src="images/tutorial11"
 	alt="Call handling flow" /><br />
 </p>
@@ -454,7 +459,7 @@ anonymous ones we use here:</p>
                 // Attach a guard to secure access to the directory
                 Guard guard = new Guard(getContext(),
                         ChallengeScheme.HTTP_BASIC, "Restlet tutorial");
-                guard.getAuthorizations().put("scott", "tiger");
+                guard.getSecrets().put("scott", "tiger");
                 router.attach("/docs/", guard);
 
                 // Create a directory able to expose a hierarchy of files
@@ -512,17 +517,115 @@ anonymous ones we use here:</p>
 </pre>
 
 <h3><a name="part12">12. Reaching target Resources</a></h3>
-<p></p>
+<p>In the previous example, we took advantage of the flexible
+routing features of the framework to route the requests while extracting
+interesting parts from the target URI. But, we didn't pay attention to
+the request method, nor to the client preferences regarding the response
+that he expects. Also, how do we connect our Restlet handlers with the
+backend systems, the domain objects?</p>
+<p>So far, we introduced features that go beyond the traditional
+Servlet API but we didn't justify the REST part in our Restlet name! If
+you haven't done so already, I recommend that you learn more about the
+REST architecture style and the best practices to follow when applying
+it to a Web application. There is a related <a
+	href="http://www.restlet.org/faq#04">FAQ entry</a> that will give you
+some starting pointers and we also maintain a <a
+	href="http://search.restlet.org">REST search engine</a> (based on
+Google) that can be useful. If you have some experience with a
+traditional MVC framework, you can read more about the relationship to
+Restlets in this other <a href="http://www.restlet.org/faq#15">FAQ
+entry</a>.</p>
+<p>To summarize, a request contains an URI that identifies the
+target resource that is the subject of the call. This information is
+stored in the Request.resourceRef property and serves as the basis of
+the routing as we saw. So the first goal when handling a request is to
+find the target resource which is in the framework... an instance of the
+Resource class or more precisely one of its subclasses. To help us in
+this task, we can use the dedicated Finder, a subclass of Restlet, which
+takes a Resource class reference as an argument and which will
+automatically instantiate it when a request comes in. Then it will
+dynamically dispatch the call to the newly created instance, actually to
+one of its handle*() methods (handleGet, handleDelete, etc.) depending
+on the request method. Of course, this behavior can be customized. There
+is even an attach() method on Router that can take two arguments, an URI
+template and a Resource class and that transparently creates the Finder
+for you! Now, let's have a look at this overall diagram, showing the
+relationship between the main framework classes involved in this
+example:</p>
+<p align="middle"><img src="images/tutorial12"
+	alt="Component diagram" /><br />
+</p>
+<p>Back to the code, here is our refactored Application.createRoot()
+method. For simplicity purpose, we didn't keep the Directory serving
+static files as this part wouldn't change. You can notice the way that
+resource classes are directly attached to the router.</p>
+<pre>
+        // Create a router
+        Router router = new Router(getContext());
 
+        // Attach the resources to the router
+        router.attach("/users/{user}", UserResource.class);
+        router.attach("/users/{user}/orders", OrdersResource.class);
+        router.attach("/users/{user}/orders/{order}",
+                OrderResource.class);
+
+        // Return the root router
+        return router;
+</pre>
+<p>We will finally review one of the resource classes, the
+UserResource class. This class derives from
+org.restlet.resource.Resource and therefore has to override the three
+arguments constructor. This will initialize the useful "context",
+"request" and "response" properties on our instances. Then, we use the
+attribute "user" that is automatically extracted from the
+"/users/{user}" URI template and store its value in a convenient member
+variable. At this point, in a full application, we would lookup our
+associated "user" domain object. Finally, we declare which
+representation variants we want to expose, in our case only plain text.
+This will be used at runtime to transparently do some content
+negotiation, in order to select the preferred variant for each request
+handled, all this transparently.</p>
+<pre>
+		public class UserResource extends Resource {
+		    String userName;
+		
+		    Object user;
+		
+		    public UserResource(Context context, Request request, Response response) {
+		        super(context, request, response);
+		        this.userName = (String) request.getAttributes().get("user");
+		        this.user = null; // Could be a lookup to a domain object.
+		
+		        // Here we add the representation variants exposed
+		        getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+		    }
+		
+		    @Override
+		    public Representation getRepresentation(Variant variant) {
+		        Representation result = null;
+		        if (variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
+		            result = new StringRepresentation("Account of user \""
+		                    + this.userName + "\"");
+		        }
+		        return result;
+		    }
+		}
+</pre>
+<p>You can have a look at the rest of the code in the tutorial
+package and test the application. You will obtain the same behavior as
+in Part11, with the difference that only GET requests will be accepted.
+If you want to enable PUT for example, you have to create an
+"allowPut()" method in UserResource that simply returns 'true' then add
+a "put(Representation)" method to process the call. You can check the
+Javadocs for further details.</p>
 <h3><a name="conclusion">Conclusion</a></h3>
-<p>We already covered many aspects of the framework. Before you move
-on by yourself, let's take a step back and look at two hierarchy
+<p>We have already covered many aspects of the framework. Before you
+move on by yourself, let's take a step back and look at two hierarchy
 diagrams showing the main concepts covered in this tutorial and their
 relationships:</p>
 <p align="middle"><img src="images/restlets" alt="Restlet hierarchy" /><br />
 </p>
-<p>Now, here is the Resource hierarchy, including of the core
-Representation classes:</p>
+<p>Now, here is the hierarchy with the core Representation classes:</p>
 <p align="middle"><img src="images/representations"
 	alt="Resource and Representation hierarchy" /><br />
 </p>
@@ -541,7 +644,7 @@ Louvel</a> (<a target="_top" href="http://blog.noelios.com">blog</a>)<br />
 <h4>Notes</h4>
 <ul>
 	<li>I encourage you to run the examples. The full source code is
-	available in the latest release.
+	available in the latest release.</li>
 	<li>Thanks to <a target="_top" href="http://www.figer.com/">Jean-Paul
 	Figer</a>, Christian Jensen, Jim Ancona, Roger Menday, John D. Mitchell,
 	J&eacute;r&ocirc;me Bernard, Dave Pawson and Peter Murray for the
@@ -550,7 +653,7 @@ Louvel</a> (<a target="_top" href="http://blog.noelios.com">blog</a>)<br />
 
 <br />
 
-<small> Last modified on 2007-01-17. Copyright &copy; 2005-2007
+<small> Last modified on 2007-01-19. Copyright &copy; 2005-2007
 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>.
 Restlet is a registered trademark of <a target="_top"
 	href="http://www.noelios.com">Noelios Consulting</a>. </small>
