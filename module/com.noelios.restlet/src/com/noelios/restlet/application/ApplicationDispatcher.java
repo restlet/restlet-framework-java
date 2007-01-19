@@ -18,7 +18,6 @@
 
 package com.noelios.restlet.application;
 
-import org.restlet.Application;
 import org.restlet.Uniform;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -59,9 +58,9 @@ public class ApplicationDispatcher extends Uniform {
                     "Unable to determine the protocol to use for this call.");
         } else {
             // Add the application in request and response attributes
-            request.getAttributes().put(Application.class.getCanonicalName(),
+            request.getAttributes().put("org.restlet.application",
                     this.applicationContext.getApplication());
-            response.getAttributes().put(Application.class.getCanonicalName(),
+            response.getAttributes().put("org.restlet.application",
                     this.applicationContext.getApplication());
 
             if (protocol.equals(Protocol.WAR)) {
