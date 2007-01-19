@@ -45,6 +45,8 @@ Changes log
    Suggested by Yuri de Wit.
  - Added the "o" variable in the Template variable list for the new Request.rootRef property.
  - The creation of new Routes by a Router can now be customized via the protected createRoute() method.
+ - Enhanced the Guard class to cleanly separate authentication from authorization logic.
+   Thanks to Charles Gay (from jGuard) for the feed-back and related discussion.
  
 [Enhancements] 
  - The content negotiation algorithm is now more flexible about languages. It will try

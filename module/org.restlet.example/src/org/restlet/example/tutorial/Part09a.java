@@ -45,7 +45,7 @@ public class Part09a implements Constants {
                 // Create a Guard
                 Guard guard = new Guard(getContext(),
                         ChallengeScheme.HTTP_BASIC, "Tutorial");
-                guard.getAuthorizations().put("scott", "tiger");
+                guard.getSecrets().put("scott", "tiger");
 
                 // Create a Directory able to return a deep hierarchy of files
                 Directory directory = new Directory(getContext(), ROOT_URI);

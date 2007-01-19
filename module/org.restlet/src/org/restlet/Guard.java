@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -35,8 +36,8 @@ import org.restlet.data.Status;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Guard extends Filter {
-    /** Map of authorizations (login/password combinations). */
-    private Map<String, String> authorizations;
+    /** Map of secrets (login/password combinations). */
+    private Map<String, String> secrets;
 
     /** The authentication scheme. */
     private ChallengeScheme scheme;
@@ -56,11 +57,11 @@ public class Guard extends Filter {
      */
     public Guard(Context context, ChallengeScheme scheme, String realm) {
         super(context);
-        this.authorizations = null;
+        this.secrets = null;
 
         if ((scheme == null)) {
             throw new IllegalArgumentException(
-                    "Please specify a challenge scheme. Use the 'None' challenge if no authentication is required.");
+                    "Please specify an authentication scheme. Use the 'None' challenge if no authentication is required.");
         } else {
             this.scheme = scheme;
             this.realm = realm;
@@ -76,44 +77,80 @@ public class Guard extends Filter {
      *            The response to accept.
      */
     public void accept(Request request, Response response) {
-        // Invoke the chained Restlet
+        // Invoke the attached Restlet
         super.doHandle(request, response);
     }
 
     /**
-     * Indicates if the call is authorized to pass through the Guard Filter. At
-     * this point the caller should be authenticated and the security data
-     * should contain a valid login, password and optionnaly a role name.<br/>
-     * The application should take care of the authorization logic, based on
-     * custom criteria such as checking whether the current user has the proper
-     * role or access rights.<br/>
-     * 
-     * By default, a call is authorized if the call's login/password couple is
-     * available in the map of authorizations. Of course, this method is meant
-     * to be overriden by subclasses requiring a custom authorization mechanism.
+     * Indicates if the call is properly authenticated. By default, a call is
+     * authenticated if the request has a challenge response with a correct
+     * login/password couple as verified via the findSecret() method.
      * 
      * @param request
-     *            The request to authorize.
+     *            The request to authenticate.
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
      */
-    public int authorize(Request request) {
+    public int authenticate(Request request) {
         int result = 0;
 
-        if (request.getChallengeResponse() != null) {
-            String identifier = request.getChallengeResponse().getIdentifier();
-            String secret = request.getChallengeResponse().getSecret();
+        if (this.scheme != null) {
+            // An authentication scheme has been defined,
+            // the request must be authenticated
+            ChallengeResponse cr = request.getChallengeResponse();
 
-            if ((identifier != null) && (secret != null)) {
-                if (secret.equals(getSecret(identifier))) {
-                    result = 1;
+            if (cr != null) {
+                if (this.scheme.equals(cr.getScheme())) {
+                    // The challenge schemes are compatible
+                    String identifier = request.getChallengeResponse()
+                            .getIdentifier();
+                    String secret = request.getChallengeResponse().getSecret();
+
+                    // Check the credentials
+                    if ((identifier != null) && (secret != null)) {
+                        if (secret.equals(findSecret(identifier))) {
+                            result = 1;
+                        } else {
+                            result = -1;
+                        }
+                    }
                 } else {
-                    result = -1;
+                    // The challenge schemes are incompatible, we need to
+                    // challenge the client
                 }
+            } else {
+                // No challenge response found, we need to challenge the client
             }
         }
 
         return result;
+    }
+
+    /**
+     * Indicates if the request is authorized to pass through the Guard. The
+     * default behavior is only to check if the request is properly
+     * authenticated, as defined by the authenticate() method. If additional
+     * checks are required, they could be added by overriding this method.
+     * 
+     * @param request
+     *            The request to authorize.
+     * @return True if the request is authorized.
+     */
+    public boolean authorize(Request request) {
+        return (authenticate(request) == 1);
+    }
+
+    /**
+     * Challenges the client by adding a challenge request to the response and
+     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
+     * 
+     * @param response
+     *            The response to update.
+     */
+    public void challenge(Response response) {
+        response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+        response.setChallengeRequest(new ChallengeRequest(this.scheme,
+                this.realm));
     }
 
     /**
@@ -125,36 +162,72 @@ public class Guard extends Filter {
      *            The response to update.
      */
     public void doHandle(Request request, Response response) {
-        int result = authorize(request);
-
-        if (result == 1) {
-            accept(request, response);
-        } else {
-            reject(response, (result == 0));
+        switch (authenticate(request)) {
+        case 1:
+            // Valid credentials provided
+            if (authorize(request)) {
+                accept(request, response);
+            } else {
+                forbid(response);
+            }
+            break;
+        case 0:
+            // No credentials provided
+            challenge(response);
+            break;
+        case -1:
+            // Wrong credentials provided
+            forbid(response);
+            break;
         }
+    }
+
+    /**
+     * Finds the secret associated to a given identifier. By default it looks up
+     * into the secrets map, but this behavior can be overriden.
+     * 
+     * @param identifier
+     *            The identifier to lookup.
+     * @return The secret associated to the identifier or null.
+     */
+    protected String findSecret(String identifier) {
+        return getSecrets().get(identifier);
+    }
+
+    /**
+     * Rejects the call call due to a failed authentication or authorization.
+     * This can be overriden to change the defaut behavior, for example to
+     * display an error page. By default, if authentication is required, the
+     * challenge method is invoked, otherwise the call status is set to
+     * CLIENT_ERROR_FORBIDDEN.
+     * 
+     * @param response
+     *            The reject response.
+     */
+    public void forbid(Response response) {
+        response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
     }
 
     /**
      * Returns the map of authorizations (identifier/secret combinations).
      * 
      * @return The map of authorizations (identifier/secret combinations).
+     * @deprecated Use getSecrets() instead.
      */
+    @Deprecated
     public Map<String, String> getAuthorizations() {
-        if (this.authorizations == null)
-            this.authorizations = new TreeMap<String, String>();
-        return this.authorizations;
+        return getSecrets();
     }
 
     /**
-     * Returns the secret associated to a given identifier. By default it looks
-     * up into the authorizations map, but this behavior can be overriden.
+     * Returns the map of identifiers and secrets.
      * 
-     * @param identifier
-     *            The identifier to lookup.
-     * @return The secret associated to the identifier or null.
+     * @return The map of identifiers and secrets.
      */
-    protected String getSecret(String identifier) {
-        return getAuthorizations().get(identifier);
+    public Map<String, String> getSecrets() {
+        if (this.secrets == null)
+            this.secrets = new TreeMap<String, String>();
+        return this.secrets;
     }
 
     /**
@@ -168,14 +241,14 @@ public class Guard extends Filter {
      *            The reject response.
      * @param challenge
      *            Indicates if the client should be challenged.
+     * @deprecated Use reject(Response) or challenge(Response) methods instead.
      */
+    @Deprecated
     public void reject(Response response, boolean challenge) {
         if (challenge) {
-            response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-            response.setChallengeRequest(new ChallengeRequest(this.scheme,
-                    this.realm));
+            challenge(response);
         } else {
-            response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+            forbid(response);
         }
     }
 
