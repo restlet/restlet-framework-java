@@ -33,21 +33,21 @@ import java.util.logging.Logger;
  * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br/>
  * 
  * <pre>
- *                       URI reference        = absolute-reference | relative-reference
- *                    
- *                       absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
- *                       scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
- *                       hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
- *                       authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
- *                                                      
- *                       relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
- *                       relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
- *                                                      
- *                       path-abempty         = begins with &quot;/&quot; or is empty
- *                       path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
- *                       path-noscheme        = begins with a non-colon segment
- *                       path-rootless        = begins with a segment
- *                       path-empty           = zero characters
+ *                        URI reference        = absolute-reference | relative-reference
+ *                     
+ *                        absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
+ *                        scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
+ *                        hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
+ *                        authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
+ *                                                       
+ *                        relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
+ *                        relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
+ *                                                       
+ *                        path-abempty         = begins with &quot;/&quot; or is empty
+ *                        path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
+ *                        path-noscheme        = begins with a non-colon segment
+ *                        path-rootless        = begins with a segment
+ *                        path-empty           = zero characters
  * </pre>
  * 
  * Note that this class doesn't encode or decode the reserved characters. It
@@ -759,14 +759,23 @@ public class Reference {
     /**
      * Returns the part of the resource identifier remaining after the base
      * reference. Note that the optional fragment is not returned by this
-     * method.
+     * method. Must be used with the following prerequisites:
+     * <ul>
+     * <li>the reference is absolute</li>
+     * <li>the reference identifier starts with the resource baseRef</li>
+     * </ul>
      * 
-     * @return The remaining resource part.
+     * @return The remaining resource part or null if the prerequisites are not
+     *         satisfied.
      */
     public String getRemainingPart() {
         if (getBaseRef() != null) {
-            return toString(true, false).substring(
-                    getBaseRef().toString(true, false).length());
+            try {
+                return toString(true, false).substring(
+                        getBaseRef().toString(true, false).length());
+            } catch (Exception e) {
+                return null;
+            }
         } else {
             return toString(true, false);
         }
