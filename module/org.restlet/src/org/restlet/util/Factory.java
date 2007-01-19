@@ -53,7 +53,7 @@ public abstract class Factory {
             .getCanonicalName());
 
     /** Common version info. */
-    public static final String MINOR_NUMBER = "3";
+    public static final String MINOR_NUMBER = "4";
 
     public static final String VERSION_LONG = "1.0 RC" + MINOR_NUMBER;
 
