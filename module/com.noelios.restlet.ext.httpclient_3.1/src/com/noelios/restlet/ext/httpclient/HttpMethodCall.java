@@ -194,7 +194,7 @@ public class HttpMethodCall extends HttpClientCall {
                     .getLogger()
                     .log(
                             Level.WARNING,
-                            "An error occured during the communication with the remote HTTP server.",
+                            "An error occurred during the communication with the remote HTTP server.",
                             ioe);
             result = new Status(
                     Status.CONNECTOR_ERROR_COMMUNICATION,

@@ -223,7 +223,7 @@ public abstract class HttpServerCall extends HttpCall {
             }
         } else {
             this.logger
-                    .warning("Couldn't find the mandatory \"Host\" HTTP header.");
+                    .info("Couldn't find the mandatory \"Host\" HTTP header.");
         }
 
         this.hostParsed = true;

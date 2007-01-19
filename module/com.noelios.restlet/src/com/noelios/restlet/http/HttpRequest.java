@@ -337,7 +337,7 @@ public class HttpRequest extends Request {
                 } catch (Exception e) {
                     this.context.getLogger().log(
                             Level.WARNING,
-                            "An exception occured during cookies parsing. Headers value: "
+                            "An exception occurred during cookies parsing. Headers value: "
                                     + cookiesValue, e);
                 }
             }

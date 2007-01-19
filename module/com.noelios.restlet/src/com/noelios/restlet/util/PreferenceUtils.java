@@ -205,7 +205,7 @@ public class PreferenceUtils {
                     }
                 } catch (IOException ioe) {
                     throw new IllegalArgumentException(
-                            "An exception occured during character set preferences parsing. Header: "
+                            "An exception occurred during character set preferences parsing. Header: "
                                     + acceptCharsetHeader
                                     + ". Ignoring header.");
                 }
@@ -238,7 +238,7 @@ public class PreferenceUtils {
                 }
             } catch (IOException ioe) {
                 throw new IllegalArgumentException(
-                        "An exception occured during encoding preferences parsing. Header: "
+                        "An exception occurred during encoding preferences parsing. Header: "
                                 + acceptEncodingHeader + ". Ignoring header.");
             }
         } else {
@@ -269,7 +269,7 @@ public class PreferenceUtils {
                 }
             } catch (IOException ioe) {
                 throw new IllegalArgumentException(
-                        "An exception occured during language preferences parsing. Header: "
+                        "An exception occurred during language preferences parsing. Header: "
                                 + acceptLanguageHeader + ". Ignoring header.");
             }
         } else {
@@ -299,7 +299,7 @@ public class PreferenceUtils {
                 }
             } catch (IOException ioe) {
                 throw new IllegalArgumentException(
-                        "An exception occured during media type preferences parsing. Header: "
+                        "An exception occurred during media type preferences parsing. Header: "
                                 + acceptMediaTypeHeader + ". Ignoring header.");
             }
         } else {
