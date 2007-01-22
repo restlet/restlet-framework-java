@@ -5,6 +5,17 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - Guard.authorize() doesn't call authenticate() anymore as doHandle() was already checking
+   this point. Was pontially resulting in two calls to authenticate().
+ 
+[API changes]
+ - 
+ 
+[Enhancements] 
+ - 
+ 
+1.0 RC3 (2007-01-19)
+[Bugs fixed]
  - Fixed bug with the uri parsing in the DirectoryResource class. The query part of the resource uri
    is removed before sending request to the file connector.
  - The content negotiation was throwing class cast exceptions when a resource was 

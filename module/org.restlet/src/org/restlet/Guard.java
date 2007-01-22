@@ -127,17 +127,17 @@ public class Guard extends Filter {
     }
 
     /**
-     * Indicates if the request is authorized to pass through the Guard. The
-     * default behavior is only to check if the request is properly
-     * authenticated, as defined by the authenticate() method. If additional
-     * checks are required, they could be added by overriding this method.
+     * Indicates if the request is authorized to pass through the Guard. This
+     * method is only called if the call was sucessfully authenticated. It
+     * always returns true by default. If specific checks are required, they
+     * could be added by overriding this method.
      * 
      * @param request
      *            The request to authorize.
      * @return True if the request is authorized.
      */
     public boolean authorize(Request request) {
-        return (authenticate(request) == 1);
+        return true;
     }
 
     /**
