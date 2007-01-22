@@ -249,26 +249,6 @@ public abstract class Factory {
 
     /**
      * Returns the best variant representation for a given resource according
-     * the the client preferences.
-     * 
-     * @param client
-     *            The client preferences.
-     * @param variants
-     *            The list of variants to compare.
-     * @return The preferred variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     * @deprecated Use the getPreferredVariant(ClientInfo,List<Variant>,Language)
-     *             to specify the default language.
-     */
-    @Deprecated
-    public Variant getPreferredVariant(ClientInfo client, List<Variant> variants) {
-        return getPreferredVariant(client, variants, null);
-    }
-
-    /**
-     * Returns the best variant representation for a given resource according
      * the the client preferences.<br/>A default language is provided in case
      * the variants don't match the client preferences.
      * 

@@ -115,17 +115,6 @@ public class Variant {
     }
 
     /**
-     * Returns the encoding or null if identity encoding applies.
-     * 
-     * @return The encoding or null if identity encoding applies.
-     * @deprecated Use the getEncodings method instead.
-     */
-    @Deprecated
-    public Encoding getEncoding() {
-        return (getEncodings().isEmpty() ? null : getEncodings().get(0));
-    }
-
-    /**
      * Returns the list of encodings applied to the entity-body. An
      * "IllegalArgumentException" exception is thrown when adding a null
      * encoding to this list.
@@ -203,18 +192,6 @@ public class Variant {
      */
     public Date getExpirationDate() {
         return this.expirationDate;
-    }
-
-    /**
-     * Returns the language or null if not applicable.
-     * 
-     * @return The first language of the list of languages or null if not
-     *         applicable.
-     * @deprecated Use getLanguages instead.
-     */
-    @Deprecated
-    public Language getLanguage() {
-        return (getLanguages().isEmpty() ? null : getLanguages().get(0));
     }
 
     /**
@@ -334,20 +311,6 @@ public class Variant {
     }
 
     /**
-     * Sets the encoding or null if identity encoding applies.
-     * 
-     * @param encoding
-     *            The encoding or null if identity encoding applies.
-     * @deprecated Use getEncodings method in order to update the encodings
-     *             list.
-     */
-    @Deprecated
-    public void setEncoding(Encoding encoding) {
-        getEncodings().clear();
-        getEncodings().add(encoding);
-    }
-
-    /**
      * Sets the future date when this representation expire. If this information
      * is not known, pass null.
      * 
@@ -356,20 +319,6 @@ public class Variant {
      */
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = DateUtils.unmodifiable(expirationDate);
-    }
-
-    /**
-     * Sets the language or null if not applicable.
-     * 
-     * @param language
-     *            The language or null if not applicable.
-     * @deprecated Use getLanguages method in order to update the languages
-     *             list.
-     */
-    @Deprecated
-    public void setLanguage(Language language) {
-        getLanguages().clear();
-        getLanguages().add(language);
     }
 
     /**

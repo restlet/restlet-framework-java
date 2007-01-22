@@ -157,25 +157,6 @@ public final class ClientInfo {
     /**
      * Returns the best variant for a given resource according the the client
      * preferences: accepted languages, accepted character sets, accepted media
-     * types and accepted encodings.
-     * 
-     * @param variants
-     *            The list of variants to compare.
-     * @return The best variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     * @deprecated Use the getPreferredVariant(List<Variant>,Language) to
-     *             specify the default language.
-     */
-    @Deprecated
-    public Variant getPreferredVariant(List<Variant> variants) {
-        return getPreferredVariant(variants, null);
-    }
-
-    /**
-     * Returns the best variant for a given resource according the the client
-     * preferences: accepted languages, accepted character sets, accepted media
      * types and accepted encodings.<br/>A default language is provided in case
      * the variants don't match the client preferences.
      * 
@@ -192,25 +173,6 @@ public final class ClientInfo {
             Language defaultLanguage) {
         return Factory.getInstance().getPreferredVariant(this, variants,
                 defaultLanguage);
-    }
-
-    /**
-     * Returns the best variant for a given resource according the the client
-     * preferences.
-     * 
-     * @param resource
-     *            The resource for which the best representation needs to be
-     *            set.
-     * @return The best variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     * @deprecated Use the getPreferredVariant(Resource,Language) to specify the
-     *             default language.
-     */
-    @Deprecated
-    public Variant getPreferredVariant(Resource resource) {
-        return getPreferredVariant(resource, null);
     }
 
     /**

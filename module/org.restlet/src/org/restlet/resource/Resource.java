@@ -85,16 +85,6 @@ public class Resource {
     /**
      * Constructor.
      * 
-     * @deprecated Used the other constructor based on a Context instance.
-     */
-    @Deprecated
-    public Resource() {
-        this((Logger) null);
-    }
-
-    /**
-     * Constructor.
-     * 
      * @param context
      *            The parent context.
      * @param request
@@ -108,19 +98,6 @@ public class Resource {
         this.negotiateContent = true;
         this.request = request;
         this.response = response;
-        this.variants = null;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *            The logger to use.
-     * @deprecated Used the other constructor based on a Context instance.
-     */
-    @Deprecated
-    public Resource(Logger logger) {
-        this.logger = logger;
         this.variants = null;
     }
 
@@ -586,19 +563,6 @@ public class Resource {
     }
 
     /**
-     * Sets the logger to use.
-     * 
-     * @param logger
-     *            The logger to use.
-     * @deprecated To be removed as the logger is now provided by the context
-     *             property.
-     */
-    @Deprecated
-    public void setLogger(Logger logger) {
-        this.logger = logger;
-    }
-
-    /**
      * Indicates if the best content is automatically negotiated. Default value
      * is true.
      * 
@@ -627,19 +591,6 @@ public class Resource {
      */
     public void setResponse(Response response) {
         this.response = response;
-    }
-
-    /**
-     * Sets a new list of variants.
-     * 
-     * @param variants
-     *            The new list of variants.
-     * @deprecated To be removed to be consistent with the rest of the API when
-     *             dealing with repeating properties. Use getVariants().clear()
-     *             then getVariants().addAll() instead.
-     */
-    public void setVariants(List<Variant> variants) {
-        this.variants = variants;
     }
 
     /**

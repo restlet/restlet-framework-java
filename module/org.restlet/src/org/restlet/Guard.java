@@ -209,17 +209,6 @@ public class Guard extends Filter {
     }
 
     /**
-     * Returns the map of authorizations (identifier/secret combinations).
-     * 
-     * @return The map of authorizations (identifier/secret combinations).
-     * @deprecated Use getSecrets() instead.
-     */
-    @Deprecated
-    public Map<String, String> getAuthorizations() {
-        return getSecrets();
-    }
-
-    /**
      * Returns the map of identifiers and secrets.
      * 
      * @return The map of identifiers and secrets.
@@ -228,28 +217,6 @@ public class Guard extends Filter {
         if (this.secrets == null)
             this.secrets = new TreeMap<String, String>();
         return this.secrets;
-    }
-
-    /**
-     * Rejects the call call due to a failed authentication or authorization.
-     * This can be overriden to change the defaut behavior, for example to
-     * display an error page. By default, if authentication is required, the
-     * challenge method is invoked, otherwise the call status is set to
-     * CLIENT_ERROR_FORBIDDEN.
-     * 
-     * @param response
-     *            The reject response.
-     * @param challenge
-     *            Indicates if the client should be challenged.
-     * @deprecated Use reject(Response) or challenge(Response) methods instead.
-     */
-    @Deprecated
-    public void reject(Response response, boolean challenge) {
-        if (challenge) {
-            challenge(response);
-        } else {
-            forbid(response);
-        }
     }
 
 }

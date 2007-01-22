@@ -130,19 +130,6 @@ public class Transformer extends Filter {
      * null.
      * 
      * @return The encoding of the result representation.
-     * @deprecated use getResultEncodings instead.
-     */
-    @Deprecated
-    public Encoding getResultEncoding() {
-        return (getResultEncodings().isEmpty() ? null : getResultEncodings()
-                .get(0));
-    }
-
-    /**
-     * Returns the encoding of the result representation. The default value is
-     * null.
-     * 
-     * @return The encoding of the result representation.
      */
     public List<Encoding> getResultEncodings() {
         if (this.resultEncodings == null)
@@ -198,19 +185,6 @@ public class Transformer extends Filter {
      */
     public void setResultCharacterSet(CharacterSet resultCharacterSet) {
         this.resultCharacterSet = resultCharacterSet;
-    }
-
-    /**
-     * Sets the encoding of the result representation.
-     * 
-     * @param resultEncoding
-     *            The encoding of the result representation.
-     * @deprecated use the getResultEncodings instead.
-     */
-    @Deprecated
-    public void setResultEncoding(Encoding resultEncoding) {
-        getResultEncodings().clear();
-        getResultEncodings().add(resultEncoding);
     }
 
     /**

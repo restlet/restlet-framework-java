@@ -74,21 +74,6 @@ public class DecodeRepresentation extends WrapperRepresentation {
     }
 
     /**
-     * Returns the encoding or null if identity encoding applies.
-     * 
-     * @return The encoding or null if identity encoding applies.
-     * @deprecated use the getEncodings method instead
-     */
-    @Deprecated
-    public Encoding getEncoding() {
-        if (canDecode()) {
-            return null;
-        } else {
-            return getWrappedRepresentation().getEncoding();
-        }
-    }
-
-    /**
      * Returns the encodings applied to the entity.
      * 
      * @return The encodings applied to the entity.
@@ -99,19 +84,6 @@ public class DecodeRepresentation extends WrapperRepresentation {
         } else {
             return wrappedEncodings;
         }
-    }
-
-    /**
-     * Sets the encoding or null if identity encoding applies.
-     * 
-     * @param encoding
-     *            The encoding or null if identity encoding applies.
-     * @deprecated use the getEncodings method instead.
-     */
-    @Deprecated
-    public void setEncoding(Encoding encoding) {
-        throw new IllegalArgumentException(
-                "The encoding can't be changed for a decoder representation");
     }
 
     /**

@@ -142,25 +142,6 @@ public class Directory extends Finder {
     }
 
     /**
-     * Returns the variant representations of a directory. This method can be
-     * subclassed in order to provide alternative representations. By default it
-     * returns a simple HTML document and a textual URI list as variants.
-     * 
-     * @param directoryContent
-     *            The list of references contained in the directory.
-     * @return The variant representations of a directory.
-     * @deprecated Use getIndexVariants() and getIndexRepresentation() instead.
-     */
-    @Deprecated
-    public List<Variant> getDirectoryVariants(ReferenceList directoryContent) {
-        // Create the variants list
-        List<Variant> result = new ArrayList<Variant>();
-        result.add(directoryContent.getWebRepresentation());
-        result.add(directoryContent.getTextRepresentation());
-        return result;
-    }
-
-    /**
      * Returns the variant representations of a directory index. This method can
      * be subclassed in order to provide alternative representations. By default
      * it returns a simple HTML document and a textual URI list as variants.
