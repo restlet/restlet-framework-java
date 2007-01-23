@@ -42,29 +42,29 @@ import com.noelios.restlet.http.HttpServerHelper;
  * configuration for your Restlet webapp:
  * 
  * <pre>
- *                         &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
- *                         &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
- *                         &lt;web-app&gt;
- *                         	&lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- *                         
- *                         	&lt;!-- Your application class name --&gt;
- *                         	&lt;context-param&gt;
- *                         		&lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
- *                         		&lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
- *                         	&lt;/context-param&gt;
- *                         
- *                         	&lt;!-- Restlet adapter --&gt;
- *                         	&lt;servlet&gt;
- *                         		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *                         		&lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
- *                         	&lt;/servlet&gt;
- *                         
- *                         	&lt;!-- Catch all requests --&gt;
- *                         	&lt;servlet-mapping&gt;
- *                         		&lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *                         		&lt;url-pattern&gt;/*&lt;/url-pattern&gt;
- *                         	&lt;/servlet-mapping&gt;
- *                         &lt;/web-app&gt;}
+ *                           &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+ *                           &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
+ *                           &lt;web-app&gt;
+ *                                &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
+ *                           
+ *                                &lt;!-- Your application class name --&gt;
+ *                                &lt;context-param&gt;
+ *                                        &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ *                                        &lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
+ *                                &lt;/context-param&gt;
+ *                           
+ *                                &lt;!-- Restlet adapter --&gt;
+ *                                &lt;servlet&gt;
+ *                                        &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                                        &lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+ *                                &lt;/servlet&gt;
+ *                           
+ *                                &lt;!-- Catch all requests --&gt;
+ *                                &lt;servlet-mapping&gt;
+ *                                        &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                                        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+ *                                &lt;/servlet-mapping&gt;
+ *                           &lt;/web-app&gt;}
  * </pre>
  * 
  * The enumeration of initParameters of your Servlet will be copied to the
@@ -231,7 +231,18 @@ public class ServerServlet extends HttpServlet {
         // Load the application class using the given class name
         if (applicationClassName != null) {
             try {
-                Class targetClass = Class.forName(applicationClassName);
+                // According to
+                // http://www.caucho.com/resin-3.0/webapp/faq.xtp#Class.forName()-doesn't-seem-to-work-right
+                // this approach may need to used when loading classes.
+                Class targetClass;
+                ClassLoader loader = Thread.currentThread()
+                        .getContextClassLoader();
+
+                if (loader != null)
+                    targetClass = Class.forName(applicationClassName, false,
+                            loader);
+                else
+                    targetClass = Class.forName(applicationClassName);
 
                 try {
                     // Create a new instance of the application class by
