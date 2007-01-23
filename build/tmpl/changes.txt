@@ -8,7 +8,8 @@ Changes log
  - Guard.authorize() doesn't call authenticate() anymore as doHandle() was already checking
    this point. Was pontially resulting in two calls to authenticate().
  - Replaced "RESTlet" by "Restlet" in all logos to match the actual project name.
-  
+ - Fixed a potential issue with Resin 3.0.19 servlet container. Contributed by Denis Haskin.
+ 
 [API changes]
  - Added Resource.getPreferredRepresentation() method as a shortcut to  
    getRepresentation(getPreferredVariant()).
