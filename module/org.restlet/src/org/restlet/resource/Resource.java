@@ -185,6 +185,16 @@ public class Resource {
     }
 
     /**
+     * Returns the preferred representation according to the client preferences
+     * specified in the associated request.
+     * 
+     * @return The preferred representation.
+     */
+    public Representation getPreferredRepresentation() {
+        return getRepresentation(getPreferredVariant());
+    }
+
+    /**
      * Returns the preferred variant according to the client preferences
      * specified in the associated request.
      * 
@@ -259,10 +269,15 @@ public class Resource {
     }
 
     /**
-     * Returns the list of variants. A variant can be a purely descriptive
-     * representation, with no actual content that can be served. It can also be
-     * a full representation in case a resource has only one variant or if the
-     * initialization cost is very low.
+     * Returns the modifiable list of variants. A variant can be a purely
+     * descriptive representation, with no actual content that can be served. It
+     * can also be a full representation in case a resource has only one variant
+     * or if the initialization cost is very low.<br>
+     * <br>
+     * It is recommended to not override this method and to simply use it at
+     * construction time to initialize the list of available variants.
+     * Overriding it will force you to reconstruct the list for each call which
+     * is expensive.
      * 
      * @return The list of variants.
      * @see #getRepresentation(Variant)

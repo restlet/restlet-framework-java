@@ -9,7 +9,8 @@ Changes log
    this point. Was pontially resulting in two calls to authenticate().
  
 [API changes]
- - 
+ - Added Resource.getPreferredRepresentation() method as a shortcut to  
+   getRepresentation(getPreferredVariant()).
  
 [Enhancements] 
  - 
