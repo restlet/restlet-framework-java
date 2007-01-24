@@ -10,7 +10,8 @@ Changes log
  - Replaced "RESTlet" by "Restlet" in all logos to match the actual project name.
  - Fixed bug in DomRepresentation's constructor for empty Documents. Reported by David Rauschenbach.
  - Fixed a potential classloader issue with Resin 3.0.19 servlet container. Reported by Denis Haskin.
- 
+ - Force sort order for list of representations set by the DirectoryResource.
+  
 [API changes]
  - Added Resource.getPreferredRepresentation() method as a shortcut to  
    getRepresentation(getPreferredVariant()).
