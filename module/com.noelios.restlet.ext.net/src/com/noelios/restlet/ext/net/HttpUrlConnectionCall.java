@@ -79,9 +79,9 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                     || (majorVersionNumber == 1 && minorVersionNumber >= 5)) {
                 this.connection.setConnectTimeout(getHelper()
                         .getConnectTimeout());
+                this.connection.setReadTimeout(getHelper().getReadTimeout());
             }
 
-            this.connection.setReadTimeout(getHelper().getReadTimeout());
             this.connection.setAllowUserInteraction(getHelper()
                     .isAllowUserInteraction());
             this.connection.setDoOutput(hasEntity);
