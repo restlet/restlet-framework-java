@@ -242,8 +242,7 @@ public class DirectoryResource extends Resource {
             getResponse().setRedirectRef(this.targetUri);
         } else {
             // We allow the transfer of the PUT calls only if the readOnly flag
-            // is
-            // not set
+            // is not set
             if (!getDirectory().isModifiable()) {
                 status = Status.CLIENT_ERROR_FORBIDDEN;
             } else {
@@ -462,8 +461,8 @@ public class DirectoryResource extends Resource {
     /**
      * Allows to sort the list of representations set by the resource.
      * 
-     * @return a Comparator instance imposing a sort order of representations or
-     *         null if the no special order is wanted.
+     * @return A Comparator instance imposing a sort order of representations or
+     *         null if no special order is wanted.
      */
     private Comparator<Representation> getRepresentationsComparator() {
         // Sort the list of representations by their identifier.
