@@ -154,10 +154,12 @@ public class DirectoryResource extends Resource {
             this.targetDirectory = true;
             this.directoryContent = new ReferenceList(contextResponse
                     .getEntity());
-
-            if (!this.targetUri.endsWith("/")) {
+            if (!request.getResourceRef().getIdentifier().endsWith("/")) {
                 this.directoryRedirection = true; // all request will be
                 // automatically redirected
+            }
+
+            if (!this.targetUri.endsWith("/")) {
                 this.targetUri += "/";
                 this.relativePart += "/";
             }
@@ -229,6 +231,22 @@ public class DirectoryResource extends Resource {
      */
     public boolean allowPut() {
         return getDirectory().isModifiable();
+    }
+
+    @Override
+    public void handleGet() {
+        if (directoryRedirection) {
+            // If this request targets a directory and if the target URI does
+            // not end with a tailing "/", the client is told to redirect to a
+            // correct URI.
+            getResponse().setStatus(Status.REDIRECTION_FOUND);
+            getResponse().setEntity(null);
+            getResponse().setRedirectRef(
+                    getRequest().getResourceRef().getIdentifier() + "/");
+        } else {
+            super.handleGet();
+        }
+
     }
 
     /**
@@ -481,9 +499,9 @@ public class DirectoryResource extends Resource {
                             return 1;
                         } else {
                             return rep0.getIdentifier().getLastSegment()
-                            .compareTo(
-                                    rep1.getIdentifier()
-                                            .getLastSegment());
+                                    .compareTo(
+                                            rep1.getIdentifier()
+                                                    .getLastSegment());
                         }
                     }
                 }
