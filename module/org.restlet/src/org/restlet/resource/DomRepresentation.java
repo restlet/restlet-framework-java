@@ -59,7 +59,7 @@ public class DomRepresentation extends XmlRepresentation {
      */
     public DomRepresentation(MediaType mediaType) throws IOException {
         super(mediaType);
-        getDocumentBuilder().newDocument();
+        this.dom = getDocumentBuilder().newDocument();
     }
 
     /**

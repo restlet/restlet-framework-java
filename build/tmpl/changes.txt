@@ -6,9 +6,10 @@ Changes log
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Guard.authorize() doesn't call authenticate() anymore as doHandle() was already checking
-   this point. Was pontially resulting in two calls to authenticate().
+   this point. Was pontially resulting in two calls to authenticate(). Reported by Vincent Lari.
  - Replaced "RESTlet" by "Restlet" in all logos to match the actual project name.
- - Fixed a potential issue with Resin 3.0.19 servlet container. Contributed by Denis Haskin.
+ - Fixed bug in DomRepresentation's constructor for empty Documents. Reported by David Rauschenbach.
+ - Fixed a potential classloader issue with Resin 3.0.19 servlet container. Reported by Denis Haskin.
  
 [API changes]
  - Added Resource.getPreferredRepresentation() method as a shortcut to  
