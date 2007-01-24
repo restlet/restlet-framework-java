@@ -40,6 +40,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.util.DateUtils;
+import org.restlet.util.Factory;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.http.HttpConstants;
@@ -108,22 +109,22 @@ public class SecurityUtils {
                 contentMd5 = "";
 
             // Setup the ContentType header
-            String contentType = httpHeaders
-                    .getFirstValue(HttpConstants.HEADER_CONTENT_TYPE, true);
+            String contentType = httpHeaders.getFirstValue(
+                    HttpConstants.HEADER_CONTENT_TYPE, true);
             if (contentType == null) {
-                String javaVersion = System.getProperty("java.version");
-
                 boolean applyPatch = false;
+                int majorVersionNumber = Factory.getMajorJavaVersion();
+                int minorVersionNumber = Factory.getMinorJavaVersion();
 
-                if (javaVersion.startsWith("1.3")
-                        || javaVersion.startsWith("1.4")) {
-                    applyPatch = true;
-                } else if (javaVersion.startsWith("1.5")) {
-                    int minorVersion = Integer.parseInt(javaVersion
-                            .substring(javaVersion.indexOf('_') + 1));
-
-                    // Sun is supposed to fix it in update 10
-                    applyPatch = (minorVersion < 10);
+                if (majorVersionNumber == 1) {
+                    if ((minorVersionNumber == 3 || minorVersionNumber == 4)) {
+                        applyPatch = true;
+                    } else {
+                        if (minorVersionNumber == 5) {
+                            // Sun is supposed to fix it in update 10
+                            applyPatch = (Factory.getJavaVersionUpdateRelease() < 10);
+                        }
+                    }
                 }
 
                 if (applyPatch && !request.getMethod().equals(Method.PUT)) {
