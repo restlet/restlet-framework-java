@@ -71,7 +71,12 @@ public class HttpUrlConnectionCall extends HttpClientCall {
         if (requestUri.startsWith("http")) {
             URL url = new URL(requestUri);
             this.connection = (HttpURLConnection) url.openConnection();
-            this.connection.setConnectTimeout(getHelper().getConnectTimeout());
+            String javaVersion = System.getProperty("java.version");
+            if (javaVersion.startsWith("1.5") || javaVersion.startsWith("1.6")) {
+                this.connection.setConnectTimeout(getHelper()
+                        .getConnectTimeout());
+            }
+
             this.connection.setReadTimeout(getHelper().getReadTimeout());
             this.connection.setAllowUserInteraction(getHelper()
                     .isAllowUserInteraction());
