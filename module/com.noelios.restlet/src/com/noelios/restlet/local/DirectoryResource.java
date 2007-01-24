@@ -19,8 +19,10 @@
 package com.noelios.restlet.local;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
@@ -386,7 +388,12 @@ public class DirectoryResource extends Resource {
      * @return The representation variants.
      */
     public List<Variant> getVariants() {
-        List<Variant> result = super.getVariants();
+        List<Variant> results = super.getVariants();
+
+        // Allows to sort the list of representations
+        SortedSet<Representation> resultSet = new TreeSet<Representation>(
+                getRepresentationsComparator());
+
         getLogger().info("Getting variants for : " + getTargetUri());
 
         // Compute the base reference (from a call's client point of view)
@@ -414,12 +421,12 @@ public class DirectoryResource extends Resource {
                                 rootLength);
                         Representation rep = contextResponse.getEntity();
                         rep.setIdentifier(baseRef + filePath);
-                        result.add(rep);
+                        resultSet.add(rep);
                     }
                 }
             }
 
-            if (result.size() == 0) {
+            if (resultSet.isEmpty()) {
                 if (this.targetDirectory && getDirectory().isListingAllowed()) {
                     ReferenceList userList = new ReferenceList(
                             this.directoryContent.size());
@@ -440,7 +447,7 @@ public class DirectoryResource extends Resource {
                     List<Variant> list = getDirectory().getIndexVariants(
                             userList);
                     for (Variant variant : list) {
-                        result.add(getDirectory().getIndexRepresentation(
+                        resultSet.add(getDirectory().getIndexRepresentation(
                                 variant, userList));
                     }
 
@@ -448,7 +455,42 @@ public class DirectoryResource extends Resource {
             }
         }
 
-        return result;
+        results.addAll(resultSet);
+        return results;
+    }
+
+    /**
+     * Allows to sort the list of representations set by the resource.
+     * 
+     * @return a Comparator instance imposing a sort order of representations or
+     *         null if the no special order is wanted.
+     */
+    private Comparator<Representation> getRepresentationsComparator() {
+        // Sort the list of representations by their identifier.
+        Comparator<Representation> identifiersComparator = new Comparator<Representation>() {
+            public int compare(Representation rep0, Representation rep1) {
+                boolean bRep0Null = (rep0.getIdentifier() == null);
+                boolean bRep1Null = (rep1.getIdentifier() == null);
+
+                if (bRep0Null && bRep1Null) {
+                    return 0;
+                } else {
+                    if (bRep0Null) {
+                        return -1;
+                    } else {
+                        if (bRep1Null) {
+                            return 1;
+                        } else {
+                            return rep0.getIdentifier().getLastSegment()
+                            .compareTo(
+                                    rep1.getIdentifier()
+                                            .getLastSegment());
+                        }
+                    }
+                }
+            }
+        };
+        return identifiersComparator;
     }
 
     /**
