@@ -69,9 +69,8 @@ public abstract class Factory {
     private static ClassLoader classloader = Factory.class.getClassLoader();
 
     /**
-     * Returns a class loader to use when creating instantiating
-     * implementation classes. By default, it reused the classloader of this
-     * Factory's class.
+     * Returns a class loader to use when creating instantiating implementation
+     * classes. By default, it reused the classloader of this Factory's class.
      */
     public static ClassLoader getClassLoader() {
         return classloader;
@@ -293,5 +292,67 @@ public abstract class Factory {
      */
     public abstract void parse(Logger logger, Form form, String queryString,
             CharacterSet characterSet);
+
+    /**
+     * Parses the "java.version" system property and returns the first digit of
+     * the version number of the Java Runtime Environment (e.g. "1" for
+     * "1.3.0").
+     * 
+     * @see http://java.sun.com/j2se/versioning_naming.html
+     * @return The major version number of the Java Runtime Environment.
+     */
+    public static int getMajorJavaVersion() {
+        int result;
+        String javaVersion = System.getProperty("java.version");
+        try {
+            result = Integer.parseInt(javaVersion.substring(0, javaVersion
+                    .indexOf(".")));
+        } catch (Exception e) {
+            result = 0;
+        }
+
+        return result;
+    }
+
+    /**
+     * Parses the "java.version" system property and returns the second digit of
+     * the version number of the Java Runtime Environment (e.g. "3" for
+     * "1.3.0").
+     * 
+     * @see http://java.sun.com/j2se/versioning_naming.html
+     * @return The minor version number of the Java Runtime Environment.
+     */
+    public static int getMinorJavaVersion() {
+        int result;
+        String javaVersion = System.getProperty("java.version");
+        try {
+            result = Integer.parseInt(javaVersion.split("\\.")[1]);
+        } catch (Exception e) {
+            result = 0;
+        }
+
+        return result;
+    }
+
+    /**
+     * Parses the "java.version" system property and returns the update release
+     * number of the Java Runtime Environment (e.g. "10" for "1.3.0_10").
+     * 
+     * @see http://java.sun.com/j2se/versioning_naming.html
+     * @return The release number of the Java Runtime Environment or 0 if it
+     *         does not exist.
+     */
+    public static int getJavaVersionUpdateRelease() {
+        int result;
+        String javaVersion = System.getProperty("java.version");
+        try {
+            result = Integer.parseInt(javaVersion.substring(javaVersion
+                    .indexOf('_') + 1));
+        } catch (Exception e) {
+            result = 0;
+        }
+
+        return result;
+    }
 
 }
