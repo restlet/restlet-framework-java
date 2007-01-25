@@ -1062,7 +1062,7 @@
 		<packageLibrary name="logging" />
 		<packageLibrary name="mina" />
 		<packageLibrary name="pool" />
-		<packageLibrary name="servlet4" />
+		<packageLibrary name="servlet" />
 		<packageLibrary name="servlet5" />
 		<packageLibrary name="simple" />
 		<packageLibrary name="slf4j" />
