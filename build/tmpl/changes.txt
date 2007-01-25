@@ -16,6 +16,7 @@ Changes log
  - FileRepresentation(String path) constructor now accepts both simple path names and file URI. 
    Suggested by Sean Landis.
  - Fixed bug with repeated patterns in URI templates. Reported by Vincent Lari.
+ - Fixed bug in Servlet extension POM. Reported by Mitchell Stewart.
  
 [API changes]
  - Added Resource.getPreferredRepresentation() method as a shortcut to  

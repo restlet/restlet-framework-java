@@ -119,9 +119,9 @@
 	<property name="lib-retroweaver-version" value="1.2" />
 	<property name="lib-retroweaver-id" value="${lib-retroweaver-package}_${lib-retroweaver-version}" />
 
-	<property name="lib-servlet4-package" value="javax.servlet" />
-	<property name="lib-servlet4-version" value="2.4" />
-	<property name="lib-servlet4-id" value="${lib-servlet4-package}_${lib-servlet4-version}" />
+	<property name="lib-servlet-package" value="javax.servlet" />
+	<property name="lib-servlet-version" value="2.4" />
+	<property name="lib-servlet-id" value="${lib-servlet-package}_${lib-servlet-version}" />
 
 	<property name="lib-servlet5-package" value="javax.servlet" />
 	<property name="lib-servlet5-version" value="2.5" />
@@ -217,7 +217,7 @@
 	<property name="mod-ri-test-id" value="${mod-ri-test-package}" />
 
 	<property name="mod-servlet-package" value="com.noelios.restlet.ext.servlet" />
-	<property name="mod-servlet-version" value="${lib-servlet4-version}" />
+	<property name="mod-servlet-version" value="${lib-servlet-version}" />
 	<property name="mod-servlet-id" value="${mod-servlet-package}_${mod-servlet-version}" />
 
 	<property name="mod-simple-package" value="com.noelios.restlet.ext.simple" />
@@ -313,7 +313,7 @@
 	<path id="mod-fileupload-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-servlet4-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-fileupload-id}" includes="*.jar" />
 	</path>
 
@@ -348,7 +348,7 @@
 	<path id="mod-jetty5-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-servlet4-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-jetty5-id}" includes="*.jar" />
 	</path>
@@ -379,7 +379,7 @@
 	<path id="mod-servlet-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-servlet4-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
 	</path>
 
 	<path id="mod-simple-path">

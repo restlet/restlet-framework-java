@@ -88,14 +88,14 @@ public class Directory extends Finder {
      *            file or unzipped in a directory), use war:// URIs and then you
      *            shouldn't have to register a WAR connector as it is
      *            automatically provided for applications. However, for WAR
-     *            URIs, you have to define in the application context's a
-     *            parameter named "warPath" that contains a string with either
-     *            the location of your zipped WAR file or the root directory of
-     *            your unzipped WAR. If you don't define this parameter, it will
-     *            use the ${user.home}/restlet.war value by default. Note that
-     *            this parameter shouldn't directly be set by the Application
-     *            but by the parent Component so that the Application can be
-     *            portable to new environments.
+     *            URIs, you have to define, in the application context, a
+     *            parameter named "warPath" that contains either the location of
+     *            your zipped WAR file or the root directory of your unzipped
+     *            WAR. If you don't define this parameter, it will use the
+     *            ${user.home}/restlet.war value by default. Note that this
+     *            parameter shouldn't directly be set by the Application but by
+     *            the parent Component so that the Application can be portable
+     *            to new environments.
      */
     public Directory(Context context, String rootUri) {
         super(context);
