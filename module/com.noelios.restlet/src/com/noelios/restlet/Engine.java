@@ -60,14 +60,14 @@ import com.noelios.restlet.util.FormUtils;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Factory extends org.restlet.util.Factory {
+public class Engine extends org.restlet.util.Engine {
     /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(Factory.class
+    private static Logger logger = Logger.getLogger(Engine.class
             .getCanonicalName());
 
-    public static final String VERSION_LONG = org.restlet.util.Factory.VERSION_LONG;
+    public static final String VERSION_LONG = org.restlet.util.Engine.VERSION_LONG;
 
-    public static final String VERSION_SHORT = org.restlet.util.Factory.VERSION_SHORT;
+    public static final String VERSION_SHORT = org.restlet.util.Engine.VERSION_SHORT;
 
     public static final String VERSION_HEADER = "Noelios-Restlet-Engine/"
             + VERSION_SHORT;
@@ -76,7 +76,7 @@ public class Factory extends org.restlet.util.Factory {
      * Registers a new Noelios Restlet Engine.
      */
     public static void register() {
-        Factory.setInstance(new Factory());
+        Engine.setInstance(new Engine());
     }
 
     /** List of available client connectors. */
@@ -89,7 +89,7 @@ public class Factory extends org.restlet.util.Factory {
      * Constructor that will automatically attempt to discover connectors.
      */
     @SuppressWarnings("unchecked")
-    public Factory() {
+    public Engine() {
         this(true);
     }
 
@@ -100,14 +100,14 @@ public class Factory extends org.restlet.util.Factory {
      *            True if connectors should be automatically discovered.
      */
     @SuppressWarnings("unchecked")
-    public Factory(boolean discoverConnectors) {
+    public Engine(boolean discoverConnectors) {
         if (discoverConnectors) {
             // Find the factory class name
             String line = null;
             String provider = null;
 
             // Find the factory class name
-            ClassLoader cl = org.restlet.util.Factory.getClassLoader();
+            ClassLoader cl = org.restlet.util.Engine.getClassLoader();
             URL configURL;
 
             // Register the client connector providers
@@ -367,6 +367,68 @@ public class Factory extends org.restlet.util.Factory {
 
                 logger.log(Level.WARNING, sb.toString());
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Parses the "java.version" system property and returns the first digit of
+     * the version number of the Java Runtime Environment (e.g. "1" for
+     * "1.3.0").
+     * 
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official Java versioning</a>
+     * @return The major version number of the Java Runtime Environment.
+     */
+    public static int getJavaMajorVersion() {
+        int result;
+        String javaVersion = System.getProperty("java.version");
+        try {
+            result = Integer.parseInt(javaVersion.substring(0, javaVersion
+                    .indexOf(".")));
+        } catch (Exception e) {
+            result = 0;
+        }
+
+        return result;
+    }
+
+    /**
+     * Parses the "java.version" system property and returns the second digit of
+     * the version number of the Java Runtime Environment (e.g. "3" for
+     * "1.3.0").
+     * 
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official Java versioning</a>
+     * @return The minor version number of the Java Runtime Environment.
+     */
+    public static int getJavaMinorVersion() {
+        int result;
+        String javaVersion = System.getProperty("java.version");
+        try {
+            result = Integer.parseInt(javaVersion.split("\\.")[1]);
+        } catch (Exception e) {
+            result = 0;
+        }
+
+        return result;
+    }
+
+    /**
+     * Parses the "java.version" system property and returns the update release
+     * number of the Java Runtime Environment (e.g. "10" for "1.3.0_10").
+     * 
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official Java versioning</a>
+     * @return The release number of the Java Runtime Environment or 0 if it
+     *         does not exist.
+     */
+    public static int getJavaUpdateVersion() {
+        int result;
+        String javaVersion = System.getProperty("java.version");
+        try {
+            result = Integer.parseInt(javaVersion.substring(javaVersion
+                    .indexOf('_') + 1));
+        } catch (Exception e) {
+            result = 0;
         }
 
         return result;

@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
-import org.restlet.util.Factory;
+import org.restlet.util.Engine;
 
 /**
  * Client specific data related to a call.
@@ -171,7 +171,7 @@ public final class ClientInfo {
      */
     public Variant getPreferredVariant(List<Variant> variants,
             Language defaultLanguage) {
-        return Factory.getInstance().getPreferredVariant(this, variants,
+        return Engine.getInstance().getPreferredVariant(this, variants,
                 defaultLanguage);
     }
 

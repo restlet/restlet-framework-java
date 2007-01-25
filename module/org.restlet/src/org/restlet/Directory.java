@@ -32,7 +32,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
-import org.restlet.util.Factory;
+import org.restlet.util.Engine;
 
 /**
  * Finder mapping a directory of local resources. Those resources have
@@ -132,7 +132,7 @@ public class Directory extends Finder {
      */
     public Resource findTarget(Request request, Response response) {
         try {
-            return Factory.getInstance().createDirectoryResource(this, request,
+            return Engine.getInstance().createDirectoryResource(this, request,
                     response);
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING,

@@ -12,12 +12,14 @@ Changes log
  - Fixed a potential classloader issue with Resin 3.0.19 servlet container. Reported by Denis Haskin.
  - Force sort order for list of representations set by the DirectoryResource.
  - Fixed issue with the "timeout" property (class HTTPUrlConnection) which is not defined in Java 1.4. Reported by Stephan Schmitt. 
+ 
 [API changes]
  - Added Resource.getPreferredRepresentation() method as a shortcut to  
    getRepresentation(getPreferredVariant()).
+ - Renamed org.restlet.util.Factory to Engine as it does more than just providing factory methods.
  
 [Enhancements] 
- - 
+ - Updated FreeMarker to version 2.3.9.
  
 1.0 RC3 (2007-01-19)
 [Bugs fixed]

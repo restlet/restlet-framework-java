@@ -18,7 +18,7 @@
 
 package org.restlet.data;
 
-import org.restlet.util.Factory;
+import org.restlet.util.Engine;
 
 /**
  * Cookie provided by a client.
@@ -161,7 +161,7 @@ public class Cookie extends Parameter {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Factory.hashCode(super.hashCode(), getVersion(), getPath(),
+        return Engine.hashCode(super.hashCode(), getVersion(), getPath(),
                 getDomain());
     }
 

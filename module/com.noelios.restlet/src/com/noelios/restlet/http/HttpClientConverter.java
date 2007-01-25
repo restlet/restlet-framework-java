@@ -38,7 +38,7 @@ import org.restlet.data.Status;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
-import com.noelios.restlet.Factory;
+import com.noelios.restlet.Engine;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.HeaderReader;
@@ -150,7 +150,7 @@ public class HttpClientConverter extends HttpConverter {
                         .getClientInfo().getAgent());
             } else {
                 requestHeaders.add(HttpConstants.HEADER_USER_AGENT,
-                        Factory.VERSION_HEADER);
+                        Engine.VERSION_HEADER);
             }
 
             // Add the conditions

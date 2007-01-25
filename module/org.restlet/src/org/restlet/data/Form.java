@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.util.Factory;
+import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**
@@ -70,7 +70,7 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(Logger logger, Representation representation) {
-        Factory.getInstance().parse(logger, this, representation);
+        Engine.getInstance().parse(logger, this, representation);
     }
 
     /**
@@ -85,7 +85,7 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(Logger logger, String queryString, CharacterSet characterSet) {
-        Factory.getInstance().parse(logger, this, queryString, characterSet);
+        Engine.getInstance().parse(logger, this, queryString, characterSet);
     }
 
     /**

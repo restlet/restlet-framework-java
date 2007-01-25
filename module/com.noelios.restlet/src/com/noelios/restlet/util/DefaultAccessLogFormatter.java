@@ -20,7 +20,7 @@ package com.noelios.restlet.util;
 
 import java.util.logging.Handler;
 
-import com.noelios.restlet.Factory;
+import com.noelios.restlet.Engine;
 
 /**
  * Access log record formatter which writes a header describing the default log
@@ -34,7 +34,7 @@ public class DefaultAccessLogFormatter extends AccessLogFormatter {
     public String getHead(Handler h) {
         StringBuilder sb = new StringBuilder();
         sb.append("#Software: Noelios Restlet Engine ").append(
-                Factory.VERSION_LONG).append('\n');
+                Engine.VERSION_LONG).append('\n');
         sb.append("#Version: 1.0\n");
         sb.append("#Date: ");
         long currentTime = System.currentTimeMillis();

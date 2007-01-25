@@ -24,7 +24,7 @@ import java.util.List;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.util.Factory;
+import org.restlet.util.Engine;
 import org.restlet.util.Helper;
 
 /**
@@ -49,8 +49,8 @@ public class Client extends Connector {
         super(context, protocols);
 
         if ((protocols != null) && (protocols.size() > 0)) {
-            if (Factory.getInstance() != null) {
-                this.helper = Factory.getInstance().createHelper(this);
+            if (Engine.getInstance() != null) {
+                this.helper = Engine.getInstance().createHelper(this);
             }
         }
     }

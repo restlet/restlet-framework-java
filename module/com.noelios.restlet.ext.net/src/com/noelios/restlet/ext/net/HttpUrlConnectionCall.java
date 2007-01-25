@@ -34,9 +34,9 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
-import org.restlet.util.Factory;
 import org.restlet.util.Series;
 
+import com.noelios.restlet.Engine;
 import com.noelios.restlet.http.HttpClientCall;
 
 /**
@@ -72,8 +72,8 @@ public class HttpUrlConnectionCall extends HttpClientCall {
         if (requestUri.startsWith("http")) {
             URL url = new URL(requestUri);
             this.connection = (HttpURLConnection) url.openConnection();
-            int majorVersionNumber = Factory.getMajorJavaVersion();
-            int minorVersionNumber = Factory.getMinorJavaVersion();
+            int majorVersionNumber = Engine.getJavaMajorVersion();
+            int minorVersionNumber = Engine.getJavaMinorVersion();
 
             if ((majorVersionNumber > 1)
                     || (majorVersionNumber == 1 && minorVersionNumber >= 5)) {

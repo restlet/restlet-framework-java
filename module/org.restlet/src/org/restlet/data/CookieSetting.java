@@ -18,7 +18,7 @@
 
 package org.restlet.data;
 
-import org.restlet.util.Factory;
+import org.restlet.util.Engine;
 
 /**
  * Cookie setting provided by a server.
@@ -158,7 +158,7 @@ public final class CookieSetting extends Cookie {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Factory.hashCode(super.hashCode(), getComment(), getMaxAge(),
+        return Engine.hashCode(super.hashCode(), getComment(), getMaxAge(),
                 isSecure());
     }
 

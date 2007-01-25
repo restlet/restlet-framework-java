@@ -40,9 +40,9 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.util.DateUtils;
-import org.restlet.util.Factory;
 import org.restlet.util.Series;
 
+import com.noelios.restlet.Engine;
 import com.noelios.restlet.http.HttpConstants;
 
 /**
@@ -113,17 +113,15 @@ public class SecurityUtils {
                     HttpConstants.HEADER_CONTENT_TYPE, true);
             if (contentType == null) {
                 boolean applyPatch = false;
-                int majorVersionNumber = Factory.getMajorJavaVersion();
-                int minorVersionNumber = Factory.getMinorJavaVersion();
+                int majorVersionNumber = Engine.getJavaMajorVersion();
+                int minorVersionNumber = Engine.getJavaMinorVersion();
 
                 if (majorVersionNumber == 1) {
-                    if ((minorVersionNumber == 3 || minorVersionNumber == 4)) {
+                    if (minorVersionNumber < 5) {
                         applyPatch = true;
-                    } else {
-                        if (minorVersionNumber == 5) {
-                            // Sun is supposed to fix it in update 10
-                            applyPatch = (Factory.getJavaVersionUpdateRelease() < 10);
-                        }
+                    } else if (minorVersionNumber == 5) {
+                        // Sun fixed the bug in update 10
+                        applyPatch = (Engine.getJavaUpdateVersion() < 10);
                     }
                 }
 

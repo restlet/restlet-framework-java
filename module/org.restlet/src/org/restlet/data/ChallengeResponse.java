@@ -18,7 +18,7 @@
 
 package org.restlet.data;
 
-import org.restlet.util.Factory;
+import org.restlet.util.Engine;
 
 /**
  * Authentication response sent by client to an origin server.
@@ -158,7 +158,7 @@ public final class ChallengeResponse {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Factory.hashCode(getScheme(), getIdentifier(), getSecret(),
+        return Engine.hashCode(getScheme(), getIdentifier(), getSecret(),
                 getCredentials());
     }
 

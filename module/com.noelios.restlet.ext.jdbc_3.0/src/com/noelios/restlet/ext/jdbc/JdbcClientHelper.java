@@ -52,7 +52,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.noelios.restlet.ClientHelper;
-import com.noelios.restlet.Factory;
+import com.noelios.restlet.Engine;
 
 /**
  * Client connector to a JDBC database.<br/> To send a request to the server,
@@ -115,7 +115,7 @@ public class JdbcClientHelper extends ClientHelper {
      */
     public static Request create(String jdbcURI, Representation request) {
         Request result = new Request();
-        result.getClientInfo().setAgent(Factory.VERSION_HEADER);
+        result.getClientInfo().setAgent(Engine.VERSION_HEADER);
         result.setMethod(Method.POST);
         result.setResourceRef(jdbcURI);
         result.setEntity(request);

@@ -43,13 +43,14 @@ import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
 /**
- * Factory and registration service for Restlet API implementations.
+ * Facade to the implementation of the Restlet API. This class is supporting
+ * many API classes but shouldn't be directly used by end-users.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class Factory {
+public abstract class Engine {
     /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(Factory.class
+    private static Logger logger = Logger.getLogger(Engine.class
             .getCanonicalName());
 
     /** Common version info. */
@@ -59,34 +60,34 @@ public abstract class Factory {
 
     public static final String VERSION_SHORT = "1.0rc" + MINOR_NUMBER;
 
-    /** The registered factory. */
-    private static Factory instance = null;
+    /** The registered engine. */
+    private static Engine instance = null;
 
     /** Provider resource. */
-    private static final String providerResource = "META-INF/services/org.restlet.util.Factory";
+    private static final String providerResource = "META-INF/services/org.restlet.util.Engine";
 
     /** Classloader to use for dynamic class loading. */
-    private static ClassLoader classloader = Factory.class.getClassLoader();
+    private static ClassLoader classloader = Engine.class.getClassLoader();
 
     /**
      * Returns a class loader to use when creating instantiating implementation
-     * classes. By default, it reused the classloader of this Factory's class.
+     * classes. By default, it reused the classloader of this Engine's class.
      */
     public static ClassLoader getClassLoader() {
         return classloader;
     }
 
     /**
-     * Returns the factory of the Restlet implementation.
+     * Returns the registered Restlet engine.
      * 
-     * @return The factory of the Restlet implementation.
+     * @return The registered Restlet engine.
      */
-    public static Factory getInstance() {
-        Factory result = instance;
+    public static Engine getInstance() {
+        Engine result = instance;
 
         if (result == null) {
-            // Find the factory class name
-            String factoryClassName = null;
+            // Find the engine class name
+            String engineClassName = null;
 
             // Try the default classloader
             ClassLoader cl = getClassLoader();
@@ -112,7 +113,7 @@ public abstract class Factory {
                     String providerName = reader.readLine();
 
                     if (providerName != null)
-                        factoryClassName = providerName.substring(0,
+                        engineClassName = providerName.substring(0,
                                 providerName.indexOf('#')).trim();
                 } catch (IOException e) {
                     logger
@@ -132,9 +133,9 @@ public abstract class Factory {
 
                 }
 
-                // Instantiate the factory
+                // Instantiate the engine
                 try {
-                    instance = (Factory) Class.forName(factoryClassName)
+                    instance = (Engine) Class.forName(engineClassName)
                             .newInstance();
                     result = instance;
                 } catch (Exception e) {
@@ -183,13 +184,13 @@ public abstract class Factory {
     }
 
     /**
-     * Sets the factory of the Restlet implementation.
+     * Sets the registered Restlet engine.
      * 
-     * @param factory
-     *            The factory to register.
+     * @param engine
+     *            The registered Restlet engine.
      */
-    public static void setInstance(Factory factory) {
-        instance = factory;
+    public static void setInstance(Engine engine) {
+        instance = engine;
     }
 
     /**
@@ -292,67 +293,5 @@ public abstract class Factory {
      */
     public abstract void parse(Logger logger, Form form, String queryString,
             CharacterSet characterSet);
-
-    /**
-     * Parses the "java.version" system property and returns the first digit of
-     * the version number of the Java Runtime Environment (e.g. "1" for
-     * "1.3.0").
-     * 
-     * @see http://java.sun.com/j2se/versioning_naming.html
-     * @return The major version number of the Java Runtime Environment.
-     */
-    public static int getMajorJavaVersion() {
-        int result;
-        String javaVersion = System.getProperty("java.version");
-        try {
-            result = Integer.parseInt(javaVersion.substring(0, javaVersion
-                    .indexOf(".")));
-        } catch (Exception e) {
-            result = 0;
-        }
-
-        return result;
-    }
-
-    /**
-     * Parses the "java.version" system property and returns the second digit of
-     * the version number of the Java Runtime Environment (e.g. "3" for
-     * "1.3.0").
-     * 
-     * @see http://java.sun.com/j2se/versioning_naming.html
-     * @return The minor version number of the Java Runtime Environment.
-     */
-    public static int getMinorJavaVersion() {
-        int result;
-        String javaVersion = System.getProperty("java.version");
-        try {
-            result = Integer.parseInt(javaVersion.split("\\.")[1]);
-        } catch (Exception e) {
-            result = 0;
-        }
-
-        return result;
-    }
-
-    /**
-     * Parses the "java.version" system property and returns the update release
-     * number of the Java Runtime Environment (e.g. "10" for "1.3.0_10").
-     * 
-     * @see http://java.sun.com/j2se/versioning_naming.html
-     * @return The release number of the Java Runtime Environment or 0 if it
-     *         does not exist.
-     */
-    public static int getJavaVersionUpdateRelease() {
-        int result;
-        String javaVersion = System.getProperty("java.version");
-        try {
-            result = Integer.parseInt(javaVersion.substring(javaVersion
-                    .indexOf('_') + 1));
-        } catch (Exception e) {
-            result = 0;
-        }
-
-        return result;
-    }
 
 }

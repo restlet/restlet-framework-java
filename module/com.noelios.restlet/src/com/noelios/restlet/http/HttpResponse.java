@@ -23,7 +23,7 @@ import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 
-import com.noelios.restlet.Factory;
+import com.noelios.restlet.Engine;
 
 /**
  * Response wrapper for server HTTP calls.
@@ -73,7 +73,7 @@ public class HttpResponse extends Response {
 
         if (!this.serverAdded) {
             result.setAddress(httpCall.getServerAddress());
-            result.setAgent(Factory.VERSION_HEADER);
+            result.setAgent(Engine.VERSION_HEADER);
             result.setPort(httpCall.getServerPort());
             this.serverAdded = true;
         }

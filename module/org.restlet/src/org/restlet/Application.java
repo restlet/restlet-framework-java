@@ -26,7 +26,7 @@ import org.restlet.service.DecoderService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.StatusService;
 import org.restlet.service.TunnelService;
-import org.restlet.util.Factory;
+import org.restlet.util.Engine;
 import org.restlet.util.Helper;
 
 /**
@@ -91,8 +91,8 @@ public abstract class Application extends Restlet {
     public Application(Context parentContext) {
         super(null);
 
-        if (Factory.getInstance() != null) {
-            this.helper = Factory.getInstance().createHelper(this,
+        if (Engine.getInstance() != null) {
+            this.helper = Engine.getInstance().createHelper(this,
                     parentContext);
 
             // Compose the logger name

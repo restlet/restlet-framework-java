@@ -26,7 +26,7 @@ import org.restlet.data.Response;
 import org.restlet.service.LogService;
 import org.restlet.service.StatusService;
 import org.restlet.util.ClientList;
-import org.restlet.util.Factory;
+import org.restlet.util.Engine;
 import org.restlet.util.Helper;
 import org.restlet.util.ServerList;
 
@@ -82,8 +82,8 @@ public class Component extends Restlet {
      */
     public Component(Context context) {
         super(context);
-        if (Factory.getInstance() != null) {
-            this.helper = Factory.getInstance().createHelper(this);
+        if (Engine.getInstance() != null) {
+            this.helper = Engine.getInstance().createHelper(this);
             if (this.helper != null) {
                 setContext(this.helper.createContext(getClass()
                         .getCanonicalName()));

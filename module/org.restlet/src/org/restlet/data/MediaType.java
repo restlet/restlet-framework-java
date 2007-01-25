@@ -18,7 +18,7 @@
 
 package org.restlet.data;
 
-import org.restlet.util.Factory;
+import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**
@@ -472,7 +472,7 @@ public final class MediaType extends Metadata {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Factory.hashCode(super.hashCode(), getParameters());
+        return Engine.hashCode(super.hashCode(), getParameters());
     }
 
     /**

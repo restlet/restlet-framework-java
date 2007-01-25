@@ -20,7 +20,7 @@ package org.restlet.data;
 
 import java.io.IOException;
 
-import org.restlet.util.Factory;
+import org.restlet.util.Engine;
 
 /**
  * Multi-usage parameter.
@@ -122,7 +122,7 @@ public class Parameter implements Comparable<Parameter> {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Factory.hashCode(getName(), getValue());
+        return Engine.hashCode(getName(), getValue());
     }
 
     /**
