@@ -233,9 +233,7 @@ public class DirectoryResource extends Resource {
             // If this request targets a directory and if the target URI does
             // not end with a tailing "/", the client is told to redirect to a
             // correct URI.
-            getResponse().setStatus(Status.REDIRECTION_FOUND);
-            getResponse().setEntity(null);
-            getResponse().setRedirectRef(
+            getResponse().redirectPermanent(
                     getRequest().getResourceRef().getIdentifier() + "/");
         } else {
             super.handleGet();
