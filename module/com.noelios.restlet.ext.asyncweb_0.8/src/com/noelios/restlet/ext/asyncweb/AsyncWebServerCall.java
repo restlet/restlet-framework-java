@@ -22,9 +22,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.Iterator;
 
 import org.restlet.Server;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 import org.restlet.util.Series;
 import org.safehaus.asyncweb.http.HttpRequest;
 import org.safehaus.asyncweb.http.HttpResponse;
@@ -86,7 +89,41 @@ public class AsyncWebServerCall extends HttpServerCall {
 
     @Override
     public String getRequestUri() {
-        return request.getRequestURI();
+        StringBuilder stringBuilder = new StringBuilder(request.getRequestURI());
+
+        // The query seems to be automatically parsed and decoded by AsyncWeb.
+        // Therefore, we should rebuild the entire query string in order to
+        // generate a proper URI.
+        if (request.getParameterNames().hasNext()) {
+            stringBuilder.append("?");
+            for (Iterator iterName = request.getParameterNames(); iterName
+                    .hasNext();) {
+                String name = (String) iterName.next();
+                if (request.getParameterValues(name).hasNext()) {
+                    for (Iterator iterValue = request.getParameterValues(name); iterValue
+                            .hasNext();) {
+                        String value = (String) iterValue.next();
+                        // As the query seems to be decoded in the Latin1
+                        // character set, we should encode it.
+                        stringBuilder
+                                .append(
+                                        Reference.encode(name,
+                                                CharacterSet.ISO_8859_1))
+                                .append("=").append(
+                                        Reference.encode(value,
+                                                CharacterSet.ISO_8859_1));
+                        if (iterValue.hasNext()) {
+                            stringBuilder.append("&");
+                        }
+                    }
+
+                }
+                if (iterName.hasNext()) {
+                    stringBuilder.append("&");
+                }
+            }
+        }
+        return stringBuilder.toString();
     }
 
     @Override
