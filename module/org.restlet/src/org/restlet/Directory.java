@@ -43,7 +43,7 @@ import org.restlet.util.Engine;
  * preferences.
  * 
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving
- *      context resources</a>
+ *      static files</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Directory extends Finder {

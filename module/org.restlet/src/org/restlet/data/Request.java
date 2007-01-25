@@ -30,7 +30,7 @@ import org.restlet.util.Series;
  * all types of connectors, protocols and components.
  * 
  * @see org.restlet.data.Response
- * @see org.restlet.Restlet
+ * @see org.restlet.Uniform
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Request extends Message {

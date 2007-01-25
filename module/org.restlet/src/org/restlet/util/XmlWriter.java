@@ -94,9 +94,9 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *          &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
- *         
- *          &lt;greeting&gt;Hello, world!&lt;/greeting&gt;
+ *           &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *          
+ *           &lt;greeting&gt;Hello, world!&lt;/greeting&gt;
  * </pre>
  * 
  * <p>
@@ -132,7 +132,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *          &lt;item&gt;1&lt;/item&gt;&lt;item&gt;3&lt;/item&gt;&lt;item&gt;3&lt;/item&gt;
+ *           &lt;item&gt;1&lt;/item&gt;&lt;item&gt;3&lt;/item&gt;&lt;item&gt;3&lt;/item&gt;
  * </pre>
  * 
  * <p>
@@ -164,9 +164,9 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *          &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
- *         
- *          &lt;_NS1:foo xmlns:_NS1=&quot;http://www.foo.com/ns/&quot;/&gt;
+ *           &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *          
+ *           &lt;_NS1:foo xmlns:_NS1=&quot;http://www.foo.com/ns/&quot;/&gt;
  * </pre>
  * 
  * <p>
@@ -204,9 +204,9 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *          &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
- *         
- *          &lt;foo:foo xmlns:foo=&quot;http://www.foo.com/ns/&quot;/&gt;
+ *           &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *          
+ *           &lt;foo:foo xmlns:foo=&quot;http://www.foo.com/ns/&quot;/&gt;
  * </pre>
  * 
  * <p>
@@ -225,9 +225,9 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *          &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
- *         
- *          &lt;foo xmlns=&quot;http://www.foo.com/ns/&quot;/&gt;
+ *           &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *          
+ *           &lt;foo xmlns=&quot;http://www.foo.com/ns/&quot;/&gt;
  * </pre>
  * 
  * <p>
@@ -237,15 +237,15 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *          &lt;xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
- *         
- *          &lt;rdf:RDF xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;&gt;
- *           &lt;rdf:Description about=&quot;http://www.foo.com/ids/books/12345&quot;&gt;
- *            &lt;dc:title xmlns:dc=&quot;http://www.purl.org/dc/&quot;&gt;A Dark Night&lt;/dc:title&gt;
- *            &lt;dc:creator xmlns:dc=&quot;http://www.purl.org/dc/&quot;&gt;Jane Smith&lt;/dc:title&gt;
- *            &lt;dc:date xmlns:dc=&quot;http://www.purl.org/dc/&quot;&gt;2000-09-09&lt;/dc:title&gt;
- *           &lt;/rdf:Description&gt;
- *          &lt;/rdf:RDF&gt;
+ *           &lt;xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *          
+ *           &lt;rdf:RDF xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;&gt;
+ *            &lt;rdf:Description about=&quot;http://www.foo.com/ids/books/12345&quot;&gt;
+ *             &lt;dc:title xmlns:dc=&quot;http://www.purl.org/dc/&quot;&gt;A Dark Night&lt;/dc:title&gt;
+ *             &lt;dc:creator xmlns:dc=&quot;http://www.purl.org/dc/&quot;&gt;Jane Smith&lt;/dc:title&gt;
+ *             &lt;dc:date xmlns:dc=&quot;http://www.purl.org/dc/&quot;&gt;2000-09-09&lt;/dc:title&gt;
+ *            &lt;/rdf:Description&gt;
+ *           &lt;/rdf:RDF&gt;
  * </pre>
  * 
  * <p>
@@ -266,16 +266,16 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *          &lt;xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
- *         
- *          &lt;rdf:RDF xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;
- *                      xmlns:dc=&quot;http://www.purl.org/dc/&quot;&gt;
- *           &lt;rdf:Description about=&quot;http://www.foo.com/ids/books/12345&quot;&gt;
- *            &lt;dc:title&gt;A Dark Night&lt;/dc:title&gt;
- *            &lt;dc:creator&gt;Jane Smith&lt;/dc:title&gt;
- *            &lt;dc:date&gt;2000-09-09&lt;/dc:title&gt;
- *           &lt;/rdf:Description&gt;
- *          &lt;/rdf:RDF&gt;
+ *           &lt;xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *          
+ *           &lt;rdf:RDF xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;
+ *                       xmlns:dc=&quot;http://www.purl.org/dc/&quot;&gt;
+ *            &lt;rdf:Description about=&quot;http://www.foo.com/ids/books/12345&quot;&gt;
+ *             &lt;dc:title&gt;A Dark Night&lt;/dc:title&gt;
+ *             &lt;dc:creator&gt;Jane Smith&lt;/dc:title&gt;
+ *             &lt;dc:date&gt;2000-09-09&lt;/dc:title&gt;
+ *            &lt;/rdf:Description&gt;
+ *           &lt;/rdf:RDF&gt;
  * </pre>
  * 
  * <p>
@@ -332,18 +332,18 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- *          &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
- *         
- *          &lt;Person&gt;
- *            &lt;name&gt;Jane Smith&lt;/name&gt;
- *            &lt;date-of-birth&gt;1965-05-23&lt;/date-of-birth&gt;
- *            &lt;citizenship&gt;US&lt;/citizenship&gt;
- *          &lt;/Person&gt;
+ *           &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+ *          
+ *           &lt;Person&gt;
+ *             &lt;name&gt;Jane Smith&lt;/name&gt;
+ *             &lt;date-of-birth&gt;1965-05-23&lt;/date-of-birth&gt;
+ *             &lt;citizenship&gt;US&lt;/citizenship&gt;
+ *           &lt;/Person&gt;
  * </pre>
  * 
  * @see org.xml.sax.XMLFilter
  * @see org.xml.sax.ContentHandler
- * @author Jerome Louvel (contact@noelios.com)
+ * @author David Megginson, Jerome Louvel (contact@noelios.com)
  */
 public final class XmlWriter extends XMLFilterImpl {
     private static final Object SEEN_NOTHING = new Object();

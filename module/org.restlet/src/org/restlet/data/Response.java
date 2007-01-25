@@ -32,7 +32,7 @@ import org.restlet.util.Series;
  * and components.
  * 
  * @see org.restlet.data.Request
- * @see org.restlet.Restlet
+ * @see org.restlet.Uniform
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Response extends Message {
