@@ -28,6 +28,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 
+import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
@@ -62,16 +63,32 @@ public class FileRepresentation extends Representation {
     /**
      * Constructor.
      * 
-     * @param filePath
-     *            The path of the represented file.
+     * @param path
+     *            The path name or file URI of the represented file.
      * @param mediaType
      *            The representation's media type.
      * @param timeToLive
      *            The time to live before it expires (in seconds).
+     * @see java.io.File#File(String)
      */
-    public FileRepresentation(String filePath, MediaType mediaType,
-            int timeToLive) {
-        this(new File(filePath), mediaType, timeToLive);
+    public FileRepresentation(String path, MediaType mediaType, int timeToLive) {
+        this(createFile(path), mediaType, timeToLive);
+    }
+
+    /**
+     * Creates a new file by detecting if the name is a URI or a simple path
+     * name.
+     * 
+     * @param path
+     *            The path name or file URI of the represented file.
+     * @return The associated File instance.
+     */
+    private static File createFile(String path) {
+        if (path.startsWith("file://")) {
+            return new LocalReference(path).getFile();
+        } else {
+            return new File(path);
+        }
     }
 
     /**

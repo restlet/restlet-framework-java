@@ -41,7 +41,7 @@ import org.restlet.resource.Representation;
  * Connector to the WAR resources. Here is the list of parameters that are
  * supported: <table>
  * <tr>
- * <td>webAppPath</td>
+ * <td>warPath</td>
  * <td>String</td>
  * <td>${user.home}/restlet.war</td>
  * <td>Path to the Web Application WAR file or directory.</td>
@@ -52,7 +52,7 @@ import org.restlet.resource.Representation;
  */
 public class WarClientHelper extends FileClientHelper {
     /** The location of the Web Application archive file or directory path. */
-    private String webAppPath;
+    private String warPath;
 
     /**
      * Indicates if the Web Application path corresponds to an archive file or a
@@ -74,7 +74,7 @@ public class WarClientHelper extends FileClientHelper {
         super(client);
         getProtocols().clear();
         getProtocols().add(Protocol.WAR);
-        this.webAppPath = null;
+        this.warPath = null;
         this.webAppArchive = false;
         this.warEntries = null;
     }
@@ -116,7 +116,7 @@ public class WarClientHelper extends FileClientHelper {
         if (this.webAppArchive) {
             try {
                 String path = request.getResourceRef().getPath();
-                JarFile war = new JarFile(getWebAppPath());
+                JarFile war = new JarFile(getWarPath());
                 JarEntry entry = war.getJarEntry(path);
 
                 if (entry.isDirectory()) {
@@ -170,7 +170,7 @@ public class WarClientHelper extends FileClientHelper {
                                 + path);
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
-                path = getWebAppPath() + path;
+                path = getWarPath() + path;
                 handleFile(request, response, path);
             }
         }
@@ -181,33 +181,33 @@ public class WarClientHelper extends FileClientHelper {
      * 
      * @return The Web Application archive file or directory path.
      */
-    public String getWebAppPath() {
-        if (this.webAppPath == null) {
-            this.webAppPath = getParameters().getFirstValue(
-                    "webAppPath",
+    public String getWarPath() {
+        if (this.warPath == null) {
+            this.warPath = getParameters().getFirstValue(
+                    "warPath",
                     System.getProperty("user.home") + File.separator
                             + "restlet.war");
-            File file = new File(this.webAppPath);
+            File file = new File(this.warPath);
 
             if (file.exists()) {
                 if (file.isDirectory()) {
                     this.webAppArchive = false;
 
                     // Adjust the archive directory path if necessary
-                    if (webAppPath.endsWith("/"))
-                        this.webAppPath = this.webAppPath.substring(0,
-                                this.webAppPath.length() - 1);
+                    if (warPath.endsWith("/"))
+                        this.warPath = this.warPath.substring(0, this.warPath
+                                .length() - 1);
                 } else {
                     this.webAppArchive = true;
                 }
             } else {
                 getLogger().warning(
                         "Unable to find an existing directory or archive at: "
-                                + this.webAppPath);
+                                + this.warPath);
             }
         }
 
-        return this.webAppPath;
+        return this.warPath;
     }
 
 }

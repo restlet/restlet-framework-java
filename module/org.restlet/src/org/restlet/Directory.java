@@ -53,10 +53,7 @@ public class Directory extends Finder {
     /** Indicates if the subdirectories are deeply accessible (true by default). */
     private boolean deeplyAccessible;
 
-    /**
-     * The absolute root reference, including the "file://" or "context://"
-     * scheme.
-     */
+    /** The absolute root reference (file, clap or war URI). */
     private Reference rootRef;
 
     /**
@@ -77,8 +74,28 @@ public class Directory extends Finder {
      * @param context
      *            The context.
      * @param rootUri
-     *            The absolute root Uri, including the "file://" or "context://"
-     *            scheme.
+     *            The absolute root URI. <br>
+     *            <br>
+     *            If you serve files from the file system, use file:// URIs and
+     *            make sure that you register a FILE connector with your parent
+     *            Component. <br>
+     *            <br>
+     *            If you serve files from a class loader, use clap:// URIs and
+     *            make sure that you register a CLAP connector with your parent
+     *            Component.<br>
+     *            <br>
+     *            If you serve files from the application's WAR (from a zipped
+     *            file or unzipped in a directory), use war:// URIs and then you
+     *            shouldn't have to register a WAR connector as it is
+     *            automatically provided for applications. However, for WAR
+     *            URIs, you have to define in the application context's a
+     *            parameter named "warPath" that contains a string with either
+     *            the location of your zipped WAR file or the root directory of
+     *            your unzipped WAR. If you don't define this parameter, it will
+     *            use the ${user.home}/restlet.war value by default. Note that
+     *            this parameter shouldn't directly be set by the Application
+     *            but by the parent Component so that the Application can be
+     *            portable to new environments.
      */
     public Directory(Context context, String rootUri) {
         super(context);

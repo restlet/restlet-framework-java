@@ -11,14 +11,17 @@ Changes log
  - Fixed bug in DomRepresentation's constructor for empty Documents. Reported by David Rauschenbach.
  - Fixed a potential classloader issue with Resin 3.0.19 servlet container. Reported by Denis Haskin.
  - Force sort order for list of representations set by the DirectoryResource.
- - Fixed issue with the "timeout" property (class HTTPUrlConnection) which is not defined in Java 1.4. Reported by Stephan Schmitt. 
+ - Fixed issue with the "timeout" property (class HTTPUrlConnection) which is not defined in Java 1.4. 
+   Reported by Stephan Schmitt. 
+ - FileRepresentation(String path) constructor now accepts both simple path names and file URI. 
+   Suggested by Sean Landis.
  - Fixed bug with repeated patterns in URI templates. Reported by Vincent Lari.
  
 [API changes]
  - Added Resource.getPreferredRepresentation() method as a shortcut to  
    getRepresentation(getPreferredVariant()).
  - Renamed org.restlet.util.Factory to Engine as it does more than just providing factory methods.
- 
+  
 [Enhancements] 
  - Updated FreeMarker to version 2.3.9.
  

@@ -77,10 +77,7 @@ public class DirectoryResource extends Resource {
     /** The resource path relative to the directory URI. */
     private String relativePart;
 
-    /**
-     * The context's target URI. For example, "file:///c:/dir/foo.en" or
-     * "context://webapp/dir/foo.en".
-     */
+    /** The context's target URI (file, clap or war URI). */
     private String targetUri;
 
     /** Indicates if the target resource is a directory or a file. */
@@ -89,10 +86,7 @@ public class DirectoryResource extends Resource {
     /** Indicates if the target resource is a directory with an index. */
     private boolean targetIndex;
 
-    /**
-     * The context's directory URI. For example, "file:///c:/dir/" or
-     * "context://webapp/dir/".
-     */
+    /** The context's directory URI (file, clap or war URI). */
     private String directoryUri;
 
     /**
@@ -351,11 +345,9 @@ public class DirectoryResource extends Resource {
     }
 
     /**
-     * Returns the context's directory URI. For example, "file:///c:/dir/" or
-     * "context://webapp/dir/".
+     * Returns the context's directory URI (file, clap or war URI).
      * 
-     * @return The context's directory URI. For example, "file:///c:/dir/" or
-     *         "context://webapp/dir/".
+     * @return The context's directory URI (file, clap or war URI).
      */
     public String getDirectoryUri() {
         return this.directoryUri;
@@ -390,10 +382,9 @@ public class DirectoryResource extends Resource {
     }
 
     /**
-     * Returns the context's target URI. For example, "file:///c:/dir/foo.en" or
-     * "context://webapp/dir/foo.en".
+     * Returns the context's target URI (file, clap or war URI).
      * 
-     * @return The context's target URI.
+     * @return The context's target URI (file, clap or war URI).
      */
     public String getTargetUri() {
         return this.targetUri;
@@ -578,13 +569,12 @@ public class DirectoryResource extends Resource {
     }
 
     /**
-     * Sets the context's target URI. For example, "file:///c:/dir/foo.en" or
-     * "context://webapp/dir/foo.en".
+     * Sets the context's target URI (file, clap or war URI).
      * 
-     * @param baseUri
+     * @param targetUri
      *            The context's target URI.
      */
-    public void setTargetUri(String baseUri) {
-        this.targetUri = baseUri;
+    public void setTargetUri(String targetUri) {
+        this.targetUri = targetUri;
     }
 }
