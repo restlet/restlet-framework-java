@@ -32,17 +32,18 @@ import org.restlet.resource.Resource;
  * Restlet that can find the target resource that will concretely handle the
  * request. Based on a given resource class, it is also able to instantiate the
  * resource with the call's context, request and response without requiring the
- * usage of a subclass.
- * 
+ * usage of a subclass. It will use either the constructor with three arguments:
+ * context, request, response; or it will invoke the default constructor then
+ * invoke the init() method with the same arguments.<br>
+ * <br>
  * Once the target resource has been found, the call is automatically dispatched
  * to the appropriate handle*() method (where the '*' character corresponds to
- * the method name) if the corresponding allow*() method returns true.<br/>
- * <br/>
- * 
+ * the method name) if the corresponding allow*() method returns true.<br>
+ * <br>
  * For example, if you want to support a MOVE method for a WebDAV server, you
  * just have to add a handleMove() method in your subclass of Resource and it
- * will be automatically be used by the Finder instance at runtime.<br/> <br/>
- * 
+ * will be automatically be used by the Finder instance at runtime.<br>
+ * <br>
  * If no matching handle*() method is found, then a
  * Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is returned.
  * 
@@ -100,9 +101,17 @@ public class Finder extends Restlet {
             try {
                 constructor = this.targetClass.getConstructor(Context.class,
                         Request.class, Response.class);
+
                 if (constructor != null) {
                     result = (Resource) constructor.newInstance(getContext(),
                             request, response);
+                } else {
+                    constructor = this.targetClass.getConstructor();
+
+                    if (constructor != null) {
+                        result = (Resource) constructor.newInstance();
+                        result.init(getContext(), request, response);
+                    }
                 }
             } catch (Exception e) {
                 getLogger()

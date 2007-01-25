@@ -19,9 +19,10 @@
 package org.restlet.service;
 
 /**
- * Service providing access logging service.
- * 
- * <br/> The default access log format follows the <a
+ * Service providing access logging service. The implementation is fully based
+ * on the standard logging mechanism introduced in JDK 1.4.<br>
+ * <br>
+ * The default access log format follows the <a
  * href="http://www.w3.org/TR/WD-logfile.html"> W3C Extended Log File Format</a>
  * with the following fields used: <br/>
  * <ol>
@@ -42,17 +43,20 @@ package org.restlet.service;
  * <li>Client agent name</li>
  * <li>Referrer reference</li>
  * </ol>
- * <br/>
- * 
- * <br/> If you use <a href="http://www.analog.cx">Analog</a> to generate your
- * log reports, and if you use the default log format, then you can simply
- * specify this string as a value of the LOGFORMAT command:
+ * <br>
+ * <br>
+ * If you use <a href="http://www.analog.cx">Analog</a> to generate your log
+ * reports, and if you use the default log format, then you can simply specify
+ * this string as a value of the LOGFORMAT command:
  * (%Y-%m-%d\t%h:%n:%j\t%S\t%u\t%j\t%j\t%j\t%r\t%q\t%c\t%b\t%j\t%T\t%v\t%B\t%f)<br/>
- * <br/>
- * 
+ * <br>
  * For custom access log format, see the syntax to use and the list of available
- * variable names in {@link org.restlet.util.Template}.
+ * variable names in {@link org.restlet.util.Template}. <br>
  * 
+ * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial part 7: Access
+ *      logging</a>
+ * @see <a
+ *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class LogService {

@@ -69,7 +69,9 @@ public class Guard extends Filter {
     }
 
     /**
-     * Accepts the call. By default, invokes the attached Restlet.
+     * Accepts the call. By default, it is invoked it the request is
+     * authenticated and authorized, and asks the attached Restlet to handle the
+     * call.
      * 
      * @param request
      *            The request to accept.
@@ -195,10 +197,10 @@ public class Guard extends Filter {
     }
 
     /**
-     * Rejects the call call due to a failed authentication or authorization.
-     * This can be overriden to change the defaut behavior, for example to
-     * display an error page. By default, if authentication is required, the
-     * challenge method is invoked, otherwise the call status is set to
+     * Rejects the call due to a failed authentication or authorization. This
+     * can be overriden to change the defaut behavior, for example to display an
+     * error page. By default, if authentication is required, the challenge
+     * method is invoked, otherwise the call status is set to
      * CLIENT_ERROR_FORBIDDEN.
      * 
      * @param response

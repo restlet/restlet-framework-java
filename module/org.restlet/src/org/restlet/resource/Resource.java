@@ -83,7 +83,14 @@ public class Resource {
     private List<Variant> variants;
 
     /**
-     * Constructor.
+     * Default constructor. Note that the init() method must be invoked right
+     * after the creation of the resource.
+     */
+    public Resource() {
+    }
+
+    /**
+     * Constructor. This constructor will invoke the init() method by default.
      * 
      * @param context
      *            The parent context.
@@ -93,12 +100,7 @@ public class Resource {
      *            The response to return.
      */
     public Resource(Context context, Request request, Response response) {
-        this.context = context;
-        this.logger = (context != null) ? context.getLogger() : null;
-        this.negotiateContent = true;
-        this.request = request;
-        this.response = response;
-        this.variants = null;
+        init(context, request, response);
     }
 
     /**
@@ -509,6 +511,25 @@ public class Resource {
                                 "Missing request entity"));
             }
         }
+    }
+
+    /**
+     * Initialize the resource with its context.
+     * 
+     * @param context
+     *            The parent context.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to return.
+     */
+    public void init(Context context, Request request, Response response) {
+        this.context = context;
+        this.logger = (context != null) ? context.getLogger() : null;
+        this.negotiateContent = true;
+        this.request = request;
+        this.response = response;
+        this.variants = null;
     }
 
     /**

@@ -16,14 +16,17 @@ Changes log
  - FileRepresentation(String path) constructor now accepts both simple path names and file URI. 
    Suggested by Sean Landis.
  - Fixed bug with repeated patterns in URI templates. Reported by Vincent Lari.
- - Fixed bug in Servlet extension POM. Reported by Mitchell Stewart.
+ - Fixed bugs in some POM files. Reported by Mitchell Stewart.
  - The query need to be reconstruct and appended to the requestURI in order to get the "full" uri 
-   from AsincWeb request object. Reported by David Rauschenbach.
+   from AsyncWeb request object. Reported by David Rauschenbach.
   
 [API changes]
  - Added Resource.getPreferredRepresentation() method as a shortcut to  
    getRepresentation(getPreferredVariant()).
  - Renamed org.restlet.util.Factory to Engine as it does more than just providing factory methods.
+ - Added init(Context, Request, Response) method and default constructor to Resource.
+ - Finder now looks for a default Resource constructor if the current one (with 3 args) couldn't be found.
+   Suggested by Diggory Briercliffe, Brandon Lonac, Sean Landis and Ryan Daum.
   
 [Enhancements] 
  - Updated FreeMarker to version 2.3.9.

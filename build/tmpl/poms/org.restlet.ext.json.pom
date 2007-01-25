@@ -9,6 +9,15 @@
 			<artifactId>org.restlet</artifactId>
 			<version>@version@</version>
 		</dependency>
+		<dependency>
+			<!--  This dependency isn't based on any official JSON POM -->
+			<!--  as none could be found. You will probably have to    -->
+			<!--  manually add the org.json.jar file to your local     -->
+			<!--  Maven repository.                                    -->
+			<groupId>org.json</groupId>
+			<artifactId>org.json</artifactId>
+			<version>@lib-json-version@</version>
+		</dependency>
 	</dependencies>
 
 	<name>JSON representation</name>

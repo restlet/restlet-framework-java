@@ -558,11 +558,13 @@
 	<!-- Generate the module POM file -->
 	<macrodef name="pomModule">
 		<attribute name="name" />
+		<attribute name="ext" />
 		<sequential>
 			<copy file="tmpl/poms/${mod-@{name}-package}.pom" tofile="${temp}/poms/${mod-@{name}-id}.pom" overwrite="true" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@version@" value="${version-compact}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${lib-@{name}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-@{name}-id}" />
+			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext}-version@" value="${lib-@{ext}-version}" />
 		</sequential>
 	</macrodef>
 
@@ -782,25 +784,25 @@
 		
 		<!-- Generate the Maven POM files -->
 		<mkdir dir="${temp}/poms"/>
-		<pomModule name="api" />
-		<pomModule name="ri" />
-		<pomModule name="asyncweb" />
-<!-- disabled for 1.0  <pomModule name="atom" /> -->
-		<pomModule name="asyncweb" />
-		<pomModule name="fileupload" />
-		<pomModule name="freemarker" />
-		<pomModule name="httpclient" />
-		<pomModule name="javamail" />
-		<pomModule name="jdbc" />
-<!-- disabled for 1.0  <pomModule name="jetty5" /> -->
-		<pomModule name="jetty" />
-<!-- disabled for 1.0  <pomModule name="jmx" /> -->
-		<pomModule name="json" />
-		<pomModule name="net" />
-		<pomModule name="servlet" />
-		<pomModule name="simple" />
-		<pomModule name="spring" />
-		<pomModule name="velocity" />
+		<pomModule name="api" ext="" />
+		<pomModule name="ri" ext="" />
+		<pomModule name="asyncweb" ext="" />
+<!-- disabled for 1.0  <pomModule name="atom" ext="" /> -->
+		<pomModule name="asyncweb" ext="" />
+		<pomModule name="fileupload" ext="" />
+		<pomModule name="freemarker" ext="" />
+		<pomModule name="httpclient" ext="" />
+		<pomModule name="javamail" ext="" />
+		<pomModule name="jdbc" ext="dbcp" />
+<!-- disabled for 1.0  <pomModule name="jetty5" ext="" /> -->
+		<pomModule name="jetty" ext="" />
+<!-- disabled for 1.0  <pomModule name="jmx" ext="" /> -->
+		<pomModule name="json" ext="" />
+		<pomModule name="net" ext="" />
+		<pomModule name="servlet" ext="" />
+		<pomModule name="simple" ext="" />
+		<pomModule name="spring" ext="" />
+		<pomModule name="velocity" ext="" />
 
 		<!-- Generate the NSIS files -->
 		<copy file="tmpl/common.nsh" todir="${temp}" overwrite="true" />
