@@ -557,7 +557,7 @@ public class Template {
                                 // The variable is used several times in the
                                 // pattern, ensure that this constraint is
                                 // enforced when parsing.
-                                patternBuffer.append("\\" + varIndex);
+                                patternBuffer.append("\\" + (varIndex + 1));
                             } else {
                                 // New variable detected. Insert a capturing
                                 // group.
@@ -1008,7 +1008,8 @@ public class Template {
                         }
                     } else if (variableName.equals("ee")) {
                         if ((request.getEntity() != null)
-                                && (!request.getEntity().getEncodings().isEmpty())) {
+                                && (!request.getEntity().getEncodings()
+                                        .isEmpty())) {
                             StringBuilder value = new StringBuilder();
                             for (int i = 0; i < request.getEntity()
                                     .getEncodings().size(); i++) {
@@ -1096,7 +1097,8 @@ public class Template {
                         }
                     } else if (variableName.equals("EE")) {
                         if ((response.getEntity() != null)
-                                && (!response.getEntity().getEncodings().isEmpty())) {
+                                && (!response.getEntity().getEncodings()
+                                        .isEmpty())) {
                             StringBuilder value = new StringBuilder();
                             for (int i = 0; i < response.getEntity()
                                     .getEncodings().size(); i++) {
