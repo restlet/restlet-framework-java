@@ -35,10 +35,10 @@ import org.restlet.data.Protocol;
  * implementation of resources and communication mechanisms" Roy T. Fielding
  * 
  * @see <a
- *      href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_2">Source
+ *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_2">Source
  *      dissertation</a>
  * @see <a
- *      href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
+ *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
  *      dissertation</a>
  * @author Jerome Louvel (contact@noelios.com)
  */

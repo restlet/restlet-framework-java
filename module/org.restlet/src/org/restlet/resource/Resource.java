@@ -43,23 +43,58 @@ import org.restlet.util.Template;
  * "today's weather in Los Angeles"), a collection of other resources, a
  * non-virtual object (e.g. a person), and so on. In other words, any concept
  * that might be the target of an author's hypertext reference must fit within
- * the definition of a resource."<br/><br/> "The only thing that is required
- * to be static for a resource is the semantics of the mapping, since the
- * semantics is what distinguishes one resource from another." Roy T. Fielding<br/>
- * <br/> Another definition adapted from the URI standard (RFC 3986): a resource
- * is the conceptual mapping to a representation (also known as entity) or set
- * of representations, not necessarily the representation which corresponds to
- * that mapping at any particular instance in time. Thus, a resource can remain
+ * the definition of a resource. The only thing that is required to be static
+ * for a resource is the semantics of the mapping, since the semantics is what
+ * distinguishes one resource from another." Roy T. Fielding<br>
+ * <br>
+ * Another definition adapted from the URI standard (RFC 3986): a resource is
+ * the conceptual mapping to a representation (also known as entity) or set of
+ * representations, not necessarily the representation which corresponds to that
+ * mapping at any particular instance in time. Thus, a resource can remain
  * constant even when its content (the representations to which it currently
  * corresponds) changes over time, provided that the conceptual mapping is not
  * changed in the process. In addition, a resource is always identified by a
- * URI.
+ * URI.<br>
+ * <br>
+ * Typically created by Finders, Resource instances are the final handlers of
+ * calls received by server connectors. Unlike the other handlers in the
+ * processing chain, a Resource is genarally not shared between calls and
+ * doesn't have to be thread-safe. This is the point where the RESTful view of
+ * your Web application can be integrated with your domain objects. Those domain
+ * objects can be implemented using any technology, relational databases, object
+ * databases, transactional components like EJB, etc. You just have to extend
+ * this class to override the REST methods you want to support like post(),
+ * put() or delete(). The common GET method is supported by the modifiable
+ * "variants" list property and the {@link #getRepresentation(Variant)} method.
+ * This allows an easy and cheap declaration of the available variants in the
+ * constructor for example, then the on-demand creation of costly
+ * representations via the {@link #getRepresentation(Variant)} method.<br>
+ * <br>
+ * At a lower level, you have a handle*(Request,Response) method for each REST
+ * method that is supported by the Resource, where the '*' is replaced by the
+ * method name. The Finder handler for example, will be able to dynamically
+ * dispatch a call to the appropriate handle*() method. Most common REST methods
+ * like GET, POST, PUT and DELETE have default implementations that pre-handle
+ * calls to do content negotiation for example, based on the higher-level
+ * methods that we discussed previously. For example if you want to support a
+ * MOVE method, just add an handleMove(Request,Response) method and it will be
+ * detected automatically by a Finder handler.<br>
+ * <br>
+ * Finally, you need to declare which REST methods are allowed by your Resource
+ * by overiding the matching allow*() method. By default, allowGet() returns
+ * true, but all other allow*() methods will return false. Therefore, if you
+ * want to support the DELETE method, just override allowDelete() and return
+ * true. Again, a previous Finder handler will be able to detect this method and
+ * know whether or not your Resource should be invoked. It is also used by the
+ * handleOptions() method to return the list of allowed methods.
  * 
  * @see <a
- *      href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source
+ *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source
  *      dissertation</a>
+ * @see <a href="http://www.restlet.org/tutorial#part12">Tutorial: Reaching
+ *      target Resources</a>
  * @see org.restlet.resource.Representation
- * @see org.restlet.data.Reference
+ * @see org.restlet.Finder
  * @author Jerome Louvel (contact@noelios.com)
  * @author Thierry Boileau (thboileau@gmail.com)
  */

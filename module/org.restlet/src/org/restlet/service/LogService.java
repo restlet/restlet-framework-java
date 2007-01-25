@@ -53,7 +53,7 @@ package org.restlet.service;
  * For custom access log format, see the syntax to use and the list of available
  * variable names in {@link org.restlet.util.Template}. <br>
  * 
- * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial part 7: Access
+ * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Access
  *      logging</a>
  * @see <a
  *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>

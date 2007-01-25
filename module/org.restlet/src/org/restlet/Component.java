@@ -41,7 +41,7 @@ import org.restlet.util.ServerList;
  * features in a portable way, like access log and status setting.
  * 
  * @see <a
- *      href="http://www.ics.uci.edu/~fielding/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
+ *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
  *      dissertation</a>
  * @author Jerome Louvel (contact@noelios.com)
  */

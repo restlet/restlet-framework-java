@@ -36,7 +36,7 @@ import org.restlet.resource.Representation;
  * Roy T. Fielding<br/> <br/>
  * 
  * @see <a
- *      href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
+ *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
  *      dissertation</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
