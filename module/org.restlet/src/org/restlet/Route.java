@@ -417,24 +417,26 @@ public class Route extends Filter {
         if ((getRouter() != null) && (request.getResourceRef() != null)
                 && (getTemplate() != null)) {
             String remainingPart = request.getResourceRef().getRemainingPart();
-            int matchedLength = getTemplate().match(remainingPart);
+            if(remainingPart!=null){
+                int matchedLength = getTemplate().match(remainingPart);
 
-            if (matchedLength != -1) {
-                float totalLength = remainingPart.length();
+                if (matchedLength != -1) {
+                    float totalLength = remainingPart.length();
 
-                if (totalLength > 0.0F) {
-                    result = getRouter().getRequiredScore()
-                            + (1.0F - getRouter().getRequiredScore())
-                            * (((float) matchedLength) / totalLength);
-                } else {
-                    result = 1.0F;
+                    if (totalLength > 0.0F) {
+                        result = getRouter().getRequiredScore()
+                                + (1.0F - getRouter().getRequiredScore())
+                                * (((float) matchedLength) / totalLength);
+                    } else {
+                        result = 1.0F;
+                    }
                 }
-            }
 
-            if (getLogger().isLoggable(Level.FINER)) {
-                getLogger().finer(
-                        "Call score for the \"" + getTemplate().getPattern()
-                                + "\" URI pattern: " + result);
+                if (getLogger().isLoggable(Level.FINER)) {
+                    getLogger().finer(
+                            "Call score for the \"" + getTemplate().getPattern()
+                                    + "\" URI pattern: " + result);
+                }
             }
         }
 
