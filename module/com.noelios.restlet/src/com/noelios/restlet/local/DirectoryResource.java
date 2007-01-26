@@ -368,7 +368,7 @@ public class DirectoryResource extends Resource {
     public MetadataService getMetadataService() {
         MetadataService result = null;
         Application application = (Application) getContext().getAttributes()
-                .get("org.restlet.application");
+                .get(Application.KEY);
 
         if (application != null) {
             result = application.getMetadataService();

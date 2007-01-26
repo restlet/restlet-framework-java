@@ -53,6 +53,12 @@ import org.restlet.util.Helper;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Application extends Restlet {
+    /**
+     * Name of the attribute key containing a reference to the current
+     * application.
+     */
+    public static final String KEY = "org.restlet.application";
+
     /** The display name. */
     private String name;
 

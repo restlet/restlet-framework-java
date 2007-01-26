@@ -179,8 +179,7 @@ public class UserResource extends Resource {
      * @return the parent application.
      */
     public Application getApplication() {
-        return (Application) getContext().getAttributes().get(
-                "org.restlet.application");
+        return (Application) getContext().getAttributes().get(Application.KEY);
     }
 
     /**

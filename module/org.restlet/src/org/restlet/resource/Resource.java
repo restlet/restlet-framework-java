@@ -245,8 +245,7 @@ public class Resource {
             Language language = null;
             // Compute the preferred variant. Get the default language
             // preference from the Application (if any).
-            Object app = getContext().getAttributes().get(
-                    "org.restlet.application");
+            Object app = getContext().getAttributes().get(Application.KEY);
 
             if (app instanceof Application) {
                 language = ((Application) app).getMetadataService()

@@ -64,7 +64,7 @@ public class ApplicationContext extends Context {
 
         // Set the application as an attribute for usage by other services
         // like the ConnectorService
-        getAttributes().put("org.restlet.application", application);
+        getAttributes().put(Application.KEY, application);
 
     }
 

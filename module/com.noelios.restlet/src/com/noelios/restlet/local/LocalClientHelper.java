@@ -75,7 +75,7 @@ public class LocalClientHelper extends ClientHelper {
     public MetadataService getMetadataService(Request request) {
         MetadataService result = null;
         Application application = (Application) request.getAttributes().get(
-                "org.restlet.application");
+                Application.KEY);
 
         if (application != null) {
             result = application.getMetadataService();

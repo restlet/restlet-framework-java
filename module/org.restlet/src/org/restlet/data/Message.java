@@ -107,7 +107,7 @@ public abstract class Message {
     private ConverterService getConverterService() {
         ConverterService result = null;
         Application application = (Application) getAttributes().get(
-                "org.restlet.application");
+                Application.KEY);
 
         if (application != null) {
             result = application.getConverterService();
