@@ -21,8 +21,7 @@ package org.restlet.service;
 import org.restlet.resource.Representation;
 
 /**
- * Service providing conversion between message entities and higher-level
- * objects.
+ * Service converting message entities into higher-level objects.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

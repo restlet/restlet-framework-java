@@ -25,7 +25,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 
 /**
- * Service providing status representation setting.
+ * Service providing common representations for exception status.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

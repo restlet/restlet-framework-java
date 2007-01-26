@@ -21,10 +21,10 @@ package org.restlet.service;
 import org.restlet.data.ClientInfo;
 
 /**
- * Service providing tunnelling of method names or client preferences. Clients
- * applications can easily override the default values of their client connector
- * by specifying additional query parameters. Here is the list of the default
- * parameter names supported: <table>
+ * Service tunnelling method names or client preferences via query parameters.
+ * Clients applications such as browsers can easily override the default values
+ * of their client connector by specifying additional query parameters. Here is
+ * the list of the default parameter names supported: <table>
  * <tr>
  * <th>Property</th>
  * <th>Default name</th>

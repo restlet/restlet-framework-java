@@ -34,7 +34,21 @@ import org.restlet.util.Helper;
  * guaranteed to receive calls with their base reference set relatively to the
  * VirtualHost that served them. This class is both a descriptor able to create
  * the root Restlet and the actual Restlet that can be attached to one or more
- * VirtualHost instances.
+ * VirtualHost instances.<br>
+ * <br>
+ * Applications also have many useful Services associated. They are available as
+ * properties that can be eventually overriden:
+ * <ul>
+ * <li>"connectorService" to manage client and server connectors.</li>
+ * <li>"converterService" to convert message entities into higher-level
+ * objects.</li>
+ * <li>"decoderService" to automatically decode or decompress request entities.</li>
+ * <li>"metadataService" to provide access to metadata and their associated
+ * extension names.</li>
+ * <li>"statusService" to provide common representations for exception status.</li>
+ * <li>"tunnelService" to tunnel method names or client preferences via query
+ * parameters.</li>
+ * </ul>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -92,8 +106,8 @@ public abstract class Application extends Restlet {
         super(null);
 
         if (Engine.getInstance() != null) {
-            this.helper = Engine.getInstance().createHelper(this,
-                    parentContext);
+            this.helper = Engine.getInstance()
+                    .createHelper(this, parentContext);
 
             // Compose the logger name
             String applicationName = (getName() == null) ? Integer

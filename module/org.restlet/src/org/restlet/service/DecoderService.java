@@ -19,7 +19,7 @@
 package org.restlet.service;
 
 /**
- * Service providing decoding and decompression of request entities.
+ * Service automatically decoding or decompressing request entities.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

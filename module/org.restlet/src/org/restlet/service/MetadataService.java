@@ -27,7 +27,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 
 /**
- * Service providing access to metadata and their extension names.
+ * Service providing access to metadata and their associated extension names.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
