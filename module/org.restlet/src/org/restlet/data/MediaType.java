@@ -486,28 +486,13 @@ public final class MediaType extends Metadata {
      * @return True if the given media type is included in the current one.
      */
     public boolean includes(MediaType included) {
-        boolean result = equals(ALL);
+        boolean result = equals(ALL) || equals(included);
 
-        if (result) {
-            // The ALL media type includes all other types.
-        } else {
-            result = equals(included);
-
-            if (result) {
-                // Both media types are equal
-            } else {
-                result = getMainType().equals(included.getMainType())
-                        && (getSubType().equals(included.getSubType()) || getSubType()
-                                .equals("*"));
-
-                if (result) {
-                    // Both media types have the same main type
-                    // and the subtype of current media type includes all
-                    // subtypes.
-                } else {
-                    // Both media types are not equal
-                }
-            }
+        if (!result) {
+            // Both media types are different
+            result = getMainType().equals(included.getMainType())
+                    && (getSubType().equals(included.getSubType()) || getSubType()
+                            .equals("*"));
         }
 
         return result;

@@ -223,4 +223,24 @@ public class Component extends Restlet {
             getHelper().handle(request, response);
     }
 
+    /**
+     * Sets the global log service.
+     * 
+     * @param logService
+     *            The global log service.
+     */
+    public void setLogService(LogService logService) {
+        this.logService = logService;
+    }
+
+    /**
+     * Sets the status service.
+     * 
+     * @param statusService
+     *            The status service.
+     */
+    public void setStatusService(StatusService statusService) {
+        this.statusService = statusService;
+    }
+
 }

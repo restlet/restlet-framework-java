@@ -36,6 +36,7 @@ Changes log
  - Moved MetadataService.indexName property to Directory for more flexibility.
  - Renamed Redirector.MODE_CONNECTOR constant into MODE_DISPATCHER.
  - Added redirectDispatcher() method to allow overriding of this logic.
+ - Added setters for all service properties on Component and Application.
    
 [Enhancements] 
  - Updated FreeMarker to version 2.3.9.

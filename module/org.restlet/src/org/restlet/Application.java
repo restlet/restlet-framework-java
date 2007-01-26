@@ -344,4 +344,64 @@ public abstract class Application extends Restlet {
         super.stop();
     }
 
+    /**
+     * Sets the connector service.
+     * 
+     * @param connectorService
+     *            The connector service.
+     */
+    public void setConnectorService(ConnectorService connectorService) {
+        this.connectorService = connectorService;
+    }
+
+    /**
+     * Sets the converter service.
+     * 
+     * @param converterService
+     *            The converter service.
+     */
+    public void setConverterService(ConverterService converterService) {
+        this.converterService = converterService;
+    }
+
+    /**
+     * Sets the decoder service.
+     * 
+     * @param decoderService
+     *            The decoder service.
+     */
+    public void setDecoderService(DecoderService decoderService) {
+        this.decoderService = decoderService;
+    }
+
+    /**
+     * Sets the metadata service.
+     * 
+     * @param metadataService
+     *            The metadata service.
+     */
+    public void setMetadataService(MetadataService metadataService) {
+        this.metadataService = metadataService;
+    }
+
+    /**
+     * Sets the status service.
+     * 
+     * @param statusService
+     *            The status service.
+     */
+    public void setStatusService(StatusService statusService) {
+        this.statusService = statusService;
+    }
+
+    /**
+     * Sets the tunnel service.
+     * 
+     * @param tunnelService
+     *            The tunnel service.
+     */
+    public void setTunnelService(TunnelService tunnelService) {
+        this.tunnelService = tunnelService;
+    }
+
 }

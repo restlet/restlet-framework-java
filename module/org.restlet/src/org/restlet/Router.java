@@ -31,8 +31,9 @@ import org.restlet.util.RouteList;
  * Restlet routing calls to one of the attached routes. Each route can compute
  * an affinity score for each call depending on various criteria. The attach()
  * method allow the creation of routes based on URI patterns matching the
- * beginning of a the resource reference's remaining part.<br/> <br/> In
- * addition, several routing modes are supported, implementing various
+ * beginning of a the resource reference's remaining part.<br>
+ * <br>
+ * In addition, several routing modes are supported, implementing various
  * algorithms:
  * <ul>
  * <li>Best match (default)</li>
@@ -42,14 +43,12 @@ import org.restlet.util.RouteList;
  * <li>Round robin</li>
  * <li>Custom</li>
  * </ul>
- * <br/> Note that for routes using URI patterns will update the resource
- * reference's base reference during the routing if they are selected. If you
- * are using hierarchical paths, remember to directly attach the child routers
- * to their parent router instead of the top level Restlet component. Also,
- * remember to manually handle the path separator characters in your path
- * patterns otherwise the delegation will not work as expected.<br/> <br/>
- * Finally, you can modify the routes list while handling incoming calls as the
- * delegation code is ensured to be thread-safe.
+ * <br>
+ * Note that for routes using URI patterns will update the resource reference's
+ * base reference during the routing if they are selected. It is also important
+ * to know that the routing is very strict about path separators in your URI
+ * patterns. Finally, you can modify the list of routes while handling incoming
+ * calls as the delegation code is ensured to be thread-safe.
  * 
  * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Routers and
  *      hierarchical URIs</a>
