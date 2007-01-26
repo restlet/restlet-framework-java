@@ -18,6 +18,9 @@
 
 package org.restlet;
 
+import java.lang.reflect.Constructor;
+import java.util.logging.Level;
+
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -96,6 +99,9 @@ public class Router extends Restlet {
      */
     public static final int CUSTOM = 6;
 
+    /** Finder class to instantiate. */
+    private Class<? extends Finder> finderClass;
+
     /** The modifiable list of routes. */
     private RouteList routes;
 
@@ -134,6 +140,7 @@ public class Router extends Restlet {
         super(context);
         this.routes = null;
         this.defaultRoute = null;
+        this.finderClass = Finder.class;
         this.routingMode = BEST;
         this.requiredScore = 0.5F;
         this.maxAttempts = 1;
@@ -165,7 +172,34 @@ public class Router extends Restlet {
      * @return The created route.
      */
     public Route attach(String uriPattern, Class<? extends Resource> targetClass) {
-        return attach(uriPattern, new Finder(getContext(), targetClass));
+        return attach(uriPattern, createFinder(targetClass));
+    }
+
+    /**
+     * Creates a new finder instance based on the "targetClass" property.
+     * 
+     * @param targetClass
+     *            The target Resource class to attach.
+     * @return The new finder instance.
+     */
+    private Finder createFinder(Class<? extends Resource> targetClass) {
+        Finder result = null;
+
+        if (getFinderClass() != null) {
+            try {
+                Constructor<? extends Finder> constructor = getFinderClass()
+                        .getConstructor(Context.class, Class.class);
+
+                if (constructor != null) {
+                    result = constructor.newInstance(getContext(), targetClass);
+                }
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING,
+                        "Exception while instantiating the finder.", e);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -196,7 +230,7 @@ public class Router extends Restlet {
      * @return The created route.
      */
     public Route attachDefault(Class<? extends Resource> defaultTargetClass) {
-        return attachDefault(new Finder(getContext(), defaultTargetClass));
+        return attachDefault(createFinder(defaultTargetClass));
     }
 
     /**
@@ -460,6 +494,25 @@ public class Router extends Restlet {
      */
     public void setRoutingMode(int routingMode) {
         this.routingMode = routingMode;
+    }
+
+    /**
+     * Returns the finder class to instantiate.
+     * 
+     * @return the finder class to instantiate.
+     */
+    public Class<? extends Finder> getFinderClass() {
+        return this.finderClass;
+    }
+
+    /**
+     * Sets the finder class to instantiate.
+     * 
+     * @param finderClass
+     *            The finder class to instantiate.
+     */
+    public void setFinderClass(Class<? extends Finder> finderClass) {
+        this.finderClass = finderClass;
     }
 
 }

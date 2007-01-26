@@ -28,6 +28,10 @@ Changes log
  - Finder now looks for a default Resource constructor if the current one (with 3 args) couldn't be found.
    Suggested by Diggory Briercliffe, Brandon Lonac, Sean Landis and Ryan Daum.
  - Added Application.KEY string constant containing the reseverved application attribute key.
+ - Exposed Finder.resourceClass property with a getter. 
+ - Extracted the Resource creation logic from Finder.findTarget() into a createResource() method.
+ - Added a "finderClass" property on Router that will create the right Finder instance for 
+   you when calling attach(..., myResource.class) methods. 
   
 [Enhancements] 
  - Updated FreeMarker to version 2.3.9.

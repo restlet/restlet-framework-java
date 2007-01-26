@@ -86,8 +86,45 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Finds the target Resource if available. The default value is null, but
-     * this method is intended to be overriden in subclasses.
+     * Indicates if a method is allowed on a target resource.
+     * 
+     * @param method
+     *            The method to test.
+     * @param target
+     *            The target resource.
+     * @return True if a method is allowed on a target resource.
+     */
+    private boolean allowMethod(Method method, Resource target) {
+        boolean result = false;
+
+        if (target != null) {
+            if (method.equals(Method.GET) || method.equals(Method.HEAD)) {
+                result = target.allowGet();
+            } else if (method.equals(Method.POST)) {
+                result = target.allowPost();
+            } else if (method.equals(Method.PUT)) {
+                result = target.allowPut();
+            } else if (method.equals(Method.DELETE)) {
+                result = target.allowDelete();
+            } else if (method.equals(Method.OPTIONS)) {
+                result = true;
+            } else {
+                // Dynamically introspect the target resource to detect a
+                // matching "allow" method.
+                java.lang.reflect.Method allowMethod = getAllowMethod(method,
+                        target);
+                if (allowMethod != null) {
+                    result = (Boolean) invoke(target, allowMethod);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Finds the target Resource if available. The default behavior is to invoke
+     * the {@link #createResource(Request, Response)} method.
      * 
      * @param request
      *            The request to handle.
@@ -96,19 +133,33 @@ public class Finder extends Restlet {
      * @return The target resource if available or null.
      */
     public Resource findTarget(Request request, Response response) {
+        return createResource(request, response);
+    }
+
+    /**
+     * Creates a new instance of the resource class designated by the
+     * "targetClass" property.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @return The created resource or null.
+     */
+    public Resource createResource(Request request, Response response) {
         Resource result = null;
 
-        if (this.targetClass != null) {
+        if (getTargetClass() != null) {
             Constructor constructor;
             try {
-                constructor = this.targetClass.getConstructor(Context.class,
+                constructor = getTargetClass().getConstructor(Context.class,
                         Request.class, Response.class);
 
                 if (constructor != null) {
                     result = (Resource) constructor.newInstance(getContext(),
                             request, response);
                 } else {
-                    constructor = this.targetClass.getConstructor();
+                    constructor = getTargetClass().getConstructor();
 
                     if (constructor != null) {
                         result = (Resource) constructor.newInstance();
@@ -125,6 +176,79 @@ public class Finder extends Restlet {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the allow method matching the given method name.
+     * 
+     * @param method
+     *            The method to match.
+     * @param target
+     *            The target resource.
+     * @return The allow method matching the given method name.
+     */
+    private java.lang.reflect.Method getAllowMethod(Method method,
+            Resource target) {
+        return getMethod("allow", method, target);
+    }
+
+    /**
+     * Returns the handle method matching the given method name.
+     * 
+     * @param method
+     *            The method to match.
+     * @return The handle method matching the given method name.
+     */
+    private java.lang.reflect.Method getHandleMethod(Resource target,
+            Method method) {
+        return getMethod("handle", method, target);
+    }
+
+    /**
+     * Returns the method matching the given prefix and method name.
+     * 
+     * @param prefix
+     *            The method prefix to match (ex: "allow" or "handle").
+     * @param method
+     *            The method to match.
+     * @return The method matching the given prefix and method name.
+     */
+    private java.lang.reflect.Method getMethod(String prefix, Method method,
+            Object target, Class... classes) {
+        java.lang.reflect.Method result = null;
+        StringBuilder sb = new StringBuilder();
+        String methodName = method.getName().toLowerCase();
+
+        if ((methodName != null) && (methodName.length() > 0)) {
+            sb.append("handle");
+            sb.append(Character.toUpperCase(methodName.charAt(0)));
+            sb.append(methodName.substring(1));
+        }
+
+        try {
+            result = target.getClass().getMethod(sb.toString(), classes);
+        } catch (SecurityException e) {
+            getLogger().log(
+                    Level.WARNING,
+                    "Couldn't access the " + prefix + " method for \"" + method
+                            + "\"", e);
+        } catch (NoSuchMethodException e) {
+            getLogger().log(
+                    Level.WARNING,
+                    "Couldn't find the " + prefix + " method for \"" + method
+                            + "\"", e);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the target Resource class.
+     * 
+     * @return the target Resource class.
+     */
+    public Class<? extends Resource> getTargetClass() {
+        return this.targetClass;
     }
 
     /**
@@ -191,117 +315,6 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Indicates if a method is allowed on a target resource.
-     * 
-     * @param method
-     *            The method to test.
-     * @param target
-     *            The target resource.
-     * @return True if a method is allowed on a target resource.
-     */
-    private boolean allowMethod(Method method, Resource target) {
-        boolean result = false;
-
-        if (target != null) {
-            if (method.equals(Method.GET) || method.equals(Method.HEAD)) {
-                result = target.allowGet();
-            } else if (method.equals(Method.POST)) {
-                result = target.allowPost();
-            } else if (method.equals(Method.PUT)) {
-                result = target.allowPut();
-            } else if (method.equals(Method.DELETE)) {
-                result = target.allowDelete();
-            } else if (method.equals(Method.OPTIONS)) {
-                result = true;
-            } else {
-                // Dynamically introspect the target resource to detect a
-                // matching "allow" method.
-                java.lang.reflect.Method allowMethod = getAllowMethod(method,
-                        target);
-                if (allowMethod != null) {
-                    result = (Boolean) invoke(target, allowMethod);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Updates the set of allowed methods on the response based on a target
-     * resource.
-     * 
-     * @param response
-     *            The response to update.
-     * @param target
-     *            The target resource.
-     */
-    private void updateAllowedMethods(Response response, Resource target) {
-        Set<Method> allowedMethods = response.getAllowedMethods();
-        for (java.lang.reflect.Method classMethod : target.getClass()
-                .getMethods()) {
-            if (classMethod.getName().startsWith("allow")
-                    && (classMethod.getParameterTypes().length == 0)) {
-                if ((Boolean) invoke(target, classMethod)) {
-                    Method allowedMethod = Method.valueOf(classMethod.getName()
-                            .substring(5));
-                    allowedMethods.add(allowedMethod);
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns the handle method matching the given method name.
-     * 
-     * @param method
-     *            The method to match.
-     * @return The handle method matching the given method name.
-     */
-    private java.lang.reflect.Method getHandleMethod(Resource target,
-            Method method) {
-        return getMethod("handle", method, target);
-    }
-
-    /**
-     * Returns the method matching the given prefix and method name.
-     * 
-     * @param prefix
-     *            The method prefix to match (ex: "allow" or "handle").
-     * @param method
-     *            The method to match.
-     * @return The method matching the given prefix and method name.
-     */
-    private java.lang.reflect.Method getMethod(String prefix, Method method,
-            Object target, Class... classes) {
-        java.lang.reflect.Method result = null;
-        StringBuilder sb = new StringBuilder();
-        String methodName = method.getName().toLowerCase();
-
-        if ((methodName != null) && (methodName.length() > 0)) {
-            sb.append("handle");
-            sb.append(Character.toUpperCase(methodName.charAt(0)));
-            sb.append(methodName.substring(1));
-        }
-
-        try {
-            result = target.getClass().getMethod(sb.toString(), classes);
-        } catch (SecurityException e) {
-            getLogger().log(
-                    Level.WARNING,
-                    "Couldn't access the " + prefix + " method for \"" + method
-                            + "\"", e);
-        } catch (NoSuchMethodException e) {
-            getLogger().log(
-                    Level.WARNING,
-                    "Couldn't find the " + prefix + " method for \"" + method
-                            + "\"", e);
-        }
-
-        return result;
-    }
-
-    /**
      * Invokes a method with the given arguments.
      * 
      * @param target
@@ -331,17 +344,27 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Returns the allow method matching the given method name.
+     * Updates the set of allowed methods on the response based on a target
+     * resource.
      * 
-     * @param method
-     *            The method to match.
+     * @param response
+     *            The response to update.
      * @param target
      *            The target resource.
-     * @return The allow method matching the given method name.
      */
-    private java.lang.reflect.Method getAllowMethod(Method method,
-            Resource target) {
-        return getMethod("allow", method, target);
+    private void updateAllowedMethods(Response response, Resource target) {
+        Set<Method> allowedMethods = response.getAllowedMethods();
+        for (java.lang.reflect.Method classMethod : target.getClass()
+                .getMethods()) {
+            if (classMethod.getName().startsWith("allow")
+                    && (classMethod.getParameterTypes().length == 0)) {
+                if ((Boolean) invoke(target, classMethod)) {
+                    Method allowedMethod = Method.valueOf(classMethod.getName()
+                            .substring(5));
+                    allowedMethods.add(allowedMethod);
+                }
+            }
+        }
     }
 
 }
