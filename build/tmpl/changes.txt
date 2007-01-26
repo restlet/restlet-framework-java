@@ -19,7 +19,8 @@ Changes log
  - Fixed bugs in some POM files. Reported by Mitchell Stewart.
  - The query need to be reconstruct and appended to the requestURI in order to get the "full" uri 
    from AsyncWeb request object. Reported by David Rauschenbach.
-  
+ - Fixed NPE in the URI template scoring method.
+   
 [API changes]
  - Added Resource.getPreferredRepresentation() method as a shortcut to  
    getRepresentation(getPreferredVariant()).
