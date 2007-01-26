@@ -72,9 +72,11 @@ public class HttpUrlConnectionCall extends HttpClientCall {
         if (requestUri.startsWith("http")) {
             URL url = new URL(requestUri);
             this.connection = (HttpURLConnection) url.openConnection();
+
+            // These properties can only be used with Java 1.5 and upper
+            // releases
             int majorVersionNumber = Engine.getJavaMajorVersion();
             int minorVersionNumber = Engine.getJavaMinorVersion();
-
             if ((majorVersionNumber > 1)
                     || (majorVersionNumber == 1 && minorVersionNumber >= 5)) {
                 this.connection.setConnectTimeout(getHelper()
@@ -129,19 +131,27 @@ public class HttpUrlConnectionCall extends HttpClientCall {
             if (request.isEntityAvailable()) {
                 Representation entity = request.getEntity();
 
-                // Adjust the streaming mode
-                if (entity.getSize() > 0) {
-                    // The size of the entity is known in advance
-                    getConnection().setFixedLengthStreamingMode(
-                            (int) entity.getSize());
-                } else {
-                    // The size of the entity is not known in advance
-                    if (getHelper().getChunkLength() >= 0) {
-                        // Use chunked encoding
-                        getConnection().setChunkedStreamingMode(
-                                getHelper().getChunkLength());
+                // These properties can only be used with Java 1.5 and upper
+                // releases
+                int majorVersionNumber = Engine.getJavaMajorVersion();
+                int minorVersionNumber = Engine.getJavaMinorVersion();
+                if ((majorVersionNumber > 1)
+                        || (majorVersionNumber == 1 && minorVersionNumber >= 5)) {
+                    // Adjust the streaming mode
+                    if (entity.getSize() > 0) {
+                        // The size of the entity is known in advance
+                        getConnection().setFixedLengthStreamingMode(
+                                (int) entity.getSize());
                     } else {
-                        // Use entity buffering to determine the content length
+                        // The size of the entity is not known in advance
+                        if (getHelper().getChunkLength() >= 0) {
+                            // Use chunked encoding
+                            getConnection().setChunkedStreamingMode(
+                                    getHelper().getChunkLength());
+                        } else {
+                            // Use entity buffering to determine the content
+                            // length
+                        }
                     }
                 }
             }
