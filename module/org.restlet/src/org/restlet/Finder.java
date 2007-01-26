@@ -29,8 +29,8 @@ import org.restlet.data.Status;
 import org.restlet.resource.Resource;
 
 /**
- * Restlet that can find the target resource that will concretely handle the
- * request. Based on a given resource class, it is also able to instantiate the
+ * Restlet that can find the target resource that will concretely handle a call.
+ * Based on a given resource class, it is also capable of instantiating the
  * resource with the call's context, request and response without requiring the
  * usage of a subclass. It will use either the constructor with three arguments:
  * context, request, response; or it will invoke the default constructor then

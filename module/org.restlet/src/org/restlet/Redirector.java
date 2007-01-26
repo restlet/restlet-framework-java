@@ -65,14 +65,25 @@ public class Redirector extends Restlet {
     public static final int MODE_CLIENT_TEMPORARY = 4;
 
     /**
-     * In this mode, the call is sent to the connector indicated by the
-     * "connectorName" property. Once the connector has completed the call
-     * handling, the call is normally returned to the client. In this case, you
-     * can view the Redirector as acting as a proxy Restlet.<br/> Remember to
-     * attach the connector you want to use to the parent Restlet component,
-     * using the exact same name as the one you provided to the setConnectorName
-     * method.
+     * In this mode, the call is sent to the context's dispatcher. Once the
+     * selected client connector has completed the request handling, the
+     * response is normally returned to the client. In this case, you can view
+     * the Redirector as acting as a transparent proxy Restlet.<br>
+     * <br>
+     * Remember to add the required connectors to the parent Component and to
+     * declare them in the list of required connectors on the
+     * Application.connectorService property.<br>
+     * <br>
+     * Note that in this mode, the headers of HTTP requests, stored in the
+     * request's attributes, are removed before dispatching. Also, when a HTTP
+     * response comes back the headers are also removed.
      */
+    public static final int MODE_DISPATCHER = 5;
+
+    /**
+     * @deprecated Use the MODE_DISPATCHER constant instead.
+     */
+    @Deprecated
     public static final int MODE_CONNECTOR = 5;
 
     /** The target URI pattern. */
@@ -143,16 +154,35 @@ public class Redirector extends Restlet {
             response.redirectTemporary(targetRef);
             break;
 
-        case MODE_CONNECTOR:
+        case MODE_DISPATCHER:
             getLogger().log(Level.INFO,
                     "Redirecting via client connector to: " + targetRef);
-            request.setResourceRef(targetRef);
-            request.getAttributes().remove("org.restlet.http.headers");
-            getContext().getDispatcher().handle(request, response);
-            response.setEntity(rewrite(response.getEntity()));
-            response.getAttributes().remove("org.restlet.http.headers");
+            redirectDispatcher(targetRef, request, response);
             break;
         }
+    }
+
+    /**
+     * Redirects a given call to a target reference. In the default
+     * implementation, the request HTTP headers, stored in the request's
+     * attributes, are removed before dispatching. After dispatching, the
+     * response HTTP headers are also removed to prevent conflicts with the main
+     * call.
+     * 
+     * @param targetRef
+     *            The target reference with URI variables resolved.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    protected void redirectDispatcher(Reference targetRef, Request request,
+            Response response) {
+        request.setResourceRef(targetRef);
+        request.getAttributes().remove("org.restlet.http.headers");
+        getContext().getDispatcher().handle(request, response);
+        response.setEntity(rewrite(response.getEntity()));
+        response.getAttributes().remove("org.restlet.http.headers");
     }
 
     /**

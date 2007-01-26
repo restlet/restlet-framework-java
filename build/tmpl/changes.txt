@@ -34,7 +34,9 @@ Changes log
  - Added a "finderClass" property on Router that will create the right Finder instance for 
    you when calling attach(..., myResource.class) methods. 
  - Moved MetadataService.indexName property to Directory for more flexibility.
-  
+ - Renamed Redirector.MODE_CONNECTOR constant into MODE_DISPATCHER.
+ - Added redirectDispatcher() method to allow overriding of this logic.
+   
 [Enhancements] 
  - Updated FreeMarker to version 2.3.9.
  
