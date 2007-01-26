@@ -417,7 +417,7 @@ public class Route extends Filter {
         if ((getRouter() != null) && (request.getResourceRef() != null)
                 && (getTemplate() != null)) {
             String remainingPart = request.getResourceRef().getRemainingPart();
-            if(remainingPart!=null){
+            if (remainingPart != null) {
                 int matchedLength = getTemplate().match(remainingPart);
 
                 if (matchedLength != -1) {
@@ -431,12 +431,12 @@ public class Route extends Filter {
                         result = 1.0F;
                     }
                 }
-
-                if (getLogger().isLoggable(Level.FINER)) {
-                    getLogger().finer(
-                            "Call score for the \"" + getTemplate().getPattern()
-                                    + "\" URI pattern: " + result);
-                }
+            }
+            
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger().finer(
+                        "Call score for the \"" + getTemplate().getPattern()
+                                + "\" URI pattern: " + result);
             }
         }
 
