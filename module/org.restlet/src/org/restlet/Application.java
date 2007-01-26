@@ -49,6 +49,10 @@ import org.restlet.util.Helper;
  * <li>"tunnelService" to tunnel method names or client preferences via query
  * parameters.</li>
  * </ul>
+ * <br>
+ * If you need to retrieve the reference to an Application from one of its
+ * contained Restlets, you can use the {@link #KEY} constant to lookup the
+ * Context.attributes property.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -326,14 +330,14 @@ public abstract class Application extends Restlet {
         this.owner = owner;
     }
 
-    /** Start callback. */
+    @Override
     public void start() throws Exception {
         super.start();
         if (getHelper() != null)
             getHelper().start();
     }
 
-    /** Stop callback. */
+    @Override
     public void stop() throws Exception {
         if (getHelper() != null)
             getHelper().stop();

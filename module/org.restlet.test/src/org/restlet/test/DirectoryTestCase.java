@@ -108,7 +108,7 @@ public class DirectoryTestCase extends TestCase {
         String testFileUrl = webSiteURL.concat(testFile.getName());
         String testDirectoryUrl = webSiteURL.concat(testDirectory.getName());
 
-        application.getMetadataService().setIndexName(indexName);
+        directory.setIndexName(indexName);
         // Test 1a : directory does not allow to GET its content
         directory.setListingAllowed(false);
         Response response = handle(application, webSiteURL, webSiteURL,

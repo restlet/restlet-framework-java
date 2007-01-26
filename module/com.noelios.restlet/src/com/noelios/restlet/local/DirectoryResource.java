@@ -26,7 +26,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
-import org.restlet.Application;
 import org.restlet.Directory;
 import org.restlet.Uniform;
 import org.restlet.data.MediaType;
@@ -40,7 +39,6 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
-import org.restlet.service.MetadataService;
 
 /**
  * Resource supported by a set of context representations (from file system,
@@ -159,10 +157,10 @@ public class DirectoryResource extends Resource {
             }
 
             // Append the index name
-            if (getMetadataService().getIndexName() != null
-                    && getMetadataService().getIndexName().length() > 0) {
+            if (getDirectory().getIndexName() != null
+                    && getDirectory().getIndexName().length() > 0) {
                 this.directoryUri = this.targetUri;
-                this.baseName = getMetadataService().getIndexName();
+                this.baseName = getDirectory().getIndexName();
                 this.targetUri = this.directoryUri + this.baseName;
                 this.targetIndex = true;
             } else {
@@ -358,25 +356,6 @@ public class DirectoryResource extends Resource {
      */
     private Uniform getDispatcher() {
         return getDirectory().getContext().getDispatcher();
-    }
-
-    /**
-     * Returns the metadata service.
-     * 
-     * @return The metadata service.
-     */
-    public MetadataService getMetadataService() {
-        MetadataService result = null;
-        Application application = (Application) getContext().getAttributes()
-                .get(Application.KEY);
-
-        if (application != null) {
-            result = application.getMetadataService();
-        } else {
-            result = new MetadataService();
-        }
-
-        return result;
     }
 
     /**

@@ -44,9 +44,6 @@ public class MetadataService {
     /** The mappings from extension names to metadata. */
     private Map<String, Metadata> metadataMappings;
 
-    /** The index name, without extensions (ex: "index" or "home"). */
-    private String indexName;
-
     /**
      * Constructor.
      */
@@ -55,7 +52,6 @@ public class MetadataService {
         this.defaultLanguage = Language.ENGLISH_US;
         this.defaultMediaType = MediaType.APPLICATION_OCTET_STREAM;
         this.metadataMappings = new TreeMap<String, Metadata>();
-        this.indexName = "index";
         addCommonExtensions();
     }
 
@@ -172,15 +168,6 @@ public class MetadataService {
     }
 
     /**
-     * Returns the index name, without extensions. Returns "index" by default.
-     * 
-     * @return The index name.
-     */
-    public String getIndexName() {
-        return this.indexName;
-    }
-
-    /**
      * Returns the mappings from extension names to metadata.
      * 
      * @return The mappings from extension names to metadata.
@@ -229,16 +216,6 @@ public class MetadataService {
      */
     public void setDefaultMediaType(MediaType defaultMediaType) {
         this.defaultMediaType = defaultMediaType;
-    }
-
-    /**
-     * Sets the index name, without extensions.
-     * 
-     * @param indexName
-     *            The index name.
-     */
-    public void setIndexName(String indexName) {
-        this.indexName = indexName;
     }
 
 }

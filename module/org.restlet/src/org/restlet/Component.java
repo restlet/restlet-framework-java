@@ -31,14 +31,14 @@ import org.restlet.util.Helper;
 import org.restlet.util.ServerList;
 
 /**
- * Restlet managing a set of Clients, Servers and other Restlets. "A component
- * is an abstract unit of software instructions and internal state that provides
- * a transformation of data via its interface." Roy T. Fielding
- * 
- * Component managing a set of VirtualHosts and Applications. Applications are
- * expected to be directly attached to VirtualHosts. Components are also
- * exposing a number of services in order to control several operational
- * features in a portable way, like access log and status setting.
+ * Restlet managing a set of Connectors, VirtualHosts and Applications.
+ * Applications are expected to be directly attached to VirtualHosts. Components
+ * also expose several services: access logging and status setting. <br>
+ * <br>
+ * From an architectural point of view, here is the REST definition: "A
+ * component is an abstract unit of software instructions and internal state
+ * that provides a transformation of data via its interface." Roy T. Fielding<br>
+ * <br>
  * 
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
@@ -71,17 +71,8 @@ public class Component extends Restlet {
      * Constructor.
      */
     public Component() {
-        this(null);
-    }
+        super(null);
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     */
-    public Component(Context context) {
-        super(context);
         if (Engine.getInstance() != null) {
             this.helper = Engine.getInstance().createHelper(this);
             if (this.helper != null) {
@@ -118,8 +109,9 @@ public class Component extends Restlet {
     }
 
     /**
-     * Start hook. Starts all connectors.
+     * Starts the component and all its connectors.
      */
+    @Override
     public void start() throws Exception {
         if (this.clients != null) {
             for (Client client : this.clients) {
@@ -140,8 +132,9 @@ public class Component extends Restlet {
     }
 
     /**
-     * Stop hook. Stops all connectors.
+     * Stops the component and all its connectors.
      */
+    @Override
     public void stop() throws Exception {
         if (getHelper() != null)
             getHelper().stop();
@@ -198,8 +191,8 @@ public class Component extends Restlet {
     public LogService getLogService() {
         if (this.logService == null) {
             this.logService = new LogService(true);
-            this.logService.setLoggerName(getClass().getCanonicalName()
-                    + " (" + hashCode() + ")");
+            this.logService.setLoggerName(getClass().getCanonicalName() + " ("
+                    + hashCode() + ")");
         }
 
         return this.logService;

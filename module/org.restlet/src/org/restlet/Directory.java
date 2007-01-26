@@ -53,6 +53,9 @@ public class Directory extends Finder {
     /** Indicates if the subdirectories are deeply accessible (true by default). */
     private boolean deeplyAccessible;
 
+    /** The index name, without extensions (ex: "index" or "home"). */
+    private String indexName;
+
     /** The absolute root reference (file, clap or war URI). */
     private Reference rootRef;
 
@@ -73,12 +76,38 @@ public class Directory extends Finder {
      * 
      * @param context
      *            The context.
+     * @param rootLocalReference
+     *            The root Uri.
+     */
+    public Directory(Context context, LocalReference rootLocalReference) {
+        super(context);
+
+        if (rootLocalReference.getIdentifier().endsWith("/")) {
+            this.rootRef = new Reference(rootLocalReference.getIdentifier());
+        } else {
+            // We don't take the risk of exposing directory "file:///C:/AA"
+            // if only "file:///C:/A" was intended
+            this.rootRef = new Reference(rootLocalReference.getIdentifier()
+                    + "/");
+        }
+
+        this.deeplyAccessible = true;
+        this.modifiable = false;
+        this.listingAllowed = false;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
      * @param rootUri
      *            The absolute root URI. <br>
      *            <br>
      *            If you serve files from the file system, use file:// URIs and
      *            make sure that you register a FILE connector with your parent
-     *            Component. <br>
+     *            Component. On Windows, make sure that you add enough slash
+     *            characters at the beginning, for example: file:///c:/dir/file<br>
      *            <br>
      *            If you serve files from a class loader, use clap:// URIs and
      *            make sure that you register a CLAP connector with your parent
@@ -109,33 +138,9 @@ public class Directory extends Finder {
         }
 
         this.deeplyAccessible = true;
-        this.modifiable = false;
+        this.indexName = "index";
         this.listingAllowed = false;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     * @param rootLocalReference
-     *            The root Uri.
-     */
-    public Directory(Context context, LocalReference rootLocalReference) {
-        super(context);
-
-        if (rootLocalReference.getIdentifier().endsWith("/")) {
-            this.rootRef = new Reference(rootLocalReference.getIdentifier());
-        } else {
-            // We don't take the risk of exposing directory "file:///C:/AA"
-            // if only "file:///C:/A" was intended
-            this.rootRef = new Reference(rootLocalReference.getIdentifier()
-                    + "/");
-        }
-
-        this.deeplyAccessible = true;
         this.modifiable = false;
-        this.listingAllowed = false;
     }
 
     /**
@@ -159,19 +164,12 @@ public class Directory extends Finder {
     }
 
     /**
-     * Returns the variant representations of a directory index. This method can
-     * be subclassed in order to provide alternative representations. By default
-     * it returns a simple HTML document and a textual URI list as variants.
+     * Returns the index name, without extensions. Returns "index" by default.
      * 
-     * @param indexContent
-     *            The list of references contained in the directory index.
-     * @return The variant representations of a directory.
+     * @return The index name.
      */
-    public List<Variant> getIndexVariants(ReferenceList indexContent) {
-        List<Variant> result = new ArrayList<Variant>();
-        result.add(new Variant(MediaType.TEXT_URI_LIST));
-        result.add(new Variant(MediaType.TEXT_HTML));
-        return result;
+    public String getIndexName() {
+        return this.indexName;
     }
 
     /**
@@ -191,6 +189,22 @@ public class Directory extends Finder {
         } else if (variant.getMediaType().equals(MediaType.TEXT_URI_LIST)) {
             result = indexContent.getTextRepresentation();
         }
+        return result;
+    }
+
+    /**
+     * Returns the variant representations of a directory index. This method can
+     * be subclassed in order to provide alternative representations. By default
+     * it returns a simple HTML document and a textual URI list as variants.
+     * 
+     * @param indexContent
+     *            The list of references contained in the directory index.
+     * @return The variant representations of a directory.
+     */
+    public List<Variant> getIndexVariants(ReferenceList indexContent) {
+        List<Variant> result = new ArrayList<Variant>();
+        result.add(new Variant(MediaType.TEXT_URI_LIST));
+        result.add(new Variant(MediaType.TEXT_HTML));
         return result;
     }
 
@@ -250,6 +264,16 @@ public class Directory extends Finder {
      */
     public void setDeeplyAccessible(boolean deeplyAccessible) {
         this.deeplyAccessible = deeplyAccessible;
+    }
+
+    /**
+     * Sets the index name, without extensions.
+     * 
+     * @param indexName
+     *            The index name.
+     */
+    public void setIndexName(String indexName) {
+        this.indexName = indexName;
     }
 
     /**

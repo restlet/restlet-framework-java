@@ -33,6 +33,7 @@ Changes log
  - Extracted the Resource creation logic from Finder.findTarget() into a createResource() method.
  - Added a "finderClass" property on Router that will create the right Finder instance for 
    you when calling attach(..., myResource.class) methods. 
+ - Moved MetadataService.indexName property to Directory for more flexibility.
   
 [Enhancements] 
  - Updated FreeMarker to version 2.3.9.

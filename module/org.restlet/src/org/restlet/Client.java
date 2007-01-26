@@ -110,14 +110,14 @@ public class Client extends Connector {
             getHelper().handle(request, response);
     }
 
-    /** Start callback. */
+    @Override
     public void start() throws Exception {
         super.start();
         if (getHelper() != null)
             getHelper().start();
     }
 
-    /** Stop callback. */
+    @Override
     public void stop() throws Exception {
         if (getHelper() != null)
             getHelper().stop();

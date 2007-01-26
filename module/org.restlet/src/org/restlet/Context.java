@@ -30,8 +30,7 @@ import org.restlet.util.Series;
  * Contextual data and services provided to a Restlet. The context is the means
  * by which a Restlet may access the software environment within the framework.
  * It is typically provided by the immediate parent Restlet (Component and
- * Application are the most common cases). The services provided are access to a
- * logger, access to configuration parameters and to a request dispatcher.
+ * Application are the most common cases).
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -105,7 +104,11 @@ public class Context {
     }
 
     /**
-     * Returns a request dispatcher to available client connectors.
+     * Returns a request dispatcher to available client connectors. When you ask
+     * the dispatcher to handle a request, it will automatically select the best
+     * client connector for your request, based on the request.protocol property
+     * or on the resource URI's scheme. This call is blocking and will return an
+     * updated response object.
      * 
      * @return A request dispatcher to available client connectors.
      */
