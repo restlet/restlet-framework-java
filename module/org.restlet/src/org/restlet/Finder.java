@@ -150,17 +150,19 @@ public class Finder extends Restlet {
         Resource result = null;
 
         if (getTargetClass() != null) {
-            Constructor constructor;
             try {
-                constructor = getTargetClass().getConstructor(Context.class,
-                        Request.class, Response.class);
-
-                if (constructor != null) {
+                Constructor constructor;
+                try {
+                    // Invoke the constructor with Context, Request and Response
+                    // parameters
+                    constructor = getTargetClass().getConstructor(
+                            Context.class, Request.class, Response.class);
                     result = (Resource) constructor.newInstance(getContext(),
                             request, response);
-                } else {
+                } catch (NoSuchMethodException nsme) {
+                    // Invoke the default constructor then the init(Context,
+                    // Request, Response) method.
                     constructor = getTargetClass().getConstructor();
-
                     if (constructor != null) {
                         result = (Resource) constructor.newInstance();
                         result.init(getContext(), request, response);
