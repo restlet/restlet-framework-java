@@ -28,7 +28,7 @@ public class VelocityTestCase extends TestCase {
         // Create a temporary template file
         File testFile = File.createTempFile("test", ".vm", testDir);
         FileWriter fw = new FileWriter(testFile);
-        fw.append("Value=$value");
+        fw.write("Value=$value");
         fw.close();
 
         Map<String, Object> map = new TreeMap<String, Object>();

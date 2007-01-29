@@ -30,7 +30,7 @@ public class FreeMarkerTestCase extends TestCase {
         // Create a temporary template file
         File testFile = File.createTempFile("test", ".ftl", testDir);
         FileWriter fw = new FileWriter(testFile);
-        fw.append("Value=${value}");
+        fw.write("Value=${value}");
         fw.close();
 
         Configuration fmc = new Configuration();
