@@ -11,7 +11,7 @@ Changes log
  - 
  
 [Enhancements] 
- - 
+ - Enhanced support of Java SE 4.0 via Retrotranslator.
 
 1.0 RC4 (2007-01-26)
 [Bugs fixed]
