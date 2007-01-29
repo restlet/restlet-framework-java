@@ -37,7 +37,8 @@
 	<property name="docs-api" value="${docs}/api" />
 	<property name="docs-ext" value="${docs}/ext" />
 	<property name="docs-nre" value="${docs}/nre" />
-
+	<property name="jdk1.4-home" value="jdk1.4-home" />
+		
 	<!-- Library properties -->
 	<property name="lib-asm-package" value="org.objectweb.asm" />
 	<property name="lib-asm-version" value="2.2" />
@@ -151,6 +152,14 @@
 	<property name="lib-wrapper-version" value="3.2" />
 	<property name="lib-wrapper-id" value="${lib-wrapper-package}_${lib-wrapper-version}" />
 
+	<property name="lib-webrowset-package" value="com.sun.rowset" />
+	<property name="lib-webrowset-version" value="1.0" />
+	<property name="lib-webrowset-id" value="${lib-webrowset-package}_${lib-webrowset-version}" />
+
+	<property name="lib-xerces-package" value="org.apache.xerces" />
+	<property name="lib-xerces-version" value="2.9" />
+	<property name="lib-xerces-id" value="${lib-xerces-package}_${lib-xerces-version}" />
+
 	<!-- Module properties -->
 	<property name="mod-api-package" value="org.restlet" />
 	<property name="mod-api-version" value="${version-base}" />
@@ -236,7 +245,6 @@
 	<property name="mod-velocity-version" value="${lib-velocity-version}" />
 	<property name="mod-velocity-id" value="${mod-velocity-package}_${mod-velocity-version}" />
 
-
 	<!-- ======================= -->
 	<!-- ===  Paths setting  === -->
 	<!-- ======================= -->
@@ -277,7 +285,10 @@
 		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
 				
-		<pathelement location="tools/retroweaver/retroweaver-all.jar" />
+		<!-- retrotranslator 1.2.0 -->
+		<pathelement location="tools/retrotranslator/backport-util-concurrent-3.0.jar" />
+		<pathelement location="tools/retrotranslator/retrotranslator-runtime-1.2.0.jar" />
+		<pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.0.jar" />
 	</path>
 
 	<path id="mod-ri-path">
@@ -406,6 +417,19 @@
 		<fileset dir="${lib}/${lib-velocity-id}" includes="*.jar" />
 	</path>
 
+	<!-- used for backport to jdk 1.4 -->
+	<path id="mod-webrowset-path">
+		<path refid="mod-ri-path" />
+		<pathelement path="${classes}/${mod-ri-id}" />
+		<fileset dir="${lib}/${lib-webrowset-id}" includes="*.jar" />
+	</path>
+	<!-- used for backport to jdk 1.4 -->
+	<path id="mod-xerces-path">
+		<path refid="mod-ri-path" />
+		<pathelement path="${classes}/${mod-ri-id}" />
+		<fileset dir="${lib}/${lib-xerces-id}" includes="*.jar" />
+	</path>
+
 	<path id="path-all">
 		<pathelement path="${classes}/${mod-api-id}" />
 		<pathelement path="${classes}/${mod-ri-id}" />
@@ -441,15 +465,24 @@
 	</path>
 
 	<path id="path-none" />
-
-
+	
+	<pathconvert property="defaultbootclasspath">
+		<path path="${sun.boot.class.path}"/>
+	</pathconvert>
+	<pathconvert property="backportbootclasspath">
+		<path refid="mod-webrowset-path" />
+		<path refid="mod-xerces-path"/>
+		<path path="${sun.boot.class.path}"/>
+	</pathconvert>
+	
 	<!-- =================== -->
 	<!-- ===  Ant Tasks  === -->
 	<!-- =================== -->
 
-	<taskdef name="retroweave" classname="com.rc.retroweaver.ant.RetroWeaverTask">
+	<!-- Retrotranslator 1.2.0 -->
+	<taskdef name="retrotranslator" classname="net.sf.retrotranslator.transformer.RetrotranslatorTask">
 		<classpath>
-			<pathelement location="tools/retroweaver/retroweaver-all.jar" />
+			<pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.0.jar" />
 		</classpath>
 	</taskdef>
 
@@ -498,8 +531,9 @@
 			       verbose="@{verbose}"
 			       srcdir="@{srcdir}"
 			       destdir="@{destdir}"
-			       includes="@{includes}">
-		    	<classpath refid="@{classpathref}"/>
+			       includes="@{includes}"
+				   bootclasspath="${custombootclasspath}">
+			   	<classpath refid="@{classpathref}"/>
 			</javac>
 		</sequential>
 	</macrodef>
@@ -588,6 +622,34 @@
 		</sequential>
 	</macrodef>
 
+	<!-- Backports a module -->
+	<macrodef name="backportModule">
+		<attribute name="name" />
+		<attribute name="failonwarning" default="true" />
+		<sequential>
+			<path id="backport-@{name}-classpath">
+				<dirset dir="${classes}" />
+				<path refid="mod-@{name}-path"/>
+				<path refid="mod-webrowset-path" />
+				<path refid="mod-xerces-path" />
+				<fileset dir="tools/retrotranslator">
+					<include name="**/*.jar" />
+				</fileset>
+				<fileset dir="${jdk1.4-home}/jre/lib">
+					<filename name="*.jar" />
+				</fileset>
+			</path>
+			<pathconvert property="backport-@{name}-jarfiles" refid="backport-@{name}-classpath"/>
+
+			<retrotranslator verify="true" classpath="${backport-@{name}-jarfiles}" failonwarning="@{failonwarning}">
+				<!-- Caution: Overrides the Java 1.5 generated classes -->
+				<fileset dir="${classes}/${mod-@{name}-id}">
+					<include name="**/*.class" />
+				</fileset>
+			</retrotranslator>
+		</sequential>
+	</macrodef>
+
 	<!-- Packages a library -->
 	<macrodef name="packageLibrary">
 		<!-- Package a library -->
@@ -603,7 +665,7 @@
 		</sequential>
 	</macrodef>
 
-
+	
 	<!-- ===================== -->
 	<!-- ===  Ant Targets  === -->
 	<!-- ===================== -->
@@ -625,6 +687,9 @@
 
 		<!-- Set the property that will enable the Weave target -->
 		<condition property="do-backport">
+			<istrue value="${backport}" />
+		</condition>
+		<condition property="custombootclasspath" value="${backportbootclasspath}" else="${defaultbootclasspath}">
 			<istrue value="${backport}" />
 		</condition>
 
@@ -733,21 +798,36 @@
 		<compileModule name="ri-test" />
 	</target>
 
-	<!-- RETROWEAVE target -->
-	<target name="retroweave"
-	        if="do-backport"
-	        depends="compile"
-	        description="Backport classes using Retroweaver">
-		<retroweave>
-			<!-- Caution: Overrides the Java 1.5 generated classes -->
-			<fileset dir="${classes}">
-				<include name="**/*.class" />
-			</fileset>
-		</retroweave>
+	<!-- RETROTRANSLATOR VERIFY target -->
+	<target name="backport"
+			if="do-backport"
+        	depends="compile"
+	        description="Backport classes using Retrotranslator">
+		<backportModule name="api" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="ri" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="asyncweb" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="atom" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="fileupload" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="freemarker" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="httpclient" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="javamail" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="jdbc" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="jetty5" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="jetty" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="jmx" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="json" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="net" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="servlet" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="simple" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="spring" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="velocity" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="example" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="api-test" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="ri-test" failonwarning="@{backport-failonwarning}"/>
 	</target>
 
 	<!-- TEST target -->
-	<target name="test" depends="verify-ant, retroweave" description="Execute the test suites">
+	<target name="test" depends="verify-ant, backport" description="Execute the test suites">
 		<mkdir dir="${temp}/test"/>
 		<junit printsummary="true"
 		       fork="true"
