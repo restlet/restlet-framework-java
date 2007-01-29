@@ -31,6 +31,7 @@ org.restlet.ext.fileupload_1.1 (Integration with Apache FileUpload)
 ------------------------------
  - javax.servlet_2.4
  - org.apache.commons.fileupload_1.1 
+ - org.apache.commons.io_1.2 
  - org.restlet
 
 

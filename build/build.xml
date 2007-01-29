@@ -83,6 +83,10 @@
 	<property name="lib-httpclient-version" value="3.1" />
 	<property name="lib-httpclient-id" value="${lib-httpclient-package}_${lib-httpclient-version}" />
 
+	<property name="lib-io-package" value="org.apache.commons.io" />
+	<property name="lib-io-version" value="1.2" />
+	<property name="lib-io-id" value="${lib-io-package}_${lib-io-version}" />
+
 	<property name="lib-javamail-package" value="javax.mail" />
 	<property name="lib-javamail-version" value="1.4" />
 	<property name="lib-javamail-id" value="${lib-javamail-package}_${lib-javamail-version}" />
@@ -315,6 +319,7 @@
 		<pathelement path="${classes}/${mod-ri-id}" />
 		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-fileupload-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-io-id}" includes="*.jar" />
 	</path>
 
 	<path id="mod-freemarker-path">
@@ -1055,6 +1060,7 @@
 		<packageLibrary name="fileupload" />
 		<packageLibrary name="freemarker" />
 		<packageLibrary name="httpclient" />
+		<packageLibrary name="io" />
 		<packageLibrary name="javamail" />
 <!-- disabled for 1.0	<packageLibrary name="jetty5" /> -->
 		<packageLibrary name="jetty" />

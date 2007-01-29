@@ -5,6 +5,16 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - Added missing dependency on Apache Commons IO for the Commons FileUpload library. Reported by Thierry Boileau.
+ 
+[API changes]
+ - 
+ 
+[Enhancements] 
+ - 
+
+1.0 RC4 (2007-01-26)
+[Bugs fixed]
  - Guard.authorize() doesn't call authenticate() anymore as doHandle() was already checking
    this point. Was pontially resulting in two calls to authenticate(). Reported by Vincent Lari.
  - Replaced "RESTlet" by "Restlet" in all logos to match the actual project name.
