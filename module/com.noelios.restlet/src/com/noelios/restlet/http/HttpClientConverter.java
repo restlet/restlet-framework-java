@@ -83,7 +83,7 @@ public class HttpClientConverter extends HttpConverter {
     /**
      * Commits the changes to a handled HTTP client call back into the original
      * uniform call. The default implementation first invokes the
-     * "addResponseHeaders" the asks the "htppCall" to send the response back to
+     * "addResponseHeaders" then asks the "htppCall" to send the response back to
      * the client.
      * 
      * @param httpCall

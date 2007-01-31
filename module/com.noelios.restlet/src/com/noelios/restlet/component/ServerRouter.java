@@ -56,7 +56,7 @@ public class ServerRouter extends Router {
             getRoutes().add(new HostRoute(this, host));
         }
 
-        // Also attach the local host if it exists
+        // Also attach the default host if it exists
         if (getComponent().getDefaultHost() != null) {
             getRoutes().add(
                     new HostRoute(this, getComponent().getDefaultHost()));

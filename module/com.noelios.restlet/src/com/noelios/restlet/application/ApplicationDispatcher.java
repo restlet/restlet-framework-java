@@ -68,14 +68,14 @@ public class ApplicationDispatcher extends Uniform {
                 this.applicationContext.getWarClient()
                         .handle(request, response);
             } else {
-                if (this.applicationContext.getApplication()
+                if (!this.applicationContext.getApplication()
                         .getConnectorService().getClientProtocols().contains(
                                 protocol)) {
                     this.applicationContext
                             .getLogger()
-                            .warning(
+                            .fine(
                                     "The protocol used by this request is not declared in the application's connector service. "
-                                            + "Please update your list of client connectors and restart your application.");
+                                            + "Please update the list of client connectors used by your application and restart it.");
                 }
 
                 this.applicationContext.getParentContext().getDispatcher()

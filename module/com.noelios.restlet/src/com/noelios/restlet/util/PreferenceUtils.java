@@ -40,7 +40,7 @@ import org.restlet.data.Preference;
  */
 public class PreferenceUtils {
     /**
-     * Formats a list of preferences.
+     * Formats a list of preferences with a comma separator.
      * 
      * @param prefs
      *            The list of preferences.
@@ -121,7 +121,8 @@ public class PreferenceUtils {
     }
 
     /**
-     * Formats a quality value.
+     * Formats a quality value.<br/> If the quality is invalid, an
+     * IllegalArgumentException is thrown.
      * 
      * @param quality
      *            The quality value as a float.
@@ -142,7 +143,8 @@ public class PreferenceUtils {
     }
 
     /**
-     * Parses a quality value.
+     * Parses a quality value.<br/> If the quality is invalid, an
+     * IllegalArgumentException is thrown.
      * 
      * @param quality
      *            The quality value as a string.
@@ -165,8 +167,7 @@ public class PreferenceUtils {
     }
 
     /**
-     * Indicates if the quality value is valid.<br/> Otherwise an
-     * IllegalArgumentException is thrown.
+     * Indicates if the quality value is valid.
      * 
      * @param quality
      *            The quality value.

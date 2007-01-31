@@ -96,9 +96,8 @@ public class HttpRequest extends Request {
             setConfidential(true);
         } else {
             // We don't want to autocreate the security data just for this
-            // information
-            // Because that will by the default value of this property if read
-            // by someone.
+            // information, because that will by the default value of this
+            // property if read by someone.
         }
 
         // Set the host reference
@@ -115,7 +114,8 @@ public class HttpRequest extends Request {
         // Set the resource reference
         setResourceRef(new Reference(getHostRef(), httpCall.getRequestUri()));
         if (getResourceRef().isRelative()) {
-            setResourceRef(new Reference(getHostRef(), getHostRef().toString() +  httpCall.getRequestUri()));
+            setResourceRef(new Reference(getHostRef(), getHostRef().toString()
+                    + httpCall.getRequestUri()));
         }
     }
 
@@ -181,8 +181,7 @@ public class HttpRequest extends Request {
                 // This information is only safe for intermediary components
                 // within your local network.
                 // Other addresses could easily be changed by setting a fake
-                // header and should not
-                // be trusted for serious security checks.
+                // header and should not be trusted for serious security checks.
                 String header = getHttpCall().getRequestHeaders().getValues(
                         HttpConstants.HEADER_X_FORWARDED_FOR);
                 if (header != null) {

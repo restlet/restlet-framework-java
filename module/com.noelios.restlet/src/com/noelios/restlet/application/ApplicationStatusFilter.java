@@ -58,7 +58,7 @@ public class ApplicationStatusFilter extends StatusFilter {
     }
 
     /**
-     * Returns a representation for the given status.<br/> In order to
+     * Returns a representation for the given status.<br/>In order to
      * customize the default representation, this method can be overriden.
      * 
      * @param status

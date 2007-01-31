@@ -128,11 +128,11 @@ public class HttpClientCall extends HttpCall {
                 if (connectorService != null)
                     connectorService.beforeSend(entity);
 
-                // In order to workaround bug #6472250, it is very important to
-                // reuse that exact same
-                // "rs" reference when manipulating the request stream,
-                // otherwise "infufficient data sent" exceptions
-                // will occur in "fixedLengthMode"
+                // In order to workaround bug #6472250
+                // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
+                // it is very important to reuse that exact same "rs" reference
+                // when manipulating the request stream, otherwise "infufficient
+                // data sent" exceptions will occur in "fixedLengthMode"
                 OutputStream rs = getRequestStream();
                 WritableByteChannel wbc = getRequestChannel();
                 if (wbc != null) {
@@ -235,7 +235,7 @@ public class HttpClientCall extends HttpCall {
                     String value = hr.readValue();
                     while (value != null) {
                         Encoding encoding = new Encoding(value);
-                        if(!encoding.equals(Encoding.IDENTITY)){
+                        if (!encoding.equals(Encoding.IDENTITY)) {
                             result.getEncodings().add(encoding);
                         }
                         value = hr.readValue();

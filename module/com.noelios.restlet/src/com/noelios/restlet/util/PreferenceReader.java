@@ -224,7 +224,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
     }
 
     /**
-     * Extract the media parameters. Only leaveas the quality parameter if
+     * Extract the media parameters. Only leave as the quality parameter if
      * found. Modifies the parameters list.
      * 
      * @param parameters

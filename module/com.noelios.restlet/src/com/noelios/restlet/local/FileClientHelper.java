@@ -85,7 +85,7 @@ public class FileClientHelper extends LocalClientHelper {
             throw new IllegalArgumentException(
                     "Protocol \""
                             + scheme
-                            + "\" not supported by the connector. Only FILE and CONTEXT are supported.");
+                            + "\" not supported by the connector. Only FILE is supported.");
         }
     }
 
