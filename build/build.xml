@@ -617,7 +617,7 @@
 				<property key="checkstyle.cache.file" file="${temp}/checkstyle/cachefile"/>
 				<formatter type="xml" tofile="${temp}/checkstyle/${mod-@{name}-id}-cs.xml"/>
 			</checkstyle>
-	        <style in="${temp}/checkstyle/${mod-@{name}-id}-cs.xml" out="${temp}/checkstyle/${mod-@{name}-id}-cs.html"
+	        <xslt in="${temp}/checkstyle/${mod-@{name}-id}-cs.xml" out="${temp}/checkstyle/${mod-@{name}-id}-cs.html"
 	               style="checks.xsl"/>			
 		</sequential>
 	</macrodef>
