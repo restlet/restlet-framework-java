@@ -47,10 +47,10 @@ public class Application extends org.restlet.Application {
         comp.start();
     }
 
-    /** Open and keep the db4o object container. */
     private ObjectContainer container;
 
     public Application() {
+        /** Open and keep the db4o object container. */
         this.container = Db4o.openFile(System.getProperty("user.home")
                 + File.separator + "restbook.dbo");
     }
