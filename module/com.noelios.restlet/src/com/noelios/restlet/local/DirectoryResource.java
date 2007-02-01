@@ -252,7 +252,8 @@ public class DirectoryResource extends Resource {
             // We allow the transfer of the PUT calls only if the readOnly flag
             // is not set
             if (!getDirectory().isModifiable()) {
-                status = Status.CLIENT_ERROR_FORBIDDEN;
+                status = new Status(Status.CLIENT_ERROR_FORBIDDEN,
+                        "No modification allowed.");
             } else {
                 Request contextRequest = new Request(Method.DELETE,
                         this.targetUri);
@@ -275,7 +276,7 @@ public class DirectoryResource extends Resource {
                             // We found variants, but not the right one
                             contextResponse
                                     .setStatus(new Status(
-                                            Status.CLIENT_ERROR_UNAUTHORIZED,
+                                            Status.CLIENT_ERROR_NOT_ACCEPTABLE,
                                             "Unable to process properly the request. Several variants exist but none of them suits precisely. "));
                         }
                     } else {
@@ -308,7 +309,8 @@ public class DirectoryResource extends Resource {
         // We allow the transfer of the PUT calls only if the readOnly flag is
         // not set
         if (!getDirectory().isModifiable()) {
-            status = Status.CLIENT_ERROR_FORBIDDEN;
+            status = new Status(Status.CLIENT_ERROR_FORBIDDEN,
+                    "No modification allowed.");
         } else {
             Request contextRequest = new Request(Method.PUT, this.targetUri);
             contextRequest.setEntity(variant);

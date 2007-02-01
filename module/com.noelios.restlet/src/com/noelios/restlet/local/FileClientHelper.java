@@ -240,7 +240,7 @@ public class FileClientHelper extends LocalClientHelper {
                             // The request could be more precise
                             response
                                     .setStatus(new Status(
-                                            Status.CLIENT_ERROR_UNAUTHORIZED,
+                                            Status.CLIENT_ERROR_NOT_ACCEPTABLE,
                                             "Unable to process properly the request. Several variants exist but none of them suits precisely."));
                         } else {
                             // This resource does not exist, yet.
