@@ -135,4 +135,15 @@ public class Context {
             this.parameters = new Form();
         return this.parameters;
     }
+
+    /**
+     * Sets the logger.
+     * 
+     * @param logger
+     *            The logger.
+     */
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+
 }
