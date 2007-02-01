@@ -103,6 +103,7 @@ public final class Conditions {
         // Is the "if-Match" rule followed or not?
         if (getMatch() != null && getMatch().size() != 0) {
             boolean matched = false;
+            boolean failed = false;
 
             if (variant != null) {
                 // If a tag exists
@@ -117,9 +118,15 @@ public final class Conditions {
                     }
                 }
             } else {
-                matched = getMatch().get(0).equals(Tag.ALL);
+                // see
+                // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24
+                // If none of the entity tags match, or if "*" is given and no
+                // current entity exists, the server MUST NOT perform the
+                // requested method
+                failed = getMatch().get(0).equals(Tag.ALL);
             }
-            if (!matched) {
+            failed = failed || !matched;
+            if (failed) {
                 result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
             }
         }

@@ -346,8 +346,9 @@ public class Resource {
                     bContinue = false;
                 }
             }
-
-            if (preferredVariant != null && bContinue) {
+            // The conditions have to be checked even if there is no preferred
+            // variant.
+            if (bContinue) {
                 Status status = getRequest().getConditions().getStatus(
                         getRequest().getMethod(), preferredVariant);
 
@@ -438,9 +439,9 @@ public class Resource {
             }
         }
 
-        // The given representation (if any) must meet the request conditions
+        // The given representation (even if null) must meet the request conditions
         // (if any).
-        if (selectedVariant != null && getRequest().getConditions().hasSome()) {
+        if (getRequest().getConditions().hasSome()) {
             Status status = getRequest().getConditions().getStatus(
                     getRequest().getMethod(), selectedVariant);
             if (status != null) {
@@ -504,7 +505,9 @@ public class Resource {
                     bContinue = false;
                 }
             }
-            if (preferredVariant != null && bContinue) {
+            // The conditions have to be checked even if there is no preferred
+            // variant.
+            if (bContinue) {
                 Status status = getRequest().getConditions().getStatus(
                         getRequest().getMethod(), preferredVariant);
                 if (status != null) {
