@@ -12,6 +12,7 @@ Changes log
  - The default HTTPS connector for Jetty is now BIO based because the NIO one is marked as
    "beta quality" only.
  - Added Context.setLogger() method. Suggested by Alex Combs.
+ - Remove temporarily the WAR support.
  
 [Enhancements] 
  - Enhanced support of Java SE 4.0 via Retrotranslator.
