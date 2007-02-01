@@ -75,7 +75,7 @@ public class DirectoryResource extends Resource {
     /** The resource path relative to the directory URI. */
     private String relativePart;
 
-    /** The context's target URI (file, clap or war URI). */
+    /** The context's target URI (file, clap URI). */
     private String targetUri;
 
     /** Indicates if the target resource is a directory or a file. */
@@ -84,7 +84,7 @@ public class DirectoryResource extends Resource {
     /** Indicates if the target resource is a directory with an index. */
     private boolean targetIndex;
 
-    /** The context's directory URI (file, clap or war URI). */
+    /** The context's directory URI (file, clap URI). */
     private String directoryUri;
 
     /**
@@ -343,9 +343,9 @@ public class DirectoryResource extends Resource {
     }
 
     /**
-     * Returns the context's directory URI (file, clap or war URI).
+     * Returns the context's directory URI (file, clap URI).
      * 
-     * @return The context's directory URI (file, clap or war URI).
+     * @return The context's directory URI (file, clap URI).
      */
     public String getDirectoryUri() {
         return this.directoryUri;
@@ -361,9 +361,9 @@ public class DirectoryResource extends Resource {
     }
 
     /**
-     * Returns the context's target URI (file, clap or war URI).
+     * Returns the context's target URI (file, clap URI).
      * 
-     * @return The context's target URI (file, clap or war URI).
+     * @return The context's target URI (file, clap URI).
      */
     public String getTargetUri() {
         return this.targetUri;
@@ -548,7 +548,7 @@ public class DirectoryResource extends Resource {
     }
 
     /**
-     * Sets the context's target URI (file, clap or war URI).
+     * Sets the context's target URI (file, clap URI).
      * 
      * @param targetUri
      *            The context's target URI.
