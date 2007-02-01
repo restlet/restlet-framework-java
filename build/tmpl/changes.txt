@@ -6,6 +6,7 @@ Changes log
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Added missing dependency on Apache Commons IO for the Commons FileUpload library. Reported by Thierry Boileau.
+ - Fixed unconformity with pre-conditions test when the resource has no representation and the client sends "if-match:*" header.
  
 [API changes]
  - The default HTTPS connector for Jetty is now BIO based because the NIO one is marked as
