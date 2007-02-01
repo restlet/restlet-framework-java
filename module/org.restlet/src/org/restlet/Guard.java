@@ -84,14 +84,14 @@ public class Guard extends Filter {
     }
 
     /**
-     * Indicates if the call is properly authenticated. By default, a call is
-     * authenticated if the request has a challenge response with a correct
-     * login/password couple as verified via the findSecret() method.
-     * 
+     * Indicates if the call is properly authenticated. By default, this
+     * delegates credential checking to authenticate().
+     *
      * @param request
      *            The request to authenticate.
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
+     * @see #checkSecret(identifier,secret)
      */
     public int authenticate(Request request) {
         int result = 0;
@@ -110,11 +110,7 @@ public class Guard extends Filter {
 
                     // Check the credentials
                     if ((identifier != null) && (secret != null)) {
-                        if (secret.equals(findSecret(identifier))) {
-                            result = 1;
-                        } else {
-                            result = -1;
-                        }
+                        result = checkSecret(identifier, secret) ? 1 : -1;
                     }
                 } else {
                     // The challenge schemes are incompatible, we need to
@@ -126,6 +122,19 @@ public class Guard extends Filter {
         }
 
         return result;
+    }
+
+    /**
+     * Indicates if the secret is valid for the given identifier.  By default, 
+     * this returns true given the correct login/password couple as verified
+     * via the findSecret() method.
+     *
+     * @param identifier	the identifier
+     * @param secret		the identifier's secret
+     * @return			true if the secret is valid for the given identifier
+     */
+    protected boolean checkSecret(String identifier, String secret) {
+	return (secret.equals(findSecret(identifier)));
     }
 
     /**
