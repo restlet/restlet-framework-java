@@ -99,7 +99,7 @@ import org.restlet.data.Protocol;
  * <tr>
  * <td>type</td>
  * <td>int</td>
- * <td>1</td>
+ * <td>2</td>
  * <td>The type of Jetty connector to use.<br/> 1 : Selecting NIO connector
  * (Jetty's SslSelectChannelConnector class).<br/> 2 : Blocking BIO connector
  * (Jetty's SslSocketConnector class).</td>
@@ -281,7 +281,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * @return The type of Jetty connector to use.
      */
     public int getType() {
-        return Integer.parseInt(getParameters().getFirstValue("type", "1"));
+        return Integer.parseInt(getParameters().getFirstValue("type", "2"));
     }
 
 }

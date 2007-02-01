@@ -8,7 +8,8 @@ Changes log
  - Added missing dependency on Apache Commons IO for the Commons FileUpload library. Reported by Thierry Boileau.
  
 [API changes]
- - 
+ - The default HTTPS connector for Jetty is now BIO based because the NIO one is marked as
+   "beta quality" only.
  
 [Enhancements] 
  - Enhanced support of Java SE 4.0 via Retrotranslator.
