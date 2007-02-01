@@ -36,7 +36,7 @@ import org.restlet.util.Engine;
 
 /**
  * Finder mapping a directory of local resources. Those resources have
- * representations accessed by the file system, the WAR context or the class
+ * representations accessed by the file system or the class
  * loaders. An automatic content negotiation mechanism (similar to the one in
  * Apache HTTP server) is used to select the best representation of a resource
  * based on the available variants and on the client capabilities and
@@ -56,7 +56,7 @@ public class Directory extends Finder {
     /** The index name, without extensions (ex: "index" or "home"). */
     private String indexName;
 
-    /** The absolute root reference (file, clap or war URI). */
+    /** The absolute root reference (file, clap URI). */
     private Reference rootRef;
 
     /**
@@ -113,18 +113,6 @@ public class Directory extends Finder {
      *            make sure that you register a CLAP connector with your parent
      *            Component.<br>
      *            <br>
-     *            If you serve files from the application's WAR (from a zipped
-     *            file or unzipped in a directory), use war:// URIs and then you
-     *            shouldn't have to register a WAR connector as it is
-     *            automatically provided for applications. However, for WAR
-     *            URIs, you have to define, in the application context, a
-     *            parameter named "warPath" that contains either the location of
-     *            your zipped WAR file or the root directory of your unzipped
-     *            WAR. If you don't define this parameter, it will use the
-     *            ${user.home}/restlet.war value by default. Note that this
-     *            parameter shouldn't directly be set by the Application but by
-     *            the parent Component so that the Application can be portable
-     *            to new environments.
      */
     public Directory(Context context, String rootUri) {
         super(context);
