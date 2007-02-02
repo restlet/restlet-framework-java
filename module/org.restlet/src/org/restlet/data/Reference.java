@@ -561,6 +561,12 @@ public class Reference {
      *         identifiers or -1 if the port number does not exist.
      */
     public int getHostPort() {
+        Logger
+        .getLogger(Reference.class.getCanonicalName())
+        .log(
+                Level.WARNING,
+                "[hostRef,requestUri]=["+getBaseRef()+","+internalRef+"]");
+
         int result = -1;
         String authority = getAuthority();
 
