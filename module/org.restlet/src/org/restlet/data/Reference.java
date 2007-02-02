@@ -33,21 +33,21 @@ import java.util.logging.Logger;
  * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br/>
  * 
  * <pre>
- *                         URI reference        = absolute-reference | relative-reference
- *                      
- *                         absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
- *                         scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
- *                         hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
- *                         authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
- *                                                        
- *                         relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
- *                         relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
- *                                                        
- *                         path-abempty         = begins with &quot;/&quot; or is empty
- *                         path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
- *                         path-noscheme        = begins with a non-colon segment
- *                         path-rootless        = begins with a segment
- *                         path-empty           = zero characters
+ *                          URI reference        = absolute-reference | relative-reference
+ *                       
+ *                          absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
+ *                          scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
+ *                          hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
+ *                          authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
+ *                                                         
+ *                          relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
+ *                          relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
+ *                                                         
+ *                          path-abempty         = begins with &quot;/&quot; or is empty
+ *                          path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
+ *                          path-noscheme        = begins with a non-colon segment
+ *                          path-rootless        = begins with a segment
+ *                          path-empty           = zero characters
  * </pre>
  * 
  * Note that this class doesn't encode or decode the reserved characters. It
@@ -561,12 +561,6 @@ public class Reference {
      *         identifiers or -1 if the port number does not exist.
      */
     public int getHostPort() {
-        Logger
-        .getLogger(Reference.class.getCanonicalName())
-        .log(
-                Level.WARNING,
-                "[hostRef,requestUri]=["+getBaseRef()+","+internalRef+"]");
-
         int result = -1;
         String authority = getAuthority();
 
@@ -574,7 +568,14 @@ public class Reference {
             int index = authority.indexOf(':');
 
             if (index != -1) {
-                result = Integer.parseInt(authority.substring(index + 1));
+                try {
+                    result = Integer.parseInt(authority.substring(index + 1));
+                } catch (NumberFormatException nfe) {
+                    Logger.getLogger(Reference.class.getCanonicalName()).log(
+                            Level.WARNING,
+                            "Can't parse hostPort : [hostRef,requestUri]=["
+                                    + getBaseRef() + "," + internalRef + "]");
+                }
             }
         }
 
