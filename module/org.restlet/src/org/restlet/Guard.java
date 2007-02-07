@@ -91,7 +91,7 @@ public class Guard extends Filter {
      *            The request to authenticate.
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
-     * @see #checkSecret(identifier,secret)
+     * @see #checkSecret(String, String)
      */
     public int authenticate(Request request) {
         int result = 0;
