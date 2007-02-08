@@ -74,6 +74,7 @@ public class TunnelFilter extends Filter {
     public void beforeHandle(Request request, Response response) {
         super.beforeHandle(request, response);
         Form query = request.getResourceRef().getQueryAsForm(null);
+        boolean queryModified = false;
 
         // Tunnels the extracted attributes into the proper call objects.
         if (getApplication().getTunnelService().isMethodTunnel()
@@ -83,10 +84,11 @@ public class TunnelFilter extends Filter {
 
             if (methodName != null) {
                 request.setMethod(Method.valueOf(methodName));
-                // The method parameter is removed from the list of parameters
+
+                // The parameter is removed from the query
                 query.removeFirst(getApplication().getTunnelService()
                         .getMethodParameter());
-                request.getResourceRef().setQuery(query.getQueryString(null));
+                queryModified = true;
             }
         }
 
@@ -113,6 +115,11 @@ public class TunnelFilter extends Filter {
                     request.getClientInfo().getAcceptedCharacterSets().add(
                             new Preference<CharacterSet>(
                                     (CharacterSet) metadata));
+
+                    // The parameter is removed from the query
+                    query.removeFirst(getApplication().getTunnelService()
+                            .getCharacterSetAttribute());
+                    queryModified = true;
                 }
             }
 
@@ -124,6 +131,11 @@ public class TunnelFilter extends Filter {
                     request.getClientInfo().getAcceptedEncodings().clear();
                     request.getClientInfo().getAcceptedEncodings().add(
                             new Preference<Encoding>((Encoding) metadata));
+
+                    // The parameter is removed from the query
+                    query.removeFirst(getApplication().getTunnelService()
+                            .getEncodingAttribute());
+                    queryModified = true;
                 }
             }
 
@@ -135,6 +147,11 @@ public class TunnelFilter extends Filter {
                     request.getClientInfo().getAcceptedLanguages().clear();
                     request.getClientInfo().getAcceptedLanguages().add(
                             new Preference<Language>((Language) metadata));
+
+                    // The parameter is removed from the query
+                    query.removeFirst(getApplication().getTunnelService()
+                            .getLanguageAttribute());
+                    queryModified = true;
                 }
             }
 
@@ -146,8 +163,18 @@ public class TunnelFilter extends Filter {
                     request.getClientInfo().getAcceptedMediaTypes().clear();
                     request.getClientInfo().getAcceptedMediaTypes().add(
                             new Preference<MediaType>((MediaType) metadata));
+
+                    // The parameter is removed from the query
+                    query.removeFirst(getApplication().getTunnelService()
+                            .getMediaTypeAttribute());
+                    queryModified = true;
                 }
             }
+        }
+
+        // Update the query if it has been modified
+        if (queryModified) {
+            request.getResourceRef().setQuery(query.getQueryString(null));
         }
     }
 
