@@ -7,17 +7,19 @@ Changes log
 [Bugs fixed]
  - Added missing dependency on Apache Commons IO for the Commons FileUpload library. Reported by Thierry Boileau.
  - Fixed unconformity with pre-conditions test when the resource has no representation and the client sends "if-match:*" header.
- 
+ - The TunnelService wasn't removing the preference parameters from the query after usage. Reported by Valdis Rigdon.
+
 [API changes]
  - The default HTTPS connector for Jetty is now BIO based because the NIO one is marked as
    "beta quality" only.
  - Added Context.setLogger() method. Suggested by Alex Combs.
  - Remove temporarily the WAR support.
- 
+
 [Enhancements] 
  - Enhanced support of Java SE 4.0 via Retrotranslator.
  - The checking of identifier's secret is deported in a delegated method. Contributed by Valdis Rigdon. 
- 
+ - Refactored the build files to extract the Web files to another SVN repository.
+
 1.0 RC4 (2007-01-26)
 [Bugs fixed]
  - Guard.authorize() doesn't call authenticate() anymore as doHandle() was already checking
