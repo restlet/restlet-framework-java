@@ -847,7 +847,6 @@
 	<target name="generate" depends="init" description="Generate template-based files">
 		<!-- Generate the Changes file -->
 		<copy file="${tmpl}/text/changes.txt" todir="${docs}" overwrite="true" />
-		<replace file="${docs}/changes.txt" token="@stability@" value="${stability}" />
 		<replace file="${docs}/changes.txt" token="@release-date@" value="${release-date}" />
 		<replace file="${docs}/changes.txt" token="@version-full@" value="${version-full}" />
 		<replace file="${docs}/changes.txt" token="@version-compact@" value="${version-compact}" />
