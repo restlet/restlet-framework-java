@@ -58,7 +58,7 @@ import org.restlet.util.Template;
  * <br>
  * Typically created by Finders, Resource instances are the final handlers of
  * calls received by server connectors. Unlike the other handlers in the
- * processing chain, a Resource is genarally not shared between calls and
+ * processing chain, a Resource is generally not shared between calls and
  * doesn't have to be thread-safe. This is the point where the RESTful view of
  * your Web application can be integrated with your domain objects. Those domain
  * objects can be implemented using any technology, relational databases, object
