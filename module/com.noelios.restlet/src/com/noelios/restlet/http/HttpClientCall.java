@@ -131,7 +131,7 @@ public class HttpClientCall extends HttpCall {
                 // In order to workaround bug #6472250
                 // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
                 // it is very important to reuse that exact same "rs" reference
-                // when manipulating the request stream, otherwise "infufficient
+                // when manipulating the request stream, otherwise "insufficient
                 // data sent" exceptions will occur in "fixedLengthMode"
                 OutputStream rs = getRequestStream();
                 WritableByteChannel wbc = getRequestChannel();
