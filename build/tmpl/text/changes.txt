@@ -19,7 +19,8 @@ Changes log
  - Enhanced support of Java SE 4.0 via Retrotranslator.
  - The checking of identifier's secret is deported in a delegated method. Contributed by Valdis Rigdon. 
  - Refactored the build files to extract the Web files to another SVN repository.
-
+ - Add comments describing status codes and methods (from HTTP, Webdav RFC). Suggested by Chuck Hinson.
+ 
 1.0 RC4 (2007-01-26)
 [Bugs fixed]
  - Guard.authorize() doesn't call authenticate() anymore as doHandle() was already checking
