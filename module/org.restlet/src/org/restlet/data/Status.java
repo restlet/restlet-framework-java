@@ -58,7 +58,7 @@ public final class Status extends Metadata {
      * server has a reasonable expectation that the request will take
      * significant time to complete.
      * 
-     * @see <a href="http://www.ietf.org/rfc/rfc2518">WEBDAV RFC - 10.1 102
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_102">WEBDAV RFC - 10.1 102
      *      Processing</a>
      */
     public static final Status INFO_PROCESSING = new Status(102);
@@ -139,7 +139,7 @@ public final class Status extends Metadata {
      * This response is used to inform the client that the HTTP response entity
      * contains a set of status codes generated during the method invocation.
      * 
-     * @see <a href="http://www.ietf.org/rfc/rfc2518">WEBDAV RFC - 10.2 207
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_207">WEBDAV RFC - 10.2 207
      *      Multi-Status</a>
      */
     public static final Status SUCCESS_MULTI_STATUS = new Status(207);
@@ -410,7 +410,7 @@ public final class Status extends Metadata {
      * request entity (syntactically correct) but was unable to process the
      * contained instructions.
      * 
-     * @see <a href="http://www.ietf.org/rfc/rfc2518">WEBDAV RFC - 10.3 422
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_422">WEBDAV RFC - 10.3 422
      *      Unprocessable Entity</a>
      */
     public static final Status CLIENT_ERROR_UNPROCESSABLE_ENTITY = new Status(
@@ -420,7 +420,7 @@ public final class Status extends Metadata {
      * The source or destination resource of a method is locked (or temporarily
      * involved in another process).
      * 
-     * @see <a href="http://www.ietf.org/rfc/rfc2518">WEBDAV RFC - 10.4 423
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_423">WEBDAV RFC - 10.4 423
      *      Locked</a>
      */
     public static final Status CLIENT_ERROR_LOCKED = new Status(423);
@@ -430,7 +430,7 @@ public final class Status extends Metadata {
      * resource because the requested action depended on another action and that
      * action failed.
      * 
-     * @see <a href="http://www.ietf.org/rfc/rfc2518">WEBDAV RFC - 10.5 424
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_424">WEBDAV RFC - 10.5 424
      *      Failed Dependency</a>
      */
     public static final Status CLIENT_ERROR_FAILED_DEPENDENCY = new Status(424);
@@ -503,7 +503,7 @@ public final class Status extends Metadata {
      * because the server is unable to store the representation needed to
      * successfully complete the request.
      * 
-     * @see <a href="http://www.ietf.org/rfc/rfc2518">WEBDAV RFC - 10.6 507
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_507">WEBDAV RFC - 10.6 507
      *      Insufficient Storage</a>
      */
     public static final Status SERVER_ERROR_INSUFFICIENT_STORAGE = new Status(
