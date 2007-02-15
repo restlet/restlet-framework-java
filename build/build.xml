@@ -29,8 +29,8 @@
 	<property name="dist-base" value="dist" />
 	<property name="dist-path" value="restlet-${version-compact}" />
 	<property name="dist" value="${dist-base}/${dist-path}" />
-	<property name="lib" value="../library" />
-	<property name="mod" value="../module" />
+	<property name="lib" value="../libraries" />
+	<property name="mod" value="../modules" />
 	<property name="tmpl" value="tmpl" />
 	<property name="docs" value="${temp}/docs" />
 	<property name="docs-api" value="${docs}/api" />
