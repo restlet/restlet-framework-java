@@ -80,12 +80,6 @@ public class Redirector extends Restlet {
      */
     public static final int MODE_DISPATCHER = 5;
 
-    /**
-     * @deprecated Use the MODE_DISPATCHER constant instead.
-     */
-    @Deprecated
-    public static final int MODE_CONNECTOR = 5;
-
     /** The target URI pattern. */
     protected String targetTemplate;
 
@@ -102,7 +96,7 @@ public class Redirector extends Restlet {
      * @see org.restlet.util.Template
      */
     public Redirector(Context context, String targetTemplate) {
-        this(context, targetTemplate, MODE_CONNECTOR);
+        this(context, targetTemplate, MODE_DISPATCHER);
     }
 
     /**

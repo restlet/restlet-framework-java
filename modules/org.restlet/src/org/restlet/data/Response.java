@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 
 /**
@@ -59,70 +58,6 @@ public class Response extends Message {
 
     /** The status. */
     private Status status;
-
-    /**
-     * Default constructor.
-     */
-    @Deprecated
-    public Response() {
-        this((Request) null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param status
-     *            The status.
-     */
-    @Deprecated
-    public Response(Status status) {
-        this(status, null, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param status
-     *            The status.
-     * @param redirectionRef
-     *            The redirection reference.
-     */
-    @Deprecated
-    public Response(Status status, Reference redirectionRef) {
-        this(status, null, redirectionRef);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param status
-     *            The status.
-     * @param entity
-     *            The entity.
-     */
-    @Deprecated
-    public Response(Status status, Representation entity) {
-        this(status, entity, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param status
-     *            The status.
-     * @param entity
-     *            The entity.
-     * @param redirectionRef
-     *            The redirection reference.
-     */
-    @Deprecated
-    public Response(Status status, Representation entity,
-            Reference redirectionRef) {
-        this((Request) null);
-        setEntity(entity);
-        setStatus(status);
-        setRedirectRef(redirectionRef);
-    }
 
     /**
      * Constructor.

@@ -282,141 +282,14 @@ public final class DateUtils {
 
         /** {@inheritDoc} */
         @Override
-        @Deprecated
-        public int getDate() {
-            return delegate.getDate();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public int getDay() {
-            return delegate.getDay();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public int getHours() {
-            return delegate.getHours();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public int getMinutes() {
-            return delegate.getMinutes();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public int getMonth() {
-            return delegate.getMonth();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public int getSeconds() {
-
-            return delegate.getSeconds();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public long getTime() {
             return delegate.getTime();
         }
 
         /** {@inheritDoc} */
         @Override
-        @Deprecated
-        public int getTimezoneOffset() {
-            return delegate.getTimezoneOffset();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public int getYear() {
-            return delegate.getYear();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public int hashCode() {
             return delegate.hashCode();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public void setDate(int date) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public void setHours(int hours) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public void setMinutes(int minutes) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public void setMonth(int month) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public void setSeconds(int seconds) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public void setTime(long time) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public void setYear(int year) {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public String toGMTString() {
-            return delegate.toGMTString();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @Deprecated
-        public String toLocaleString() {
-            return delegate.toLocaleString();
         }
 
         /** {@inheritDoc} */
