@@ -262,7 +262,7 @@ public class HttpRequest extends Request {
                     }
                 } catch (Exception e) {
                     this.context.getLogger().log(
-                            Level.WARNING,
+                            Level.INFO,
                             "Unable to process the if-match header: "
                                     + ifMatchHeader);
                 }
@@ -290,7 +290,7 @@ public class HttpRequest extends Request {
                     }
                 } catch (Exception e) {
                     this.context.getLogger().log(
-                            Level.WARNING,
+                            Level.INFO,
                             "Unable to process the if-none-match header: "
                                     + ifNoneMatchHeader);
                 }
