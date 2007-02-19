@@ -34,8 +34,8 @@
 	<property name="tmpl" value="tmpl" />
 	<property name="docs" value="${temp}/docs" />
 	<property name="docs-api" value="${docs}/api" />
-	<property name="docs-ext" value="${docs}/ext" />
 	<property name="docs-nre" value="${docs}/nre" />
+	<property name="docs-ext" value="${docs}/ext" />
 	<property name="jdk1.4-home" value="jdk1.4-home" />
 		
 	<!-- Library properties -->
@@ -979,6 +979,37 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 	
+		<javadoc packagenames="com.noelios.restlet.*"
+				 excludepackagenames="${exclude-packages}"
+		         destdir="${docs-nre}"
+		         classpathref="path-all"
+		         author="true"
+		         version="true"
+		         use="true"
+		         windowtitle="Noelios Restlet Engine ${version-full}"
+		         doctitle="Noelios Restlet Engine ${version-full}"
+	             overview="${tmpl}/javadocs/overview-nre.html"
+		         verbose="${verbose}">
+			<sourcepath>
+				<pathelement path="${mod}/${mod-ri-id}/src/" />
+			</sourcepath>
+	
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-2007 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+			</bottom>
+	
+			<group title="${restlet-nre-impl}">
+				<package name="com.noelios.restlet.impl*" />
+			</group>
+	
+			<group title="${restlet-nre-ext}">
+				<package name="com.noelios.restlet.ext*" />
+			</group>
+		
+			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+		</javadoc>
+	
 		<javadoc packagenames="org.restlet.ext.*,com.noelios.restlet.ext.*"
 				 excludepackagenames="${exclude-packages}"
 		         destdir="${docs-ext}"
@@ -1032,37 +1063,6 @@
 			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://www.restlet.org/docs/nre/" packagelistLoc="${docs-nre}" offline="true" />
 			<link href="http://www.simpleframework.org/javadoc/" />
-		</javadoc>
-	
-		<javadoc packagenames="com.noelios.restlet.*"
-				 excludepackagenames="${exclude-packages}"
-		         destdir="${docs-nre}"
-		         classpathref="path-all"
-		         author="true"
-		         version="true"
-		         use="true"
-		         windowtitle="Noelios Restlet Engine ${version-full}"
-		         doctitle="Noelios Restlet Engine ${version-full}"
-	             overview="${tmpl}/javadocs/overview-nre.html"
-		         verbose="${verbose}">
-			<sourcepath>
-				<pathelement path="${mod}/${mod-ri-id}/src/" />
-			</sourcepath>
-	
-			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2007 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
-			</bottom>
-	
-			<group title="${restlet-nre-impl}">
-				<package name="com.noelios.restlet.impl*" />
-			</group>
-	
-			<group title="${restlet-nre-ext}">
-				<package name="com.noelios.restlet.ext*" />
-			</group>
-		
-			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 	</target>
 
