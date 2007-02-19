@@ -7,7 +7,8 @@ Changes log
 [Bugs fixed]
  - Added missing dependency on Apache Commons IO for the Commons FileUpload library. Reported by Thierry Boileau.
  - Fixed unconformity with pre-conditions test when the resource has no representation and the client sends "if-match:*" header.
- - The TunnelService wasn't removing the preference parameters from the query after usage. Reported by Valdis Rigdon.
+ - TunnelService wasn't removing the preference parameters from the query after usage. Reported by Valdis Rigdon.
+ - Fixed potential NPE in Router.detach() method. Reported by Alex Combs.
 
 [API changes]
  - The default HTTPS connector for Jetty is now BIO based because the NIO one is marked as

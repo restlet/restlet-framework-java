@@ -38,8 +38,8 @@ import org.restlet.resource.Representation;
 /**
  * Filter compressing entities. The best encoding is automatically selected
  * based on the preferences of the client and on the encoding supported by NRE:
- * GZip, Zip and Deflate.<br/> If the {@link org.restlet.data.Content} has an
- * unknown size, it will always be a candidate for encoding. Candidate
+ * GZip, Zip and Deflate.<br/> If the {@link org.restlet.resource.Representation}
+ * has an unknown size, it will always be a candidate for encoding. Candidate
  * representations need to respect media type criteria by the lists of accepted
  * and ignored media types.
  * 
