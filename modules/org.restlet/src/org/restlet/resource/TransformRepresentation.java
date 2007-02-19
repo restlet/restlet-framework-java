@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.util.logging.Level;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -26,6 +27,9 @@ import org.restlet.data.Response;
 public class TransformRepresentation extends OutputRepresentation {
     /** The source representation to transform. */
     private Representation source;
+
+    /** The transformer to be used and reused. */
+    private Transformer transformer;
 
     /** The XSLT transform sheet to apply to message entities. */
     private Representation transformSheet;
@@ -62,6 +66,37 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /**
+     * Returns the transformer to be used and reused.
+     * 
+     * @return The transformer to be used and reused.
+     */
+    public Transformer getTransformer() throws IOException {
+        if (this.transformer == null) {
+            try {
+                // Prepare the XSLT transformer documents
+                StreamSource transformSheet = new StreamSource(
+                        getTransformSheet().getStream());
+
+                // Create a new transformer as they are not thread safe
+                this.transformer = TransformerFactory.newInstance()
+                        .newTransformer(transformSheet);
+
+                // Set the URI resolver
+                transformer.setURIResolver(getURIResolver());
+            } catch (TransformerConfigurationException tce) {
+                throw new IOException("Transformer configuration exception. "
+                        + tce.getMessage());
+            } catch (TransformerFactoryConfigurationError tfce) {
+                throw new IOException(
+                        "Transformer factory configuration exception. "
+                                + tfce.getMessage());
+            }
+        }
+
+        return this.transformer;
+    }
+
+    /**
      * Returns the XSLT transform sheet to apply to message entities.
      * 
      * @return The XSLT transform sheet to apply to message entities.
@@ -91,30 +126,14 @@ public class TransformRepresentation extends OutputRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        // Prepare the XSLT transformer documents
-        StreamSource sourceDocument = new StreamSource(
-                getSourceRepresentation().getStream());
-        StreamSource transformSheet = new StreamSource(getTransformSheet()
-                .getStream());
-        StreamResult resultDocument = new StreamResult(outputStream);
-
         try {
-            // Create a new transformer as they are not thread safe
-            javax.xml.transform.Transformer transformer = TransformerFactory
-                    .newInstance().newTransformer(transformSheet);
-
-            // Set the URI resolver
-            transformer.setURIResolver(getURIResolver());
+            // Prepare the source and result documents
+            StreamSource sourceDocument = new StreamSource(
+                    getSourceRepresentation().getStream());
+            StreamResult resultDocument = new StreamResult(outputStream);
 
             // Generates the result of the transformation
-            transformer.transform(sourceDocument, resultDocument);
-        } catch (TransformerConfigurationException tce) {
-            throw new IOException("Transformer configuration exception. "
-                    + tce.getMessage());
-        } catch (TransformerFactoryConfigurationError tfce) {
-            throw new IOException(
-                    "Transformer factory configuration exception. "
-                            + tfce.getMessage());
+            getTransformer().transform(sourceDocument, resultDocument);
         } catch (TransformerException te) {
             throw new IOException("Transformer exception. " + te.getMessage());
         }
