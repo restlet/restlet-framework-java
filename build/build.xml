@@ -51,6 +51,10 @@
 	<property name="lib-backport-version" value="2.2" />
 	<property name="lib-backport-id" value="${lib-backport-package}_${lib-backport-version}" />
 
+	<property name="lib-bouncycastle-package" value="org.bouncycastle" />
+	<property name="lib-bouncycastle-version" value="1.34" />
+	<property name="lib-bouncycastle-id" value="${lib-bouncycastle-package}_${lib-bouncycastle-version}" />
+
 	<property name="lib-codec-package" value="org.apache.commons.codec" />
 	<property name="lib-codec-version" value="1.3" />
 	<property name="lib-codec-id" value="${lib-codec-package}_${lib-codec-version}" />
@@ -79,6 +83,10 @@
 	<property name="lib-freemarker-version" value="2.3" />
 	<property name="lib-freemarker-id" value="${lib-freemarker-package}_${lib-freemarker-version}" />
 
+	<property name="lib-grizzly-package" value="com.sun.grizzly" />
+	<property name="lib-grizzly-version" value="1.5" />
+	<property name="lib-grizzly-id" value="${lib-grizzly-package}_${lib-grizzly-version}" />
+
 	<property name="lib-httpclient-package" value="org.apache.commons.httpclient" />
 	<property name="lib-httpclient-version" value="3.1" />
 	<property name="lib-httpclient-id" value="${lib-httpclient-package}_${lib-httpclient-version}" />
@@ -106,6 +114,10 @@
 	<property name="lib-junit-package" value="org.junit" />
 	<property name="lib-junit-version" value="4.1" />
 	<property name="lib-junit-id" value="${lib-junit-package}_${lib-junit-version}" />
+
+	<property name="lib-jxta-package" value="net.jxta" />
+	<property name="lib-jxta-version" value="2.5" />
+	<property name="lib-jxta-id" value="${lib-jxta-package}_${lib-jxta-version}" />
 
 	<property name="lib-logging-package" value="org.apache.commons.logging" />
 	<property name="lib-logging-version" value="1.1" />
@@ -188,6 +200,10 @@
 	<property name="mod-freemarker-version" value="${lib-freemarker-version}" />
 	<property name="mod-freemarker-id" value="${mod-freemarker-package}_${mod-freemarker-version}" />
 
+	<property name="mod-grizzly-package" value="com.noelios.restlet.ext.grizzly" />
+	<property name="mod-grizzly-version" value="${lib-grizzly-version}" />
+	<property name="mod-grizzly-id" value="${mod-grizzly-package}_${mod-grizzly-version}" />
+
 	<property name="mod-httpclient-package" value="com.noelios.restlet.ext.httpclient" />
 	<property name="mod-httpclient-version" value="${lib-httpclient-version}" />
 	<property name="mod-httpclient-id" value="${mod-httpclient-package}_${mod-httpclient-version}" />
@@ -215,6 +231,10 @@
 	<property name="mod-json-package" value="org.restlet.ext.json" />
 	<property name="mod-json-version" value="${lib-json-version}" />
 	<property name="mod-json-id" value="${mod-json-package}_${mod-json-version}" />
+
+	<property name="mod-jxta-package" value="com.noelios.restlet.ext.jxta" />
+	<property name="mod-jxta-version" value="${lib-jxta-version}" />
+	<property name="mod-jxta-id" value="${mod-jxta-package}_${mod-jxta-version}" />
 
 	<property name="mod-net-package" value="com.noelios.restlet.ext.net" />
 	<property name="mod-net-version" value="${version-base}" />
@@ -338,6 +358,12 @@
 		<fileset dir="${lib}/${lib-freemarker-id}" includes="*.jar" />
 	</path>
 
+	<path id="mod-grizzly-path">
+		<path refid="mod-ri-path" />
+		<pathelement path="${classes}/${mod-ri-id}" />
+		<fileset dir="${lib}/${lib-grizzly-id}" includes="*.jar" />
+	</path>
+
 	<path id="mod-httpclient-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
@@ -384,6 +410,13 @@
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
 		<fileset dir="${lib}/${lib-json-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-jxta-path">
+		<path refid="mod-ri-path" />
+		<pathelement path="${classes}/${mod-ri-id}" />
+		<fileset dir="${lib}/${lib-bouncycastle-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-jxta-id}" includes="*.jar" />
 	</path>
 	
 	<path id="mod-net-path">
@@ -435,6 +468,7 @@
 		<pathelement path="${classes}/${mod-asyncweb-id}" />
 		<pathelement path="${classes}/${mod-fileupload-id}" />
 		<pathelement path="${classes}/${mod-freemarker-id}" />
+		<pathelement path="${classes}/${mod-grizzly-id}" />
 		<pathelement path="${classes}/${mod-httpclient-id}" />
 		<pathelement path="${classes}/${mod-javamail-id}" />
 		<pathelement path="${classes}/${mod-jdbc-id}" />
@@ -442,6 +476,7 @@
 		<pathelement path="${classes}/${mod-jetty-id}" />
 		<pathelement path="${classes}/${mod-jmx-id}" />
 		<pathelement path="${classes}/${mod-json-id}" />
+		<pathelement path="${classes}/${mod-jxta-id}" />
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
 		<pathelement path="${classes}/${mod-spring-id}" />
@@ -449,6 +484,7 @@
 		<path refid="mod-asyncweb-path" />
 		<path refid="mod-fileupload-path" />
 		<path refid="mod-freemarker-path" />
+		<path refid="mod-grizzly-path" />
 		<path refid="mod-httpclient-path" />
 		<path refid="mod-javamail-path" />
 		<path refid="mod-jdbc-path" />
@@ -456,6 +492,7 @@
 		<path refid="mod-jetty-path" />
 		<path refid="mod-jmx-path" />
 		<path refid="mod-json-path" />
+		<path refid="mod-jxta-path" />
 		<path refid="mod-net-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
@@ -780,6 +817,7 @@
 		<compileModule name="atom" />
 		<compileModule name="fileupload" />
 		<compileModule name="freemarker" />
+		<compileModule name="grizzly" />
 		<compileModule name="httpclient" />
 		<compileModule name="javamail" />
 		<compileModule name="jdbc" />
@@ -787,6 +825,7 @@
 		<compileModule name="jetty" />
 		<compileModule name="jmx" />
 		<compileModule name="json" />
+		<compileModule name="jxta" />
 		<compileModule name="net" />
 		<compileModule name="servlet" />
 		<compileModule name="simple" />
@@ -808,6 +847,7 @@
 		<backportModule name="atom" failonwarning="@{backport-failonwarning}"/>
 		<backportModule name="fileupload" failonwarning="@{backport-failonwarning}"/>
 		<backportModule name="freemarker" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="grizzly" failonwarning="@{backport-failonwarning}"/>
 		<backportModule name="httpclient" failonwarning="@{backport-failonwarning}"/>
 		<backportModule name="javamail" failonwarning="@{backport-failonwarning}"/>
 		<backportModule name="jdbc" failonwarning="@{backport-failonwarning}"/>
@@ -815,6 +855,7 @@
 		<backportModule name="jetty" failonwarning="@{backport-failonwarning}"/>
 		<backportModule name="jmx" failonwarning="@{backport-failonwarning}"/>
 		<backportModule name="json" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="jxta" failonwarning="@{backport-failonwarning}"/>
 		<backportModule name="net" failonwarning="@{backport-failonwarning}"/>
 		<backportModule name="servlet" failonwarning="@{backport-failonwarning}"/>
 		<backportModule name="simple" failonwarning="@{backport-failonwarning}"/>
@@ -860,6 +901,7 @@
 		<pomModule name="asyncweb" ext="" />
 		<pomModule name="fileupload" ext="" />
 		<pomModule name="freemarker" ext="" />
+<!-- disabled for 1.0  <pomModule name="grizzly" ext="" /> -->
 		<pomModule name="httpclient" ext="" />
 		<pomModule name="javamail" ext="" />
 		<pomModule name="jdbc" ext="dbcp" />
@@ -867,6 +909,7 @@
 		<pomModule name="jetty" ext="" />
 <!-- disabled for 1.0  <pomModule name="jmx" ext="" /> -->
 		<pomModule name="json" ext="" />
+<!-- disabled for 1.0  <pomModule name="jxta" ext="" /> -->
 		<pomModule name="net" ext="" />
 		<pomModule name="servlet" ext="" />
 		<pomModule name="simple" ext="" />
@@ -898,6 +941,7 @@
 <!-- disabled for 1.0	<findbugsModule name="atom" /> -->
 		<findbugsModule name="fileupload" />
 		<findbugsModule name="freemarker" />
+<!-- disabled for 1.0	<findbugsModule name="grizzly" /> -->
 		<findbugsModule name="httpclient" />
 		<findbugsModule name="javamail" />
 		<findbugsModule name="jdbc" />
@@ -905,6 +949,7 @@
 		<findbugsModule name="jetty" />
 <!-- disabled for 1.0   <findbugsModule name="jmx" /> -->
 		<findbugsModule name="json" />
+<!-- disabled for 1.0	<findbugsModule name="jxta" /> -->
 		<findbugsModule name="net" />
 		<findbugsModule name="servlet" />
 		<findbugsModule name="simple" />
@@ -922,6 +967,7 @@
 		<checkstyleModule name="atom" />
 		<checkstyleModule name="fileupload" />
 		<checkstyleModule name="freemarker" />
+		<checkstyleModule name="grizzly" />
 		<checkstyleModule name="httpclient" />
 		<checkstyleModule name="javamail" />
 		<checkstyleModule name="jdbc" />
@@ -929,6 +975,7 @@
 		<checkstyleModule name="jetty" />
 		<checkstyleModule name="jmx" />
 		<checkstyleModule name="json" />
+		<checkstyleModule name="jxta" />
 		<checkstyleModule name="net" />
 		<checkstyleModule name="servlet" />
 		<checkstyleModule name="simple" />
@@ -1025,13 +1072,15 @@
 <!-- disabled for 1.0	<pathelement path="${mod}/${mod-atom-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
 				<pathelement path="${mod}/${mod-freemarker-id}/src/" />
-				<pathelement path="${mod}/${mod-json-id}/src/" />
+<!-- disabled for 1.0	<pathelement path="${mod}/${mod-grizzly-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-asyncweb-id}/src/" />
 				<pathelement path="${mod}/${mod-httpclient-id}/src/" />
 				<pathelement path="${mod}/${mod-javamail-id}/src/" />
 				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
 				<pathelement path="${mod}/${mod-jetty-id}/src/" />
 				<pathelement path="${mod}/${mod-jmx-id}/src/" />
+				<pathelement path="${mod}/${mod-json-id}/src/" />
+<!-- disabled for 1.0	<pathelement path="${mod}/${mod-jxta-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-net-id}/src/" />
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
 				<pathelement path="${mod}/${mod-simple-id}/src/" />
@@ -1107,6 +1156,7 @@
 
 		<!-- Packages libraries -->
 		<packageLibrary name="asyncweb" />
+<!-- disabled for 1.0	<packageLibrary name="bouncycastle" /> -->
 		<packageLibrary name="codec" />
 		<packageLibrary name="collections" />
 		<packageLibrary name="concurrent" />
@@ -1114,12 +1164,14 @@
 		<packageLibrary name="dbcp" />
 		<packageLibrary name="fileupload" />
 		<packageLibrary name="freemarker" />
+<!-- disabled for 1.0	<packageLibrary name="grizzly" /> -->
 		<packageLibrary name="httpclient" />
 		<packageLibrary name="io" />
 		<packageLibrary name="javamail" />
 <!-- disabled for 1.0	<packageLibrary name="jetty5" /> -->
 		<packageLibrary name="jetty" />
 		<packageLibrary name="json" />
+<!-- disabled for 1.0	<packageLibrary name="jxta" /> -->
 		<packageLibrary name="logging" />
 		<packageLibrary name="mina" />
 		<packageLibrary name="pool" />
@@ -1136,6 +1188,7 @@
 		<packageModule name="ri" />
 		<packageModule name="asyncweb" />
 <!-- disabled for 1.0  <packageModule name="atom" /> -->
+<!-- disabled for 1.0  <packageModule name="bouncycastle" /> -->
 		<packageModule name="fileupload" />
 		<packageModule name="freemarker" />
 		<packageModule name="httpclient" />
@@ -1145,6 +1198,7 @@
 		<packageModule name="jetty" />
 <!-- disabled for 1.0  <packageModule name="jmx" /> -->
 		<packageModule name="json" />
+<!-- disabled for 1.0  <packageModule name="jxta" /> -->
 		<packageModule name="net" />
 		<packageModule name="servlet" />
 		<packageModule name="simple" />
