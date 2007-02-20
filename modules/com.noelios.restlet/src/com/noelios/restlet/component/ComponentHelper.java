@@ -239,16 +239,27 @@ public class ComponentHelper extends ChainHelper {
     /** Stop callback. */
     public void stop() throws Exception {
         // Stop all applications
+        stopVirtualHostApplications(getComponent().getDefaultHost());
         for (VirtualHost host : getComponent().getHosts()) {
-            for (Route route : host.getRoutes()) {
-                Restlet next = route.getNext();
+            stopVirtualHostApplications(host);
+        }
+    }
 
-                if (next instanceof Application) {
-                    Application application = (Application) next;
+    /**
+     * Stop all applications attached to a virtual host
+     * 
+     * @param host
+     * @throws Exception
+     */
+    private void stopVirtualHostApplications(VirtualHost host) throws Exception {
+        for (Route route : host.getRoutes()) {
+            Restlet next = route.getNext();
 
-                    if (application.isStarted()) {
-                        application.stop();
-                    }
+            if (next instanceof Application) {
+                Application application = (Application) next;
+
+                if (application.isStarted()) {
+                    application.stop();
                 }
             }
         }
