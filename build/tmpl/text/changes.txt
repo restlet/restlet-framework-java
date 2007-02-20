@@ -9,7 +9,8 @@ Changes log
  - Fixed unconformity with pre-conditions test when the resource has no representation and the client sends "if-match:*" header.
  - TunnelService wasn't removing the preference parameters from the query after usage. Reported by Valdis Rigdon.
  - Fixed potential NPE in Router.detach() method. Reported by Alex Combs.
-
+ - Stop the applications attached to the default virtual host when stopping the component. Reported by Alex Combs.
+ 
 [API changes]
  - The default HTTPS connector for Jetty is now BIO based because the NIO one is marked as
    "beta quality" only.
