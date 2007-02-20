@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Grizzly NIO Framework
+Bundle-SymbolicName: com.sun.grizzly
+Bundle-Version: 1.5
+Bundle-ClassPath: com.sun.grizzly.jar
+Bundle-Localization: plugin
+Export-Package: com.sun.grizzly,
+ com.sun.grizzly.filter,
+ com.sun.grizzly.util
+Bundle-Vendor: Sun Microsystems Inc.
