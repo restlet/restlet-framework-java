@@ -54,11 +54,11 @@ public abstract class Engine {
             .getCanonicalName());
 
     /** Common version info. */
-    public static final String MINOR_NUMBER = "0";
+    public static final String MINOR_NUMBER = "5";
 
-    public static final String VERSION_LONG = "1.0." + MINOR_NUMBER;
+    public static final String VERSION_LONG = "1.0 RC" + MINOR_NUMBER;
 
-    public static final String VERSION_SHORT = "1.0." + MINOR_NUMBER;
+    public static final String VERSION_SHORT = "1.0rc" + MINOR_NUMBER;
 
     /** The registered engine. */
     private static Engine instance = null;
