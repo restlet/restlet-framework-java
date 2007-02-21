@@ -5,3 +5,4 @@ Bundle-SymbolicName: com.noelios.restlet.ext.grizzly
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
+Require-Bundle: com.noelios.restlet

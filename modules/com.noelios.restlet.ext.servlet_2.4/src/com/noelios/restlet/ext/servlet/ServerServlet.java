@@ -42,29 +42,29 @@ import com.noelios.restlet.http.HttpServerHelper;
  * configuration for your Restlet webapp:
  * 
  * <pre>
- *                            &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
- *                            &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
- *                            &lt;web-app&gt;
- *                                 &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- *                            
- *                                 &lt;!-- Your application class name --&gt;
- *                                 &lt;context-param&gt;
- *                                         &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
- *                                         &lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
- *                                 &lt;/context-param&gt;
- *                            
- *                                 &lt;!-- Restlet adapter --&gt;
- *                                 &lt;servlet&gt;
- *                                         &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *                                         &lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
- *                                 &lt;/servlet&gt;
- *                            
- *                                 &lt;!-- Catch all requests --&gt;
- *                                 &lt;servlet-mapping&gt;
- *                                         &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *                                         &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
- *                                 &lt;/servlet-mapping&gt;
- *                            &lt;/web-app&gt;}
+ *      &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+ *      &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
+ *      &lt;web-app&gt;
+ *              &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
+ *                                                              
+ *              &lt;!-- Your application class name --&gt;
+ *              &lt;context-param&gt;
+ *                      &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ *                      &lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
+ *              &lt;/context-param&gt;
+ *                                                              
+ *              &lt;!-- Restlet adapter --&gt;
+ *              &lt;servlet&gt;
+ *                      &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                      &lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+ *              &lt;/servlet&gt;
+ *                                                              
+ *              &lt;!-- Catch all requests --&gt;
+ *              &lt;servlet-mapping&gt;
+ *                      &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                      &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+ *              &lt;/servlet-mapping&gt;
+ *      &lt;/web-app&gt;}
  * </pre>
  * 
  * The enumeration of initParameters of your Servlet will be copied to the
@@ -78,16 +78,42 @@ import com.noelios.restlet.http.HttpServerHelper;
 public class ServerServlet extends HttpServlet {
     /**
      * The Servlet context initialization parameter's name containing the name
+     * of the Servlet context attribute that should be used to store the Restlet
+     * Application instance.
+     */
+    private static final String NAME_APPLICATION_ATTRIBUTE = "org.restlet.attribute.application";
+
+    /** The default value for the NAME_APPLICATION_ATTRIBUTE parameter. */
+    private static final String NAME_APPLICATION_ATTRIBUTE_DEFAULT = "com.noelios.restlet.ext.servlet.ServerServlet.application";
+
+    /**
+     * The Servlet context initialization parameter's name containing the name
+     * of the Servlet context attribute that should be used to store the Restlet
+     * Component instance.
+     */
+    private static final String NAME_COMPONENT_ATTRIBUTE = "org.restlet.attribute.component";
+
+    /** The default value for the NAME_COMPONENT_ATTRIBUTE parameter. */
+    private static final String NAME_COMPONENT_ATTRIBUTE_DEFAULT = "com.noelios.restlet.ext.servlet.ServerServlet.component";
+
+    /**
+     * The Servlet context initialization parameter's name containing the name
      * of the Servlet context attribute that should be used to store the HTTP
      * server connector instance.
      */
-    public static final String NAME_SERVER_ATTRIBUTE = "org.restlet.server";
+    private static final String NAME_SERVER_ATTRIBUTE = "org.restlet.attribute.server";
 
     /** The default value for the NAME_SERVER_ATTRIBUTE parameter. */
-    public static final String NAME_SERVER_ATTRIBUTE_DEFAULT = "com.noelios.restlet.ext.servlet.ServerServlet.server";
+    private static final String NAME_SERVER_ATTRIBUTE_DEFAULT = "com.noelios.restlet.ext.servlet.ServerServlet.server";
 
     /** Serial version identifier. */
     private static final long serialVersionUID = 1L;
+
+    /** The associated Restlet application. */
+    private transient Application application;
+
+    /** The associated Restlet component. */
+    private transient Component component;
 
     /** The associated HTTP server helper. */
     private transient HttpServerHelper helper;
@@ -96,115 +122,9 @@ public class ServerServlet extends HttpServlet {
      * Constructor.
      */
     public ServerServlet() {
+        this.application = null;
+        this.component = null;
         this.helper = null;
-    }
-
-    /**
-     * Services a HTTP Servlet request as an uniform call.
-     * 
-     * @param request
-     *            The HTTP Servlet request.
-     * @param response
-     *            The HTTP Servlet response.
-     */
-    protected void service(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
-        HttpServerHelper helper = getServer(request);
-
-        if (helper != null) {
-            helper
-                    .handle(new ServletCall(helper.getServer(), request,
-                            response));
-        } else {
-            log("[Noelios Restlet Engine] - Unable to get the Restlet HTTP server connector. Status code 500 returned.");
-            response.sendError(500);
-        }
-    }
-
-    /**
-     * Returns the associated HTTP server handling calls.<br/> For the first
-     * invocation, we look for an existing target in the application context,
-     * using the NAME_APPLICATION_ATTRIBUTE parameter.<br/> We lookup for the
-     * attribute name in the servlet configuration, then in the application
-     * context.<br/> If no target exists, we try to instantiate one based on
-     * the class name set in the NAME_APPLICATION_CLASS parameter.<br/> We
-     * lookup for the class name in the servlet configuration, then in the
-     * application context.<br/> Once the target is found, we wrap the servlet
-     * request and response into a Restlet HTTP call and ask the target
-     * application to handle it.<br/> When the handling is done, we write the
-     * result back into the result object and return from the service method.
-     * 
-     * @param request
-     *            The HTTP Servlet request.
-     * @return The HTTP server handling calls.
-     */
-    protected HttpServerHelper getServer(HttpServletRequest request) {
-        HttpServerHelper result = this.helper;
-
-        if (result == null) {
-            synchronized (ServerServlet.class) {
-                // Find the attribute name to use to store the server reference
-                String serverAttributeName = getInitParameter(
-                        NAME_SERVER_ATTRIBUTE, NAME_SERVER_ATTRIBUTE_DEFAULT);
-
-                // Look up the attribute for a target
-                result = (HttpServerHelper) getServletContext().getAttribute(
-                        serverAttributeName);
-
-                if (result == null) {
-                    result = createServer(request);
-                    if (result != null) {
-                        // Starts the target Restlet
-                        try {
-                            result.start();
-                        } catch (Exception e) {
-                            log(
-                                    "[Noelios Restlet Engine] - The ServerServlet couldn't start the target Restlet.",
-                                    e);
-                        }
-                    } else {
-                        log("[Noelios Restlet Engine] - The ServerServlet couldn't find the target class name. Please set the initialization parameter called "
-                                + Application.KEY);
-                    }
-                }
-                this.helper = result;
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Creates the associated HTTP server handling calls.
-     * 
-     * @param request
-     *            The HTTP Servlet request.
-     * @return The new HTTP server handling calls.
-     */
-    protected HttpServerHelper createServer(HttpServletRequest request) {
-        HttpServerHelper result = null;
-
-        Component component = new Component();
-        Application application = createApplication(component.getContext());
-        if (application != null) {
-            // First, let's locate the closest component
-            Server server = new Server(component.getContext(),
-                    (List<Protocol>) null, request.getLocalAddr(), request
-                            .getLocalPort(), component);
-            result = new HttpServerHelper(server);
-            getServletContext().setAttribute(NAME_SERVER_ATTRIBUTE, result);
-
-            // Set the Servlet context
-            application.setContext(new ServletContextAdapter(this, application,
-                    component.getContext()));
-
-            // Attach the application
-            String uriPattern = request.getContextPath()
-                    + request.getServletPath();
-            component.getDefaultHost().attach(uriPattern, application);
-
-        }
-        return result;
     }
 
     /**
@@ -215,7 +135,7 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The newly created Application or null if unable to create
      */
-    protected Application createApplication(Context context) {
+    public Application createApplication(Context context) {
         Application application = null;
         // Try to instantiate a new target application
         // First, find the application class name
@@ -252,7 +172,9 @@ public class ServerServlet extends HttpServlet {
                     application = (Application) targetClass.getConstructor()
                             .newInstance();
                     if (application != null) {
-                        application.setContext(context);
+                        // Set the context based on the Servlet's context
+                        application.setContext(new ServletContextAdapter(this,
+                                application, context));
                     }
                 }
             } catch (ClassNotFoundException e) {
@@ -283,6 +205,111 @@ public class ServerServlet extends HttpServlet {
     }
 
     /**
+     * Creates the associated HTTP server handling calls.
+     * 
+     * @param request
+     *            The HTTP Servlet request.
+     * @return The new HTTP server handling calls.
+     */
+    public HttpServerHelper createServer(HttpServletRequest request) {
+        HttpServerHelper result = null;
+        Component component = getComponent();
+        Application application = getApplication();
+
+        if ((component != null) && (application != null)) {
+            // First, let's locate the closest component
+            Server server = new Server(component.getContext(),
+                    (List<Protocol>) null, request.getLocalAddr(), request
+                            .getLocalPort(), component);
+            result = new HttpServerHelper(server);
+
+            // Attach the application
+            String uriPattern = request.getContextPath()
+                    + request.getServletPath();
+            component.getDefaultHost().attach(uriPattern, application);
+        }
+
+        return result;
+    }
+
+    @Override
+    public void destroy() {
+        if ((getApplication() != null) && (getApplication().isStarted())) {
+            try {
+                getApplication().stop();
+            } catch (Exception e) {
+                log("Error during the stopping of the Restlet Application", e);
+            }
+        }
+
+        super.destroy();
+    }
+
+    /**
+     * Returns the application. It creates a new one if none exists.
+     * 
+     * @return The application.
+     */
+    public Application getApplication() {
+        Application result = this.application;
+
+        if (result == null) {
+            synchronized (ServerServlet.class) {
+                // Find the attribute name to use to store the application
+                String applicationAttributeName = getInitParameter(
+                        NAME_APPLICATION_ATTRIBUTE,
+                        NAME_APPLICATION_ATTRIBUTE_DEFAULT);
+
+                // Look up the attribute for a target
+                result = (Application) getServletContext().getAttribute(
+                        applicationAttributeName);
+
+                if (result == null) {
+                    result = createApplication(getComponent().getContext());
+                    getServletContext().setAttribute(applicationAttributeName,
+                            result);
+                }
+
+                this.application = result;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the component. It creates a new one if none exists.
+     * 
+     * @return The component.
+     */
+    public Component getComponent() {
+        Component result = this.component;
+
+        if (result == null) {
+            synchronized (ServerServlet.class) {
+                // Find the attribute name to use to store the component
+                String componentAttributeName = getInitParameter(
+                        NAME_COMPONENT_ATTRIBUTE,
+                        NAME_COMPONENT_ATTRIBUTE_DEFAULT);
+
+                // Look up the attribute for a target
+                result = (Component) getServletContext().getAttribute(
+                        componentAttributeName);
+
+                if (result == null) {
+                    result = new Component();
+                    getServletContext().setAttribute(componentAttributeName,
+                            result);
+                }
+
+                this.component = result;
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the value of a given initialization parameter, first from the
      * Servlet configuration, then from the Web Application context.
      * 
@@ -292,7 +319,7 @@ public class ServerServlet extends HttpServlet {
      *            The default to use in case the parameter is not found.
      * @return The value of the parameter or null.
      */
-    protected String getInitParameter(String name, String defaultValue) {
+    public String getInitParameter(String name, String defaultValue) {
         String result = getServletConfig().getInitParameter(name);
 
         if (result == null) {
@@ -305,6 +332,73 @@ public class ServerServlet extends HttpServlet {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the associated HTTP server handling calls. It creates a new one
+     * if none exists.
+     * 
+     * @param request
+     *            The HTTP Servlet request.
+     * @return The HTTP server handling calls.
+     */
+    public HttpServerHelper getServer(HttpServletRequest request) {
+        HttpServerHelper result = this.helper;
+
+        if (result == null) {
+            synchronized (ServerServlet.class) {
+                // Find the attribute name to use to store the server reference
+                String serverAttributeName = getInitParameter(
+                        NAME_SERVER_ATTRIBUTE, NAME_SERVER_ATTRIBUTE_DEFAULT);
+
+                // Look up the attribute for a target
+                result = (HttpServerHelper) getServletContext().getAttribute(
+                        serverAttributeName);
+
+                if (result == null) {
+                    result = createServer(request);
+                    getServletContext().setAttribute(serverAttributeName,
+                            result);
+                }
+
+                this.helper = result;
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public void init() throws ServletException {
+        if ((getApplication() != null) && (getApplication().isStopped())) {
+            try {
+                getApplication().start();
+            } catch (Exception e) {
+                log("Error during the starting of the Restlet Application", e);
+            }
+        }
+    }
+
+    /**
+     * Services a HTTP Servlet request as an uniform call.
+     * 
+     * @param request
+     *            The HTTP Servlet request.
+     * @param response
+     *            The HTTP Servlet response.
+     */
+    public void service(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException {
+        HttpServerHelper helper = getServer(request);
+
+        if (helper != null) {
+            helper
+                    .handle(new ServletCall(helper.getServer(), request,
+                            response));
+        } else {
+            log("[Noelios Restlet Engine] - Unable to get the Restlet HTTP server connector. Status code 500 returned.");
+            response.sendError(500);
+        }
     }
 
 }
