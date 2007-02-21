@@ -377,11 +377,11 @@ public class DirectoryResource extends Resource {
     public List<Variant> getVariants() {
         List<Variant> results = super.getVariants();
 
+        getLogger().info("Getting variants for : " + getTargetUri());
+
         // Allows to sort the list of representations
         SortedSet<Representation> resultSet = new TreeSet<Representation>(
                 getRepresentationsComparator());
-
-        getLogger().info("Getting variants for : " + getTargetUri());
 
         // Compute the base reference (from a call's client point of view)
         String baseRef = getRequest().getResourceRef().getBaseRef().toString(
@@ -412,7 +412,7 @@ public class DirectoryResource extends Resource {
                     }
                 }
             }
-
+            results.addAll(resultSet);
             if (resultSet.isEmpty()) {
                 if (this.targetDirectory && getDirectory().isListingAllowed()) {
                     ReferenceList userList = new ReferenceList(
@@ -420,7 +420,11 @@ public class DirectoryResource extends Resource {
                     // Set the list identifier
                     userList.setIdentifier(baseRef);
 
-                    for (Reference ref : this.directoryContent) {
+                    SortedSet<Reference> sortedSet = new TreeSet<Reference>(
+                            getReferencesComparator());
+                    sortedSet.addAll(this.directoryContent);
+
+                    for (Reference ref : sortedSet) {
                         String filePart = ref.toString(false, false).substring(
                                 rootLength);
                         StringBuilder filePath = new StringBuilder();
@@ -434,15 +438,13 @@ public class DirectoryResource extends Resource {
                     List<Variant> list = getDirectory().getIndexVariants(
                             userList);
                     for (Variant variant : list) {
-                        resultSet.add(getDirectory().getIndexRepresentation(
+                        results.add(getDirectory().getIndexRepresentation(
                                 variant, userList));
                     }
 
                 }
             }
         }
-
-        results.addAll(resultSet);
         return results;
     }
 
@@ -472,6 +474,38 @@ public class DirectoryResource extends Resource {
                                     .compareTo(
                                             rep1.getIdentifier()
                                                     .getLastSegment());
+                        }
+                    }
+                }
+            }
+        };
+        return identifiersComparator;
+    }
+
+    /**
+     * Allows to sort the list of references set by the resource.
+     * 
+     * @return A Comparator instance imposing a sort order of references or null
+     *         if no special order is wanted.
+     */
+    private Comparator<Reference> getReferencesComparator() {
+        // Sort the list of references by their identifier.
+        Comparator<Reference> identifiersComparator = new Comparator<Reference>() {
+            public int compare(Reference rep0, Reference rep1) {
+                boolean bRep0Null = (rep0.getIdentifier() == null);
+                boolean bRep1Null = (rep1.getIdentifier() == null);
+
+                if (bRep0Null && bRep1Null) {
+                    return 0;
+                } else {
+                    if (bRep0Null) {
+                        return -1;
+                    } else {
+                        if (bRep1Null) {
+                            return 1;
+                        } else {
+                            return rep0.toString(false, false).compareTo(
+                                    rep1.toString(false, false));
                         }
                     }
                 }
