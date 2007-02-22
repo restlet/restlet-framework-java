@@ -57,7 +57,7 @@ public class ApplicationContext extends Context {
      */
     public ApplicationContext(Application application, Context parentContext,
             Logger logger) {
-        super(Application.class.getCanonicalName());
+        super(getLoggerName(application));
         this.application = application;
         this.parentContext = parentContext;
         this.warClient = null;
@@ -66,6 +66,20 @@ public class ApplicationContext extends Context {
         // like the ConnectorService
         getAttributes().put(Application.KEY, application);
 
+    }
+
+    /**
+     * Returns a non-null logger name.
+     * 
+     * @param application
+     *            The application.
+     * @return The logger name.
+     */
+    private static String getLoggerName(Application application) {
+        String result = application.getClass().getCanonicalName();
+        if (result == null)
+            result = "org.restlet.application";
+        return result;
     }
 
     /**
