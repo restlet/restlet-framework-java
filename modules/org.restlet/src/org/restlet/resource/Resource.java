@@ -252,7 +252,7 @@ public class Resource {
                         .getDefaultLanguage();
             }
             result = getRequest().getClientInfo().getPreferredVariant(
-                    getVariants(), language);
+                    variants, language);
 
         }
 
