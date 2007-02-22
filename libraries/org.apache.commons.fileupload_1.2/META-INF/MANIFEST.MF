@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jakarta Commons FileUpload Plug-in
 Bundle-SymbolicName: org.apache.commons.fileupload
-Bundle-Version: 1.1.1
+Bundle-Version: 1.2
 Bundle-ClassPath: org.apache.commons.fileupload.jar
 Bundle-Vendor: Apache Software Foundation
 Bundle-Localization: plugin
