@@ -94,7 +94,9 @@ public class Restlet extends Uniform {
     }
 
     /**
-     * Initialize the Restlet by attempting to start it.
+     * Initialize the Restlet by attempting to start it, unless it was already
+     * started. If an exception is thrown during the start action, then the
+     * response status is set to {@link Status#SERVER_ERROR_INTERNAL}.
      * 
      * @param request
      *            The request to handle.
