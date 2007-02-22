@@ -184,7 +184,12 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the global log service. This service is enabled by default.
+     * Returns the global log service. On the first call, if no log service was
+     * defined via the {@link #setLogService(LogService)} method, then a default
+     * logger service is created. This default service is enabled by default and
+     * has a logger name composed of the canonical name of the current
+     * component's class or subclass, appended with the instance hash code
+     * between parenthesis (eg. "com.mycompany.MyComponent(1439)").
      * 
      * @return The global log service.
      */
