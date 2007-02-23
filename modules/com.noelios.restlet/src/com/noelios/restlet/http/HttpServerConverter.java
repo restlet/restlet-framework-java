@@ -235,43 +235,47 @@ public class HttpServerConverter extends HttpConverter {
                 }
             }
 
-            // Add the Vary header if content negotiation was used
-            Set<Dimension> dimensions = response.getDimensions();
-            if (!dimensions.isEmpty()) {
-                StringBuilder sb = new StringBuilder();
-                boolean first = true;
+            // Send the Vary header only to none-MSIE user agents as MSIE seems
+            // to support partially and badly this header (cf issue 261).
+            if (!(response.getRequest().getClientInfo().getAgent() != null && response
+                    .getRequest().getClientInfo().getAgent().contains("MSIE"))) {
+                // Add the Vary header if content negotiation was used
+                Set<Dimension> dimensions = response.getDimensions();
+                if (!dimensions.isEmpty()) {
+                    StringBuilder sb = new StringBuilder();
+                    boolean first = true;
 
-                if (dimensions.contains(Dimension.CLIENT_ADDRESS)
-                        || dimensions.contains(Dimension.TIME)
-                        || dimensions.contains(Dimension.UNSPECIFIED)) {
-                    // From an HTTP point of view the representations can vary
-                    // in unspecified ways
-                    responseHeaders.add(HttpConstants.HEADER_VARY, "*");
-                } else {
-                    for (Dimension dim : response.getDimensions()) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            sb.append(", ");
+                    if (dimensions.contains(Dimension.CLIENT_ADDRESS)
+                            || dimensions.contains(Dimension.TIME)
+                            || dimensions.contains(Dimension.UNSPECIFIED)) {
+                        // From an HTTP point of view the representations can
+                        // vary in unspecified ways
+                        responseHeaders.add(HttpConstants.HEADER_VARY, "*");
+                    } else {
+                        for (Dimension dim : response.getDimensions()) {
+                            if (first) {
+                                first = false;
+                            } else {
+                                sb.append(", ");
+                            }
+
+                            if (dim == Dimension.CHARACTER_SET) {
+                                sb.append(HttpConstants.HEADER_ACCEPT_CHARSET);
+                            } else if (dim == Dimension.CLIENT_AGENT) {
+                                sb.append(HttpConstants.HEADER_USER_AGENT);
+                            } else if (dim == Dimension.ENCODING) {
+                                sb.append(HttpConstants.HEADER_ACCEPT_ENCODING);
+                            } else if (dim == Dimension.LANGUAGE) {
+                                sb.append(HttpConstants.HEADER_ACCEPT_LANGUAGE);
+                            } else if (dim == Dimension.MEDIA_TYPE) {
+                                sb.append(HttpConstants.HEADER_ACCEPT);
+                            }
                         }
 
-                        if (dim == Dimension.CHARACTER_SET) {
-                            sb.append(HttpConstants.HEADER_ACCEPT_CHARSET);
-                        } else if (dim == Dimension.CLIENT_AGENT) {
-                            sb.append(HttpConstants.HEADER_USER_AGENT);
-                        } else if (dim == Dimension.ENCODING) {
-                            sb.append(HttpConstants.HEADER_ACCEPT_ENCODING);
-                        } else if (dim == Dimension.LANGUAGE) {
-                            sb.append(HttpConstants.HEADER_ACCEPT_LANGUAGE);
-                        } else if (dim == Dimension.MEDIA_TYPE) {
-                            sb.append(HttpConstants.HEADER_ACCEPT);
-                        }
+                        responseHeaders.add(HttpConstants.HEADER_VARY, sb
+                                .toString());
                     }
-
-                    responseHeaders.add(HttpConstants.HEADER_VARY, sb
-                            .toString());
                 }
-
             }
 
             // Add user-defined extension headers
