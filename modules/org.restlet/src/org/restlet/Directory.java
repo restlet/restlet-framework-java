@@ -191,8 +191,8 @@ public class Directory extends Finder {
      */
     public List<Variant> getIndexVariants(ReferenceList indexContent) {
         List<Variant> result = new ArrayList<Variant>();
-        result.add(new Variant(MediaType.TEXT_URI_LIST));
         result.add(new Variant(MediaType.TEXT_HTML));
+        result.add(new Variant(MediaType.TEXT_URI_LIST));
         return result;
     }
 
