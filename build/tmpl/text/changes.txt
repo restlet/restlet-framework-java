@@ -31,6 +31,7 @@ Changes log
  - Updated Apache Fileupload to 1.2 and Commons IO to 1.3.1.
  - Clarified the Javadocs for Restlet.init() method.
  - Added initial support for IntelliJ in the SVN code base. Contributed by James Todd.
+ - Updated db4o library (object database) to version 6.1.
  
 1.0 RC4 (2007-01-26)
 [Bugs fixed]

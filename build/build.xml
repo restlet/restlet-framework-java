@@ -68,7 +68,7 @@
 	<property name="lib-concurrent-id" value="${lib-concurrent-package}_${lib-concurrent-version}" />
 
 	<property name="lib-db4o-package" value="com.db4o" />
-	<property name="lib-db4o-version" value="6.0" />
+	<property name="lib-db4o-version" value="6.1" />
 	<property name="lib-db4o-id" value="${lib-db4o-package}_${lib-db4o-version}" />
 
 	<property name="lib-dbcp-package" value="org.apache.commons.dbcp" />
