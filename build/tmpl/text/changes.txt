@@ -14,7 +14,8 @@ Changes log
    application was started upon the first request and never stopped.
  - Fixed bug with the order of the representations provided by a Directory (TEXT/URI-LIST and TEXT/HTML) as IE does 
    not send HTML preference in the Accept headers.
-
+ - Send the Vary header only to none-MSIE user agents as MSIE seems to support badly this header. Reported by Heinrich Klobuczek.
+ 
 [API changes]
  - The default HTTPS connector for Jetty is now BIO based because the NIO one is marked as
    "beta quality" only.
