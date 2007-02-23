@@ -724,8 +724,10 @@ public class Template {
 
             // Expressions to create non-capturing groups
             final String PCT_ENCODED = "\\%[" + HEXA + "][" + HEXA + "]";
-            final String PCHAR = "[" + URI_UNRESERVED + "]|(?:" + PCT_ENCODED
-                    + ")|[" + URI_SUB_DELIMS + "]|\\:|\\@";
+            // final String PCHAR = "[" + URI_UNRESERVED + "]|(?:" + PCT_ENCODED
+            // + ")|[" + URI_SUB_DELIMS + "]|\\:|\\@";
+            final String PCHAR = "[" + URI_UNRESERVED + URI_SUB_DELIMS
+                    + "\\:\\@]|(?:" + PCT_ENCODED + ")";
             final String QUERY = PCHAR + "|\\/|\\?";
             final String FRAGMENT = QUERY;
 
@@ -848,15 +850,21 @@ public class Template {
     public int match(String formattedString) {
         int result = -1;
 
-        if (formattedString != null) {
-            Matcher matcher = getRegexPattern().matcher(formattedString);
+        try {
+            if (formattedString != null) {
+                Matcher matcher = getRegexPattern().matcher(formattedString);
 
-            if ((getMatchingMode() == MODE_EQUALS) && matcher.matches()) {
-                result = matcher.end();
-            } else if ((getMatchingMode() == MODE_STARTS_WITH)
-                    && matcher.lookingAt()) {
-                result = matcher.end();
+                if ((getMatchingMode() == MODE_EQUALS) && matcher.matches()) {
+                    result = matcher.end();
+                } else if ((getMatchingMode() == MODE_STARTS_WITH)
+                        && matcher.lookingAt()) {
+                    result = matcher.end();
+                }
             }
+        } catch (StackOverflowError soe) {
+            getLogger().warning(
+                    "StackOverflowError exception encountered while matching this string : "
+                            + formattedString);
         }
 
         return result;
@@ -888,24 +896,31 @@ public class Template {
      */
     public int parse(String formattedString, Map<String, Object> variables) {
         int result = -1;
-        Matcher matcher = getRegexPattern().matcher(formattedString);
-        boolean matched = ((getMatchingMode() == MODE_EQUALS) && matcher
-                .matches())
-                || ((getMatchingMode() == MODE_STARTS_WITH) && matcher
-                        .lookingAt());
+        try {
 
-        if (matched) {
-            // Update the number of matched characters
-            result = matcher.end();
+            Matcher matcher = getRegexPattern().matcher(formattedString);
+            boolean matched = ((getMatchingMode() == MODE_EQUALS) && matcher
+                    .matches())
+                    || ((getMatchingMode() == MODE_STARTS_WITH) && matcher
+                            .lookingAt());
 
-            // Update the attributes with the variables value
-            String attributeName = null;
-            String attributeValue = null;
-            for (int i = 0; i < getRegexVariables().size(); i++) {
-                attributeName = getRegexVariables().get(i);
-                attributeValue = matcher.group(i + 1);
-                variables.put(attributeName, attributeValue);
+            if (matched) {
+                // Update the number of matched characters
+                result = matcher.end();
+
+                // Update the attributes with the variables value
+                String attributeName = null;
+                String attributeValue = null;
+                for (int i = 0; i < getRegexVariables().size(); i++) {
+                    attributeName = getRegexVariables().get(i);
+                    attributeValue = matcher.group(i + 1);
+                    variables.put(attributeName, attributeValue);
+                }
             }
+        } catch (StackOverflowError soe) {
+            getLogger().warning(
+                    "StackOverflowError exception encountered while matching this string : "
+                            + formattedString);
         }
 
         return result;
