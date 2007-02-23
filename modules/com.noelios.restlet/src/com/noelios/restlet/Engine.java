@@ -505,7 +505,9 @@ public class Engine extends org.restlet.util.Engine {
 
             // Client preferences are altered
             languagePrefs.addAll(primaryLanguagePrefs);
-            languagePrefs.add(defaultLanguagePref);
+            if(defaultLanguagePref!=null){
+                languagePrefs.add(defaultLanguagePref);
+            }
             languagePrefs.add(allLanguagesPref);
 
             // For each available variant, we will compute the negotiation score
