@@ -89,8 +89,13 @@ public class FormUtils {
                                 ioe);
         }
 
-        if (fr != null) {
-            fr.addParameters(form);
+        if (post.isAvailable()) {
+            if (fr != null) {
+                fr.addParameters(form);
+            }
+        } else {
+            throw new IllegalStateException(
+                    "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
         }
     }
 
@@ -128,7 +133,12 @@ public class FormUtils {
      */
     public static void getParameters(Logger logger, Representation post,
             Map<String, Object> parameters) throws IOException {
-        new FormReader(logger, post).readParameters(parameters);
+        if (!post.isAvailable()) {
+            throw new IllegalStateException(
+                    "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
+        } else {
+            new FormReader(logger, post).readParameters(parameters);
+        }
     }
 
     /**
@@ -165,7 +175,13 @@ public class FormUtils {
      */
     public static Parameter getFirstParameter(Logger logger,
             Representation post, String name) throws IOException {
-        return new FormReader(logger, post).readFirstParameter(name);
+        if (!post.isAvailable()) {
+            throw new IllegalStateException(
+                    "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
+        } else {
+            return new FormReader(logger, post).readFirstParameter(name);
+        }
+
     }
 
     /**
@@ -201,7 +217,12 @@ public class FormUtils {
      */
     public static Object getParameter(Logger logger, Representation form,
             String name) throws IOException {
-        return new FormReader(logger, form).readParameter(name);
+        if (!form.isAvailable()) {
+            throw new IllegalStateException(
+                    "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
+        } else {
+            return new FormReader(logger, form).readParameter(name);
+        }
     }
 
     /**
