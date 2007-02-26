@@ -35,14 +35,14 @@ import org.restlet.resource.Resource;
  * A sample xml for "lookup-method":
  *
  * <pre>
- *      <bean id="myFinder" class="org.restlet.ext.spring.SpringFinder"> 
- *              <lookup-method name="createResource" bean="myResource"/> 
- *      </bean>
+ *      &lt;bean id="myFinder" class="org.restlet.ext.spring.SpringFinder"> 
+ *              &lt;lookup-method name="createResource" bean="myResource"/> 
+ *      &lt;/bean>
  *       
- *      <bean id="myResource" class="com.mycompany.rest.resource.MyResource" scope="prototype"> 
- *              <property name="aProperty" value="anotherOne"/> 
- *              <property name="oneMore" value="true"/>
- *      </bean>
+ *      &lt;bean id="myResource" class="com.mycompany.rest.resource.MyResource" scope="prototype"> 
+ *              &lt;property name="aProperty" value="anotherOne"/> 
+ *              &lt;property name="oneMore" value="true"/>
+ *      &lt;/bean>
  * </pre>
  * 
  * @author Jerome Louvel (contact@noelios.com)

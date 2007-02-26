@@ -47,7 +47,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * as input a series of SAX2 ContentHandler events and uses the information in
  * those events to write an XML document. Since this class is a filter, it can
  * also pass the events on down a filter chain for further processing (you can
- * use the XMLWriter to take a snapshot of the current state at any point in a
+ * use the XmlWriter to take a snapshot of the current state at any point in a
  * filter chain), and it can be used directly as a ContentHandler for a SAX2
  * XMLReader.
  * </p>
@@ -80,7 +80,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- * XMLWriter w = new XMLWriter();
+ * XmlWriter w = new XmlWriter();
  * 
  * w.startDocument();
  * w.startElement(&quot;greeting&quot;);
@@ -106,7 +106,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * </p>
  * 
  * <pre>
- * XMLWriter w = new XMLWriter();
+ * XmlWriter w = new XmlWriter();
  * 
  * w.startDocument();
  * w.dataElement(&quot;greeting&quot;, &quot;Hello, world!&quot;);
