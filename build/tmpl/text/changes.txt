@@ -26,6 +26,8 @@ Changes log
    It is currently based on JDK's internal XSLT engine. Suggested by Denis Haskin.
  - The default name of the application's context logger is now either the canonical application's class name,
    or "org.restlet.application" for anonymous classes. It allows for a finer filtering of log entries.
+ - Added a SpringFinder class in the Spring extension to allow easier dependency injection
+   with resources. Suggested by Jonathan Hall, Valdis Rigdon and Ryan Daum.
 
 [Enhancements] 
  - Enhanced support of Java SE 4.0 via Retrotranslator.
