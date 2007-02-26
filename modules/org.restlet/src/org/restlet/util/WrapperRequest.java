@@ -18,13 +18,21 @@
 
 package org.restlet.util;
 
+import java.util.Map;
+
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
+import org.restlet.resource.DomRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.SaxRepresentation;
 
 /**
  * Request wrapper. Useful for application developer who need to enrich the
@@ -215,6 +223,193 @@ public class WrapperRequest extends Request {
      */
     public void setResourceRef(String resourceUri) {
         getWrappedRequest().setResourceRef(resourceUri);
+    }
+
+    /**
+     * Returns the host reference. This may be different from the resourceRef's
+     * host, for example for URNs and other URIs that don't contain host
+     * information.
+     * 
+     * @return The host reference.
+     */
+    public Reference getHostRef() {
+        return getWrappedRequest().getHostRef();
+    }
+
+    /**
+     * Returns the protocol by first returning the baseRef.schemeProtocol
+     * property if it is set, or the resourceRef.schemeProtocol property
+     * otherwise.
+     * 
+     * @return The protocol or null if not available.
+     */
+    public Protocol getProtocol() {
+        return getWrappedRequest().getProtocol();
+    }
+
+    /**
+     * Returns the application root reference.
+     * 
+     * @return The application root reference.
+     */
+    public Reference getRootRef() {
+        return getWrappedRequest().getRootRef();
+    }
+
+    /**
+     * Sets the host reference.
+     * 
+     * @param hostRef
+     *            The host reference.
+     */
+    public void setHostRef(Reference hostRef) {
+        getWrappedRequest().setHostRef(hostRef);
+    }
+
+    /**
+     * Sets the host reference using an URI string.
+     * 
+     * @param hostUri
+     *            The host URI.
+     */
+    public void setHostRef(String hostUri) {
+        getWrappedRequest().setHostRef(hostUri);
+    }
+
+    /**
+     * Sets the application root reference.
+     * 
+     * @param rootRef
+     *            The application root reference.
+     */
+    public void setRootRef(Reference rootRef) {
+        getWrappedRequest().setRootRef(rootRef);
+    }
+
+    /**
+     * Returns a modifiable attributes map that can be used by developers to
+     * save information relative to the message. This is an easier alternative
+     * to the creation of a wrapper instance around the whole message.<br/>
+     * <br/>
+     * 
+     * In addition, this map is a shared space between the developer and the
+     * connectors. In this case, it is used to exchange information that is not
+     * uniform across all protocols and couldn't therefore be directly included
+     * in the API. For this purpose, all attribute names starting with
+     * "org.restlet" are reserved. Currently the following attributes are used:
+     * <table>
+     * <tr>
+     * <th>Attribute name</th>
+     * <th>Class name</th>
+     * <th>Description</th>
+     * </tr>
+     * <tr>
+     * <td>org.restlet.http.headers</td>
+     * <td>org.restlet.data.Form</td>
+     * <td>Server HTTP connectors must provide all request headers and client
+     * HTTP connectors must provide all response headers, exactly as they were
+     * received. In addition, developers can also use this attribute to specify
+     * <b>non-standard</b> headers that should be added to the request or to
+     * the response. </td>
+     * </tr>
+     * </table> Adding standard HTTP headers is forbidden because it could
+     * conflict with the connector's internal behavior, limit portability or
+     * prevent future optimizations.</td>
+     * 
+     * @return The modifiable attributes map.
+     */
+    public Map<String, Object> getAttributes() {
+        return getWrappedRequest().getAttributes();
+    }
+
+    /**
+     * Returns the entity representation.
+     * 
+     * @return The entity representation.
+     */
+    public Representation getEntity() {
+        return getWrappedRequest().getEntity();
+    }
+
+    @Override
+    public DomRepresentation getEntityAsDom() {
+        return getWrappedRequest().getEntityAsDom();
+    }
+
+    /**
+     * Returns the entity as a DOM representation.<br/> Note that this triggers
+     * the parsing of the entity into a reusable DOM document stored in memory.<br/>
+     * This method and the related getEntity*() methods can only be invoked
+     * once.
+     * 
+     * @return The entity as a DOM representation.
+     */
+    public Form getEntityAsForm() {
+        return getWrappedRequest().getEntityAsForm();
+    }
+
+    /**
+     * Returns the entity as a higher-level object. This object is created by
+     * the Application's converter service. If you want to use this method to
+     * facilitate the processing of request entities, you need to provide a
+     * custom implementation of the ConverterService class, overriding the
+     * toObject(Representation) method. <br/> Note that this triggers the
+     * parsing of the entity.<br/> This method and the related getEntity*()
+     * methods can only be invoked once.
+     * 
+     * @return The entity as a higher-level object.
+     */
+    public Object getEntityAsObject() {
+        return getWrappedRequest().getEntityAsObject();
+    }
+
+    /**
+     * Returns the entity as a SAX representation.<br/> Note that this kind of
+     * representation can only be parsed once. If you evaluate an XPath
+     * expression, it can also only be done once. If you need to reuse the
+     * entity multiple times, consider using the getEntityAsDom() method
+     * instead.
+     * 
+     * @return The entity as a SAX representation.
+     */
+    public SaxRepresentation getEntityAsSax() {
+        return getWrappedRequest().getEntityAsSax();
+    }
+
+    /**
+     * Sets the entity from a higher-level object. This object is converted to a
+     * representation using the Application's converter service. If you want to
+     * use this method to facilitate the setting of entities, you need to
+     * provide a custom implementation of the ConverterService class, overriding
+     * the toRepresentation(Object) method.
+     * 
+     * @param object
+     *            The higher-level object.
+     */
+    public void setEntity(Object object) {
+        getWrappedRequest().setEntity(object);
+    }
+
+    /**
+     * Sets the entity representation.
+     * 
+     * @param entity
+     *            The entity representation.
+     */
+    public void setEntity(Representation entity) {
+        getWrappedRequest().setEntity(entity);
+    }
+
+    /**
+     * Sets a textual entity.
+     * 
+     * @param value
+     *            The represented string.
+     * @param mediaType
+     *            The representation's media type.
+     */
+    public void setEntity(String value, MediaType mediaType) {
+        getWrappedRequest().setEntity(value, mediaType);
     }
 
 }

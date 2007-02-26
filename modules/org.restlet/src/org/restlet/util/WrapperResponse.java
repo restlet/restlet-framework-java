@@ -18,13 +18,23 @@
 
 package org.restlet.util;
 
+import java.util.Map;
+import java.util.Set;
+
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.Dimension;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
+import org.restlet.resource.DomRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.SaxRepresentation;
 
 /**
  * Request wrapper. Useful for application developer who need to enrich the
@@ -176,6 +186,253 @@ public class WrapperResponse extends Response {
      */
     public void setStatus(Status status, String message) {
         getWrappedResponse().setStatus(status, message);
+    }
+
+    /**
+     * Returns the set of methods allowed on the requested resource. This
+     * property only has to be updated when a status
+     * CLIENT_ERROR_METHOD_NOT_ALLOWED is set.
+     * 
+     * @return The list of allowed methods.
+     */
+    public Set<Method> getAllowedMethods() {
+        return getWrappedResponse().getAllowedMethods();
+    }
+
+    /**
+     * Returns the set of selecting dimensions on which the response entity may
+     * vary. If some server-side content negotiation is done, this set should be
+     * properly updated, other it can be left empty.
+     * 
+     * @return The set of dimensions on which the response entity may vary.
+     */
+    public Set<Dimension> getDimensions() {
+        return getWrappedResponse().getDimensions();
+    }
+
+    /**
+     * Permanently redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
+     * 
+     * @param targetRef
+     *            The target URI reference.
+     */
+    public void redirectPermanent(Reference targetRef) {
+        getWrappedResponse().redirectPermanent(targetRef);
+    }
+
+    /**
+     * Permanently redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
+     * 
+     * @param targetUri
+     *            The target URI.
+     */
+    public void redirectPermanent(String targetUri) {
+        getWrappedResponse().redirectPermanent(targetUri);
+    }
+
+    /**
+     * Redirects the client to a different URI that SHOULD be retrieved using a
+     * GET method on that resource. This method exists primarily to allow the
+     * output of a POST-activated script to redirect the user agent to a
+     * selected resource. The new URI is not a substitute reference for the
+     * originally requested resource.
+     * 
+     * @param targetRef
+     *            The target reference.
+     */
+    public void redirectSeeOther(Reference targetRef) {
+        getWrappedResponse().redirectSeeOther(targetRef);
+    }
+
+    /**
+     * Redirects the client to a different URI that SHOULD be retrieved using a
+     * GET method on that resource. This method exists primarily to allow the
+     * output of a POST-activated script to redirect the user agent to a
+     * selected resource. The new URI is not a substitute reference for the
+     * originally requested resource.
+     * 
+     * @param targetUri
+     *            The target URI.
+     */
+    public void redirectSeeOther(String targetUri) {
+        getWrappedResponse().redirectSeeOther(targetUri);
+    }
+
+    /**
+     * Temporarily redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
+     * 
+     * @param targetRef
+     *            The target reference.
+     */
+    public void redirectTemporary(Reference targetRef) {
+        getWrappedResponse().redirectTemporary(targetRef);
+    }
+
+    /**
+     * Temporarily redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
+     * 
+     * @param targetUri
+     *            The target URI.
+     */
+    public void redirectTemporary(String targetUri) {
+        getWrappedResponse().redirectTemporary(targetUri);
+    }
+
+    /**
+     * Sets the associated request.
+     * 
+     * @param request
+     *            The associated request
+     */
+    public void setRequest(Request request) {
+        getWrappedResponse().setRequest(request);
+    }
+
+    /**
+     * Returns a modifiable attributes map that can be used by developers to
+     * save information relative to the message. This is an easier alternative
+     * to the creation of a wrapper instance around the whole message.<br/>
+     * <br/>
+     * 
+     * In addition, this map is a shared space between the developer and the
+     * connectors. In this case, it is used to exchange information that is not
+     * uniform across all protocols and couldn't therefore be directly included
+     * in the API. For this purpose, all attribute names starting with
+     * "org.restlet" are reserved. Currently the following attributes are used:
+     * <table>
+     * <tr>
+     * <th>Attribute name</th>
+     * <th>Class name</th>
+     * <th>Description</th>
+     * </tr>
+     * <tr>
+     * <td>org.restlet.http.headers</td>
+     * <td>org.restlet.data.Form</td>
+     * <td>Server HTTP connectors must provide all request headers and client
+     * HTTP connectors must provide all response headers, exactly as they were
+     * received. In addition, developers can also use this attribute to specify
+     * <b>non-standard</b> headers that should be added to the request or to
+     * the response. </td>
+     * </tr>
+     * </table> Adding standard HTTP headers is forbidden because it could
+     * conflict with the connector's internal behavior, limit portability or
+     * prevent future optimizations.</td>
+     * 
+     * @return The modifiable attributes map.
+     */
+    public Map<String, Object> getAttributes() {
+        return getWrappedResponse().getAttributes();
+    }
+
+    /**
+     * Returns the entity representation.
+     * 
+     * @return The entity representation.
+     */
+    public Representation getEntity() {
+        return getWrappedResponse().getEntity();
+    }
+
+    /**
+     * Returns the entity as a DOM representation.<br/> Note that this triggers
+     * the parsing of the entity into a reusable DOM document stored in memory.<br/>
+     * This method and the related getEntity*() methods can only be invoked
+     * once.
+     * 
+     * @return The entity as a DOM representation.
+     */
+    public DomRepresentation getEntityAsDom() {
+        return getWrappedResponse().getEntityAsDom();
+    }
+
+    /**
+     * Returns the entity as a DOM representation.<br/> Note that this triggers
+     * the parsing of the entity into a reusable DOM document stored in memory.<br/>
+     * This method and the related getEntity*() methods can only be invoked
+     * once.
+     * 
+     * @return The entity as a DOM representation.
+     */
+    public Form getEntityAsForm() {
+        return getWrappedResponse().getEntityAsForm();
+    }
+
+    /**
+     * Returns the entity as a higher-level object. This object is created by
+     * the Application's converter service. If you want to use this method to
+     * facilitate the processing of request entities, you need to provide a
+     * custom implementation of the ConverterService class, overriding the
+     * toObject(Representation) method. <br/> Note that this triggers the
+     * parsing of the entity.<br/> This method and the related getEntity*()
+     * methods can only be invoked once.
+     * 
+     * @return The entity as a higher-level object.
+     */
+    public Object getEntityAsObject() {
+        return getWrappedResponse().getEntityAsObject();
+    }
+
+    /**
+     * Returns the entity as a SAX representation.<br/> Note that this kind of
+     * representation can only be parsed once. If you evaluate an XPath
+     * expression, it can also only be done once. If you need to reuse the
+     * entity multiple times, consider using the getEntityAsDom() method
+     * instead.
+     * 
+     * @return The entity as a SAX representation.
+     */
+    public SaxRepresentation getEntityAsSax() {
+        return getWrappedResponse().getEntityAsSax();
+    }
+
+    /**
+     * Indicates if a content is available and can be sent. Several conditions
+     * must be met: the content must exists and have some available data.
+     * 
+     * @return True if a content is available and can be sent.
+     */
+    public boolean isEntityAvailable() {
+        return getWrappedResponse().isEntityAvailable();
+    }
+
+    /**
+     * Sets the entity from a higher-level object. This object is converted to a
+     * representation using the Application's converter service. If you want to
+     * use this method to facilitate the setting of entities, you need to
+     * provide a custom implementation of the ConverterService class, overriding
+     * the toRepresentation(Object) method.
+     * 
+     * @param object
+     *            The higher-level object.
+     */
+    public void setEntity(Object object) {
+        getWrappedResponse().setEntity(object);
+    }
+
+    /**
+     * Sets the entity representation.
+     * 
+     * @param entity
+     *            The entity representation.
+     */
+    public void setEntity(Representation entity) {
+        getWrappedResponse().setEntity(entity);
+    }
+
+    /**
+     * Sets a textual entity.
+     * 
+     * @param value
+     *            The represented string.
+     * @param mediaType
+     *            The representation's media type.
+     */
+    public void setEntity(String value, MediaType mediaType) {
+        getWrappedResponse().setEntity(value, mediaType);
     }
 
 }
