@@ -3,7 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: JXTA Technology
 Bundle-SymbolicName: net.jxta
 Bundle-Version: 2.5
-Bundle-ClassPath: net.jxta.jar
+Bundle-ClassPath: net.jxta.jar,
+ net.jxta.ext.configuration.jar,
+ net.jxta.ext.network.jar
 Bundle-Localization: plugin
 Export-Package: net.jxta.access,
  net.jxta.codat,
@@ -12,6 +14,12 @@ Export-Package: net.jxta.access,
  net.jxta.document,
  net.jxta.endpoint,
  net.jxta.exception,
+ net.jxta.ext.configuration,
+ net.jxta.ext.configuration.optimizers,
+ net.jxta.ext.configuration.probes,
+ net.jxta.ext.configuration.service.reflection,
+ net.jxta.ext.configuration.validators,
+ net.jxta.ext.network,
  net.jxta.id,
  net.jxta.id.jxta,
  net.jxta.impl.access,
@@ -31,10 +39,10 @@ Export-Package: net.jxta.access,
  net.jxta.impl.endpoint.tcp,
  net.jxta.impl.endpoint.tls,
  net.jxta.impl.endpoint.transportMeter,
- net.jxta.impl.id.binaryID,
  net.jxta.impl.id.CBID,
- net.jxta.impl.id.unknown,
  net.jxta.impl.id.UUID,
+ net.jxta.impl.id.binaryID,
+ net.jxta.impl.id.unknown,
  net.jxta.impl.loader,
  net.jxta.impl.membership,
  net.jxta.impl.membership.none,
@@ -79,3 +87,4 @@ Export-Package: net.jxta.access,
  net.jxta.util,
  net.jxta.util.documentSerializable,
  sun.net.www.protocol.urn
+Bundle-Vendor: Sun Microsystems Inc.
