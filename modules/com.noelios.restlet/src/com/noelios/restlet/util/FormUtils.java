@@ -77,19 +77,17 @@ public class FormUtils {
      *            The posted form.
      */
     public static void parsePost(Logger logger, Form form, Representation post) {
-        FormReader fr = null;
-        try {
-            fr = new FormReader(logger, post);
-        } catch (IOException ioe) {
-            if (logger != null)
-                logger
-                        .log(
-                                Level.WARNING,
-                                "Unable to create a form reader. Parsing aborted.",
-                                ioe);
-        }
-
         if (post.isAvailable()) {
+            FormReader fr = null;
+            try {
+                fr = new FormReader(logger, post);
+            } catch (IOException ioe) {
+                if (logger != null)
+                    logger.log(Level.WARNING,
+                            "Unable to create a form reader. Parsing aborted.",
+                            ioe);
+            }
+
             if (fr != null) {
                 fr.addParameters(form);
             }
