@@ -111,12 +111,12 @@ Var StartMenuGroup
 
 # Installer attributes
 OutFile @dist-base@/restlet-@version-compact@.exe
-InstallDir "$PROGRAMFILES\Noelios\Restlet-@version-base@"
+InstallDir "$PROGRAMFILES\Noelios\Restlet-@version-minor@"
 CRCCheck on
 XPStyle on
 ShowInstDetails hide
 ShowUnInstDetails hide
-VIProductVersion "@version-base@.0.0"
+VIProductVersion "@version-minor@.0.0"
 VIAddVersionKey ProductName "Restlet"
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "${COMPANY}"
@@ -210,7 +210,7 @@ Section un.post UNSEC0001
        ${RemoveDir} "$INSTDIR"
 
        ;Remove the Noelios directory (if so) if it is empty
-       StrCmp "$INSTDIR" "$PROGRAMFILES\Noelios\Restlet-@version-base@" 0 +2
+       StrCmp "$INSTDIR" "$PROGRAMFILES\Noelios\Restlet-@version-minor@" 0 +2
        ${RemoveDir} "$PROGRAMFILES\Noelios"
        
     ${EndIf}
