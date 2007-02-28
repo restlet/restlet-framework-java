@@ -173,11 +173,11 @@
 
 	<!-- Module properties -->
 	<property name="mod-api-package" value="org.restlet" />
-	<property name="mod-api-version" value="${version-base}" />
+	<property name="mod-api-version" value="${version-minor}" />
 	<property name="mod-api-id" value="${mod-api-package}" />
 
 	<property name="mod-api-test-package" value="org.restlet.test" />
-	<property name="mod-api-test-version" value="${version-base}" />
+	<property name="mod-api-test-version" value="${version-minor}" />
 	<property name="mod-api-test-id" value="${mod-api-test-package}" />
 
 	<property name="mod-asyncweb-package" value="com.noelios.restlet.ext.asyncweb" />
@@ -189,7 +189,7 @@
 	<property name="mod-atom-id" value="${mod-atom-package}_${mod-atom-version}" />
 
 	<property name="mod-example-package" value="org.restlet.example" />
-	<property name="mod-example-version" value="${version-base}" />
+	<property name="mod-example-version" value="${version-minor}" />
 	<property name="mod-example-id" value="${mod-example-package}" />
 
 	<property name="mod-fileupload-package" value="org.restlet.ext.fileupload" />
@@ -237,15 +237,15 @@
 	<property name="mod-jxta-id" value="${mod-jxta-package}_${mod-jxta-version}" />
 
 	<property name="mod-net-package" value="com.noelios.restlet.ext.net" />
-	<property name="mod-net-version" value="${version-base}" />
+	<property name="mod-net-version" value="${version-minor}" />
 	<property name="mod-net-id" value="${mod-net-package}" />
 
 	<property name="mod-ri-package" value="com.noelios.restlet" />
-	<property name="mod-ri-version" value="${version-base}" />
+	<property name="mod-ri-version" value="${version-minor}" />
 	<property name="mod-ri-id" value="${mod-ri-package}" />
 
 	<property name="mod-ri-test-package" value="com.noelios.restlet.test" />
-	<property name="mod-ri-test-version" value="${version-base}" />
+	<property name="mod-ri-test-version" value="${version-minor}" />
 	<property name="mod-ri-test-id" value="${mod-ri-test-package}" />
 
 	<property name="mod-servlet-package" value="com.noelios.restlet.ext.servlet" />
@@ -921,7 +921,7 @@
 		<copy file="${tmpl}/nsis/setup.nsi" todir="${temp}" overwrite="true" />
 		<replace file="${temp}/setup.nsi" token="@version-full@" value="${version-full}" />
 		<replace file="${temp}/setup.nsi" token="@version-compact@" value="${version-compact}" />
-		<replace file="${temp}/setup.nsi" token="@version-base@" value="${version-base}" />
+		<replace file="${temp}/setup.nsi" token="@version-minor@" value="${version-minor}" />
 		<replace file="${temp}/setup.nsi" token="@www@" value="../${www}" />
 		<replace file="${temp}/setup.nsi" token="@images-dir@" value="../${www}/images" />
 		<replace file="${temp}/setup.nsi" token="@license-dir@" value="../${docs}" />
