@@ -56,7 +56,7 @@ public class Constants {
 
             private int attribute;
 
-            ATTRIBUTE(final int atribute) {
+            ATTRIBUTE(final int attribute) {
                 this.attribute = attribute;
             }
 
