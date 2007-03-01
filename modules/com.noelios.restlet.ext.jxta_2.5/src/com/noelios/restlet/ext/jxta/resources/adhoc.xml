@@ -19,26 +19,26 @@ Portions Copyright [yyyy] [name of copyright owner]
 @author james todd [james dot w dot todd at gmail dot com]
 -->
 
-<!DOCTYPE org.jxta:configuration>
+<!DOCTYPE org.jxtaHttp:configuration>
 
-<jxta>
+<jxtaHttp>
   <peer descriptor="adhoc"/>
 
-  <network id="urn:jxta:uuid-7038704567907394506794356077903402"
+  <network id="urn:jxtaHttp:uuid-7038704567907394506794356077903402"
     name="ToddNet"
     description="ToddNet">
 <!--
     <service id="${user.name}.p2mp"
       name="JXA:HTTP2MP"
       document="/attention.*"
-      class="net.jxta.ext.service.peerlet.AttentionPeerlet"/>
+      class="net.jxtaHttp.ext.service.peerlet.AttentionPeerlet"/>
 -->
 <!--
-    <group id="urn:jxta:uuid-1989101414002000081518002844102602"
+    <group id="urn:jxtaHttp:uuid-1989101414002000081518002844102602"
       name="MyJXTA"
       password=""
       description="">
-      <group id="urn:jxta:uuid-7210772407234707234021340724702802"
+      <group id="urn:jxtaHttp:uuid-7210772407234707234021340724702802"
         name="NetBeans"
         password=""
         description=""/>
@@ -63,4 +63,4 @@ Portions Copyright [yyyy] [name of copyright owner]
   <service>
     <rendezVous mode="adhoc"/>
   </service>
-</jxta>
+</jxtaHttp>
