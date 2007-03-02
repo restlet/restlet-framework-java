@@ -5,7 +5,6 @@
      ======================================================== -->
 
 <project name="Restlet" default="all">
-
 	<!-- ============================ -->
 	<!-- ===  Properties setting  === -->
 	<!-- ============================ -->
@@ -23,12 +22,14 @@
 	<property name="restlet-nre-ext" value="Extensions" />
 
 	<!-- Location properties -->
+	<property name="dist-base" value="dist" />
+	<property name="dist-path" value="restlet-${version-compact}" />
+	<property name="dist-classic" value="${dist-base}/classic/${dist-path}" />
+	<property name="dist-eclipse" value="${dist-base}/eclipse/${dist-path}" />
+	<property name="dist-maven" value="${dist-base}/maven/${dist-path}" />
 	<property name="bin" value="bin" />
 	<property name="temp" value="temp" />
 	<property name="classes" value="${temp}/classes" />
-	<property name="dist-base" value="dist" />
-	<property name="dist-path" value="restlet-${version-compact}" />
-	<property name="dist" value="${dist-base}/${dist-path}" />
 	<property name="lib" value="../libraries" />
 	<property name="mod" value="../modules" />
 	<property name="tmpl" value="tmpl" />
@@ -36,6 +37,7 @@
 	<property name="docs-api" value="${docs}/api" />
 	<property name="docs-nre" value="${docs}/nre" />
 	<property name="docs-ext" value="${docs}/ext" />
+	<property name="www" value="${temp}/www" />
 	<property name="jdk1.4-home" value="jdk1.4-home" />
 		
 	<!-- Library properties -->
@@ -585,7 +587,7 @@
 	</macrodef>
 
 	<!-- Packages a module -->
-	<macrodef name="packageModule">
+	<macrodef name="stageModule">
 		<attribute name="name" />
 		<sequential>
 			<!-- Create the Manifest by merging the Eclipse plugin Manifest and the default JAR's one -->
@@ -603,16 +605,16 @@
 			</manifest>
 
 			<!-- Create plugin jar -->
-			<mkdir dir="${dist}/lib" />
-			<jar jarfile="${dist}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
+			<mkdir dir="${dist-classic}/lib" />
+			<jar jarfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
 				<fileset dir="${classes}/${mod-@{name}-id}" />
 				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="META-INF/**" />
 				<fileset dir="${temp}/jar/" />
 			</jar>
 
 			<!-- Create extension source jar file -->
-			<mkdir dir="${dist}/src" />
-			<copy todir="${dist}/src/${mod-@{name}-id}">
+			<mkdir dir="${dist-classic}/src" />
+			<copy todir="${dist-classic}/src/${mod-@{name}-id}">
 				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${excludes}" />
 			</copy>
 		</sequential>
@@ -625,7 +627,7 @@
 			<findbugs debug="false" home="tools/findbugs" output="html" outputFile="${temp}/findbugs/${mod-@{name}-id}-fb.html" >
 				<auxClasspath refid="mod-@{name}-path" />
 				<sourcePath path="${mod}/${mod-@{name}-id}/src" />
-				<class location="${dist}/lib/${mod-@{name}-id}.jar" />
+				<class location="${dist-classic}/lib/${mod-@{name}-id}.jar" />
 			</findbugs>
 		</sequential>
 	</macrodef>
@@ -687,15 +689,15 @@
 	</macrodef>
 
 	<!-- Packages a library -->
-	<macrodef name="packageLibrary">
+	<macrodef name="stageLibrary">
 		<!-- Package a library -->
 		<attribute name="name" />
 		<sequential>
 			<!-- Create a destination directory -->
-			<mkdir dir="${dist}/lib/${lib-@{name}-id}" />
+			<mkdir dir="${dist-classic}/lib/${lib-@{name}-id}" />
 
 			<!-- Copy all library content into the destination folder -->
-			<copy todir="${dist}/lib/${lib-@{name}-id}">
+			<copy todir="${dist-classic}/lib/${lib-@{name}-id}">
 				<fileset dir="${lib}/${lib-@{name}-id}" excludes="bin, .classpath, .project, build.properties"/>
 			</copy>
 		</sequential>
@@ -707,7 +709,7 @@
 	<!-- ===================== -->
 
 	<!-- GENERAL targets -->
-	<target name="all" depends="test, generate, javadoc, package, findbugs, checkstyle" description="Full build"/>
+	<target name="all" depends="test, generate, javadoc, stage, package, findbugs, checkstyle" description="Full build"/>
 	<target name="verify" depends="test, package, findbugs, checkstyle" description="Verify build"/>
 	<target name="init" description="Initialize some properties">
 		<!-- Create the time stamp -->
@@ -922,15 +924,22 @@
 		<replace file="${temp}/setup.nsi" token="@version-full@" value="${version-full}" />
 		<replace file="${temp}/setup.nsi" token="@version-compact@" value="${version-compact}" />
 		<replace file="${temp}/setup.nsi" token="@version-minor@" value="${version-minor}" />
+		<echo message="${www}"/>
 		<replace file="${temp}/setup.nsi" token="@www@" value="../${www}" />
 		<replace file="${temp}/setup.nsi" token="@images-dir@" value="../${www}/images" />
 		<replace file="${temp}/setup.nsi" token="@license-dir@" value="../${docs}" />
-		<replace file="${temp}/setup.nsi" token="@dist@" value="../${dist}" />
+		<!-- @dist@ stands for the place where are located the files to add. -->
+		<replace file="${temp}/setup.nsi" token="@dist@" value="../${dist-classic}" />
+		<!-- @dist-base@ stands for the place where to generate the executable. -->
 		<replace file="${temp}/setup.nsi" token="@dist-base@" value="../${dist-base}" />
 	</target>
 
+
+	<!-- STAGE target -->
+	<target name="stage" depends="stage-classic" description="Stage the packaging step."/>
+	
 	<!-- PACKAGE target -->
-	<target name="package" depends="package-dist, package-zip, package-nsis" description="Generate the distribution"/>
+	<target name="package" depends="package-zip, package-nsis" description="Generate the distribution"/>
   
 	<!-- FINDBUGS target -->
 	<target name="findbugs" depends="init" if="do-findbugs" description="Attempts to find bugs">
@@ -1116,111 +1125,111 @@
 	</target>
 
 
-	<!-- PACKAGE-DIST target (generation of distribution files) -->
-	<target name="package-dist" description="Generate the distribution files">
+	<!-- STAGE-CLASSIC target (Stage the packaging step) -->
+	<target name="stage-classic" description="Stage the packaging step.">
 		<!-- Prepare distribution directories -->
-		<delete dir="${dist}" verbose="false" quiet="true" includeEmptyDirs="true" />
-		<mkdir dir="${dist}/bin" />
-		<mkdir dir="${dist}/lib" />
-		<mkdir dir="${dist}/lib/poms" />
-		<mkdir dir="${dist}/src" />
+		<delete dir="${dist-classic}" verbose="false" quiet="true" includeEmptyDirs="true" />
+		<mkdir dir="${dist-classic}/bin" />
+		<mkdir dir="${dist-classic}/lib" />
+		<mkdir dir="${dist-classic}/lib/poms" />
+		<mkdir dir="${dist-classic}/src" />
 
 		<!-- Increment the build number -->
 		<buildnumber />
 
 		<!-- Copy the binaries -->
-		<copy todir="${dist}/bin">
+		<copy todir="${dist-classic}/bin">
 			<fileset dir="${bin}" />
 		</copy>
 
 		<!-- Copy the Javadoc -->
-		<copy todir="${dist}/docs/api">
+		<copy todir="${dist-classic}/docs/api">
 			<fileset dir="${docs-api}" />
 		</copy>
-		<copy todir="${dist}/docs/ext">
+		<copy todir="${dist-classic}/docs/ext">
 			<fileset dir="${docs-ext}" />
 		</copy>
-		<copy todir="${dist}/docs/nre">
+		<copy todir="${dist-classic}/docs/nre">
 			<fileset dir="${docs-nre}" />
 		</copy>
 
 		<!-- Copy text notes -->
-		<copy file="${docs}/changes.txt" tofile="${dist}/changes.txt" />
-		<copy file="${tmpl}/text/copyright.txt" tofile="${dist}/copyright.txt" />
-		<copy file="${tmpl}/text/dependencies.txt" tofile="${dist}/lib/readme.txt" />
-		<copy file="${tmpl}/text/docs.txt" tofile="${dist}/docs/readme.txt" />
-		<copy file="${tmpl}/text/src.txt" tofile="${dist}/src/readme.txt" />
-		<copy file="${tmpl}/text/license.txt" tofile="${dist}/license.txt" />
-		<copy file="${tmpl}/text/readme.txt" tofile="${dist}/readme.txt" />
-		<copy file="${tmpl}/text/trademarks.txt" tofile="${dist}/trademarks.txt" />
+		<copy file="${docs}/changes.txt" tofile="${dist-classic}/changes.txt" />
+		<copy file="${tmpl}/text/copyright.txt" tofile="${dist-classic}/copyright.txt" />
+		<copy file="${tmpl}/text/dependencies.txt" tofile="${dist-classic}/lib/readme.txt" />
+		<copy file="${tmpl}/text/docs.txt" tofile="${dist-classic}/docs/readme.txt" />
+		<copy file="${tmpl}/text/src.txt" tofile="${dist-classic}/src/readme.txt" />
+		<copy file="${tmpl}/text/license.txt" tofile="${dist-classic}/license.txt" />
+		<copy file="${tmpl}/text/readme.txt" tofile="${dist-classic}/readme.txt" />
+		<copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
 
 		<!-- Packages libraries -->
-		<packageLibrary name="asyncweb" />
-<!-- disabled for 1.0	<packageLibrary name="bouncycastle" /> -->
-		<packageLibrary name="codec" />
-		<packageLibrary name="collections" />
-		<packageLibrary name="concurrent" />
-		<packageLibrary name="db4o" />
-		<packageLibrary name="dbcp" />
-		<packageLibrary name="fileupload" />
-		<packageLibrary name="freemarker" />
-<!-- disabled for 1.0	<packageLibrary name="grizzly" /> -->
-		<packageLibrary name="httpclient" />
-		<packageLibrary name="io" />
-		<packageLibrary name="javamail" />
-<!-- disabled for 1.0	<packageLibrary name="jetty5" /> -->
-		<packageLibrary name="jetty" />
-		<packageLibrary name="json" />
-<!-- disabled for 1.0	<packageLibrary name="jxta" /> -->
-		<packageLibrary name="logging" />
-		<packageLibrary name="mina" />
-		<packageLibrary name="pool" />
-		<packageLibrary name="servlet" />
-		<packageLibrary name="servlet5" />
-		<packageLibrary name="simple" />
-		<packageLibrary name="slf4j" />
-		<packageLibrary name="spring" />
-		<packageLibrary name="velocity" />
-		<packageLibrary name="wrapper" />
+		<stageLibrary name="asyncweb" />
+<!-- disabled for 1.0	<stageLibrary name="bouncycastle" /> -->
+		<stageLibrary name="codec" />
+		<stageLibrary name="collections" />
+		<stageLibrary name="concurrent" />
+		<stageLibrary name="db4o" />
+		<stageLibrary name="dbcp" />
+		<stageLibrary name="fileupload" />
+		<stageLibrary name="freemarker" />
+<!-- disabled for 1.0	<stageLibrary name="grizzly" /> -->
+		<stageLibrary name="httpclient" />
+		<stageLibrary name="io" />
+		<stageLibrary name="javamail" />
+<!-- disabled for 1.0	<stageLibrary name="jetty5" /> -->
+		<stageLibrary name="jetty" />
+		<stageLibrary name="json" />
+<!-- disabled for 1.0	<stageLibrary name="jxta" /> -->
+		<stageLibrary name="logging" />
+		<stageLibrary name="mina" />
+		<stageLibrary name="pool" />
+		<stageLibrary name="servlet" />
+		<stageLibrary name="servlet5" />
+		<stageLibrary name="simple" />
+		<stageLibrary name="slf4j" />
+		<stageLibrary name="spring" />
+		<stageLibrary name="velocity" />
+		<stageLibrary name="wrapper" />
 
 		<!-- Package modules -->
-		<packageModule name="api" />
-		<packageModule name="ri" />
-		<packageModule name="asyncweb" />
-<!-- disabled for 1.0  <packageModule name="atom" /> -->
-<!-- disabled for 1.0  <packageModule name="bouncycastle" /> -->
-		<packageModule name="fileupload" />
-		<packageModule name="freemarker" />
-		<packageModule name="httpclient" />
-		<packageModule name="javamail" />
-		<packageModule name="jdbc" />
-<!-- disabled for 1.0  <packageModule name="jetty5" /> -->
-		<packageModule name="jetty" />
-<!-- disabled for 1.0  <packageModule name="jmx" /> -->
-		<packageModule name="json" />
-<!-- disabled for 1.0  <packageModule name="jxta" /> -->
-		<packageModule name="net" />
-		<packageModule name="servlet" />
-		<packageModule name="simple" />
-		<packageModule name="spring" />
-		<packageModule name="velocity" />
-		<packageModule name="example" />
+		<stageModule name="api" />
+		<stageModule name="ri" />
+		<stageModule name="asyncweb" />
+<!-- disabled for 1.0  <stageModule name="atom" /> -->
+<!-- disabled for 1.0  <stageModule name="bouncycastle" /> -->
+		<stageModule name="fileupload" />
+		<stageModule name="freemarker" />
+		<stageModule name="httpclient" />
+		<stageModule name="javamail" />
+		<stageModule name="jdbc" />
+<!-- disabled for 1.0  <stageModule name="jetty5" /> -->
+		<stageModule name="jetty" />
+<!-- disabled for 1.0  <stageModule name="jmx" /> -->
+		<stageModule name="json" />
+<!-- disabled for 1.0  <stageModule name="jxta" /> -->
+		<stageModule name="net" />
+		<stageModule name="servlet" />
+		<stageModule name="simple" />
+		<stageModule name="spring" />
+		<stageModule name="velocity" />
+		<stageModule name="example" />
 
 		<!-- Copy the POM files -->
-		<copy todir="${dist}/lib/poms">
+		<copy todir="${dist-classic}/lib/poms">
 			<fileset dir="${temp}/poms" />
 		</copy>
 	</target>
 
 	<!-- PACKAGE-ZIP target (generation of final Zip file) -->
 	<target name="package-zip" description="Generate the final zip file">
-		<zip destfile="${dist-zip}/restlet-${version-compact}.zip" basedir="${dist-base}" includes="${dist-path}/**/*" />
+		<zip destfile="${dist-base}/restlet-${version-compact}.zip" basedir="${dist-base}/classic" />
 	</target>
 
 	<!-- PACKAGE-NSIS target (generation of Windows installer) -->
 	<target name="package-nsis" depends="init" if="do-nsis" description="Generate the windows installer">
-		<nsis script="${temp}/setup.nsi" verbosity="2" uninstallfilelist="${dist}/uninstall.log">
-			<fileset dir="${dist}" includes="**/*" />
+		<nsis script="${temp}/setup.nsi" verbosity="2" uninstallfilelist="${dist-classic}/uninstall.log">
+			<fileset dir="${dist-classic}" includes="**/*" />
 		</nsis>
 	</target>
 
