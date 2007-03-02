@@ -17,6 +17,7 @@ Changes log
  - Send the Vary header only to none-MSIE user agents as MSIE seems to support badly this header. Reported by Heinrich Klobuczek.
  - Enhanced but non completely fixed support of long URIs (due to regexp limitations). Reported by Ivan Gorgiev.
  - IllegalStateException is thrown each time a Web form is going to be parsed, but is not available. Reported by Ron Lancaster.
+ - Fixed improper line returns in Linux shell script ("bin/linux/restlet.sh"). Reported by Sébastien Pierre.
 
 [API changes]
  - The default HTTPS connector for Jetty is now BIO based because the NIO one is marked as
