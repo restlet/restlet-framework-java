@@ -222,7 +222,7 @@ public class Finder extends Restlet {
         String methodName = method.getName().toLowerCase();
 
         if ((methodName != null) && (methodName.length() > 0)) {
-            sb.append("handle");
+            sb.append(prefix);
             sb.append(Character.toUpperCase(methodName.charAt(0)));
             sb.append(methodName.substring(1));
         }
