@@ -14,13 +14,13 @@ Caption "Noelios Restlet Engine @version-full@"
 BrandingText " "
 
 # MUI defines
-!define MUI_ICON @www@/favicon.ico
+!define MUI_ICON @icons-dir@/favicon.ico
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_NODISABLE
 !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Noelios\$(^Name)"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
-!define MUI_UNICON @www@/favicon.ico
+!define MUI_UNICON @icons-dir@/favicon.ico
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 !define MUI_WELCOMEFINISHPAGE_BITMAP_NOSTRETCH
 !define MUI_WELCOMEFINISHPAGE_BITMAP @images-dir@\installer.bmp
