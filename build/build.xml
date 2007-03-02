@@ -4,7 +4,7 @@
      Restlet build file  -  Copyright 2005-2007 Jerome LOUVEL
      ======================================================== -->
 
-<project name="Restlet" default="all">
+<project name="Restlet" default="rebuild">
 	<!-- ============================ -->
 	<!-- ===  Properties setting  === -->
 	<!-- ============================ -->
@@ -37,7 +37,9 @@
 	<property name="docs-api" value="${docs}/api" />
 	<property name="docs-nre" value="${docs}/nre" />
 	<property name="docs-ext" value="${docs}/ext" />
-	<property name="www" value="${temp}/www" />
+	<property name="images" value="images" />
+	<property name="icons" value="${images}/ico" />
+	<property name="documentation" value="documentation" />
 	<property name="jdk1.4-home" value="jdk1.4-home" />
 		
 	<!-- Library properties -->
@@ -523,19 +525,21 @@
 			<pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.0.jar" />
 		</classpath>
 	</taskdef>
-
+	<!-- Findbugs -->
 	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
 		<classpath>
 			<pathelement location="tools/findbugs/lib/findbugs-ant.jar" />
 		</classpath>
 	</taskdef>
 
+	<!-- Checkstyle -->
 	<taskdef resource="checkstyletask.properties">
 		<classpath>
 			<pathelement location="tools/checkstyle/checkstyle-all-4.2.jar" />
 		</classpath>
 	</taskdef>
 
+	<!-- NSIS 1.3 -->
 	<taskdef name="nsis" classname="net.sf.nsisant.Task">
 		<classpath>
 			<pathelement location="tools/nsis/nsisant-1.3.custom.jar" />
@@ -547,7 +551,7 @@
 	<!-- ===  Ant Macros  === -->
 	<!-- ==================== -->
 
-	<!-- Compiles using preferences -->
+	<!-- Compile using preferences -->
 	<macrodef name="compile">
 		<attribute name="compiler" default="javac1.5" />
 		<attribute name="debug" default="${debug}" />
@@ -576,7 +580,7 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Compiles a module -->
+	<!-- Compile a module -->
 	<macrodef name="compileModule">
 		<attribute name="name" />
 		<sequential>
@@ -586,7 +590,7 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Packages a module -->
+	<!-- Package a module -->
 	<macrodef name="stageModule">
 		<attribute name="name" />
 		<sequential>
@@ -627,7 +631,7 @@
 			<findbugs debug="false" home="tools/findbugs" output="html" outputFile="${temp}/findbugs/${mod-@{name}-id}-fb.html" >
 				<auxClasspath refid="mod-@{name}-path" />
 				<sourcePath path="${mod}/${mod-@{name}-id}/src" />
-				<class location="${dist-classic}/lib/${mod-@{name}-id}.jar" />
+				<class location="${classes}/${mod-@{name}-id}" />
 			</findbugs>
 		</sequential>
 	</macrodef>
@@ -660,7 +664,7 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Backports a module -->
+	<!-- Backport a module -->
 	<macrodef name="backportModule">
 		<attribute name="name" />
 		<attribute name="failonwarning" default="true" />
@@ -688,7 +692,7 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Packages a library -->
+	<!-- Package a library -->
 	<macrodef name="stageLibrary">
 		<!-- Package a library -->
 		<attribute name="name" />
@@ -709,9 +713,10 @@
 	<!-- ===================== -->
 
 	<!-- GENERAL targets -->
-	<target name="all" depends="test, generate, javadoc, stage, package, findbugs, checkstyle" description="Full build"/>
-	<target name="verify" depends="test, package, findbugs, checkstyle" description="Verify build"/>
-	<target name="init" description="Initialize some properties">
+	<target name="build" depends="generate, verify, integrate, stage, package" description="Full build." />
+	<target name="rebuild" depends="clean, generate, verify, integrate, stage, package" description="Full build from scratch." />
+	
+	<target name="init" description="Initialize some properties.">
 		<!-- Create the time stamp -->
 		<tstamp>
 			<format property="release-date" pattern="yyyy-MM-dd" />
@@ -803,91 +808,29 @@
 			</and>
 		</condition>
 	</target>
-	
-	<target name="verify-ant" if="ant-old" depends="init" description="Check the Ant version for potential issues with JUnit">
-		<echo message="For easier integration with JUnit, we recommand usage of Ant 1.7."/>
-		<echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory."/>
-		<echo message="Current version: ${ant.version}"/>
+
+	<!-- CLEAN target -->
+	<target name="clean" depends="clean-temp, clean-dist" description="Clean the staging area." />
+
+	<!-- CLEAN-DIST target -->
+	<target name="clean-dist" description="Clean distributions files.">
+		<delete includeEmptyDirs="true" verbose="false" quiet="false"  failonerror="false">
+			<fileset dir="${dist-base}" />
+		</delete>
 	</target>
 
-	<!-- COMPILE target -->
-	<target name="compile" depends="init" description="Compile the Java source files">
-		<mkdir dir="${classes}" />
-		<compileModule name="api" />
-		<compileModule name="ri" />
-		<compileModule name="asyncweb" />
-		<compileModule name="atom" />
-		<compileModule name="fileupload" />
-		<compileModule name="freemarker" />
-		<compileModule name="grizzly" />
-		<compileModule name="httpclient" />
-		<compileModule name="javamail" />
-		<compileModule name="jdbc" />
-		<compileModule name="jetty5" />
-		<compileModule name="jetty" />
-		<compileModule name="jmx" />
-		<compileModule name="json" />
-		<compileModule name="jxta" />
-		<compileModule name="net" />
-		<compileModule name="servlet" />
-		<compileModule name="simple" />
-		<compileModule name="spring" />
-		<compileModule name="velocity" />
-		<compileModule name="example" />
-		<compileModule name="api-test" />
-		<compileModule name="ri-test" />
+	<!-- CLEAN-TEMP target -->
+	<target name="clean-temp" description="Clean temporary build files.">
+		<!-- Delete the classes and Javadoc directories -->
+		<delete includeEmptyDirs="true" verbose="false" quiet="false"  failonerror="false">
+			<fileset dir="${temp}" />
+		</delete>
 	</target>
 
-	<!-- RETROTRANSLATOR VERIFY target -->
-	<target name="backport"
-			if="do-backport"
-        	depends="compile"
-	        description="Backport classes using Retrotranslator">
-		<backportModule name="api" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="ri" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="asyncweb" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="atom" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="fileupload" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="freemarker" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="grizzly" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="httpclient" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="javamail" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="jdbc" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="jetty5" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="jetty" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="jmx" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="json" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="jxta" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="net" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="servlet" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="simple" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="spring" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="velocity" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="example" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="api-test" failonwarning="@{backport-failonwarning}"/>
-		<backportModule name="ri-test" failonwarning="@{backport-failonwarning}"/>
-	</target>
-
-	<!-- TEST target -->
-	<target name="test" depends="verify-ant, backport" description="Execute the test suites">
-		<mkdir dir="${temp}/test"/>
-		<junit printsummary="true"
-		       fork="true"
-		       haltonfailure="true"
-		       filtertrace="true"
-		       showoutput="${verbose}">
-			<classpath>
-				<path refid="mod-api-test-path" />
-			</classpath>
-
-			<formatter type="plain" />
-			<test name="com.noelios.restlet.test.NoeliosTestSuite" todir="${temp}/test" />
-			<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" />
-		</junit>
-	</target>
-  
 	<!-- GENERATE target -->
-	<target name="generate" depends="init" description="Generate template-based files">
+	<target name="generate" depends="generate-classes, generate-backport, generate-template, generate-javadocs" description="Generate files." />
+		
+	<target name="generate-template" depends="init" description="Generate template-based files.">
 		<!-- Generate the Changes file -->
 		<copy file="${tmpl}/text/changes.txt" todir="${docs}" overwrite="true" />
 		<replace file="${docs}/changes.txt" token="@release-date@" value="${release-date}" />
@@ -924,85 +867,72 @@
 		<replace file="${temp}/setup.nsi" token="@version-full@" value="${version-full}" />
 		<replace file="${temp}/setup.nsi" token="@version-compact@" value="${version-compact}" />
 		<replace file="${temp}/setup.nsi" token="@version-minor@" value="${version-minor}" />
-		<echo message="${www}"/>
-		<replace file="${temp}/setup.nsi" token="@www@" value="../${www}" />
-		<replace file="${temp}/setup.nsi" token="@images-dir@" value="../${www}/images" />
-		<replace file="${temp}/setup.nsi" token="@license-dir@" value="../${docs}" />
+		<replace file="${temp}/setup.nsi" token="@icons-dir@" value="../${icons}" />
+		<replace file="${temp}/setup.nsi" token="@images-dir@" value="../${images}" />
+		<replace file="${temp}/setup.nsi" token="@license-dir@" value="../${documentation}" />
 		<!-- @dist@ stands for the place where are located the files to add. -->
 		<replace file="${temp}/setup.nsi" token="@dist@" value="../${dist-classic}" />
 		<!-- @dist-base@ stands for the place where to generate the executable. -->
 		<replace file="${temp}/setup.nsi" token="@dist-base@" value="../${dist-base}" />
 	</target>
-
-
-	<!-- STAGE target -->
-	<target name="stage" depends="stage-classic" description="Stage the packaging step."/>
 	
-	<!-- PACKAGE target -->
-	<target name="package" depends="package-zip, package-nsis" description="Generate the distribution"/>
-  
-	<!-- FINDBUGS target -->
-	<target name="findbugs" depends="init" if="do-findbugs" description="Attempts to find bugs">
-		<mkdir dir="${temp}/findbugs" />
-		<findbugsModule name="api" /> 
-		<findbugsModule name="ri" />
-		<findbugsModule name="asyncweb" />
-<!-- disabled for 1.0	<findbugsModule name="atom" /> -->
-		<findbugsModule name="fileupload" />
-		<findbugsModule name="freemarker" />
-<!-- disabled for 1.0	<findbugsModule name="grizzly" /> -->
-		<findbugsModule name="httpclient" />
-		<findbugsModule name="javamail" />
-		<findbugsModule name="jdbc" />
-<!-- disabled for 1.0	<findbugsModule name="jetty5" /> -->
-		<findbugsModule name="jetty" />
-<!-- disabled for 1.0   <findbugsModule name="jmx" /> -->
-		<findbugsModule name="json" />
-<!-- disabled for 1.0	<findbugsModule name="jxta" /> -->
-		<findbugsModule name="net" />
-		<findbugsModule name="servlet" />
-		<findbugsModule name="simple" />
-		<findbugsModule name="spring" />
-		<findbugsModule name="velocity" />
-		<findbugsModule name="example" />
+	<!-- COMPILE target -->
+	<target name="generate-classes" depends="init" description="Compile the Java source files.">
+		<mkdir dir="${classes}" />
+		<compileModule name="api" />
+		<compileModule name="ri" />
+		<compileModule name="asyncweb" />
+		<compileModule name="atom" />
+		<compileModule name="fileupload" />
+		<compileModule name="freemarker" />
+		<compileModule name="grizzly" />
+		<compileModule name="httpclient" />
+		<compileModule name="javamail" />
+		<compileModule name="jdbc" />
+		<compileModule name="jetty5" />
+		<compileModule name="jetty" />
+		<compileModule name="jmx" />
+		<compileModule name="json" />
+		<compileModule name="jxta" />
+		<compileModule name="net" />
+		<compileModule name="servlet" />
+		<compileModule name="simple" />
+		<compileModule name="spring" />
+		<compileModule name="velocity" />
+		<compileModule name="example" />
+		<compileModule name="api-test" />
+		<compileModule name="ri-test" />
 	</target>
-	  
-	<!-- CHECKSTYLE target -->
-	<target name="checkstyle" depends="init" if="do-checkstyle" description="Check the style of the code">
-		<mkdir dir="${temp}/checkstyle" />
-		<checkstyleModule name="api" /> 
-		<checkstyleModule name="ri" />
-		<checkstyleModule name="asyncweb" />
-		<checkstyleModule name="atom" />
-		<checkstyleModule name="fileupload" />
-		<checkstyleModule name="freemarker" />
-		<checkstyleModule name="grizzly" />
-		<checkstyleModule name="httpclient" />
-		<checkstyleModule name="javamail" />
-		<checkstyleModule name="jdbc" />
-		<checkstyleModule name="jetty5" />
-		<checkstyleModule name="jetty" />
-		<checkstyleModule name="jmx" />
-		<checkstyleModule name="json" />
-		<checkstyleModule name="jxta" />
-		<checkstyleModule name="net" />
-		<checkstyleModule name="servlet" />
-		<checkstyleModule name="simple" />
-		<checkstyleModule name="spring" />
-		<checkstyleModule name="velocity" />
-		<checkstyleModule name="example" />
-	</target>
-	
-	<!-- CLEAN target -->
-	<target name="clean" description="Clean temporary build files">
-		<!-- Delete the classes and Javadoc directories -->
-		<delete includeEmptyDirs="true" verbose="false" quiet="false"  failonerror="false">
-			<fileset dir="${temp}" />
-		</delete>
+
+	<!-- RETROTRANSLATOR VERIFY target -->
+	<target name="generate-backport" if="do-backport" depends="generate-classes" description="Backport classes using Retrotranslator.">
+		<backportModule name="api" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="ri" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="asyncweb" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="atom" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="fileupload" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="freemarker" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="grizzly" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="httpclient" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="javamail" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="jdbc" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="jetty5" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="jetty" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="jmx" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="json" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="jxta" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="net" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="servlet" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="simple" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="spring" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="velocity" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="example" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="api-test" failonwarning="@{backport-failonwarning}"/>
+		<backportModule name="ri-test" failonwarning="@{backport-failonwarning}"/>
 	</target>
 
 	<!-- JAVADOC target -->
-	<target name="javadoc" if="do-javadoc" depends="compile" description="Generate the Javadoc">
+	<target name="generate-javadocs" if="do-javadoc" depends="generate-classes" description="Generate the Javadocs.">
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
 			<fileset dir="${docs-api}" excludes="**/.svn" />
 			<fileset dir="${docs-nre}" excludes="**/.svn" />
@@ -1124,9 +1054,90 @@
 		</javadoc>
 	</target>
 
+	<!-- VERIFY target -->
+	<target name="verify" depends="verify-ant, verify-tests, verify-findbugs, verify-checkstyle" description="Verify build." />
+	
+	<target name="verify-ant" if="ant-old" depends="init" description="Check the Ant version for potential issues with JUnit.">
+		<echo message="For easier integration with JUnit, we recommand usage of Ant 1.7."/>
+		<echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory."/>
+		<echo message="Current version: ${ant.version}"/>
+	</target>
+
+	<target name="verify-tests" depends="verify-ant" description="Execute the tests suites.">
+		<mkdir dir="${temp}/test"/>
+		<junit printsummary="true"
+		       fork="true"
+		       haltonfailure="true"
+		       filtertrace="true"
+		       showoutput="${verbose}">
+			<classpath>
+				<path refid="mod-api-test-path" />
+			</classpath>
+
+			<formatter type="plain" />
+			<test name="com.noelios.restlet.test.NoeliosTestSuite" todir="${temp}/test" />
+			<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" />
+		</junit>
+	</target>
+  
+	<target name="verify-findbugs" depends="init" if="do-findbugs" description="Attempts to find bugs.">
+		<mkdir dir="${temp}/findbugs" />
+		<findbugsModule name="api" /> 
+		<findbugsModule name="ri" />
+		<findbugsModule name="asyncweb" />
+<!-- disabled for 1.0	<findbugsModule name="atom" /> -->
+		<findbugsModule name="fileupload" />
+		<findbugsModule name="freemarker" />
+<!-- disabled for 1.0	<findbugsModule name="grizzly" /> -->
+		<findbugsModule name="httpclient" />
+		<findbugsModule name="javamail" />
+		<findbugsModule name="jdbc" />
+<!-- disabled for 1.0	<findbugsModule name="jetty5" /> -->
+		<findbugsModule name="jetty" />
+<!-- disabled for 1.0   <findbugsModule name="jmx" /> -->
+		<findbugsModule name="json" />
+<!-- disabled for 1.0	<findbugsModule name="jxta" /> -->
+		<findbugsModule name="net" />
+		<findbugsModule name="servlet" />
+		<findbugsModule name="simple" />
+		<findbugsModule name="spring" />
+		<findbugsModule name="velocity" />
+		<findbugsModule name="example" />
+	</target>
+	  
+	<target name="verify-checkstyle" depends="init" if="do-checkstyle" description="Check the style of the code.">
+		<mkdir dir="${temp}/checkstyle" />
+		<checkstyleModule name="api" /> 
+		<checkstyleModule name="ri" />
+		<checkstyleModule name="asyncweb" />
+		<checkstyleModule name="atom" />
+		<checkstyleModule name="fileupload" />
+		<checkstyleModule name="freemarker" />
+		<checkstyleModule name="grizzly" />
+		<checkstyleModule name="httpclient" />
+		<checkstyleModule name="javamail" />
+		<checkstyleModule name="jdbc" />
+		<checkstyleModule name="jetty5" />
+		<checkstyleModule name="jetty" />
+		<checkstyleModule name="jmx" />
+		<checkstyleModule name="json" />
+		<checkstyleModule name="jxta" />
+		<checkstyleModule name="net" />
+		<checkstyleModule name="servlet" />
+		<checkstyleModule name="simple" />
+		<checkstyleModule name="spring" />
+		<checkstyleModule name="velocity" />
+		<checkstyleModule name="example" />
+	</target>
+
+	<!-- Integrate target -->
+	<target name="integrate" depends="" description="Integrate files from other projects." />
+
+	<!-- STAGE target -->
+	<target name="stage" depends="stage-classic" description="Stage the packaging step."/>
 
 	<!-- STAGE-CLASSIC target (Stage the packaging step) -->
-	<target name="stage-classic" description="Stage the packaging step.">
+	<target name="stage-classic" description="Stage the packaging step of classic distribution.">
 		<!-- Prepare distribution directories -->
 		<delete dir="${dist-classic}" verbose="false" quiet="true" includeEmptyDirs="true" />
 		<mkdir dir="${dist-classic}/bin" />
@@ -1159,7 +1170,7 @@
 		<copy file="${tmpl}/text/dependencies.txt" tofile="${dist-classic}/lib/readme.txt" />
 		<copy file="${tmpl}/text/docs.txt" tofile="${dist-classic}/docs/readme.txt" />
 		<copy file="${tmpl}/text/src.txt" tofile="${dist-classic}/src/readme.txt" />
-		<copy file="${tmpl}/text/license.txt" tofile="${dist-classic}/license.txt" />
+		<copy file="${documentation}/license.txt" tofile="${dist-classic}/license.txt" />
 		<copy file="${tmpl}/text/readme.txt" tofile="${dist-classic}/readme.txt" />
 		<copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
 
@@ -1220,14 +1231,19 @@
 			<fileset dir="${temp}/poms" />
 		</copy>
 	</target>
-
+	
+	<!-- PACKAGE target -->
+	<target name="package" depends="package-classic" description="Generate the distribution."/>
+  
+	<target name="package-classic" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions."/>
+	
 	<!-- PACKAGE-ZIP target (generation of final Zip file) -->
-	<target name="package-zip" description="Generate the final zip file">
+	<target name="package-classic-zip" description="Generate the final zip file for the classic distribution.">
 		<zip destfile="${dist-base}/restlet-${version-compact}.zip" basedir="${dist-base}/classic" />
 	</target>
 
 	<!-- PACKAGE-NSIS target (generation of Windows installer) -->
-	<target name="package-nsis" depends="init" if="do-nsis" description="Generate the windows installer">
+	<target name="package-classic-nsis" depends="init" if="do-nsis" description="Generate the windows installer for the classic distribution.">
 		<nsis script="${temp}/setup.nsi" verbosity="2" uninstallfilelist="${dist-classic}/uninstall.log">
 			<fileset dir="${dist-classic}" includes="**/*" />
 		</nsis>
