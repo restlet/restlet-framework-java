@@ -304,7 +304,7 @@ public class Finder extends Restlet {
                             java.lang.reflect.Method handleMethod = getHandleMethod(
                                     target, method);
                             if (handleMethod != null) {
-                                invoke(this, handleMethod, request, response);
+                                invoke(target, handleMethod);
                             } else {
                                 response
                                         .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
