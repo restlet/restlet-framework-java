@@ -828,9 +828,9 @@
 	</target>
 
 	<!-- GENERATE target -->
-	<target name="generate" depends="generate-classes, generate-backport, generate-template, generate-javadocs" description="Generate files." />
+	<target name="generate" depends="generate-classes, generate-backport, generate-templates, generate-javadocs" description="Generate files." />
 		
-	<target name="generate-template" depends="init" description="Generate template-based files.">
+	<target name="generate-templates" depends="init" description="Generate template-based files.">
 		<!-- Generate the Changes file -->
 		<copy file="${tmpl}/text/changes.txt" todir="${docs}" overwrite="true" />
 		<replace file="${docs}/changes.txt" token="@release-date@" value="${release-date}" />
