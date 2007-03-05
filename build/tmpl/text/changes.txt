@@ -19,6 +19,7 @@ Changes log
  - IllegalStateException is thrown each time a Web form is going to be parsed, but is not available. Reported by Ron Lancaster.
  - Fixed improper line returns in Linux shell script ("bin/linux/restlet.sh"). Reported by Sébastien Pierre.
  - Fixed hardcoded "handle" prefix in Finder.getMethod(). Reported by Brian Crow and Ron Lancaster.
+ - Fixed handleXxx method invocation in Finder class (no argument, invocation on "target" resource). Reported and contributed by Brian Crow.
 
 [API changes]
  - The default HTTPS connector for Jetty is now BIO based because the NIO one is marked as
