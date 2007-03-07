@@ -949,6 +949,7 @@
 		         windowtitle="Restlet API ${version-full}"
 		         doctitle="Restlet API ${version-full}"
 		         overview="${tmpl}/javadocs/overview-api.html"
+				 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
 		         verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${mod}/${mod-api-id}/src/" />
@@ -975,6 +976,7 @@
 		         windowtitle="Noelios Restlet Engine ${version-full}"
 		         doctitle="Noelios Restlet Engine ${version-full}"
 	             overview="${tmpl}/javadocs/overview-nre.html"
+				 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
 		         verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${mod}/${mod-ri-id}/src/" />
@@ -1006,6 +1008,7 @@
 		         windowtitle="Restlet Extensions ${version-full}"
 		         doctitle="Restlet Extensions ${version-full}"
 		         overview="${tmpl}/javadocs/overview-ext.html"
+				 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
 		         verbose="${verbose}">
 			<sourcepath>
 <!-- disabled for 1.0	<pathelement path="${mod}/${mod-atom-id}/src/" /> -->
