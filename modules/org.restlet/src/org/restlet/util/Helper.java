@@ -24,6 +24,7 @@ import org.restlet.data.Response;
 
 /**
  * Delegate used by API classes to get support from the implementation classes.
+ * Note that this is an SPI class that is not intended for public usage.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

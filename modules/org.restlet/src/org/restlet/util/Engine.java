@@ -43,8 +43,8 @@ import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
 /**
- * Facade to the implementation of the Restlet API. This class is supporting
- * many API classes but shouldn't be directly used by end-users.
+ * Facade to the engine implementating the Restlet API. Note that this is an SPI
+ * class that is not intended for public usage.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
