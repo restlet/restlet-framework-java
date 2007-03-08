@@ -85,15 +85,15 @@ public class RedirectTestCase extends TestCase {
 
         // Tests
         Context context = clientComponent.getContext();
-        String uri = "http://localhost:8080/?foo=bar";
+        String uri = "http://localhost:8182/?foo=bar";
         testCall(context, Method.GET, uri);
         testCall(context, Method.DELETE, uri);
 
-        uri = "http://localhost:8080/abcd/efgh/ijkl?foo=bar&foo=beer";
+        uri = "http://localhost:8182/abcd/efgh/ijkl?foo=bar&foo=beer";
         testCall(context, Method.GET, uri);
         testCall(context, Method.DELETE, uri);
 
-        uri = "http://localhost:8080/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";
+        uri = "http://localhost:8182/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";
         testCall(context, Method.GET, uri);
 
         // Stop the components
