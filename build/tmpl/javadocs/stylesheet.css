@@ -14,7 +14,7 @@ h1 { font-size: 145% }
 .TableRowColor         { background: #FFFFFF } /* White */
 
 /* Font used in left-hand frame lists */
-.FrameTitleFont   { font-size: 100%; font-family: Arial, Helvetica, sans-serif }
+.FrameTitleFont   { font-size: 120%; font-family: Arial, Helvetica, sans-serif }
 .FrameHeadingFont { font-size: 120%; font-family: Arial, Helvetica, sans-serif }
 .FrameItemFont    { font-size: 120%; font-family: Arial, Helvetica, sans-serif }
 
@@ -27,7 +27,7 @@ h1 { font-size: 145% }
 .NavBarCell2    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
 .NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
 
-.TableRowColor a { font-size: 120%; }
+/*.TableRowColor a { font-size: 120%; }*/
 
 a:link {
    color: #1C4D97;
@@ -92,7 +92,6 @@ p {
 
 pre {
    text-align: left;
-   padding-left: 20px;
    font-size: 120%;
 }
 
