@@ -28,28 +28,6 @@ body {
    width: 700px;
 }
 
-#layout {
-   padding: 25px 50px 25px 50px;
-   background-color: white;
-   text-align: center;
-}
-
-#header {
-	margin-bottom: 30px;
-}
-
-#navigation {
-	display: inline;
-}
-
-#content {
-	text-align: left;
-}
-
-#footer {
-   margin-top: 30px;
-}
-
 h1 {
    font-size: 160%;
    font-weight: bolder;
@@ -69,13 +47,6 @@ h2 {
 h1 + h2 { margin-top: -5px }
 h2 + p { margin-top: -2px }
 
-h2.welcome {
-   font-weight: normal;
-   font-size: 120%;
-   line-height: 150%;
-   vertical-align: bottom;
-}
-
 h3 {
    font-size: 100%;
    font-weight: bolder;
@@ -89,58 +60,4 @@ h4 {
    font-weight: bold;
    line-height: 200%;
    vertical-align: bottom;
-}
-
-img {
-   border: none;
-   vertical-align: middle;
-}
-
-p {
-   text-align: justify;
-}
-
-pre {
-   text-align: left;
-   background-color: #eeeeec;
-   padding-left: 20px
-}
-
-table {
-   background-color: white;
-}
-
-ul {
-   list-style-position: outside;
-   list-style-image: url(/images/icons/8/puce.png);
-}
-
-ul li li{
-   list-style-image: url(/images/icons/8/puce2.png);
-}
-
-.index{
-   font-size: 120%;
-   text-align: left;
-   width:150px;
-   margin-left: auto;
-   margin-right: auto;
-}
-
-.welcome {
-   font-weight: bolder;
-   font-size: 160%;
-}
-
-.notes {
-	text-align: left;
-	font-size: smaller;
-}
-
-.notes h3 {
-	text-align: left;
-}
-
-img {
-	text-align: center;
 }
