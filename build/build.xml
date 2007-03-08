@@ -1173,7 +1173,7 @@
 		<copy file="${tmpl}/text/dependencies.txt" tofile="${dist-classic}/lib/readme.txt" />
 		<copy file="${tmpl}/text/docs.txt" tofile="${dist-classic}/docs/readme.txt" />
 		<copy file="${tmpl}/text/src.txt" tofile="${dist-classic}/src/readme.txt" />
-		<copy file="${documentation}/license.txt" tofile="${dist-classic}/license.txt" />
+		<copy file="${tmpl}/text/license.txt" tofile="${dist-classic}/license.txt" />
 		<copy file="${tmpl}/text/readme.txt" tofile="${dist-classic}/readme.txt" />
 		<copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
 
