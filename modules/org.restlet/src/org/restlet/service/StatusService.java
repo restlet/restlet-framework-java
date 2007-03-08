@@ -93,6 +93,24 @@ public class StatusService {
     }
 
     /**
+     * Returns a status for a given exception or error. By default it returns an
+     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br/>
+     * In order to customize the default behavior, this method can be overriden.
+     * 
+     * @param throwable
+     *            The exception or error caught.
+     * @param request
+     *            The request handled.
+     * @param response
+     *            The response updated.
+     * @return The representation of the given status.
+     */
+    public Status getStatus(Throwable throwable, Request request,
+            Response response) {
+        return null;
+    }
+
+    /**
      * Indicates if the service should be enabled.
      * 
      * @return True if the service should be enabled.

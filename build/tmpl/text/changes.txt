@@ -32,6 +32,8 @@ Changes log
    or "org.restlet.application" for anonymous classes. It allows for a finer filtering of log entries.
  - Added a SpringFinder class in the Spring extension to allow easier dependency injection
    with resources. Suggested by Jonathan Hall, Valdis Rigdon and Ryan Daum.
+ - Added a getStatus(Throwable,Request,Response) method to StatusService to allow for customization
+   of behavior when exceptions or errors are intercepted. Suggested by Stokes.
 
 [Enhancements] 
  - Enhanced support of Java SE 4.0 via Retrotranslator.

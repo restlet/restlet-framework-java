@@ -57,24 +57,23 @@ public class ApplicationStatusFilter extends StatusFilter {
         return this.application;
     }
 
-    /**
-     * Returns a representation for the given status.<br/>In order to
-     * customize the default representation, this method can be overriden.
-     * 
-     * @param status
-     *            The status to represent.
-     * @param request
-     *            The request handled.
-     * @param response
-     *            The response updated.
-     * @return The representation of the given status.
-     */
+    @Override
     public Representation getRepresentation(Status status, Request request,
             Response response) {
         Representation result = getApplication().getStatusService()
                 .getRepresentation(status, request, response);
         if (result == null)
             result = super.getRepresentation(status, request, response);
+        return result;
+    }
+
+    @Override
+    public Status getStatus(Throwable throwable, Request request,
+            Response response) {
+        Status result = getApplication().getStatusService().getStatus(
+                throwable, request, response);
+        if (result == null)
+            result = super.getStatus(throwable, request, response);
         return result;
     }
 
