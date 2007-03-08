@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -33,7 +33,7 @@ import org.restlet.resource.StringRepresentation;
 
 /**
  * Unit tests for the RedirectRestlet.
- * 
+ *
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class RedirectTestCase extends TestCase {
@@ -75,7 +75,7 @@ public class RedirectTestCase extends TestCase {
         originComponent.getDefaultHost().attach("", trace);
 
         // Create the server connectors
-        proxyComponent.getServers().add(Protocol.HTTP, 8080);
+        proxyComponent.getServers().add(Protocol.HTTP, 8182);
         originComponent.getServers().add(Protocol.HTTP, 9090);
 
         // Now, let's start the components!
