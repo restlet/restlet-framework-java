@@ -869,7 +869,7 @@
 		<replace file="${temp}/setup.nsi" token="@version-minor@" value="${version-minor}" />
 		<replace file="${temp}/setup.nsi" token="@icons-dir@" value="../${icons}" />
 		<replace file="${temp}/setup.nsi" token="@images-dir@" value="../${images}" />
-		<replace file="${temp}/setup.nsi" token="@license-dir@" value="${dist-classic}" />
+		<replace file="${temp}/setup.nsi" token="@license-dir@" value="../${dist-classic}" />
 		<!-- @dist@ stands for the place where are located the files to add. -->
 		<replace file="${temp}/setup.nsi" token="@dist@" value="../${dist-classic}" />
 		<!-- @dist-base@ stands for the place where to generate the executable. -->
