@@ -7,6 +7,8 @@ Changes log
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Fixed bug with the control of the existence of fragment in setIdentifier method.
+ - Fixed bug in ServerServlet failing to set the ServletContextAdapter in some cases.
+   Reported by Ryan Daum.
 
 [API changes]
  - 
