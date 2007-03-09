@@ -9,12 +9,12 @@ body { background-color: #FFFFFF }
 h1 { font-size: 145% }
 
 /* Table colors */
-.TableHeadingColor     { background: #CCCCFF } /* Dark mauve */
+.TableHeadingColor     { background: #CCCCFF; font-size: 120%; } /* Dark mauve */
 .TableSubHeadingColor  { background: #EEEEFF } /* Light mauve */
 .TableRowColor         { background: #FFFFFF } /* White */
 
 /* Font used in left-hand frame lists */
-.FrameTitleFont   { font-size: 120%; font-family: Arial, Helvetica, sans-serif }
+.FrameTitleFont   { font-size: 120%; font-family: Arial, Helvetica, sans-serif; line-height: 150% }
 .FrameHeadingFont { font-size: 100%; font-family: Arial, Helvetica, sans-serif; font-weight: bold}
 .FrameItemFont    { font-size: 120%; font-family: Arial, Helvetica, sans-serif }
 
@@ -28,8 +28,6 @@ h1 { font-size: 145% }
 .NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
 
 /*.TableRowColor a { font-size: 120%; }*/
-
-.TableHeadingColor font {font-size: 120%; }
 
 a:link {
    color: #1C4D97;
