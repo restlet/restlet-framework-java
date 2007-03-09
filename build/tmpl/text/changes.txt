@@ -6,9 +6,11 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - 
+ - Fixed bug with the control of the existence of fragment in setIdentifier method.
+
 [API changes]
  - 
+
 [Enhancements] 
  - 
 
