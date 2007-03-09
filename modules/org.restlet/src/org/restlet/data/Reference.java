@@ -1555,7 +1555,7 @@ public class Reference {
     public void setIdentifier(String identifier) {
         if (identifier == null)
             identifier = "";
-        if (identifier.indexOf('#') == -1) {
+        if (identifier.indexOf('#') != -1) {
             throw new IllegalArgumentException(
                     "Illegal '#' character detected in parameter");
         } else {
