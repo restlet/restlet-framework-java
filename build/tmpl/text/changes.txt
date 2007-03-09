@@ -45,6 +45,7 @@ Changes log
  - Added initial support for IntelliJ in the SVN code base. Contributed by James Todd.
  - Updated db4o library (object database) to version 6.1.
  - Upgraded Jetty to 6.1.2 RC1.
+ - Improved the Javadocs for VirtualHost. Suggested by Sean Landis.
  
 1.0 RC4 (2007-01-26)
 [Bugs fixed]

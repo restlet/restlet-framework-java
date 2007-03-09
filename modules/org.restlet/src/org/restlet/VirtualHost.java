@@ -30,15 +30,21 @@ import org.restlet.data.Response;
  * 
  * A virtual host is defined along three properties:
  * <ul>
- * <li>request's "hostRef"</li>
- * <li>request's "resourceRef"</li>
- * <li>response's "serverInfo"</li>
+ * <li>request's {@link Request#getHostRef()}: the URI of the host that received the request. Note that
+ * the same IP address can correspond to multiple domain names and therefore receive
+ * request with different "hostRef" URIs.</li>
+ * <li>request's {@link Request#getResourceRef()}: the URI of the target resource of the request. If
+ * this reference is relative, then it is based on the "hostRef", otherwise it is
+ * maintained as received. This difference is useful for resources identified by 
+ * URNs or for Web proxies or Web caches.</li>
+ * <li>response's {@link Response#getServerInfo()}: the information about the server
+ * connector receiving the requests such as it IP address and port number.</li>
  * </ul>
- * When creating a new instance, you can define regular expressions that must
- * match subpart of each property like the domain name, port, scheme for
- * references or IP address and port number for server information. The default
- * values match everything.
+ * When creating a new instance, you can define Java regular expressions ({@link java.util.regex.Pattern})
+ * that must match the domain name, port, scheme for references or IP address and 
+ * port number for server information. The default values match everything.
  * 
+ * @see java.util.regex.Pattern
  * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia -
  *      Virtual Hosting</a>
  * @see <a href="http://httpd.apache.org/docs/2.2/vhosts/">Apache - Virtual
