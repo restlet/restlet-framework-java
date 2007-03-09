@@ -54,7 +54,7 @@ public abstract class Engine {
             .getCanonicalName());
 
     /** Common version info. */
-    public static final String MINOR_NUMBER = "5";
+    public static final String MINOR_NUMBER = "6";
 
     public static final String VERSION_LONG = "1.0 RC" + MINOR_NUMBER;
 
