@@ -881,7 +881,7 @@
 		<copy file="${tmpl}/javadocs/overview-ext.tmpl" tofile="${tmpl}/javadocs/overview-ext.html" overwrite="true" />
 		<replace file="${tmpl}/javadocs/overview-api.html" token="@version-minor@" value="${version-minor}" />
 		<replace file="${tmpl}/javadocs/overview-nre.html" token="@version-minor@" value="${version-minor}" />
-		<replace file="${tmpl}/javadocs/overview-nre.html" token="@version-minor@" value="${version-minor}" />
+		<replace file="${tmpl}/javadocs/overview-ext.html" token="@version-minor@" value="${version-minor}" />
 
 	</target>
 	
