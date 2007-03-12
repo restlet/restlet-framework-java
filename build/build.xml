@@ -874,6 +874,15 @@
 		<replace file="${temp}/setup.nsi" token="@dist@" value="../${dist-classic}" />
 		<!-- @dist-base@ stands for the place where to generate the executable. -->
 		<replace file="${temp}/setup.nsi" token="@dist-base@" value="../${dist-base}" />
+
+		<!-- Generate the javadocs overview files -->
+		<copy file="${tmpl}/javadocs/overview-api.tmpl" tofile="${tmpl}/javadocs/overview-api.html" overwrite="true" />
+		<copy file="${tmpl}/javadocs/overview-nre.tmpl" tofile="${tmpl}/javadocs/overview-nre.html" overwrite="true" />
+		<copy file="${tmpl}/javadocs/overview-ext.tmpl" tofile="${tmpl}/javadocs/overview-ext.html" overwrite="true" />
+		<replace file="${tmpl}/javadocs/overview-api.tmpl" token="@version-minor@" value="${version-minor}" />
+		<replace file="${tmpl}/javadocs/overview-nre.tmpl" token="@version-minor@" value="${version-minor}" />
+		<replace file="${tmpl}/javadocs/overview-nre.tmpl" token="@version-minor@" value="${version-minor}" />
+
 	</target>
 	
 	<!-- COMPILE target -->
