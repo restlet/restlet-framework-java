@@ -994,7 +994,7 @@
 				<package name="com.noelios.restlet.ext*" />
 			</group>
 		
-			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
+			<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 	
@@ -1051,8 +1051,8 @@
 			<link href="http://jetty.mortbay.org/apidocs/" />
 			<link href="http://static.springframework.org/spring/docs/2.0.x/api/" />
 			<link href="http://www.json.org/javadoc/" />
-			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
-			<link href="http://www.restlet.org/docs/nre/" packagelistLoc="${docs-nre}" offline="true" />
+			<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
+			<link href="http://www.restlet.org/documentation/${version-minor}/nre/" packagelistLoc="${docs-nre}" offline="true" />
 			<link href="http://www.simpleframework.org/javadoc/" />
 		</javadoc>
 	</target>
