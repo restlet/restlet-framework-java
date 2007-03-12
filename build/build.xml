@@ -1251,7 +1251,7 @@
 	
 	<!-- PACKAGE-ZIP target (generation of final Zip file) -->
 	<target name="package-classic-zip" description="Generate the final zip file for the classic distribution.">
-		<zip destfile="${dist-base}/restlet-${version-compact}.zip" basedir="${dist-base}/classic" />
+		<zip destfile="${dist-base}/restlet-${version-compact}.zip" basedir="${dist-base}/classic" includes="restlet-${version-compact}/**/*" />
 	</target>
 
 	<!-- PACKAGE-NSIS target (generation of Windows installer) -->
