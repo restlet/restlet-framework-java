@@ -26,7 +26,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.Resource;
 
 /**
- * Finder that is customize for easier usage by Spring wiring services. The idea
+ * Finder that is specialized for easier usage by Spring wiring services. The idea
  * is to create a singleton Spring bean based on that SpringFinder and configure
  * it using Spring's "lookup-method" element to return instances of a
  * "prototype" bean for {@link #createResource()}. Finally, attach the
