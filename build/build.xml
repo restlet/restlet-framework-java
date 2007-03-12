@@ -879,9 +879,9 @@
 		<copy file="${tmpl}/javadocs/overview-api.tmpl" tofile="${tmpl}/javadocs/overview-api.html" overwrite="true" />
 		<copy file="${tmpl}/javadocs/overview-nre.tmpl" tofile="${tmpl}/javadocs/overview-nre.html" overwrite="true" />
 		<copy file="${tmpl}/javadocs/overview-ext.tmpl" tofile="${tmpl}/javadocs/overview-ext.html" overwrite="true" />
-		<replace file="${tmpl}/javadocs/overview-api.tmpl" token="@version-minor@" value="${version-minor}" />
-		<replace file="${tmpl}/javadocs/overview-nre.tmpl" token="@version-minor@" value="${version-minor}" />
-		<replace file="${tmpl}/javadocs/overview-nre.tmpl" token="@version-minor@" value="${version-minor}" />
+		<replace file="${tmpl}/javadocs/overview-api.html" token="@version-minor@" value="${version-minor}" />
+		<replace file="${tmpl}/javadocs/overview-nre.html" token="@version-minor@" value="${version-minor}" />
+		<replace file="${tmpl}/javadocs/overview-nre.html" token="@version-minor@" value="${version-minor}" />
 
 	</target>
 	
