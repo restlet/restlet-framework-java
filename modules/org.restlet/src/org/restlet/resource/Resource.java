@@ -551,7 +551,8 @@ public class Resource {
     }
 
     /**
-     * Initialize the resource with its context.
+     * Initialize the resource with its context. If you override this method, make sure that you don't
+     * forget to call super.init() first, otherwise your Resource won't behave properly.
      * 
      * @param context
      *            The parent context.

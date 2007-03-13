@@ -14,6 +14,7 @@ Changes log
  - 
 
 [Enhancements] 
+ - Fixed Spring plugin descriptor for Eclipse.
  - 
 
 1.0 RC5 (2007-03-09)
