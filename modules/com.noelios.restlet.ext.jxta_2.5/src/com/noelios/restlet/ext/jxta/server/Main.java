@@ -26,10 +26,10 @@ public class Main {
 
     // todo: test hack
     public static void main(String[] args) {
-        JxtaHttpServerHelper jxtaHttp = new JxtaHttpServerHelper(null);
+        HttpServerHelper http = new HttpServerHelper(null);
 
         try {
-            jxtaHttp.start();
+            http.start();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -46,8 +46,8 @@ public class Constants {
     }
 
     public enum Pipe {
-        P2PP_NAME("Jxta:HTTP2PP"),
-        P2MP_NAME("Jxta:HTTP2MP"),
+        P2PP_NAME("JXTA:HTTP2PP"),
+        P2MP_NAME("JXTA:HTTP2MP"),
         P2PP_TYPE(PipeService.UnicastType),
         P2MP_TYPE(PipeService.PropagateType);
 

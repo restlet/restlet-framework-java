@@ -21,12 +21,12 @@ Portions Copyright [yyyy] [name of copyright owner]
 
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 
-<!DOCTYPE org.jxtaHttp:configuration>
+<!DOCTYPE org.http:configuration>
 
-<jxtaHttp>
+<jxta>
   <peer descriptor="edge" name="NetBeans" description="NetBeans"/>
  
-  <network id="urn:jxtaHttp:uuid-7038704567907394506794356077903402"
+  <network id="urn:jxta:uuid-7038704567907394506794356077903402"
     name="ToddNet"
     description="ToddNet"
     autoRendezVousPeriod="-1">
@@ -40,11 +40,11 @@ Portions Copyright [yyyy] [name of copyright owner]
       <address>http://1.2.3.4:9800</address>
     </relays>
 <!--
-    <group id="urn:jxtaHttp:uuid-1989101414002000081518002844102602"
+    <group id="urn:http:uuid-1989101414002000081518002844102602"
       name="MyJXTA"
       password=""
       description="">
-      <group id="urn:jxtaHttp:uuid-7210772407234707234021340724702802"
+      <group id="urn:http:uuid-7210772407234707234021340724702802"
         name="NetBeans"
         password=""
         description=""/>
@@ -65,4 +65,4 @@ Portions Copyright [yyyy] [name of copyright owner]
       </address>
     </http>
   </transport>
-</jxtaHttp>
+</jxta>

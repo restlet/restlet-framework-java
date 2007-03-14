@@ -35,6 +35,8 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.EventObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author james todd [james dot w dot todd at gmail dot com]
@@ -43,13 +45,13 @@ import java.util.EventObject;
 class NetworkHandler {
 
     // todo: config hack for the time being
-    private static final String HOME = System.getProperty("JXTA_HOME", System.getProperty("user.dir") +
-            File.separator + ".mynet");
+    private static final URI HOME = URI.create(System.getProperty("JXTA_HOME", System.getProperty("user.dir") +
+            File.separator + ".mynet"));
     private static final String PROFILE_RESOURCE = "/com/noelios/restlet/ext/jxta/resources/adhoc.xml";
     private static final String CONFIG_NAME = "restlet";
     private static final String CONFIG_USER = "usr";
     private static final String CONFIG_PASSWORD = "pwd";
-    private static final String LISTENER_LOCK = NetworkHandler.class.getName() + ":listener lock";
+    private static final Logger logger = Logger.getLogger(NetworkHandler.class.getName());
 
     private Network network = null;
     private NetworkListener listener = null;
@@ -60,96 +62,116 @@ class NetworkHandler {
 
     public NetworkHandler(final NetworkListener listener) {
         this.listener = listener;
+
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "instantiated[listener]: [" + listener + "]");
+        }
     }
 
     public Network getNetwork() {
         return network;
     }
 
-    public void start() {
-        if (network == null) {
-            try {
-                network = new Network(new AbstractConfigurator(new URI(HOME),
-                        Profile.get(getClass().getResource(PROFILE_RESOURCE).toURI())) {
-                    public PlatformConfig createPlatformConfig(Configurator c)
-                            throws ConfiguratorException {
-                        c.setName(CONFIG_NAME);
-                        c.setSecurity(CONFIG_USER, CONFIG_PASSWORD);
+    public void start()
+            throws NetworkException {
+        if (network != null) {
+            throw new IllegalStateException("network already started");
+        }
 
-                        return c.getPlatformConfig();
-                    }
-                }, getNetworkListener());
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "network starting");
+        }
 
-                network.start();
-            } catch (URISyntaxException use) {
-                // todo: do better
-                use.printStackTrace();
-            } catch (NetworkException ne) {
-                // todo: do better
-                ne.printStackTrace();
-            }
+        try {
+            network = new Network(new AbstractConfigurator(HOME,
+                    Profile.get(getClass().getResource(PROFILE_RESOURCE).toURI())) {
+                public PlatformConfig createPlatformConfig(Configurator c)
+                        throws ConfiguratorException {
+                    c.setName(CONFIG_NAME);
+                    c.setSecurity(CONFIG_USER, CONFIG_PASSWORD);
+
+                    return c.getPlatformConfig();
+                }
+            }, listener != null ? listener : createNetworkListener());
+
+            network.start();
+        } catch (URISyntaxException use) {
+            throw new NetworkException("invalid uri: " + getClass().getResource(PROFILE_RESOURCE), use);
+        }
+
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "network started");
         }
     }
 
     public void stop() {
-        if (network != null) {
-            network.stop();
+        if (network == null) {
+            throw new IllegalStateException("network already stopped");
+        }
 
-            network = null;
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "stopping");
+        }
+
+        network.stop();
+
+        network = null;
+
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "stopped");
         }
     }
 
-    private NetworkListener getNetworkListener() {
-        if (listener == null) {
-            synchronized (LISTENER_LOCK) {
-                listener = new NetworkListener() {
-                    public void notify(NetworkEvent ne) {
-                        StringBuffer msg = new StringBuffer();
-                        PeerGroup pg = ne.getPeerGroup();
-
-                        msg.append("NetworkEvent: ").
-                                append(pg.getPeerGroupName()).
-                                append(" ");
-
-                        EventObject cause = ne.getCause();
-
-                        if (cause != null) {
-                            msg.append(cause.getClass().getName()).
-                                    append(" ");
-
-                            if (cause instanceof RendezvousEvent) {
-                                RendezvousEvent re = (RendezvousEvent)cause;
-                                String p = re.getPeer();
-                                String pid = re.getPeerID().toString();
-                                int t = re.getType();
-
-                                pg = ne.getPeerGroup();
-
-                                msg.append(pg.getPeerGroupName()).
-                                        append(" ").
-                                        append(p).
-                                        append(" ").
-                                        append(pid).
-                                        append(" ").
-                                        append(t);
-                            } else if (cause instanceof GroupEvent) {
-                                GroupEvent ge = (GroupEvent)cause;
-                                int t = ge.getType();
-
-                                pg = ge.getPeerGroup();
-
-                                msg.append(pg.getPeerGroupName()).
-                                        append(" ").
-                                        append(t);
-                            }
-                        }
-
-                        System.out.println(msg);
-                    }
-                };
-            }
+    // todo: this should likely go in time
+    private NetworkListener createNetworkListener() {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "creating listener");
         }
+        
+        return new NetworkListener() {
+            public void notify(NetworkEvent ne) {
+                StringBuffer msg = new StringBuffer();
+                PeerGroup pg = ne.getPeerGroup();
 
-        return listener;
+                msg.append("NetworkEvent: ").
+                        append(pg.getPeerGroupName()).
+                        append(" ");
+
+                EventObject cause = ne.getCause();
+
+                if (cause != null) {
+                    msg.append(cause.getClass().getName()).
+                            append(" ");
+
+                    if (cause instanceof RendezvousEvent) {
+                        RendezvousEvent re = (RendezvousEvent)cause;
+                        String p = re.getPeer();
+                        String pid = re.getPeerID().toString();
+                        int t = re.getType();
+
+                        pg = ne.getPeerGroup();
+
+                        msg.append(pg.getPeerGroupName()).
+                                append(" ").
+                                append(p).
+                                append(" ").
+                                append(pid).
+                                append(" ").
+                                append(t);
+                    } else if (cause instanceof GroupEvent) {
+                        GroupEvent ge = (GroupEvent)cause;
+                        int t = ge.getType();
+
+                        pg = ge.getPeerGroup();
+
+                        msg.append(pg.getPeerGroupName()).
+                                append(" ").
+                                append(t);
+                    }
+                }
+
+                System.out.println(msg);
+            }
+        };
     }
 }
