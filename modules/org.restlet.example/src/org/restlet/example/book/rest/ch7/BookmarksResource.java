@@ -20,6 +20,7 @@ package org.restlet.example.book.rest.ch7;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -69,6 +70,20 @@ public class BookmarksResource extends UserResource {
         }
 
         return result;
+    }
+
+    @Override
+    public void handleGet() {
+        // Make sure that the Uri ends with a "/" without changing the query.
+        // This is helpful when exposing the list of relative references of the
+        // bookmarks.
+        Reference ref = getRequest().getResourceRef();
+        if (!ref.getPath().endsWith("/")) {
+            ref.setPath(ref.getPath() + "/");
+            getResponse().redirectPermanent(ref);
+        } else {
+            super.handleGet();
+        }
     }
 
 }
