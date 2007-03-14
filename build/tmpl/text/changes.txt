@@ -9,7 +9,7 @@ Changes log
  - Fixed bug with the control of the existence of fragment in setIdentifier method.
  - Fixed bug in ServerServlet failing to set the ServletContextAdapter in some cases.
    Reported by Ryan Daum.
-
+ - Fixed bug with the relative links of the Web representation of the "Bookmarks" resource in the book tutorial. Reported by Sean Landis.
 [API changes]
  - 
 
