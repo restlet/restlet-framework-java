@@ -18,21 +18,20 @@
 
 package com.noelios.restlet.ext.jxta.net;
 
-import com.noelios.restlet.ext.jxta.net.MulticastSocketConnectionHandler;
-import com.noelios.restlet.ext.jxta.util.PipeUtility;
-import net.jxta.ext.network.NetworkException;
-import net.jxta.ext.network.NetworkEvent;
-import net.jxta.peergroup.PeerGroup;
-import net.jxta.pipe.PipeService;
-import net.jxta.pipe.PipeID;
-import net.jxta.socket.JxtaMulticastSocket;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.concurrent.Callable;
+
+import net.jxta.ext.network.NetworkException;
+import net.jxta.peergroup.PeerGroup;
+import net.jxta.pipe.PipeID;
+import net.jxta.pipe.PipeService;
+import net.jxta.socket.JxtaMulticastSocket;
+
+import com.noelios.restlet.ext.jxta.util.PipeUtility;
 
 /**
  * @author james todd [james dot w dot todd at gmail dot com]

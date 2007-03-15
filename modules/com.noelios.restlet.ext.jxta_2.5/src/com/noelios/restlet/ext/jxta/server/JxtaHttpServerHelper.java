@@ -21,6 +21,7 @@ package com.noelios.restlet.ext.jxta.server;
 import com.noelios.restlet.http.HttpServerHelper;
 import net.jxta.ext.network.GroupEvent;
 import net.jxta.ext.network.NetworkEvent;
+import net.jxta.ext.network.NetworkException;
 import net.jxta.ext.network.NetworkListener;
 import org.restlet.Server;
 
@@ -48,7 +49,7 @@ public class JxtaHttpServerHelper extends HttpServerHelper {
         stopServer();
     }
 
-    private void startNetwork() {
+    private void startNetwork() throws NetworkException {
         if (network == null || network.getNetwork() == null) {
             network = new NetworkHandler(new NetworkListener() {
                 public void notify(NetworkEvent ne) {
