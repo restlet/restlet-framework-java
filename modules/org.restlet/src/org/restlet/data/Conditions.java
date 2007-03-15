@@ -169,23 +169,27 @@ public final class Conditions {
 
         // Is the "if-Modified-Since" rule followed or not?
         if (result == null && getModifiedSince() != null) {
-            Date modifiedSince = getModifiedSince();
-            boolean isModifiedSince = ((modifiedSince == null)
-                    || (variant.getModificationDate() == null) || DateUtils
-                    .after(modifiedSince, variant.getModificationDate()));
-            if (!isModifiedSince) {
-                result = Status.REDIRECTION_NOT_MODIFIED;
+            if (variant != null) {
+                Date modifiedSince = getModifiedSince();
+                boolean isModifiedSince = ((modifiedSince == null)
+                        || (variant.getModificationDate() == null) || DateUtils
+                        .after(modifiedSince, variant.getModificationDate()));
+                if (!isModifiedSince) {
+                    result = Status.REDIRECTION_NOT_MODIFIED;
+                }
             }
         }
 
         // Is the "if-Unmodified-Since" rule followed or not?
         if (result == null && getUnmodifiedSince() != null) {
-            Date unModifiedSince = getUnmodifiedSince();
-            boolean isUnModifiedSince = ((unModifiedSince == null)
-                    || (variant.getModificationDate() == null) || DateUtils
-                    .after(variant.getModificationDate(), unModifiedSince));
-            if (!isUnModifiedSince) {
-                result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+            if (variant != null) {
+                Date unModifiedSince = getUnmodifiedSince();
+                boolean isUnModifiedSince = ((unModifiedSince == null)
+                        || (variant.getModificationDate() == null) || DateUtils
+                        .after(variant.getModificationDate(), unModifiedSince));
+                if (!isUnModifiedSince) {
+                    result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+                }
             }
         }
 
