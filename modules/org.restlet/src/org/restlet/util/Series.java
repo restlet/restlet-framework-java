@@ -92,19 +92,26 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      */
     public abstract Series<E> createSeries(List<E> delegate);
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Creates then adds a parameter at the end of the list.
      * 
-     * @see org.restlet.data.PList#add(java.lang.String, java.lang.String)
+     * @param name
+     *            The parameter name.
+     * @param value
+     *            The parameter value.
+     * @return True (as per the general contract of the Collection.add method).
      */
     public boolean add(String name, String value) {
         return add(createEntry(name, value));
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Copies the parameters whose name is a key in the given map.<br/> If a
+     * matching parameter is found, its value is put in the map.<br/> If
+     * multiple values are found, a list is created and set in the map.
      * 
-     * @see org.restlet.data.PList#copyTo(java.util.Map)
+     * @param params
+     *            The map controlling the copy.
      */
     @SuppressWarnings("unchecked")
     public void copyTo(Map<String, Object> params) {
@@ -174,19 +181,25 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns the first parameter found with the given name.
      * 
-     * @see org.restlet.data.PList#getFirst(java.lang.String)
+     * @param name
+     *            The parameter name (case sensitive).
+     * @return The first parameter found with the given name.
      */
     public E getFirst(String name) {
         return getFirst(name, false);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns the first parameter found with the given name.
      * 
-     * @see org.restlet.data.PList#getFirst(java.lang.String, boolean)
+     * @param name
+     *            The parameter name.
+     * @param ignoreCase
+     *            Indicates if the name comparison is case sensitive.
+     * @return The first parameter found with the given name.
      */
     public E getFirst(String name, boolean ignoreCase) {
         for (E param : this) {
@@ -198,29 +211,41 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         return null;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns the value of the first parameter found with the given name.
      * 
-     * @see org.restlet.data.PList#getFirstValue(java.lang.String)
+     * @param name
+     *            The parameter name (case sensitive).
+     * @return The value of the first parameter found with the given name.
      */
     public String getFirstValue(String name) {
         return getFirstValue(name, false);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns the value of the first parameter found with the given name.
      * 
-     * @see org.restlet.data.PList#getFirstValue(java.lang.String, boolean)
+     * @param name
+     *            The parameter name.
+     * @param ignoreCase
+     *            Indicates if the name comparison is case sensitive.
+     * @return The value of the first parameter found with the given name.
      */
     public String getFirstValue(String name, boolean ignoreCase) {
         return getFirstValue(name, ignoreCase, null);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns the value of the first parameter found with the given name.
      * 
-     * @see org.restlet.data.PList#getFirstValue(java.lang.String, boolean,
-     *      java.lang.String)
+     * @param name
+     *            The parameter name.
+     * @param ignoreCase
+     *            Indicates if the name comparison is case sensitive.
+     * @param defaultValue
+     *            The default value to return if no matching parameter found.
+     * @return The value of the first parameter found with the given name or the
+     *         default value.
      */
     public String getFirstValue(String name, boolean ignoreCase,
             String defaultValue) {
@@ -234,20 +259,24 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns the value of the first parameter found with the given name.
      * 
-     * @see org.restlet.data.PList#getFirstValue(java.lang.String,
-     *      java.lang.String)
+     * @param name
+     *            The parameter name (case sensitive).
+     * @param defaultValue
+     *            The default value to return if no matching parameter found.
+     * @return The value of the first parameter found with the given name or the
+     *         default value.
      */
     public String getFirstValue(String name, String defaultValue) {
         return getFirstValue(name, false, defaultValue);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns the set of parameter names (case sensitive).
      * 
-     * @see org.restlet.data.PList#getNames()
+     * @return The set of parameter names.
      */
     public Set<String> getNames() {
         Set<String> result = new HashSet<String>();
@@ -259,20 +288,31 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns the values of the parameters with a given name. If multiple
+     * parameters with the same name are found, all values are concatenated and
+     * separated by a comma (like for HTTP message headers).
      * 
-     * @see org.restlet.data.PList#getValues(java.lang.String)
+     * @param name
+     *            The parameter name (case insensitive).
+     * @return The values of the parameters with a given name.
      */
     public String getValues(String name) {
         return getValues(name, ",", true);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns the parameter values with a given name. If multiple parameters
+     * with the same name are found, all values are concatenated and separated
+     * by the given separator.
      * 
-     * @see org.restlet.data.PList#getValues(java.lang.String, java.lang.String,
-     *      boolean)
+     * @param name
+     *            The parameter name.
+     * @param separator
+     *            The separator character.
+     * @param ignoreCase
+     *            Indicates if the name comparison is case sensitive.
+     * @return The sequence of values.
      */
     public String getValues(String name, String separator, boolean ignoreCase) {
         String result = null;
@@ -302,26 +342,24 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     }
 
     /**
-     * Removes from this list all the entries whose name equals the specified
-     * name ignoring the case.
+     * Removes all the parameters with a given name.
      * 
      * @param name
-     *            The name of the entries to be removed.
-     * @return false if no entry has been removed, true otherwise.
+     *            The parameter name (case sensitive).
+     * @return True if the list changed.
      */
     public boolean removeAll(String name) {
         return removeAll(name, false);
     }
 
     /**
-     * Removes from this list all the entries whose name equals the specified
-     * name ignoring the case or not.
+     * Removes all the parameters with a given name.
      * 
      * @param name
-     *            The name of the entries to be removed.
+     *            The parameter name.
      * @param ignoreCase
-     *            true if the comparison ignores the case, false otherwise.
-     * @return false if no entry has been removed, true otherwise.
+     *            Indicates if the name comparison is case sensitive.
+     * @return True if the list changed.
      */
     public boolean removeAll(String name, boolean ignoreCase) {
         boolean changed = false;
@@ -343,7 +381,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * name ignoring the case.
      * 
      * @param name
-     *            The name of the entries to be removed.
+     *            The name of the entries to be removed (case sensitive).
      * @return false if no entry has been removed, true otherwise.
      */
     public boolean removeFirst(String name) {
@@ -375,11 +413,17 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         return changed;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Replaces the value of the first parameter with the given name and removes
+     * all other parameters with the same name.
      * 
-     * @see org.restlet.data.PList#set(java.lang.String, java.lang.String,
-     *      boolean)
+     * @param name
+     *            The parameter name.
+     * @param value
+     *            The value to set.
+     * @param ignoreCase
+     *            Indicates if the name comparison is case sensitive.
+     * @return The parameter set or added.
      */
     public E set(String name, String value, boolean ignoreCase) {
         E result = null;
@@ -409,29 +453,40 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns a view of the portion of this list between the specified
+     * fromIndex, inclusive, and toIndex, exclusive.
      * 
-     * @see org.restlet.data.PList#subList(int, int)
+     * @param fromIndex
+     *            The start position.
+     * @param toIndex
+     *            The end position (exclusive).
+     * @return The sub-list.
      */
     @Override
     public Series<E> subList(int fromIndex, int toIndex) {
         return createSeries(getDelegate().subList(fromIndex, toIndex));
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns a list of all the values associated to the parameter name.
      * 
-     * @see org.restlet.data.PList#subList(java.lang.String)
+     * @param name
+     *            The parameter name (case sensitive).
+     * @return The list of values.
      */
     public Series<E> subList(String name) {
         return subList(name, false);
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns a list of all the values associated to the parameter name.
      * 
-     * @see org.restlet.data.PList#subList(java.lang.String, boolean)
+     * @param name
+     *            The parameter name.
+     * @param ignoreCase
+     *            Indicates if the name comparison is case sensitive.
+     * @return The list of values.
      */
     public Series<E> subList(String name, boolean ignoreCase) {
         Series<E> result = createSeries(null);

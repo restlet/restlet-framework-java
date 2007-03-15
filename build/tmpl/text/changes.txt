@@ -21,6 +21,7 @@ Changes log
  - Fixed Spring plugin descriptor for Eclipse.
  - Upgraded Velocity to version 1.5.
  - Added Apache Commons Lang library, dependency for Velocity 1.5.
+ - Completed missing Javadocs for Series class. Reported by Jonathan Hall.
 
 1.0 RC5 (2007-03-09)
 [Bugs fixed]
