@@ -66,7 +66,7 @@ public class PipeUtility {
 
     public static URI getURI(PipeAdvertisement pipe) {
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "uri[pipe]: [" + pipe + "]");
+            logger.log(Level.FINE, "pipe: " + pipe);
         }
 
         String pid = pipe.getPipeID().toString();
@@ -74,7 +74,7 @@ public class PipeUtility {
         URI u = URI.create(SCHEMES.get(pipe.getType()) + "://" + pid.substring(i));
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "uri[uri]: [" + u + "]");
+            logger.log(Level.FINE, "uri: " + u);
         }
 
         return u;
@@ -83,8 +83,10 @@ public class PipeUtility {
     public static PipeAdvertisement createPipeAdvertisement(String name, String type, PeerGroup group,
                                                             PipeID pipeId) {
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "advertisement[name][type][group][pipe]: [" + name + "][" +
-                    type + "][" + group + "][" + pipeId + "]");
+            logger.log(Level.FINE, "name: " + name);
+            logger.log(Level.FINE, "type: " + type);
+            logger.log(Level.FINE, "group: " + group);
+            logger.log(Level.FINE, "pipe: " + pipeId);
         }
 
         PipeAdvertisement pa = (PipeAdvertisement)AdvertisementFactory.
@@ -95,15 +97,20 @@ public class PipeUtility {
         pa.setType(type);
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "pipe[pipe]: [" + pa + "]");
+            logger.log(Level.FINE, "pipe: " + pa);
         }
 
         return pa;
     }
 
+    public static PipeID createPipeID(PeerGroup group) {
+        return createPipeID(group, null);
+    }
+    
     public static PipeID createPipeID(PeerGroup group, PipeID pipeId) {
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "pipe[group][pipe][newPipe]: [" + group + "][" + pipeId + "]");
+            logger.log(Level.FINE, "group: " + group);
+            logger.log(Level.FINE, "pipe: " + pipeId);
         }
 
         byte[] sb = null;
@@ -129,7 +136,7 @@ public class PipeUtility {
                 IDFactory.newPipeID(group.getPeerGroupID(), sb) : IDFactory.newPipeID(group.getPeerGroupID());
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "pipe[pipe]: [" + pid + "]");
+            logger.log(Level.FINE, "pipe: " + pid);
         }
 
         return pid;

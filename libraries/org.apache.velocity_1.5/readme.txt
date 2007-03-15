@@ -6,4 +6,4 @@ Jakarta Velocity
 yet powerful template language to reference objects defined in Java code."
 
 For more information:
-http://jakarta.apache.org/velocity/
+http://velocity.apache.org/

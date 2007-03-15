@@ -19,7 +19,7 @@
 package com.noelios.restlet.ext.jxta.server;
 
 import com.noelios.restlet.ext.jxta.util.NetworkHandler;
-import com.noelios.restlet.ext.jxta.server.jxta.JxtaMulticastServer;
+import com.noelios.restlet.ext.jxta.net.JxtaMulticastServer;
 import net.jxta.ext.network.GroupEvent;
 import net.jxta.ext.network.NetworkEvent;
 import net.jxta.ext.network.NetworkException;
@@ -49,28 +49,28 @@ public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper 
     @Override
     public void start() throws Exception {
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "starting");
+            logger.log(Level.FINE, "http starting");
         }
 
         startNetwork();
         startServer();
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "started");
+            logger.log(Level.FINE, "http started");
         }
     }
 
     @Override
     public void stop() throws Exception {
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "stopping");
+            logger.log(Level.FINE, "http stopping");
         }
 
         stopNetwork();
         stopServer();
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "stopped");
+            logger.log(Level.FINE, "http stopped");
         }
     }
 
@@ -81,7 +81,7 @@ public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper 
         }
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "network starting");
+            logger.log(Level.FINE, "starting network");
         }
 
         network = new NetworkHandler(new NetworkListener() {
@@ -98,7 +98,7 @@ public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper 
         network.start();
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "network started");
+            logger.log(Level.FINE, "started network");
         }
     }
 
@@ -108,7 +108,7 @@ public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper 
         }
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "network stopping");
+            logger.log(Level.FINE, "stopping network");
         }
 
         network.stop();
@@ -116,17 +116,17 @@ public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper 
         network = null;
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "network stopped");
+            logger.log(Level.FINE, "stopped network");
         }
     }
 
     private void startServer() {
-        if (network != null) {
+        if (server != null) {
             throw new IllegalStateException("server already started");
         }
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "server starting");
+            logger.log(Level.FINE, "starting server");
         }
 
         // todo: introduce ServerFactory (see meerkat)
@@ -135,17 +135,17 @@ public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper 
         server.start();
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "server started");
+            logger.log(Level.FINE, "started server");
         }
     }
 
     private void stopServer() {
-        if (network == null) {
+        if (server == null) {
             throw new IllegalStateException("server not started");
         }
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "server stopping");
+            logger.log(Level.FINE, "stopping server");
         }
 
         server.stop();
@@ -153,7 +153,7 @@ public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper 
         server = null;
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "server stopped");
+            logger.log(Level.FINE, "stopped server");
         }
     }
 }

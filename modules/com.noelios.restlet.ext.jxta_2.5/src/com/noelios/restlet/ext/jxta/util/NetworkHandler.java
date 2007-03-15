@@ -64,7 +64,7 @@ public class NetworkHandler {
         this.listener = listener;
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "instantiated[listener]: [" + listener + "]");
+            logger.log(Level.FINE, "listener: " + listener);
         }
     }
 
@@ -110,7 +110,7 @@ public class NetworkHandler {
         }
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "stopping");
+            logger.log(Level.FINE, "network stopping");
         }
 
         network.stop();
@@ -118,7 +118,7 @@ public class NetworkHandler {
         network = null;
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "stopped");
+            logger.log(Level.FINE, "network stopped");
         }
     }
 

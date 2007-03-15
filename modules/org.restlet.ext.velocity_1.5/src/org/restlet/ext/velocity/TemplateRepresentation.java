@@ -121,10 +121,6 @@ public class TemplateRepresentation extends OutputRepresentation {
         Writer tmplWriter = null;
 
         try {
-            // Initialize the log system
-            getEngine()
-                    .setProperty("runtime.log.logsystem", new JdkLogSystem());
-
             // Initialize the engine
             getEngine().init();
 
