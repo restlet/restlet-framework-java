@@ -156,6 +156,9 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_ALL = new MediaType("text/*",
             "All texts");
 
+    public static final MediaType TEXT_CALENDAR = new MediaType("text/calendar",
+            "iCalendar event");
+
     public static final MediaType TEXT_CSS = new MediaType("text/css",
             "CSS stylesheet");
 
@@ -287,6 +290,8 @@ public final class MediaType extends Metadata {
                 result = MULTIPART_FORM_DATA;
             else if (name.equals(TEXT_ALL.getName()))
                 result = TEXT_ALL;
+            else if (name.equals(TEXT_CALENDAR.getName()))
+                result = TEXT_CALENDAR;
             else if (name.equals(TEXT_CSS.getName()))
                 result = TEXT_CSS;
             else if (name.equals(TEXT_HTML.getName()))

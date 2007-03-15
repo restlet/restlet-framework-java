@@ -10,8 +10,9 @@ Changes log
  - Fixed bug in ServerServlet failing to set the ServletContextAdapter in some cases.
    Reported by Ryan Daum.
  - Fixed bug with the relative links of the Web representation of the "Bookmarks" resource in the book tutorial. Reported by Sean Landis.
+ 
 [API changes]
- - 
+ - Added MediaType.TEXT_CALENDAR constant for iCalendar events. Suggested by Aron Roberts.
 
 [Enhancements] 
  - Fixed Spring plugin descriptor for Eclipse.
