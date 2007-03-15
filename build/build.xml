@@ -882,12 +882,12 @@
 		<replace file="${temp}/setup.nsi" token="@dist-base@" value="../${dist-base}" />
 
 		<!-- Generate the javadocs overview files -->
-		<copy file="${tmpl}/javadocs/overview-api.tmpl" tofile="${tmpl}/javadocs/overview-api.html" overwrite="true" />
-		<copy file="${tmpl}/javadocs/overview-nre.tmpl" tofile="${tmpl}/javadocs/overview-nre.html" overwrite="true" />
-		<copy file="${tmpl}/javadocs/overview-ext.tmpl" tofile="${tmpl}/javadocs/overview-ext.html" overwrite="true" />
-		<replace file="${tmpl}/javadocs/overview-api.html" token="@version-minor@" value="${version-minor}" />
-		<replace file="${tmpl}/javadocs/overview-nre.html" token="@version-minor@" value="${version-minor}" />
-		<replace file="${tmpl}/javadocs/overview-ext.html" token="@version-minor@" value="${version-minor}" />
+		<copy file="${tmpl}/javadocs/overview-api.tmpl" tofile="${temp}/javadocs/overview-api.html" overwrite="true" />
+		<copy file="${tmpl}/javadocs/overview-nre.tmpl" tofile="${temp}/javadocs/overview-nre.html" overwrite="true" />
+		<copy file="${tmpl}/javadocs/overview-ext.tmpl" tofile="${temp}/javadocs/overview-ext.html" overwrite="true" />
+		<replace file="${temp}/javadocs/overview-api.html" token="@version-minor@" value="${version-minor}" />
+		<replace file="${temp}/javadocs/overview-nre.html" token="@version-minor@" value="${version-minor}" />
+		<replace file="${temp}/javadocs/overview-ext.html" token="@version-minor@" value="${version-minor}" />
 
 	</target>
 	
@@ -963,7 +963,7 @@
 		         use="true"
 		         windowtitle="Restlet API ${version-full}"
 		         doctitle="Restlet API ${version-full}"
-		         overview="${tmpl}/javadocs/overview-api.html"
+		         overview="${temp}/javadocs/overview-api.html"
 				 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
 		         verbose="${verbose}">
 			<sourcepath>
@@ -990,7 +990,7 @@
 		         use="true"
 		         windowtitle="Noelios Restlet Engine ${version-full}"
 		         doctitle="Noelios Restlet Engine ${version-full}"
-	             overview="${tmpl}/javadocs/overview-nre.html"
+	             overview="${temp}/javadocs/overview-nre.html"
 				 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
 		         verbose="${verbose}">
 			<sourcepath>
@@ -1022,7 +1022,7 @@
 		         use="true"
 		         windowtitle="Restlet Extensions ${version-full}"
 		         doctitle="Restlet Extensions ${version-full}"
-		         overview="${tmpl}/javadocs/overview-ext.html"
+		         overview="${temp}/javadocs/overview-ext.html"
 				 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
 		         verbose="${verbose}">
 			<sourcepath>
