@@ -62,8 +62,8 @@ public class ServerHelper extends ConnectorHelper {
      * @return The server parameters.
      */
     public Series<Parameter> getParameters() {
-        Series<Parameter> result = (getServer() != null) ? getServer().getContext()
-                .getParameters() : null;
+        Series<Parameter> result = (getServer() != null) ? getServer()
+                .getContext().getParameters() : null;
         if (result == null)
             result = new Form();
         return result;
@@ -97,6 +97,16 @@ public class ServerHelper extends ConnectorHelper {
      */
     public void handle(Request request, Response response) {
         getServer().handle(request, response);
+    }
+
+    /**
+     * Sets the server to help.
+     * 
+     * @param server
+     *            The server to help.
+     */
+    public void setServer(Server server) {
+        this.server = server;
     }
 
 }

@@ -63,6 +63,15 @@ public class HttpServerHelper extends ServerHelper {
     private HttpServerConverter converter;
 
     /**
+     * Default constructor. Note that many methods assume that a non-null server
+     * is set to work properly. You can use the {@link #setServer} method for
+     * this purpose or better rely on the other constructor.
+     */
+    public HttpServerHelper() {
+        this(null);
+    }
+
+    /**
      * Constructor.
      * 
      * @param server

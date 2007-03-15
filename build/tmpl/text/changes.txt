@@ -13,6 +13,8 @@ Changes log
  
 [API changes]
  - Added MediaType.TEXT_CALENDAR constant for iCalendar events. Suggested by Aron Roberts.
+ - Added default constructor to NRE's HttpServerHelper and a setServer() method to
+   NRE's ServerHelper. Suggested by Brandon Lonac.
 
 [Enhancements] 
  - Fixed Spring plugin descriptor for Eclipse.
