@@ -123,6 +123,10 @@
 	<property name="lib-jxta-version" value="2.5" />
 	<property name="lib-jxta-id" value="${lib-jxta-package}_${lib-jxta-version}" />
 
+	<property name="lib-lang-package" value="org.apache.commons.lang" />
+	<property name="lib-lang-version" value="2.3" />
+	<property name="lib-lang-id" value="${lib-lang-package}_${lib-lang-version}" />
+
 	<property name="lib-logging-package" value="org.apache.commons.logging" />
 	<property name="lib-logging-version" value="1.1" />
 	<property name="lib-logging-id" value="${lib-logging-package}_${lib-logging-version}" />
@@ -160,7 +164,7 @@
 	<property name="lib-spring-id" value="${lib-spring-package}_${lib-spring-version}" />
 
 	<property name="lib-velocity-package" value="org.apache.velocity" />
-	<property name="lib-velocity-version" value="1.4" />
+	<property name="lib-velocity-version" value="1.5" />
 	<property name="lib-velocity-id" value="${lib-velocity-package}_${lib-velocity-version}" />
 
 	<property name="lib-wrapper-package" value="org.tanukisoftware.wrapper" />
@@ -307,6 +311,7 @@
 
 		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-lang-id}" includes="*.jar" />
 				
 		<!-- retrotranslator 1.2.0 -->
 		<pathelement location="tools/retrotranslator/backport-util-concurrent-3.0.jar" />
@@ -459,6 +464,7 @@
 		<pathelement path="${classes}/${mod-ri-id}" />
 		<fileset dir="${lib}/${lib-webrowset-id}" includes="*.jar" />
 	</path>
+	
 	<!-- used for backport to jdk 1.4 -->
 	<path id="mod-xerces-path">
 		<path refid="mod-ri-path" />
@@ -1204,6 +1210,7 @@
 		<stageLibrary name="jetty" />
 		<stageLibrary name="json" />
 <!-- disabled for 1.0	<stageLibrary name="jxta" /> -->
+		<stageLibrary name="lang" />
 		<stageLibrary name="logging" />
 		<stageLibrary name="mina" />
 		<stageLibrary name="pool" />
