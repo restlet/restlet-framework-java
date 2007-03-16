@@ -29,6 +29,7 @@ import org.restlet.util.Variable;
 
 import com.db4o.Db4o;
 import com.db4o.ObjectContainer;
+import com.db4o.config.Configuration;
 
 /**
  * The main Web application.
@@ -51,6 +52,8 @@ public class Application extends org.restlet.Application {
 
     public Application() {
         /** Open and keep the db4o object container. */
+        Configuration config = Db4o.configure();
+        config.updateDepth(2);
         this.container = Db4o.openFile(System.getProperty("user.home")
                 + File.separator + "restbook.dbo");
     }

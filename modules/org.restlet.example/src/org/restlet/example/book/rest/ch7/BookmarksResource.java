@@ -47,7 +47,9 @@ public class BookmarksResource extends UserResource {
     public BookmarksResource(Context context, Request request, Response response) {
         super(context, request, response);
         getVariants().clear();
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
+        if (getUser() != null) {
+            getVariants().add(new Variant(MediaType.TEXT_HTML));
+        }
     }
 
     @Override
