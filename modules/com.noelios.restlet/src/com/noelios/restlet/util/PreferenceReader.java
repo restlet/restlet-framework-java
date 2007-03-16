@@ -31,7 +31,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.util.Series;
 
-import com.noelios.restlet.http.HeaderUtils;
+import com.noelios.restlet.http.HttpUtils;
 
 /**
  * Preference header reader. Works for character sets, encodings, languages or
@@ -111,9 +111,9 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                             throw new IOException(
                                     "Empty metadata name detected.");
                         }
-                    } else if (HeaderUtils.isSpace(nextChar)) {
+                    } else if (HttpUtils.isSpace(nextChar)) {
                         // Ignore spaces
-                    } else if (HeaderUtils.isText(nextChar)) {
+                    } else if (HttpUtils.isText(nextChar)) {
                         metadataBuffer.append((char) nextChar);
                     } else {
                         throw new IOException(
@@ -133,7 +133,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                     } else if (nextChar == -1) {
                         if (paramNameBuffer.length() > 0) {
                             // End of parameters section
-                            parameters.add(HeaderUtils.createParameter(
+                            parameters.add(HttpUtils.createParameter(
                                     paramNameBuffer, null));
                             result = createPreference(metadataBuffer,
                                     parameters);
@@ -143,15 +143,15 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                         }
                     } else if (nextChar == ';') {
                         // End of parameter
-                        parameters.add(HeaderUtils.createParameter(
+                        parameters.add(HttpUtils.createParameter(
                                 paramNameBuffer, null));
                         paramNameBuffer = new StringBuilder();
                         readingParamName = true;
                         readingParamValue = false;
-                    } else if (HeaderUtils.isSpace(nextChar)
+                    } else if (HttpUtils.isSpace(nextChar)
                             && (paramNameBuffer.length() == 0)) {
                         // Ignore white spaces
-                    } else if (HeaderUtils.isTokenChar(nextChar)) {
+                    } else if (HttpUtils.isTokenChar(nextChar)) {
                         paramNameBuffer.append((char) nextChar);
                     } else {
                         throw new IOException(
@@ -161,7 +161,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                     if (nextChar == -1) {
                         if (paramValueBuffer.length() > 0) {
                             // End of parameters section
-                            parameters.add(HeaderUtils.createParameter(
+                            parameters.add(HttpUtils.createParameter(
                                     paramNameBuffer, paramValueBuffer));
                             result = createPreference(metadataBuffer,
                                     parameters);
@@ -171,7 +171,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                         }
                     } else if (nextChar == ';') {
                         // End of parameter
-                        parameters.add(HeaderUtils.createParameter(
+                        parameters.add(HttpUtils.createParameter(
                                 paramNameBuffer, paramValueBuffer));
                         paramNameBuffer = new StringBuilder();
                         readingParamName = true;
@@ -189,27 +189,27 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
 
                             if (quotedPair) {
                                 // End of quoted pair (escape sequence)
-                                if (HeaderUtils.isText(nextChar)) {
+                                if (HttpUtils.isText(nextChar)) {
                                     paramValueBuffer.append((char) nextChar);
                                     quotedPair = false;
                                 } else {
                                     throw new IOException(
                                             "Invalid character detected in quoted string. Please check your value");
                                 }
-                            } else if (HeaderUtils.isDoubleQuote(nextChar)) {
+                            } else if (HttpUtils.isDoubleQuote(nextChar)) {
                                 // End of quoted string
                                 done = true;
                             } else if (nextChar == '\\') {
                                 // Begin of quoted pair (escape sequence)
                                 quotedPair = true;
-                            } else if (HeaderUtils.isText(nextChar)) {
+                            } else if (HttpUtils.isText(nextChar)) {
                                 paramValueBuffer.append((char) nextChar);
                             } else {
                                 throw new IOException(
                                         "Invalid character detected in quoted string. Please check your value");
                             }
                         }
-                    } else if (HeaderUtils.isTokenChar(nextChar)) {
+                    } else if (HttpUtils.isTokenChar(nextChar)) {
                         paramValueBuffer.append((char) nextChar);
                     } else {
                         throw new IOException(

@@ -28,7 +28,7 @@ import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.util.DateUtils;
 
-import com.noelios.restlet.http.HeaderUtils;
+import com.noelios.restlet.http.HttpUtils;
 
 /**
  * Cookie manipulation utilities.
@@ -123,7 +123,7 @@ public class CookieUtils {
                 if (version == 0) {
                     destination.append(path);
                 } else {
-                    HeaderUtils.appendQuote(path, destination);
+                    HttpUtils.appendQuote(path, destination);
                 }
             }
 
@@ -219,14 +219,14 @@ public class CookieUtils {
                     String path = cookie.getPath();
                     if ((path != null) && (path.length() > 0)) {
                         destination.append("; $Path=");
-                        HeaderUtils.appendQuote(path, destination);
+                        HttpUtils.appendQuote(path, destination);
                     }
 
                     // Append the domain
                     String domain = cookie.getDomain();
                     if ((domain != null) && (domain.length() > 0)) {
                         destination.append("; $Domain=");
-                        HeaderUtils.appendQuote(domain, destination);
+                        HttpUtils.appendQuote(domain, destination);
                     }
                 }
             } catch (IOException e) {
@@ -251,7 +251,7 @@ public class CookieUtils {
         if (version == 0) {
             destination.append(value.toString());
         } else {
-            HeaderUtils.appendQuote(value, destination);
+            HttpUtils.appendQuote(value, destination);
         }
 
         return destination;

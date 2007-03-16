@@ -20,7 +20,7 @@ package com.noelios.restlet.util;
 
 import java.io.IOException;
 
-import com.noelios.restlet.http.HeaderUtils;
+import com.noelios.restlet.http.HttpUtils;
 
 /**
  * HTTP-style header reader.
@@ -117,9 +117,9 @@ public class HeaderReader {
      * @return True if the given character is a value separator.
      */
     protected boolean isLinearWhiteSpace(int character) {
-        return (HeaderUtils.isCarriageReturn(character)
-                || HeaderUtils.isSpace(character)
-                || HeaderUtils.isLineFeed(character) || HeaderUtils
+        return (HttpUtils.isCarriageReturn(character)
+                || HttpUtils.isSpace(character)
+                || HttpUtils.isLineFeed(character) || HttpUtils
                 .isHorizontalTab(character));
     }
 
@@ -152,20 +152,20 @@ public class HeaderReader {
 
             if (quotedPair) {
                 // End of quoted pair (escape sequence)
-                if (HeaderUtils.isText(nextChar)) {
+                if (HttpUtils.isText(nextChar)) {
                     buffer.append((char) nextChar);
                     quotedPair = false;
                 } else {
                     throw new IOException(
                             "Invalid character detected in quoted string. Please check your value");
                 }
-            } else if (HeaderUtils.isDoubleQuote(nextChar)) {
+            } else if (HttpUtils.isDoubleQuote(nextChar)) {
                 // End of quoted string
                 done = true;
             } else if (nextChar == '\\') {
                 // Begin of quoted pair (escape sequence)
                 quotedPair = true;
-            } else if (HeaderUtils.isText(nextChar)) {
+            } else if (HttpUtils.isText(nextChar)) {
                 buffer.append((char) nextChar);
             } else {
                 throw new IOException(

@@ -29,7 +29,7 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
 import org.restlet.util.DateUtils;
 
-import com.noelios.restlet.http.HeaderUtils;
+import com.noelios.restlet.http.HttpUtils;
 
 /**
  * Cookie header reader.
@@ -256,14 +256,14 @@ public class CookieReader extends HeaderReader {
                     nextChar = read();
 
                     if (readingName) {
-                        if ((HeaderUtils.isSpace(nextChar))
+                        if ((HttpUtils.isSpace(nextChar))
                                 && (nameBuffer.length() == 0)) {
                             // Skip spaces
                         } else if ((nextChar == -1) || (nextChar == ';')
                                 || (nextChar == ',')) {
                             if (nameBuffer.length() > 0) {
                                 // End of pair with no value
-                                result = HeaderUtils.createParameter(
+                                result = HttpUtils.createParameter(
                                         nameBuffer, null);
                             } else if (nextChar == -1) {
                                 // Do nothing return null preference
@@ -274,7 +274,7 @@ public class CookieReader extends HeaderReader {
                         } else if (nextChar == '=') {
                             readingName = false;
                             readingValue = true;
-                        } else if (HeaderUtils.isTokenChar(nextChar)
+                        } else if (HttpUtils.isTokenChar(nextChar)
                                 || (this.globalVersion < 1)) {
                             nameBuffer.append((char) nextChar);
                         } else {
@@ -282,17 +282,17 @@ public class CookieReader extends HeaderReader {
                                     "Separator and control characters are not allowed within a token. Please check your cookie header");
                         }
                     } else if (readingValue) {
-                        if ((HeaderUtils.isSpace(nextChar))
+                        if ((HttpUtils.isSpace(nextChar))
                                 && (valueBuffer.length() == 0)) {
                             // Skip spaces
                         } else if ((nextChar == -1) || (nextChar == ';')) {
                             // End of pair
-                            result = HeaderUtils.createParameter(nameBuffer,
+                            result = HttpUtils.createParameter(nameBuffer,
                                     valueBuffer);
                         } else if ((nextChar == '"')
                                 && (valueBuffer.length() == 0)) {
                             valueBuffer.append(readQuotedString());
-                        } else if (HeaderUtils.isTokenChar(nextChar)
+                        } else if (HttpUtils.isTokenChar(nextChar)
                                 || (this.globalVersion < 1)) {
                             valueBuffer.append((char) nextChar);
                         } else {
