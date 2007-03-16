@@ -926,9 +926,9 @@ public final class Status extends Metadata {
     }
 
     /**
-     * Returns the HTTP code.
+     * Returns the corresponding code (HTTP or WebDAV or custom code).
      * 
-     * @return The HTTP code.
+     * @return The corresponding code.
      */
     public int getCode() {
         return this.code;

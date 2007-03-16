@@ -429,7 +429,7 @@ public class HttpCall {
      * @param version
      *            The protocol version used.
      */
-    public void setProtocol(String version) {
+    public void setVersion(String version) {
         this.version = version;
     }
 

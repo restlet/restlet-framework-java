@@ -126,6 +126,16 @@ public class Parameter implements Comparable<Parameter> {
     }
 
     /**
+     * Sets the name.
+     * 
+     * @param name
+     *            The name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Sets the value.
      * 
      * @param value
@@ -160,8 +170,8 @@ public class Parameter implements Comparable<Parameter> {
     }
 
     /**
-     * Encodes the parameter and appends the result to the given buffer. Uses the
-     * standard URI encoding mechanism.
+     * Encodes the parameter and appends the result to the given buffer. Uses
+     * the standard URI encoding mechanism.
      * 
      * @param buffer
      *            The buffer to append.

@@ -160,7 +160,7 @@ public abstract class JettyServerHelper extends
         getWrappedServer().setThreadPool(btp);
     }
 
-    /** Starts the Connector. */
+    @Override
     public void start() throws Exception {
         if (this.connector == null) {
             this.connector = createConnector();
@@ -171,7 +171,7 @@ public abstract class JettyServerHelper extends
         getWrappedServer().start();
     }
 
-    /** Stops the Connector. */
+    @Override
     public void stop() throws Exception {
         getWrappedServer().stop();
     }
