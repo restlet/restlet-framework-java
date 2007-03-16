@@ -35,7 +35,7 @@ import org.restlet.data.Protocol;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class StreamHttpServerHelper extends HttpServerHelper {
+public class StreamServerHelper extends HttpServerHelper {
     /** The server socket to listen on. */
     private ServerSocket serverSocket;
 
@@ -51,7 +51,7 @@ public class StreamHttpServerHelper extends HttpServerHelper {
      * @param server
      *            The server to help.
      */
-    public StreamHttpServerHelper(Server server) {
+    public StreamServerHelper(Server server) {
         super(server);
         getProtocols().add(Protocol.HTTP);
     }
@@ -81,11 +81,10 @@ public class StreamHttpServerHelper extends HttpServerHelper {
      * Listener thread that accepts incoming requests.
      */
     class Listener extends Thread {
-        private StreamHttpServerHelper helper;
+        private StreamServerHelper helper;
 
-        Listener(StreamHttpServerHelper helper) {
+        Listener(StreamServerHelper helper) {
             this.helper = helper;
-            setDaemon(true);
         }
 
         public void run() {
@@ -123,18 +122,18 @@ public class StreamHttpServerHelper extends HttpServerHelper {
      * Connection that handles the socket.
      */
     class Connection implements Runnable {
-        private StreamHttpServerHelper helper;
+        private StreamServerHelper helper;
 
         private final Socket socket;
 
-        Connection(StreamHttpServerHelper helper, Socket socket) {
+        Connection(StreamServerHelper helper, Socket socket) {
             this.helper = helper;
             this.socket = socket;
         }
 
         public void run() {
             try {
-                this.helper.handle(new StreamHttpServerCall(this.helper
+                this.helper.handle(new StreamServerCall(this.helper
                         .getServer(), this.socket.getInputStream(), this.socket
                         .getOutputStream()));
             } catch (IOException ioe) {

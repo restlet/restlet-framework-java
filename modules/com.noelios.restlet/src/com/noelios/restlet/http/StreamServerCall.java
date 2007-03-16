@@ -34,7 +34,7 @@ import org.restlet.data.Response;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class StreamHttpServerCall extends HttpServerCall {
+public class StreamServerCall extends HttpServerCall {
     /** The request input stream. */
     private InputStream requestStream;
 
@@ -48,7 +48,7 @@ public class StreamHttpServerCall extends HttpServerCall {
      * @param requestStream
      * @param responseStream
      */
-    public StreamHttpServerCall(Server server, InputStream requestStream,
+    public StreamServerCall(Server server, InputStream requestStream,
             OutputStream responseStream) {
         super(server);
         this.requestStream = requestStream;
