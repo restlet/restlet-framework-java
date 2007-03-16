@@ -20,6 +20,8 @@ package com.noelios.restlet.util;
 
 import java.io.IOException;
 
+import com.noelios.restlet.http.HeaderUtils;
+
 /**
  * HTTP-style header reader.
  * 

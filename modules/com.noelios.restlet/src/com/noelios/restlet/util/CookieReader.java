@@ -29,6 +29,8 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
 import org.restlet.util.DateUtils;
 
+import com.noelios.restlet.http.HeaderUtils;
+
 /**
  * Cookie header reader.
  * 

@@ -31,6 +31,8 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.util.Series;
 
+import com.noelios.restlet.http.HeaderUtils;
+
 /**
  * Preference header reader. Works for character sets, encodings, languages or
  * media types.
