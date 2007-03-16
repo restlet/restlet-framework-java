@@ -54,17 +54,19 @@ public class StreamHttpServerHelper extends HttpServerHelper {
     public StreamHttpServerHelper(Server server) {
         super(server);
         getProtocols().add(Protocol.HTTP);
-        this.socketAddress = new InetSocketAddress(server.getAddress(), server
-                .getPort());
     }
 
     @Override
     public void start() throws Exception {
-        new Listener(this).run();
+        super.start();
+        getLogger().info("Starting the HTTP server");
+        new Listener(this).start();
     }
 
     @Override
     public void stop() throws Exception {
+        super.stop();
+        getLogger().info("Stopping the HTTP server");
         if (this.serverSocket.isBound()) {
             this.serverSocket.close();
             this.serverSocket = null;
@@ -88,12 +90,22 @@ public class StreamHttpServerHelper extends HttpServerHelper {
 
         public void run() {
             try {
+                if (socketAddress == null) {
+                    if (getServer().getAddress() == null) {
+                        socketAddress = new InetSocketAddress(getServer()
+                                .getPort());
+                    } else {
+                        socketAddress = new InetSocketAddress(getServer()
+                                .getAddress(), getServer().getPort());
+                    }
+                }
+
                 executorService = Executors.newFixedThreadPool(10);
                 serverSocket = new ServerSocket();
                 serverSocket.bind(socketAddress);
 
                 for (;;) {
-                    executorService.execute(new Handler(helper, serverSocket
+                    executorService.execute(new Connection(helper, serverSocket
                             .accept()));
                 }
             } catch (IOException ioe) {
@@ -108,14 +120,14 @@ public class StreamHttpServerHelper extends HttpServerHelper {
     }
 
     /**
-     * Handler that handles new connections.
+     * Connection that handles the socket.
      */
-    class Handler implements Runnable {
+    class Connection implements Runnable {
         private StreamHttpServerHelper helper;
 
         private final Socket socket;
 
-        Handler(StreamHttpServerHelper helper, Socket socket) {
+        Connection(StreamHttpServerHelper helper, Socket socket) {
             this.helper = helper;
             this.socket = socket;
         }

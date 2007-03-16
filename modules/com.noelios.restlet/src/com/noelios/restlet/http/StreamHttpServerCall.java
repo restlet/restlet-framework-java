@@ -106,9 +106,8 @@ public class StreamHttpServerCall extends HttpServerCall {
             result = new Parameter();
 
             // Parse the header name
-            next = getRequestStream().read();
             while ((next != -1) && (next != ':')) {
-                sb.append(next);
+                sb.append((char) next);
                 next = getRequestStream().read();
             }
 
@@ -121,8 +120,8 @@ public class StreamHttpServerCall extends HttpServerCall {
 
                 // Parse the header value
                 next = getRequestStream().read();
-                while ((next != -1) && (HttpUtils.isCarriageReturn(next))) {
-                    sb.append(next);
+                while ((next != -1) && (!HttpUtils.isCarriageReturn(next))) {
+                    sb.append((char) next);
                     next = getRequestStream().read();
                 }
 
@@ -130,8 +129,15 @@ public class StreamHttpServerCall extends HttpServerCall {
                     throw new IOException(
                             "Unable to parse the header value. End of stream reached too early.");
                 } else {
-                    result.setValue(sb.toString());
-                    sb.delete(0, sb.length());
+                    next = getRequestStream().read();
+
+                    if (HttpUtils.isLineFeed(next)) {
+                        result.setValue(sb.toString());
+                        sb.delete(0, sb.length());
+                    } else {
+                        throw new IOException(
+                                "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
+                    }
                 }
             }
         }
@@ -150,7 +156,7 @@ public class StreamHttpServerCall extends HttpServerCall {
         // Parse the request method
         int next = getRequestStream().read();
         while ((next != -1) && !HttpUtils.isSpace(next)) {
-            sb.append(next);
+            sb.append((char) next);
             next = getRequestStream().read();
         }
 
@@ -164,7 +170,7 @@ public class StreamHttpServerCall extends HttpServerCall {
             // Parse the request URI
             next = getRequestStream().read();
             while ((next != -1) && !HttpUtils.isSpace(next)) {
-                sb.append(next);
+                sb.append((char) next);
                 next = getRequestStream().read();
             }
 
@@ -178,7 +184,7 @@ public class StreamHttpServerCall extends HttpServerCall {
                 // Parse the HTTP version
                 next = getRequestStream().read();
                 while ((next != -1) && !HttpUtils.isCarriageReturn(next)) {
-                    sb.append(next);
+                    sb.append((char) next);
                     next = getRequestStream().read();
                 }
 
@@ -217,6 +223,10 @@ public class StreamHttpServerCall extends HttpServerCall {
         getResponseStream().write(getReasonPhrase().getBytes());
         getResponseStream().write(13); // CR
         getResponseStream().write(10); // LF
+
+        // We don't support persistent connections yet
+        getResponseHeaders()
+                .set(HttpConstants.HEADER_CONNECTION, "close", true);
 
         // Write the response headers
         for (Parameter header : getResponseHeaders()) {
