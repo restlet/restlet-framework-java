@@ -25,7 +25,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 
 /**
- * Base class exposing the uniform REST interface.<br/> <br/>
+ * Base class exposing the uniform REST interface. 
  * 
  * "The central feature that distinguishes the REST architectural style from
  * other network-based styles is its emphasis on a uniform interface between

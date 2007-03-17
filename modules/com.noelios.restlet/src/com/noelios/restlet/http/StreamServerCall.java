@@ -45,8 +45,11 @@ public class StreamServerCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
+     *            The server connector.
      * @param requestStream
+     *            The request input stream.
      * @param responseStream
+     *            The response output stream.
      */
     public StreamServerCall(Server server, InputStream requestStream,
             OutputStream responseStream) {
@@ -81,68 +84,6 @@ public class StreamServerCall extends HttpServerCall {
     @Override
     public OutputStream getResponseStream() {
         return this.responseStream;
-    }
-
-    /**
-     * Parses a header line. Return null if the last header was already read.
-     * 
-     * @param sb
-     *            The string builder to reuse.
-     * @return The header read or null.
-     * @throws IOException
-     */
-    protected Parameter parseHeader(StringBuilder sb) throws IOException {
-        Parameter result = null;
-
-        // Detect the end of headers
-        int next = getRequestStream().read();
-        if (HttpUtils.isCarriageReturn(next)) {
-            next = getRequestStream().read();
-            if (!HttpUtils.isLineFeed(next)) {
-                throw new IOException(
-                        "Invalid end of headers. Line feed missing after the carriage return.");
-            }
-        } else {
-            result = new Parameter();
-
-            // Parse the header name
-            while ((next != -1) && (next != ':')) {
-                sb.append((char) next);
-                next = getRequestStream().read();
-            }
-
-            if (next == -1) {
-                throw new IOException(
-                        "Unable to parse the header name. End of stream reached too early.");
-            } else {
-                result.setName(sb.toString());
-                sb.delete(0, sb.length());
-
-                // Parse the header value
-                next = getRequestStream().read();
-                while ((next != -1) && (!HttpUtils.isCarriageReturn(next))) {
-                    sb.append((char) next);
-                    next = getRequestStream().read();
-                }
-
-                if (next == -1) {
-                    throw new IOException(
-                            "Unable to parse the header value. End of stream reached too early.");
-                } else {
-                    next = getRequestStream().read();
-
-                    if (HttpUtils.isLineFeed(next)) {
-                        result.setValue(sb.toString());
-                        sb.delete(0, sb.length());
-                    } else {
-                        throw new IOException(
-                                "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
-                    }
-                }
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -199,10 +140,12 @@ public class StreamServerCall extends HttpServerCall {
                         sb.delete(0, sb.length());
 
                         // Parse the headers
-                        Parameter header = parseHeader(sb);
+                        Parameter header = HttpUtils.readHeader(
+                                getRequestStream(), sb);
                         while (header != null) {
                             getRequestHeaders().add(header);
-                            header = parseHeader(sb);
+                            header = HttpUtils.readHeader(getRequestStream(),
+                                    sb);
                         }
                     } else {
                         throw new IOException(
@@ -230,11 +173,7 @@ public class StreamServerCall extends HttpServerCall {
 
         // Write the response headers
         for (Parameter header : getResponseHeaders()) {
-            getResponseStream().write(header.getName().getBytes());
-            getResponseStream().write(':');
-            getResponseStream().write(header.getValue().getBytes());
-            getResponseStream().write(13); // CR
-            getResponseStream().write(10); // LF
+            HttpUtils.writeHeader(header, getResponseStream());
         }
 
         // Write the end of the headers section
@@ -243,6 +182,9 @@ public class StreamServerCall extends HttpServerCall {
 
         // Write the response body
         super.sendResponse(response);
+
+        // Close the socket
+        getResponseStream().close();
     }
 
 }

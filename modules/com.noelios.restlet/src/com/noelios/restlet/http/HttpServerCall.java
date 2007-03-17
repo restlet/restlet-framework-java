@@ -25,7 +25,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.restlet.Server;
 import org.restlet.data.CharacterSet;
@@ -50,9 +49,6 @@ import com.noelios.restlet.util.HeaderReader;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class HttpServerCall extends HttpCall {
-    /** The logger to use. */
-    private Logger logger;
-
     /** Indicates if the "host" header was already parsed. */
     private boolean hostParsed;
 
@@ -222,8 +218,8 @@ public abstract class HttpServerCall extends HttpCall {
                 }
             }
         } else {
-            this.logger
-                    .info("Couldn't find the mandatory \"Host\" HTTP header.");
+            getLogger().info(
+                    "Couldn't find the mandatory \"Host\" HTTP header.");
         }
 
         this.hostParsed = true;
@@ -269,25 +265,6 @@ public abstract class HttpServerCall extends HttpCall {
                 getResponseStream().flush();
             }
         }
-    }
-
-    /**
-     * Returns the logger to use.
-     * 
-     * @return The logger to use.
-     */
-    public Logger getLogger() {
-        return this.logger;
-    }
-
-    /**
-     * Sets the logger to use.
-     * 
-     * @param logger
-     *            The logger to use.
-     */
-    public void setLogger(Logger logger) {
-        this.logger = logger;
     }
 
 }

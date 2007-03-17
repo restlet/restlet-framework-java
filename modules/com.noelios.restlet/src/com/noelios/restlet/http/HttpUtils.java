@@ -19,6 +19,8 @@
 package com.noelios.restlet.http;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Parameter;
@@ -357,5 +359,88 @@ public class HttpUtils {
         }
 
         return true;
+    }
+
+    /**
+     * Read a header. Return null if the last header was already read.
+     * 
+     * @param is
+     *            The message input stream.
+     * @param sb
+     *            The string builder to reuse.
+     * @return The header read or null.
+     * @throws IOException
+     */
+    public static Parameter readHeader(InputStream is, StringBuilder sb)
+            throws IOException {
+        Parameter result = null;
+
+        // Detect the end of headers
+        int next = is.read();
+        if (HttpUtils.isCarriageReturn(next)) {
+            next = is.read();
+            if (!HttpUtils.isLineFeed(next)) {
+                throw new IOException(
+                        "Invalid end of headers. Line feed missing after the carriage return.");
+            }
+        } else {
+            result = new Parameter();
+
+            // Parse the header name
+            while ((next != -1) && (next != ':')) {
+                sb.append((char) next);
+                next = is.read();
+            }
+
+            if (next == -1) {
+                throw new IOException(
+                        "Unable to parse the header name. End of stream reached too early.");
+            } else {
+                result.setName(sb.toString());
+                sb.delete(0, sb.length());
+
+                // Parse the header value
+                next = is.read();
+                while ((next != -1) && (!HttpUtils.isCarriageReturn(next))) {
+                    sb.append((char) next);
+                    next = is.read();
+                }
+
+                if (next == -1) {
+                    throw new IOException(
+                            "Unable to parse the header value. End of stream reached too early.");
+                } else {
+                    next = is.read();
+
+                    if (HttpUtils.isLineFeed(next)) {
+                        result.setValue(sb.toString());
+                        sb.delete(0, sb.length());
+                    } else {
+                        throw new IOException(
+                                "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Writes a header line.
+     * 
+     * @param header
+     *            The header to write.
+     * @param os
+     *            The output stream.
+     * @throws IOException
+     */
+    public static void writeHeader(Parameter header, OutputStream os)
+            throws IOException {
+        os.write(header.getName().getBytes());
+        os.write(':');
+        os.write(header.getValue().getBytes());
+        os.write(13); // CR
+        os.write(10); // LF
     }
 }

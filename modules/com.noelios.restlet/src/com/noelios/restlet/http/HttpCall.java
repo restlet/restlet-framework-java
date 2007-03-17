@@ -19,6 +19,7 @@
 package com.noelios.restlet.http;
 
 import java.util.Date;
+import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.data.Form;
@@ -35,6 +36,9 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpCall {
+    /** The logger to use. */
+    private Logger logger;
+
     /** The hostRef domain. */
     private String hostDomain;
 
@@ -175,6 +179,15 @@ public class HttpCall {
      */
     public int getHostPort() {
         return this.hostPort;
+    }
+
+    /**
+     * Returns the logger to use.
+     * 
+     * @return The logger to use.
+     */
+    public Logger getLogger() {
+        return this.logger;
     }
 
     /**
@@ -350,6 +363,16 @@ public class HttpCall {
      */
     public void setHostPort(int hostPort) {
         this.hostPort = hostPort;
+    }
+
+    /**
+     * Sets the logger to use.
+     * 
+     * @param logger
+     *            The logger to use.
+     */
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 
     /**

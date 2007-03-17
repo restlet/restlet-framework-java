@@ -62,6 +62,7 @@ public class HttpClientCall extends HttpCall {
      */
     public HttpClientCall(HttpClientHelper helper, String method,
             String requestUri) {
+        setLogger(helper.getLogger());
         this.helper = helper;
         setMethod(method);
         setRequestUri(requestUri);
