@@ -34,6 +34,17 @@ public class Main {
             e.printStackTrace();
         }
 
-        System.out.println("ROCK ON");
+        System.out.println("sleeping");
+        try { Thread.sleep(8000);} catch (Exception e) {}
+        System.out.println("waking");
+
+        try {
+            http.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // todo: not shutting down cleanly
+        System.out.println("exiting");
     }
 }

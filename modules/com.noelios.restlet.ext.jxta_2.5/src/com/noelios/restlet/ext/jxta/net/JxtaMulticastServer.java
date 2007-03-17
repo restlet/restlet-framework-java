@@ -18,21 +18,22 @@
 
 package com.noelios.restlet.ext.jxta.net;
 
-import com.noelios.restlet.ext.jxta.net.MulticastSocketConnectionHandler;
 import com.noelios.restlet.ext.jxta.util.PipeUtility;
+import com.noelios.restlet.ext.jxta.net.handler.MulticastSocketHandler;
 import net.jxta.ext.network.NetworkException;
-import net.jxta.ext.network.NetworkEvent;
 import net.jxta.peergroup.PeerGroup;
-import net.jxta.pipe.PipeService;
 import net.jxta.pipe.PipeID;
+import net.jxta.pipe.PipeService;
 import net.jxta.socket.JxtaMulticastSocket;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.concurrent.Callable;
 
 /**
  * @author james todd [james dot w dot todd at gmail dot com]
@@ -44,7 +45,7 @@ public class JxtaMulticastServer
     private static final int BLOCK = 65536;
     private static final Logger logger = Logger.getLogger(JxtaMulticastServer.class.getName());
     private MulticastSocket server;
-//    private Thread listener;
+    ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public JxtaMulticastServer(String name, PeerGroup group) {
         this(name, group, PipeUtility.createPipeID(group));
@@ -71,22 +72,19 @@ public class JxtaMulticastServer
 
         try {
             server = new JxtaMulticastSocket(getPeerGroup(), getPipeAdvertisement());
+
+            server.setSoTimeout(0);
         } catch (IOException ioe) {
             throw new NetworkException("unable to create socket", ioe);
         }
 
-        Callable listener = new Callable() {
-            public Object call() {
+        executor.submit(new Callable<Object>() {
+            public Object call() throws IOException {
                 listen();
 
                 return null;
             }
-        };
-                
-//        listener = new Thread(this, getClass().getName() + ":server-listener");
-//
-//        listener.setDaemon(true);
-//        listener.start();
+        });
 
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "jxta multicast server started");
@@ -102,8 +100,17 @@ public class JxtaMulticastServer
             logger.log(Level.FINE, "jxta multicast server stopping");
         }
 
-//        listener.interrupt();
+        server.disconnect();
         server.close();
+        executor.shutdown();
+
+        while (! executor.isTerminated()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ie) {
+                // ignore
+            }
+        }
 
         server = null;
 
@@ -112,35 +119,27 @@ public class JxtaMulticastServer
         }
     }
 
-    private void listen() {
+    private void listen()
+            throws IOException {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "jxta multicast start listening");
         }
 
-//        while (!listener.isInterrupted()) {
         while (true) {
             byte[] buf = new byte[BLOCK];
             DatagramPacket data = new DatagramPacket(buf, buf.length);
 
-            try {
-                server.receive(data);
-            } catch (IOException ioe) {
-//                listener.interrupt();
-            }
+            server.receive(data);
 
-            MulticastSocketConnectionHandler connectionHandler = new MulticastSocketConnectionHandler(server, data);
-            Thread handler = new Thread(connectionHandler, MulticastSocketConnectionHandler.class.getName() + ":handle-connection");
+            final MulticastSocketHandler handler = new MulticastSocketHandler(server, data);
 
-            handler.setDaemon(true);
-            handler.start();
+            Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
+                public Object call() {
+                    handler.handle();
 
-            break;
-        }
-
-//        listener = null;
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "jxta multicast stop listening");
+                    return null;
+                }
+            });
         }
     }
 }

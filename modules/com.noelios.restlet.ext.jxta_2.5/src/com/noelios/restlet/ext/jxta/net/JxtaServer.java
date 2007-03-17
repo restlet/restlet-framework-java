@@ -79,37 +79,25 @@ abstract class JxtaServer implements Server {
         this.publish = publish;
     }
 
-    public void start() {
+    public void start() throws NetworkException {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "jxta server starting");
         }
 
-        try {
-            startServer();
-            publish();
-        } catch (NetworkException ne) {
-            if (logger.isLoggable(Level.WARNING)) {
-                logger.log(Level.WARNING, "can't start server", ne);
-            }
-        }
+        startServer();
+        publish();
 
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "jxta server started");
         }
     }
 
-    public void stop() {
+    public void stop() throws NetworkException {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "jxta server stopping");
         }
 
-        try {
-            stopServer();
-        } catch (NetworkException ne) {
-            if (logger.isLoggable(Level.WARNING)) {
-                logger.log(Level.WARNING, "can't stop server", ne);
-            }
-        }
+        stopServer();
 
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "jxta server stopped");

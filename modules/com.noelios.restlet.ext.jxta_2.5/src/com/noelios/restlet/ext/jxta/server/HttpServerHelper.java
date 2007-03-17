@@ -18,12 +18,14 @@
 
 package com.noelios.restlet.ext.jxta.server;
 
-import com.noelios.restlet.ext.jxta.util.NetworkHandler;
 import com.noelios.restlet.ext.jxta.net.JxtaMulticastServer;
+import com.noelios.restlet.ext.jxta.prototype.Constants;
+import com.noelios.restlet.ext.jxta.util.NetworkHandler;
 import net.jxta.ext.network.GroupEvent;
 import net.jxta.ext.network.NetworkEvent;
 import net.jxta.ext.network.NetworkException;
 import net.jxta.ext.network.NetworkListener;
+import net.jxta.pipe.PipeID;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,8 +68,8 @@ public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper 
             logger.log(Level.FINE, "http stopping");
         }
 
-        stopNetwork();
         stopServer();
+        stopNetwork();
 
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "http stopped");
@@ -120,7 +122,7 @@ public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper 
         }
     }
 
-    private void startServer() {
+    private void startServer() throws NetworkException {
         if (server != null) {
             throw new IllegalStateException("server already started");
         }
@@ -129,8 +131,10 @@ public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper 
             logger.log(Level.FINE, "starting server");
         }
 
-        // todo: introduce ServerFactory (see meerkat)
-        server = new JxtaMulticastServer("proto", network.getNetwork().getNetPeerGroup());
+        // todo: consider ServerFactory (see meerkat)
+        server = new JxtaMulticastServer(Constants.PROTOTYPE_MULTICAST_PIPE_NAME,
+                network.getNetwork().getNetPeerGroup(),
+                PipeID.create(Constants.PROTOTYPE_MULTICAST_PIPE_ID));
 
         server.start();
 
@@ -139,7 +143,7 @@ public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper 
         }
     }
 
-    private void stopServer() {
+    private void stopServer() throws NetworkException {
         if (server == null) {
             throw new IllegalStateException("server not started");
         }

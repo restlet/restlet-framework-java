@@ -80,6 +80,10 @@ public class PipeUtility {
         return u;
     }
 
+    public static PipeAdvertisement createPipeAdvertisement(String name, String type, PeerGroup group) {
+        return createPipeAdvertisement(name, type, group, null);
+    }
+    
     public static PipeAdvertisement createPipeAdvertisement(String name, String type, PeerGroup group,
                                                             PipeID pipeId) {
         if (logger.isLoggable(Level.FINE)) {

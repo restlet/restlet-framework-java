@@ -2,9 +2,9 @@ package com.noelios.restlet.ext.jxta.net.handler;
 
 import com.noelios.restlet.ext.jxta.net.Handler;
 
-import java.net.MulticastSocket;
-import java.net.DatagramPacket;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.MulticastSocket;
 
 /**
  * @author james todd [james dot w dot todd at gmail dot com]
@@ -12,11 +12,11 @@ import java.io.IOException;
 
 public class MulticastSocketHandler implements Handler {
 
-    private MulticastSocket multicast = null;
+    private MulticastSocket socket = null;
     private DatagramPacket datagram = null;
 
     public MulticastSocketHandler(MulticastSocket socket, DatagramPacket datagram) {
-        this.multicast = socket;
+        this.socket = socket;
         this.datagram = datagram;
     }
 
@@ -29,10 +29,12 @@ public class MulticastSocketHandler implements Handler {
         byte[] responseData = response.getBytes();
         DatagramPacket responseDatagram = new DatagramPacket(responseData, responseData.length);
 
-        try {
-            multicast.send(responseDatagram);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        if (socket.isConnected() && ! socket.isClosed()) {
+            try {
+                socket.send(responseDatagram);
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
         }
     }
 }
