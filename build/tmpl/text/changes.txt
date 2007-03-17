@@ -25,7 +25,8 @@ Changes log
  - Upgraded Velocity to version 1.5.
  - Added Apache Commons Lang library, dependency for Velocity 1.5.
  - Completed missing Javadocs for Series class. Reported by Jonathan Hall.
-
+ - Added warning message when no Restlet API found in the classpath.
+ 
 1.0 RC5 (2007-03-09)
 [Bugs fixed]
  - Added missing dependency on Apache Commons IO for the Commons FileUpload library. Reported by Thierry Boileau.

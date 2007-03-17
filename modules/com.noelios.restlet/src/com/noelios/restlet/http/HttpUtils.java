@@ -399,26 +399,32 @@ public class HttpUtils {
                 result.setName(sb.toString());
                 sb.delete(0, sb.length());
 
-                // Parse the header value
                 next = is.read();
-                while ((next != -1) && (!HttpUtils.isCarriageReturn(next))) {
-                    sb.append((char) next);
+                if (HttpUtils.isSpace(next)) {
+                    // Parse the header value
                     next = is.read();
-                }
-
-                if (next == -1) {
-                    throw new IOException(
-                            "Unable to parse the header value. End of stream reached too early.");
-                } else {
-                    next = is.read();
-
-                    if (HttpUtils.isLineFeed(next)) {
-                        result.setValue(sb.toString());
-                        sb.delete(0, sb.length());
-                    } else {
-                        throw new IOException(
-                                "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
+                    while ((next != -1) && (!HttpUtils.isCarriageReturn(next))) {
+                        sb.append((char) next);
+                        next = is.read();
                     }
+
+                    if (next == -1) {
+                        throw new IOException(
+                                "Unable to parse the header value. End of stream reached too early.");
+                    } else {
+                        next = is.read();
+
+                        if (HttpUtils.isLineFeed(next)) {
+                            result.setValue(sb.toString());
+                            sb.delete(0, sb.length());
+                        } else {
+                            throw new IOException(
+                                    "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
+                        }
+                    }
+                } else {
+                    throw new IOException(
+                            "Unable to parse the HTTP header value. Missing space after the colon.");
                 }
             }
         }

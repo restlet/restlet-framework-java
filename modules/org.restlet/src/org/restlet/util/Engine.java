@@ -149,6 +149,13 @@ public abstract class Engine {
                 }
             }
 
+            if (configURL == null) {
+                logger
+                        .log(
+                                Level.SEVERE,
+                                "Unable to find an implementation of the Restlet API. Please check your classpath.");
+
+            }
         }
 
         return result;

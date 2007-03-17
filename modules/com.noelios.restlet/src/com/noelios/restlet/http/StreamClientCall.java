@@ -56,7 +56,9 @@ public class StreamClientCall extends HttpClientCall {
     public StreamClientCall(StreamClientHelper helper, Request request) {
         super(helper, request.getMethod().toString(), request.getResourceRef()
                 .getIdentifier());
-        sendRequest(request);
+
+        // Set the HTTP version
+        setVersion("HTTP/1.1");
     }
 
     /**
@@ -189,6 +191,13 @@ public class StreamClientCall extends HttpClientCall {
             getRequestHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
                     true);
 
+            // We don't support persistent connections yet
+            String host = hostDomain;
+            if (request.getResourceRef().getHostPort() != -1) {
+                host += request.getResourceRef().getHostPort();
+            }
+            getRequestHeaders().set(HttpConstants.HEADER_HOST, host, true);
+
             // Write the request headers
             for (Parameter header : getRequestHeaders()) {
                 HttpUtils.writeHeader(header, getRequestStream());
@@ -203,9 +212,6 @@ public class StreamClientCall extends HttpClientCall {
 
             // Parse the response
             parseResponse();
-
-            // Close the socket
-            getRequestStream().close();
         } catch (IOException ioe) {
             getHelper()
                     .getLogger()

@@ -182,9 +182,6 @@ public class StreamServerCall extends HttpServerCall {
 
         // Write the response body
         super.sendResponse(response);
-
-        // Close the socket
-        getResponseStream().close();
     }
 
 }
