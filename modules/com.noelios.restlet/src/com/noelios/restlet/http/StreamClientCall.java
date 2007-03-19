@@ -194,7 +194,7 @@ public class StreamClientCall extends HttpClientCall {
             // We don't support persistent connections yet
             String host = hostDomain;
             if (request.getResourceRef().getHostPort() != -1) {
-                host += request.getResourceRef().getHostPort();
+                host += ":" + request.getResourceRef().getHostPort();
             }
             getRequestHeaders().set(HttpConstants.HEADER_HOST, host, true);
 
