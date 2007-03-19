@@ -26,6 +26,7 @@ Changes log
  - Added Apache Commons Lang library, dependency for Velocity 1.5.
  - Completed missing Javadocs for Series class. Reported by Jonathan Hall.
  - Added warning message when no Restlet API found in the classpath.
+ - Upgraded Apache HTTP Client to 3.1 RC1.
  
 1.0 RC5 (2007-03-09)
 [Bugs fixed]
