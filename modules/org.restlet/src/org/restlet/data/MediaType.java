@@ -81,8 +81,15 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_PROJECT = new MediaType(
             "application/vnd.ms-project", "Microsoft Project document");
 
+    /**
+     * @deprecated Use APPLICATION_RDF_XML instead.
+     */
+    @Deprecated
     public static final MediaType APPLICATION_RDF = new MediaType(
             "application/rdf+xml", "Resource Description Framework document");
+
+    public static final MediaType APPLICATION_RDF_XML = new MediaType(
+            "application/rdf+xml", "XML serialized Resource Description Framework document");
 
     public static final MediaType APPLICATION_RTF = new MediaType(
             "application/rtf", "Rich Text Format document");
@@ -167,6 +174,9 @@ public final class MediaType extends Metadata {
 
     public static final MediaType TEXT_PLAIN = new MediaType("text/plain",
             "Plain text");
+
+    public static final MediaType TEXT_RDF_N3 = new MediaType(
+            "text/rdf+n3", "N3 serialized Resource Description Framework document");
 
     public static final MediaType TEXT_URI_LIST = new MediaType(
             "text/uri-list", "List of URIs");

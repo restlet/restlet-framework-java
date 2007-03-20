@@ -22,6 +22,8 @@ Changes log
    NRE's ServerHelper. Suggested by Brandon Lonac.
  - Renamed internal NRE's HttpCall.setProtocol() to setVersion().
  - Added Parameter.setName() method.
+ - Media type APPLICATION_RDF was renamed to APPLICATION_RDF_XML and TEXT_RDF_N3 was 
+   added. Suggested by Ryan Daum.
 
 [Enhancements] 
  - Fixed Spring plugin descriptor for Eclipse.
