@@ -107,7 +107,7 @@ public class HttpRequest extends Request {
         if ((httpCall.getHostPort() != -1)
                 && (httpCall.getHostPort() != httpCall.getProtocol()
                         .getDefaultPort())) {
-            sb.append(':').append(httpCall.getServerPort());
+            sb.append(':').append(httpCall.getHostPort());
         }
         setHostRef(new Reference(sb.toString()));
 

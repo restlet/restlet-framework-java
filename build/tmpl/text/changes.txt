@@ -12,7 +12,9 @@ Changes log
  - Fixed bug with the relative links of the Web representation of the "Bookmarks" resource in the book tutorial. Reported by Sean Landis.
  - Fixed potential bug when checking "modification date" condition on a null variant. 
  - Fixed bug with db4o configuration in the book tutorial. Reported by Sean Landis.
-  
+ - Fixed potential issue with Request.hostRef.port when the server listening port is 
+   different from the port specified in the HTTP Host header. Reported by Thierry Boileau.
+   
 [API changes]
  - Added MediaType.TEXT_CALENDAR constant for iCalendar events. Suggested by Aron Roberts.
  - Added default constructor to NRE's HttpServerHelper and a setServer() method to
