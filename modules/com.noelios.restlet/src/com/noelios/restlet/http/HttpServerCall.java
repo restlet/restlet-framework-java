@@ -18,30 +18,19 @@
 
 package com.noelios.restlet.http;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.noelios.restlet.util.HeaderReader;
 import org.restlet.Server;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Parameter;
-import org.restlet.data.Protocol;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
+import org.restlet.data.*;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.ReadableRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
 
-import com.noelios.restlet.util.HeaderReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * Abstract HTTP server connector call.
@@ -105,11 +94,16 @@ public abstract class HttpServerCall extends HttpCall {
 
         if (((requestStream != null) || (requestChannel != null))) {
             // Extract the header values
-            List<Encoding> contentEncodings = new ArrayList<Encoding>();
-            List<Language> contentLanguages = new ArrayList<Language>();
             MediaType contentMediaType = null;
-            CharacterSet contentCharacterSet = null;
-            long contentLength = -1L;
+            long contentLength = Representation.UNKNOWN_SIZE;
+
+            if (requestStream != null) {
+                result = new InputRepresentation(requestStream,
+                        contentMediaType, contentLength);
+            } else {
+                result = new ReadableRepresentation(requestChannel,
+                        contentMediaType, contentLength);
+            }
 
             for (Parameter header : getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
@@ -119,7 +113,7 @@ public abstract class HttpServerCall extends HttpCall {
                     while (value != null) {
                         Encoding encoding = Encoding.valueOf(value);
                         if (!encoding.equals(Encoding.IDENTITY)) {
-                            contentEncodings.add(encoding);
+                            result.getEncodings().add(encoding);
                         }
                         value = hr.readValue();
                     }
@@ -128,45 +122,25 @@ public abstract class HttpServerCall extends HttpCall {
                     HeaderReader hr = new HeaderReader(header.getValue());
                     String value = hr.readValue();
                     while (value != null) {
-                        contentLanguages.add(Language.valueOf(value));
+                        result.getLanguages().add(Language.valueOf(value));
                         value = hr.readValue();
                     }
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_TYPE)) {
                     ContentType contentType = new ContentType(header.getValue());
-                    if (contentType != null) {
-                        contentMediaType = contentType.getMediaType();
-                        contentCharacterSet = contentType.getCharacterSet();
-                    }
+                    result.setMediaType(contentType.getMediaType());
+                    result.setCharacterSet(contentType.getCharacterSet());
 
-                    contentMediaType = MediaType.valueOf(header.getValue());
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_LENGTH)) {
-                    contentLength = Long.parseLong(header.getValue());
-                }
-            }
-
-            if (requestStream != null) {
-                result = new InputRepresentation(requestStream,
-                        contentMediaType, contentLength);
-            } else if (requestChannel != null) {
-                result = new ReadableRepresentation(requestChannel,
-                        contentMediaType, contentLength);
-            }
-
-            if (result != null) {
-                for (Encoding encoding : contentEncodings) {
-                    if (!encoding.equals(Encoding.IDENTITY)) {
-                        result.getEncodings().add(encoding);
+                    try {
+                        contentLength = Long.parseLong(header.getValue());
+                    } catch (NumberFormatException e) {
+                        contentLength = Representation.UNKNOWN_SIZE;
                     }
+                    result.setSize(contentLength);
                 }
-
-                if (!contentLanguages.isEmpty()) {
-                    result.getLanguages().addAll(contentLanguages);
-                }
-                result.setCharacterSet(contentCharacterSet);
             }
-
         }
 
         return result;
