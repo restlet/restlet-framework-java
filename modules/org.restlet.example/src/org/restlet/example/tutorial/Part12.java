@@ -29,7 +29,7 @@ import org.restlet.data.Protocol;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part12 implements Constants {
+public class Part12 {
     public static void main(String[] args) throws Exception {
         // Create a component
         Component component = new Component();

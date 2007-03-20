@@ -29,13 +29,14 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import static org.restlet.example.tutorial.Constants.*;
 
 /**
  * Routers and hierarchical URIs
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part11 implements Constants {
+public class Part11 {
     public static void main(String[] args) throws Exception {
         // Create a component
         Component component = new Component();

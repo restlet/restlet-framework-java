@@ -27,6 +27,8 @@ Changes log
  - Completed missing Javadocs for Series class. Reported by Jonathan Hall.
  - Added warning message when no Restlet API found in the classpath.
  - Upgraded Apache HTTP Client to 3.1 RC1.
+ - Tutorial examples now statically import the Constants class instead of implementing
+   the Constants interface anti-pattern. Reported by Sean Landis.
  
 1.0 RC5 (2007-03-09)
 [Bugs fixed]

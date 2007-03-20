@@ -23,13 +23,14 @@ import org.restlet.Component;
 import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
+import static org.restlet.example.tutorial.Constants.*;
 
 /**
  * Server static files using an application.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part06 implements Constants {
+public class Part06 {
     public static void main(String[] args) throws Exception {
         // Create a component
         Component component = new Component();
