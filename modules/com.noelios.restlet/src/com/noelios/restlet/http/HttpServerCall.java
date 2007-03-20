@@ -119,7 +119,7 @@ public abstract class HttpServerCall extends HttpCall {
                     while (value != null) {
                         Encoding encoding = Encoding.valueOf(value);
                         if (!encoding.equals(Encoding.IDENTITY)) {
-                            result.getEncodings().add(encoding);
+                            contentEncodings.add(encoding);
                         }
                         value = hr.readValue();
                     }
