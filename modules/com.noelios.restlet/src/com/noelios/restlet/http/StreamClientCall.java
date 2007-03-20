@@ -55,7 +55,7 @@ public class StreamClientCall extends HttpClientCall {
      */
     public StreamClientCall(StreamClientHelper helper, Request request) {
         super(helper, request.getMethod().toString(), request.getResourceRef()
-                .getIdentifier());
+                .getPath());
 
         // Set the HTTP version
         setVersion("HTTP/1.1");
