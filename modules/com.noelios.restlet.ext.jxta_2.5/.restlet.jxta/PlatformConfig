@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:CP>
+<jxta:CP type="jxta:PlatformConfig" xml:space="preserve" xmlns:jxta="http://jxta.org">
+<Name>restlet</Name><Desc>Created by: net.jxta.ext.configuration.Configurator (adhoc)</Desc><Svc><MCID>urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000505</MCID><Parm type="jxta:PSEConfig" xml:space="preserve" xmlns:jxta="http://jxta.org"><RootCert><Certificate>MIICAjCCAWugAwIBAgIBATANBgkqhkiG9w0BAQUFADBHMRUwEwYDVQQKDAx3d3cuanh0YS5vcmcx
+DzANBgNVBAMMBnVzci1DQTEdMBsGA1UECwwUMUM1QkUyOUJDM0EyQTY3Mjg5RjIwHhcNMDcwMzE0
+MTcxNzEwWhcNMTcwMzE0MTcxNzEwWjBHMRUwEwYDVQQKDAx3d3cuanh0YS5vcmcxDzANBgNVBAMM
+BnVzci1DQTEdMBsGA1UECwwUMUM1QkUyOUJDM0EyQTY3Mjg5RjIwgZ8wDQYJKoZIhvcNAQEBBQAD
+gY0AMIGJAoGBAImNMtXhYX07JbQ2rvUgDa1yL6L9KaZrv6HsUUzcs9+NdXn/IIy4s7KSpIxoqCER
+hRqE78tzL752AbgkzIgsCt9kQFf+hwYniO4hHNISjBayLOsPCIpUKnddBKC+sxIDSzGFLhGjH86i
+IvUvCjc5UACiUzUTaSTdSigpFnElsSUpAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAQa4O3NUhI7cj
+HCyGDRkVgVr2JA2Gb7xVVoWjMo7iOzd/VorP1fbim7BXaJ+dlRmpJvW++oOrMaDgbhJrtD0Mp9eW
+9ed/CVl+9KkYT74gSccI5LkVLX20Wy/+lx+G+qk8MoFq65j8GyGF5PU+6hoNlwUCVDGDoOmWDu7Y
+qvjoUKk=</Certificate><EncryptedPrivateKey algorithm="RSA">MIICoTAbBgkqhkiG9w0BBQMwDgQIkYDAS6rw//sCAgH0BIICgB2JTjRnFdVchMGm6xNwJz9p799o
+n2xAx3v/xWCgWstOAZHIaODOrGiCuxCTI0ExxWOnp4Mapr801nlcefGHb/7Ms36Z0Dufm7EXUFfY
+hveJmKORadCexW0bTpPEc3aJyWoFmosXDUVdtmhzHHmvFMdp7Xr6CwHKFfUJwNis44Xg+uJ0XMZx
+8gdyVRC10Zu1IDXpPPc6U1A1G7M5B/6bAAwXKr6Ov7Tfe0aswIMuLtelmVVMVsFpxtHQGDDvAUe6
+b1haAVef4OkLXLJk896bAMumzMIe7D1WGihMcr5nU6Bv5v+eOPMLOFl7C3NGiIiy+06ObAevxrNg
+RhjxBOEuxEKDXnZsIgz5q1otSRlQ7ncGoq+M+e5s1e2CWUwUCH0Ncm1hLimFjcD5W+vw7E7XJpDd
+GH17pwU4+gfUPJtG5EgQjdyT0D3QLNaKev/3HuIniFR6z0yNeiSGCFu85s+14jV01+ntk9S3TWPp
+wz3GFVQMbgI3xR1sEDvcORKPv2eWFneF5OsQN0lTqS+pLLVx24Y1u1e9RV2e2PuVWOy0AXel2FSs
+qzU+VqJIV6/tOPKlYsW8qZz/Su90RMR1aQOd0bBK3lcWREGsCr0Vz2csBtRj/Y9TRmY4vLTGha/H
+vb7KeXpBzig9/BevGpAwIk5JYla8woYLk7IKBhJtdPNJjATWYRV9wOlJTOSs9AtXPXBBdhbq69mS
+SMCjJ1MRZ4Xn0Gl2GENKJmVXqZGnJDjy2COltR77KZEu3489Ns9AXPHc4TO8YPsC6XI5dEJsFn7u
+cveZwNylTjwh2j4T9jemqWB18W+DhPwniAOHh7cJy9FwNwuo9f79wLFYClDxcanCCM4=</EncryptedPrivateKey></RootCert></Parm></Svc><Svc><MCID>urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000A05</MCID><Parm><jxta:TransportAdvertisement xmlns:jxta="http://jxta.org" xml:space="preserve" type="jxta:HTTPTransportAdvertisement"><Protocol>http</Protocol><ConfigMode>auto</ConfigMode><Port>9700</Port><ProxyOff/></jxta:TransportAdvertisement></Parm></Svc><Svc><MCID>urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E05</MCID><Parm><isOff/></Parm></Svc><Svc><MCID>urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000605</MCID><Parm type="jxta:RdvConfig" config="client" xml:space="preserve" xmlns:jxta="http://jxta.org"/></Svc><Svc><MCID>urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000905</MCID><Parm><jxta:TransportAdvertisement xmlns:jxta="http://jxta.org" xml:space="preserve" type="jxta:TCPTransportAdvertisement"><Protocol>tcp</Protocol><ConfigMode>auto</ConfigMode><Port start="0" end="0">0</Port><MulticastAddr>224.0.1.85</MulticastAddr><MulticastPort>1234</MulticastPort><MulticastSize>16384</MulticastSize></jxta:TransportAdvertisement></Parm></Svc><Svc><MCID>urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F05</MCID><Parm type="jxta:RelayConfig" xml:space="preserve" xmlns:jxta="http://jxta.org"><client/><server/></Parm></Svc><Svc><MCID>urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000805</MCID><Parm><MessengerQueueSize>20</MessengerQueueSize></Parm></Svc></jxta:CP>

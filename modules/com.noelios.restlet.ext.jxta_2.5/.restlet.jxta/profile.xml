@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><jxta>
+  <peer descriptor="adhoc"/>
+
+  <network description="ToddNet" id="urn:jxta:uuid-7038704567907394506794356077903402" name="ToddNet">
+<!--
+    <service id="${user.name}.p2mp"
+      name="JXA:HTTP2MP"
+      document="/attention.*"
+      class="net.http.ext.service.peerlet.AttentionPeerlet"/>
+-->
+<!--
+    <group id="urn:http:uuid-1989101414002000081518002844102602"
+      name="MyJXTA"
+      password=""
+      description="">
+      <group id="urn:http:uuid-7210772407234707234021340724702802"
+        name="NetBeans"
+        password=""
+        description=""/>
+    </group>
+-->
+  </network>
+    
+  <transport>
+    <tcp>
+      <address>
+        <multicast>udp://224.0.1.85:1234</multicast>
+        tcp://${host.any}:0
+      </address>
+    </tcp>
+
+    <http>
+      <incoming enabled="true"/>
+      <address>http://${host.any}:9700</address>
+    </http>
+  </transport>
+
+  <service>
+    <rendezVous mode="adhoc"/>
+  </service>
+</jxta>
