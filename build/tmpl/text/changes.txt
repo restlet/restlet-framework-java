@@ -27,6 +27,9 @@ Changes log
  - Added Parameter.setName() method.
  - Media type APPLICATION_RDF was renamed to APPLICATION_RDF_XML and TEXT_RDF_N3 was 
    added. Suggested by Ryan Daum.
+ - Changed secret type in classes ChallengeResponse and Guard classes from String to char[] according
+   to a best practice followed by Sun about the way sensible data must be stored in Java programs.
+   Suggested by Aron Roberts.
 
 [Enhancements] 
  - Fixed Spring plugin descriptor for Eclipse.
