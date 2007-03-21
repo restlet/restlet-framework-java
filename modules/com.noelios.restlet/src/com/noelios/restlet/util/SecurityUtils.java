@@ -148,12 +148,12 @@ public class SecurityUtils {
 
             // Append the AWS credentials
             sb.append(challenge.getIdentifier()).append(':').append(
-                    Base64.encodeBytes(toHMac(rest.toString(), challenge
-                            .getSecret())));
+                    Base64.encodeBytes(toHMac(rest.toString(), new String(
+                            challenge.getSecret()))));
         } else if (challenge.getScheme().equals(ChallengeScheme.HTTP_BASIC)) {
             try {
                 String credentials = challenge.getIdentifier() + ':'
-                        + challenge.getSecret();
+                        + new String(challenge.getSecret());
                 sb.append(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(
@@ -162,7 +162,7 @@ public class SecurityUtils {
         } else if (challenge.getScheme().equals(ChallengeScheme.SMTP_PLAIN)) {
             try {
                 String credentials = "^@" + challenge.getIdentifier() + "^@"
-                        + challenge.getSecret();
+                        + new String(challenge.getSecret());
                 sb.append(Base64.encodeBytes(credentials.getBytes("US-ASCII")));
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(

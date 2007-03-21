@@ -123,10 +123,19 @@ public final class ChallengeResponse {
                         }
 
                         if (result) {
-                            if (getSecret() != null) {
-                                result = getSecret().equals(that.getSecret());
+                            if (getSecret() == null || that.getSecret() == null) {
+                                // check if both are null
+                                result = (getSecret() == that.getSecret());
                             } else {
-                                result = (that.getSecret() == null);
+                                if (getSecret().length == that.getSecret().length) {
+                                    boolean equals = true;
+                                    for (int i = 0; i < getSecret().length
+                                            && equals; i++) {
+                                        equals = (getSecret()[i] == that
+                                                .getSecret()[i]);
+                                    }
+                                    result = equals;
+                                }
                             }
                         }
                     }
@@ -176,8 +185,8 @@ public final class ChallengeResponse {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Engine.hashCode(getScheme(), getIdentifier(), getSecret(),
-                getCredentials());
+        return Engine.hashCode(getScheme(), getIdentifier(), new String(
+                getSecret()), getCredentials());
     }
 
     /**
@@ -217,7 +226,7 @@ public final class ChallengeResponse {
      *            The user secret, such as a password or a secret key.
      */
     public void setSecret(String secret) {
-        this.secret = (secret == null) ? secret.toCharArray() : null;
+        this.secret = (secret == null) ? null : secret.toCharArray();
     }
 
     /**
