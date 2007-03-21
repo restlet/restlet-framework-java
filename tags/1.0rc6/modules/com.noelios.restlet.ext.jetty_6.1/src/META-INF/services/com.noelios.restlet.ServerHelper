@@ -1,3 +1,0 @@
-com.noelios.restlet.ext.jetty.AjpServerHelper	# AJP
-com.noelios.restlet.ext.jetty.HttpServerHelper	# HTTP
-com.noelios.restlet.ext.jetty.HttpsServerHelper	# HTTPS
