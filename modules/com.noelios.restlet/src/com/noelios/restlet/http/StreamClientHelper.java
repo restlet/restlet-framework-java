@@ -41,6 +41,11 @@ public class StreamClientHelper extends HttpClientHelper {
     }
 
     @Override
+    public HttpClientCall create(Request request) {
+        return new StreamClientCall(this, request);
+    }
+
+    @Override
     public void start() throws Exception {
         super.start();
         getLogger().info("Starting the HTTP client");
@@ -50,10 +55,5 @@ public class StreamClientHelper extends HttpClientHelper {
     public void stop() throws Exception {
         super.stop();
         getLogger().info("Stopping the HTTP client");
-    }
-
-    @Override
-    public HttpClientCall create(Request request) {
-        return new StreamClientCall(this, request);
     }
 }

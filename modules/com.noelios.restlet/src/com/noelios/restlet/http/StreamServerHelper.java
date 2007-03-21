@@ -36,44 +36,28 @@ import org.restlet.data.Protocol;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StreamServerHelper extends HttpServerHelper {
-    /** The server socket to listen on. */
-    private ServerSocket serverSocket;
-
-    /** The server socket address. */
-    private SocketAddress socketAddress;
-
-    /** The executor service (thread pool). */
-    private ExecutorService executorService;
-
     /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server to help.
+     * Connection that handles the socket.
      */
-    public StreamServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTP);
-    }
+    class Connection implements Runnable {
+        private StreamServerHelper helper;
 
-    @Override
-    public void start() throws Exception {
-        super.start();
-        getLogger().info("Starting the HTTP server");
-        new Listener(this).start();
-    }
+        private final Socket socket;
 
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-        getLogger().info("Stopping the HTTP server");
-        if (this.serverSocket.isBound()) {
-            this.serverSocket.close();
-            this.serverSocket = null;
+        Connection(StreamServerHelper helper, Socket socket) {
+            this.helper = helper;
+            this.socket = socket;
         }
 
-        if (this.executorService != null) {
-            this.executorService.shutdown();
+        public void run() {
+            try {
+                this.helper.handle(new StreamServerCall(
+                        this.helper.getServer(), this.socket.getInputStream(),
+                        this.socket.getOutputStream()));
+            } catch (IOException ioe) {
+                getLogger().log(Level.WARNING,
+                        "Unexpected error while handle a call", ioe);
+            }
         }
     }
 
@@ -100,8 +84,7 @@ public class StreamServerHelper extends HttpServerHelper {
                 }
 
                 executorService = Executors.newFixedThreadPool(10);
-                serverSocket = new ServerSocket();
-                serverSocket.bind(socketAddress);
+                serverSocket = createSocket(socketAddress);
 
                 for (;;) {
                     executorService.execute(new Connection(helper, serverSocket
@@ -118,28 +101,58 @@ public class StreamServerHelper extends HttpServerHelper {
         }
     }
 
+    /** The server socket to listen on. */
+    private ServerSocket serverSocket;
+
+    /** The server socket address. */
+    private SocketAddress socketAddress;
+
+    /** The executor service (thread pool). */
+    private ExecutorService executorService;
+
     /**
-     * Connection that handles the socket.
+     * Constructor.
+     * 
+     * @param server
+     *            The server to help.
      */
-    class Connection implements Runnable {
-        private StreamServerHelper helper;
+    public StreamServerHelper(Server server) {
+        super(server);
+        getProtocols().add(Protocol.HTTP);
+    }
 
-        private final Socket socket;
+    /**
+     * Creates a server socket to listen on.
+     * 
+     * @param address
+     *            The server IP address and port to use.
+     * @return The created server socket.
+     * @throws IOException
+     */
+    public ServerSocket createSocket(SocketAddress address) throws IOException {
+        ServerSocket serverSocket = new ServerSocket();
+        serverSocket.bind(address);
+        return serverSocket;
+    }
 
-        Connection(StreamServerHelper helper, Socket socket) {
-            this.helper = helper;
-            this.socket = socket;
+    @Override
+    public void start() throws Exception {
+        super.start();
+        getLogger().info("Starting the HTTP server");
+        new Listener(this).start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        getLogger().info("Stopping the HTTP server");
+        if (this.serverSocket.isBound()) {
+            this.serverSocket.close();
+            this.serverSocket = null;
         }
 
-        public void run() {
-            try {
-                this.helper.handle(new StreamServerCall(this.helper
-                        .getServer(), this.socket.getInputStream(), this.socket
-                        .getOutputStream()));
-            } catch (IOException ioe) {
-                getLogger().log(Level.WARNING,
-                        "Unexpected error while handle a call", ioe);
-            }
+        if (this.executorService != null) {
+            this.executorService.shutdown();
         }
     }
 }

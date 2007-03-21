@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
@@ -59,6 +60,23 @@ public class StreamClientCall extends HttpClientCall {
 
         // Set the HTTP version
         setVersion("HTTP/1.1");
+    }
+
+    /**
+     * Creates the socket that will be used to send the request and get the
+     * response.
+     * 
+     * @param hostDomain
+     *            The target host domain name.
+     * @param hostPort
+     *            The target host port.
+     * @return The created socket.
+     * @throws UnknownHostException
+     * @throws IOException
+     */
+    public Socket createSocket(String hostDomain, int hostPort)
+            throws UnknownHostException, IOException {
+        return new Socket(hostDomain, hostPort);
     }
 
     /**
@@ -174,7 +192,7 @@ public class StreamClientCall extends HttpClientCall {
             }
 
             // Create the client socket
-            Socket socket = new Socket(hostDomain, hostPort);
+            Socket socket = createSocket(hostDomain, hostPort);
             this.requestStream = socket.getOutputStream();
             this.responseStream = socket.getInputStream();
 
@@ -227,5 +245,4 @@ public class StreamClientCall extends HttpClientCall {
 
         return result;
     }
-
 }
