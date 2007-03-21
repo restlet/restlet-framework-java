@@ -24,5 +24,5 @@ package org.restlet.example.tutorial;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Constants {
-    public static final String ROOT_URI = "file:///D:/Forge/build/swc/restlet/trunk/build/temp/docs/api/";
+    public static final String ROOT_URI = "file:///c:/restlet/docs/api/";
 }

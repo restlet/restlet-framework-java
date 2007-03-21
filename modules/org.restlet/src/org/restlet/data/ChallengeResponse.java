@@ -33,7 +33,7 @@ public final class ChallengeResponse {
     private String identifier;
 
     /** The user secret, such as a password or a secret key. */
-    private String secret;
+    private char[] secret;
 
     /** The raw credentials for custom challenge schemes. */
     private String credentials;
@@ -66,6 +66,24 @@ public final class ChallengeResponse {
      */
     public ChallengeResponse(final ChallengeScheme scheme,
             final String identifier, String secret) {
+        this.scheme = scheme;
+        this.credentials = null;
+        this.identifier = identifier;
+        this.secret = (secret != null) ? secret.toCharArray() : null;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param scheme
+     *            The challenge scheme.
+     * @param identifier
+     *            The user identifier, such as a login name or an access key.
+     * @param secret
+     *            The user secret, such as a password or a secret key.
+     */
+    public ChallengeResponse(final ChallengeScheme scheme,
+            final String identifier, char[] secret) {
         this.scheme = scheme;
         this.credentials = null;
         this.identifier = identifier;
@@ -151,7 +169,7 @@ public final class ChallengeResponse {
      * 
      * @return The user secret, such as a password or a secret key.
      */
-    public String getSecret() {
+    public char[] getSecret() {
         return this.secret;
     }
 
@@ -199,6 +217,16 @@ public final class ChallengeResponse {
      *            The user secret, such as a password or a secret key.
      */
     public void setSecret(String secret) {
+        this.secret = (secret == null) ? secret.toCharArray() : null;
+    }
+
+    /**
+     * Sets the user secret, such as a password or a secret key.
+     * 
+     * @param secret
+     *            The user secret, such as a password or a secret key.
+     */
+    public void setSecret(char[] secret) {
         this.secret = secret;
     }
 

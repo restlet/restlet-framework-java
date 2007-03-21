@@ -46,7 +46,7 @@ public class Part09a {
                 // Create a Guard
                 Guard guard = new Guard(getContext(),
                         ChallengeScheme.HTTP_BASIC, "Tutorial");
-                guard.getSecrets().put("scott", "tiger");
+                guard.getSecrets().put("scott", "tiger".toCharArray());
 
                 // Create a Directory able to return a deep hierarchy of files
                 Directory directory = new Directory(getContext(), ROOT_URI);

@@ -53,7 +53,7 @@ public class Part11 {
                 // Attach a guard to secure access to the directory
                 Guard guard = new Guard(getContext(),
                         ChallengeScheme.HTTP_BASIC, "Restlet tutorial");
-                guard.getSecrets().put("scott", "tiger");
+                guard.getSecrets().put("scott", "tiger".toCharArray());
                 router.attach("/docs/", guard);
 
                 // Create a directory able to expose a hierarchy of files

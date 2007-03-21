@@ -67,7 +67,7 @@ public class UserResource extends Resource {
         this.userName = (String) request.getAttributes().get("username");
         ChallengeResponse cr = request.getChallengeResponse();
         this.login = (cr != null) ? cr.getIdentifier() : null;
-        this.password = (cr != null) ? cr.getSecret() : null;
+        this.password = (cr != null) ? new String(cr.getSecret()) : null;
         this.user = findUser();
 
         if (user != null) {

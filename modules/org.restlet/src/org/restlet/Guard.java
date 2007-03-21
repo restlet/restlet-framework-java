@@ -37,7 +37,7 @@ import org.restlet.data.Status;
  */
 public class Guard extends Filter {
     /** Map of secrets (login/password combinations). */
-    private Map<String, String> secrets;
+    private Map<String, char[]> secrets;
 
     /** The authentication scheme. */
     private ChallengeScheme scheme;
@@ -86,7 +86,7 @@ public class Guard extends Filter {
     /**
      * Indicates if the call is properly authenticated. By default, this
      * delegates credential checking to authenticate().
-     *
+     * 
      * @param request
      *            The request to authenticate.
      * @return -1 if the given credentials were invalid, 0 if no credentials
@@ -106,7 +106,7 @@ public class Guard extends Filter {
                     // The challenge schemes are compatible
                     String identifier = request.getChallengeResponse()
                             .getIdentifier();
-                    String secret = request.getChallengeResponse().getSecret();
+                    char[] secret = request.getChallengeResponse().getSecret();
 
                     // Check the credentials
                     if ((identifier != null) && (secret != null)) {
@@ -125,16 +125,33 @@ public class Guard extends Filter {
     }
 
     /**
-     * Indicates if the secret is valid for the given identifier.  By default, 
-     * this returns true given the correct login/password couple as verified
-     * via the findSecret() method.
-     *
-     * @param identifier	the identifier
-     * @param secret		the identifier's secret
-     * @return			true if the secret is valid for the given identifier
+     * Indicates if the secret is valid for the given identifier. By default,
+     * this returns true given the correct login/password couple as verified via
+     * the findSecret() method.
+     * 
+     * @param identifier
+     *            the identifier
+     * @param secret
+     *            the identifier's secret
+     * @return true if the secret is valid for the given identifier
      */
-    protected boolean checkSecret(String identifier, String secret) {
-	return (secret.equals(findSecret(identifier)));
+    protected boolean checkSecret(String identifier, char[] secret) {
+        boolean result = false;
+        char[] secret2 = findSecret(identifier);
+        if (secret == null || secret2 == null) {
+            // check if both are null
+            result = (secret == secret2);
+        } else {
+            if (secret.length == secret2.length) {
+                boolean equals = true;
+                for (int i = 0; i < secret.length && equals; i++) {
+                    equals = (secret[i] == secret2[i]);
+                }
+                result = equals;
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -201,7 +218,7 @@ public class Guard extends Filter {
      *            The identifier to lookup.
      * @return The secret associated to the identifier or null.
      */
-    protected String findSecret(String identifier) {
+    protected char[] findSecret(String identifier) {
         return getSecrets().get(identifier);
     }
 
@@ -224,9 +241,9 @@ public class Guard extends Filter {
      * 
      * @return The map of identifiers and secrets.
      */
-    public Map<String, String> getSecrets() {
+    public Map<String, char[]> getSecrets() {
         if (this.secrets == null)
-            this.secrets = new TreeMap<String, String>();
+            this.secrets = new TreeMap<String, char[]>();
         return this.secrets;
     }
 
