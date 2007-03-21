@@ -412,6 +412,10 @@ public class HttpCall {
      *            The full request URI.
      */
     protected void setRequestUri(String requestUri) {
+        if ((requestUri == null) || (requestUri.equals(""))) {
+            requestUri = "/";
+        }
+
         this.requestUri = requestUri;
     }
 
