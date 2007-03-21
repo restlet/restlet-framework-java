@@ -67,7 +67,6 @@ Export-Package:
  com.db4o.internal.replication,
  com.db4o.internal.slots,
  com.db4o.io,
- com.db4o.io.crypt,
  com.db4o.messaging,
  com.db4o.nativequery,
  com.db4o.nativequery.analysis,
