@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -45,7 +45,7 @@ import org.restlet.resource.Variant;
 /**
  * Facade to the engine implementating the Restlet API. Note that this is an SPI
  * class that is not intended for public usage.
- * 
+ *
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Engine {
@@ -54,7 +54,7 @@ public abstract class Engine {
             .getCanonicalName());
 
     /** Common version info. */
-    public static final String MINOR_NUMBER = "6";
+    public static final String MINOR_NUMBER = "6b";
 
     public static final String VERSION_LONG = "1.0 RC" + MINOR_NUMBER;
 
@@ -79,7 +79,7 @@ public abstract class Engine {
 
     /**
      * Returns the registered Restlet engine.
-     * 
+     *
      * @return The registered Restlet engine.
      */
     public static Engine getInstance() {
@@ -164,7 +164,7 @@ public abstract class Engine {
     /**
      * Computes the hash code of a set of objects. Follows the algorithm
      * specified in List.hasCode().
-     * 
+     *
      * @return The hash code of a set of objects.
      */
     public static int hashCode(Object... objects) {
@@ -182,7 +182,7 @@ public abstract class Engine {
     /**
      * Sets a new class loader to use when creating instantiating implementation
      * classes.
-     * 
+     *
      * @param newClassloader
      *            The new class loader to use.
      */
@@ -192,7 +192,7 @@ public abstract class Engine {
 
     /**
      * Sets the registered Restlet engine.
-     * 
+     *
      * @param engine
      *            The registered Restlet engine.
      */
@@ -202,7 +202,7 @@ public abstract class Engine {
 
     /**
      * Creates a directory resource.
-     * 
+     *
      * @param handler
      *            The parent directory handler.
      * @param request
@@ -217,7 +217,7 @@ public abstract class Engine {
 
     /**
      * Creates a new helper for a given component.
-     * 
+     *
      * @param application
      *            The application to help.
      * @param parentContext
@@ -229,7 +229,7 @@ public abstract class Engine {
 
     /**
      * Creates a new helper for a given client connector.
-     * 
+     *
      * @param client
      *            The client to help.
      * @return The new helper.
@@ -238,7 +238,7 @@ public abstract class Engine {
 
     /**
      * Creates a new helper for a given component.
-     * 
+     *
      * @param component
      *            The component to help.
      * @return The new helper.
@@ -247,7 +247,7 @@ public abstract class Engine {
 
     /**
      * Creates a new helper for a given server connector.
-     * 
+     *
      * @param server
      *            The server to help.
      * @return The new helper.
@@ -258,7 +258,7 @@ public abstract class Engine {
      * Returns the best variant representation for a given resource according
      * the the client preferences.<br/>A default language is provided in case
      * the variants don't match the client preferences.
-     * 
+     *
      * @param client
      *            The client preferences.
      * @param variants
@@ -275,7 +275,7 @@ public abstract class Engine {
 
     /**
      * Parses a representation into a form.
-     * 
+     *
      * @param logger
      *            The logger to use.
      * @param form
@@ -288,7 +288,7 @@ public abstract class Engine {
 
     /**
      * Parses an URL encoded query string into a given form.
-     * 
+     *
      * @param logger
      *            The logger to use.
      * @param form
