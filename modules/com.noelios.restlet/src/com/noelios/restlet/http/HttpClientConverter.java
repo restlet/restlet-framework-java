@@ -83,8 +83,8 @@ public class HttpClientConverter extends HttpConverter {
     /**
      * Commits the changes to a handled HTTP client call back into the original
      * uniform call. The default implementation first invokes the
-     * "addResponseHeaders" then asks the "htppCall" to send the response back to
-     * the client.
+     * "addResponseHeaders" then asks the "htppCall" to send the response back
+     * to the client.
      * 
      * @param httpCall
      *            The original HTTP call.
@@ -260,8 +260,21 @@ public class HttpClientConverter extends HttpConverter {
             // Add entity headers
             if (request.getEntity() != null) {
                 if (request.getEntity().getMediaType() != null) {
+                    String contentType = request.getEntity().getMediaType()
+                            .toString();
+
+                    // Specify the character set parameter if required
+                    if ((request.getEntity().getMediaType().getParameters()
+                            .getFirstValue("charset") == null)
+                            && (request.getEntity().getCharacterSet() != null)) {
+                        contentType = contentType
+                                + "; charset="
+                                + request.getEntity().getCharacterSet()
+                                        .getName();
+                    }
+
                     requestHeaders.add(HttpConstants.HEADER_CONTENT_TYPE,
-                            request.getEntity().getMediaType().toString());
+                            contentType);
                 }
 
                 if (!request.getEntity().getEncodings().isEmpty()) {

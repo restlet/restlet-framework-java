@@ -101,7 +101,7 @@ public class MetadataService {
         addExtension("pdf", MediaType.APPLICATION_PDF);
         addExtension("png", MediaType.IMAGE_PNG);
         addExtension("ppt", MediaType.APPLICATION_POWERPOINT);
-        addExtension("rdf", MediaType.APPLICATION_RDF);
+        addExtension("rdf", MediaType.APPLICATION_RDF_XML);
         addExtension("txt", MediaType.TEXT_PLAIN);
         addExtension("svg", MediaType.IMAGE_SVG);
         addExtension("swf", MediaType.APPLICATION_FLASH);

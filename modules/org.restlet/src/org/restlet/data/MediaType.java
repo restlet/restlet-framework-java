@@ -89,7 +89,8 @@ public final class MediaType extends Metadata {
             "application/rdf+xml", "Resource Description Framework document");
 
     public static final MediaType APPLICATION_RDF_XML = new MediaType(
-            "application/rdf+xml", "XML serialized Resource Description Framework document");
+            "application/rdf+xml",
+            "XML serialized Resource Description Framework document");
 
     public static final MediaType APPLICATION_RTF = new MediaType(
             "application/rtf", "Rich Text Format document");
@@ -163,8 +164,8 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_ALL = new MediaType("text/*",
             "All texts");
 
-    public static final MediaType TEXT_CALENDAR = new MediaType("text/calendar",
-            "iCalendar event");
+    public static final MediaType TEXT_CALENDAR = new MediaType(
+            "text/calendar", "iCalendar event");
 
     public static final MediaType TEXT_CSS = new MediaType("text/css",
             "CSS stylesheet");
@@ -175,8 +176,8 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_PLAIN = new MediaType("text/plain",
             "Plain text");
 
-    public static final MediaType TEXT_RDF_N3 = new MediaType(
-            "text/rdf+n3", "N3 serialized Resource Description Framework document");
+    public static final MediaType TEXT_RDF_N3 = new MediaType("text/rdf+n3",
+            "N3 serialized Resource Description Framework document");
 
     public static final MediaType TEXT_URI_LIST = new MediaType(
             "text/uri-list", "List of URIs");
@@ -511,5 +512,21 @@ public final class MediaType extends Metadata {
         }
 
         return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        if (getName() != null) {
+            sb.append(getName());
+
+            for (Parameter param : getParameters()) {
+                sb.append("; ").append(param.getName()).append('=').append(
+                        param.getValue());
+            }
+        }
+
+        return sb.toString();
     }
 }

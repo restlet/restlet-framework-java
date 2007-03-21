@@ -16,6 +16,8 @@ Changes log
  - Fixed potential issue with Request.hostRef.port when the server listening port is 
    different from the port specified in the HTTP Host header. Reported by Thierry Boileau.
  - Fixed NPE when parsing the "content encoding" header. Reported and contributed by Brian Crow.
+ - The HTTP client connectors were not correctly sending the content type parameters
+   like the "charset" parameter. Reported by Christian Ohr.
       
 [API changes]
  - Added MediaType.TEXT_CALENDAR constant for iCalendar events. Suggested by Aron Roberts.
