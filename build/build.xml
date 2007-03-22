@@ -651,7 +651,7 @@
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@version@" value="${version-compact}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${lib-@{name}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-@{name}-id}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext}-version@" value="${lib-@{ext}-version}" />
+			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext}-version@" value="[${lib-@{ext}-version},)" />
 		</sequential>
 	</macrodef>
 
