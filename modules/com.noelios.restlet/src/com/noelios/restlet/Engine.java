@@ -65,12 +65,12 @@ public class Engine extends org.restlet.util.Engine {
     private static Logger logger = Logger.getLogger(Engine.class
             .getCanonicalName());
 
-    public static final String VERSION_LONG = org.restlet.util.Engine.VERSION_LONG;
+    /** Complete version. */
+    public static final String VERSION = org.restlet.util.Engine.VERSION;
 
-    public static final String VERSION_SHORT = org.restlet.util.Engine.VERSION_SHORT;
-
+    /** Complete version header. */
     public static final String VERSION_HEADER = "Noelios-Restlet-Engine/"
-            + VERSION_SHORT;
+            + VERSION;
 
     /**
      * Registers a new Noelios Restlet Engine.
@@ -377,7 +377,8 @@ public class Engine extends org.restlet.util.Engine {
      * the version number of the Java Runtime Environment (e.g. "1" for
      * "1.3.0").
      * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official Java versioning</a>
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
+     *      Java versioning</a>
      * @return The major version number of the Java Runtime Environment.
      */
     public static int getJavaMajorVersion() {
@@ -398,7 +399,8 @@ public class Engine extends org.restlet.util.Engine {
      * the version number of the Java Runtime Environment (e.g. "3" for
      * "1.3.0").
      * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official Java versioning</a>
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
+     *      Java versioning</a>
      * @return The minor version number of the Java Runtime Environment.
      */
     public static int getJavaMinorVersion() {
@@ -417,7 +419,8 @@ public class Engine extends org.restlet.util.Engine {
      * Parses the "java.version" system property and returns the update release
      * number of the Java Runtime Environment (e.g. "10" for "1.3.0_10").
      * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official Java versioning</a>
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
+     *      Java versioning</a>
      * @return The release number of the Java Runtime Environment or 0 if it
      *         does not exist.
      */
@@ -505,7 +508,7 @@ public class Engine extends org.restlet.util.Engine {
 
             // Client preferences are altered
             languagePrefs.addAll(primaryLanguagePrefs);
-            if(defaultLanguagePref!=null){
+            if (defaultLanguagePref != null) {
                 languagePrefs.add(defaultLanguagePref);
             }
             languagePrefs.add(allLanguagesPref);

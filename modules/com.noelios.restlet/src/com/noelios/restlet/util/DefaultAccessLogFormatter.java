@@ -33,8 +33,8 @@ public class DefaultAccessLogFormatter extends AccessLogFormatter {
     @Override
     public String getHead(Handler h) {
         StringBuilder sb = new StringBuilder();
-        sb.append("#Software: Noelios Restlet Engine ").append(
-                Engine.VERSION_LONG).append('\n');
+        sb.append("#Software: Noelios Restlet Engine ").append(Engine.VERSION)
+                .append('\n');
         sb.append("#Version: 1.0\n");
         sb.append("#Date: ");
         long currentTime = System.currentTimeMillis();
