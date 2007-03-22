@@ -821,7 +821,10 @@
 	<!-- CLEAN-DIST target -->
 	<target name="clean-dist" description="Clean distributions files.">
 		<delete includeEmptyDirs="true" verbose="false" quiet="false"  failonerror="false">
-			<fileset dir="${dist-base}" />
+			<fileset dir="${dist-base}">
+				<include name="*/${dist-path}/**/*"/>
+				<include name="*/${dist-path}"/>
+			</fileset>
 		</delete>
 	</target>
 
