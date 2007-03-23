@@ -7,12 +7,6 @@ Changes log
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Fixed bug when instantiating the secret of a ChallengeResponse.
-      
-[API changes]
- - 
-
-[Enhancements] 
- - 
 
 1.0 RC6 (2007-03-21)
 [Bugs fixed]
