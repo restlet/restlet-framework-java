@@ -99,12 +99,13 @@ public class ServletConverter extends HttpServerConverter {
 
             // Adjust the relative reference
             if (this.baseRef == null) {
-                String baseUri = request.getContextPath()
+                String basePath = request.getContextPath()
                         + request.getServletPath();
-                int baseIndex = request.getRequestURI().indexOf(baseUri);
+                String baseUri = request.getRequestURL().toString();
+                int baseIndex = baseUri.indexOf(basePath);
                 if (baseIndex != -1) {
-                    this.baseRef = new Reference(request.getRequestURI()
-                            .substring(0, baseIndex + baseUri.length()));
+                    this.baseRef = new Reference(baseUri.substring(0, baseIndex
+                            + basePath.length()));
                 }
             }
             httpRequest.getResourceRef().setBaseRef(this.baseRef);
