@@ -8,6 +8,11 @@ Changes log
 [Bugs fixed]
  - Fixed bug when instantiating the secret of a ChallengeResponse.
 
+[Enhancements] 
+ - Added new ServletConverter class to facilitate lighter integration of Restlets with Servlet 
+   and especially Spring. Inspired from discussions with Ryan Daum, Michael Makunas, 
+   Jim Alateras, Shlok and Jonathan Hall.
+  
 1.0 RC6 (2007-03-21)
 [Bugs fixed]
  - Fixed bug with the control of the existence of fragment in setIdentifier method.

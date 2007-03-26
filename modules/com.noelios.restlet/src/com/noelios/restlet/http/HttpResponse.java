@@ -32,7 +32,7 @@ import com.noelios.restlet.Engine;
  */
 public class HttpResponse extends Response {
     /** The low-level HTTP call. */
-    private HttpCall httpCall;
+    private HttpServerCall httpCall;
 
     /** Indicates if the server data was parsed and added. */
     private boolean serverAdded;
@@ -59,7 +59,7 @@ public class HttpResponse extends Response {
      * 
      * @return The low-level HTTP call.
      */
-    public HttpCall getHttpCall() {
+    public HttpServerCall getHttpCall() {
         return this.httpCall;
     }
 

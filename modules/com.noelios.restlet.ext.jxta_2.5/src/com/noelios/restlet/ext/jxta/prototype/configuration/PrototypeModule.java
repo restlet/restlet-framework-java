@@ -1,22 +1,22 @@
 package com.noelios.restlet.ext.jxta.prototype.configuration;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 import com.noelios.restlet.ext.jxta.prototype.Peer;
 import com.noelios.restlet.ext.jxta.prototype.peers.PeerClient;
 import com.noelios.restlet.ext.jxta.prototype.peers.PeerServer;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-
 /**
  * @author james todd [james dot w dot todd at gmail dot com]
  */
 public class PrototypeModule extends AbstractModule {
 
-    private static final String CLIENT = "client";
+//    private static final String CLIENT = "client";
     private static final String SERVER = "server";
     private static final String JXTA_PROPERTIES =
             "/com/noelios/restlet/ext/jxta/prototype/configuration/jxta.properties";
@@ -36,6 +36,7 @@ public class PrototypeModule extends AbstractModule {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void configure() {
         boolean isServer = options.contains("-" + SERVER);
         String base = System.getProperty("peer.home", System.getProperty("user.dir")) +

@@ -22,10 +22,6 @@ import net.jxta.ext.network.NetworkException;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.pipe.PipeService;
 import net.jxta.protocol.PipeAdvertisement;
-import net.jxta.socket.JxtaServerSocket;
-
-import java.io.IOException;
-import java.net.ServerSocket;
 
 /**
  * @author james todd [james dot w dot todd at gmail dot com]
@@ -34,7 +30,7 @@ import java.net.ServerSocket;
 public class JxtaSocketServer
         extends JxtaServer {
 
-    private ServerSocket server;
+    // Not used: private ServerSocket server;
 
     public JxtaSocketServer(String name, PeerGroup group) {
         this(name, group, null);
@@ -52,11 +48,11 @@ public class JxtaSocketServer
 
     // todo: implement
     public void startServer() throws NetworkException {
-        try {
-            server = new JxtaServerSocket(getPeerGroup(), getPipeAdvertisement());
-        } catch (IOException ioe) {
-            throw new NetworkException("unable to create socket", ioe);
-        }
+//        try {
+// Not used: server = new JxtaServerSocket(getPeerGroup(), getPipeAdvertisement());
+//        } catch (IOException ioe) {
+//            throw new NetworkException("unable to create socket", ioe);
+//        }
     }
 
     // todo: implement

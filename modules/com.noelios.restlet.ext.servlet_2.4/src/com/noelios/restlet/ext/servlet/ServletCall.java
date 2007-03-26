@@ -26,6 +26,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -68,6 +69,23 @@ public class ServletCall extends HttpServerCall {
     public ServletCall(Server server, HttpServletRequest request,
             HttpServletResponse response) {
         super(server);
+        this.request = request;
+        this.response = response;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param logger
+     *            The logger.
+     * @param serverAddress
+     *            The server IP address.
+     * @param serverPort
+     *            The server port.
+     */
+    public ServletCall(Logger logger, String serverAddress, int serverPort,
+            HttpServletRequest request, HttpServletResponse response) {
+        super(logger, serverAddress, serverPort);
         this.request = request;
         this.response = response;
     }

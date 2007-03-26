@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.logging.Logger;
 
 /**
  * Abstract HTTP server connector call.
@@ -48,9 +49,23 @@ public abstract class HttpServerCall extends HttpCall {
      *            The parent server connector.
      */
     public HttpServerCall(Server server) {
-        setLogger(server.getLogger());
-        setServerAddress(server.getAddress());
-        setServerPort(server.getPort());
+        this(server.getLogger(), server.getAddress(), server.getPort());
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param logger
+     *            The logger.
+     * @param serverAddress
+     *            The server IP address.
+     * @param serverPort
+     *            The server port.
+     */
+    public HttpServerCall(Logger logger, String serverAddress, int serverPort) {
+        setLogger(logger);
+        setServerAddress(serverAddress);
+        setServerPort(serverPort);
         this.hostParsed = false;
     }
 

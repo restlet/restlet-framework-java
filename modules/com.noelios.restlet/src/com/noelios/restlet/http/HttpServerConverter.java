@@ -29,8 +29,6 @@ import org.restlet.data.Dimension;
 import org.restlet.data.Encoding;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
@@ -62,8 +60,8 @@ public class HttpServerConverter extends HttpConverter {
      *            The low-level HTTP call.
      * @return A new high-level uniform request.
      */
-    public Request toRequest(HttpServerCall httpCall) {
-        Request result = new HttpRequest(getContext(), httpCall);
+    public HttpRequest toRequest(HttpServerCall httpCall) {
+        HttpRequest result = new HttpRequest(getContext(), httpCall);
         result.getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
                 httpCall.getRequestHeaders());
 
@@ -80,38 +78,36 @@ public class HttpServerConverter extends HttpConverter {
      * call. The default implementation first invokes the "addResponseHeaders"
      * then asks the "htppCall" to send the response back to the client.
      * 
-     * @param httpCall
-     *            The original HTTP call.
      * @param response
      *            The high-level response.
      */
-    public void commit(HttpServerCall httpCall, Response response) {
+    public void commit(HttpResponse response) {
         try {
             // Add the response headers
-            addResponseHeaders(httpCall, response);
+            addResponseHeaders(response);
 
             // Send the response to the client
-            httpCall.sendResponse(response);
+            response.getHttpCall().sendResponse(response);
         } catch (Exception e) {
             getLogger().log(Level.INFO, "Exception intercepted", e);
-            httpCall.setStatusCode(500);
-            httpCall.setReasonPhrase("An unexpected exception occured");
+            response.getHttpCall().setStatusCode(500);
+            response.getHttpCall().setReasonPhrase(
+                    "An unexpected exception occured");
         }
     }
 
     /**
      * Adds the response headers for the handled uniform call.
      * 
-     * @param httpCall
-     *            The original HTTP call.
      * @param response
      *            The response returned.
      */
     @SuppressWarnings("unchecked")
-    protected void addResponseHeaders(HttpServerCall httpCall, Response response) {
+    protected void addResponseHeaders(HttpResponse response) {
         try {
             // Add all the necessary response headers
-            Series<Parameter> responseHeaders = httpCall.getResponseHeaders();
+            Series<Parameter> responseHeaders = response.getHttpCall()
+                    .getResponseHeaders();
 
             if (response.getStatus().equals(
                     Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)) {
@@ -155,13 +151,16 @@ public class HttpServerConverter extends HttpConverter {
             }
 
             // Set the server name again
-            httpCall.getResponseHeaders().add(HttpConstants.HEADER_SERVER,
+            response.getHttpCall().getResponseHeaders().add(
+                    HttpConstants.HEADER_SERVER,
                     response.getServerInfo().getAgent());
 
             // Set the status code in the response
             if (response.getStatus() != null) {
-                httpCall.setStatusCode(response.getStatus().getCode());
-                httpCall.setReasonPhrase(response.getStatus().getDescription());
+                response.getHttpCall().setStatusCode(
+                        response.getStatus().getCode());
+                response.getHttpCall().setReasonPhrase(
+                        response.getStatus().getDescription());
             }
 
             // If an entity was set during the call, copy it to the output
@@ -170,8 +169,9 @@ public class HttpServerConverter extends HttpConverter {
                 Representation entity = response.getEntity();
 
                 if (entity.getExpirationDate() != null) {
-                    responseHeaders.add(HttpConstants.HEADER_EXPIRES, httpCall
-                            .formatDate(entity.getExpirationDate(), false));
+                    responseHeaders.add(HttpConstants.HEADER_EXPIRES, response
+                            .getHttpCall().formatDate(
+                                    entity.getExpirationDate(), false));
                 }
 
                 if (!entity.getEncodings().isEmpty()) {
@@ -215,8 +215,8 @@ public class HttpServerConverter extends HttpConverter {
 
                 if (entity.getModificationDate() != null) {
                     responseHeaders.add(HttpConstants.HEADER_LAST_MODIFIED,
-                            httpCall.formatDate(entity.getModificationDate(),
-                                    false));
+                            response.getHttpCall().formatDate(
+                                    entity.getModificationDate(), false));
                 }
 
                 if (entity.getTag() != null) {
@@ -286,9 +286,10 @@ public class HttpServerConverter extends HttpConverter {
             getLogger().log(Level.INFO,
                     "Exception intercepted while adding the response headers",
                     e);
-            httpCall.setStatusCode(Status.SERVER_ERROR_INTERNAL.getCode());
-            httpCall.setReasonPhrase(Status.SERVER_ERROR_INTERNAL
-                    .getDescription());
+            response.getHttpCall().setStatusCode(
+                    Status.SERVER_ERROR_INTERNAL.getCode());
+            response.getHttpCall().setReasonPhrase(
+                    Status.SERVER_ERROR_INTERNAL.getDescription());
         }
     }
 }

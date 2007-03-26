@@ -23,8 +23,6 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Server;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 import com.noelios.restlet.ServerHelper;
 
@@ -91,10 +89,10 @@ public class HttpServerHelper extends ServerHelper {
      */
     public void handle(HttpServerCall httpCall) {
         try {
-            Request request = getConverter().toRequest(httpCall);
-            Response response = new HttpResponse(httpCall, request);
+            HttpRequest request = getConverter().toRequest(httpCall);
+            HttpResponse response = new HttpResponse(httpCall, request);
             handle(request, response);
-            getConverter().commit(httpCall, response);
+            getConverter().commit(response);
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Error while handling an HTTP server call: ",
