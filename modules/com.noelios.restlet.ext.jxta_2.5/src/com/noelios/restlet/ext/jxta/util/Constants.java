@@ -26,6 +26,9 @@ import net.jxta.pipe.PipeService;
 
 public class Constants {
 
+    public static final String JXTA_HOME = "JXTA_HOME";
+    public static final String PROFILE = "PROFILE";
+
     public enum Protocol {
         P2PP("p2pp"),
         P2PSP("p2psp"),

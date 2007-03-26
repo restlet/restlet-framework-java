@@ -22,11 +22,7 @@ import net.jxta.exception.ConfiguratorException;
 import net.jxta.ext.configuration.AbstractConfigurator;
 import net.jxta.ext.configuration.Configurator;
 import net.jxta.ext.configuration.Profile;
-import net.jxta.ext.network.GroupEvent;
-import net.jxta.ext.network.Network;
-import net.jxta.ext.network.NetworkEvent;
-import net.jxta.ext.network.NetworkException;
-import net.jxta.ext.network.NetworkListener;
+import net.jxta.ext.network.*;
 import net.jxta.impl.protocol.PlatformConfig;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.rendezvous.RendezvousEvent;
@@ -35,8 +31,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.EventObject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author james todd [james dot w dot todd at gmail dot com]
@@ -45,13 +39,13 @@ import java.util.logging.Logger;
 public class NetworkHandler {
 
     // todo: config hack for the time being
-    private static final URI HOME = URI.create(System.getProperty("JXTA_HOME", System.getProperty("user.dir") +
-            File.separator + ".restlet.jxta"));
-    private static final String PROFILE_RESOURCE = "/com/noelios/restlet/ext/jxta/resources/adhoc.xml";
+    private static final URI HOME = URI.create(System.getProperty(Constants.JXTA_HOME,
+            System.getProperty("user.dir") + File.separator + ".jxta"));
+    private static final String PROFILE_RESOURCE = System.getProperty(Constants.PROFILE,
+            "/com/noelios/restlet/ext/jxta/resources/adhoc.xml");
     private static final String CONFIG_NAME = "restlet";
     private static final String CONFIG_USER = "usr";
     private static final String CONFIG_PASSWORD = "pwd";
-    private static final Logger logger = Logger.getLogger(NetworkHandler.class.getName());
 
     private Network network = null;
     private NetworkListener listener = null;
@@ -62,10 +56,6 @@ public class NetworkHandler {
 
     public NetworkHandler(final NetworkListener listener) {
         this.listener = listener;
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "listener: " + listener);
-        }
     }
 
     public Network getNetwork() {
@@ -76,10 +66,6 @@ public class NetworkHandler {
             throws NetworkException {
         if (network != null) {
             throw new IllegalStateException("network already started");
-        }
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "network starting");
         }
 
         try {
@@ -98,10 +84,6 @@ public class NetworkHandler {
         } catch (URISyntaxException use) {
             throw new NetworkException("invalid uri: " + getClass().getResource(PROFILE_RESOURCE), use);
         }
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "network started");
-        }
     }
 
     public void stop() {
@@ -109,25 +91,13 @@ public class NetworkHandler {
             throw new IllegalStateException("network already stopped");
         }
 
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "network stopping");
-        }
-
         network.stop();
 
         network = null;
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "network stopped");
-        }
     }
 
     // todo: move to pkg protecgted DefaultNetworkListener class
     private NetworkListener createNetworkListener() {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "creating listener");
-        }
-        
         return new NetworkListener() {
             public void notify(NetworkEvent ne) {
                 StringBuffer msg = new StringBuffer();

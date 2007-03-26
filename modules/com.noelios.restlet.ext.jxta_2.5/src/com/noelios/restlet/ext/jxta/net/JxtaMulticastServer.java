@@ -18,8 +18,8 @@
 
 package com.noelios.restlet.ext.jxta.net;
 
-import com.noelios.restlet.ext.jxta.util.PipeUtility;
 import com.noelios.restlet.ext.jxta.net.handler.MulticastSocketHandler;
+import com.noelios.restlet.ext.jxta.util.PipeUtility;
 import net.jxta.ext.network.NetworkException;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.pipe.PipeID;
@@ -32,8 +32,6 @@ import java.net.MulticastSocket;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author james todd [james dot w dot todd at gmail dot com]
@@ -43,7 +41,6 @@ public class JxtaMulticastServer
         extends JxtaServer {
 
     private static final int BLOCK = 65536;
-    private static final Logger logger = Logger.getLogger(JxtaMulticastServer.class.getName());
     private MulticastSocket server;
     ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -53,21 +50,11 @@ public class JxtaMulticastServer
 
     public JxtaMulticastServer(String name, PeerGroup group, PipeID pipe) {
         super(name, group, PipeUtility.createPipeAdvertisement(name, PipeService.PropagateType, group, pipe));
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "name: " + name);
-            logger.log(Level.FINE, "group: " + group);
-            logger.log(Level.FINE, "pipe: " + pipe);
-        }
     }
 
     public void startServer() throws NetworkException {
         if (server != null) {
             throw new IllegalStateException("server already started");
-        }
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "jxta multicast server starting");
         }
 
         try {
@@ -85,19 +72,11 @@ public class JxtaMulticastServer
                 return null;
             }
         });
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "jxta multicast server started");
-        }
     }
 
     public void stopServer() throws NetworkException {
         if (server == null) {
             throw new IllegalStateException("server not started");
-        }
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "jxta multicast server stopping");
         }
 
         server.disconnect();
@@ -113,23 +92,17 @@ public class JxtaMulticastServer
         }
 
         server = null;
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "jxta multicast server stoppped");
-        }
     }
 
     private void listen()
             throws IOException {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "jxta multicast start listening");
-        }
-
         while (true) {
             byte[] buf = new byte[BLOCK];
             DatagramPacket data = new DatagramPacket(buf, buf.length);
 
+            System.out.println("listening ...");
             server.receive(data);
+            System.out.println("listenend");
 
             final MulticastSocketHandler handler = new MulticastSocketHandler(server, data);
 

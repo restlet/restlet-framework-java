@@ -18,15 +18,14 @@
 
 package com.noelios.restlet.ext.jxta.net;
 
+import net.jxta.ext.network.NetworkException;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.pipe.PipeService;
 import net.jxta.protocol.PipeAdvertisement;
-import net.jxta.ext.network.NetworkException;
+import net.jxta.socket.JxtaServerSocket;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author james todd [james dot w dot todd at gmail dot com]
@@ -35,7 +34,6 @@ import java.util.logging.Logger;
 public class JxtaSocketServer
         extends JxtaServer {
 
-    private static final Logger logger = Logger.getLogger(JxtaSocketServer.class.getName());
     private ServerSocket server;
 
     public JxtaSocketServer(String name, PeerGroup group) {
@@ -50,32 +48,18 @@ public class JxtaSocketServer
                         !pipe.getType().equals(PipeService.UnicastSecureType))) {
             throw new IllegalArgumentException("invalid pipe: " + pipe);
         }
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "instantiated[name][group][pipe]: [" + name + "][" +
-                group + "][" + pipe + "]");
-        }
     }
 
-    // todo: impl
+    // todo: implement
     public void startServer() throws NetworkException {
         try {
-            server = createServerSocket();
+            server = new JxtaServerSocket(getPeerGroup(), getPipeAdvertisement());
         } catch (IOException ioe) {
             throw new NetworkException("unable to create socket", ioe);
         }
     }
 
-    // todo: impl
+    // todo: implement
     public void stopServer() throws NetworkException {
-    }
-
-    private ServerSocket createServerSocket()
-            throws IOException {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "start socket");
-        }
-
-        return new net.jxta.socket.JxtaServerSocket(getPeerGroup(), getPipeAdvertisement());
     }
 }

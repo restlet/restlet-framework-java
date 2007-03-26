@@ -19,16 +19,11 @@
 package com.noelios.restlet.ext.jxta.server;
 
 import com.noelios.restlet.ext.jxta.net.JxtaMulticastServer;
-import com.noelios.restlet.ext.jxta.prototype.Constants;
 import com.noelios.restlet.ext.jxta.util.NetworkHandler;
-import net.jxta.ext.network.GroupEvent;
-import net.jxta.ext.network.NetworkEvent;
 import net.jxta.ext.network.NetworkException;
-import net.jxta.ext.network.NetworkListener;
 import net.jxta.pipe.PipeID;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.net.URI;
 
 /**
  * @author james todd [james dot w dot todd at gmail dot com]
@@ -36,128 +31,40 @@ import java.util.logging.Logger;
 
 public class HttpServerHelper extends com.noelios.restlet.http.HttpServerHelper {
 
-    private static Logger logger = Logger.getLogger(HttpServerHelper.class.getName());
-    private NetworkHandler network;
+    private String name;
+    private URI id;
+    private NetworkHandler networkHandler;
     private Server server;
 
     public HttpServerHelper(org.restlet.Server server) {
         super(server);
+    }
 
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "instantiated[server]: [" + server + "]");
-        }
+    // todo: move to config
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setId(URI id) {
+        this.id = id;
+    }
+
+    public void setNetworkHandler(NetworkHandler networkHandler) {
+        this.networkHandler = networkHandler;
     }
 
     @Override
-    public void start() throws Exception {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "http starting");
-        }
-
-        startNetwork();
-        startServer();
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "http started");
-        }
-    }
-
-    @Override
-    public void stop() throws Exception {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "http stopping");
-        }
-
-        stopServer();
-        stopNetwork();
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "http stopped");
-        }
-    }
-
-    private void startNetwork()
-            throws NetworkException {
-        if (network != null) {
-            throw new IllegalStateException("network already started");
-        }
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "starting network");
-        }
-
-        network = new NetworkHandler(new NetworkListener() {
-            public void notify(NetworkEvent ne) {
-                // todo: do better
-                System.out.println("NetworkEvent");
-
-                if (ne.getCause() instanceof GroupEvent) {
-                    System.out.println("GroupEvent");
-                }
-            }
-        });
-
-        network.start();
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "started network");
-        }
-    }
-
-    private void stopNetwork() {
-        if (network == null) {
-            throw new IllegalStateException("network not started");
-        }
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "stopping network");
-        }
-
-        network.stop();
-
-        network = null;
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "stopped network");
-        }
-    }
-
-    private void startServer() throws NetworkException {
-        if (server != null) {
-            throw new IllegalStateException("server already started");
-        }
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "starting server");
-        }
-
-        // todo: consider ServerFactory (see meerkat)
-        server = new JxtaMulticastServer(Constants.PROTOTYPE_MULTICAST_PIPE_NAME,
-                network.getNetwork().getNetPeerGroup(),
-                PipeID.create(Constants.PROTOTYPE_MULTICAST_PIPE_ID));
+    public void start() throws NetworkException {
+        server = new JxtaMulticastServer(name, networkHandler.getNetwork().getNetPeerGroup(),
+                PipeID.create(id));
 
         server.start();
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "started server");
-        }
     }
 
-    private void stopServer() throws NetworkException {
-        if (server == null) {
-            throw new IllegalStateException("server not started");
-        }
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "stopping server");
-        }
-
+    @Override
+    public void stop() throws NetworkException {
         server.stop();
 
         server = null;
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "stopped server");
-        }
     }
 }
