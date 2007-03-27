@@ -30,7 +30,10 @@ import org.restlet.util.Helper;
 /**
  * Connector acting as a WAR client for a Servlet Application. It internally
  * uses one of the available connectors registered with the current Restlet
- * implementation.
+ * implementation.<br/> <br/>
+ * 
+ * Here is an example of WAR URI that can be resolved by this client:
+ * "war:///WEB-INF/web.xml"
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

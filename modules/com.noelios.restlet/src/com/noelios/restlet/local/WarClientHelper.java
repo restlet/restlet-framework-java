@@ -51,6 +51,12 @@ import org.restlet.resource.Representation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class WarClientHelper extends FileClientHelper {
+    /**
+     * Restrict the access to the META-INF and WEB-INF directories. False by
+     * default.
+     */
+    private boolean restrict;
+
     /** The location of the Web Application archive file or directory path. */
     private String warPath;
 
@@ -74,6 +80,7 @@ public class WarClientHelper extends FileClientHelper {
         super(client);
         getProtocols().clear();
         getProtocols().add(Protocol.WAR);
+        this.restrict = false;
         this.warPath = null;
         this.webAppArchive = false;
         this.warEntries = null;
@@ -159,12 +166,13 @@ public class WarClientHelper extends FileClientHelper {
         } else {
             String path = request.getResourceRef().getPath();
 
-            if (path.toUpperCase().startsWith("/WEB-INF/")) {
+            if (isRestrict() && path.toUpperCase().startsWith("/WEB-INF/")) {
                 getLogger().warning(
                         "Forbidden access to the WEB-INF directory detected. Path requested: "
                                 + path);
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-            } else if (path.toUpperCase().startsWith("/META-INF/")) {
+            } else if (isRestrict()
+                    && path.toUpperCase().startsWith("/META-INF/")) {
                 getLogger().warning(
                         "Forbidden access to the META-INF directory detected. Path requested: "
                                 + path);
@@ -208,6 +216,27 @@ public class WarClientHelper extends FileClientHelper {
         }
 
         return this.warPath;
+    }
+
+    /**
+     * Indicates if the access to the META-INF and WEB-INF directories is
+     * restricted. False by default.
+     * 
+     * @return True if the access is restricted.
+     */
+    public boolean isRestrict() {
+        return this.restrict;
+    }
+
+    /**
+     * Indicates if the access to the META-INF and WEB-INF directories is
+     * restricted.
+     * 
+     * @param restrict
+     *            True if the access is restricted.
+     */
+    public void setRestrict(boolean restrict) {
+        this.restrict = restrict;
     }
 
 }

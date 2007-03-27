@@ -63,11 +63,11 @@ public class ApplicationDispatcher extends Uniform {
                     this.applicationContext.getApplication());
             response.getAttributes().put(Application.KEY,
                     this.applicationContext.getApplication());
-// The WAR protocol support is temporarily removed as it is not fully supported.
-//            if (protocol.equals(Protocol.WAR)) {
-//                this.applicationContext.getWarClient()
-//                        .handle(request, response);
-//            } else {
+            
+            if (protocol.equals(Protocol.WAR)) {
+                this.applicationContext.getWarClient()
+                        .handle(request, response);
+            } else {
                 if (!this.applicationContext.getApplication()
                         .getConnectorService().getClientProtocols().contains(
                                 protocol)) {
@@ -80,7 +80,7 @@ public class ApplicationDispatcher extends Uniform {
 
                 this.applicationContext.getParentContext().getDispatcher()
                         .handle(request, response);
-//            }
+            }
         }
     }
 

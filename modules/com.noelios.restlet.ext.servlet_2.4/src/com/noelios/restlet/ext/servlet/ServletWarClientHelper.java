@@ -69,18 +69,11 @@ public class ServletWarClientHelper extends WarClientHelper {
         return this.servletContext;
     }
 
-    /**
-     * Handles a call using the current Web Application.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    protected void handleWebApp(Request request, Response response) {
+    @Override
+    protected void handleWar(Request request, Response response) {
         if (request.getMethod().equals(Method.GET)
                 || request.getMethod().equals(Method.HEAD)) {
-            String basePath = request.getResourceRef().toString();
+            String basePath = request.getResourceRef().getPath();
             int lastSlashIndex = basePath.lastIndexOf('/');
             String entry = (lastSlashIndex == -1) ? basePath : basePath
                     .substring(lastSlashIndex + 1);
