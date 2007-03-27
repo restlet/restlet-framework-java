@@ -217,15 +217,18 @@ public class FileClientHelper extends LocalClientHelper {
                     File uniqueVariant = null;
 
                     List<File> variantsList = new ArrayList<File>();
-                    for (File entry : files) {
-                        if (entry.getName().startsWith(baseName)) {
-                            Set<String> entryExtensions = getExtensions(entry,
-                                    metadataService);
-                            if (entryExtensions.containsAll(extensions)) {
-                                variantsList.add(entry);
-                                if (extensions.containsAll(entryExtensions)) {
-                                    // The right representation has been found.
-                                    uniqueVariant = entry;
+                    if (files != null) {
+                        for (File entry : files) {
+                            if (entry.getName().startsWith(baseName)) {
+                                Set<String> entryExtensions = getExtensions(
+                                        entry, metadataService);
+                                if (entryExtensions.containsAll(extensions)) {
+                                    variantsList.add(entry);
+                                    if (extensions.containsAll(entryExtensions)) {
+                                        // The right representation has been
+                                        // found.
+                                        uniqueVariant = entry;
+                                    }
                                 }
                             }
                         }
@@ -372,19 +375,17 @@ public class FileClientHelper extends LocalClientHelper {
                             }
                         } else {
                             File parent = file.getParentFile();
-                            if ((parent != null) && parent.isDirectory()) {
-                                if (!parent.exists()) {
-                                    // Create the parent directories then the
-                                    // new file
-                                    if (!parent.mkdirs()) {
-                                        getLogger()
-                                                .log(Level.WARNING,
-                                                        "Unable to create the parent directory");
-                                        response
-                                                .setStatus(new Status(
-                                                        Status.SERVER_ERROR_INTERNAL,
-                                                        "Unable to create the parent directory"));
-                                    }
+                            if ((parent != null) && !parent.exists()) {
+                                // Create the parent directories then the new
+                                // file
+                                if (!parent.mkdirs()) {
+                                    getLogger()
+                                            .log(Level.WARNING,
+                                                    "Unable to create the parent directory");
+                                    response
+                                            .setStatus(new Status(
+                                                    Status.SERVER_ERROR_INTERNAL,
+                                                    "Unable to create the parent directory"));
                                 }
                             }
                             FileOutputStream fos = null;

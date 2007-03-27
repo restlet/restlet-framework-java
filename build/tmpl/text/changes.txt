@@ -9,7 +9,9 @@ Changes log
  - Fixed bug when instantiating the secret of a ChallengeResponse.
  - Fixed bugs in the Servlet-based WAR client which prevented a normal behavior.
    Now, URIs like "war:///WEB-INF/web.xml".
-
+ - Fixed bug in the FileClientHelper. The PUT method creates the parent directories
+   in case they don't exist.
+   
 [Enhancements] 
  - Added new ServletConverter class to facilitate lighter integration of Restlets with Servlet 
    and especially Spring. Inspired from discussions with Ryan Daum, Michael Makunas, 
