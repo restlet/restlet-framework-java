@@ -16,6 +16,7 @@ Changes log
  - Added new ServletConverter class to facilitate lighter integration of Restlets with Servlet 
    and especially Spring. Inspired from discussions with Ryan Daum, Michael Makunas, 
    Jim Alateras, Shlok and Jonathan Hall.
+ - Updated Jetty to version 6.1.2 RC2.
   
 1.0 RC6 (2007-03-21)
 [Bugs fixed]
