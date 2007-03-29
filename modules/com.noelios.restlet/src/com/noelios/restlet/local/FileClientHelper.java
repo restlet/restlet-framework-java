@@ -316,15 +316,6 @@ public class FileClientHelper extends LocalClientHelper {
                             try {
                                 tmp = File.createTempFile("restlet-upload",
                                         "bin");
-                                if(tmp!=null){
-                                    getLogger()
-                                    .log(Level.INFO,
-                                            "Temporary file created at: " + tmp.getAbsolutePath());
-                                } else {
-                                    getLogger()
-                                    .log(Level.INFO,
-                                            "Temporary file null.");                                    
-                                }
 
                                 if (request.isEntityAvailable()) {
                                     fos = new FileOutputStream(tmp);
