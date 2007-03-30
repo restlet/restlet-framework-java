@@ -18,9 +18,13 @@
 
 package com.noelios.restlet.local;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -350,6 +354,7 @@ public class FileClientHelper extends LocalClientHelper {
                             if (file.delete()) {
                                 // Finally move the temporary file to the
                                 // existing file location
+                                boolean renameSuccessfull = false;
                                 if ((tmp != null) && tmp.renameTo(file)) {
                                     if (request.getEntity() == null) {
                                         response
@@ -357,14 +362,41 @@ public class FileClientHelper extends LocalClientHelper {
                                     } else {
                                         response.setStatus(Status.SUCCESS_OK);
                                     }
+                                    renameSuccessfull = true;
                                 } else {
-                                    getLogger()
-                                            .log(Level.WARNING,
-                                                    "Unable to move the temporary file to replace the existing file");
-                                    response
-                                            .setStatus(new Status(
-                                                    Status.SERVER_ERROR_INTERNAL,
-                                                    "Unable to move the temporary file to replace the existing file"));
+                                    // Many aspects of the behavior of the
+                                    // method "renameTo" are inherently
+                                    // platform-dependent: The rename operation
+                                    // might not be able to move a file from one
+                                    // filesystem to another.
+                                    if (tmp != null && tmp.exists()) {
+                                        try {
+                                            BufferedReader br = new BufferedReader(
+                                                    new FileReader(tmp));
+                                            BufferedWriter wr = new BufferedWriter(
+                                                    new FileWriter(file));
+                                            String s;
+                                            while ((s = br.readLine()) != null)
+                                                wr.append(s);
+
+                                            br.close();
+                                            wr.flush();
+                                            wr.close();
+                                            renameSuccessfull = true;
+                                            tmp.delete();
+                                        } catch (Exception e) {
+                                            renameSuccessfull = false;
+                                        }
+                                    }
+                                    if (!renameSuccessfull) {
+                                        getLogger()
+                                                .log(Level.WARNING,
+                                                        "Unable to move the temporary file to replace the existing file");
+                                        response
+                                                .setStatus(new Status(
+                                                        Status.SERVER_ERROR_INTERNAL,
+                                                        "Unable to move the temporary file to replace the existing file"));
+                                    }
                                 }
                             } else {
                                 getLogger().log(Level.WARNING,
