@@ -11,6 +11,8 @@ Changes log
    Now, URIs like "war:///WEB-INF/web.xml".
  - Fixed bug in the FileClientHelper. The PUT method creates the parent directories
    in case they don't exist.
+ - Fixed bug in the FileClientHelper. The renameTo method may fail (depending on the implementation) 
+   when renaming a file from a filesystem to another.
    
 [Enhancements] 
  - Added new ServletConverter class to facilitate lighter integration of Restlets with Servlet 
