@@ -18,24 +18,20 @@
 
 package com.noelios.restlet.ext.grizzly;
 
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.nio.channels.ServerSocketChannel;
-
 import org.restlet.Server;
-import org.restlet.data.Protocol;
 
 import com.noelios.restlet.http.HttpServerHelper;
 import com.sun.grizzly.Controller;
-import com.sun.grizzly.DefaultInstanceHandler;
-import com.sun.grizzly.DefaultProtocolChain;
-import com.sun.grizzly.ProtocolChain;
-import com.sun.grizzly.filter.ReadFilter;
 
 /**
+ * Base Grizzly connector.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class GrizzlyServerHelper extends HttpServerHelper {
+public abstract class GrizzlyServerHelper extends HttpServerHelper {
+    /** The Grizzly controller. */
+    private Controller controller;
+
     /**
      * Constructor.
      * 
@@ -44,45 +40,38 @@ public class GrizzlyServerHelper extends HttpServerHelper {
      */
     public GrizzlyServerHelper(Server server) {
         super(server);
-        getProtocols().add(Protocol.HTTP);
+        this.controller = null;
     }
 
     @Override
     public void start() throws Exception {
         super.start();
 
-        // Create the server socket address
-        int port = getServer().getPort();
-        String address = getServer().getAddress();
-        InetSocketAddress socketAddress;
-        if (address == null) {
-            socketAddress = new InetSocketAddress(port);
-        } else {
-            socketAddress = new InetSocketAddress(address, port);
+        if (this.controller == null) {
+            // Configure a new controller
+            this.controller = new Controller();
+            configure(this.controller);
         }
 
-        // Create and bind the server socket
-        int socketBackLog = 50;
-        ServerSocketChannel socketChannel = ServerSocketChannel.open();
-        ServerSocket socket = socketChannel.socket();
-        socket.setReuseAddress(true);
-        socket.bind(socketAddress, socketBackLog);
-        socketChannel.configureBlocking(false);
-
-        // Create the Grizzly controller
-        Controller controller = new Controller();
-        controller.setInstanceHandler(new DefaultInstanceHandler() {
-            public ProtocolChain poll() {
-                ProtocolChain protocolChain = protocolChains.poll();
-                if (protocolChain == null) {
-                    protocolChain = new DefaultProtocolChain();
-                    protocolChain.addFilter(new ReadFilter());
-                    protocolChain.addFilter(new HttpParserFilter(GrizzlyServerHelper.this));
-                }
-                return protocolChain;
-            }
-        });
-
+        getLogger().info("Starting the Grizzly HTTP server");
+        this.controller.start();
     }
 
+    /**
+     * Configures the Grizzly controller.
+     * 
+     * @param controller
+     *            The controller to configure.
+     */
+    protected abstract void configure(Controller controller) throws Exception;
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+
+        if (this.controller != null) {
+            getLogger().info("Stopping the Grizzly HTTP server");
+            this.controller.stop();
+        }
+    }
 }

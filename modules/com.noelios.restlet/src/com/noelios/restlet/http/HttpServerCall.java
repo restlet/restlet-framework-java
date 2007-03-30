@@ -215,6 +215,74 @@ public abstract class HttpServerCall extends HttpCall {
     }
 
     /**
+     * Reads the HTTP request head (request line and headers).
+     * 
+     * @throws IOException
+     */
+    protected void readRequestHead(InputStream headStream) throws IOException {
+        StringBuilder sb = new StringBuilder();
+
+        // Parse the request method
+        int next = headStream.read();
+        while ((next != -1) && !HttpUtils.isSpace(next)) {
+            sb.append((char) next);
+            next = headStream.read();
+        }
+
+        if (next == -1) {
+            throw new IOException(
+                    "Unable to parse the request method. End of stream reached too early.");
+        } else {
+            setMethod(sb.toString());
+            sb.delete(0, sb.length());
+
+            // Parse the request URI
+            next = headStream.read();
+            while ((next != -1) && !HttpUtils.isSpace(next)) {
+                sb.append((char) next);
+                next = headStream.read();
+            }
+
+            if (next == -1) {
+                throw new IOException(
+                        "Unable to parse the request URI. End of stream reached too early.");
+            } else {
+                setRequestUri(sb.toString());
+                sb.delete(0, sb.length());
+
+                // Parse the HTTP version
+                next = headStream.read();
+                while ((next != -1) && !HttpUtils.isCarriageReturn(next)) {
+                    sb.append((char) next);
+                    next = headStream.read();
+                }
+
+                if (next == -1) {
+                    throw new IOException(
+                            "Unable to parse the HTTP version. End of stream reached too early.");
+                } else {
+                    next = headStream.read();
+
+                    if (HttpUtils.isLineFeed(next)) {
+                        setVersion(sb.toString());
+                        sb.delete(0, sb.length());
+
+                        // Parse the headers
+                        Parameter header = HttpUtils.readHeader(headStream, sb);
+                        while (header != null) {
+                            getRequestHeaders().add(header);
+                            header = HttpUtils.readHeader(headStream, sb);
+                        }
+                    } else {
+                        throw new IOException(
+                                "Unable to parse the HTTP version. The carriage return must be followed by a line feed.");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Sends the response back to the client. Commits the status, headers and
      * optional entity and send them over the network. The default
      * implementation only writes the response entity on the reponse stream or
@@ -279,6 +347,38 @@ public abstract class HttpServerCall extends HttpCall {
      */
     public void writeResponseHead(Response response) throws IOException {
         // Do nothing by default
+    }
+
+    /**
+     * Writes the response head to the given output stream.
+     * 
+     * @param headStream
+     *            The output stream to write to.
+     * @throws IOException
+     */
+    protected void writeResponseHead(OutputStream headStream)
+            throws IOException {
+        // Write the status line
+        headStream.write(getVersion().getBytes());
+        headStream.write(' ');
+        headStream.write(getStatusCode());
+        headStream.write(' ');
+        headStream.write(getReasonPhrase().getBytes());
+        headStream.write(13); // CR
+        headStream.write(10); // LF
+
+        // We don't support persistent connections yet
+        getResponseHeaders()
+                .set(HttpConstants.HEADER_CONNECTION, "close", true);
+
+        // Write the response headers
+        for (Parameter header : getResponseHeaders()) {
+            HttpUtils.writeHeader(header, headStream);
+        }
+
+        // Write the end of the headers section
+        headStream.write(13); // CR
+        headStream.write(10); // LF
     }
 
 }

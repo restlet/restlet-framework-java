@@ -138,14 +138,14 @@ public class StreamServerHelper extends HttpServerHelper {
     @Override
     public void start() throws Exception {
         super.start();
-        getLogger().info("Starting the HTTP server");
+        getLogger().info("Starting the internal HTTP server");
         new Listener(this).start();
     }
 
     @Override
     public void stop() throws Exception {
         super.stop();
-        getLogger().info("Stopping the HTTP server");
+        getLogger().info("Stopping the internal HTTP server");
         if (this.serverSocket.isBound()) {
             this.serverSocket.close();
             this.serverSocket = null;

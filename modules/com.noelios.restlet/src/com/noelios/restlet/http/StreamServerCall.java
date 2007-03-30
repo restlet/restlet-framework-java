@@ -26,7 +26,6 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Server;
-import org.restlet.data.Parameter;
 import org.restlet.data.Response;
 
 /**
@@ -57,9 +56,8 @@ public class StreamServerCall extends HttpServerCall {
         this.requestStream = requestStream;
         this.responseStream = responseStream;
 
-        /** Parse the request until the optional request body. */
         try {
-            parseRequest();
+            readRequestHead(getRequestStream());
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING, "Unable to parse the HTTP request",
                     ioe);
@@ -86,99 +84,9 @@ public class StreamServerCall extends HttpServerCall {
         return this.responseStream;
     }
 
-    /**
-     * Parsed the HTTP request.
-     * 
-     * @throws IOException
-     */
-    protected void parseRequest() throws IOException {
-        StringBuilder sb = new StringBuilder();
-
-        // Parse the request method
-        int next = getRequestStream().read();
-        while ((next != -1) && !HttpUtils.isSpace(next)) {
-            sb.append((char) next);
-            next = getRequestStream().read();
-        }
-
-        if (next == -1) {
-            throw new IOException(
-                    "Unable to parse the request method. End of stream reached too early.");
-        } else {
-            setMethod(sb.toString());
-            sb.delete(0, sb.length());
-
-            // Parse the request URI
-            next = getRequestStream().read();
-            while ((next != -1) && !HttpUtils.isSpace(next)) {
-                sb.append((char) next);
-                next = getRequestStream().read();
-            }
-
-            if (next == -1) {
-                throw new IOException(
-                        "Unable to parse the request URI. End of stream reached too early.");
-            } else {
-                setRequestUri(sb.toString());
-                sb.delete(0, sb.length());
-
-                // Parse the HTTP version
-                next = getRequestStream().read();
-                while ((next != -1) && !HttpUtils.isCarriageReturn(next)) {
-                    sb.append((char) next);
-                    next = getRequestStream().read();
-                }
-
-                if (next == -1) {
-                    throw new IOException(
-                            "Unable to parse the HTTP version. End of stream reached too early.");
-                } else {
-                    next = getRequestStream().read();
-
-                    if (HttpUtils.isLineFeed(next)) {
-                        setVersion(sb.toString());
-                        sb.delete(0, sb.length());
-
-                        // Parse the headers
-                        Parameter header = HttpUtils.readHeader(
-                                getRequestStream(), sb);
-                        while (header != null) {
-                            getRequestHeaders().add(header);
-                            header = HttpUtils.readHeader(getRequestStream(),
-                                    sb);
-                        }
-                    } else {
-                        throw new IOException(
-                                "Unable to parse the HTTP version. The carriage return must be followed by a line feed.");
-                    }
-                }
-            }
-        }
-    }
-
     @Override
     public void writeResponseHead(Response response) throws IOException {
-        // Write the status line
-        getResponseStream().write(getVersion().getBytes());
-        getResponseStream().write(' ');
-        getResponseStream().write(getStatusCode());
-        getResponseStream().write(' ');
-        getResponseStream().write(getReasonPhrase().getBytes());
-        getResponseStream().write(13); // CR
-        getResponseStream().write(10); // LF
-
-        // We don't support persistent connections yet
-        getResponseHeaders()
-                .set(HttpConstants.HEADER_CONNECTION, "close", true);
-
-        // Write the response headers
-        for (Parameter header : getResponseHeaders()) {
-            HttpUtils.writeHeader(header, getResponseStream());
-        }
-
-        // Write the end of the headers section
-        getResponseStream().write(13); // CR
-        getResponseStream().write(10); // LF
+        writeResponseHead(getResponseStream());
     }
 
 }
