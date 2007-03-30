@@ -50,6 +50,7 @@ public class HttpParserFilter implements ProtocolFilter {
         // Create the HTTP call
         ByteBuffer byteBuffer = ((WorkerThread) Thread.currentThread())
                 .getByteBuffer();
+        byteBuffer.flip();
         SelectionKey key = context.getSelectionKey();
         GrizzlyServerCall serverCall = new GrizzlyServerCall(this.helper
                 .getServer(), byteBuffer, key);
