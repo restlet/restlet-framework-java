@@ -210,7 +210,28 @@ public class HttpClientCall extends HttpCall {
         } else if (getResponseChannel() != null) {
             result = new ReadableRepresentation(getResponseChannel(), null);
         } else if (getMethod().equals(Method.HEAD.getName())) {
-            result = new Representation();
+            result = new Representation() {
+                @Override
+                public ReadableByteChannel getChannel() throws IOException {
+                    return null;
+                }
+
+                @Override
+                public InputStream getStream() throws IOException {
+                    return null;
+                }
+
+                @Override
+                public void write(OutputStream outputStream) throws IOException {
+                    // Do nothing
+                }
+
+                @Override
+                public void write(WritableByteChannel writableChannel)
+                        throws IOException {
+                    // Do nothing
+                }
+            };
         }
 
         if (result != null) {

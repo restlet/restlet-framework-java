@@ -47,6 +47,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.resource.Variant;
 import org.restlet.service.MetadataService;
 import org.restlet.util.ByteUtils;
 
@@ -564,21 +565,21 @@ public class FileClientHelper extends LocalClientHelper {
             MetadataService metadataService, Representation representation) {
         boolean result = true;
         if (representation != null) {
-            Representation rep = new Representation();
-            updateMetadata(metadataService, fileName, rep);
+            Variant var = new Variant();
+            updateMetadata(metadataService, fileName, var);
             // "rep" contains the theorical correct metadata
             if (!representation.getLanguages().isEmpty()
-                    && !rep.getLanguages().containsAll(
+                    && !var.getLanguages().containsAll(
                             representation.getLanguages())) {
                 result = false;
             }
             if (representation.getMediaType() != null
                     && !representation.getMediaType()
-                            .equals(rep.getMediaType())) {
+                            .equals(var.getMediaType())) {
                 result = false;
             }
             if (!representation.getEncodings().isEmpty()
-                    && !rep.getEncodings().containsAll(
+                    && !var.getEncodings().containsAll(
                             representation.getEncodings())) {
                 result = false;
             }

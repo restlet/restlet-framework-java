@@ -182,16 +182,9 @@ public class SimpleCall extends HttpServerCall {
         return request.getMajor() + "." + request.getMinor();
     }
 
-    /**
-     * Sends the response back to the client. Commits the status, headers and
-     * optional entity and send them on the network.
-     * 
-     * @param restletResponse
-     *            The high-level response.
-     */
-    public void sendResponse(org.restlet.data.Response restletResponse)
+    @Override
+    public void writeResponseHead(org.restlet.data.Response restletResponse)
             throws IOException {
-        // Set the response headers
         response.clear();
         for (Parameter header : getResponseHeaders()) {
             response.add(header.getName(), header.getValue());
@@ -205,8 +198,5 @@ public class SimpleCall extends HttpServerCall {
         if (restletResponse.getEntity() == null) {
             response.setContentLength(0);
         }
-
-        // Send the response entity
-        super.sendResponse(restletResponse);
     }
 }

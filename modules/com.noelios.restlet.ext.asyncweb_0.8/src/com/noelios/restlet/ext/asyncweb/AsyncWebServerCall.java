@@ -149,15 +149,8 @@ public class AsyncWebServerCall extends HttpServerCall {
         return result;
     }
 
-    /**
-     * Sends the response back to the client. Commits the status, headers and
-     * optional entity and send them on the network.
-     * 
-     * @param restletResponse
-     *            The high-level response.
-     */
-    public void sendResponse(org.restlet.data.Response restletResponse)
-            throws IOException {
+    @Override
+    public void writeResponseHead(org.restlet.data.Response restletResponse) throws IOException {
         response.setStatus(ResponseStatus.forId(getStatusCode()),
                 getReasonPhrase());
 
@@ -166,9 +159,6 @@ public class AsyncWebServerCall extends HttpServerCall {
         for (Parameter header : super.getResponseHeaders()) {
             response.addHeader(header.getName(), header.getValue());
         }
-
-        // Send the response entity
-        super.sendResponse(restletResponse);
     }
 
     @Override

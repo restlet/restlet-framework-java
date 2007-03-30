@@ -157,7 +157,7 @@ public class StreamServerCall extends HttpServerCall {
     }
 
     @Override
-    public void sendResponse(Response response) throws IOException {
+    public void writeResponseHead(Response response) throws IOException {
         // Write the status line
         getResponseStream().write(getVersion().getBytes());
         getResponseStream().write(' ');
@@ -179,9 +179,6 @@ public class StreamServerCall extends HttpServerCall {
         // Write the end of the headers section
         getResponseStream().write(13); // CR
         getResponseStream().write(10); // LF
-
-        // Write the response body
-        super.sendResponse(response);
     }
 
 }

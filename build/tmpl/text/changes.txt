@@ -11,14 +11,19 @@ Changes log
    Now, URIs like "war:///WEB-INF/web.xml".
  - Fixed bug in the FileClientHelper. The PUT method creates the parent directories
    in case they don't exist.
- - Fixed bug in the FileClientHelper. The renameTo method may fail (depending on the implementation) 
+ - Fixed bug in the FileClientHelper. The renameTo method may fail (depending on the JVM) 
    when renaming a file from a filesystem to another.
+
+[API changes]
+ - Representation is now an abstract class. If you ever needed to create an instance of 
+   it, just use its super class Variant instead.
    
 [Enhancements] 
  - Added new ServletConverter class to facilitate lighter integration of Restlets with Servlet 
    and especially Spring. Inspired from discussions with Ryan Daum, Michael Makunas, 
    Jim Alateras, Shlok and Jonathan Hall.
  - Updated Jetty to version 6.1.2 RC2.
+ - Refactored internal NRE HTTP classes to provide more extension points. 
   
 1.0 RC6 (2007-03-21)
 [Bugs fixed]

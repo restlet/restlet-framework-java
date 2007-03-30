@@ -191,13 +191,7 @@ public class JettyCall extends HttpServerCall {
         return getConnection().getRequest().isSecure();
     }
 
-    /**
-     * Sends the response back to the client. Commits the status, headers and
-     * optional entity and send them on the network.
-     * 
-     * @param response
-     *            The high-level response.
-     */
+    @Override
     public void sendResponse(Response response) throws IOException {
         // Add call headers
         Parameter header;

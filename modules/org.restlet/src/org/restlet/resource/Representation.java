@@ -44,7 +44,7 @@ import org.restlet.data.MediaType;
  *      dissertation</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Representation extends Variant {
+public abstract class Representation extends Variant {
     /** Indicates if the representation's content is available. */
     private boolean contentAvailable;
 
@@ -79,9 +79,7 @@ public class Representation extends Variant {
      * @return A channel with the representation's content.
      * @throws IOException
      */
-    public ReadableByteChannel getChannel() throws IOException {
-        return null;
-    }
+    public abstract ReadableByteChannel getChannel() throws IOException;
 
     /**
      * Returns a stream with the representation's content. This method is
@@ -91,9 +89,7 @@ public class Representation extends Variant {
      * @return A stream with the representation's content.
      * @throws IOException
      */
-    public InputStream getStream() throws IOException {
-        return null;
-    }
+    public abstract InputStream getStream() throws IOException;
 
     /**
      * Converts the representation to a string value. Be careful when using this
@@ -174,10 +170,7 @@ public class Representation extends Variant {
      *            The output stream.
      * @throws IOException
      */
-    public void write(OutputStream outputStream) throws IOException {
-        throw new UnsupportedOperationException(
-                "You must override this method in order to use it");
-    }
+    public abstract void write(OutputStream outputStream) throws IOException;
 
     /**
      * Writes the representation to a byte channel. This method is ensured to
@@ -188,9 +181,7 @@ public class Representation extends Variant {
      *            A writable byte channel.
      * @throws IOException
      */
-    public void write(WritableByteChannel writableChannel) throws IOException {
-        throw new UnsupportedOperationException(
-                "You must override this method in order to use it");
-    }
+    public abstract void write(WritableByteChannel writableChannel)
+            throws IOException;
 
 }

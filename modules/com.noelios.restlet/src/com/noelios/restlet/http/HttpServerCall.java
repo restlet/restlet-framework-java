@@ -226,6 +226,7 @@ public abstract class HttpServerCall extends HttpCall {
      */
     public void sendResponse(Response response) throws IOException {
         if (response != null) {
+            writeResponseHead(response);
             Representation entity = response.getEntity();
 
             if ((entity != null)
@@ -239,12 +240,7 @@ public abstract class HttpServerCall extends HttpCall {
                 if (connectorService != null)
                     connectorService.beforeSend(entity);
 
-                // Send the entity to the client
-                if (getResponseChannel() != null) {
-                    entity.write(getResponseChannel());
-                } else if (getResponseStream() != null) {
-                    entity.write(getResponseStream());
-                }
+                writeResponseBody(entity);
 
                 if (connectorService != null)
                     connectorService.afterSend(entity);
@@ -254,6 +250,35 @@ public abstract class HttpServerCall extends HttpCall {
                 getResponseStream().flush();
             }
         }
+    }
+
+    /**
+     * Effectively writes the response body. The entity to write is guaranteed
+     * to be non null. Attempts to write the entity on the response channel or
+     * response stream by default.
+     * 
+     * @param entity
+     *            The representation to write as entity of the body.
+     * @throws IOException
+     */
+    public void writeResponseBody(Representation entity) throws IOException {
+        // Send the entity to the client
+        if (getResponseChannel() != null) {
+            entity.write(getResponseChannel());
+        } else if (getResponseStream() != null) {
+            entity.write(getResponseStream());
+        }
+    }
+
+    /**
+     * Writes the response status line and headers. Does nothing by default.
+     * 
+     * @param response
+     *            The response.
+     * @throws IOException
+     */
+    public void writeResponseHead(Response response) throws IOException {
+        // Do nothing by default
     }
 
 }

@@ -211,14 +211,8 @@ public class JettyCall extends HttpServerCall {
         return getRequest().isConfidential();
     }
 
-    /**
-     * Sends the response back to the client. Commits the status, headers and
-     * optional entity and send them on the network.
-     * 
-     * @param response
-     *            The high-level response.
-     */
-    public void sendResponse(Response response) throws IOException {
+    @Override
+    public void writeResponseHead(Response restletResponse) throws IOException {
         // Set the response status
         getResponse().setStatus(getStatusCode(), getReasonPhrase());
 
@@ -235,9 +229,6 @@ public class JettyCall extends HttpServerCall {
             header = iter.next();
             getResponse().addField(header.getName(), header.getValue());
         }
-
-        // Send the response entity
-        super.sendResponse(response);
     }
 
 }

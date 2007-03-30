@@ -26,7 +26,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Request;
-import org.restlet.resource.Representation;
+import org.restlet.resource.Variant;
 import org.restlet.service.MetadataService;
 
 import com.noelios.restlet.ClientHelper;
@@ -87,19 +87,19 @@ public class LocalClientHelper extends ClientHelper {
     }
 
     /**
-     * Updates some representation metadata based on a given entry name with
+     * Updates some variant metadata based on a given entry name with
      * extensions.
      * 
      * @param metadataService
      *            The parent metadata service.
      * @param entryName
      *            The entry name with extensions.
-     * @param representation
-     *            The representation to update.
+     * @param variant
+     *            The variant to update.
      */
     public void updateMetadata(MetadataService metadataService,
-            String entryName, Representation representation) {
-        if (representation != null) {
+            String entryName, Variant variant) {
+        if (variant != null) {
             String[] tokens = entryName.split("\\.");
             Metadata current;
 
@@ -109,13 +109,13 @@ public class LocalClientHelper extends ClientHelper {
                 if (current != null) {
                     // Metadata extension detected
                     if (current instanceof MediaType)
-                        representation.setMediaType((MediaType) current);
+                        variant.setMediaType((MediaType) current);
                     if (current instanceof CharacterSet)
-                        representation.setCharacterSet((CharacterSet) current);
+                        variant.setCharacterSet((CharacterSet) current);
                     if (current instanceof Encoding)
-                        representation.getEncodings().add((Encoding) current);
+                        variant.getEncodings().add((Encoding) current);
                     if (current instanceof Language)
-                        representation.getLanguages().add((Language) current);
+                        variant.getLanguages().add((Language) current);
                 }
 
                 int dashIndex = tokens[j].indexOf('-');
@@ -127,14 +127,14 @@ public class LocalClientHelper extends ClientHelper {
                     String primaryPart = tokens[j].substring(0, dashIndex);
                     current = metadataService.getMetadata(primaryPart);
                     if (current instanceof Language)
-                        representation.getLanguages().add((Language) current);
+                        variant.getLanguages().add((Language) current);
                 }
             }
 
             // If no language is defines, take the default language
-            if (representation.getLanguages().isEmpty()) {
-                representation.getLanguages().add(
-                        metadataService.getDefaultLanguage());
+            if (variant.getLanguages().isEmpty()) {
+                variant.getLanguages()
+                        .add(metadataService.getDefaultLanguage());
             }
         }
     }
