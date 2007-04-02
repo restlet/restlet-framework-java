@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE org.http:configuration>
 <!--
 
 Copyright 2007 Noelios Consulting.
@@ -18,11 +20,6 @@ Portions Copyright [yyyy] [name of copyright owner]
 
 @author james todd [james dot w dot todd at gmail dot com]
 -->
-
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
-
-<!DOCTYPE org.http:configuration>
-
 <jxta>
   <peer descriptor="edge" name="NetBeans" description="NetBeans"/>
  
