@@ -73,7 +73,7 @@ public class RepresentationContext implements RequestContext {
      */
     public String getContentType() {
         if (this.multipartForm.getMediaType() != null) {
-            return this.multipartForm.getMediaType().getName();
+            return this.multipartForm.getMediaType().toString();
         } else {
             return null;
         }
