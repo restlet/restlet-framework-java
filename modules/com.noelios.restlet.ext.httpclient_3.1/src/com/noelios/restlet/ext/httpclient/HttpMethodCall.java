@@ -178,7 +178,7 @@ public class HttpMethodCall extends HttpClientCall {
                 });
             }
 
-            // Ensure that the connections is active
+            // Ensure that the connection is active
             this.clientHelper.getHttpClient().executeMethod(getHttpMethod());
 
             // Now we can access the status code, this MUST happen after closing
