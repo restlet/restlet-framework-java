@@ -13,6 +13,9 @@ Changes log
    in case they don't exist.
  - Fixed bug in the FileClientHelper. The renameTo method may fail (depending on the JVM) 
    when renaming a file from a filesystem to another.
+ - Fixed bug in the FileUpload extension. The RepresentationContext class does not return
+   the full content-type (with parameter) expected by the underlying Apache Commons-fileupload's 
+   FileItem parser. Reported and contributed by Christian Ohr.
 
 [API changes]
  - Representation is now an abstract class. If you ever needed to create an instance of 
