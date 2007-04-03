@@ -9,6 +9,8 @@ import com.sun.grizzly.util.OutputWriter;
 
 /**
  * Output stream connected to a socket channel.
+ * 
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class GrizzlyOutputStream extends OutputStream {
     private SocketChannel socketChannel;

@@ -74,17 +74,15 @@ public class StreamServerHelper extends HttpServerHelper {
         public void run() {
             try {
                 if (socketAddress == null) {
-                    if (getServer().getAddress() == null) {
-                        socketAddress = new InetSocketAddress(getServer()
-                                .getPort());
-                    } else {
-                        socketAddress = new InetSocketAddress(getServer()
-                                .getAddress(), getServer().getPort());
-                    }
+                    socketAddress = createSocketAddress();
                 }
 
                 executorService = Executors.newFixedThreadPool(10);
-                serverSocket = createSocket(socketAddress);
+                serverSocket = createSocket();
+
+                if (socketAddress != null) {
+                    serverSocket.bind(socketAddress);
+                }
 
                 for (;;) {
                     executorService.execute(new Connection(helper, serverSocket
@@ -124,15 +122,27 @@ public class StreamServerHelper extends HttpServerHelper {
     /**
      * Creates a server socket to listen on.
      * 
-     * @param address
-     *            The server IP address and port to use.
      * @return The created server socket.
      * @throws IOException
      */
-    public ServerSocket createSocket(SocketAddress address) throws IOException {
+    public ServerSocket createSocket() throws IOException {
         ServerSocket serverSocket = new ServerSocket();
-        serverSocket.bind(address);
         return serverSocket;
+    }
+
+    /**
+     * Creates a socket address to listen on.
+     * 
+     * @return The created socket address.
+     * @throws IOException
+     */
+    public SocketAddress createSocketAddress() throws IOException {
+        if (getServer().getAddress() == null) {
+            return new InetSocketAddress(getServer().getPort());
+        } else {
+            return new InetSocketAddress(getServer().getAddress(), getServer()
+                    .getPort());
+        }
     }
 
     @Override

@@ -199,6 +199,21 @@ public class Server extends Connector {
     }
 
     /**
+     * Constructor using the protocol's default port.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     * @param address
+     *            The listening IP address (useful if multiple IP addresses
+     *            available).
+     * @param target
+     *            The target Restlet.
+     */
+    public Server(Protocol protocol, String address, Restlet target) {
+        this(null, protocol, address, protocol.getDefaultPort(), target);
+    }
+
+    /**
      * Constructor.
      * 
      * @param protocol
