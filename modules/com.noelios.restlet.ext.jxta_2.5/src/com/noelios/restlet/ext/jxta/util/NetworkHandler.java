@@ -1,14 +1,14 @@
 /*
  * Copyright 2007 Noelios Consulting.
- *
+ * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- *
+ * 
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -38,15 +38,22 @@ import java.net.URISyntaxException;
 public class NetworkHandler {
 
     // todo: configuration hack
-    private static final URI HOME = URI.create(System.getProperty(Constants.JXTA_HOME,
-            System.getProperty("user.dir") + File.separator + ".jxta"));
-    private static final String PROFILE_RESOURCE = System.getProperty(Constants.PROFILE,
+    private static final URI HOME = new File(System.getProperty(
+            Constants.JXTA_HOME, System.getProperty("user.dir")
+                    + File.separator + ".jxta")).toURI();
+
+    private static final String PROFILE_RESOURCE = System.getProperty(
+            Constants.PROFILE,
             "/com/noelios/restlet/ext/jxta/resources/adhoc.xml");
+
     private static final String CONFIG_NAME = "restlet";
+
     private static final String CONFIG_USER = "usr";
+
     private static final String CONFIG_PASSWORD = "pwd";
 
     private Network network = null;
+
     private NetworkListener listener = null;
 
     public NetworkHandler(NetworkListener listener) {
@@ -63,8 +70,8 @@ public class NetworkHandler {
         }
 
         try {
-            network = new Network(new AbstractConfigurator(HOME,
-                    Profile.get(getClass().getResource(PROFILE_RESOURCE).toURI())) {
+            network = new Network(new AbstractConfigurator(HOME, Profile
+                    .get(getClass().getResource(PROFILE_RESOURCE).toURI())) {
                 public PlatformConfig createPlatformConfig(Configurator c)
                         throws ConfiguratorException {
                     c.setName(CONFIG_NAME);
@@ -76,17 +83,18 @@ public class NetworkHandler {
 
             network.start();
         } catch (URISyntaxException use) {
-            throw new NetworkException("invalid uri: " + getClass().getResource(PROFILE_RESOURCE), use);
+            throw new NetworkException("invalid uri: "
+                    + getClass().getResource(PROFILE_RESOURCE), use);
         }
 
         // todo: fix, profile.adhoc !-> PlatformConfig.RdvConfig.mode
-//        while (! network.isConnected()) {
-//            try {
-//                Thread.sleep(500);
-//            } catch (InterruptedException ie) {
-//                // ignore
-//            }
-//        }
+        // while (! network.isConnected()) {
+        // try {
+        // Thread.sleep(500);
+        // } catch (InterruptedException ie) {
+        // // ignore
+        // }
+        // }
     }
 
     public void stop() {

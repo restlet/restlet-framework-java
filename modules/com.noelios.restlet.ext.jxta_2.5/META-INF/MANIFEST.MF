@@ -6,4 +6,7 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: net.jxta,
- com.noelios.restlet
+ com.noelios.restlet,
+ org.bouncycastle,
+ org.mortbay.jetty4,
+ javax.servlet4
