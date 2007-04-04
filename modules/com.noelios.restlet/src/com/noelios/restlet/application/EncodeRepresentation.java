@@ -252,7 +252,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
         String result = null;
 
         if (canEncode()) {
-            result = ByteUtils.toString(getStream());
+            result = ByteUtils.toString(getStream(), getCharacterSet());
         } else {
             result = getWrappedRepresentation().getText();
         }

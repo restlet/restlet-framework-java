@@ -186,7 +186,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
         String result = null;
 
         if (canDecode()) {
-            result = ByteUtils.toString(getStream());
+            result = ByteUtils.toString(getStream(), getCharacterSet());
         } else {
             result = getWrappedRepresentation().getText();
         }
