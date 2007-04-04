@@ -35,7 +35,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * <td>minThreads</td>
  * <td>int</td>
  * <td>2</td>
- * <td>Minumum threads waiting to service requests.</td>
+ * <td>Minimum threads waiting to service requests.</td>
  * </tr>
  * <tr>
  * <td>maxThread</td>
@@ -118,9 +118,9 @@ public abstract class JettyServerHelper extends HttpServerHelper {
     }
 
     /**
-     * Returns the minumum threads waiting to service requests.
+     * Returns the minimum threads waiting to service requests.
      * 
-     * @return The minumum threads waiting to service requests.
+     * @return The minimum threads waiting to service requests.
      */
     public int getMinThreads() {
         return Integer.parseInt(getParameters()
