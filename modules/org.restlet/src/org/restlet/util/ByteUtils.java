@@ -18,9 +18,10 @@
 
 package org.restlet.util;
 
-import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.Pipe;
@@ -29,6 +30,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.resource.Representation;
 
 /**
@@ -153,25 +155,56 @@ public final class ByteUtils {
     }
 
     /**
-     * Converts an input stream to a string.
+     * Converts an input stream to a string.<br/>As this method uses the
+     * InputstreamReader class, the default character set is used for decoding
+     * the input stream.
      * 
+     * @see <a
+     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
+     *      class</a>
+     * @see #toString(InputStream, CharacterSet)
      * @param inputStream
      *            The input stream.
      * @return The converted string.
      */
     public static String toString(InputStream inputStream) {
+        return toString(inputStream, null);
+    }
+
+    /**
+     * Converts an input stream to a string using the specified character set
+     * for decoding the input stream.
+     * 
+     * @see <a
+     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
+     *      class</a>
+     * @param inputStream
+     *            The input stream.
+     * @param characterSet
+     *            The character set
+     * @return The converted string.
+     */
+    public static String toString(InputStream inputStream,
+            CharacterSet characterSet) {
         String result = null;
 
         if (inputStream != null) {
             try {
                 StringBuilder sb = new StringBuilder();
-                InputStream is = new BufferedInputStream(inputStream);
-                int nextByte = is.read();
+                InputStreamReader isr = null;
+                if (characterSet != null) {
+                    isr = new InputStreamReader(inputStream, characterSet
+                            .getName());
+                } else {
+                    isr = new InputStreamReader(inputStream);
+                }
+                BufferedReader br = new BufferedReader(isr);
+                int nextByte = br.read();
                 while (nextByte != -1) {
                     sb.append((char) nextByte);
-                    nextByte = is.read();
+                    nextByte = br.read();
                 }
-                is.close();
+                br.close();
                 result = sb.toString();
             } catch (Exception e) {
                 // Returns an empty string
@@ -226,7 +259,7 @@ public final class ByteUtils {
     private ByteUtils() {
 
     }
-    
+
     /**
      * Pipe stream that pipes output streams into input streams. Implementation
      * based on a shared synchronized queue.
@@ -285,6 +318,5 @@ public final class ByteUtils {
         }
 
     }
-    
-}
 
+}

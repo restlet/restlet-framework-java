@@ -85,7 +85,7 @@ public class InputRepresentation extends StreamRepresentation {
      * @return The representation as a string value.
      */
     public String getText() throws IOException {
-        return ByteUtils.toString(getStream());
+        return ByteUtils.toString(getStream(), this.getCharacterSet());
     }
 
     /**
