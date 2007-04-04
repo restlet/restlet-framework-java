@@ -16,6 +16,8 @@ Changes log
  - Fixed bug in the FileUpload extension. The RepresentationContext class does not return
    the full content-type (with parameter) expected by the underlying Apache Commons-fileupload's 
    FileItem parser. Reported and contributed by Christian Ohr.
+ - Fixed bug in ByteUtils.toString method, lack of a characterSet parameter in order 
+   to read the inner input stream correctly. Reported by Özgün Atacan.
 
 [API changes]
  - Representation is now an abstract class. If you ever needed to create an instance of 
