@@ -33,7 +33,7 @@ import com.sun.rowset.WebRowSetImpl;
 /**
  * XML Representation of a ResultSet instance wrapped either in a JdbcResult
  * instance or in a WebRowSet. Leverage the WebRowSet API to create the Response
- * entity.<br/> Give access the JdbcResult instance and to the WebRowSet for
+ * entity.<br/> Give access to the JdbcResult instance and to the WebRowSet for
  * retrieval of the connected ResultSet in the same JVM (for advanced use
  * cases).<br/>
  * 
