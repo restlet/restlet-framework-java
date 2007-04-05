@@ -113,15 +113,21 @@ public class SecurityUtils {
                     HttpConstants.HEADER_CONTENT_TYPE, true);
             if (contentType == null) {
                 boolean applyPatch = false;
-                int majorVersionNumber = Engine.getJavaMajorVersion();
-                int minorVersionNumber = Engine.getJavaMinorVersion();
 
-                if (majorVersionNumber == 1) {
-                    if (minorVersionNumber < 5) {
-                        applyPatch = true;
-                    } else if (minorVersionNumber == 5) {
-                        // Sun fixed the bug in update 10
-                        applyPatch = (Engine.getJavaUpdateVersion() < 10);
+                // This patch seems to apply to Sun JVM only.
+                String jvmVendor = System.getProperty("java.vm.vendor");
+                if (jvmVendor != null
+                        && (jvmVendor.toLowerCase()).startsWith("sun")) {
+                    int majorVersionNumber = Engine.getJavaMajorVersion();
+                    int minorVersionNumber = Engine.getJavaMinorVersion();
+
+                    if (majorVersionNumber == 1) {
+                        if (minorVersionNumber < 5) {
+                            applyPatch = true;
+                        } else if (minorVersionNumber == 5) {
+                            // Sun fixed the bug in update 10
+                            applyPatch = (Engine.getJavaUpdateVersion() < 10);
+                        }
                     }
                 }
 
