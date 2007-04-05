@@ -82,15 +82,9 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_ACCEPT_LANGUAGE)
                         || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_ACCEPT_RANGES)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_AGE)
-                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_ALLOW)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_AUTHORIZATION)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_CACHE_CONTROL)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_CONNECTION)
                         || param.getName().equalsIgnoreCase(
@@ -102,10 +96,6 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_CONTENT_LOCATION)
                         || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_CONTENT_MD5)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_CONTENT_RANGE)
-                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_CONTENT_TYPE)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_COOKIE)
@@ -114,11 +104,7 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_ETAG)
                         || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_EXPECT)
-                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_EXPIRES)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_FROM)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_HOST)
                         || param.getName().equalsIgnoreCase(
@@ -128,13 +114,47 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_IF_NONE_MATCH)
                         || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_IF_RANGE)
-                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_IF_UNMODIFIED_SINCE)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_LAST_MODIFIED)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_LOCATION)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_REFERRER)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_SERVER)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_SET_COOKIE)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_SET_COOKIE2)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_USER_AGENT)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_VARY)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_WWW_AUTHENTICATE)) {
+                    // Standard headers that can't be overriden
+                    getLogger()
+                            .warning(
+                                    "Addition of the standard header \""
+                                            + param.getName()
+                                            + "\" is not allowed. Please use the Restlet API instead.");
+                } else if (param.getName().equalsIgnoreCase(
+                        HttpConstants.HEADER_AGE)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_ACCEPT_RANGES)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_CACHE_CONTROL)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_CONTENT_MD5)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_CONTENT_RANGE)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_EXPECT)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_FROM)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_IF_RANGE)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_MAX_FORWARDS)
                         || param.getName().equalsIgnoreCase(
@@ -146,15 +166,7 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_RANGE)
                         || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_REFERRER)
-                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_RETRY_AFTER)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_SERVER)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_SET_COOKIE)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_SET_COOKIE2)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_TRAILER)
                         || param.getName().equalsIgnoreCase(
@@ -164,19 +176,16 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_UPGRADE)
                         || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_USER_AGENT)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_VARY)
-                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_VIA)
                         || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_WARNING)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_WWW_AUTHENTICATE)) {
-                    // Standard headers can't be overriden
-                    getLogger().warning(
-                            "Addition of the standard header \""
-                                    + param.getName() + "\" is not allowed.");
+                                HttpConstants.HEADER_WARNING)) {
+                    // Standard headers can't shouldn't be overriden
+                    getLogger()
+                            .info(
+                                    "Addition of the standard header \""
+                                            + param.getName()
+                                            + "\" is discouraged. Future versions of the Restlet API will directly support it.");
+                    existingHeaders.add(param);
                 } else {
                     existingHeaders.add(param);
                 }

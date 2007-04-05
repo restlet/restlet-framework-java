@@ -23,7 +23,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
@@ -99,11 +98,7 @@ public class FileRepresentation extends Representation {
      */
     public FileChannel getChannel() throws IOException {
         try {
-            // Alternative method
-            // return new FileInputStream(getFile()).getChannel();
-
-            RandomAccessFile raf = new RandomAccessFile(file, "r");
-            return raf.getChannel();
+            return new FileInputStream(file).getChannel();
         } catch (FileNotFoundException fnfe) {
             throw new IOException("Couldn't get the channel. File not found");
         }
