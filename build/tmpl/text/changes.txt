@@ -18,6 +18,9 @@ Changes log
    FileItem parser. Reported and contributed by Christian Ohr.
  - Fixed bug in ByteUtils.toString method, lack of a characterSet parameter in order 
    to read the inner input stream correctly. Reported by Özgün Atacan.
+ - Updated patch providing a workaround to a JDK bug with AWS authorization header
+   (see NRE SecurityUtils class). Applies only to the JVM delivered by Sun. Reported by 
+   Justin C. van Vorst.
 
 [API changes]
  - Representation is now an abstract class. If you ever needed to create an instance of 
