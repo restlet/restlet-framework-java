@@ -22,13 +22,14 @@ Changes log
 [API changes]
  - Representation is now an abstract class. If you ever needed to create an instance of 
    it, just use its super class Variant instead.
- - Relaxed the usage of standard HTTP headers not currently covered by the Restlet API. This 
-   usage is discouraged by an information message but now allowed. Suggested by Diggory Briercliffe.
+ - Relaxed the usage of standard HTTP headers not currently covered by the Restlet API. 
+   This usage is discouraged by an information message but now allowed. Suggested by 
+   Diggory Briercliffe.
    
 [Enhancements] 
- - Added new ServletConverter class to facilitate lighter integration of Restlets with Servlet 
-   and especially Spring. Inspired from discussions with Ryan Daum, Michael Makunas, 
-   Jim Alateras, Shlok and Jonathan Hall.
+ - Added new ServletConverter class to facilitate lighter integration of Restlets with 
+   Servlet and especially Spring. Inspired from discussions with Ryan Daum, Michael 
+   Makunas, Jim Alateras, Shlok and Jonathan Hall.
  - Updated Jetty to version 6.1.2 RC2.
  - Refactored internal NRE HTTP classes to provide more extension points. 
  - FileRepresentation now relies on a FileInputStream to expose a readable channel
