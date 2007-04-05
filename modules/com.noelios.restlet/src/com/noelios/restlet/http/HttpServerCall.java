@@ -198,12 +198,7 @@ public abstract class HttpServerCall extends HttpCall {
                         .substring(colonIndex + 1)));
             } else {
                 super.setHostDomain(host);
-
-                if (isConfidential()) {
-                    super.setServerPort(Protocol.HTTPS.getDefaultPort());
-                } else {
-                    super.setServerPort(Protocol.HTTP.getDefaultPort());
-                }
+                super.setHostPort(getProtocol().getDefaultPort());
             }
         } else {
             getLogger().info(

@@ -66,17 +66,14 @@ public class SimpleCall extends HttpServerCall {
      * @param response
      *            Response to wrap.
      * @param confidential
-     *            Inidicates if this call is acting in HTTP or HTTPS mode.
-     * @param hostPort
-     *            The listening port used.
+     *            Indicates if this call is acting in HTTP or HTTPS mode.
      */
     SimpleCall(Server server, Request request, Response response,
-            boolean confidential, int hostPort) {
+            boolean confidential) {
         super(server);
         this.request = request;
         this.response = response;
         setConfidential(confidential);
-        this.setHostPort(hostPort);
         this.requestHeadersAdded = false;
     }
 

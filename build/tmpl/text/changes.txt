@@ -21,6 +21,8 @@ Changes log
  - Updated patch providing a workaround to a JDK bug with AWS authorization header
    (see NRE SecurityUtils class). Applies only to the JVM delivered by Sun. Reported by 
    Justin C. van Vorst.
+ - Fixed bug in Simple HTTP server causing the improper setting of the server port as
+   the host port. Those two values may be different in certain cases.
 
 [API changes]
  - Representation is now an abstract class. If you ever needed to create an instance of 

@@ -109,7 +109,7 @@ public class HttpRequest extends Request {
                         .getDefaultPort())) {
             sb.append(':').append(httpCall.getHostPort());
         }
-        setHostRef(new Reference(sb.toString()));
+        setHostRef(sb.toString());
 
         // Set the resource reference
         setResourceRef(new Reference(getHostRef(), httpCall.getRequestUri()));
