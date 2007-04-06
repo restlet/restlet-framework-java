@@ -90,7 +90,7 @@ public class HttpServerConverter extends HttpConverter {
             response.getHttpCall().sendResponse(response);
         } catch (Exception e) {
             getLogger().log(Level.INFO, "Exception intercepted", e);
-            response.getHttpCall().setStatusCode(500);
+            response.getHttpCall().setStatusCode(Status.SERVER_ERROR_INTERNAL.getCode());
             response.getHttpCall().setReasonPhrase(
                     "An unexpected exception occured");
         }

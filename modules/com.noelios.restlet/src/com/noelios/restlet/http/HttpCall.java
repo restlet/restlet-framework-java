@@ -18,6 +18,7 @@
 
 package com.noelios.restlet.http;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -274,8 +275,9 @@ public class HttpCall {
      * Returns the status code.
      * 
      * @return The status code.
+     * @throws IOException 
      */
-    public int getStatusCode() {
+    public int getStatusCode() throws IOException {
         return this.statusCode;
     }
 
