@@ -278,15 +278,10 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * Returns the response status code.
      * 
      * @return The response status code.
+     * @throws IOException 
      */
-    public int getStatusCode() {
-        try {
-            return getConnection().getResponseCode();
-        } catch (IOException ioe) {
-            getHelper().getLogger().log(Level.WARNING,
-                    "Unable to get the response code", ioe);
-            return -1;
-        }
+    public int getStatusCode() throws IOException {
+        return getConnection().getResponseCode();
     }
 
     /**
