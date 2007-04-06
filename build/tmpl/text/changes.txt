@@ -25,6 +25,8 @@ Changes log
    the host port. Those two values may be different in certain cases.
  - Fixed bug in Net HTTP client returning status code -1 in case of communication error 
    with the server. Reported by Alex Combs.
+ - Fixed bug with the JavaMail extension that lacked the JAF dependencies and made the 
+   ClientHelper class abstract. Reported by Matthieu Hug.
 
 [API changes]
  - Representation is now an abstract class. If you ever needed to create an instance of 
@@ -506,7 +508,7 @@ Changes log
  - Renamed TunnelFilter into org.restlet.Tunnel.
  - Moved StringTemplate data model to org.restlet.util.Model. Removed ReadableModel and WritableModel.
  - Replace Representation.toString() by getValue() to prevent unwanted consumption of the content. Reported by Vincent Lari.
- 	Note that getValue() throws IOException instead of eating them as to older toString() implementation. 
+   Note that getValue() throws IOException instead of eating them as to older toString() implementation. 
  - Refactored TunnelFilter into a TunnelService enabled by default. 
  - Also refactored and renamed LocalService into MetadataService used by the TunnelService and local client connectors.
  - Refactored VirtualClient interface into a Dispatcher class. Renamed Context.getClient() into getDispatcher().
@@ -690,7 +692,7 @@ Changes log
  
 [API breaking changes]
  - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
- 	We will now use connectors'parameters instead. Suggested by John D. Mitchell.
+   We will now use connectors'parameters instead. Suggested by John D. Mitchell.
  - NRE's HttpClient (based on HttpUrlConnection) now used these parameters: "chunkLength", "followRedirects", "allowUserInteraction", "useCaches"
    "connectTimeout" and "readTimeout".
  - NRE's HttpClient no longers sets the JDK's system property "http.keepalive" to "false". This could conflict with other classes using HttpUrlConnection.
@@ -841,8 +843,8 @@ Changes log
  - Changed Preference.parameters type from List<Parameter> to ParameterList and adjusted related classes.
  - Added DefaultRouter.customFind() method as an easy hook for the RouteMode.CUSTOM routing mode.
  - Factorized the handling of IO exception in various HTTP server connectors into the base com.noelios.restlet.impl.HttpServer class.
- 	Now, when an IO exception, a one line log entry is added at the WARNING level, and the full stack trace is added at the INFO level.
- 	This is important to prevent excessive log entries for the Simple connector when the connection is closed by the client (Broken Pipe).
+   Now, when an IO exception, a one line log entry is added at the WARNING level, and the full stack trace is added at the INFO level.
+   This is important to prevent excessive log entries for the Simple connector when the connection is closed by the client (Broken Pipe).
  - Improved the logging of PatternScorer's logic. Adjust your logging properties to see the traces (FINE and FINER levels).
  - Added log traces in CallImpl when a contextPath/Ref is specified before any resourcePath/Ref was specified. Reported by Thierry Boileau.
 
@@ -907,7 +909,7 @@ Changes log
  - Components and Connectors now have a getParameters() method that exposes a modifiable list of parameters (ParameterList instance).
  - Moved ContextResource to "impl" package
  - Added "readOnly" property to DirectoryRestlet to enable modifications from the client. By default, "readOnly" is set to true. Suggested by
- 	Don Dwoske and John D. Mitchell.
+   Don Dwoske and John D. Mitchell.
  - Refactored Resource interface to extend both Data and Restlet interfaces and moved it to the org.restlet.data package according to the REST classification.
  - Renamed Resource.getVariantsMetadata() to getVariants() for simplification purpose.
  - Added "identifier" and "identifiers" properties to the Resource interface (Reference instances), for the official and alias URIs.
@@ -992,7 +994,7 @@ Changes log
  
 1.0 beta 12 (2006-05-20)
  - Added com.noelios.restlet.build package containing builder classes allowing a compact construction of Restlet applications base of the Fluent design
-	pattern coined by Martin Fowler. Based on suggestion and contribution from Lars Heuer and Yuri de Wit.
+   pattern coined by Martin Fowler. Based on suggestion and contribution from Lars Heuer and Yuri de Wit.
  - Added Tutorial 12 illustrating the used of builders to reimplement Tutorial 11.
  - Added buffering to Simple server to solve the performance issue.
  - Removed the Element interface which doesn't bring value to the framework.
@@ -1018,7 +1020,7 @@ Changes log
  - Added an ExtractChainlet to extract some attributes from a call (query string parameters, input form parameters, call's template model 
    or context matches). The extracted attributes are available via the Call.getAttributes() map. Suggested by Yuri de Wit.
  - Added TunnelChainlet, subclass of ExtractChainlet that can tunnel method name, accept headers and resource URI for clients unable to make full REST
- 	calls (like browsers restricted to GET and POST methods). Suggested by Yuri de Wit. 
+   calls (like browsers restricted to GET and POST methods). Suggested by Yuri de Wit. 
  - Added a forward(Call) method to AbstractRestlet to facilitate the internal forwarding and dispatching of calls (similar to Servlet forwarding).
    Suggested by John D. Mitchell.
  - Fixed issue with HTTP client connector when getting the response stream in error cases (404 not found, etc.).
@@ -1135,7 +1137,7 @@ Changes log
  - Refactored GuardChainlet to separate the concepts of authentication and authorization and make each step optional. More hooks 
    provided to implement custom authentication schemes based on cookies, query params or IP addresses for example. Suggested by A.J. Barnes.
  - Added "login", "password" and "role" properties to the SecurityData interface. Used by the GuardChainlet if authentication succeeds.
- 	Can also be modified and accessed by the application to manage user roles and resource level access authorizations.
+   Can also be modified and accessed by the application to manage user roles and resource level access authorizations.
  - Manager is smarter when handling creation requests with null names. It now returns null instead of throwing NPE exceptions.
  - Added convenience UniformCall.setResourceRef(String uri) method.
  - Improved DateUtils parsing by allowing the specification of multiple formats to try before failing. 

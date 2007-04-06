@@ -58,7 +58,7 @@ import com.noelios.restlet.Engine;
  * following syntax: smtp://host[:port]<br/> <br/> The default port used is 25
  * for SMTP and 465 for SMTPS. Use the Call.getSecurity().setLogin() and
  * setPassword() methods for authentication.<br/> <br/> Sample XML email:<br/>
- * {@code <?xml version="1.0" encoding="ISO-8851-1" ?>}<br/> {@code <email>}<br/>
+ * {@code <?xml version="1.0" encoding="ISO-8859-1" ?>}<br/> {@code <email>}<br/>
  * &nbsp;&nbsp;{@code   <head>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code      <subject>Account activation</subject>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <from>support@restlet.org</from>}<br/>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <to>user@domain.com</to>}<br/>
@@ -68,7 +68,7 @@ import com.noelios.restlet.Engine;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class JavaMailClientHelper extends ClientHelper {
+public class JavaMailClientHelper extends ClientHelper {
     /**
      * Constructor.
      * 
