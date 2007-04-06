@@ -23,6 +23,8 @@ Changes log
    Justin C. van Vorst.
  - Fixed bug in Simple HTTP server causing the improper setting of the server port as
    the host port. Those two values may be different in certain cases.
+ - Fixed bug in Net HTTP client returning status code -1 in case of communication error 
+   with the server. Reported by Alex Combs.
 
 [API changes]
  - Representation is now an abstract class. If you ever needed to create an instance of 
