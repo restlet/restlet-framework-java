@@ -17,3 +17,4 @@ Export-Package: com.sun.mail.handlers,
  javax.mail.event,
  javax.mail.internet,
  javax.mail.search
+Require-Bundle: javax.activation
