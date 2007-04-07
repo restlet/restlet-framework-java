@@ -25,7 +25,7 @@ import simple.http.BufferedPipelineFactory;
 import simple.http.Pipeline;
 
 /**
- * A subclass of BufferedPipelineFactory that set the connection socket on each
+ * A subclass of BufferedPipelineFactory that sets the connection socket on each
  * pipeline for later retrieval.
  * 
  * @author Jerome Louvel (contact@noelios.com)
