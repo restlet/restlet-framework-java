@@ -103,6 +103,10 @@
    <property name="lib-javamail-version" value="1.4" />
    <property name="lib-javamail-id" value="${lib-javamail-package}_${lib-javamail-version}" />
 
+   <property name="lib-activation-package" value="javax.activation" />
+   <property name="lib-activation-version" value="1.1" />
+   <property name="lib-activation-id" value="${lib-activation-package}_${lib-activation-version}" />
+
    <property name="lib-jetty5-package" value="org.mortbay.jetty" />
    <property name="lib-jetty5-version" value="5.1" />
    <property name="lib-jetty5-id" value="${lib-jetty5-package}_${lib-jetty5-version}" />
@@ -385,6 +389,7 @@
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <fileset dir="${lib}/${lib-javamail-id}" includes="*.jar" />
+      <fileset dir="${lib}/${lib-activation-id}" includes="*.jar" />
    </path>
 
    <path id="mod-jdbc-path">
@@ -1212,6 +1217,7 @@
       <stageLibrary name="httpclient" />
       <stageLibrary name="io" />
       <stageLibrary name="javamail" />
+      <stageLibrary name="activation" />
 <!-- disabled for 1.0   <stageLibrary name="jetty5" /> -->
       <stageLibrary name="jetty" />
       <stageLibrary name="json" />
