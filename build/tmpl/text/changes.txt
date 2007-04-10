@@ -27,6 +27,7 @@ Changes log
    with the server. Reported by Alex Combs.
  - Fixed bug with the JavaMail extension that lacked the JAF dependencies and made the 
    ClientHelper class abstract. Reported by Matthieu Hug.
+ - Fixed synchronization issue with Restlet initialization. Reported by Adam Falk.
 
 [API changes]
  - Representation is now an abstract class. If you ever needed to create an instance of 

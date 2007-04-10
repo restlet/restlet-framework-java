@@ -103,7 +103,7 @@ public class Restlet extends Uniform {
      * @param response
      *            The response to update.
      */
-    protected void init(Request request, Response response) {
+    protected synchronized void init(Request request, Response response) {
         // Check if the Restlet was started
         if (isStopped()) {
             try {
@@ -128,7 +128,7 @@ public class Restlet extends Uniform {
      * 
      * @return True if the Restlet is started.
      */
-    public boolean isStarted() {
+    public synchronized boolean isStarted() {
         return this.started;
     }
 
@@ -137,7 +137,7 @@ public class Restlet extends Uniform {
      * 
      * @return True if the Restlet is stopped.
      */
-    public boolean isStopped() {
+    public synchronized boolean isStopped() {
         return !this.started;
     }
 
@@ -152,12 +152,12 @@ public class Restlet extends Uniform {
     }
 
     /** Starts the Restlet. */
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         this.started = true;
     }
 
     /** Stops the Restlet. */
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         this.started = false;
     }
 
