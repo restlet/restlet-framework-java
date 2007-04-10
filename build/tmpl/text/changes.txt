@@ -35,6 +35,7 @@ Changes log
  - Relaxed the usage of standard HTTP headers not currently covered by the Restlet API. 
    This usage is discouraged by an information message but now allowed. Suggested by 
    Diggory Briercliffe.
+ - Removed deprecated MediaType constant APPLICATION_RDF (Use APPLICATION_RDF_XML instead).
    
 [Enhancements] 
  - Added new ServletConverter class to facilitate lighter integration of Restlets with 
