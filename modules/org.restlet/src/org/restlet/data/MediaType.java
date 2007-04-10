@@ -81,13 +81,6 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_PROJECT = new MediaType(
             "application/vnd.ms-project", "Microsoft Project document");
 
-    /**
-     * @deprecated Use APPLICATION_RDF_XML instead.
-     */
-    @Deprecated
-    public static final MediaType APPLICATION_RDF = new MediaType(
-            "application/rdf+xml", "Resource Description Framework document");
-
     public static final MediaType APPLICATION_RDF_XML = new MediaType(
             "application/rdf+xml",
             "XML serialized Resource Description Framework document");
@@ -249,8 +242,6 @@ public final class MediaType extends Metadata {
                 result = APPLICATION_POWERPOINT;
             else if (name.equals(APPLICATION_PROJECT.getName()))
                 result = APPLICATION_PROJECT;
-            else if (name.equals(APPLICATION_RDF.getName()))
-                result = APPLICATION_RDF;
             else if (name.equals(APPLICATION_RTF.getName()))
                 result = APPLICATION_RTF;
             else if (name.equals(APPLICATION_STUFFIT.getName()))
