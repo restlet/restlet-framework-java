@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -31,30 +31,30 @@ import java.util.logging.Logger;
  * Reference to a Uniform Resource Identifier (URI). Contrary to the
  * java.net.URI class, this interface represents mutable references. It strictly
  * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br/>
- * 
+ *
  * <pre>
- *                             URI reference        = absolute-reference | relative-reference
- *                          
- *                             absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
- *                             scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
- *                             hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
- *                             authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
- *                                                            
- *                             relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
- *                             relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
- *                                                            
- *                             path-abempty         = begins with &quot;/&quot; or is empty
- *                             path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
- *                             path-noscheme        = begins with a non-colon segment
- *                             path-rootless        = begins with a segment
- *                             path-empty           = zero characters
+ * URI reference        = absolute-reference | relative-reference
+ *
+ * absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
+ * scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
+ * hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
+ * authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
+ *
+ * relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
+ * relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
+ *
+ * path-abempty         = begins with &quot;/&quot; or is empty
+ * path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
+ * path-noscheme        = begins with a non-colon segment
+ * path-rootless        = begins with a segment
+ * path-empty           = zero characters
  * </pre>
- * 
+ *
  * Note that this class doesn't encode or decode the reserved characters. It
  * assumes that the URIs or the URI parts passed in are properly encoded using
  * the standard URI encoding mechanism. You can use the static "encode()" and
  * "decode()" methods for this purpose.
- * 
+ *
  * @author Jerome Louvel (contact@noelios.com)
  * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986</a>
  */
@@ -63,7 +63,7 @@ public class Reference {
     /**
      * Decodes a given string using the standard URI encoding mechanism and the
      * UTF-8 character set.
-     * 
+     *
      * @param toDecode
      *            The string to decode.
      * @return The decoded string.
@@ -88,7 +88,7 @@ public class Reference {
     /**
      * Encodes a given string using the standard URI encoding mechanism and the
      * UTF-8 character set.
-     * 
+     *
      * @param toEncode
      *            The string to encode.
      * @return The encoded string.
@@ -113,12 +113,12 @@ public class Reference {
     /**
      * Encodes a given string using the standard URI encoding mechanism. If the
      * provided character set is null, the string is returned but not encoded.
-     * 
+     *
      * <em><strong>Note:</strong> The <a
      * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
      * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
      * used. Not doing so may introduce incompatibilites.</em>
-     * 
+     *
      * @param toEncode
      *            The string to encode.
      * @param characterSet
@@ -151,7 +151,7 @@ public class Reference {
      * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
      * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
      * used. Not doing so may introduce incompatibilites.</em>
-     * 
+     *
      * @param toDecode
      *            The string to decode.
      * @param characterSet
@@ -179,7 +179,7 @@ public class Reference {
 
     /**
      * Creates a reference string from its parts.
-     * 
+     *
      * @param scheme
      *            The scheme ("http", "https" or "ftp").
      * @param hostName
@@ -210,7 +210,7 @@ public class Reference {
 
     /**
      * Creates a relative reference string from its parts.
-     * 
+     *
      * @param relativePart
      *            The relative part component.
      * @param query
@@ -243,7 +243,7 @@ public class Reference {
 
     /**
      * Creates a reference string from its parts.
-     * 
+     *
      * @param scheme
      *            The scheme ("http", "https" or "ftp").
      * @param host
@@ -307,7 +307,7 @@ public class Reference {
 
     /**
      * Clone constructor.
-     * 
+     *
      * @param ref
      *            The reference to clone.
      */
@@ -317,7 +317,7 @@ public class Reference {
 
     /**
      * Constructor from an URI reference (most likely relative).
-     * 
+     *
      * @param baseRef
      *            The base reference.
      * @param uriReference
@@ -331,7 +331,7 @@ public class Reference {
 
     /**
      * Constructor of relative reference from its parts.
-     * 
+     *
      * @param baseRef
      *            The base reference.
      * @param relativePart
@@ -349,7 +349,7 @@ public class Reference {
 
     /**
      * Constructor from an URI reference.
-     * 
+     *
      * @param uriReference
      *            The URI reference, either absolute or relative.
      */
@@ -359,7 +359,7 @@ public class Reference {
 
     /**
      * Constructor from an identifier and a fragment.
-     * 
+     *
      * @param identifier
      *            The resource identifier.
      * @param fragment
@@ -371,7 +371,7 @@ public class Reference {
 
     /**
      * Constructor of absolute reference from its parts.
-     * 
+     *
      * @param scheme
      *            The scheme ("http", "https" or "ftp").
      * @param hostName
@@ -392,7 +392,7 @@ public class Reference {
 
     /**
      * Indicates whether some other object is "equal to" this one.
-     * 
+     *
      * @param object
      *            The object to compare to.
      * @return True if this object is the same as the obj argument.
@@ -414,7 +414,7 @@ public class Reference {
     /**
      * Returns the authority component for hierarchical identifiers. Includes
      * the user info, host name and the host port number.
-     * 
+     *
      * @return The authority component for hierarchical identifiers.
      */
     public String getAuthority() {
@@ -441,7 +441,7 @@ public class Reference {
 
     /**
      * Returns the base reference for relative references.
-     * 
+     *
      * @return The base reference for relative references.
      */
     public Reference getBaseRef() {
@@ -450,7 +450,7 @@ public class Reference {
 
     /**
      * Returns the fragment identifier.
-     * 
+     *
      * @return The fragment identifier.
      */
     public String getFragment() {
@@ -464,7 +464,7 @@ public class Reference {
     /**
      * Returns the hierarchical part which is equivalent to the scheme specific
      * part less the query component.
-     * 
+     *
      * @return The hierarchical part .
      */
     public String getHierarchicalPart() {
@@ -505,7 +505,7 @@ public class Reference {
      * Returns the host domain name component for server based hierarchical
      * identifiers. It can also be replaced by an IP address when no domain name
      * was registered.
-     * 
+     *
      * @return The host domain name component for server based hierarchical
      *         identifiers.
      */
@@ -544,7 +544,7 @@ public class Reference {
     /**
      * Returns the host identifier. Includes the scheme, the host name and the
      * host port number.
-     * 
+     *
      * @return The host identifier.
      */
     public String getHostIdentifier() {
@@ -556,7 +556,7 @@ public class Reference {
     /**
      * Returns the optional port number for server based hierarchical
      * identifiers.
-     * 
+     *
      * @return The optional port number for server based hierarchical
      *         identifiers or -1 if the port number does not exist.
      */
@@ -584,7 +584,7 @@ public class Reference {
 
     /**
      * Returns the absolute resource identifier, without the fragment.
-     * 
+     *
      * @return The absolute resource identifier, without the fragment.
      */
     public String getIdentifier() {
@@ -600,7 +600,7 @@ public class Reference {
     /**
      * Returns the last segment of a hierarchical path.<br/> For example the
      * "/a/b/c" and "/a/b/c/" paths have the same segments: "a", "b", "c.
-     * 
+     *
      * @return The last segment of a hierarchical path.
      */
     public String getLastSegment() {
@@ -617,7 +617,7 @@ public class Reference {
     /**
      * Returns the parent reference of a hierarchical reference. The last slash
      * of the path will be considered as the end of the parent path.
-     * 
+     *
      * @return The parent reference of a hierarchical reference.
      */
     public Reference getParentRef() {
@@ -645,7 +645,7 @@ public class Reference {
 
     /**
      * Returns the path component for hierarchical identifiers.
-     * 
+     *
      * @return The path component for hierarchical identifiers.
      */
     public String getPath() {
@@ -689,7 +689,7 @@ public class Reference {
 
     /**
      * Returns the optional query component for hierarchical identifiers.
-     * 
+     *
      * @return The optional query component for hierarchical identifiers.
      */
     public String getQuery() {
@@ -715,7 +715,7 @@ public class Reference {
 
     /**
      * Returns the optional query component as a form submission.
-     * 
+     *
      * @return The optional query component as a form submission.
      * @throws IOException
      */
@@ -725,7 +725,7 @@ public class Reference {
 
     /**
      * Returns the optional query component as a form submission.
-     * 
+     *
      * @param characterSet
      *            The supported character encoding.
      * @return The optional query component as a form submission.
@@ -738,7 +738,7 @@ public class Reference {
     /**
      * Returns the relative part. Note that the optional query and fragment are
      * not returned by this method.
-     * 
+     *
      * @return The relative part.
      */
     public String getRelativePart() {
@@ -776,7 +776,7 @@ public class Reference {
      * <li>the reference is absolute</li>
      * <li>the reference identifier starts with the resource baseRef</li>
      * </ul>
-     * 
+     *
      * @return The remaining resource part or null if the prerequisites are not
      *         satisfied.
      */
@@ -797,7 +797,7 @@ public class Reference {
      * Returns the current reference as a relative reference to the current base
      * reference. This method should only be invoked for absolute references,
      * otherwise an IllegalArgumentException will be raised.
-     * 
+     *
      * @return The current reference as a relative reference to the current base
      *         reference.
      * @see #getRelativeRef(Reference)
@@ -810,7 +810,7 @@ public class Reference {
      * Returns the current reference relatively to a base reference. This method
      * should only be invoked for absolute references, otherwise an
      * IllegalArgumentException will be raised.
-     * 
+     *
      * @param base
      *            The base reference to use.
      * @return The current reference relatively to a base reference.
@@ -997,7 +997,7 @@ public class Reference {
 
     /**
      * Returns the scheme component.
-     * 
+     *
      * @return The scheme component.
      */
     public String getScheme() {
@@ -1012,7 +1012,7 @@ public class Reference {
 
     /**
      * Returns the protocol associated with the scheme component.
-     * 
+     *
      * @return The protocol associated with the scheme component.
      */
     public Protocol getSchemeProtocol() {
@@ -1021,7 +1021,7 @@ public class Reference {
 
     /**
      * Returns the scheme specific part.
-     * 
+     *
      * @return The scheme specific part.
      */
     public String getSchemeSpecificPart() {
@@ -1045,7 +1045,7 @@ public class Reference {
     /**
      * Returns the segments of a hierarchical path.<br/> A new list is created
      * for each call.
-     * 
+     *
      * @return The segments of a hierarchical path.
      */
     public List<String> getSegments() {
@@ -1091,7 +1091,7 @@ public class Reference {
     /**
      * Returns the target reference. This method resolves relative references
      * against the base reference then normalize them.
-     * 
+     *
      * @return The target reference.
      */
     public Reference getTargetRef() {
@@ -1180,7 +1180,7 @@ public class Reference {
     /**
      * Returns the user info component for server based hierarchical
      * identifiers.
-     * 
+     *
      * @return The user info component for server based hierarchical
      *         identifiers.
      */
@@ -1201,7 +1201,7 @@ public class Reference {
 
     /**
      * Returns a hash code value for the object.
-     * 
+     *
      * @return A hash code value for the object.
      */
     @Override
@@ -1211,7 +1211,7 @@ public class Reference {
 
     /**
      * Indicates if the reference is absolute.
-     * 
+     *
      * @return True if the reference is absolute.
      */
     public boolean isAbsolute() {
@@ -1221,7 +1221,7 @@ public class Reference {
     /**
      * Returns true if both reference are equivalent, meaning that they resolve
      * to the same target reference.
-     * 
+     *
      * @param ref
      *            The reference to compare.
      * @return True if both reference are equivalent.
@@ -1232,7 +1232,7 @@ public class Reference {
 
     /**
      * Indicates if the identifier is hierarchical.
-     * 
+     *
      * @return True if the identifier is hierarchical, false if it is opaque.
      */
     public boolean isHierarchical() {
@@ -1241,7 +1241,7 @@ public class Reference {
 
     /**
      * Indicates if the identifier is opaque.
-     * 
+     *
      * @return True if the identifier is opaque, false if it is hierarchical.
      */
     public boolean isOpaque() {
@@ -1251,7 +1251,7 @@ public class Reference {
     /**
      * Indicates if the reference is a parent of the hierarchical child
      * reference.
-     * 
+     *
      * @param childRef
      *            The hierarchical reference.
      * @return True if the reference is a parent of the hierarchical child
@@ -1270,7 +1270,7 @@ public class Reference {
 
     /**
      * Indicates if the reference is relative.
-     * 
+     *
      * @return True if the reference is relative.
      */
     public boolean isRelative() {
@@ -1280,7 +1280,7 @@ public class Reference {
     /**
      * Normalizes the reference. Useful before comparison between references or
      * when building a target reference from a base and a relative references.
-     * 
+     *
      * @return The current reference.
      */
     public Reference normalize() {
@@ -1381,7 +1381,7 @@ public class Reference {
 
     /**
      * Removes the last segement from the output builder.
-     * 
+     *
      * @param output
      *            The output builder to update.
      */
@@ -1404,7 +1404,7 @@ public class Reference {
 
     /**
      * Sets the authority component for hierarchical identifiers.
-     * 
+     *
      * @param authority
      *            The authority component for hierarchical identifiers.
      */
@@ -1440,7 +1440,7 @@ public class Reference {
 
     /**
      * Sets the base reference for relative references.
-     * 
+     *
      * @param baseUri
      *            The base URI for relative references.
      */
@@ -1450,7 +1450,7 @@ public class Reference {
 
     /**
      * Sets the base reference for relative references.
-     * 
+     *
      * @param baseRef
      *            The base reference for relative references.
      */
@@ -1460,7 +1460,7 @@ public class Reference {
 
     /**
      * Sets the fragment identifier.
-     * 
+     *
      * @param fragment
      *            The fragment identifier.
      */
@@ -1498,7 +1498,7 @@ public class Reference {
 
     /**
      * Sets the host domain component for server based hierarchical identifiers.
-     * 
+     *
      * @param domain
      *            The host component for server based hierarchical identifiers.
      */
@@ -1542,7 +1542,7 @@ public class Reference {
 
     /**
      * Sets the optional port number for server based hierarchical identifiers.
-     * 
+     *
      * @param port
      *            The optional port number for server based hierarchical
      *            identifiers.
@@ -1567,7 +1567,7 @@ public class Reference {
 
     /**
      * Sets the absolute resource identifier.
-     * 
+     *
      * @param identifier
      *            The absolute resource identifier.
      */
@@ -1593,7 +1593,7 @@ public class Reference {
 
     /**
      * Sets the path component for hierarchical identifiers.
-     * 
+     *
      * @param path
      *            The path component for hierarchical identifiers.
      */
@@ -1657,7 +1657,7 @@ public class Reference {
 
     /**
      * Sets the scheme component based on this protocol.
-     * 
+     *
      * @param protocol
      *            The protocol of the scheme component.
      */
@@ -1667,7 +1667,7 @@ public class Reference {
 
     /**
      * Returns the query component for hierarchical identifiers.
-     * 
+     *
      * @param query
      *            The query component for hierarchical identifiers.
      */
@@ -1728,7 +1728,7 @@ public class Reference {
 
     /**
      * Sets the relative part for relative references only.
-     * 
+     *
      * @param relativePart
      *            The relative part to set.
      */
@@ -1756,7 +1756,7 @@ public class Reference {
 
     /**
      * Sets the scheme component.
-     * 
+     *
      * @param scheme
      *            The scheme component.
      */
@@ -1791,7 +1791,7 @@ public class Reference {
 
     /**
      * Sets the scheme specific part.
-     * 
+     *
      * @param schemeSpecificPart
      *            The scheme specific part.
      */
@@ -1830,7 +1830,7 @@ public class Reference {
     /**
      * Sets the segments of a hierarchical path.<br/> A new absolute path will
      * replace any existing one.
-     * 
+     *
      * @param segments
      *            The segments of the hierarchical path.
      */
@@ -1844,7 +1844,7 @@ public class Reference {
 
     /**
      * Sets the user info component for server based hierarchical identifiers.
-     * 
+     *
      * @param userInfo
      *            The user info component for server based hierarchical
      *            identifiers.
@@ -1869,7 +1869,7 @@ public class Reference {
 
     /**
      * Returns the reference as an URI string.
-     * 
+     *
      * @return The reference as an URI string.
      */
     @Override
@@ -1879,7 +1879,7 @@ public class Reference {
 
     /**
      * Returns the URI reference string.
-     * 
+     *
      * @param query
      *            Indicates if the query should be included;
      * @param fragment
