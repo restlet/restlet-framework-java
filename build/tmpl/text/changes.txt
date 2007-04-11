@@ -28,7 +28,13 @@ Changes log
  - Fixed bug with the JavaMail extension that lacked the JAF dependencies and made the 
    ClientHelper class abstract. Reported by Matthieu Hug.
  - Fixed synchronization issue with Restlet initialization. Reported by Adam Falk.
-
+ - Fixed uncatched StackOverflowError exception when computing the relative part of a 
+   reference without base reference. Replaced by an IllegalArgument exception. Reported by 
+   Justin C. van Vorst.
+-  Fixed uncatched NullPointer exception when computing the target reference of a 
+   reference. An IllegalArgument exception in the case the base reference is not absolute. 
+   Reported by Justin C. van Vorst.
+   
 [API changes]
  - Representation is now an abstract class. If you ever needed to create an instance of 
    it, just use its super class Variant instead.
