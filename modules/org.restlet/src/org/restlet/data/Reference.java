@@ -757,7 +757,12 @@ public class Reference {
                 }
             }
         } else {
-            result = getRelativeRef().getRelativePart();
+            if (baseRef == null) {
+                throw new IllegalArgumentException(
+                        "Relative references are only usable when a base URI is known.");
+            } else {
+                result = getRelativeRef().getRelativePart();
+            }
         }
 
         return result;
@@ -781,11 +786,6 @@ public class Reference {
                 return toString(true, false).substring(
                         getBaseRef().toString(true, false).length());
             } catch (Exception e) {
-                Logger.getLogger(Reference.class.getCanonicalName()).log(
-                        Level.WARNING,
-                        "Cannot get the remaining part. [baseRef,internalRef]=["
-                                + this.baseRef + ", " + this.internalRef + "]",
-                        e);
                 return null;
             }
         } else {
@@ -1098,7 +1098,18 @@ public class Reference {
         Reference result = null;
 
         // Step 1 - Resolve relative reference against their base reference
-        if (isRelative() && (baseRef != null)) {
+        if (isRelative() && (this.baseRef != null)) {
+            Reference baseReference = null;
+            if (this.baseRef.isAbsolute()) {
+                baseReference = this.baseRef;
+            } else {
+                baseReference = this.baseRef.getTargetRef();
+            }
+            if (baseReference.isRelative()) {
+                throw new IllegalArgumentException(
+                        "The base reference must have an absolute hierarchical path component");
+            }
+
             // Relative URI detected
             String authority = getAuthority();
             String path = getPath();
@@ -1107,31 +1118,31 @@ public class Reference {
 
             // Create an empty reference
             result = new Reference();
-            result.setScheme(baseRef.getScheme());
+            result.setScheme(baseReference.getScheme());
 
             if (authority != null) {
                 result.setAuthority(authority);
                 result.setPath(path);
                 result.setQuery(query);
             } else {
-                result.setAuthority(baseRef.getAuthority());
+                result.setAuthority(baseReference.getAuthority());
 
                 if ((path == null) || (path.equals(""))) {
-                    result.setPath(baseRef.getPath());
+                    result.setPath(baseReference.getPath());
 
                     if (query != null) {
                         result.setQuery(query);
                     } else {
-                        result.setQuery(baseRef.getQuery());
+                        result.setQuery(baseReference.getQuery());
                     }
                 } else {
                     if (path.startsWith("/")) {
                         result.setPath(path);
                     } else {
-                        String basePath = baseRef.getPath();
+                        String basePath = baseReference.getPath();
                         String mergedPath = null;
 
-                        if ((baseRef.getAuthority() != null)
+                        if ((baseReference.getAuthority() != null)
                                 && ((basePath == null) || (basePath.equals("")))) {
                             mergedPath = "/" + path;
                         } else {
