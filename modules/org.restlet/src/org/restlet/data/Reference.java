@@ -803,16 +803,20 @@ public class Reference {
      *         satisfied.
      */
     public String getRemainingPart() {
+        String result = null;
+        String all = toString(true, false);
+
         if (getBaseRef() != null) {
-            try {
-                return toString(true, false).substring(
-                        getBaseRef().toString(true, false).length());
-            } catch (Exception e) {
-                return null;
+            String base = getBaseRef().toString(true, false);
+
+            if ((base != null) && all.startsWith(base)) {
+                result = all.substring(base.length());
             }
         } else {
-            return toString(true, false);
+            result = all;
         }
+
+        return result;
     }
 
     /**

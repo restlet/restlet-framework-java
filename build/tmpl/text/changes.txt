@@ -51,6 +51,8 @@ Changes log
  - Refactored internal NRE HTTP classes to provide more extension points. 
  - FileRepresentation now relies on a FileInputStream to expose a readable channel
    as it requires a read-only access to the file.
+ - Changed implementation of Reference.getRemainingPart() to not rely on a try/catch 
+   logic to test edge cases. Suggested by Justin C. van Vorst
   
 1.0 RC6 (2007-03-21)
 [Bugs fixed]
