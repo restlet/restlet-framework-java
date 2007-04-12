@@ -48,7 +48,6 @@ import java.util.logging.Logger;
  * path-noscheme        = begins with a non-colon segment
  * path-rootless        = begins with a segment
  * path-empty           = zero characters
- * </pre>
  * 
  * Note that this class doesn't encode or decode the reserved characters. It
  * assumes that the URIs or the URI parts passed in are properly encoded using
@@ -83,14 +82,14 @@ import java.util.logging.Logger;
  * 
  * Because the base reference is only a property of the Reference ("baseRef").
  * When you use the "Reference(base, path)" constructor, it is equivalent to
- * doing:<br>
- * ref = new Reference(path);<br>
- * ref.setBaseRef(base);<br>
+ * doing:
+ * ref = new Reference(path);
+ * ref.setBaseRef(base);
  * The base ref is not automatically resolved or "merged" with the rest of the
  * reference information (the path here). For example, this let's you reuse a
  * single reference as the base of several relative references. If you modify
  * the base reference, all relative references are still accurate.
- * 
+ * </pre>
  * @author Jerome Louvel (contact@noelios.com)
  * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986</a>
  */
