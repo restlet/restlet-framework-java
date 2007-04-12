@@ -115,6 +115,18 @@ public class ReferenceTestCase extends RestletTestCase {
         String uri136 = "http://a/b/c/g;x=1/y";
         String uri137 = "http://a/b/c/y";
 
+        Reference host = new Reference("http://host.com");
+        Reference slashdir = new Reference(host, "/dir");
+        Reference dir = new Reference(host, "dir");
+        Reference dirslash = new Reference(host, "dir/");
+        Reference fulldir = new Reference("http://host.com/dir");
+        Reference fulldirsub = new Reference(fulldir, "sub");
+        Reference fulldirslashsub = new Reference(fulldir, "/sub");
+        Reference slashdirsub = new Reference(slashdir, "sub");
+        Reference slashdirslashsub = new Reference(slashdir, "/sub");
+        Reference dirslashsub = new Reference(dirslash, "sub");
+        Reference fullsub = new Reference("http://host.com/dir/sub");
+
         // Test the parsing of references into its components
         testRef0("foo://example.com:8042/over/there?name=ferret#nose", "foo",
                 "example.com:8042", "/over/there", "name=ferret", "nose");
@@ -231,6 +243,30 @@ public class ReferenceTestCase extends RestletTestCase {
         testRef3("http://localhost/path#fragment?query", false, false,
                 "http://localhost/path");
 
+        testRef4(host, "http", "host.com", null, "http://host.com",
+                "http://host.com", "http://host.com", null, null);
+        testRef4(slashdir, null, null, "/dir", null, "/dir",
+                "http://host.com/dir", null, "/dir");
+        testRef4(dir, null, null, "dir", null, "dir", "http://host.com/dir",
+                null, "dir");
+        testRef4(dirslash, null, null, "dir/", null, "dir/",
+                "http://host.com/dir/", null, "dir/");
+        testRef4(fulldir, "http", "host.com", "/dir", "http://host.com/dir",
+                "http://host.com/dir", "http://host.com/dir", null, null);
+
+        testRef4(fulldirsub, null, null, "sub", null, "sub",
+                "http://host.com/sub", null, "sub");
+        testRef4(fulldirslashsub, null, null, "/sub", null, "/sub",
+                "http://host.com/sub", null, "/sub");
+        testRef4(slashdirsub, null, null, "sub", null, "sub",
+                "http://host.com/sub", null, "sub");
+        testRef4(slashdirslashsub, null, null, "/sub", "", "/sub",
+                "http://host.com/sub", null, "/sub");
+        testRef4(dirslashsub, null, null, "sub", null, "sub",
+                "http://host.com/dir/sub", null, "sub");
+        testRef4(fullsub, "http", "host.com", "/dir/sub",
+                "http://host.com/dir/sub", "http://host.com/dir/sub",
+                "http://host.com/dir/sub", null, null);
     }
 
     /**
@@ -295,6 +331,27 @@ public class ReferenceTestCase extends RestletTestCase {
             String toString) {
         Reference ref = new Reference(reference);
         assertEquals(ref.toString(query, fragment), toString);
+    }
+
+    /**
+     * Test the behaviour of several getters upon a Reference object.
+     * 
+     * @param reference
+     * @param query
+     * @param fragment
+     * @param toString
+     */
+    private void testRef4(Reference reference, String scheme, String authority,
+            String path, String remainingPart, String toString,
+            String targetRef, String query, String relativePart) {
+        assertEquals(reference.getScheme(), scheme);
+        assertEquals(reference.getAuthority(), authority);
+        assertEquals(reference.getPath(), path);
+        assertEquals(reference.getRemainingPart(), remainingPart);
+        assertEquals(reference.toString(), toString);
+        assertEquals(reference.getTargetRef().toString(), targetRef);
+        assertEquals(reference.getQuery(), query);
+        assertEquals(reference.getRelativePart(), relativePart);
     }
 
     /**
