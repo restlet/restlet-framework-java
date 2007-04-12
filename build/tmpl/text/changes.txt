@@ -29,8 +29,8 @@ Changes log
    ClientHelper class abstract. Reported by Matthieu Hug.
  - Fixed synchronization issue with Restlet initialization. Reported by Adam Falk.
  - Fixed uncaught StackOverflowError exception when computing the relative part of a 
-   reference without base reference. Replaced by an IllegalArgument exception. Reported by 
-   Justin C. van Vorst.
+   reference without base reference. Null is returned when the reference is absolute. 
+   Reported by Justin C. van Vorst.
 -  Fixed uncaught NullPointer exception when computing the target reference of a 
    reference. An IllegalArgument exception in the case the base reference is not absolute. 
    Reported by Justin C. van Vorst.
