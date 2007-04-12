@@ -33,21 +33,21 @@ import java.util.logging.Logger;
  * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br/>
  * 
  * <pre>
- *    URI reference        = absolute-reference | relative-reference
- *    
- *    absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
- *    scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
- *    hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
- *    authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
- *    
- *    relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
- *    relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
- *    
- *    path-abempty         = begins with &quot;/&quot; or is empty
- *    path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
- *    path-noscheme        = begins with a non-colon segment
- *    path-rootless        = begins with a segment
- *    path-empty           = zero characters
+ * URI reference        = absolute-reference | relative-reference
+ * 
+ * absolute-reference   = scheme &quot;:&quot; scheme-specific-part [ &quot;#&quot; fragment ]
+ * scheme-specific-part = ( hierarchical-part [ &quot;?&quot; query ] ) | opaque-part
+ * hierarchical-part    = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-rootless | path-empty
+ * authority            = [ user-info &quot;@&quot; ] host-domain [ &quot;:&quot; host-port ]
+ * 
+ * relative-reference   = relative-part [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
+ * relative-part        = ( &quot;//&quot; authority path-abempty ) | path-absolute | path-noscheme | path-empty
+ * 
+ * path-abempty         = begins with &quot;/&quot; or is empty
+ * path-absolute        = begins with &quot;/&quot; but not &quot;//&quot;
+ * path-noscheme        = begins with a non-colon segment
+ * path-rootless        = begins with a segment
+ * path-empty           = zero characters
  * </pre>
  * 
  * Note that this class doesn't encode or decode the reserved characters. It
@@ -60,7 +60,13 @@ import java.util.logging.Logger;
  * resource), an URI reference can be relative (with or without query and
  * fragment part). This relative URI reference can then be resolved against a
  * base reference via the getTargetRef() method which will return a new resolved
- * Reference instance, an absolute URI reference with no base reference.
+ * Reference instance, an absolute URI reference with no base reference and with
+ * no dot-segments (the path segments "." and "..").
+ * 
+ * You can also apply the getTargetRef() method on absolute references in order
+ * to solve the dot-segments. Note that applying the getRelativeRef() method on
+ * an absolute reference returns the current reference relatively to a base
+ * reference, if any, and solves the dot-segments.
  * 
  * The Reference stores its data as a single string, the one passed to the
  * constructor. This string can always be obtained using the toString() method.
