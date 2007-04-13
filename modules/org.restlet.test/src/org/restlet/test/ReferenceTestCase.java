@@ -260,7 +260,7 @@ public class ReferenceTestCase extends RestletTestCase {
                 "http://host.com/sub", null, "/sub");
         testRef4(slashdirsub, null, null, "sub", null, "sub",
                 "http://host.com/sub", null, "sub");
-        testRef4(slashdirslashsub, null, null, "/sub", "", "/sub",
+        testRef4(slashdirslashsub, null, null, "/sub", null, "/sub",
                 "http://host.com/sub", null, "/sub");
         testRef4(dirslashsub, null, null, "sub", null, "sub",
                 "http://host.com/dir/sub", null, "sub");
