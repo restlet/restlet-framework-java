@@ -35,4 +35,4 @@ Licensing
     * Commercial licenses can be discussed for trademark usage and alternative usage models.
 
 
-Copyright © 2005-2006 Jérôme Louvel. Restlet is a registered trademark of Noelios Consulting.
+Copyright © 2005-2007 Jérôme Louvel. Restlet is a registered trademark of Noelios Consulting.

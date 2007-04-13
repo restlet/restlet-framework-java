@@ -26,7 +26,6 @@ org.restlet.ext.fileupload_1.2 (Integration with Apache FileUpload)
 ------------------------------
  - javax.servlet_2.4
  - org.apache.commons.fileupload_1.2
- - org.apache.commons.io_1.3
  - org.restlet
 
 
@@ -83,9 +82,9 @@ com.noelios.restlet.ext.asyncweb_0.8 (AsyncWeb server HTTP connector)
 com.noelios.restlet.ext.httpclient_3.1 (HTTP client connector based on Apache Commons HTTP Client)
 --------------------------------------
  - com.noelios.restlet
- - org.apache.commons.codec
- - org.apache.commons.httpclient
- - org.apache.commons.logging
+ - org.apache.commons.codec 1.3
+ - org.apache.commons.httpclient 3.1
+ - org.apache.commons.logging 1.1
  - org.restlet
 
 
@@ -93,6 +92,7 @@ com.noelios.restlet.ext.javamail_1.4 (SMTP client connector based on JavaMail)
 ------------------------------------
  - com.noelios.restlet
  - javax.mail_1.4
+ - javax.activation_1.1
  - org.restlet
 
 
