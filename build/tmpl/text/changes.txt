@@ -7,7 +7,9 @@ Changes log
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Fixed comment error in class ServerServlet.
-
+ - Fixed bug with the ObjectRepresentation class. The constructor with 
+   Representation parameter did not get the stream from the serialized parameter.
+ 
 1.0.0 (2007-04-16)
 [Bugs fixed]
  - Fixed bug when instantiating the secret of a ChallengeResponse.
