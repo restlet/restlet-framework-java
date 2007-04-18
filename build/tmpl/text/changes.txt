@@ -9,6 +9,8 @@ Changes log
  - Fixed comment error in class ServerServlet.
  - Fixed bug with the ObjectRepresentation class. The constructor with 
    Representation parameter did not get the stream from the serialized parameter.
+ - Fixed potential bug when testing equality between media types ignoring the 
+   parameters.
  
 1.0.0 (2007-04-16)
 [Bugs fixed]
