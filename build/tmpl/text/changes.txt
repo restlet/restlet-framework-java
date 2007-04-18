@@ -6,6 +6,10 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - Fixed comment error in class ServerServlet.
+
+1.0.0 (2007-04-16)
+[Bugs fixed]
  - Fixed bug when instantiating the secret of a ChallengeResponse.
  - Fixed bugs in the Servlet-based WAR client which prevented a normal behavior.
    Now, URIs like "war:///WEB-INF/web.xml".
