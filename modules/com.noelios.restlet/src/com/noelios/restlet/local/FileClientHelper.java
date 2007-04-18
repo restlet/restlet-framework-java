@@ -574,8 +574,8 @@ public class FileClientHelper extends LocalClientHelper {
                 result = false;
             }
             if (representation.getMediaType() != null
-                    && !representation.getMediaType()
-                            .equals(var.getMediaType())) {
+                    && !representation.getMediaType().includes(
+                            var.getMediaType())) {
                 result = false;
             }
             if (!representation.getEncodings().isEmpty()
