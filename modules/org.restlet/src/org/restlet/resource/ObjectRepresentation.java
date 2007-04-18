@@ -52,7 +52,7 @@ public class ObjectRepresentation extends OutputRepresentation {
         super(MediaType.APPLICATION_JAVA_OBJECT);
         if (serializedRepresentation.getMediaType().equals(
                 MediaType.APPLICATION_JAVA_OBJECT)) {
-            ObjectInputStream ois = new ObjectInputStream(getStream());
+            ObjectInputStream ois = new ObjectInputStream(serializedRepresentation.getStream());
             this.object = ois.readObject();
             ois.close();
         } else {
