@@ -37,34 +37,36 @@ import org.restlet.data.Protocol;
 import com.noelios.restlet.http.HttpServerHelper;
 
 /**
- * Servlet acting like an HTTP server connector. See the getTarget() method for
- * details on how to provide a target for your server.<br/> Here is a sample
- * configuration for your Restlet webapp:
+ * Servlet acting like an HTTP server connector.
+ * 
+ * @See <a href="../faq#2">Developper FAQ #2</a> for details on how to
+ *      integrate a Restlet application into a servlet container.<br/> Here is
+ *      a sample configuration for your Restlet webapp:
  * 
  * <pre>
- *      &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
- *      &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
- *      &lt;web-app&gt;
- *              &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- *                                                              
- *              &lt;!-- Your application class name --&gt;
- *              &lt;context-param&gt;
- *                      &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
- *                      &lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
- *              &lt;/context-param&gt;
- *                                                              
- *              &lt;!-- Restlet adapter --&gt;
- *              &lt;servlet&gt;
- *                      &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *                      &lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
- *              &lt;/servlet&gt;
- *                                                              
- *              &lt;!-- Catch all requests --&gt;
- *              &lt;servlet-mapping&gt;
- *                      &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *                      &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
- *              &lt;/servlet-mapping&gt;
- *      &lt;/web-app&gt;}
+ *       &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+ *       &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
+ *       &lt;web-app&gt;
+ *               &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
+ *                                                               
+ *               &lt;!-- Your application class name --&gt;
+ *               &lt;context-param&gt;
+ *                       &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ *                       &lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
+ *               &lt;/context-param&gt;
+ *                                                               
+ *               &lt;!-- Restlet adapter --&gt;
+ *               &lt;servlet&gt;
+ *                       &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                       &lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+ *               &lt;/servlet&gt;
+ *                                                               
+ *               &lt;!-- Catch all requests --&gt;
+ *               &lt;servlet-mapping&gt;
+ *                       &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                       &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+ *               &lt;/servlet-mapping&gt;
+ *       &lt;/web-app&gt;}
  * </pre>
  * 
  * The enumeration of initParameters of your Servlet will be copied to the
@@ -194,7 +196,7 @@ public class ServerServlet extends HttpServlet {
                         "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
                                 + applicationClassName, e);
             }
-            
+
             if (application != null) {
                 // Set the context based on the Servlet's context
                 application.setContext(new ServletContextAdapter(this,
@@ -388,8 +390,8 @@ public class ServerServlet extends HttpServlet {
      * @param response
      *            The HTTP Servlet response.
      */
-    public void service(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+    public void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpServerHelper helper = getServer(request);
 
         if (helper != null) {
