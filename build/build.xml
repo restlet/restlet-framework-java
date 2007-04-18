@@ -902,6 +902,9 @@
    <!-- COMPILE target -->
    <target name="generate-classes" depends="init" description="Compile the Java source files.">
       <mkdir dir="${classes}" />
+      <svn>
+         <revert file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" />
+      </svn>
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@major-number@" value="${major-number}" />
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@minor-number@" value="${minor-number}" />
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@release-number@" value="${release-number}" />
