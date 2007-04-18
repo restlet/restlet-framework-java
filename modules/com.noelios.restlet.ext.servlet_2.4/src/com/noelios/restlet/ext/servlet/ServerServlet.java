@@ -38,35 +38,34 @@ import com.noelios.restlet.http.HttpServerHelper;
 
 /**
  * Servlet acting like an HTTP server connector.
- * 
- * @see <a href="../faq#2">Developper FAQ #2</a> for details on how to
- *      integrate a Restlet application into a servlet container.<br/> Here is
- *      a sample configuration for your Restlet webapp:
+ * See <a href="http://www.restlet.org/documentation/1.0/faq#02">Developper FAQ
+ * #2</a> for details on how to integrate a Restlet application into a servlet
+ * container.<br/> Here is a sample configuration for your Restlet webapp:
  * 
  * <pre>
- *       &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
- *       &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
- *       &lt;web-app&gt;
- *               &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- *                                                               
- *               &lt;!-- Your application class name --&gt;
- *               &lt;context-param&gt;
- *                       &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
- *                       &lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
- *               &lt;/context-param&gt;
- *                                                               
- *               &lt;!-- Restlet adapter --&gt;
- *               &lt;servlet&gt;
- *                       &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *                       &lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
- *               &lt;/servlet&gt;
- *                                                               
- *               &lt;!-- Catch all requests --&gt;
- *               &lt;servlet-mapping&gt;
- *                       &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
- *                       &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
- *               &lt;/servlet-mapping&gt;
- *       &lt;/web-app&gt;}
+ * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+ * &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
+ * &lt;web-app&gt;
+ *         &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
+ *                                                         
+ *         &lt;!-- Your application class name --&gt;
+ *         &lt;context-param&gt;
+ *                 &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ *                 &lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
+ *         &lt;/context-param&gt;
+ *                                                         
+ *         &lt;!-- Restlet adapter --&gt;
+ *         &lt;servlet&gt;
+ *                 &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                 &lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
+ *         &lt;/servlet&gt;
+ *                                                         
+ *         &lt;!-- Catch all requests --&gt;
+ *         &lt;servlet-mapping&gt;
+ *                 &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
+ *                 &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+ *         &lt;/servlet-mapping&gt;
+ * &lt;/web-app&gt;}
  * </pre>
  * 
  * The enumeration of initParameters of your Servlet will be copied to the
