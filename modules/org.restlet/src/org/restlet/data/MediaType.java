@@ -402,9 +402,9 @@ public final class MediaType extends Metadata {
                 // if obj isn't a mediatype or is null don't evaluate further
                 if ((obj instanceof MediaType) && obj != null) {
                     MediaType that = (MediaType) obj;
-                    result = !ignoreParameters
-                            && (this.getParameters().equals(that
-                                    .getParameters()));
+                    result = ignoreParameters
+                            || this.getParameters()
+                                    .equals(that.getParameters());
                 }
             }
         }
