@@ -17,7 +17,10 @@
  */
 package org.restlet.test;
 
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
+import org.restlet.util.Series;
 
 /**
  * Test {@link org.restlet.data.MediaType}.
@@ -38,10 +41,29 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertTrue(mt1.equals(mt2));
         assertEquals(mt1, mt2);
 
+        Series<Parameter> mediaParams1 = new Form();
+        mediaParams1.add(new Parameter("charset", "ISO-8859-1"));
+        MediaType mt1Bis = new MediaType("application/xml", mediaParams1);
+
+        Series<Parameter> mediaParams2 = new Form();
+        mediaParams2.add(new Parameter("charset", "ISO-8859-1"));
+        MediaType mt2Bis = new MediaType("application/xml", mediaParams2);
+
+        Series<Parameter> mediaParams3 = new Form();
+        mediaParams3.add(new Parameter("charset", "ISO-8859-15"));
+        MediaType mt3 = new MediaType("application/xml", mediaParams3);
+
+        assertTrue(mt1Bis.equals(mt2Bis));
+        assertEquals(mt1, mt2);
+        assertTrue(mt1Bis.equals(mt1, true));
+        assertTrue(mt1Bis.equals(mt2, true));
+        assertTrue(mt1Bis.equals(mt3, true));
+
         mt1 = new MediaType("application/*");
         mt2 = MediaType.APPLICATION_ALL;
         assertTrue(mt1.equals(mt2));
         assertEquals(mt1, mt2);
+
     }
 
     /**
@@ -51,6 +73,17 @@ public class MediaTypeTestCase extends RestletTestCase {
         MediaType mt1 = new MediaType("application/xml");
         MediaType mt2 = new MediaType("application/xml2");
         assertFalse(mt1.equals(mt2));
+
+        Series<Parameter> mediaParams1 = new Form();
+        mediaParams1.add(new Parameter("charset", "ISO-8859-1"));
+        MediaType mt1Bis = new MediaType("application/xml", mediaParams1);
+
+        Series<Parameter> mediaParams3 = new Form();
+        mediaParams3.add(new Parameter("charset", "ISO-8859-15"));
+        MediaType mt3 = new MediaType("application/xml", mediaParams3);
+
+        assertFalse(mt1Bis.equals(mt1));
+        assertFalse(mt1Bis.equals(mt3));
 
         mt1 = new MediaType("application/1");
         mt2 = MediaType.APPLICATION_ALL;
