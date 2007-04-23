@@ -124,17 +124,10 @@ public class ServletConverter extends HttpServerConverter {
                     httpRequest);
 
             // Adjust the relative reference
-            if (this.baseRef == null) {
-                String basePath = request.getContextPath()
-                        + request.getServletPath();
-                String baseUri = request.getRequestURL().toString();
-                int baseIndex = baseUri.indexOf(basePath);
-                if (baseIndex != -1) {
-                    this.baseRef = new Reference(baseUri.substring(0, baseIndex
-                            + basePath.length()));
-                }
-            }
-            httpRequest.getResourceRef().setBaseRef(this.baseRef);
+            httpRequest.getResourceRef().setBaseRef(getBaseRef(request));
+
+            // Adjust the root reference
+            httpRequest.setRootRef(getRootRef(request));
 
             // Handle the request and commit the response
             getTarget().handle(httpRequest, httpResponse);
@@ -145,12 +138,46 @@ public class ServletConverter extends HttpServerConverter {
     }
 
     /**
+     * Returns the base reference of new Restlet requests.
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The base reference of new Restlet requests.
+     */
+    public Reference getBaseRef(HttpServletRequest request) {
+        if (this.baseRef == null) {
+            String basePath = request.getContextPath()
+                    + request.getServletPath();
+            String baseUri = request.getRequestURL().toString();
+            int baseIndex = baseUri.indexOf(basePath);
+            if (baseIndex != -1) {
+                this.baseRef = new Reference(baseUri.substring(0, baseIndex
+                        + basePath.length()));
+            }
+        }
+
+        return this.baseRef;
+    }
+
+    /**
+     * Returns the root reference of new Restlet requests. By default it returns
+     * the result of getBaseRef().
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The root reference of new Restlet requests.
+     */
+    public Reference getRootRef(HttpServletRequest request) {
+        return getBaseRef(request);
+    }
+
+    /**
      * Returns the target Restlet.
      * 
      * @return The target Restlet.
      */
     public Restlet getTarget() {
-        return target;
+        return this.target;
     }
 
     /**

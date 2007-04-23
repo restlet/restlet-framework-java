@@ -11,6 +11,8 @@ Changes log
    Representation parameter did not get the stream from the serialized parameter.
  - Fixed potential bug when testing equality between media types ignoring the 
    parameters.
+ - ServletConverter now also set the request's rootRef property and allows customization
+   of the "baseRef" and "rootRef" value via getBaseRef() and getRootRef() methods.
  
 1.0.0 (2007-04-16)
 [Bugs fixed]
