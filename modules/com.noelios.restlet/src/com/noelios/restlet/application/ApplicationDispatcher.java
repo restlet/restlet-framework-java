@@ -18,6 +18,8 @@
 
 package com.noelios.restlet.application;
 
+import java.util.logging.Logger;
+
 import org.restlet.Application;
 import org.restlet.Uniform;
 import org.restlet.data.Protocol;
@@ -63,7 +65,7 @@ public class ApplicationDispatcher extends Uniform {
                     this.applicationContext.getApplication());
             response.getAttributes().put(Application.KEY,
                     this.applicationContext.getApplication());
-            
+
             if (protocol.equals(Protocol.WAR)) {
                 this.applicationContext.getWarClient()
                         .handle(request, response);
@@ -78,8 +80,17 @@ public class ApplicationDispatcher extends Uniform {
                                             + "Please update the list of client connectors used by your application and restart it.");
                 }
 
-                this.applicationContext.getParentContext().getDispatcher()
-                        .handle(request, response);
+                if (this.applicationContext != null) {
+                    this.applicationContext.getParentContext().getDispatcher()
+                            .handle(request, response);
+                } else {
+                    Logger
+                            .getLogger(
+                                    ApplicationDispatcher.class
+                                            .getCanonicalName())
+                            .warning(
+                                    "Your Application doesn't have a context set. Ensure that you pass the parent Component's context to your Application constructor.");
+                }
             }
         }
     }

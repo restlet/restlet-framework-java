@@ -13,6 +13,8 @@ Changes log
    parameters.
  - ServletConverter now also set the request's rootRef property and allows customization
    of the "baseRef" and "rootRef" value via getBaseRef() and getRootRef() methods.
+ - Fixed NPE in ApplicationDispatcher when the context from the parent Component isn't
+   set. Now a warning message is logged. Reported by Jeff Walter and Chuck Hinson.
  
 1.0.0 (2007-04-16)
 [Bugs fixed]
