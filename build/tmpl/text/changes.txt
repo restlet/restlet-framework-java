@@ -18,6 +18,9 @@ Changes log
  - ApplicationHelper was not properly setting the Application.KEY attribute in
    the incoming requests and responses, causing problem in usage of services such
    as the ConnectorService. Reported by Dig.
+ - Clarified the Javadocs on the Context.getParameters() method and on the default
+   constructors for Application, Restlet, Router and VirtualHost. Suggested by Alex Milowski
+   and Chuck Hinson.
  
 1.0.0 (2007-04-16)
 [Bugs fixed]

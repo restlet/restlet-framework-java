@@ -100,7 +100,10 @@ public abstract class Application extends Restlet {
     private Helper helper;
 
     /**
-     * Constructor.
+     * Constructor. Note that usage of this constructor is not recommended as
+     * your application won't have access to the parent component context. For
+     * example, no dispatching will be possible as it requires access to the
+     * component's client connectors.
      */
     public Application() {
         this((Context) null);

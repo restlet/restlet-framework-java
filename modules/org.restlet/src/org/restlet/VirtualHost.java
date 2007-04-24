@@ -30,19 +30,21 @@ import org.restlet.data.Response;
  * 
  * A virtual host is defined along three properties:
  * <ul>
- * <li>request's {@link Request#getHostRef()}: the URI of the host that received the request. Note that
- * the same IP address can correspond to multiple domain names and therefore receive
- * request with different "hostRef" URIs.</li>
- * <li>request's {@link Request#getResourceRef()}: the URI of the target resource of the request. If
- * this reference is relative, then it is based on the "hostRef", otherwise it is
- * maintained as received. This difference is useful for resources identified by 
- * URNs or for Web proxies or Web caches.</li>
- * <li>response's {@link Response#getServerInfo()}: the information about the server
- * connector receiving the requests such as it IP address and port number.</li>
+ * <li>request's {@link Request#getHostRef()}: the URI of the host that
+ * received the request. Note that the same IP address can correspond to
+ * multiple domain names and therefore receive request with different "hostRef"
+ * URIs.</li>
+ * <li>request's {@link Request#getResourceRef()}: the URI of the target
+ * resource of the request. If this reference is relative, then it is based on
+ * the "hostRef", otherwise it is maintained as received. This difference is
+ * useful for resources identified by URNs or for Web proxies or Web caches.</li>
+ * <li>response's {@link Response#getServerInfo()}: the information about the
+ * server connector receiving the requests such as it IP address and port
+ * number.</li>
  * </ul>
  * When creating a new instance, you can define Java regular expressions ({@link java.util.regex.Pattern})
- * that must match the domain name, port, scheme for references or IP address and 
- * port number for server information. The default values match everything.
+ * that must match the domain name, port, scheme for references or IP address
+ * and port number for server information. The default values match everything.
  * 
  * @see java.util.regex.Pattern
  * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia -
@@ -130,7 +132,9 @@ public class VirtualHost extends Router {
     private String serverPort;
 
     /**
-     * Constructor.
+     * Constructor. Note that usage of this constructor is not recommended as
+     * the Router won't have a proper context set. In general you will prefer to
+     * use the other constructor and pass it the parent component's context.
      */
     public VirtualHost() {
         this(null);

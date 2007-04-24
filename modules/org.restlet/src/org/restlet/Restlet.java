@@ -44,7 +44,11 @@ public class Restlet extends Uniform {
     private boolean started;
 
     /**
-     * Constructor.
+     * Constructor. Note that usage of this constructor is not recommended as
+     * the Restlet won't have a proper context set. In general you will prefer
+     * to use the other constructor and pass it the parent application's context
+     * or eventually the parent component's context if you don't use
+     * applications.
      */
     public Restlet() {
         this(null);

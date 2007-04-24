@@ -74,8 +74,8 @@ public class Context {
     /**
      * Returns a modifiable attributes map that can be used by developers to
      * save information relative to the context. This is a convenient mean to
-     * provide common objects to all the Restlets composing an Application.<br/>
-     * <br/>
+     * provide common objects to all the Restlets and Resources composing an
+     * Application.<br/> <br/>
      * 
      * In addition, this map is a shared space between the developer and the
      * Restlet implementation. For this purpose, all attribute names starting
@@ -126,7 +126,10 @@ public class Context {
     }
 
     /**
-     * Returns the modifiable series of parameters.
+     * Returns the modifiable series of parameters. A parameter is a pair
+     * composed of a name and a value and is typically used for configuration
+     * purpose, like Java properties. Note that multiple parameters with the
+     * same name can be declared and accessed.
      * 
      * @return The modifiable series of parameters.
      */
