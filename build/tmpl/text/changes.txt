@@ -21,7 +21,9 @@ Changes log
  - Clarified the Javadocs on the Context.getParameters() method and on the default
    constructors for Application, Restlet, Router and VirtualHost. Suggested by Alex Milowski
    and Chuck Hinson.
- 
+ - Test mediaType inclusion instead of equality when checking metadata 
+   consistency in FileClientHelper class.
+
 1.0.0 (2007-04-16)
 [Bugs fixed]
  - Fixed bug when instantiating the secret of a ChallengeResponse.
