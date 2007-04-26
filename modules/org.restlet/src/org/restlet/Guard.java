@@ -85,7 +85,7 @@ public class Guard extends Filter {
 
     /**
      * Indicates if the call is properly authenticated. By default, this
-     * delegates credential checking to authenticate().
+     * delegates credential checking to checkSecret().
      * 
      * @param request
      *            The request to authenticate.
