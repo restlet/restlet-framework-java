@@ -24,8 +24,8 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 import com.sun.grizzly.Controller;
-import com.sun.grizzly.DefaultInstanceHandler;
 import com.sun.grizzly.DefaultProtocolChain;
+import com.sun.grizzly.DefaultProtocolChainInstanceHandler;
 import com.sun.grizzly.ProtocolChain;
 import com.sun.grizzly.TCPSelectorHandler;
 import com.sun.grizzly.filter.ReadFilter;
@@ -64,17 +64,18 @@ public class HttpServerHelper extends GrizzlyServerHelper {
 
         // Create the Grizzly controller
         controller.setSelectHandler(selectHandler);
-        controller.setInstanceHandler(new DefaultInstanceHandler() {
-            public ProtocolChain poll() {
-                ProtocolChain protocolChain = protocolChains.poll();
-                if (protocolChain == null) {
-                    protocolChain = new DefaultProtocolChain();
-                    protocolChain.addFilter(readFilter);
-                    protocolChain.addFilter(httpParserFilter);
-                }
-                return protocolChain;
-            }
-        });
+        controller
+                .setProtocolChainInstanceHandler(new DefaultProtocolChainInstanceHandler() {
+                    public ProtocolChain poll() {
+                        ProtocolChain protocolChain = protocolChains.poll();
+                        if (protocolChain == null) {
+                            protocolChain = new DefaultProtocolChain();
+                            protocolChain.addFilter(readFilter);
+                            protocolChain.addFilter(httpParserFilter);
+                        }
+                        return protocolChain;
+                    }
+                });
     }
 
 }
