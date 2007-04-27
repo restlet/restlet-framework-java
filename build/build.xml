@@ -1245,6 +1245,7 @@
 <!-- disabled for 1.0  <stageModule name="bouncycastle" /> -->
       <stageModule name="fileupload" />
       <stageModule name="freemarker" />
+<!-- disabled for 1.0  <stageModule name="grizzly" /> -->
       <stageModule name="httpclient" />
       <stageModule name="javamail" />
       <stageModule name="jdbc" />
