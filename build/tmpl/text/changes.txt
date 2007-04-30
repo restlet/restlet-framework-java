@@ -28,10 +28,11 @@ Changes log
 
 [Enhancements] 
  - Separated BLOAT library from db4o library for better dependency management.
- - Updated db4o to version 6.1.501
- - Updated Retrotranslator to version 1.2.1
+ - Updated db4o to version 6.1.501.
+ - Updated Retrotranslator to version 1.2.1.
  - Removed unused Retroweaver and Backport libraries.
- - Updated Apache Commons DBCP to version 1.2.2
+ - Updated Apache Commons DBCP to version 1.2.2.
+ - Updated FreeMarker to version 2.3.10.
 
 1.0.0 (2007-04-16)
 [Bugs fixed]
