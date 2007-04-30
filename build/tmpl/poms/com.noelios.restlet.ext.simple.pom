@@ -10,8 +10,8 @@
 			<version>@version@</version>
 		</dependency>
 		<dependency>
-			<groupId>simple</groupId>
-			<artifactId>simple-core</artifactId>
+			<groupId>org.simpleframework</groupId>
+			<artifactId>org.simpleframework</artifactId>
 			<version>@lib-simple-version@</version>
 		</dependency>
 	</dependencies>

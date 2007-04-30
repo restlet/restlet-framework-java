@@ -11,7 +11,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.safehaus.asyncweb</groupId>
-			<artifactId>asyncweb</artifactId>
+			<artifactId>org.safehaus.asyncweb</artifactId>
 			<version>@lib-asyncweb-version@</version>
 		</dependency>
 	</dependencies>

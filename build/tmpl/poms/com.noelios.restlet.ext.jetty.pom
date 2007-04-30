@@ -14,6 +14,21 @@
 			<artifactId>jetty</artifactId>
 			<version>@lib-jetty-version@</version>
 		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty-ajp</artifactId>
+			<version>@lib-jetty-version@</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty-sslengine</artifactId>
+			<version>@lib-jetty-version@</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>@lib-jetty-version@</version>
+		</dependency>
 	</dependencies>
 
 	<name>HTTP server connector</name>
