@@ -88,8 +88,8 @@ public class ApplicationHelper extends Helper {
      */
     public void handle(Request request, Response response) {
         // Add the application in request and response attributes
-        request.getAttributes().put(Application.KEY, this);
-        response.getAttributes().put(Application.KEY, this);
+        request.getAttributes().put(Application.KEY, this.application);
+        response.getAttributes().put(Application.KEY, this.application);
 
         if (getFirst() != null) {
             // Dispatch the call to the first Restlet
