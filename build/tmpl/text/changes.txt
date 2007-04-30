@@ -23,8 +23,8 @@ Changes log
    and Chuck Hinson.
  - Test mediaType inclusion instead of equality when checking metadata 
    consistency in FileClientHelper class.
- - Fixed bug causing HTTP authentication with a long user or password to fail. 
-   Reported by Stian Soiland.
+ - Fixed bug causing HTTP authentication with a long user or password to fail, added JUnit test case. 
+   Reported and contributed by Stian Soiland.
 
 1.0.0 (2007-04-16)
 [Bugs fixed]
