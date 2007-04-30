@@ -903,7 +903,7 @@
    <target name="generate-classes" depends="init" description="Compile the Java source files.">
       <mkdir dir="${classes}" />
       <copy todir="${mod}">
-         <fileset dir="../modules" excludes="${excludes}" />
+         <fileset dir="../modules" />
       </copy>
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@major-number@" value="${major-number}" />
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@minor-number@" value="${minor-number}" />
