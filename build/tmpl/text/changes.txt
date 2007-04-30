@@ -116,7 +116,7 @@ Changes log
  - Added Apache Commons Lang library, dependency for Velocity 1.5.
  - Completed missing Javadocs for Series class. Reported by Jonathan Hall.
  - Added warning message when no Restlet API found in the classpath.
- - Upgraded Apache HTTP Client to 3.1 RC1.
+ - Upgraded Apache HTTP Client to version 3.1 RC1.
  - Tutorial examples now statically import the Constants class instead of implementing
    the Constants interface anti-pattern. Reported by Sean Landis.
  - Updated the normalization process of a reference by ensuring that default ports are ignored.

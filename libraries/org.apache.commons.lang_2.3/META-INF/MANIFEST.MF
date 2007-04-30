@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jakarta Commons Lang
 Bundle-SymbolicName: org.apache.commons.lang
-Bundle-Version: 2.3.0
+Bundle-Version: 2.3
 Bundle-ClassPath: org.apache.commons.lang.jar
 Bundle-Vendor: Apache Software Foundation
 Bundle-Localization: plugin
