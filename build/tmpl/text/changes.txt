@@ -26,6 +26,10 @@ Changes log
  - Fixed bug causing HTTP authentication with a long user or password to fail, added JUnit test case. 
    Reported and contributed by Stian Soiland.
 
+[Enhancements] 
+ - Separated BLOAT library from db4o library for better dependency management.
+   
+
 1.0.0 (2007-04-16)
 [Bugs fixed]
  - Fixed bug when instantiating the secret of a ChallengeResponse.
