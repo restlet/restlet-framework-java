@@ -28,6 +28,8 @@ Changes log
 
 [Enhancements] 
  - Separated BLOAT library from db4o library for better dependency management.
+ - Updated db4o to version 6.1.501
+ - Updated Retrotranslator to version 1.2.1
    
 
 1.0.0 (2007-04-16)

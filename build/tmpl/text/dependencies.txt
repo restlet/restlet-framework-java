@@ -66,6 +66,8 @@ com.noelios.restlet.example (Tutorial examples)
  - com.noelios.restlet
  - com.noelios.restlet.ext.net
  - com.noelios.restlet.ext.simple_3.1 (or another HTTP Server connector)
+ - com.db4o_6.1 (for book examples)
+ - edu.purdue.cs.bloat_1.0 (for book examples)
  
 
 com.noelios.restlet.ext.asyncweb_0.8 (AsyncWeb server HTTP connector)
