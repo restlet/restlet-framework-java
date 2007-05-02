@@ -551,6 +551,8 @@
 
          <copy file="${dist-classic}/lib/${lib-@{name}-id}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar" overwrite="true" />
          <copy file="${temp}/poms/${lib-@{name}-id}.pom" tofile="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.pom" overwrite="true" />
+         <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar"/>
+         <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.pom"/>
       </sequential>
    </macrodef>
 
@@ -574,6 +576,9 @@
          </jar>
      
          <copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-full}.pom" overwrite="true" />
+         <checksum file="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-full}.jar"/>
+         <checksum file="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-full}-sources.jar"/>
+         <checksum file="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-full}.pom"/>
       </sequential>
    </macrodef>
    
@@ -715,7 +720,6 @@
       <pomModule name="ri" ext="" />
       <pomModule name="asyncweb" ext="" />
 <!-- disabled for 1.0  <pomModule name="atom" ext="" /> -->
-      <pomModule name="asyncweb" ext="" />
       <pomModule name="fileupload" ext="" />
       <pomModule name="freemarker" ext="" />
 <!-- disabled for 1.0  <pomModule name="grizzly" ext="" /> -->
@@ -735,7 +739,8 @@
 
       <pomLibrary name="simple" ext="" />
       <pomLibrary name="asyncweb" ext="" />
-      
+      <pomLibrary name="json" ext="" />
+            
       <!-- Generate the NSIS files -->
       <copy file="${tmpl}/nsis/common.nsh" todir="${temp}" overwrite="true" />
       <copy file="${tmpl}/nsis/setup.nsi" todir="${temp}" overwrite="true" />
@@ -1153,6 +1158,7 @@
       <maven2Module name="velocity" />
       <maven2Library name="simple" />
       <maven2Library name="asyncweb" />
+      <maven2Library name="json" />
    </target>
 
    <!-- PACKAGE target -->
