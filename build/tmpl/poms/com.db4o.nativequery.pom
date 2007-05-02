@@ -9,7 +9,7 @@
          <artifactId>edu.purdue.cs.bloat</artifactId>
          <version>@lib-bloat-version@</version>
       </dependency>
-   <dependencies>
+   </dependencies>
    <name>Db4o - object database framework</name>
    <description>Db4o - object database framework.</description>
 </project>

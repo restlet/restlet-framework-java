@@ -412,7 +412,7 @@
    <!-- Generate the module POM file -->
    <macrodef name="pomModule">
       <attribute name="name" />
-      <attribute name="ext" />
+      <attribute name="ext" default="" />
       <sequential>
          <!-- sets the final pom version -->
          <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}-${lib-@{name}-suffix-maven}">
@@ -427,8 +427,7 @@
          <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
             <isset property="lib-@{name}-suffix-maven" />
          </condition>
-         <property name="mod-pom-@{name}-version" value="${lib-@{name}-version}" />
-         
+         <property name="mod-pom-@{name}-version" value="${lib-@{name}-version}" />         
          <copy file="${tmpl}/poms/${mod-@{name}-package}.pom" tofile="${temp}/poms/${mod-@{name}-id}.pom" overwrite="true" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@version@" value="${version-compact}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${mod-pom-@{name}-version}" />
@@ -442,7 +441,9 @@
    <macrodef name="pomLibrary">
       <attribute name="name" />
       <attribute name="depend1" default="-" />
+      <attribute name="type1" default="-" />
       <attribute name="depend2" default="-" />
+      <attribute name="type2" default="-" />
       <sequential>
          <!-- sets the final pom version -->
          <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}-${lib-@{name}-suffix-maven}">
@@ -466,13 +467,13 @@
          <if>
             <not><equals arg1="@{depend1}" arg2="-" /></not>
             <then>
-               <replace file="${temp}/poms/${lib-@{depend1}-id}.pom" token="@lib-@{name}-version@" value="${lib-pom-@{name}-version}" />
+               <replace file="${temp}/poms/${@{type1}-@{depend1}-id}.pom" token="@lib-@{name}-version@" value="${lib-pom-@{name}-version}" />
             </then>
          </if>
          <if>
             <not><equals arg1="@{depend2}" arg2="-" /></not>
             <then>
-               <replace file="${temp}/poms/${lib-@{depend2}-id}.pom" token="@lib-@{name}-version@" value="${lib-pom-@{name}-version}" />
+               <replace file="${temp}/poms/${@{type2}-@{depend2}-id}.pom" token="@lib-@{name}-version@" value="${lib-pom-@{name}-version}" />
             </then>
          </if>
       </sequential>
@@ -562,7 +563,7 @@
          <property name="lib-dir-@{name}-maven2" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/${lib-@{name}-package}/${lib-pom-@{name}-version}" />
          <mkdir dir="${lib-dir-@{name}-maven2}" />
 
-         <copy file="${dist-classic}/lib/${lib-@{name}-id}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar" overwrite="true" />
+         <copy file="${dist-classic}/lib/${lib-@{name}-maven-groupId}_${lib-@{name}-version}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar" overwrite="true" />
          <copy file="${temp}/poms/${lib-@{name}-id}.pom" tofile="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.pom" overwrite="true" />
          <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar"/>
          <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar" algorithm="SHA" fileext=".sha1"/>
@@ -734,34 +735,34 @@
       
       <!-- Generate the Maven POM files -->
       <mkdir dir="${temp}/poms"/>
+      <pomModule name="api" />
+      <pomModule name="ri" />
+      <pomModule name="asyncweb" />
+<!-- disabled for 1.0  <pomModule name="atom" /> -->
+      <pomModule name="fileupload" />
+      <pomModule name="freemarker" />
+<!-- disabled for 1.0  <pomModule name="grizzly" /> -->
+      <pomModule name="httpclient" />
+      <pomModule name="javamail" />
+      <pomModule name="jdbc" ext="dbcp" />
+<!-- disabled for 1.0  <pomModule name="jetty5"/> -->
+      <pomModule name="jetty" />
+<!-- disabled for 1.0  <pomModule name="jmx" /> -->
+      <pomModule name="json" />
+<!-- disabled for 1.0  <pomModule name="jxta" /> -->
+      <pomModule name="net" />
+      <pomModule name="servlet" />
+      <pomModule name="simple" />
+      <pomModule name="spring" />
+      <pomModule name="velocity" />
+      <pomModule name="example" />
+
       <pomLibrary name="simple"/>
       <pomLibrary name="asyncweb"/>
       <pomLibrary name="json"/>
-      <pomLibrary name="db4o"/>
+      <pomLibrary name="db4o" depend1="example" type1="mod" />
       <pomLibrary name="db4o-nativequery"/>
-      <pomLibrary name="bloat" depend1="db4o" depend2="db4o-nativequery"/>
-
-      <pomModule name="api" ext="" />
-      <pomModule name="ri" ext="" />
-      <pomModule name="asyncweb" ext="" />
-<!-- disabled for 1.0  <pomModule name="atom" ext="" /> -->
-      <pomModule name="fileupload" ext="" />
-      <pomModule name="freemarker" ext="" />
-<!-- disabled for 1.0  <pomModule name="grizzly" ext="" /> -->
-      <pomModule name="httpclient" ext="" />
-      <pomModule name="javamail" ext="" />
-      <pomModule name="jdbc" ext="dbcp" />
-<!-- disabled for 1.0  <pomModule name="jetty5" ext="" /> -->
-      <pomModule name="jetty" ext="" />
-<!-- disabled for 1.0  <pomModule name="jmx" ext="" /> -->
-      <pomModule name="json" ext="" />
-<!-- disabled for 1.0  <pomModule name="jxta" ext="" /> -->
-      <pomModule name="net" ext="" />
-      <pomModule name="servlet" ext="" />
-      <pomModule name="simple" ext="" />
-      <pomModule name="spring" ext="" />
-      <pomModule name="velocity" ext="" />
-
+      <pomLibrary name="bloat" depend1="db4o" type1="lib" depend2="db4o-nativequery" type2="lib" />
             
       <!-- Generate the NSIS files -->
       <copy file="${tmpl}/nsis/common.nsh" todir="${temp}" overwrite="true" />
@@ -1163,8 +1164,7 @@
       <delete dir="${dist-maven2}" verbose="false" quiet="true" includeEmptyDirs="true" />
       <maven2Module name="api"/>
       <maven2Module name="ri"/>
-      <maven2Module name="api" />
-      <maven2Module name="ri" />
+      <maven2Module name="example" />
       <maven2Module name="asyncweb" />
       <maven2Module name="fileupload" />
       <maven2Module name="freemarker" />

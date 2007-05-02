@@ -21,7 +21,7 @@
       </dependency>
       <dependency>
          <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet.ext.jetty_6.1</artifactId>
+         <artifactId>com.noelios.restlet.ext.jetty</artifactId>
          <version>@version@</version>
       </dependency>
       <dependency>
@@ -31,7 +31,7 @@
       </dependency>
       <dependency>
          <groupId>org.restlet</groupId>
-         <artifactId>org.restlet.ext.json_2.0<</artifactId>
+         <artifactId>org.restlet.ext.json</artifactId>
          <version>@version@</version>
       </dependency>
    </dependencies>
