@@ -26,7 +26,7 @@
    <property name="dist-path" value="restlet-${version-compact}" />
    <property name="dist-classic" value="${dist-base}/classic/${dist-path}" />
    <property name="dist-eclipse" value="${dist-base}/eclipse/${dist-path}" />
-   <property name="dist-maven" value="${dist-base}/maven/${dist-path}" />
+   <property name="dist-maven2" value="${dist-base}/maven2/${dist-path}" />
    <property name="bin" value="bin" />
    <property name="temp" value="temp" />
    <property name="classes" value="${temp}/classes" />
@@ -43,17 +43,9 @@
    <property name="jdk1.4-home" value="jdk1.4-home" />
       
    <!-- Library properties -->
-   <property name="lib-asm-package" value="org.objectweb.asm" />
-   <property name="lib-asm-version" value="2.2" />
-   <property name="lib-asm-id" value="${lib-asm-package}_${lib-asm-version}" />
-
    <property name="lib-asyncweb-package" value="org.safehaus.asyncweb" />
    <property name="lib-asyncweb-version" value="0.8" />
    <property name="lib-asyncweb-id" value="${lib-asyncweb-package}_${lib-asyncweb-version}" />
-
-   <property name="lib-backport-package" value="edu.emory.mathcs.backport.java.util" />
-   <property name="lib-backport-version" value="2.2" />
-   <property name="lib-backport-id" value="${lib-backport-package}_${lib-backport-version}" />
 
    <property name="lib-bouncycastle-package" value="org.bouncycastle" />
    <property name="lib-bouncycastle-version" value="1.34" />
@@ -120,7 +112,7 @@
    <property name="lib-json-id" value="${lib-json-package}_${lib-json-version}" />
 
    <property name="lib-junit-package" value="org.junit" />
-   <property name="lib-junit-version" value="4.1" />
+   <property name="lib-junit-version" value="4.3" />
    <property name="lib-junit-id" value="${lib-junit-package}_${lib-junit-version}" />
 
    <property name="lib-jxta-package" value="net.jxta" />
@@ -157,6 +149,7 @@
 
    <property name="lib-simple-package" value="org.simpleframework" />
    <property name="lib-simple-version" value="3.1" />
+   <property name="lib-simple-suffix-maven" value="1" />
    <property name="lib-simple-id" value="${lib-simple-package}_${lib-simple-version}" />
 
    <property name="lib-slf4j-package" value="org.slf4j" />
@@ -175,13 +168,9 @@
    <property name="lib-wrapper-version" value="3.2" />
    <property name="lib-wrapper-id" value="${lib-wrapper-package}_${lib-wrapper-version}" />
 
-   <property name="lib-webrowset-package" value="com.sun.rowset" />
-   <property name="lib-webrowset-version" value="1.0" />
-   <property name="lib-webrowset-id" value="${lib-webrowset-package}_${lib-webrowset-version}" />
-
-   <property name="lib-xerces-package" value="org.apache.xerces" />
-   <property name="lib-xerces-version" value="2.9" />
-   <property name="lib-xerces-id" value="${lib-xerces-package}_${lib-xerces-version}" />
+   <property name="lib-bloat-package" value="edu.purdue.cs.bloat" />
+   <property name="lib-bloat-version" value="1.0" />
+   <property name="lib-bloat-id" value="${lib-bloat-package}_${lib-bloat-version}" />
 
    <!-- Module properties -->
    <property name="mod-api-package" value="org.restlet" />
@@ -317,10 +306,10 @@
       <fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-lang-id}" includes="*.jar" />
             
-      <!-- retrotranslator 1.2.0 -->
+      <!-- retrotranslator 1.2 -->
       <pathelement location="tools/retrotranslator/backport-util-concurrent-3.0.jar" />
-      <pathelement location="tools/retrotranslator/retrotranslator-runtime-1.2.0.jar" />
-      <pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.0.jar" />
+      <pathelement location="tools/retrotranslator/retrotranslator-runtime-1.2.jar" />
+      <pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.jar" />
    </path>
 
    <path id="mod-ri-path">
@@ -355,6 +344,7 @@
       <pathelement path="${classes}/${mod-ri-id}" />
       <pathelement path="${classes}/${mod-json-id}" />
       <fileset dir="${lib}/${lib-db4o-id}" includes="*.jar" />
+      <fileset dir="${lib}/${lib-bloat-id}" includes="*.jar" />
    </path>
 
    <path id="mod-fileupload-path">
@@ -463,20 +453,6 @@
       <fileset dir="${lib}/${lib-velocity-id}" includes="*.jar" />
    </path>
 
-   <!-- used for backport to jdk 1.4 -->
-   <path id="mod-webrowset-path">
-      <path refid="mod-ri-path" />
-      <pathelement path="${classes}/${mod-ri-id}" />
-      <fileset dir="${lib}/${lib-webrowset-id}" includes="*.jar" />
-   </path>
-   
-   <!-- used for backport to jdk 1.4 -->
-   <path id="mod-xerces-path">
-      <path refid="mod-ri-path" />
-      <pathelement path="${classes}/${mod-ri-id}" />
-      <fileset dir="${lib}/${lib-xerces-id}" includes="*.jar" />
-   </path>
-
    <path id="path-all">
       <pathelement path="${classes}/${mod-api-id}" />
       <pathelement path="${classes}/${mod-ri-id}" />
@@ -521,8 +497,10 @@
       <path path="${sun.boot.class.path}"/>
    </pathconvert>
    <pathconvert property="backportbootclasspath">
-      <path refid="mod-webrowset-path" />
-      <path refid="mod-xerces-path"/>
+      <path>
+         <pathelement location="tools/retrotranslator/rowset.jar"/>
+         <pathelement location="tools/retrotranslator/xerces.jar"/>
+      </path>
       <path path="${sun.boot.class.path}"/>
    </pathconvert>
    
@@ -533,9 +511,10 @@
    <!-- Retrotranslator 1.2.0 -->
    <taskdef name="retrotranslator" classname="net.sf.retrotranslator.transformer.RetrotranslatorTask">
       <classpath>
-         <pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.0.jar" />
+         <pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.jar" />
       </classpath>
    </taskdef>
+   
    <!-- Findbugs -->
    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
       <classpath>
@@ -652,9 +631,17 @@
       <attribute name="name" />
       <attribute name="ext" />
       <sequential>
+         <condition property="${lib-@{name}-version-maven}" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
+            <isset property="${lib-@{name}-suffix-maven}" />
+         </condition>
+         <condition property="${lib-@{name}-version-maven}" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
+            <not>
+               <isset property="${lib-@{name}-suffix-maven}" />
+            </not>
+         </condition>
          <copy file="${tmpl}/poms/${mod-@{name}-package}.pom" tofile="${temp}/poms/${mod-@{name}-id}.pom" overwrite="true" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@version@" value="${version-compact}" />
-         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="[${lib-@{name}-version},)" />
+         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${lib-@{name}-version-maven}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-@{name}-id}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext}-version@" value="${lib-@{ext}-version}" />
       </sequential>
@@ -683,8 +670,6 @@
          <path id="backport-@{name}-classpath">
             <dirset dir="${classes}" />
             <path refid="mod-@{name}-path"/>
-            <path refid="mod-webrowset-path" />
-            <path refid="mod-xerces-path" />
             <fileset dir="tools/retrotranslator">
                <include name="**/*.jar" />
             </fileset>
@@ -718,6 +703,23 @@
       </sequential>
    </macrodef>
 
+   <!-- Generate the Maven 2.x files -->
+   <macrodef name="maven2Module">
+      <attribute name="name" />
+      <sequential>
+         <mkdir dir="${dist-maven2}/${mod-@{name}-package}/jars" />
+         <mkdir dir="${dist-maven2}/${mod-@{name}-package}/java-sources" />
+         <mkdir dir="${dist-maven2}/${mod-@{name}-package}/poms" />
+
+         <copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" todir="${dist-maven2}/${mod-@{name}-package}/jars" overwrite="true" />
+
+         <jar jarfile="${dist-maven2}/${mod-@{name}-package}/java-sources/${mod-@{name}-package}-${mod-@{name}-version}-sources.jar" filesetmanifest="merge">
+            <fileset dir="${mod}/${mod-api-id}/src" includes="**/*" />
+         </jar>
+     
+         <copy file="${temp}/poms/${mod-@{name}-id}.pom" todir="${dist-maven2}/${mod-@{name}-package}/poms" overwrite="true" />
+      </sequential>
+   </macrodef>
    
    <!-- ===================== -->
    <!-- ===  Ant Targets  === -->
@@ -933,7 +935,7 @@
       <compileModule name="ri-test" />
    </target>
 
-   <!-- RETROTRANSLATOR VERIFY target -->
+      <!-- GENERATE-BACKPORT target -->
    <target name="generate-backport" if="do-backport" depends="generate-classes" description="Backport classes using Retrotranslator.">
       <backportModule name="api" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="ri" failonwarning="@{backport-failonwarning}"/>
@@ -1166,7 +1168,7 @@
    <target name="integrate" depends="" description="Integrate files from other projects." />
 
    <!-- STAGE target -->
-   <target name="stage" depends="stage-classic" description="Stage the packaging step."/>
+   <target name="stage" depends="stage-classic, stage-maven" description="Stage the packaging step."/>
 
    <!-- STAGE-CLASSIC target (Stage the packaging step) -->
    <target name="stage-classic" description="Stage the packaging step of classic distribution.">
@@ -1236,7 +1238,8 @@
       <stageLibrary name="spring" />
       <stageLibrary name="velocity" />
       <stageLibrary name="wrapper" />
-
+      <stageLibrary name="bloat" />
+      
       <!-- Package modules -->
       <stageModule name="api" />
       <stageModule name="ri" />
@@ -1266,7 +1269,31 @@
          <fileset dir="${temp}/poms" />
       </copy>
    </target>
+
+   <target name="stage-maven" depends="stage-maven-2" description="Generate the maven distributions."/>
    
+   <!-- STAGE-MAVEN-2 target -->
+   <target name="stage-maven-2" depends="init" if="do-nsis" description="Generate the maven-2.x distributions.">
+      <delete dir="${dist-maven2}" verbose="false" quiet="true" includeEmptyDirs="true" />
+      <maven2Module name="api"/>
+      <maven2Module name="ri"/>
+      <maven2Module name="api" />
+      <maven2Module name="ri" />
+      <maven2Module name="asyncweb" />
+      <maven2Module name="fileupload" />
+      <maven2Module name="freemarker" />
+      <maven2Module name="httpclient" />
+      <maven2Module name="javamail" />
+      <maven2Module name="jdbc" />
+      <maven2Module name="jetty" />
+      <maven2Module name="json" />
+      <maven2Module name="net" />
+      <maven2Module name="servlet" />
+      <maven2Module name="simple" />
+      <maven2Module name="spring" />
+      <maven2Module name="velocity" />      
+   </target>
+
    <!-- PACKAGE target -->
    <target name="package" depends="package-classic" description="Generate the distribution."/>
   
