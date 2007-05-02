@@ -236,7 +236,7 @@ public class Finder extends Restlet {
                             + "\"", e);
         } catch (NoSuchMethodException e) {
             getLogger().log(
-                    Level.WARNING,
+                    Level.INFO,
                     "Couldn't find the " + prefix + " method for \"" + method
                             + "\"", e);
         }

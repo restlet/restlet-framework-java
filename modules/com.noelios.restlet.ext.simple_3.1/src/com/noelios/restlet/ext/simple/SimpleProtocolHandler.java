@@ -73,7 +73,7 @@ public class SimpleProtocolHandler implements ProtocolHandler {
             getHelper()
                     .getLogger()
                     .log(
-                            Level.WARNING,
+                            Level.INFO,
                             "Exception while closing the Simple response's output stream",
                             ioe);
         }
