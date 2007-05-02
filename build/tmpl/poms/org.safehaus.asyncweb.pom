@@ -3,21 +3,9 @@
    <groupId>@group-id@</groupId>
    <artifactId>@artifact-id@</artifactId>
    <version>@version@</version>
-   <dependencies>
-      <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet</artifactId>
-         <version>@version@</version>
-      </dependency>
-      <dependency>
-         <groupId>commons-dbcp</groupId>
-         <artifactId>commons-dbcp</artifactId>
-         <version>@lib-dbcp-version@</version>
-      </dependency>
-   </dependencies>
 
-   <name>JDBC client connector</name>
-   <description>Integration with JDBC.</description>
+   <name>AsyncWeb framework</name>
+   <description>AsyncWeb framework.</description>
    <licenses>
       <license>
          <name>CDDL license</name>

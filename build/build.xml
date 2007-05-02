@@ -42,229 +42,12 @@
    <property name="documentation" value="documentation" />
    <property name="jdk1.4-home" value="jdk1.4-home" />
       
-   <!-- Library properties -->
-   <property name="lib-asyncweb-package" value="org.safehaus.asyncweb" />
-   <property name="lib-asyncweb-version" value="0.8" />
-   <property name="lib-asyncweb-id" value="${lib-asyncweb-package}_${lib-asyncweb-version}" />
-
-   <property name="lib-bouncycastle-package" value="org.bouncycastle" />
-   <property name="lib-bouncycastle-version" value="1.34" />
-   <property name="lib-bouncycastle-id" value="${lib-bouncycastle-package}_${lib-bouncycastle-version}" />
-
-   <property name="lib-codec-package" value="org.apache.commons.codec" />
-   <property name="lib-codec-version" value="1.3" />
-   <property name="lib-codec-id" value="${lib-codec-package}_${lib-codec-version}" />
-
-   <property name="lib-collections-package" value="org.apache.commons.collections" />
-   <property name="lib-collections-version" value="3.2" />
-   <property name="lib-collections-id" value="${lib-collections-package}_${lib-collections-version}" />
-
-   <property name="lib-concurrent-package" value="edu.oswego.cs.dl.util.concurrent" />
-   <property name="lib-concurrent-version" value="1.3" />
-   <property name="lib-concurrent-id" value="${lib-concurrent-package}_${lib-concurrent-version}" />
-
-   <property name="lib-db4o-package" value="com.db4o" />
-   <property name="lib-db4o-version" value="6.1" />
-   <property name="lib-db4o-id" value="${lib-db4o-package}_${lib-db4o-version}" />
-
-   <property name="lib-dbcp-package" value="org.apache.commons.dbcp" />
-   <property name="lib-dbcp-version" value="1.2" />
-   <property name="lib-dbcp-id" value="${lib-dbcp-package}_${lib-dbcp-version}" />
-
-   <property name="lib-fileupload-package" value="org.apache.commons.fileupload" />
-   <property name="lib-fileupload-version" value="1.2" />
-   <property name="lib-fileupload-id" value="${lib-fileupload-package}_${lib-fileupload-version}" />
-
-   <property name="lib-freemarker-package" value="org.freemarker" />
-   <property name="lib-freemarker-version" value="2.3" />
-   <property name="lib-freemarker-id" value="${lib-freemarker-package}_${lib-freemarker-version}" />
-
-   <property name="lib-grizzly-package" value="com.sun.grizzly" />
-   <property name="lib-grizzly-version" value="1.5" />
-   <property name="lib-grizzly-id" value="${lib-grizzly-package}_${lib-grizzly-version}" />
-
-   <property name="lib-httpclient-package" value="org.apache.commons.httpclient" />
-   <property name="lib-httpclient-version" value="3.1" />
-   <property name="lib-httpclient-id" value="${lib-httpclient-package}_${lib-httpclient-version}" />
-
-   <property name="lib-io-package" value="org.apache.commons.io" />
-   <property name="lib-io-version" value="1.3" />
-   <property name="lib-io-id" value="${lib-io-package}_${lib-io-version}" />
-
-   <property name="lib-javamail-package" value="javax.mail" />
-   <property name="lib-javamail-version" value="1.4" />
-   <property name="lib-javamail-id" value="${lib-javamail-package}_${lib-javamail-version}" />
-
-   <property name="lib-activation-package" value="javax.activation" />
-   <property name="lib-activation-version" value="1.1" />
-   <property name="lib-activation-id" value="${lib-activation-package}_${lib-activation-version}" />
-
-   <property name="lib-jetty5-package" value="org.mortbay.jetty" />
-   <property name="lib-jetty5-version" value="5.1" />
-   <property name="lib-jetty5-id" value="${lib-jetty5-package}_${lib-jetty5-version}" />
-
-   <property name="lib-jetty-package" value="org.mortbay.jetty" />
-   <property name="lib-jetty-version" value="6.1" />
-   <property name="lib-jetty-id" value="${lib-jetty-package}_${lib-jetty-version}" />
-
-   <property name="lib-json-package" value="org.json" />
-   <property name="lib-json-version" value="2.0" />
-   <property name="lib-json-id" value="${lib-json-package}_${lib-json-version}" />
-
-   <property name="lib-junit-package" value="org.junit" />
-   <property name="lib-junit-version" value="4.3" />
-   <property name="lib-junit-id" value="${lib-junit-package}_${lib-junit-version}" />
-
-   <property name="lib-jxta-package" value="net.jxta" />
-   <property name="lib-jxta-version" value="2.5" />
-   <property name="lib-jxta-id" value="${lib-jxta-package}_${lib-jxta-version}" />
-
-   <property name="lib-lang-package" value="org.apache.commons.lang" />
-   <property name="lib-lang-version" value="2.3" />
-   <property name="lib-lang-id" value="${lib-lang-package}_${lib-lang-version}" />
-
-   <property name="lib-logging-package" value="org.apache.commons.logging" />
-   <property name="lib-logging-version" value="1.1" />
-   <property name="lib-logging-id" value="${lib-logging-package}_${lib-logging-version}" />
-
-   <property name="lib-mina-package" value="org.apache.mina" />
-   <property name="lib-mina-version" value="0.8" />
-   <property name="lib-mina-id" value="${lib-mina-package}_${lib-mina-version}" />
-
-   <property name="lib-pool-package" value="org.apache.commons.pool" />
-   <property name="lib-pool-version" value="1.3" />
-   <property name="lib-pool-id" value="${lib-pool-package}_${lib-pool-version}" />
-
-   <property name="lib-retroweaver-package" value="com.rc.retroweaver" />
-   <property name="lib-retroweaver-version" value="1.2" />
-   <property name="lib-retroweaver-id" value="${lib-retroweaver-package}_${lib-retroweaver-version}" />
-
-   <property name="lib-servlet-package" value="javax.servlet" />
-   <property name="lib-servlet-version" value="2.4" />
-   <property name="lib-servlet-id" value="${lib-servlet-package}_${lib-servlet-version}" />
-
-   <property name="lib-servlet5-package" value="javax.servlet" />
-   <property name="lib-servlet5-version" value="2.5" />
-   <property name="lib-servlet5-id" value="${lib-servlet5-package}_${lib-servlet5-version}" />
-
-   <property name="lib-simple-package" value="org.simpleframework" />
-   <property name="lib-simple-version" value="3.1" />
-   <property name="lib-simple-suffix-maven" value="1" />
-   <property name="lib-simple-id" value="${lib-simple-package}_${lib-simple-version}" />
-
-   <property name="lib-slf4j-package" value="org.slf4j" />
-   <property name="lib-slf4j-version" value="1.0" />
-   <property name="lib-slf4j-id" value="${lib-slf4j-package}_${lib-slf4j-version}" />
-
-   <property name="lib-spring-package" value="org.springframework" />
-   <property name="lib-spring-version" value="2.0" />
-   <property name="lib-spring-id" value="${lib-spring-package}_${lib-spring-version}" />
-
-   <property name="lib-velocity-package" value="org.apache.velocity" />
-   <property name="lib-velocity-version" value="1.5" />
-   <property name="lib-velocity-id" value="${lib-velocity-package}_${lib-velocity-version}" />
-
-   <property name="lib-wrapper-package" value="org.tanukisoftware.wrapper" />
-   <property name="lib-wrapper-version" value="3.2" />
-   <property name="lib-wrapper-id" value="${lib-wrapper-package}_${lib-wrapper-version}" />
-
-   <property name="lib-bloat-package" value="edu.purdue.cs.bloat" />
-   <property name="lib-bloat-version" value="1.0" />
-   <property name="lib-bloat-id" value="${lib-bloat-package}_${lib-bloat-version}" />
+   <!-- Library properties -->      
+   <property file="libraries.properties" />
 
    <!-- Module properties -->
-   <property name="mod-api-package" value="org.restlet" />
-   <property name="mod-api-version" value="${version-minor}" />
-   <property name="mod-api-id" value="${mod-api-package}" />
-
-   <property name="mod-api-test-package" value="org.restlet.test" />
-   <property name="mod-api-test-version" value="${version-minor}" />
-   <property name="mod-api-test-id" value="${mod-api-test-package}" />
-
-   <property name="mod-asyncweb-package" value="com.noelios.restlet.ext.asyncweb" />
-   <property name="mod-asyncweb-version" value="${lib-asyncweb-version}" />
-   <property name="mod-asyncweb-id" value="${mod-asyncweb-package}_${mod-asyncweb-version}" />
-
-   <property name="mod-atom-package" value="org.restlet.ext.atom" />
-   <property name="mod-atom-version" value="1.0" />
-   <property name="mod-atom-id" value="${mod-atom-package}_${mod-atom-version}" />
-
-   <property name="mod-example-package" value="org.restlet.example" />
-   <property name="mod-example-version" value="${version-minor}" />
-   <property name="mod-example-id" value="${mod-example-package}" />
-
-   <property name="mod-fileupload-package" value="org.restlet.ext.fileupload" />
-   <property name="mod-fileupload-version" value="${lib-fileupload-version}" />
-   <property name="mod-fileupload-id" value="${mod-fileupload-package}_${mod-fileupload-version}" />
-
-   <property name="mod-freemarker-package" value="org.restlet.ext.freemarker" />
-   <property name="mod-freemarker-version" value="${lib-freemarker-version}" />
-   <property name="mod-freemarker-id" value="${mod-freemarker-package}_${mod-freemarker-version}" />
-
-   <property name="mod-grizzly-package" value="com.noelios.restlet.ext.grizzly" />
-   <property name="mod-grizzly-version" value="${lib-grizzly-version}" />
-   <property name="mod-grizzly-id" value="${mod-grizzly-package}_${mod-grizzly-version}" />
-
-   <property name="mod-httpclient-package" value="com.noelios.restlet.ext.httpclient" />
-   <property name="mod-httpclient-version" value="${lib-httpclient-version}" />
-   <property name="mod-httpclient-id" value="${mod-httpclient-package}_${mod-httpclient-version}" />
-
-   <property name="mod-javamail-package" value="com.noelios.restlet.ext.javamail" />
-   <property name="mod-javamail-version" value="${lib-javamail-version}" />
-   <property name="mod-javamail-id" value="${mod-javamail-package}_${mod-javamail-version}" />
-
-   <property name="mod-jdbc-package" value="com.noelios.restlet.ext.jdbc" />
-   <property name="mod-jdbc-version" value="3.0" />
-   <property name="mod-jdbc-id" value="${mod-jdbc-package}_${mod-jdbc-version}" />
-
-   <property name="mod-jetty5-package" value="com.noelios.restlet.ext.jetty" />
-   <property name="mod-jetty5-version" value="${lib-jetty5-version}" />
-   <property name="mod-jetty5-id" value="${mod-jetty5-package}_${mod-jetty5-version}" />
-
-   <property name="mod-jetty-package" value="com.noelios.restlet.ext.jetty" />
-   <property name="mod-jetty-version" value="${lib-jetty-version}" />
-   <property name="mod-jetty-id" value="${mod-jetty-package}_${mod-jetty-version}" />
-
-   <property name="mod-jmx-package" value="com.noelios.restlet.ext.jmx" />
-   <property name="mod-jmx-version" value="1.2" />
-   <property name="mod-jmx-id" value="${mod-jmx-package}_${mod-jmx-version}" />
-
-   <property name="mod-json-package" value="org.restlet.ext.json" />
-   <property name="mod-json-version" value="${lib-json-version}" />
-   <property name="mod-json-id" value="${mod-json-package}_${mod-json-version}" />
-
-   <property name="mod-jxta-package" value="com.noelios.restlet.ext.jxta" />
-   <property name="mod-jxta-version" value="${lib-jxta-version}" />
-   <property name="mod-jxta-id" value="${mod-jxta-package}_${mod-jxta-version}" />
-
-   <property name="mod-net-package" value="com.noelios.restlet.ext.net" />
-   <property name="mod-net-version" value="${version-minor}" />
-   <property name="mod-net-id" value="${mod-net-package}" />
-
-   <property name="mod-ri-package" value="com.noelios.restlet" />
-   <property name="mod-ri-version" value="${version-minor}" />
-   <property name="mod-ri-id" value="${mod-ri-package}" />
-
-   <property name="mod-ri-test-package" value="com.noelios.restlet.test" />
-   <property name="mod-ri-test-version" value="${version-minor}" />
-   <property name="mod-ri-test-id" value="${mod-ri-test-package}" />
-
-   <property name="mod-servlet-package" value="com.noelios.restlet.ext.servlet" />
-   <property name="mod-servlet-version" value="${lib-servlet-version}" />
-   <property name="mod-servlet-id" value="${mod-servlet-package}_${mod-servlet-version}" />
-
-   <property name="mod-simple-package" value="com.noelios.restlet.ext.simple" />
-   <property name="mod-simple-version" value="${lib-simple-version}" />
-   <property name="mod-simple-id" value="${mod-simple-package}_${mod-simple-version}" />
-
-   <property name="mod-spring-package" value="org.restlet.ext.spring" />
-   <property name="mod-spring-version" value="${lib-spring-version}" />
-   <property name="mod-spring-id" value="${mod-spring-package}_${mod-spring-version}" />
-
-   <property name="mod-velocity-package" value="org.restlet.ext.velocity" />
-   <property name="mod-velocity-version" value="${lib-velocity-version}" />
-   <property name="mod-velocity-id" value="${mod-velocity-package}_${mod-velocity-version}" />
-
+   <property file="modules.properties" />
+   
    <!-- ======================= -->
    <!-- ===  Paths setting  === -->
    <!-- ======================= -->
@@ -631,19 +414,54 @@
       <attribute name="name" />
       <attribute name="ext" />
       <sequential>
-         <condition property="${lib-@{name}-version-maven}" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
-            <isset property="${lib-@{name}-suffix-maven}" />
+         <!-- sets the final pom version -->
+         <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}-${lib-@{name}-suffix-maven}">
+            <and>
+               <isset property="lib-@{name}-release" />
+               <isset property="lib-@{name}-suffix-maven" />
+            </and>
          </condition>
-         <condition property="${lib-@{name}-version-maven}" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
-            <not>
-               <isset property="${lib-@{name}-suffix-maven}" />
-            </not>
+         <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}">
+            <isset property="lib-@{name}-release" />
          </condition>
+         <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
+            <isset property="lib-@{name}-suffix-maven" />
+         </condition>
+         <property name="mod-pom-@{name}-version" value="${lib-@{name}-version}" />
+         
          <copy file="${tmpl}/poms/${mod-@{name}-package}.pom" tofile="${temp}/poms/${mod-@{name}-id}.pom" overwrite="true" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@version@" value="${version-compact}" />
-         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${lib-@{name}-version-maven}" />
+         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${mod-pom-@{name}-version}" />
+         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@group-id@" value="${mod-@{name}-maven-groupId}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-@{name}-id}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext}-version@" value="${lib-@{ext}-version}" />
+      </sequential>
+   </macrodef>
+
+   <!-- Generate the library POM file -->
+   <macrodef name="pomLibrary">
+      <attribute name="name" />
+      <attribute name="ext" />
+      <sequential>
+         <!-- sets the final pom version -->
+         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}-${lib-@{name}-suffix-maven}">
+            <and>
+               <isset property="lib-@{name}-release" />
+               <isset property="lib-@{name}-suffix-maven" />
+            </and>
+         </condition>
+         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}">
+            <isset property="lib-@{name}-release" />
+         </condition>
+         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
+            <isset property="lib-@{name}-suffix-maven" />
+         </condition>
+         <property name="lib-pom-@{name}-version" value="${lib-@{name}-version}" />
+         
+         <copy file="${tmpl}/poms/${lib-@{name}-package}.pom" tofile="${temp}/poms/${lib-@{name}-id}.pom" overwrite="true" />
+         <replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@version@" value="${lib-pom-@{name}-version}" />
+         <replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@group-id@" value="${lib-@{name}-maven-groupId}" />
+         <replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@artifact-id@" value="${lib-@{name}-id}" />
       </sequential>
    </macrodef>
 
@@ -704,20 +522,58 @@
    </macrodef>
 
    <!-- Generate the Maven 2.x files -->
+   <macrodef name="maven2Library">
+      <attribute name="name" />
+      <sequential>
+         <!-- sets the final pom version -->
+         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}-${lib-@{name}-suffix-maven}">
+            <and>
+               <isset property="lib-@{name}-release" />
+               <isset property="lib-@{name}-suffix-maven" />
+            </and>
+         </condition>
+         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}">
+            <isset property="lib-@{name}-release" />
+         </condition>
+         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
+            <isset property="lib-@{name}-suffix-maven" />
+         </condition>
+         <property name="lib-pom-@{name}-version" value="${lib-@{name}-version}" />
+
+         <propertyregex property="lib-dir-@{name}-maven-groupId"
+                    input="${lib-@{name}-maven-groupId}"
+                    regexp="\."
+                    replace="/"
+                    global="true"
+                    casesensitive="false" />
+         <property name="lib-dir-@{name}-maven2" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/${lib-@{name}-package}/${lib-pom-@{name}-version}" />
+         <mkdir dir="${lib-dir-@{name}-maven2}" />
+
+         <copy file="${dist-classic}/lib/${lib-@{name}-id}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar" overwrite="true" />
+         <copy file="${temp}/poms/${lib-@{name}-id}.pom" tofile="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.pom" overwrite="true" />
+      </sequential>
+   </macrodef>
+
    <macrodef name="maven2Module">
       <attribute name="name" />
       <sequential>
-         <mkdir dir="${dist-maven2}/${mod-@{name}-package}/jars" />
-         <mkdir dir="${dist-maven2}/${mod-@{name}-package}/java-sources" />
-         <mkdir dir="${dist-maven2}/${mod-@{name}-package}/poms" />
+         <propertyregex property="mod-dir-@{name}-maven-groupId"
+                    input="${mod-@{name}-maven-groupId}"
+                    regexp="\."
+                    replace="/"
+                    global="true"
+                    casesensitive="false" />
+         <!-- All files generated from the modules are stampped with the current full version number -->
+         <property name="mod-dir-@{name}-maven2" value="${dist-maven2}/${mod-dir-@{name}-maven-groupId}/${mod-@{name}-package}/${version-full}" />
+         <mkdir dir="${mod-dir-@{name}-maven2}" />
 
-         <copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" todir="${dist-maven2}/${mod-@{name}-package}/jars" overwrite="true" />
+         <copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-full}.jar" overwrite="true" />
 
-         <jar jarfile="${dist-maven2}/${mod-@{name}-package}/java-sources/${mod-@{name}-package}-${mod-@{name}-version}-sources.jar" filesetmanifest="merge">
+         <jar jarfile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-full}-sources.jar" filesetmanifest="merge">
             <fileset dir="${mod}/${mod-api-id}/src" includes="**/*" />
          </jar>
      
-         <copy file="${temp}/poms/${mod-@{name}-id}.pom" todir="${dist-maven2}/${mod-@{name}-package}/poms" overwrite="true" />
+         <copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-full}.pom" overwrite="true" />
       </sequential>
    </macrodef>
    
@@ -877,6 +733,9 @@
       <pomModule name="spring" ext="" />
       <pomModule name="velocity" ext="" />
 
+      <pomLibrary name="simple" ext="" />
+      <pomLibrary name="asyncweb" ext="" />
+      
       <!-- Generate the NSIS files -->
       <copy file="${tmpl}/nsis/common.nsh" todir="${temp}" overwrite="true" />
       <copy file="${tmpl}/nsis/setup.nsi" todir="${temp}" overwrite="true" />
@@ -1291,7 +1150,9 @@
       <maven2Module name="servlet" />
       <maven2Module name="simple" />
       <maven2Module name="spring" />
-      <maven2Module name="velocity" />      
+      <maven2Module name="velocity" />
+      <maven2Library name="simple" />
+      <maven2Library name="asyncweb" />
    </target>
 
    <!-- PACKAGE target -->
