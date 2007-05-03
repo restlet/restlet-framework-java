@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Retroweaver Plug-in
+Bundle-SymbolicName: com.rc.retroweaver_1.2
+Bundle-Version: 1.2.3
+Bundle-ClassPath: com.rc.retroweaver.runtime.jar
+Bundle-Vendor: Toby Reyelts
+Bundle-Localization: plugin
+Export-Package: .,
+ com.rc.retroweaver.runtime

@@ -1,0 +1,35 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.noelios.restlet</groupId>
+	<artifactId>@artifact-id@</artifactId>
+	<version>@version@</version>
+	<dependencies>
+		<dependency>
+			<groupId>com.noelios.restlet</groupId>
+			<artifactId>com.noelios.restlet</artifactId>
+			<version>@version@</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>@lib-httpclient-version@</version>
+		</dependency>
+	</dependencies>
+
+	<name>HTTP client connector</name>
+	<description>
+		Integration with Apache Commons HTTP Client.
+	</description>
+	<licenses>
+		<license>
+			<name>CDDL license</name>
+			<url>http://www.opensource.org/licenses/cddl1.php</url>
+		</license>
+		<license>
+			<name>GPL license</name>
+			<url>
+				http://www.opensource.org/licenses/gpl-license.php
+			</url>
+		</license>
+	</licenses>
+</project>

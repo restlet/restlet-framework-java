@@ -1,0 +1,37 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.restlet</groupId>
+	<artifactId>@artifact-id@</artifactId>
+	<version>@version@</version>
+	<dependencies>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>@version@</version>
+		</dependency>
+		<dependency>
+			<!--  This dependency isn't based on any official JSON POM -->
+			<!--  as none could be found. You will probably have to    -->
+			<!--  manually add the org.json.jar file to your local     -->
+			<!--  Maven repository.                                    -->
+			<groupId>org.json</groupId>
+			<artifactId>org.json</artifactId>
+			<version>@lib-json-version@</version>
+		</dependency>
+	</dependencies>
+
+	<name>JSON representation</name>
+	<description>Support for JSON representations.</description>
+	<licenses>
+		<license>
+			<name>CDDL license</name>
+			<url>http://www.opensource.org/licenses/cddl1.php</url>
+		</license>
+		<license>
+			<name>GPL license</name>
+			<url>
+				http://www.opensource.org/licenses/gpl-license.php
+			</url>
+		</license>
+	</licenses>
+</project>

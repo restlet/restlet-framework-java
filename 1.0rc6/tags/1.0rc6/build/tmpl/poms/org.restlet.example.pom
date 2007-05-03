@@ -1,0 +1,55 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.noelios.restlet</groupId>
+	<artifactId>@artifact-id@</artifactId>
+	<version>@version@</version>
+	<dependencies>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>@version@</version>
+		</dependency>
+		<dependency>
+			<groupId>com.db4o</groupId>
+			<artifactId>db4o-java5</artifactId>
+			<version>6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.db4o</groupId>
+			<artifactId>db4o-nqopt</artifactId>
+			<version>6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.noelios.restlet</groupId>
+			<artifactId>com.noelios.restlet.ext.jetty_6.1</artifactId>
+			<version>@version@</version>
+		</dependency>
+		<dependency>
+			<groupId>com.noelios.restlet</groupId>
+			<artifactId>com.noelios.restlet.ext.net</artifactId>
+			<version>@version@</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.json_2.0<</artifactId>
+			<version>@version@</version>
+		</dependency>
+	</dependencies>
+
+	<name>Restlet examples</name>
+	<description>
+		Various examples including those from the tutorial
+	</description>
+	<licenses>
+		<license>
+			<name>CDDL license</name>
+			<url>http://www.opensource.org/licenses/cddl1.php</url>
+		</license>
+		<license>
+			<name>GPL license</name>
+			<url>
+				http://www.opensource.org/licenses/gpl-license.php
+			</url>
+		</license>
+	</licenses>
+</project>
