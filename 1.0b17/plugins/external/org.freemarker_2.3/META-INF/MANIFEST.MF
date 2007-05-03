@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: FreeMarker template engine
+Bundle-SymbolicName: org.freemarker
+Bundle-Version: 2.3.8
+Bundle-ClassPath: freemarker.jar
+Bundle-Vendor: FreeMarker project
+Bundle-Localization: plugin
+Export-Package: freemarker,
+ freemarker.cache,
+ freemarker.core,
+ freemarker.debug,
+ freemarker.debug.impl,
+ freemarker.ext.ant,
+ freemarker.ext.beans,
+ freemarker.ext.dom,
+ freemarker.ext.jdom,
+ freemarker.ext.jsp,
+ freemarker.ext.jython,
+ freemarker.ext.rhino,
+ freemarker.ext.servlet,
+ freemarker.ext.util,
+ freemarker.ext.xml,
+ freemarker.log,
+ freemarker.template,
+ freemarker.template.utility

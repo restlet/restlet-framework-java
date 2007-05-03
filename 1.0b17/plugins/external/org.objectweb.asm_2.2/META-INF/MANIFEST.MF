@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ASM
+Bundle-SymbolicName: org.objectweb.asm
+Bundle-Version: 2.2.3
+Bundle-ClassPath: org.objectweb.asm.jar,
+ org.objectweb.asm.commons.jar
+Bundle-Vendor: ObjectWeb
+Bundle-Localization: plugin
+Export-Package: org.objectweb.asm,
+ org.objectweb.asm.commons,
+ org.objectweb.asm.signature

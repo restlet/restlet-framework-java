@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="org.mortbay.jetty.util.jar"/>
+	<classpathentry exported="true" sourcepath="C:/Tools/Mortbay/jetty6.0/modules/jetty/src/main/java" kind="lib" path="org.mortbay.jetty.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

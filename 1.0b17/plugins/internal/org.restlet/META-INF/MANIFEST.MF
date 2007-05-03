@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet API
+Bundle-SymbolicName: org.restlet
+Bundle-Version: 1.0.0
+Bundle-Vendor: Noelios Consulting
+Bundle-Localization: plugin
+Export-Package: org.restlet,
+ org.restlet.component,
+ org.restlet.connector,
+ org.restlet.data
