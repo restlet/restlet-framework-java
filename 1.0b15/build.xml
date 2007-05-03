@@ -1,0 +1,557 @@
+<?xml version="1.0"?>
+
+<!-- ========================================================
+     Restlet build file  -  Copyright 2005-2006 Jerome LOUVEL
+     ======================================================== -->
+
+<project name="Restlet" default="distribute">
+
+	<!-- Set general properties -->
+	<property name="restlet-api" value="Restlet API" />
+	<property name="restlet-ri" value="Noelios Restlet Engine" />
+	<property name="author" value="Jerome Louvel" />
+
+	<!-- Load system specific paths -->
+	<property file="build.properties" />
+
+	<!-- Set path location properties -->
+	<property name="bin" value="bin" />
+	<property name="lib" value="lib" />
+	<property name="tmpl" value="tmpl" />
+	<property name="www" value="www" />
+	<property name="docs" value="${www}/docs" />
+	<property name="docs-api" value="${docs}/api" />
+	<property name="docs-nre" value="${docs}/nre" />
+	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
+
+	<property name="classes" value="classes" />
+	<property name="classes-api" value="${classes}/api" />
+	<property name="classes-nre" value="${classes}/nre" />
+	<property name="classes-asyncweb0.8" value="${classes}/ext/asyncweb0.8" />
+	<property name="classes-atom1.0" value="${classes}/ext/atom1.0" />
+	<property name="classes-fileupload1.1" value="${classes}/ext/fileupload1.1" />
+	<property name="classes-freemarker2.3" value="${classes}/ext/freemarker2.3" />
+	<property name="classes-javamail1.3" value="${classes}/ext/javamail1.3" />
+	<property name="classes-jdbc3.0" value="${classes}/ext/jdbc3.0" />
+	<property name="classes-jetty5.1" value="${classes}/ext/jetty5.1" />
+	<property name="classes-jetty6.0" value="${classes}/ext/jetty6.0" />
+	<property name="classes-servlet2.4" value="${classes}/ext/servlet2.4" />
+	<property name="classes-simple3.1" value="${classes}/ext/simple3.1" />
+	<property name="classes-example" value="${classes}/example" />
+	<property name="classes-test" value="${classes}/test" />
+
+	<property name="src" value="source" />
+	<property name="src-main" value="${src}/main" />
+	<property name="src-asyncweb0.8" value="${src}/ext/asyncweb0.8" />
+	<property name="src-atom1.0" value="${src}/ext/atom1.0" />
+	<property name="src-fileupload1.1" value="${src}/ext/fileupload1.1" />
+	<property name="src-freemarker2.3" value="${src}/ext/freemarker2.3" />
+	<property name="src-javamail1.3" value="${src}/ext/javamail1.3" />
+	<property name="src-jdbc3.0" value="${src}/ext/jdbc3.0" />
+	<property name="src-jetty5.1" value="${src}/ext/jetty5.1" />
+	<property name="src-jetty6.0" value="${src}/ext/jetty6.0" />
+	<property name="src-servlet2.4" value="${src}/ext/servlet2.4" />
+	<property name="src-simple3.1" value="${src}/ext/simple3.1" />
+	<property name="src-example" value="${src}/example" />
+	<property name="src-test" value="${src}/test" />
+
+
+	<!-- Ant paths -->
+
+	<path id="path-asyncweb0.8">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/asyncweb0.8">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${lib}/mina0.8">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<path id="path-atom1.0">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+	</path>
+
+	<path id="path-fileupload1.1">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/fileupload1.1">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${lib}/servlet2.4">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="path-freemarker2.3">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/freemarker2.3">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="path-javamail1.3">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/javamail1.3">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="path-jdbc3.0">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/jdbc3.0">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="path-jetty5.1">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/jetty5.1">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${lib}/servlet2.4">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="path-jetty6.0">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/jetty6.0">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${lib}/servlet2.5">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="path-servlet2.4">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/servlet2.4">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="path-servlet2.5">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/servlet2.5">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="path-simple3.1">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<fileset dir="${lib}/simple3.1">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="path-example">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+	</path>
+
+	<path id="path-test">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-atom1.0}" />
+		<fileset dir="${lib}/junit3.8">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<path id="path-all">
+		<pathelement path="${classes-api}" />
+		<pathelement path="${classes-nre}" />
+		<pathelement path="${classes-asyncweb0.8}" />
+		<pathelement path="${classes-freemarker2.3}" />
+		<pathelement path="${classes-fileupload1.1}" />
+		<pathelement path="${classes-javamail1.3}" />
+		<pathelement path="${classes-jdbc3.0}" />
+		<pathelement path="${classes-jetty5.1}" />
+		<pathelement path="${classes-servlet2.4}" />
+		<path refid="path-asyncweb0.8" />
+		<path refid="path-simple3.1" />
+		<path refid="path-freemarker2.3" />
+		<path refid="path-fileupload1.1" />
+		<path refid="path-javamail1.3" />
+		<path refid="path-jdbc3.0" />
+		<path refid="path-servlet2.4" />
+		<path refid="path-jetty5.1" />
+	</path>
+
+	<path id="path-none"/>
+
+	
+	<!-- Ant Macros -->
+	
+	<taskdef name="retroweave" classname="com.rc.retroweaver.ant.RetroWeaverTask">
+		<classpath>
+			<fileset dir="${lib}/retroweaver1.2" includes="**/*" />
+			<pathelement location="${lib}/retroweaver1.2/com.rc.retroweaver.jar" />
+		</classpath>
+	</taskdef>
+	
+	<macrodef name="compile">
+		<attribute name="compiler" default="javac1.5" />
+	   	<attribute name="debug" default="${debug}" />
+	   	<attribute name="debuglevel" default="${debuglevel}" />
+	   	<attribute name="optimize" default="${optimize}" />
+	   	<attribute name="srcdir" />
+	   	<attribute name="destdir" />
+	   	<attribute name="classpathref" default="path-none" />
+	   	<attribute name="includes" default="*/**" />
+	   	<attribute name="verbose" default="${verbose}" />
+	   	<sequential>
+			<mkdir dir="@{destdir}" />
+			<javac compiler="@{compiler}" debug="@{debug}" debuglevel="@{debuglevel}" optimize="@{optimize}" verbose="@{verbose}" 
+				srcdir="@{srcdir}" destdir="@{destdir}" classpathref="@{classpathref}" includes="@{includes}" />
+    	</sequential>
+	</macrodef>
+	
+	<macrodef name="mkext">
+		<!-- Make an extension -->
+		<attribute name="name" />
+		<attribute name="version" />
+	   	<sequential>
+	   		<!-- Create extension binary jar file -->
+			<mkdir dir="${dist}/lib/@{name}@{version}" />
+			<jar jarfile="${dist}/lib/@{name}@{version}/restlet.@{name}.jar" basedir="${classes}/ext/@{name}@{version}">
+				<manifest>
+					<attribute name="Built-By" value="${author}" />
+					<section name="com.noelios.restlet.ext.@{name}">
+						<attribute name="Implementation-Title" value="${restlet-ri}" />
+						<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+						<attribute name="Implementation-Vendor" value="${author}" />
+					</section>
+				</manifest>
+			</jar>
+
+	   		<!-- Add the manifest files -->
+			<jar jarfile="${dist}/lib/@{name}@{version}/restlet.@{name}.jar" update="true" basedir="${src}/ext/@{name}@{version}" includes="meta-inf/**" />
+		
+			<!-- Create extension source jar file -->
+			<mkdir dir="${dist}/src/@{name}@{version}" />
+			<zip destfile="${dist}/src/@{name}@{version}/restlet.@{name}.zip" basedir="${src}/ext/@{name}@{version}" 
+				includes="com/noelios/restlet/**" excludes="${excludes}" />
+	   	</sequential>
+	</macrodef>
+
+	
+	<!-- Ant Targets -->
+	
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp>
+			<format property="release-date" pattern="yyyy-MM-dd" />
+		</tstamp>
+		
+		<!-- Set the property that will enable the Weave target -->
+		<condition property="do-backport">
+			<istrue value="${backport}"/>
+		</condition>
+		
+		<!-- Set the property that will enable the Javadoc target -->
+		<condition property="do-javadoc">
+			<istrue value="${javadoc}"/>
+		</condition>
+
+		<!-- Set the debug level property -->
+		<condition property="debuglevel" value="source,lines,vars">
+		    <and>
+		    	<istrue value="${debug-source}"/>
+		    	<istrue value="${debug-lines}"/>
+		    	<istrue value="${debug-vars}"/>
+	    	</and>
+		</condition>
+		<condition property="debuglevel" value="source,lines">
+		    <and>
+		    	<istrue value="${debug-source}"/>
+		    	<istrue value="${debug-lines}"/>
+		    	<isfalse value="${debug-vars}"/>
+	    	</and>
+		</condition>
+		<condition property="debuglevel" value="source,vars">
+		    <and>
+		    	<istrue value="${debug-source}"/>
+		    	<isfalse value="${debug-lines}"/>
+		    	<istrue value="${debug-vars}"/>
+	    	</and>
+		</condition>
+		<condition property="debuglevel" value="lines,vars">
+		    <and>
+		    	<isfalse value="${debug-source}"/>
+		    	<istrue value="${debug-lines}"/>
+		    	<istrue value="${debug-vars}"/>
+	    	</and>
+		</condition>
+		<condition property="debuglevel" value="lines">
+		    <and>
+		    	<isfalse value="${debug-source}"/>
+		    	<istrue value="${debug-lines}"/>
+		    	<isfalse value="${debug-vars}"/>
+	    	</and>
+		</condition>
+		<condition property="debuglevel" value="vars">
+		    <and>
+		    	<isfalse value="${debug-source}"/>
+		    	<isfalse value="${debug-lines}"/>
+		    	<istrue value="${debug-vars}"/>
+	    	</and>
+		</condition>
+	</target>
+
+	<target name="compile" depends="init" description="Compile the Java source files">
+		<mkdir dir="${classes}" />
+		<compile srcdir="${src-main}" 			destdir="${classes-api}" 				includes="org/restlet/**" />
+		<compile srcdir="${src-main}" 			destdir="${classes-nre}" 				classpathref="path-all" 			includes="com/noelios/restlet/**"/>
+		<compile srcdir="${src-asyncweb0.8}" 	destdir="${classes-asyncweb0.8}" 	classpathref="path-asyncweb0.8" />
+		<compile srcdir="${src-atom1.0}" 		destdir="${classes-atom1.0}" 			classpathref="path-atom1.0" />
+		<compile srcdir="${src-fileupload1.1}" destdir="${classes-fileupload1.1}" 	classpathref="path-fileupload1.1" />
+		<compile srcdir="${src-freemarker2.3}" destdir="${classes-freemarker2.3}" 	classpathref="path-freemarker2.3" />
+		<compile srcdir="${src-javamail1.3}" 	destdir="${classes-javamail1.3}" 	classpathref="path-javamail1.3" />
+		<compile srcdir="${src-jdbc3.0}" 		destdir="${classes-jdbc3.0}" 			classpathref="path-jdbc3.0" />
+		<compile srcdir="${src-jetty5.1}" 		destdir="${classes-jetty5.1}" 		classpathref="path-jetty5.1" />
+		<compile srcdir="${src-jetty6.0}" 		destdir="${classes-jetty6.0}" 		classpathref="path-jetty6.0" />
+		<compile srcdir="${src-servlet2.4}" 	destdir="${classes-servlet2.4}" 		classpathref="path-servlet2.4" />
+		<compile srcdir="${src-simple3.1}" 		destdir="${classes-simple3.1}" 		classpathref="path-simple3.1" />
+		<compile srcdir="${src-example}" 		destdir="${classes-example}" 			classpathref="path-example" />
+		<compile srcdir="${src-test}" 			destdir="${classes-test}" 				classpathref="path-test" />
+	</target>
+
+    <target name="retroweave" if="do-backport" depends="compile" description="Backport classes using Retroweaver">
+        <retroweave>
+            <!-- Caution: Overrides the Java 1.5 generated classes -->
+            <fileset dir="${classes}">
+                <include name="**/*.class"/>
+            </fileset>
+        </retroweave>
+    </target>
+
+	<target name="test" depends="retroweave" description="Execute the test suites">
+		<junit printsummary="true" fork="true" haltonfailure="true" filtertrace="true" showoutput="${verbose}">
+			<classpath>
+				<pathelement location="${classes-api}" />
+				<pathelement location="${classes-nre}" />
+				<pathelement location="${classes-test}" />
+				<pathelement location="${classes-simple3.1}" />
+				<pathelement location="${src-main}" />
+				<pathelement location="${src-simple3.1}" />
+				<path refid="path-simple3.1" />
+				<pathelement location="${lib}/retroweaver1.2/com.rc.retroweaver.runtime.jar" />
+			</classpath>
+
+			<formatter type="plain" />
+			<test name="com.noelios.restlet.test.NoeliosTestSuite" todir="${classes}" />
+			<test name="org.restlet.test.RestletTestSuite" todir="${classes}" />
+		</junit>
+	</target>
+
+	<target name="generate" depends="init" description="Generate template-based files">
+		<!-- Generate the DOAP file -->
+		<copy file="tmpl/doap.rdf" todir="${www}" overwrite="true" />
+		<replace file="${www}/doap.rdf" token="@stability@" value="${stability}" />
+		<replace file="${www}/doap.rdf" token="@release-date@" value="${release-date}" />
+		<replace file="${www}/doap.rdf" token="@version-full@" value="${version-full}" />
+		<replace file="${www}/doap.rdf" token="@version-compact@" value="${version-compact}" />
+		
+		<!-- Generate the home page -->
+		<copy file="tmpl/index.html" todir="${www}" overwrite="true" />
+		<replace file="${www}/index.html" token="@stability@" value="${stability}" />
+		<replace file="${www}/index.html" token="@release-date@" value="${release-date}" />
+		<replace file="${www}/index.html" token="@version-full@" value="${version-full}" />
+		<replace file="${www}/index.html" token="@version-compact@" value="${version-compact}" />
+		
+		<!-- Generate the Changes file -->
+		<copy file="tmpl/changes.txt" todir="${docs}" overwrite="true" />
+		<replace file="${docs}/changes.txt" token="@stability@" value="${stability}" />
+		<replace file="${docs}/changes.txt" token="@release-date@" value="${release-date}" />
+		<replace file="${docs}/changes.txt" token="@version-full@" value="${version-full}" />
+		<replace file="${docs}/changes.txt" token="@version-compact@" value="${version-compact}" />
+	</target>
+
+	<target name="distribute" depends="test, generate, javadoc" description="Generate the distribution">
+		<!-- Prepare distribution directories -->
+		<delete dir="${dist}" verbose="false" quiet="true" includeEmptyDirs="true" />
+		<mkdir dir="${dist}/bin" />
+		<mkdir dir="${dist}/lib" />
+		<mkdir dir="${dist}/src" />
+
+		<!-- Increment the build number -->
+		<buildnumber />
+
+		<!-- Copy the binaries -->
+		<copy todir="${dist}/bin">
+			<fileset dir="${bin}" />
+		</copy>
+
+		<!-- Copy the Javadoc -->
+		<copy todir="${dist}/docs/api">
+			<fileset dir="${docs-api}" />
+		</copy>
+		<copy todir="${dist}/docs/nre">
+			<fileset dir="${docs-nre}" />
+		</copy>
+
+		<!-- Copy text notes -->
+		<copy file="${docs}/changes.txt" todir="${dist}" />
+		<copy file="${docs}/copyright.txt" todir="${dist}" />
+		<copy file="${docs}/license.txt" todir="${dist}" />
+		<copy file="${docs}/readme.txt" todir="${dist}" />
+		<copy file="${docs}/trademarks.txt" todir="${dist}" />
+
+		<!-- Create Restlet API jar file -->
+		<jar jarfile="${dist}/lib/org.restlet.jar" basedir="${classes-api}">
+			<manifest>
+				<attribute name="Built-By" value="${author}" />
+				<section name="org.restlet">
+					<attribute name="Specification-Title" value="${restlet-api}" />
+					<attribute name="Specification-Version" value="${version-full} (build ${build.number})" />
+					<attribute name="Specification-Vendor" value="${author}" />
+				</section>
+			</manifest>
+		</jar>
+
+		<!-- Create Restlet API source jar file -->
+		<zip destfile="${dist}/src/org.restlet.zip" basedir="${src-main}" includes="org/restlet/**" excludes="${excludes}" />
+
+		<!-- Create Noelios Restlet Server jar file -->
+		<jar jarfile="${dist}/lib/com.noelios.restlet.jar" basedir="${classes-nre}" excludes="com/noelios/restlet/ext/**">
+			<manifest>
+				<attribute name="Built-By" value="${author}" />
+				<section name="com.noelios.restlet">
+					<attribute name="Implementation-Title" value="${restlet-ri}" />
+					<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+					<attribute name="Implementation-Vendor" value="${author}" />
+				</section>
+			</manifest>
+		</jar>
+
+		<!-- Add the services manifest files -->
+		<jar jarfile="${dist}/lib/com.noelios.restlet.jar" update="true" basedir="${src-main}" includes="meta-inf/**" />
+
+		<!-- Create Noelios Restlet Server source jar file -->
+		<zip destfile="${dist}/src/com.noelios.restlet.zip" basedir="${src-main}" includes="com/noelios/restlet/**, meta-inf/**" excludes="${excludes}" />
+
+		<!-- Create Examples jar file -->
+		<mkdir dir="${dist}/lib/example" />
+		<jar jarfile="${dist}/lib/example/restlet.example.jar" basedir="${classes-example}" includes="com/noelios/restlet/**" excludes="${excludes}">
+			<manifest>
+				<attribute name="Built-By" value="${author}" />
+				<section name="com.noelios.restlet.example">
+					<attribute name="Implementation-Title" value="${restlet-ri}" />
+					<attribute name="Implementation-Version" value="${version-full} ${TODAY}" />
+					<attribute name="Implementation-Vendor" value="${author}" />
+				</section>
+			</manifest>
+		</jar>
+
+		<!-- Create Example source jar file -->
+		<mkdir dir="${dist}/src/example" />
+		<zip destfile="${dist}/src/example/restlet.example.zip" basedir="${src-example}" includes="com/noelios/restlet/**" excludes="${excludes}" />
+
+		<!-- Create Test source jar file -->
+		<mkdir dir="${dist}/src/test" />
+		<zip destfile="${dist}/src/test/restlet.test.zip" basedir="${src-test}" includes="com/noelios/restlet/**" excludes="${excludes}" />
+
+		<!-- Copy the third party libraries -->
+		<copy todir="${dist}/lib" includeemptydirs="false">
+			<fileset dir="${lib}" excludes="retroweaver*/**,junit*/**"/>
+		</copy>
+
+		<!-- Make extensions -->
+		<mkext name="asyncweb" version="0.8"/>
+		<mkext name="atom" version="1.0"/>
+		<mkext name="fileupload" version="1.1"/>
+		<mkext name="freemarker" version="2.3"/>
+		<mkext name="javamail" version="1.3"/>
+		<mkext name="jdbc" version="3.0"/>
+		<mkext name="jetty" version="5.1"/>
+		<mkext name="jetty" version="6.0"/>
+		<mkext name="servlet" version="2.4"/>
+		<mkext name="simple" version="3.1"/>
+
+		<!-- Create the final zip file -->
+		<zip destfile="${dist-zip}/restlet-${version-compact}.zip" basedir="${dist}" includes="**/*" />
+	</target>
+
+	<target name="javadoc" if="do-javadoc" depends="init" description="Generate the Javadoc">
+		<delete includeEmptyDirs="true" verbose="false" quiet="true">
+			<fileset dir="${docs-api}" excludes="**/.svn" />
+			<fileset dir="${docs-nre}" excludes="**/.svn" />
+		</delete>
+
+		<javadoc packagenames="org.restlet.*" destdir="${docs-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet API ${version-full}" doctitle="Restlet API ${version-full}" overview="${src-main}/org/restlet/overview.html" verbose="${verbose}">
+			<sourcepath>
+				<pathelement path="${src-main}" />
+			</sourcepath>
+
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+			</bottom>
+
+			<group title="${restlet-api}">
+				<package name="org.restlet*" />
+			</group>
+	
+			<link href="http://www.restlet.org/docs/nre/" packagelistLoc="${docs-nre}" offline="true" />
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+		</javadoc>
+
+		<javadoc packagenames="com.noelios.restlet.*" destdir="${docs-nre}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Noelios Restlet Engine ${version-full}" doctitle="Noelios Restlet Engine ${version-full}" overview="${src-main}/com/noelios/restlet/overview.html" verbose="${verbose}">
+			<sourcepath>
+				<pathelement path="${src-main}" />
+				<pathelement path="${src-asyncweb0.8}" />
+				<pathelement path="${src-atom1.0}" />
+				<pathelement path="${src-fileupload1.1}" />
+				<pathelement path="${src-freemarker2.3}" />
+				<pathelement path="${src-javamail1.3}" />
+				<pathelement path="${src-jdbc3.0}" />
+				<pathelement path="${src-jetty5.1}" />
+				<pathelement path="${src-servlet2.4}" />
+				<pathelement path="${src-simple3.1}" />
+			</sourcepath>
+
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-2006 J&eacute;r&ocirc;me Louvel. Restlet is a trademark and service mark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+			</bottom>
+
+			<group title="${restlet-ri}">
+				<package name="com.noelios.restlet*" />
+			</group>
+
+			<link href="http://www.restlet.org/docs/api/" packagelistLoc="${docs-api}" offline="true" />
+			<link href="http://freemarker.org/docs/api/" />
+			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://java.sun.com/products/javamail/javadocs/" />
+			<link href="http://jetty.mortbay.org/javadoc/" />
+			<link href="http://www.simpleframework.org/javadoc/" />
+		</javadoc>
+	</target>
+
+	<target name="clean" description="Clean up the classes and Javadoc">
+		<!-- Delete the classes and Javadoc directories -->
+		<delete includeEmptyDirs="true" verbose="false" quiet="true">
+			<fileset dir="${classes}" />
+			<fileset dir="${docs-api}" excludes="**/.svn" />
+			<fileset dir="${docs-nre}" excludes="**/.svn" />
+		</delete>
+	</target>
+
+	<target name="archive" depends="init" description="Archive the content of the project">
+		<!-- Archive the content of the project, except for some generated directories -->
+		<mkdir dir="${arc}" />
+		<zip destfile="${arc}/Restlet ${DSTAMP}.zip" basedir="" includes="**/*" excludes="${arc}/** classes/** ${dist}/** ${dist-zip}/** ${docs-api}/** ${docs-nre}/**" />
+	</target>
+
+</project>

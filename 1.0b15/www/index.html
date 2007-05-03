@@ -1,0 +1,88 @@
+<html>
+<head>
+ <link rel="alternate" type="application/rss+xml" title="Noelios blog" href="http://blog.noelios.com/feed">
+ <link rel="meta" title="DOAP" type="application/rdf+xml" href="http://www.restlet.org/doap" />
+ <style type="text/css">
+/* <![CDATA[ */
+@import "http://www.restlet.org/stylesheets/tigris.css";
+/*  ]]> */
+ </style>
+ <title>Restlet</title>
+</head>
+<body>
+
+<a target="_top" href="http://www.restlet.org"><img src="http://www.restlet.org/images/logo200"/></a>
+
+<br/>
+
+<h3>Mission</h3>
+<ul>
+   <li>Bring the simplicity and efficiency of the REST architectural style to Java developers</li>
+</ul>
+
+<h3>Restlet API</h3>
+<ul>
+   <li>All REST concepts are supported (resource, representation, data, connector, components, etc.)</li>
+   <li>Suitable for both client and server Web applications</li>
+   <li>Routers support the concept of <a href="http://www.useit.com/alertbox/990321.html">URIs as UI</a> with advanced pattern matching features</li>
+   <li>Filters support features such as authentication and logging</li>
+   <li>Complete alternative to the Servlet API with no external dependency (JAR about 120kb)</li>
+   <li>Supports blocking and non-blocking NIO modes</li>
+</ul>
+
+<h3>Noelios Restlet Engine (NRE)</h3>
+<ul>
+   <li>Reference implementation of the Restlet API provided by <a target="_top" href="http://www.noelios.com">Noelios Consulting</a> (core JAR about 140kb)</li>
+   <li>Server connectors for HTTP, HTTPS, <a href="http://tomcat.apache.org/connectors-doc/">AJP</a> (for Apache or IIS)</li>
+   <li>Client connectors for HTTP, HTTPS, SMTP, JDBC</li>
+   <li>Supports logging (LogFilter), authentication (GuardFilter) and <a href="http://www.w3.org/Provider/Style/URI">cool URIs</a> rewriting (RedirectRestlet)</li>
+   <li>Static files serving (DirectoryHandler) with metadata association based on file extensions</li>
+   <li>Automatic server-side content negotiation based on media type and language preferences</li>
+   <li>FreeMarker template representations as an alternative to JSP pages</li>
+   <li>Supports Restlet applications as native services using <a href="http://wrapper.tanukisoftware.org">Java Service Wrapper</a></li>
+</ul>
+
+<h3>Documentation</h3>
+<ul>
+   <li><a target="_top" href="http://www.restlet.org/introduction">Introduction</a> (<a target="_top" href="http://www.restlet.org/introduction.pdf">PDF</a>)</li>
+   <li><a target="_top" href="http://www.restlet.org/tutorial">Tutorial</a> (<a target="_top" href="http://www.restlet.org/tutorial.pdf">PDF</a>)</li>
+   <li><a target="_top" href="http://www.restlet.org/faq">FAQ</a></li>
+   <li><a target="_top" href="http://www.restlet.org/glossary">Glossary</a></li>
+   <li><a target="_top" href="http://www.restlet.org/sample">Sample application</a></li>
+   <li>Restlet API <a target="_top" href="http://www.restlet.org/docs/api/">javadocs</a></li>
+   <li>Noelios Restlet Engine <a target="_top" href="http://www.restlet.org/docs/nre/">javadocs</a></li>
+</ul>
+
+<h3>Development</h3>
+<ul>
+   <li><a target="_top" href="http://www.restlet.org/downloads/restlet-1.0b15.zip">Download</a> the <b>1.0 beta 15</b> release (<a target="_top" href="http://blog.noelios.com">announces</a>, <a target="_top" href="http://www.restlet.org/docs/changes">changes log</a>)</li>
+   <li><a target="_top" href="http://www.restlet.org/discuss">Discuss</a> with users and developers</li>
+   <li><a target="_top" href="http://restlet.tigris.org/servlets/ProjectIssues">Report issues</a> (defects, feature, enhancement requests)</li>
+   <li><a target="_top" href="http://restlet.tigris.org">Development site</a> at Tigris.org</li>
+   <li><a target="_top" href="http://www.noelios.com">Professional services</a> (consulting, advanced support and training)</li>
+</ul>
+
+<h3>Dependencies</h3>
+<ul>
+   <li>For all applications: <a target="_top" href="http://java.sun.com/j2se/1.5.0/">Java SE 5.0</a> or above. Older versions also supported using <a href="http://retroweaver.sourceforge.net">Retroweaver</a>.</li>
+   <li>For standalone HTTP servers: <a target="_top" href="http://jetty.mortbay.org">Jetty 5.1</a> (stable), <a href="http://jetty.mortbay.org/jetty6/">Jetty 6.0 (beta)</a>, <a target="_top" href="http://www.simpleframework.org">Simple 3.1 (lightest)</a> and <a target="_top" href="http://asyncweb.safehaus.org">AsyncWeb 0.8</a> (based on <a href="http://directory.apache.org/subprojects/mina/">Apache Mina</a> NIO framework)</li>
+   <li>For embedded HTTP servers: Servlet 2.4 containers like <a href="http://tomcat.apache.org/">Apache Tomcat</a></li>
+   <li>For dynamic documents: <a target="_top" href="http://www.freemarker.org/">FreeMarker 2.3</a></li>
+   <li>For email sending: <a target="_top" href="http://java.sun.com/products/javamail/">JavaMail 1.3</a></li>
+</ul>
+
+<h3>Licensing</h3>
+<ul>
+   <li>"Restlet API" and "Noelios Restlet Engine" are distributed under the <a target="_top" href="http://www.opensource.org/licenses/cddl1.php">CDDL license</a> (similar to Mozilla Public License).</li>
+   <li>Commercial licenses can be <a href="mailto:contact@noelios.com?subject=Commercial license">discussed</a> for trademark usage and alternative usage models.</li>
+</ul>
+
+<br/>
+
+<small>
+   Last modified on 2006-06-26<br/>
+   Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+</small>
+
+</body>
+</html>
