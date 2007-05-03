@@ -6,33 +6,55 @@ Restlet, a lightweight REST framework for Java
 ----------------------------------------------
 
 
-Features
-    * REST concepts have equivalent Java classes (resource, representation, connector, etc.)
-    * Suitable for both client and server Web applications
-    * Automatic server-side content negotiation based on media type and language preferences
-    * Static file serving and editing with metadata association based on file extensions
-    * Support for representations like JSON, XML (DOM or SAX), FreeMarker templates (alternative to JSP)
-    * Server connectors for HTTP, HTTPS and AJP (for Apache or IIS) protocols
-    * Client connectors for HTTP, HTTPS, SMTP, JDBC and FILE protocols
-    * Routers support the concept of URIs as UI with advanced pattern matching features
-    * Filters support features such as authorization, browser tunnelling and extraction of call attributes
-    * Support of HTTP Basic and Amazon Web Services authentication schemes
-    * Deployment as native services using Java Service Wrapper
-    * Supports blocking and non-blocking NIO modes
-    * Clean Restlet API as a full alternative to the Servlet API
-    * Noelios Restlet Engine (NRE) is the Reference Implementation (provided by Noelios Consulting)
+REST support
+    * Core REST concepts have equivalent Java classes (resource, representation, connector, etc.).
+    * Suitable for both client and server Web Applications, using the same API which reduces the learning curve.
+    * Routers support the concept of URIs as UI with built-in support for URI Templates.
+    * Tunnelling service let browsers issue any method (PUT, DELETE, MOVE, etc.) through a simple HTTP POST. This service is transparent for Restlet applications.
 
-Dependencies
-    * For all applications: Java SE 5.0 or above. JDK 1.4 support is also available via Retroweaver.
-    * For standalone HTTP servers: AsyncWeb 0.8, Jetty 6.1 and Simple 3.1
-    * For embedded HTTP servers: Servlet 2.4 containers like Apache Tomcat
-    * For dynamic documents: FreeMarker 2.3, Velocity 1.4, JSON 2.0
-    * For uploading large files: Apache FileUpload 1.1
-    * For sending emails: JavaMail 1.4
+Complete Web Server
+    * Static file serving similar to Apache HTTP Server, with metadata association based on file extensions.
+    * Transparent content negotiation based on client preferences.
+    * Remote edition of files based on PUT and DELETE methods (aka mini-WebDAV mode).
+    * Decoder service transparently decodes compressed or encoded input representations. This service is transparent for Restlet applications.
+    * Log service writes all accesses to your applications in a standard Web log file. The log format follows the W3C Extended Log File Format and is fully customizable.
+    * Powerful URI based redirection support similar to Apache Rewrite module.
 
-Licensing
-    * "Restlet API" and "Noelios Restlet Engine" are distributed under the CDDL license (similar to Mozilla Public License).
-    * Commercial licenses can be discussed for trademark usage and alternative usage models.
+Available Connectors
+    * Multiple server HTTP connectors available, based on either AsyncWeb (now part of Apache MINA), Mortbay's Jetty or the Simple Framework.
+    * AJP server connector available to let you plug behind an Apache HTTP server or Microsoft IIS. It is based on Jetty's connector.
+    * Multiple client HTTP connectors available, based on either the JDK's HttpURLConnection class or on Apache HTTP Client.
+    * Client SMTP connector based on JavaMail and a custom email XML format.
+    * Client JDBC connector based on the JDBC API, a custom request XML format and the JDBC WebRowSet interface for XML responses.
+    * Client FILE connector support GET, PUT and DELETE methods on files and directories. In addition, it is able to return directory listings.
+
+Available Representations
+    * Built-in support for XML representations (DOM or SAX based) with a simple XPath API based on JDK's built-in XPath engine.
+    * Integration with the FreeMarker template engine
+    * Integration with the Velocity template engine
+    * Integration with Apache FileUpload to support multi-part forms and easily handle large file uploads from browsers
+    * Transformer filter to easily apply XSLT stylesheets on XML representations. It is based on JDK's built-in XSLT engine.
+    * Extensible set of core representations, based on NIO readable or writable channels, BIO input or output streams.
+
+Security
+    * Supports HTTP Basic authentication (client and server side)
+    * Supports Amazon Web Services authentication (client side)
+    * Supports HTTPS (HTTP over SSL)
+    * Supports SMTPS (SMTP over SSL)
+
+Scalability
+    * Fully multi-threaded design with few synchronization points.
+    * Intentional removal of Servlet-like HTTP sessions. This concept, attractive as a first sight, is one of the major issue for Servlet scalability and is going against the stateless exchanges promoted by REST.
+    * Supports non-blocking NIO modes to decouple the number of connections from the number of threads.
+    * Supports asynchronous request processing, decoupled from IO operations. Unlike the Servlet API, the Restlet applications don't have a direct control on the outputstream, they only provide output representation to be written by the server connector.
+
+Portability
+    * The Restlet API is cleanly seperated from the Reference Implementation called the Noelios Restlet Engine. Alternative implementation are possible and encouraged.
+    * An adapter Servlet is provided to let you deploy any Restlet application in any Servlet compliant container, when the usage of standalone HTTP connectors is not possible.
+
+Deployment
+    * Deployment as native services is possible and illustrated using the powerful Java Service Wrapper.
+    * Integration with Spring lets you apply the Inversion of Control design pattern to configure your applications using a central XML file.
 
 
 Copyright © 2005-2007 Jérôme Louvel. Restlet is a registered trademark of Noelios Consulting.
