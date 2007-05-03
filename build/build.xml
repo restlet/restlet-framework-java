@@ -106,16 +106,6 @@
       <fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
    </path>
 
-   <path id="mod-asyncweb-path">
-      <path refid="mod-ri-path" />
-      <pathelement path="${classes}/${mod-ri-id}" />
-      <fileset dir="${lib}/${lib-concurrent-id}" includes="*.jar" />
-      <fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
-      <fileset dir="${lib}/${lib-mina-id}" includes="*.jar" />
-      <fileset dir="${lib}/${lib-asyncweb-id}" includes="*.jar" />
-      <fileset dir="${lib}/${lib-slf4j-id}" includes="*.jar" />
-   </path>
-
    <path id="mod-atom-path">
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
@@ -171,14 +161,6 @@
       <fileset dir="${lib}/${lib-dbcp-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-pool-id}" includes="*.jar" />
-   </path>
-
-   <path id="mod-jetty5-path">
-      <path refid="mod-ri-path" />
-      <pathelement path="${classes}/${mod-ri-id}" />
-      <fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
-      <fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
-      <fileset dir="${lib}/${lib-jetty5-id}" includes="*.jar" />
    </path>
 
    <path id="mod-jetty-path">
@@ -239,14 +221,12 @@
    <path id="path-all">
       <pathelement path="${classes}/${mod-api-id}" />
       <pathelement path="${classes}/${mod-ri-id}" />
-      <pathelement path="${classes}/${mod-asyncweb-id}" />
       <pathelement path="${classes}/${mod-fileupload-id}" />
       <pathelement path="${classes}/${mod-freemarker-id}" />
       <pathelement path="${classes}/${mod-grizzly-id}" />
       <pathelement path="${classes}/${mod-httpclient-id}" />
       <pathelement path="${classes}/${mod-javamail-id}" />
       <pathelement path="${classes}/${mod-jdbc-id}" />
-      <pathelement path="${classes}/${mod-jetty5-id}" />
       <pathelement path="${classes}/${mod-jetty-id}" />
       <pathelement path="${classes}/${mod-jmx-id}" />
       <pathelement path="${classes}/${mod-json-id}" />
@@ -255,14 +235,12 @@
       <pathelement path="${classes}/${mod-servlet-id}" />
       <pathelement path="${classes}/${mod-spring-id}" />
       <pathelement path="${classes}/${mod-velocity-id}" />
-      <path refid="mod-asyncweb-path" />
       <path refid="mod-fileupload-path" />
       <path refid="mod-freemarker-path" />
       <path refid="mod-grizzly-path" />
       <path refid="mod-httpclient-path" />
       <path refid="mod-javamail-path" />
       <path refid="mod-jdbc-path" />
-      <path refid="mod-jetty5-path" />
       <path refid="mod-jetty-path" />
       <path refid="mod-jmx-path" />
       <path refid="mod-json-path" />
@@ -737,19 +715,17 @@
       <mkdir dir="${temp}/poms"/>
       <pomModule name="api" />
       <pomModule name="ri" />
-      <pomModule name="asyncweb" />
-<!-- disabled for 1.0  <pomModule name="atom" /> -->
+		<pomModule name="atom" />
       <pomModule name="fileupload" />
       <pomModule name="freemarker" />
-<!-- disabled for 1.0  <pomModule name="grizzly" /> -->
+		<pomModule name="grizzly" />
       <pomModule name="httpclient" />
       <pomModule name="javamail" />
       <pomModule name="jdbc" ext="dbcp" />
-<!-- disabled for 1.0  <pomModule name="jetty5"/> -->
       <pomModule name="jetty" />
 <!-- disabled for 1.0  <pomModule name="jmx" /> -->
       <pomModule name="json" />
-<!-- disabled for 1.0  <pomModule name="jxta" /> -->
+		<pomModule name="jxta" />
       <pomModule name="net" />
       <pomModule name="servlet" />
       <pomModule name="simple" />
@@ -758,7 +734,6 @@
       <pomModule name="example" />
 
       <pomLibrary name="simple"/>
-      <pomLibrary name="asyncweb"/>
       <pomLibrary name="json"/>
       <pomLibrary name="db4o" depend1="example" type1="mod" />
       <pomLibrary name="db4o-nativequery"/>
@@ -799,7 +774,6 @@
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@release-number@" value="${release-number}" />
       <compileModule name="api" />
       <compileModule name="ri" />
-      <compileModule name="asyncweb" />
       <compileModule name="atom" />
       <compileModule name="fileupload" />
       <compileModule name="freemarker" />
@@ -807,7 +781,6 @@
       <compileModule name="httpclient" />
       <compileModule name="javamail" />
       <compileModule name="jdbc" />
-      <compileModule name="jetty5" />
       <compileModule name="jetty" />
       <compileModule name="jmx" />
       <compileModule name="json" />
@@ -826,7 +799,6 @@
    <target name="generate-backport" if="do-backport" depends="generate-classes" description="Backport classes using Retrotranslator.">
       <backportModule name="api" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="ri" failonwarning="@{backport-failonwarning}"/>
-      <backportModule name="asyncweb" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="atom" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="fileupload" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="freemarker" failonwarning="@{backport-failonwarning}"/>
@@ -834,7 +806,6 @@
       <backportModule name="httpclient" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="javamail" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jdbc" failonwarning="@{backport-failonwarning}"/>
-      <backportModule name="jetty5" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jetty" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jmx" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="json" failonwarning="@{backport-failonwarning}"/>
@@ -929,18 +900,17 @@
              stylesheetfile="${tmpl}/javadocs/stylesheet.css"
                verbose="${verbose}">
          <sourcepath>
-<!-- disabled for 1.0   <pathelement path="${mod}/${mod-atom-id}/src/" /> -->
+				<pathelement path="${mod}/${mod-atom-id}/src/" />
             <pathelement path="${mod}/${mod-fileupload-id}/src/" />
             <pathelement path="${mod}/${mod-freemarker-id}/src/" />
-<!-- disabled for 1.0   <pathelement path="${mod}/${mod-grizzly-id}/src/" /> -->
-            <pathelement path="${mod}/${mod-asyncweb-id}/src/" />
+				<pathelement path="${mod}/${mod-grizzly-id}/src/" />
             <pathelement path="${mod}/${mod-httpclient-id}/src/" />
             <pathelement path="${mod}/${mod-javamail-id}/src/" />
             <pathelement path="${mod}/${mod-jdbc-id}/src/" />
             <pathelement path="${mod}/${mod-jetty-id}/src/" />
             <pathelement path="${mod}/${mod-jmx-id}/src/" />
             <pathelement path="${mod}/${mod-json-id}/src/" />
-<!-- disabled for 1.0   <pathelement path="${mod}/${mod-jxta-id}/src/" /> -->
+				<pathelement path="${mod}/${mod-jxta-id}/src/" />
             <pathelement path="${mod}/${mod-net-id}/src/" />
             <pathelement path="${mod}/${mod-servlet-id}/src/" />
             <pathelement path="${mod}/${mod-simple-id}/src/" />
@@ -1005,19 +975,17 @@
       <mkdir dir="${temp}/findbugs" />
       <findbugsModule name="api" /> 
       <findbugsModule name="ri" />
-      <findbugsModule name="asyncweb" />
-<!-- disabled for 1.0   <findbugsModule name="atom" /> -->
+		<findbugsModule name="atom" />
       <findbugsModule name="fileupload" />
       <findbugsModule name="freemarker" />
-<!-- disabled for 1.0   <findbugsModule name="grizzly" /> -->
+		<findbugsModule name="grizzly" />
       <findbugsModule name="httpclient" />
       <findbugsModule name="javamail" />
       <findbugsModule name="jdbc" />
-<!-- disabled for 1.0   <findbugsModule name="jetty5" /> -->
       <findbugsModule name="jetty" />
 <!-- disabled for 1.0   <findbugsModule name="jmx" /> -->
       <findbugsModule name="json" />
-<!-- disabled for 1.0   <findbugsModule name="jxta" /> -->
+		<findbugsModule name="jxta" />
       <findbugsModule name="net" />
       <findbugsModule name="servlet" />
       <findbugsModule name="simple" />
@@ -1030,7 +998,6 @@
       <mkdir dir="${temp}/checkstyle" />
       <checkstyleModule name="api" /> 
       <checkstyleModule name="ri" />
-      <checkstyleModule name="asyncweb" />
       <checkstyleModule name="atom" />
       <checkstyleModule name="fileupload" />
       <checkstyleModule name="freemarker" />
@@ -1038,7 +1005,6 @@
       <checkstyleModule name="httpclient" />
       <checkstyleModule name="javamail" />
       <checkstyleModule name="jdbc" />
-      <checkstyleModule name="jetty5" />
       <checkstyleModule name="jetty" />
       <checkstyleModule name="jmx" />
       <checkstyleModule name="json" />
@@ -1096,8 +1062,7 @@
       <copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
 
       <!-- Packages libraries -->
-      <stageLibrary name="asyncweb" />
-<!-- disabled for 1.0   <stageLibrary name="bouncycastle" /> -->
+		<stageLibrary name="bouncycastle" />
       <stageLibrary name="codec" />
       <stageLibrary name="collections" />
       <stageLibrary name="concurrent" />
@@ -1105,23 +1070,20 @@
       <stageLibrary name="dbcp" />
       <stageLibrary name="fileupload" />
       <stageLibrary name="freemarker" />
-<!-- disabled for 1.0   <stageLibrary name="grizzly" /> -->
+		<stageLibrary name="grizzly" />
       <stageLibrary name="httpclient" />
       <stageLibrary name="io" />
       <stageLibrary name="javamail" />
       <stageLibrary name="activation" />
-<!-- disabled for 1.0   <stageLibrary name="jetty5" /> -->
       <stageLibrary name="jetty" />
       <stageLibrary name="json" />
-<!-- disabled for 1.0   <stageLibrary name="jxta" /> -->
+		<stageLibrary name="jxta" />
       <stageLibrary name="lang" />
       <stageLibrary name="logging" />
       <stageLibrary name="mina" />
       <stageLibrary name="pool" />
       <stageLibrary name="servlet" />
-      <stageLibrary name="servlet5" />
       <stageLibrary name="simple" />
-      <stageLibrary name="slf4j" />
       <stageLibrary name="spring" />
       <stageLibrary name="velocity" />
       <stageLibrary name="wrapper" />
@@ -1130,20 +1092,17 @@
       <!-- Package modules -->
       <stageModule name="api" />
       <stageModule name="ri" />
-      <stageModule name="asyncweb" />
-<!-- disabled for 1.0  <stageModule name="atom" /> -->
-<!-- disabled for 1.0  <stageModule name="bouncycastle" /> -->
+		<stageModule name="atom" />
       <stageModule name="fileupload" />
       <stageModule name="freemarker" />
-<!-- disabled for 1.0  <stageModule name="grizzly" /> -->
+		<stageModule name="grizzly" />
       <stageModule name="httpclient" />
       <stageModule name="javamail" />
       <stageModule name="jdbc" />
-<!-- disabled for 1.0  <stageModule name="jetty5" /> -->
       <stageModule name="jetty" />
 <!-- disabled for 1.0  <stageModule name="jmx" /> -->
       <stageModule name="json" />
-<!-- disabled for 1.0  <stageModule name="jxta" /> -->
+		<stageModule name="jxta" />
       <stageModule name="net" />
       <stageModule name="servlet" />
       <stageModule name="simple" />
@@ -1165,7 +1124,6 @@
       <maven2Module name="api"/>
       <maven2Module name="ri"/>
       <maven2Module name="example" />
-      <maven2Module name="asyncweb" />
       <maven2Module name="fileupload" />
       <maven2Module name="freemarker" />
       <maven2Module name="httpclient" />
@@ -1179,7 +1137,6 @@
       <maven2Module name="spring" />
       <maven2Module name="velocity" />
       <maven2Library name="simple" />
-      <maven2Library name="asyncweb" />
       <maven2Library name="json" />
       <maven2Library name="db4o" />
       <maven2Library name="db4o-nativequery" />
