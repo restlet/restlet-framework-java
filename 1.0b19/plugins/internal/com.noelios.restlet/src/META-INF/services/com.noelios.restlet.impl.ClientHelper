@@ -1,0 +1,3 @@
+com.noelios.restlet.impl.local.ClapClientHelper		# CLAP
+com.noelios.restlet.impl.local.FileClientHelper		# FILE
+com.noelios.restlet.impl.local.WarClientHelper		# WAR

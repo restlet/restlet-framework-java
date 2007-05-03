@@ -1,0 +1,107 @@
+
+=================================
+Plugins and third-party libraries
+=================================
+
+
+The content of this directory can be directly copied inside the plugins 
+directory of your Eclipse IDE (see http://www.eclipse.org for details).
+When you restart the IDE, you will see that all the plugins were automatically
+registered and can directly be used within your applications and your own 
+plugins.
+
+Below is a list of the dependencies between Restlet plugins. If you use the 
+plugins (either as a JAR or as a directory) withing an Eclipse IDE, then the 
+dependencies are automatically declared. However, if you add them directly on 
+your classpath, you need to ensure that all the dependencies are also on the 
+classpath, otherwise ClassNotFound exceptions will be thrown.
+
+
+com.noelios.restlet.example (Tutorial examples)
+---------------------------
+ - none
+
+
+com.noelios.restlet.ext.asyncweb_0.8 (AsyncWeb server HTTP connector)
+------------------------------------
+ - edu.oswego.cs.dl.util.concurrent_1.3
+ - org.apache.commons.logging_1.1
+ - org.apache.mina_0.8
+ - org.safehaus.asyncweb_0.8
+ - org.slf4j_1.0
+
+
+com.noelios.restlet.ext.atom_1.0 (Implementation of Atom specifications)
+--------------------------------
+ - none
+ 
+
+com.noelios.restlet.ext.fileupload_1.1 (Integration with Apache FileUpload)
+------------------------------------
+ - javax.servlet_2.4
+ - org.apache.commons.fileupload_1.1 
+
+
+com.noelios.restlet.ext.freemarker_2.3 (Integration with FreeMarker template engine)
+--------------------------------------
+ - org.freemarker_2.3
+
+
+com.noelios.restlet.ext.javamail_1.4 (SMTP client connector based on JavaMail)
+------------------------------------
+ - javax.mail_1.4
+
+
+com.noelios.restlet.ext.jdbc_3.0 (JDBC client connector using Apache connections pool)
+--------------------------------
+ - org.apache.commons.dbcp_1.2
+ - org.apache.commons.logging_1.1
+ - org.apache.commons.pool_1.3
+
+
+com.noelios.restlet.ext.jetty_5.1 (Jetty 5 server HTTP connector)
+---------------------------------
+ - javax.servlet_2.4
+ - org.apache.commons.logging_1.1
+ - org.mortbay.jetty_5.1
+
+
+com.noelios.restlet.ext.jetty_6.0 (Jetty 6 server HTTP connector)
+---------------------------------
+ - javax.servlet_2.5
+ - org.mortbay.jetty_6.0
+
+
+com.noelios.restlet.ext.net (HTTP client connector based on JDK's HttpUrlConnection)
+---------------------------
+ - none
+
+
+com.noelios.restlet.ext.servlet_2.4 (Servlet base server HTTP connector)
+-----------------------------------
+ - javax.servlet_2.4
+
+
+com.noelios.restlet.ext.simple_3.1 (Simple server HTTP connector)
+----------------------------------
+ - org.simpleframework_3.1
+ 
+
+com.noelios.restlet (Noelios Restlet Engine)
+-------------------
+ - org.restlet
+ 
+ 
+com.noelios.restlet.test (NRE unit tests)
+------------------------
+ - nearly everything
+ 
+ 
+org.restlet (Resltet API)
+-----------
+ - none
+
+
+org.restlet.test (API unit tests)
+----------------
+ - none
