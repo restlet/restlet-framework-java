@@ -1,0 +1,226 @@
+<html>
+<head>
+ <style type="text/css">
+/* <![CDATA[ */
+@import "http://www.restlet.org/stylesheets/tigris.css";
+/*  ]]> */
+ </style>
+ <title>Restlet - Glossary</title>
+</head>
+<body>
+
+<a target="_top" href="http://www.restlet.org"><img src="http://www.restlet.org/images/logo200"/></a><br/>
+
+<br/>
+
+<h1>Glossary</h1>
+
+<h3><a name="toc">Table of contents</a></h3>
+<p>
+   <ol>
+      <li><a href="#application">Application</a></li>
+      <li><a href="#chainer">Chainer</a></li>
+      <li><a href="#client">Client</a></li>
+      <li><a href="#component">Component</a></li>
+      <li><a href="#connector">Connector</a></li>
+      <li><a href="#container">Container</a></li>
+      <li><a href="#context">Context</a></li>
+      <li><a href="#directory">Directory</a></li>
+      <li><a href="#engine">Engine</a></li>
+      <li><a href="#filter">Filter</a></li>
+      <li><a href="#guard">Guard</a></li>
+      <li><a href="#handler">Handler</a></li>
+      <li><a href="#redirector">Redirector</a></li>
+      <li><a href="#representation">Representation</a></li>
+      <li><a href="#request">Request</a></li>
+      <li><a href="#resource">Resource</a></li>
+      <li><a href="#response">Response</a></li>
+      <li><a href="#restlet">Restlet</a></li>
+      <li><a href="#router">Router</a></li>
+      <li><a href="#scorer">Scorer</a></li>
+      <li><a href="#server">Server</a></li>
+      <li><a href="#virtual-host">Virtual Host</a></li>
+   </ol>
+</p>
+
+<h3><a name="application">Application</a></h3>
+
+<p>
+   Restlet deployable into containers. Applications are guaranteed to receive calls with their base reference set relatively to the virtual host that served them. This class is both a descriptor able to create the root Restlet and the actual Restlet that can be attached to one or more VirtualHost instances.
+</p>
+
+<h3><a name="chainer">Chainer</a></h3>
+
+<p>
+   Restlet part of a processing chain. In addition to handling incoming calls like any Restlet, a Chainer can also resolve, either statically or dynamically, the next Restlet that will continue the processing chain. Subclasses only have to implement the getNext() method.
+</p>
+
+<h3><a name="client">Client</a></h3>
+
+<p>
+   Connector acting as a generic client. It internally uses one of the available connectors registered with the current Restlet implementation.
+</p>
+
+<h3><a name="component">Component</a></h3>
+
+<p>
+   Restlet managing a set of client and server connectors. "A component is an abstract unit of software instructions and internal state that provides a transformation of data via its interface." Roy T. Fielding
+</p>
+
+<h3><a name="connector">Connector</a></h3>
+
+<p>
+   Restlet enabling communication between components. "A connector is an abstract mechanism that mediates communication, coordination, or cooperation among components. Connectors enable communication between components by transferring data elements from one interface to another without changing the data." Roy T. Fielding "Encapsulate the activities of accessing resources and transferring resource representations. The connectors present an abstract interface for component communication, enhancing simplicity by providing a clean separation of concerns and hiding the underlying implementation of resources and communication mechanisms" Roy T. Fielding
+</p>
+
+<h3><a name="container">Container</a></h3>
+
+<p>
+   Component managing a set of virtual hosts and applications. Applications are expected to be directly attached to virtual hosts. Containers are also exposing a number of services in order to control several operational features in a portable way, like access log and status setting.
+</p>
+
+<h3><a name="context">Context</a></h3>
+
+<p>
+   Information and services provided to a Restlet. The context is the door opened for Restlets in order to access to their environment in the framework. The context is typically provided by the immediate parent Restlet (Container and Application are the most common cases). The services provided are the access to a logger instance, to some configuration parameters and to a generic client.
+</p>
+
+<h3><a name="directory">Directory</a></h3>
+
+<p>
+   Handler supported by a directory of resource (from the file system, the web application context or class loaders). An automatic content negotiation mechanism (similar to the one in Apache HTTP server) is used to select the best representation of a resource based on the available variants and on the client capabilities and preferences.
+</p>
+
+<h3><a name="engine">Engine</a></h3>
+
+<p>
+   A Restlet Engine is an implementation of the Restlet API. The reference implementation, provided by Noelios Consulting, is therefore called the Noelios Restlet Engine (NRE).
+</p>
+
+<h3><a name="filter">Filter</a></h3>
+
+<p>
+   Chainer to an attached Restlet that filters calls. The purpose is to do some pre-processing or post-processing on the calls going through it before or after they are actually handled by an attached Restlet. Also note that you can attach and detach targets while handling incoming calls as the filter is ensured to be thread-safe.
+</p>
+
+<h3><a name="guard">Guard</a></h3>
+
+<p>
+   Filter guarding the access to another Restlet. Currently it only supports the HTTP basic authentication scheme or custom schemes (based on cookies, query params or IP address for example).
+</p>
+
+<h3><a name="handler">Handler</a></h3>
+
+<p>
+   Restlet capable of handling calls using a target Resource. At this point in the processing, all the necessary information should be ready in order to find the resource that is the actual target of the request and to handle the required method on it. It is comparable to an HttpServlet class as it provides facility methods to handle the most common method names. The calls are then automatically dispatched to the appropriate handle*() method (where the '*' character corresponds to the method name, or to the handleOthers() method. By default, the implementation of the handle*() or handleOthers() methods is to invoke the defaultHandle() method which should be overriden to change the default behavior (set the status to SERVER_ERROR_NOT_IMPLEMENTED).
+</p>
+
+<h3><a name="redirector">Redirector</a></h3>
+
+<p>
+   Rewrites URIs then redirects the call or the client to a new destination.
+</p>
+
+<h3><a name="representation">Representation</a></h3>
+
+<p>
+   Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead occurs upon initialization. The main overhead must only occur during invocation of content processing methods (write, getStream, getChannel and toString).Current or intended state of a resource.
+</p>
+<p>
+   "REST components perform actions on a resource by using a representation to capture the current or intended state of that resource and transferring that representation between components. A representation is a sequence of bytes, plus representation metadata to describe those bytes. Other commonly used but less precise names for a representation include: document, file, and HTTP message entity, instance, or variant." Roy T. Fielding
+</p>
+
+<h3><a name="request">Request</a></h3>
+
+<p>
+   Generic request sent by client connectors. It is then received by server connectors and processed by Restlets. This request can also be processed by a chain of Restlets, on the client or server sides. Requests are uniform across all types of connectors, protocols and components.
+</p>
+
+<h3><a name="resource">Resource</a></h3>
+
+<p>
+   Intended conceptual target of a hypertext reference. "Any information that can be named can be a resource: a document or image, a temporal service (e.g. "today's weather in Los Angeles"), a collection of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might be the target of an author's hypertext reference must fit within the definition of a resource."
+</p>
+<p>
+   "The only thing that is required to be static for a resource is the semantics of the mapping, since the semantics is what distinguishes one resource from another." Roy T. Fielding
+</p>
+<p>
+   Another definition adapted from the URI standard (RFC 3986): a resource is the conceptual mapping to a representation (also known as entity) or set of representations, not necessarily the representation which corresponds to that mapping at any particular instance in time. Thus, a resource can remain constant even when its content (the representations to which it currently corresponds) changes over time, provided that the conceptual mapping is not      changed in the process. In addition, a resource is always identified by a URI.
+</p>
+
+<h3><a name="response">Response</a></h3>
+
+<p>
+   Generic response sent by server connectors. It is then received by client connectors. Responses are uniform across all types of connectors, protocols and components.
+</p>
+
+<h3><a name="restlet">Restlet</a></h3>
+
+<p>
+   Base class exposing a uniform REST interface.
+</p>
+<p>
+   "The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components. By applying the software engineering principle of generality to the component interface, the overall system architecture is simplified and the visibility of interactions is improved. Implementations are decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
+</p>
+<p>
+   It has many subclasses that focus on a specific ways to handle calls like filtering, routing or finding a target resource. The context property is typically provided by a parent container as a way to give access to features such as logging and client connectors.
+</p>
+
+<h3><a name="router">Router</a></h3>
+
+<p>
+   Chainer routing calls to one of the attached scorers. Each scorer represents a potential route that can compute an affinity score for each call depending on various criteria. The attach() method allow the creation of scorers based on URI patterns matching the beginning of a the relative resource part.
+</p>
+<p>
+   In addition, several routing modes are supported, implementing various algorithms like:
+       * Best match (default)
+       * First match
+       * Last match
+       * Random match
+       * Round robin
+       * Custom
+</p>
+<p>
+   Note that for scorers using URI patterns will update the resource base reference during the routing if they are selected. If you are using hierarchical paths, remember to directly attach the child routers to their parent router instead of the top level Restlet container. Also, remember to manually handle the path separator characters in your path patterns otherwise the delegation will not work as expected.
+</p>
+<p>
+   Finally, you can modify the scorers list while handling incoming calls as the delegation code is ensured to be thread-safe.
+</p>
+
+<h3><a name="scorer">Scorer</a></h3>
+
+<p>
+   Filter scoring the affinity of calls with the attached Restlet. The score is used by an associated Router in order to determine the most appropriate Restlet for a given call.
+</p>
+
+<h3><a name="server">Server</a></h3>
+
+<p>
+   Connector acting as a generic server. It internally uses one of the available connectors registered with the current Restlet implementation.
+</p>
+
+<h3><a name="virtual-host">Virtual Host</a></h3>
+
+<p>
+   Router of calls from server connectors to attached Restlets. The attached Restlets are typically applications.
+</p>
+
+<p>
+   <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a> (<a target="_top" href="http://blog.noelios.com">blog</a>)<br/>
+</p>
+
+<h4>Notes</h4>
+<p>
+   <ul>
+      <li>Thanks to Dave Pawson proposing this Glossary.</li>
+   </ul>
+</p>
+
+<br/>
+
+<small>
+   Last modified on 2006-11-08. Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.
+</small>
+
+</body>
+</html>
