@@ -1,0 +1,230 @@
+/*
+ * Copyright 2005-2006 Noelios Consulting.
+ *
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the "License").  You may not use this file except
+ * in compliance with the License.
+ *
+ * You can obtain a copy of the license at
+ * http://www.opensource.org/licenses/cddl1.txt
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL
+ * HEADER in each file and include the License file at
+ * http://www.opensource.org/licenses/cddl1.txt
+ * If applicable, add the following below this CDDL
+ * HEADER, with the fields enclosed by brackets "[]"
+ * replaced with your own identifying information:
+ * Portions Copyright [yyyy] [name of copyright owner]
+ */
+
+package com.noelios.restlet.test;
+
+import java.io.IOException;
+
+import junit.framework.TestCase;
+
+import org.restlet.data.Reference;
+
+/**
+ * Unit tests for the Cookie related classes.
+ * @author Jerome Louvel (contact@noelios.com) <a href="http://www.noelios.com/">Noelios Consulting</a>
+ */
+public class ReferenceTest extends TestCase
+{
+   /**
+    * Tests the cookies parsing.
+    */
+   public void testParsing() throws IOException
+   {
+      String base = "http://a/b/c/d;p?q";
+      
+      String uri01 = "g:h";
+      String uri02 = "g";
+      String uri03 = "./g";
+      String uri04 = "g/";
+      String uri05 = "/g";
+      String uri06 = "//g";
+      String uri07 = "?y";
+      String uri08 = "g?y";
+      String uri09 = "#s";
+      String uri10 = "g#s";
+      String uri11 = "g?y#s";
+      String uri12 = ";x";
+      String uri13 = "g;x";
+      String uri14 = "g;x?y#s";
+      String uri15 = "";
+      String uri16 = ".";
+      String uri17 = "./";
+      String uri18 = "..";
+      String uri19 = "../";
+      String uri20 = "../g";
+      String uri21 = "../..";
+      String uri22 = "../../";
+      String uri23 = "../../g";
+      String uri24 = "../../../g";
+      String uri25 = "../../../../g";
+      String uri26 = "/./g";
+      String uri27 = "/../g";
+      String uri28 = "g.";
+      String uri29 = ".g";
+      String uri30 = "g..";
+      String uri31 = "..g";
+      String uri32 = "./../g";
+      String uri33 = "./g/.";
+      String uri34 = "g/./h";
+      String uri35 = "g/../h";
+      String uri36 = "g;x=1/./y";
+      String uri37 = "g;x=1/../y";
+      
+      String uri101 = "g:h";
+      String uri102 = "http://a/b/c/g";
+      String uri103 = "http://a/b/c/g";
+      String uri104 = "http://a/b/c/g/";
+      String uri105 = "http://a/g";
+      String uri106 = "http://g";
+      String uri107 = "http://a/b/c/d;p?y";
+      String uri108 = "http://a/b/c/g?y";
+      String uri109 = "http://a/b/c/d;p?q#s";
+      String uri110 = "http://a/b/c/g#s";
+      String uri111 = "http://a/b/c/g?y#s";
+      String uri112 = "http://a/b/c/;x";
+      String uri113 = "http://a/b/c/g;x";
+      String uri114 = "http://a/b/c/g;x?y#s";
+      String uri115 = "http://a/b/c/d;p?q";
+      String uri116 = "http://a/b/c/";
+      String uri117 = "http://a/b/c/";
+      String uri118 = "http://a/b/";
+      String uri119 = "http://a/b/";
+      String uri120 = "http://a/b/g";
+      String uri121 = "http://a/";
+      String uri122 = "http://a/";
+      String uri123 = "http://a/g";
+      String uri124 = "http://a/g";
+      String uri125 = "http://a/g";
+      String uri126 = "http://a/g";
+      String uri127 = "http://a/g";
+      String uri128 = "http://a/b/c/g.";
+      String uri129 = "http://a/b/c/.g";
+      String uri130 = "http://a/b/c/g..";
+      String uri131 = "http://a/b/c/..g";
+      String uri132 = "http://a/b/g";
+      String uri133 = "http://a/b/c/g/";
+      String uri134 = "http://a/b/c/g/h";
+      String uri135 = "http://a/b/c/h";
+      String uri136 = "http://a/b/c/g;x=1/y";
+      String uri137 = "http://a/b/c/y";
+
+      // Test the parsing of references into its components
+      testRef0("foo://example.com:8042/over/there?name=ferret#nose", "foo", "example.com:8042", "/over/there", "name=ferret", "nose");
+      testRef0("urn:example:animal:ferret:nose", "urn", null, "example:animal:ferret:nose", null, null);
+      testRef0("mailto:fred@example.com", "mailto", null, "fred@example.com", null, null);
+      testRef0("foo://info.example.com?fred", "foo", "info.example.com", null, "fred", null); 
+      
+      // Test the resolution of relative references
+      testRef1(base, uri01, uri101);
+      testRef1(base, uri02, uri102);
+      testRef1(base, uri03, uri103);
+      testRef1(base, uri04, uri104);
+      testRef1(base, uri05, uri105);
+      testRef1(base, uri06, uri106);
+      testRef1(base, uri07, uri107);
+      testRef1(base, uri08, uri108);
+      testRef1(base, uri09, uri109);
+      testRef1(base, uri10, uri110);
+      testRef1(base, uri11, uri111);
+      testRef1(base, uri12, uri112);
+      testRef1(base, uri13, uri113);
+      testRef1(base, uri14, uri114);
+      testRef1(base, uri15, uri115);
+      testRef1(base, uri16, uri116);
+      testRef1(base, uri17, uri117);
+      testRef1(base, uri18, uri118);
+      testRef1(base, uri19, uri119);
+      testRef1(base, uri20, uri120);
+      testRef1(base, uri21, uri121);
+      testRef1(base, uri22, uri122);
+      testRef1(base, uri23, uri123);
+      testRef1(base, uri24, uri124);
+      testRef1(base, uri25, uri125);
+      testRef1(base, uri26, uri126);
+      testRef1(base, uri27, uri127);
+      testRef1(base, uri28, uri128);
+      testRef1(base, uri29, uri129);
+      testRef1(base, uri30, uri130);
+      testRef1(base, uri31, uri131);
+      testRef1(base, uri32, uri132);
+      testRef1(base, uri33, uri133);
+      testRef1(base, uri34, uri134);
+      testRef1(base, uri35, uri135);
+      testRef1(base, uri36, uri136);
+      testRef1(base, uri37, uri137);
+      
+      // Test the relativization of absolute references
+      testRef2(base, uri102, uri02);
+      testRef2(base, uri104, uri04);
+      testRef2(base, uri107, uri07);
+      testRef2(base, uri108, uri08);
+      testRef2(base, uri109, uri09);
+      testRef2(base, uri110, uri10);
+      testRef2(base, uri111, uri11);
+      testRef2(base, uri112, uri12);
+      testRef2(base, uri113, uri13);
+      testRef2(base, uri114, uri14);
+      testRef2(base, uri116, uri16);
+      testRef2(base, uri118, uri18);
+      testRef2(base, uri120, uri20);
+      testRef2(base, uri121, uri21);
+      testRef2(base, uri123, uri23);
+   }
+
+   /**
+    * Tests the parsing of a reference into its components
+    * @param reference
+    * @param scheme
+    * @param authority
+    * @param path
+    * @param query
+    * @param fragment
+    */
+   private void testRef0(String reference, String scheme, String authority, String path, String query, String fragment)
+   {
+   	Reference ref = new Reference(reference);
+   	assertEquals(scheme, ref.getScheme());
+   	assertEquals(authority, ref.getAuthority());
+   	assertEquals(path, ref.getPath());
+   	assertEquals(query, ref.getQuery());
+   	assertEquals(fragment, ref.getFragment());
+   }
+   
+   /**
+    * Test the resolution of relative references.
+    * @param baseUri
+    * @param relativeUri
+    * @param expectedAbsoluteUri
+    */
+   private void testRef1(String baseUri, String relativeUri, String expectedAbsoluteUri)
+   {
+      Reference baseRef = new Reference(baseUri);
+      Reference relativeRef = new Reference(baseRef, relativeUri);
+      Reference absoluteRef = relativeRef.getTargetRef();
+      assertEquals(expectedAbsoluteUri, absoluteRef.toString());
+   }
+   
+   /**
+    * Test the relativization of absolute references
+    * @param baseUri
+    * @param absoluteUri
+    * @param expectedRelativeUri
+    */
+   private void testRef2(String baseUri, String absoluteUri, String expectedRelativeUri)
+   {
+      Reference baseRef = new Reference(baseUri);
+      Reference absoluteRef = new Reference(absoluteUri);
+      Reference relativeRef = absoluteRef.getRelativeRef(baseRef);
+      assertEquals(expectedRelativeUri, relativeRef.toString());
+   }
+   
+}
