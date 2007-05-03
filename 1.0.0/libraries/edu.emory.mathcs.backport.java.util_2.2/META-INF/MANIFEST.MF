@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Backport of java.util
+Bundle-SymbolicName: edu.emory.mathcs.backport.java.util
+Bundle-Version: 2.2
+Bundle-ClassPath: edu.emory.mathcs.backport.java.util.jar
+Bundle-Vendor: Dawid Kurzyniec
+Bundle-Localization: plugin
+Export-Package: edu.emory.mathcs.backport.java.util,
+ edu.emory.mathcs.backport.java.util.concurrent,
+ edu.emory.mathcs.backport.java.util.concurrent.atomic,
+ edu.emory.mathcs.backport.java.util.concurrent.helpers,
+ edu.emory.mathcs.backport.java.util.concurrent.locks
