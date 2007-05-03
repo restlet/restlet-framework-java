@@ -1,0 +1,791 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<!-- Content Stylesheet for Site -->
+
+    
+    
+
+    
+<!-- start the processing -->
+    <!-- ====================================================================== -->
+    <!-- GENERATED FILE, DO NOT EDIT, EDIT THE XML FILE IN xdocs INSTEAD! -->
+    <!-- Main Page Section -->
+    <!-- ====================================================================== -->
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type" />
+
+                          <meta name="author" content="Lars Kühne">
+            <meta name="email" content="$au.getAttributeValue("email")">
+    
+    
+            
+        
+    <title>Checkstyle - Writing Checks</title>
+
+    <style type="text/css" media="all">
+      @import url("./css/cs-layout.css");
+      @import url("./css/cs-style.css");
+    </style>
+  </head>
+
+  <body>
+    <div class="csTopBar">
+      <div class="csTopBarContents">
+        <div class="csLeft">
+          <h1>Writing Checks</h1>
+        </div>
+        <div class="csRight">
+          <a href="http://checkstyle.sourceforge.net/">
+            <img src="images/logo.png" alt="Checkstyle Logo" height="70"/>
+          </a>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="csMiddleContainer">
+      <div class="csLeftBar">
+        <div class="csLeftBarContents">
+            <!-- ============================================================ -->
+  <!-- start makeNavigationBar -->
+  
+  <ul>
+          <li>
+        <strong>About</strong>
+      </li>
+                        <li>    <a href="./index.html">Checkstyle</a>
+</li>
+                    
+  
+          <li>
+        <strong>Documentation</strong>
+      </li>
+                        <li>    <a href="./releasenotes.html">Release Notes</a>
+</li>
+                    
+                  <li>    <a href="./config.html">Configuration</a>
+</li>
+                                    <li>    <a href="./property_types.html">&nbsp;&nbsp;&nbsp;Property Types</a>
+</li>
+                    
+  
+                  <li>    <a href="./running.html">Running</a>
+</li>
+                                    <li>    <a href="./anttask.html">&nbsp;&nbsp;&nbsp;Ant Task</a>
+</li>
+                    
+                  <li>    <a href="./cmdline.html">&nbsp;&nbsp;&nbsp;Command Line</a>
+</li>
+                    
+  
+                  <li>    <a href="./availablechecks.html">Available Checks</a>
+</li>
+                    
+                  <li>    <a href="./checks.html">Standard Checks</a>
+</li>
+                                    <li>    <a href="./config_javadoc.html">&nbsp;&nbsp;&nbsp;Javadoc Comments</a>
+</li>
+                    
+                  <li>    <a href="./config_naming.html">&nbsp;&nbsp;&nbsp;Naming Conventions</a>
+</li>
+                    
+                  <li>    <a href="./config_header.html">&nbsp;&nbsp;&nbsp;Headers</a>
+</li>
+                    
+                  <li>    <a href="./config_imports.html">&nbsp;&nbsp;&nbsp;Imports</a>
+</li>
+                    
+                  <li>    <a href="./config_sizes.html">&nbsp;&nbsp;&nbsp;Size Violations</a>
+</li>
+                    
+                  <li>    <a href="./config_whitespace.html">&nbsp;&nbsp;&nbsp;Whitespace</a>
+</li>
+                    
+                  <li>    <a href="./config_modifier.html">&nbsp;&nbsp;&nbsp;Modifiers</a>
+</li>
+                    
+                  <li>    <a href="./config_blocks.html">&nbsp;&nbsp;&nbsp;Block Checks</a>
+</li>
+                    
+                  <li>    <a href="./config_coding.html">&nbsp;&nbsp;&nbsp;Coding</a>
+</li>
+                    
+                  <li>    <a href="./config_design.html">&nbsp;&nbsp;&nbsp;Class Design</a>
+</li>
+                    
+                  <li>    <a href="./config_duplicates.html">&nbsp;&nbsp;&nbsp;Duplicate Code</a>
+</li>
+                    
+                  <li>    <a href="./config_metrics.html">&nbsp;&nbsp;&nbsp;Metrics</a>
+</li>
+                    
+                  <li>    <a href="./config_misc.html">&nbsp;&nbsp;&nbsp;Miscellaneous</a>
+</li>
+                    
+  
+                  <li>    <a href="./optional.html">Optional Checks</a>
+</li>
+                                    <li>    <a href="./config_j2ee.html">&nbsp;&nbsp;&nbsp;J2EE Checks</a>
+</li>
+                    
+  
+                  <li>    <a href="./extending.html">Extending Checkstyle</a>
+</li>
+                                    <li><b>    <a href="./writingchecks.html">&nbsp;&nbsp;&nbsp;Writing checks</a>
+</b></li>
+                                                      <li><a href="#Overview">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Overview</a></li>
+                                                        <li><a href="#Writing Checks">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writing Checks</a></li>
+                                                        <li><a href="#Java Grammar">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Java Grammar</a></li>
+                                                        <li><a href="#The Checkstyle SDK Gui">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The Checkstyle SDK Gui</a></li>
+                                                        <li><a href="#Understanding the visitor pattern">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Understanding the visitor pattern</a></li>
+                                                        <li><a href="#Visitor in action">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Visitor in action</a></li>
+                                                        <li><a href="#Navigating the AST">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Navigating the AST</a></li>
+                                                        <li><a href="#Defining Check Properties">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Defining Check Properties</a></li>
+                                                        <li><a href="#Logging errors">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Logging errors</a></li>
+                                                        <li><a href="#Integrate your Check">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Integrate your Check</a></li>
+                                                        <li><a href="#Limitations">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Limitations</a></li>
+                                                        <li><a href="#Writing FileSetChecks">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writing FileSetChecks</a></li>
+                                                        <li><a href="#Huh? I can't figure it out!">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Huh? I can't figure it out!</a></li>
+                                                        <li><a href="#Contributing">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Contributing</a></li>
+                                      
+                  <li>    <a href="./writingfilters.html">&nbsp;&nbsp;&nbsp;Writing filters</a>
+</li>
+                    
+                  <li>    <a href="./writinglisteners.html">&nbsp;&nbsp;&nbsp;Writing listeners</a>
+</li>
+                    
+  
+                  <li>    <a href="./api/index.html">Javadoc</a>
+</li>
+                    
+  
+          <li>
+        <strong>SourceForge</strong>
+      </li>
+                        <li>    <a href="http://sourceforge.net/mail/?group_id=29721">Mailing Lists</a>
+</li>
+                    
+                  <li>    <a href="http://sourceforge.net/tracker/?atid=397078&group_id=29721&func=browse">Bug Database</a>
+</li>
+                    
+                  <li>    <a href="http://sourceforge.net/tracker/?atid=397081&group_id=29721&func=browse">Feature Requests</a>
+</li>
+                    
+  
+          <li>
+        <strong>Developers</strong>
+      </li>
+                        <li>    <a href="http://sourceforge.net/projects/checkstyle">Project Page</a>
+</li>
+                    
+                  <li>    <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/checkstyle/">CVS Repository</a>
+</li>
+                    
+                  <li>    <a href="./contributing.html">Contributing</a>
+</li>
+                    
+  
+      </ul>
+
+  <ul>
+    <li>
+      <strong>Hosted by:</strong>
+      <div align="center">
+        <p><a href="http://sourceforge.net">
+        <img src="http://sourceforge.net/sflogo.php?group_id=29721&amp;type=1" width="88" height="31" alt="SourceForge Logo"/></a>
+         </p>
+       </div>
+    </li>
+  </ul>
+
+  <!-- end makeNavigationBar -->
+  <!-- ============================================================ -->
+        </div>
+      </div>
+
+      <div class="csMain">
+                          <a id="Overview"></a>
+  <h2>Overview</h2>
+                                    <p>
+        OK, so you have finally decided to write your own Check.  Welcome
+        aboard, this is really a fun thing to do.  There are actually two
+        kinds of Checks, so before you can start, you have to find out
+        which kind of Check you want to implement.
+      </p>
+                                                <p>
+        The functionality of Checkstyle is implemented in modules that can
+        be plugged into Checkstyle. Modules can be containers for other
+        modules, i.e. they form a tree structure. The toplevel modules
+        that are known directly to the Checkstyle kernel (which is also a
+        module and forms the root of the tree) implement the <a href="api/com/puppycrawl/tools/checkstyle/api/FileSetCheck.html">FileSetCheck</a>
+        interface. These are pretty simple to grasp: they take a set of
+        input files and fire error messages.
+      </p>
+                                                <p>
+        Checkstyle provides a few FileSetCheck implementations by default
+        and one of them happens to be the <a href="api/com/puppycrawl/tools/checkstyle/TreeWalker.html">TreeWalker</a>. A
+        TreeWalker supports submodules that are derived from the <a href="api/com/puppycrawl/tools/checkstyle/api/Check.html">Check</a>
+        class. The TreeWalker operates by separately transforming each of
+        the Java input files into an abstract syntax tree and then handing
+        the result over to each of the Check submodules which in turn have
+        a look at a certain aspect of the tree.
+      </p>
+                                                      <a id="Writing Checks"></a>
+  <h2>Writing Checks</h2>
+                                    <p>
+        Most of the functionality of Checkstyle is implemented as
+        Checks. If you know how to write your own Checks, you can extend
+        Checkstyle according to your needs without having to wait for the
+        Checkstyle development team. You are about to become a Checkstyle
+        Expert.
+      </p>
+                                                <p>
+        Suppose you have a convention that the number of methods in a
+        class should not exceed a certain limit, say 30. This rule makes
+        sense, a class should only do one thing and do it well. With a
+        zillion methods chances are that the class does more than one
+        thing. The only problem you have is that your convention is not
+        checked by Checkstyle, so you'll have to write your own Check
+        and plug it into the Checkstyle framework.
+      </p>
+                                                <p> This chapter is organized as a tour that takes you
+      through the process step by step and explains both the theoretical
+      foundations and the <a href="api/com/puppycrawl/tools/checkstyle/api/package-summary.html">Checkstyle
+      API</a> along the way.  </p>
+                                                      <a id="Java Grammar"></a>
+  <h2>Java Grammar</h2>
+                                    <p>
+        Every Java Program is structured into files, and each of these
+        files has a certain structure. For example, if there is a
+        package statement then it is the first line of the file that is
+        not comment or whitespace. After the package statement comes a
+        list of import statements, which is followed by a class or
+        interface definition, and so on.
+      </p>
+                                                <p>
+        If you have ever read an introductory level Java book you probably
+        knew all of the above. And if you have studied computer science,
+        you probably also know that the rules that specify the Java language
+        can be formally specified using a grammar (statement is simplified
+        for didactic purposes).
+      </p>
+                                                <p>
+        Tools exist which read a grammar definition and produce a parser
+        for the language that is specified in the grammar. In other
+        words, the output of the tool is a program that can transform a
+        stream of characters (a Java file) into a tree representation
+        that reflects the structure of the file. Checkstyle uses the
+        parser generator <a href="http://www.antlr.org">ANTLR</a> but
+        that is an implementation detail you do not need to worry about
+        when writing Checks. Several other parser generators exist and
+        they all work well.
+      </p>
+                                                      <a id="The Checkstyle SDK Gui"></a>
+  <h2>The Checkstyle SDK Gui</h2>
+                                    <p>
+        Still with us? Great, you have mastered the basic theory so here
+        is your reward - a GUI that displays the structure of a Java
+        source file. To run it type
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>java -classpath checkstyle-all-4.2.jar \
+     com.puppycrawl.tools.checkstyle.gui.Main</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+        on the command line. Click the button at the bottom of the frame
+        and select a syntactically correct Java source file. The frame
+        will be populated with a tree that corresponds to the structure
+        of the Java source code.
+      </p>
+                                                <p>
+        <image alt="screenshot" src="images/gui_screenshot.png" />
+      </p>
+                                                <p> In the leftmost column you can open and close branches
+      of the tree, the remaining columns display information about each node
+      in the tree.  The second column displays a token type for each node. As
+      you navigate from the root of the tree to one of the leafs, you'll
+      notice that the token type denotes smaller and smaller units of your
+      source file, i.e. close to the root you might see the token type <a href="api/com/puppycrawl/tools/checkstyle/api/TokenTypes.html#CLASS_DEF">CLASS_DEF</a>
+      (a node that represents a class definition) while you will see token
+      types like IDENT (an identifier) near the leaves of the tree.  </p>
+                                                <p>
+        We'll get back to the details in the other columns later, they
+        are important for implementing Checks but not for understanding
+        the basic concepts. For now it is sufficient to know that the
+        gui is a tool that lets you look at the structure of a Java
+        file, i.e. you can see the Java grammar 'in action'.
+      </p>
+                                                      <a id="Understanding the visitor pattern"></a>
+  <h2>Understanding the visitor pattern</h2>
+                                    <p>
+        Ready for a bit more theory? The last bit
+        that is missing before you can start writing Checks is understanding
+        the Visitor pattern.
+      </p>
+                                                <p>
+        When working with ASTs, a simple approach to define check operations
+        on them would be to add a <span class="code">check()</span> method to the Class that defines
+        the AST nodes. For example, our AST type could have a method
+        <span class="code">checkNumberOfMethods()</span>. Such an approach would suffer from a few
+        serious drawbacks. Most importantly, it does not provide an extensible
+        design, i.e. the Checks have to be known at compile time; there is no
+        way to write plugins.
+      </p>
+                                                <p> Hence Checkstyle's AST classes do not have any
+      methods that implement checking functionality. Instead,
+      Checkstyle's <a href="api/com/puppycrawl/tools/checkstyle/TreeWalker.html">TreeWalker</a>
+      takes a set of objects that conform to a <a href="api/com/puppycrawl/tools/checkstyle/api/Check.html">Check</a>
+      interface. OK, you're right - actually it's not an interface
+      but an abstract class to provide some helper methods. A Check provides
+      methods that take an AST as an argument and perform the checking process
+      for that AST, most prominently <a href="api/com/puppycrawl/tools/checkstyle/api/Check.html#visitToken(com.puppycrawl.tools.checkstyle.api.DetailAST)"><span class="code">visitToken()</span></a>.  </p>
+                                                <p> It is important to understand that the individual
+      Checks do no drive the AST traversal. Instead, the TreeWalker initiates
+      a recursive descend from the root of the AST to the leaf nodes and calls
+      the Check methods. The traversal is done using a <a href="http://mathworld.wolfram.com/Depth-FirstTraversal.html">depth-first</a>
+      algorithm.  </p>
+                                                <p> Before any visitor method is called, the TreeWalker
+      will call <a href="api/com/puppycrawl/tools/checkstyle/api/Check.html#beginTree(com.puppycrawl.tools.checkstyle.api.DetailAST)"><span class="code">beginTree()</span></a> to give the Check a chance to do
+      some initialization. Then, when performing the recursive descend from
+      the root to the leaf nodes, the <span class="code">visitToken()</span>
+      method is called. Unlike the basic examples in the pattern book, there
+      is a <span class="code">visitToken()</span> counterpart called <a href="api/com/puppycrawl/tools/checkstyle/api/Check.html#leaveToken(com.puppycrawl.tools.checkstyle.api.DetailAST)"><span class="code">leaveToken()</span></a>. The TreeWalker will call that
+      method to signal that the subtree below the node has been processed and
+      the TreeWalker is backtracking from the node. After the root node has
+      been left, the TreeWalker will call <a href="api/com/puppycrawl/tools/checkstyle/api/Check.html#finishTree(com.puppycrawl.tools.checkstyle.api.DetailAST)"><span class="code">finishTree()</span></a>.  </p>
+                                                <p>
+        If you'd like to learn more about the Visitor pattern you should
+        grab a copy of the Gof
+        <a href="http://c2.com/cgi/wiki?DesignPatternsBook">Design
+        Patterns</a> book.
+      </p>
+                                                      <a id="Visitor in action"></a>
+  <h2>Visitor in action</h2>
+                                    <p>
+        Let's get back to our example and start writing code - that's why
+        you came here, right?
+        When you fire up the Checkstyle GUI and look at a few source
+        files you'll figure out pretty quickly that you are mainly
+        interested in the number of tree nodes of type METHOD_DEF. The
+        number of such tokens should be counted separately for each
+        CLASS_DEF / INTERFACE_DEF.
+      </p>
+                                                <p>
+        Hence we need to register the Check for the token types
+        CLASS_DEF and INTERFACE_DEF. The TreeWalker will only call
+        visitToken for these token types. Because the requirements of
+        our tasks are so simple, there is no need to implement the other
+        fancy methods, like <span class="code">finishTree()</span>, etc., so here is our first
+        shot at our Check implementation:
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>package com.mycompany.checks;
+import com.puppycrawl.tools.checkstyle.api.*;
+
+public class MethodLimitCheck extends Check
+{
+    private int max = 30;
+
+    public int[] getDefaultTokens()
+    {
+        return new int[]{TokenTypes.CLASS_DEF, TokenTypes.INTERFACE_DEF};
+    }
+
+    public void visitToken(DetailAST ast)
+    {
+        // find the OBJBLOCK node below the CLASS_DEF/INTERFACE_DEF
+        DetailAST objBlock = ast.findFirstToken(TokenTypes.OBJBLOCK);
+        // count the number of direct children of the OBJBLOCK
+        // that are METHOD_DEFS
+        int methodDefs = objBlock.getChildCount(TokenTypes.METHOD_DEF);
+        // report error if limit is reached
+        if (methodDefs &gt; max) {
+            log(ast.getLineNo(),
+                &quot;too many methods, only &quot; + max + &quot; are allowed&quot;);
+        }
+   }
+}</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                      <a id="Navigating the AST"></a>
+  <h2>Navigating the AST</h2>
+                                    <p>
+        In the example above you already saw that the DetailsAST class
+        provides utility methods to extract information from the tree,
+        like <span class="code">getChildCount()</span>. By now you have
+        probably consulted the api documentation and found that
+        DetailsAST additionally provides methods for navigating around
+        in the syntax tree, like finding the next sibling of a node, the
+        children of a node, the parent of a node, etc.
+      </p>
+                                                <p>
+        These methods provide great power for developing complex
+        Checks. Most of the Checks that Checkstyle provides by default
+        use these methods to analyze the environment of the ASTs that
+        are visited by the TreeWalker.  Don't abuse that feature for
+        exploring the whole tree, though. Let the TreeWalker drive the
+        tree traversal and limit the visitor to the neighbours of a
+        single AST.
+      </p>
+                                                      <a id="Defining Check Properties"></a>
+  <h2>Defining Check Properties</h2>
+                                    <p>
+
+        Ok Mr. Checkstyle, that's all very nice but in my company we
+        have several projects, and each has another number of allowed
+        methods. I need to control my Check through properties, so where
+        is the API to do that?
+      </p>
+                                                <p>
+        Well, the short answer is, there is no API. It's magic. Really!
+      </p>
+                                                <p>
+        If you need to make something configurable, just add a setter method
+        to the Check:
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>public class MethodLimitCheck extends Check
+{
+    // code from above omitted for brevity
+    public void setMax(int limit)
+    {
+        max = limit;
+    }
+}</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+        With this code added, you can set the property <span class="code">max</span> for the MethodLimitCheck module in the
+        configuration file. It doesn't get any simpler than that. The secret is
+        that Checkstyle uses JavaBean introspection to set the JavaBean
+        properties. That works for all primitive types like boolean,
+        int, long, etc., plus Strings, plus arrays of these types.
+      </p>
+                                                      <a id="Logging errors"></a>
+  <h2>Logging errors</h2>
+                                    <p>
+        Detecting errors is one thing, presenting them to the user is
+        another. To do that, the Check base class provides several log
+        methods, the simplest of them being <span class="code">Check.log(String)</span>. In your
+        Check you can simply use a verbatim error string like in <span class="code">log("Too many methods, only " + mMax +
+        " are allowed");</span> as the argument. That will
+        work, but it's not the best possible solution if your Check is
+        intended for a wider audience.
+      </p>
+                                                <p>
+        If you are not living in a country where people speak English,
+        you may have noticed that Checkstyle writes internationalized
+        error messages, for example if you live in Germany the error
+        messages are German. The individual Checks don't have to do
+        anything fancy to achieve this, it's actually quite easy and the
+        Checkstyle framework does most of the work.
+      </p>
+                                                <p>
+        To support internationalized error messages, you need to create
+        a message.properties file alongside your Check class, i.e. the
+        Java file and the properties files should be in the same
+        directory.  Add a symbolic error code and an English
+        representation to the messages.properties. The file should
+        contain the following line: <span class="code">too.many.methods=Too many methods, only {0} are
+        allowed</span>.  Then replace the verbatim error message with
+        the symbolic representation and use one of the log helper
+        methods to provide the dynamic part of the message (mMax in this
+        case): <span class="code">log("too.many.methods",
+        mMax);</span>. Please consult the documentation of Java's <a href="http://java.sun.com/j2se/1.4.1/docs/api/java/text/MessageFormat.html">MessageFormat</a>
+        to learn about the syntax of format strings (especially about
+        those funny numbers in the translated text).
+      </p>
+                                                <p>
+        Supporting a new language is very easy now, simply create a new
+        messages file for the language, e.g. messages_fr.properties to
+        provide french error messages. The correct file will be chosen
+        automatically, based on the language settings of the user's
+        operating system.
+      </p>
+                                                      <a id="Integrate your Check"></a>
+  <h2>Integrate your Check</h2>
+                                    <p>
+        The great final moment has arrived, you are about to run your
+        Check. To integrate your Check, add a new subentry under the
+        TreeWalker module of your configuration file. Use the full
+        classname of your Check class as the name of the module.
+        Your configuration file should look something like this:
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;!DOCTYPE module PUBLIC
+    &quot;-//Puppy Crawl//DTD Check Configuration 1.2//EN&quot;
+    &quot;http://www.puppycrawl.com/dtds/configuration_1_2.dtd&quot;&gt;
+&lt;module name=&quot;Checker&quot;&gt;
+  &lt;module name=&quot;TreeWalker&quot;&gt;
+          &lt;!-- your standard Checks that come with Checkstyle --&gt;
+    &lt;module name=&quot;UpperEll&quot;/&gt;
+    &lt;module name=&quot;MethodLength&quot;/&gt;
+          &lt;!-- your Check goes here --&gt;
+    &lt;module name=&quot;com.mycompany.checks.MethodLimitCheck&quot;&gt;
+      &lt;property name=&quot;max&quot; value=&quot;45&quot;/&gt;
+    &lt;/module&gt;
+  &lt;/module&gt;
+&lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+        To run the new Check on the command line compile your Check,
+        create a jar that contains the classes and property files,
+        e.g. <span class="code">mycompanychecks.jar</span>. Then run
+        (with the path separator adjusted to your platform):
+      </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>java -classpath mycompanychecks.jar:checkstyle-all-4.2.jar \
+     com.puppycrawl.tools.checkstyle.Main \
+     -c config.xml -r .</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+        Did you see all those errors about "too many methods"
+        flying over your screen? Congratulations. You can now consider
+        yourself a Checkstyle expert. Go to your fridge. Have a beer.
+      </p>
+                                                <p>
+        Please consult the <a href="config.html#Packages">Checkstyle
+        configuration manual</a> to learn how to integrate your Checks
+        into the package configuration so that you can use <span class="code">MethodLimit</span> instead of the full class name.
+      </p>
+                                                      <a id="Limitations"></a>
+  <h2>Limitations</h2>
+                                    <p>
+        OK, so you have written your first Check, and you have found
+        several flaws in many of your programs. You now know that your
+        boss does not follow the coding conventions he wrote.  And you
+        know that you are the king of the world. To become a programming
+        god, you want to write your second Check - now wait, first you
+        should know what your limits are.
+      </p>
+                                                <p>
+        There are basically only two of them:
+      </p>
+                                                <ul>
+        <li>You cannot determine the type of an expression.</li>
+        <li>You cannot see the content of other files.</li>
+      </ul>
+                                                <p>
+        This means that you cannot implement some of the code inspection
+        features that are available in advanced IDEs like <a href="http://www.intellij.com/idea/">IntelliJ IDEA</a>. For
+        example you will not be able to implement a Check that finds
+        redundant type casts or unused public methods.
+      </p>
+                                                      <a id="Writing FileSetChecks"></a>
+  <h2>Writing FileSetChecks</h2>
+                                    <p> Writing a FileSetCheck is pretty straightforward: Just
+      inherit from <a href="api/com/puppycrawl/tools/checkstyle/api/AbstractFileSetCheck.html">AbstractFileSetCheck</a>
+      and implement the <a href="api/com/puppycrawl/tools/checkstyle/api/FileSetCheck.html#process(java.io.File[])"><span class="code">process(File[] files)</span></a> method and you're
+      done. A very simple example could fire an error if the number of files
+      that are passed in exceeds a certain limit. Here is a FileSetCheck that does just that:</p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>package com.mycompany.checks;
+import java.io.File;
+import com.puppycrawl.tools.checkstyle.api.*;
+
+public class LimitImplementationFiles
+    extends AbstractFileSetCheck
+{
+    private int max = 100;
+    public void setMax(int aMax)
+    {
+        max = aMax;
+    }
+          public void process(File[] files)
+    {
+        if (files != null &amp;&amp; files.length &gt; max) {
+            // figure out the file that contains the error
+            final String path = files[max].getPath();
+            // message collector is used to collect error messages,
+            // needs to be reset before starting to collect error messages
+            // for a file.
+            getMessageCollector().reset();
+            // message dispatcher is used to fire AuditEvents
+            MessageDispatcher dispatcher = getMessageDispatcher();
+            // signal start of file to AuditListeners
+            dispatcher.fireFileStarted(path);
+            // log the message
+            log(0, &quot;max.files.exceeded&quot;, new Integer(max));
+            // you can call log() multiple times to flag multiple
+            // errors in the same file
+            // fire the errors for this file to the AuditListeners
+            fireErrors(path);
+            // signal end of file to AuditListeners
+            dispatcher.fireFileFinished(path);
+        }
+    }
+}</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+        Note that the configuration via bean introspection also applies
+        here.  By implementing the <span class="code">setMax()</span>
+        method the FileSetCheck automatically makes "max" a
+        legal configuration parameter that you can use in the Checkstyle
+        configuration file.
+      </p>
+                                                <p>
+        There are virtually no limits what you can do in
+        FileSetChecks. The craziest ideas we've had so far are:
+      </p>
+                                                <ul>
+        <li>to find global code problems like unused public methods.</li>
+        <li>to find duplicate code.</li>
+        <li>to port the TreeWalker solution to check C#
+        instead of Java.</li>
+      </ul>
+                                                      <a id="Huh? I can't figure it out!"></a>
+  <h2>Huh? I can't figure it out!</h2>
+                                    <p>
+        That's probably our fault, and it means that we have to provide
+        better documentation. Please do not hesitate to ask questions on
+        the user mailing list, this will help us to improve this
+        document.  Please ask your questions as precisely as possible.
+        We will not be able to answer questions like "I want to
+        write a Check but I don't know how, can you help me?". Tell
+        us what you are trying to do (the purpose of the Check), what
+        you have understood so far, and what exactly you are getting stuck
+        on.
+      </p>
+                                                      <a id="Contributing"></a>
+  <h2>Contributing</h2>
+                                    <p>
+        We need <em>your</em> help to keep improving Checkstyle.
+
+        Whenever you write a Check or FileSetCheck that you think is
+        generally useful, please consider
+        <a href="contributing.html">contributing</a> it to the
+        Checkstyle community and submit it for inclusion in the next
+        release of Checkstyle.
+
+      </p>
+                                        </div>
+    </div>
+
+    <div class="csBottomBar">
+      <div class="csBottomBarContents">
+        Copyright &copy; 2001-2005, Oliver Burn
+      </div>
+    </div>
+  </body>
+</html>
+
+<!-- end the processing -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

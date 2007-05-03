@@ -1,0 +1,268 @@
+<html>
+<head>
+<style type="text/css">
+/* <![CDATA[ */
+@import "http://www.restlet.org/stylesheets/tigris.css";
+/*  ]]> */
+ </style>
+<title>Restlet - Sample application</title>
+</head>
+<body>
+
+<a target="_top" href="http://www.restlet.org"><img
+	src="http://www.restlet.org/images/logo200" /></a>
+<br />
+
+<br />
+
+<h1>Sample application</h1>
+
+<h3><a name="toc">Table of contents</a></h3>
+<p>
+<ol>
+	<li><a href="#part01">Introduction</a></li>
+	<li><a href="#part02">Imported classes</a></li>
+	<li><a href="#part03">Declaring the Main class</a></li>
+	<li><a href="#part04">Main method</a></li>
+	<li><a href="#part05">Fluently build the container</a></li>
+	<li><a href="#part06">Conclusion</a></li>
+</ol>
+</p>
+
+<h3><a name="part01">1. Introduction</a></h3>
+<p>The Restlet Web site that you are currently navigating is powered
+by the Noelios Restlet Engine, the reference implementation of the
+Restlet API. In order to serve HTTP calls, we rely on a production-ready
+Simple 3.1 HTTP connector. As you will see below, running basic Web
+sites with Restlets is very simple. The required code consists of less
+than 140 lines of Java code, including blank lines and comments.</p>
+
+<h3><a name="part02">2. Imported classes</a></h3>
+<p>First, let's declare the imported classes required to support our
+Web container.</p>
+<pre>
+      import java.io.File;
+
+      import org.restlet.component.Container;
+      import org.restlet.data.ChallengeScheme;
+      import org.restlet.data.Protocol;
+      import org.restlet.data.Status;
+
+      import com.noelios.restlet.build.Builders;
+      import com.noelios.restlet.data.FileReference;
+</pre>
+
+<h3><a name="part03">3. Declaring the Main class</a></h3>
+<p>Now, we declare the main class, called the WebContainer,
+extending the org.restlet.component.RestletContainer. Note that this
+container hosts two Web servers, one for the Restlet project and one for
+the Noelios Consulting Web site. For more complex Web sites we could
+perfectly use two Restlet Containers, one for each Web site, all
+contained with a root Restlet Server.</p>
+<pre>
+      /**
+       * The web server hosting the Restlet and Noelios Consulting Web servers.<br />
+       * One server connector is listening to the *.noelios.com domains,<br />
+       * and another one to the *.restlet.com, *.restlet.org and *.restlet.net domains.
+       */
+      public class WebContainer extends Container
+      {
+         ...
+</pre>
+
+<h3><a name="part04">4. Main method</a></h3>
+<p>Below, you have the main method that is invoked by our startup
+scripts. Note that we take arguments in order to parameterize several
+aspects like IP addresses and listening ports. Each Web site (Restlet
+and Noelios Consulting) uses a separate IP address and TCP port
+combination. You will understand later how we support multiple virtual
+hosts at the same time. Note that we use public and private port number
+because our Linux server internally redirects the public port to a
+private port in order to run without root privileges.</p>
+<pre>
+      /**
+       * Main method.
+       * @param args Program arguments.
+       */
+      public static void main(String[] args)
+      {
+         try
+         {
+            if ((args == null) || (args.length != 9))
+            {
+               // Display program arguments
+               System.err
+                     .println("Can't launch the Maine web server. List of required arguments:\n"
+                           + " 1) Restlet root path (where web files are located)\n"
+                           + " 2) Restlet IP address (IP address to listen on)\n"
+                           + " 3) Restlet private port (port to listen on)\n"
+                           + " 4) Restlet public port (port which initially receives the TCP connections)\n"
+                           + " 5) Noelios root path (where web files are located)\n"
+                           + " 6) Noelios IP address (IP address to listen on)\n"
+                           + " 7) Noelios private port (port to listen on)\n"
+                           + " 8) Noelios public port (port which initially receives the TCP connections)\n"
+                           + " 9) Data root path      (where stable data files are located)");
+            }
+            else
+            {
+               // Create and start the server
+               new WebContainer(args[0], args[1], Integer.parseInt(args[2]), Integer
+                     .parseInt(args[3]), args[4], args[5], Integer.parseInt(args[6]),
+                     Integer.parseInt(args[7]), args[8]).start();
+            }
+         }
+         catch (Exception e)
+         {
+            System.err
+                  .println("Can't launch the Web server.\nAn unexpected exception occured:");
+            e.printStackTrace(System.err);
+         }
+      }
+</pre>
+
+<h3><a name="part05">5. Fluently build the container</a></h3>
+<p>We the recent addition of fluent builders, it has never been
+easier to configure and start a Web server. Here we will build the
+WebContainer using the RestletContainerBuilder class and passing a
+reference to our container instance. First, we add two server HTTP
+connectors (one for IP address we are listening to) using addServer()
+method. Then, we add a LogFilter to write all calls into Apache-like log
+files, we chain a typical StatusFilter for error pages and a Router to
+it. Note that all the Filter instances and the RootRouter instance are
+shared by all client calls. In fact, multiple concurrent threads can
+execute the same code in parallel. The root Router added by the
+addRouter() method will then be the main responsible for the dispatching
+of the client calls to the proper Restlets. First, let's see an overview
+of the call handling flow:</p>
+<p><img src="images/sample01" alt="Call handling flow" /><br />
+</p>
+<p>You can see on the left the two <a
+	href="http://www.simpleframework.org">Simple</a> HTTP connectors
+listening to separate IP addresses. They share two Filters and a root
+Router that we presented above. Then we add three Host Routers, one for
+the www.restlet.org domain, one for the www.noelios.com domain and a
+last one for the blog.noelios.com domain. We also declared related
+domain names for each of them (ex: restlet.net) in order to
+automatically redirect calls to the preferred domain, using the
+redirectClient() and redirectStatus() methods. Note that in this case we
+need to first create the Host Router, then configure them and finally
+attach them to their parent Router (attachParent() method). This is due
+to the fact that the attachment pattern use by the parent Router is
+dependent one the complete Router configuration.</p>
+<p>To each Host Router, we add several Directory Restlets to server
+static files from local directories. One of them is serving log reports
+and requires authentication by the client. For this purpose, we add a
+Guard Filter in front of the Directory Restlet. Finally, we go up the
+tree of builders using the owner() method with returns the current
+RestletContainerBuilder instance and we start everything.</p>
+<pre>
+      /**
+       * Constructor.
+       * @param restletPath Path where the Restlet web files are located.
+       * @param restletAddress IP address to listen on.
+       * @param privateRestletPort Port to listen on for Restlet HTTP requests.
+       * @param publicRestletPort Port which initially receives the TCP connections.
+       * @param noeliosPath Path where the Noelios web files are located.
+       * @param noeliosAddress IP address to listen on.
+       * @param privateNoeliosPort Port to listen on for Noelios HTTP requests.
+       * @param publicNoeliosPort Port which initially receives the TCP connections.
+       * @param dataPath Path where data files are located.
+       */
+      public WebContainer(String restletPath, String restletAddress, int privateRestletPort,
+            int publicRestletPort, String noeliosPath, String noeliosAddress,
+            int privateNoeliosPort, int publicNoeliosPort, String dataPath) throws Exception
+      {
+         dataPath = FileReference.normalizePath(dataPath);
+         String downloadsPath = dataPath + File.separatorChar + "archive" + File.separatorChar + "restlet";
+         String reportPath = dataPath + File.separatorChar + "log" + File.separatorChar + "report";
+
+         // Fluently build the container
+         Builders.buildContainer(this)
+            .addServer(Protocol.HTTP, restletAddress, privateRestletPort)
+            .addServer(Protocol.HTTP, noeliosAddress, privateNoeliosPort)
+            .attachLog("com.noelios.maine.WebContainer.www")
+               .attachStatus(false, "contact@noelios.com", "http://www.noelios.com")
+                  .attachRouter()
+
+                     // Restlet domains Maplet
+                     .createHost("www.restlet.org", publicRestletPort)
+                        .allowDomain("restlet.org")
+                        .allowDomain("www.restlet.com")
+                        .allowDomain("restlet.com")
+                        .allowDomain("www.restlet.net")
+                        .allowDomain("restlet.net")
+                        .redirectClient()
+                        .redirectStatus(Status.REDIRECTION_MOVED_PERMANENTLY)
+                        .attachParent()
+
+                        // Serve download files from a specific directory
+                        .attachDirectory("/downloads", downloadsPath, "index").listing(true).negotiate(true).upRouter()
+
+                        // Serve other files from the Restlet path
+                        .attachDirectory("", restletPath, "index").negotiate(true).upRouter(2)
+
+                     // Noelios domain Maplet
+                     .createHost("www.noelios.com", publicNoeliosPort).allowDomain("noelios.com")
+                        .redirectClient()
+                        .redirectStatus(Status.REDIRECTION_MOVED_PERMANENTLY)
+                        .attachParent()
+
+                        // Serve logs report from a guarded directory
+                        .attachGuard("/logs/report", "com.noelios.maine.WebContainer", true, ChallengeScheme.HTTP_BASIC, "Log report", true)
+                           .authorize("***", "***")
+                           .attachDirectory(reportPath, "index").negotiate(true).upRouter()
+
+                        // Serve other files from the Noelios path
+                        .attachDirectory("", noeliosPath, "index").negotiate(true).upRouter(2)
+
+                     // Noelios blog Maplet
+                     .createHost("blog.noelios.com", publicNoeliosPort)
+                        .preferDomain("noelios.wordpress.com")
+                        .redirectClient()
+                        .redirectStatus(Status.REDIRECTION_MOVED_TEMPORARILY)
+                        .attachParent()
+
+                     // Start the container
+                     .owner().start();
+      }
+</pre>
+
+<h3><a name="part06">6. Conclusion</a></h3>
+<p>That's all! Beside the standard JDK logging properties, zero
+additional XML configuration is required. Feel free to copy this sample
+source code in order to run your own Web sites.</p>
+<br />
+
+<p><a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me
+Louvel</a> (<a target="_top" href="http://blog.noelios.com">blog</a>)<br />
+</p>
+
+<h4>Notes</h4>
+<p>
+<ul>
+	<li>Thanks to Michael Mayer for the idea of providing the source
+	code of this Web site as a sample application.</li>
+</ul>
+</p>
+
+<br />
+
+<small>
+<table>
+	<tr>
+		<td style="vertical-align: middle;" rowspan="2"><a
+			href="http://www.java.net/"><img
+			src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
+		<td>Version 2.4, last modified on 2006-08-18</td>
+	</tr>
+	<tr>
+		<td>Copyright &copy; 2005-2006 <a
+			href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>.
+		Restlet is a registered trademark of <a target="_top"
+			href="http://www.noelios.com">Noelios Consulting</a>.</td>
+	</tr>
+</table>
+</small>
+
+</body>
+</html>
