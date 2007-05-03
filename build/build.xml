@@ -565,10 +565,10 @@
 
          <copy file="${dist-classic}/lib/${lib-@{name}-maven-groupId}_${lib-@{name}-version}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar" overwrite="true" />
          <copy file="${temp}/poms/${lib-@{name}-id}.pom" tofile="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.pom" overwrite="true" />
-         <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar"/>
-         <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar" algorithm="SHA" fileext=".sha1"/>
-         <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.pom"/>
-         <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.pom" algorithm="SHA" fileext=".sha1"/>
+         <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar" fileext=".md5" />
+         <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar" algorithm="SHA" fileext=".sha1" />
+         <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.pom" fileext=".md5" />
+         <checksum file="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.pom" algorithm="SHA" fileext=".sha1" />
       </sequential>
    </macrodef>
 
