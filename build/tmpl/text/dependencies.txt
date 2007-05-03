@@ -68,17 +68,6 @@ com.noelios.restlet.example (Tutorial examples)
  - com.noelios.restlet.ext.simple_3.1 (or another HTTP Server connector)
  - com.db4o_6.1 (for book examples)
  - edu.purdue.cs.bloat_1.0 (for book examples)
- 
-
-com.noelios.restlet.ext.asyncweb_0.8 (AsyncWeb server HTTP connector)
-------------------------------------
- - com.noelios.restlet
- - edu.oswego.cs.dl.util.concurrent_1.3
- - org.apache.commons.logging_1.1
- - org.apache.mina_0.8
- - org.restlet
- - org.safehaus.asyncweb_0.8
- - org.slf4j_1.0
 
 
 com.noelios.restlet.ext.httpclient_3.1 (HTTP client connector based on Apache Commons HTTP Client)
@@ -121,10 +110,10 @@ com.noelios.restlet.ext.net (HTTP client connector based on JDK's HttpUrlConnect
  - org.restlet
 
 
-com.noelios.restlet.ext.servlet_2.4 (Servlet base server HTTP connector)
+com.noelios.restlet.ext.servlet_2.5 (Servlet base server HTTP connector)
 -----------------------------------
  - com.noelios.restlet
- - javax.servlet_2.4
+ - javax.servlet_2.5
  - org.restlet
 
 
