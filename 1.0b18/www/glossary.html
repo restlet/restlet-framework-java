@@ -1,0 +1,193 @@
+<html>
+<head>
+ <style type="text/css">
+/* <![CDATA[ */
+@import "http://www.restlet.org/stylesheets/tigris.css";
+/*  ]]> */
+ </style>
+ <title>Restlet - Glossary</title>
+</head>
+<body>
+
+<a target="_top" href="http://www.restlet.org"><img src="http://www.restlet.org/images/logo200"/></a><br/>
+
+<br/>
+
+<h1>Glossary</h1>
+
+<h3><a name="toc">Table of contents</a></h3>
+<p>
+   <ol>
+      <li><a href="#call">Call</a></li>
+      <li><a href="#chainer">Chainer</a></li>
+      <li><a href="#component">Component</a></li>
+      <li><a href="#connector">Connector</a></li>
+      <li><a href="#container">Container</a></li>
+      <li><a href="#directory-handler">Directory Handler</a></li>
+      <li><a href="#engine">Engine</a></li>
+      <li><a href="#filter">Filter</a></li>
+      <li><a href="#guard-filter">Guard Filter</a></li>
+      <li><a href="#handler">Handler</a></li>
+      <li><a href="#host-router">Host Router</a></li>
+      <li><a href="#log-filter">Log Filter</a></li>
+      <li><a href="#redirect-restlet">Redirect Restlet</a></li>
+      <li><a href="#representation">Representation</a></li>
+      <li><a href="#resource">Resource</a></li>
+      <li><a href="#restlet">Restlet</a></li>
+      <li><a href="#router">Router</a></li>
+      <li><a href="#scorer">Scorer</a></li>
+      <li><a href="#status-filter">Status Filter</a></li>
+   </ol>
+</p>
+
+<h3><a name="call">Call</a></h3>
+
+<p>
+   Issued by a client to a server and handled by one or more Restlets. Calls are uniform across all type of connectors (client or server), all types of protocols and component. If you are familiar with the Servlet API, a Restlet call merges and abstracts the Servlet HTTP request and response, as well as the HttpUrlConnection class from the JDK.
+</p>
+
+<h3><a name="chainer">Chainer</a></h3>
+
+<p>
+   Restlet that is part of a processing chain. The next handler is determined for each call and can therefore by either statically or dynamically resolved. Examples of chainers are routers, filters and scorers.
+</p>
+
+<h3><a name="component">Component</a></h3>
+
+<p>
+   Abstract unit of software instructions and internal state. An example of Container is. "A component is an abstract unit of software instructions and internal state that provides a transformation of data via its interface." Roy T. Fielding
+</p>
+
+<h3><a name="connector">Connector</a></h3>
+
+<p>
+   Abstract mechanism that enables communication between components. "A connector is an abstract mechanism that mediates communication, coordination, or cooperation among components. Connectors enable communication between components by transferring data elements from one interface to another without changing the data." Roy T. Fielding "Encapsulate the activities of accessing resources and transferring resource representations. The connectors present an abstract interface for component communication, enhancing simplicity by providing a clean separation of concerns and hiding the underlying implementation of resources and communication mechanisms" Roy T. Fielding
+</p>
+
+<h3><a name="container">Container</a></h3>
+
+<p>
+   Component whose main purpose is to contain and manage a set of Restlets (Handlers, Routers or Filters) in order to constitue a coherent processing chain for incoming REST calls. In addition, Restlet containers can also be contained within a parent Restlet server.
+</p>
+
+<h3><a name="directory-handler">Directory Handler</a></h3>
+
+<p>
+   Call handler supported by a directory of resource (from the file system, the web application context or class loaders). An automatic content negotiation mechanism (similar to the one in Apache HTTP server) is used to select the best representation of a resource based on the available variants and on the client capabilities and preferences.
+</p>
+
+<h3><a name="engine">Engine</a></h3>
+
+<p>
+   A Restlet Engine is an implementation of the Restlet API. The reference implementation, provided by Noelios Consulting, is therefore called the Noelios Restlet Engine (NRE).
+</p>
+
+<h3><a name="filter">Filter</a></h3>
+
+<p>
+   Filter of calls to a target Restlet. This concept is similar to Servlet Filters and Apache Modules if you are familiar with those technologies. Interception or filtering can be done in the beforeHandle() and afterHandle() methods. Note that during this filtering, the call paths (context path and resource path) are not supposed to be modified. See also this FAQ entry: <a href="http://www.restlet.org/faq#19">What is the difference between a Filter and a Router?</a>.
+</p>
+
+<h3><a name="guard-filter">Guard Filter</a></h3>
+
+<p>
+   Filter guarding the access to another Restlet. Currently it only supports the HTTP basic authentication scheme or custom schemes (based on cookies, query params or IP address for example).
+</p>
+
+<h3><a name="handler">Handler</a></h3>
+
+<p>
+   Restlet that is the final handler of the call processing chain. It should have all the necessary information in order to find the resource that is the actual target of the call and to handle the required method on it.
+</p>
+
+<h3><a name="host-router">Host Router</a></h3>
+
+<p>
+   Router associated with a host and allowing different alias URI patterns. After configuration , you can use the getPattern() method to attach your HostRouter to a RestletContainer or a root router. Target Restlets can also be attached to a HostRouter for further delegation. By default, the supported protocol is HTTP, "localhost" URIs and IP-based URIs are allowed. However, client redirections to the preferred format are not issued automatically
+</p>
+
+<h3><a name="log-filter">Log Filter</a></h3>
+
+<p>
+   Filter logging all calls after their handling by the target Restlet. The current format is similar to IIS 6 logs. The logging is based on the java.util.logging package.
+</p>
+
+<h3><a name="redirect-restlet">Redirect Restlet</a></h3>
+
+<p>
+   Rewrites URIs then redirects the call or the client to a new destination.
+</p>
+
+<h3><a name="representation">Representation</a></h3>
+
+<p>
+   Current or intended state of a resource. For performance purpose, it is essential that a minimal overhead occurs upon initialization. The main
+   overhead must only occur during invocation of content processing methods (write, getStream, getChannel and toString).
+</p>
+<p>
+   "REST components perform actions on a resource by using a representation to capture the current or intended state of that resource and transferring that representation between components. A representation is a sequence of bytes, plus representation metadata to describe those bytes. Other commonly used but less precise names for a representation include: document, file, and HTTP message entity, instance, or variant." Roy T. Fielding
+</p>
+
+<h3><a name="resource">Resource</a></h3>
+
+<p>
+   Intended conceptual target of a hypertext reference. "Any information that can be named can be a resource: a document or image, a temporal service (e.g. "today's weather in Los Angeles"), a collection of other resources, a non-virtual object (e.g. a person), and so on. In other words, any concept that might be the target of an author's hypertext reference must fit within the definition of a resource."
+</p>
+<p>
+   "The only thing that is required to be static for a resource is the semantics of the mapping, since the semantics is what distinguishes one resource from another." Roy T. Fielding
+</p>
+<p>
+   Another definition adapted from the URI standard (RFC 3986): a resource is the conceptual mapping to a representation (also known as entity) or set of representations, not necessarily the representation which corresponds to that mapping at any particular instance in time. Thus, a resource can remain constant even when its content (the representations to which it currently corresponds) changes over time, provided that the conceptual mapping is not changed in the process. In addition, a resource is always identified by a URI.
+</p>
+
+<h3><a name="restlet">Restlet</a></h3>
+
+<p>
+   Uniform interface for REST handlers. "The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components. By applying the software engineering principle of generality to the component interface, the overall system architecture is simplified and the visibility of interactions is improved. Implementations are decoupled from the services they provide, which encourages independent evolvability." Roy T. Fielding
+</p>
+
+<h3><a name="router">Router</a></h3>
+
+<p>
+   Router of calls to target Restlets. Internally, the targets are handled using attachments objects. Some methods allow the creation of attachments based on URI path patterns matching the beginning of a the resource path in the current context (see Call.getContextPath() method).<br/> Note that during the delegation, the call paths are automatically modified. If you are handling hierarchical paths, remember to directly attach the child routers to their parent router instead of the top level Restlet container. Also, remember to manually handle the path separator characters in your path patterns otherwise the delegation will not work as expected.<br/> Also note that you can attach and detach targets while handling incoming calls as the delegation code is ensured to be thread-safe and atomic. See also this FAQ entry: <a href="http://www.restlet.org/faq#19">What is the difference between a Filter and a Router?</a>.
+</p>
+
+<h3><a name="scorer">Scorer</a></h3>
+
+<p>
+   Scoring handler typically attached to a Router. It is also able to score calls indicating its affinity. The score is typically used by the Router in order to determine the best handler for a given call.
+</p>
+
+<h3><a name="status-filter">Status Filter</a></h3>
+
+<p>
+   Filter associating an output representation based on the call status. In order to customize the default representation, just subclass this class and override the "getRepresentation" method.
+</p>
+
+<p>
+   <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a> (<a target="_top" href="http://blog.noelios.com">blog</a>)<br/>
+</p>
+
+<h4>Notes</h4>
+<p>
+   <ul>
+      <li>Thanks to Dave Pawson proposing this Glossary.</li>
+   </ul>
+</p>
+
+<br/>
+
+<small>
+   <table>
+      <tr>
+         <td style="vertical-align: middle;" rowspan="2"><a href="http://www.java.net/"><img src="http://www.restlet.org/images/javanet.gif" alt="java.net member" /></a></td>
+         <td>Version 2.3, last modified on 2006-08-18</td>
+      </tr>
+      <tr>
+         <td>Copyright &copy; 2005-2006 <a href="mailto:contact@noelios.com">J&eacute;r&ocirc;me Louvel</a>. Restlet is a registered trademark of <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</td>
+      </tr>
+   </table>
+</small>
+
+</body>
+</html>

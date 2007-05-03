@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Noelios Restlet Engine - Core
+Bundle-SymbolicName: com.noelios.restlet
+Bundle-Version: 1.0.0
+Bundle-Vendor: Noelios Consulting
+Bundle-Localization: plugin
+Require-Bundle: org.restlet
+Export-Package: com.noelios.restlet,
+ com.noelios.restlet.build,
+ com.noelios.restlet.connector,
+ com.noelios.restlet.data,
+ com.noelios.restlet.spi,
+ com.noelios.restlet.util

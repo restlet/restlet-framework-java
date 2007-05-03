@@ -1,0 +1,4 @@
+From the author: "Do I need a license to use it? Can I get one? No!"
+        
+Reference:
+http://g.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html

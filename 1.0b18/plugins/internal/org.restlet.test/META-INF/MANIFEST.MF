@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet API - Tests
+Bundle-SymbolicName: org.restlet.test
+Bundle-Version: 1.0.0
+Bundle-Vendor: Noelios Consulting
+Bundle-Localization: plugin
+Require-Bundle: org.restlet,
+ com.noelios.restlet,
+ com.noelios.restlet.ext.net,
+ org.junit4
