@@ -7,5 +7,5 @@ Bundle-Vendor: Noelios Consulting
 Bundle-Localization: plugin
 Require-Bundle: org.restlet;visibility:=reexport,
  org.apache.commons.fileupload;visibility:=reexport,
- javax.servlet4;visibility:=reexport
+ javax.servlet;visibility:=reexport
 Export-Package: org.restlet.ext.fileupload

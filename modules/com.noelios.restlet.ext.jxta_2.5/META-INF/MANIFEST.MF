@@ -9,4 +9,4 @@ Require-Bundle: net.jxta,
  com.noelios.restlet,
  org.bouncycastle,
  org.mortbay.jetty4,
- javax.servlet4
+ javax.servlet
