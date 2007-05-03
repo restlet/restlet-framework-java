@@ -9,15 +9,10 @@
          <artifactId>com.noelios.restlet</artifactId>
          <version>@version@</version>
       </dependency>
-      <dependency>
-         <groupId>org.safehaus.asyncweb</groupId>
-         <artifactId>org.safehaus.asyncweb</artifactId>
-         <version>@lib-asyncweb-version@</version>
-      </dependency>
    </dependencies>
 
-   <name>HTTP server connector</name>
-   <description>Integration with AsyncWeb.</description>
+   <name>Atom extension</name>
+   <description>Support Atom representations.</description>
    <licenses>
       <license>
          <name>CDDL license</name>

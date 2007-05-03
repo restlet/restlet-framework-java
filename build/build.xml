@@ -166,7 +166,7 @@
    <path id="mod-jetty-path">
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
-      <fileset dir="${lib}/${lib-servlet5-id}" includes="*.jar" />
+      <fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-jetty-id}" includes="*.jar" />
    </path>
 
