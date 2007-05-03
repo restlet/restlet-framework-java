@@ -5,6 +5,8 @@ Changes log
 
 
 @version-full@ (@release-date@)
+
+1.0.1 (2007-05-04)
 [Bugs fixed]
  - Fixed comment error in class ServerServlet.
  - Fixed bug with the ObjectRepresentation class. The constructor with 
