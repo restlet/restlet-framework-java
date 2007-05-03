@@ -1,0 +1,72 @@
+<Project xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns="http://usefulinc.com/ns/doap#">
+
+	<name>Restlet</name>
+	<homepage rdf:resource="http://www.restlet.org" />
+	<created>2005-11-01</created>
+	<shortdesc xml:lang="en">
+	  REST framework for Java.
+	</shortdesc>
+	<shortdesc xml:lang="fr">
+	  Framework REST en Java. 
+	</shortdesc>
+	<description xml:lang="en">
+	  Restlet is a framework that brings the simplicity and efficiency of the REST architectural 
+	  style to Java developers. It is composed of two parts, the Restlet API (alternative to Servlet API) 
+	  and a reference implementation (Noelios Restlet Engine). It supports all REST concepts 
+	  (resource, representation, data, connector, component, etc.) and is suitable for both client 
+	  and server REST applications.
+	</description>
+	<description xml:lang="fr">
+	  Restlet est un framework qui apporte la simplicit&eacute; et l'efficacit&eacute; du style d'architecture REST 
+	  aux d&eacute;veloppeurs Java. Il est compos&eacute; de deux parties, l'API Restlet (alternative &agrave; l'API Servlet) 
+	  et une impl&eacute;mentation de r&eacute;f&eacute;rence (Noelios Restlet Engine). Il supporte tous les concepts de REST
+	  (ressource, repr&eacute;sentation, donn&eacute;e, connecteur, composant, etc.) et peut convenir &agrave; la fois aux
+	  applications REST clientes et serveurs.
+	</description>
+	<programming-language>Java</programming-language>
+	<bug-database rdf:resource="http://restlet.tigris.org/servlets/ProjectIssues" />
+	<download-page rdf:resource="http://www.restlet.org" />
+
+	<mailing-list rdf:resource="http://www.restlet.org/discuss" />
+	<maintainer>
+		<foaf:Person>
+			<foaf:name>J&eacute;r&ocirc;me Louvel</foaf:name>
+			<foaf:mbox rdf:resource="mailto:contact@noelios.com" />
+			<foaf:homepage rdf:resource="http://www.noelios.com" />
+		</foaf:Person>
+	</maintainer>
+
+	<!-- Currently supported versions -->
+	<release>
+		<Version>
+			<name>@stability@</name>
+			<created>@release-date@</created>
+			<revision>@version-full@</revision>
+			<file-release rdf:resource="http://www.restlet.org/downloads/restlet-@version-compact@.zip" /> 
+		</Version>
+	</release>
+
+	<license rdf:resource="http://usefulinc.com/doap/licenses/CDDL" />
+
+	<repository>
+		<SVNRepository>
+			<location rdf:resource="http://restlet.tigris.org/svn/restlet/trunk" />
+			<browse rdf:resource="http://restlet.tigris.org/source/browse/restlet/" />
+		</SVNRepository>
+	</repository>
+
+	<!-- Freashmeat categories -->
+	<category rdf:resource="http://freshmeat.net/browse/10/"/>
+	<category rdf:resource="http://freshmeat.net/browse/226/"/>
+	<category rdf:resource="http://freshmeat.net/browse/3/"/>
+	<category rdf:resource="http://freshmeat.net/browse/1103/"/>
+	<category rdf:resource="http://freshmeat.net/browse/198/"/>
+	<category rdf:resource="http://freshmeat.net/browse/87/"/>
+	<category rdf:resource="http://freshmeat.net/browse/250/"/>
+	<category rdf:resource="http://freshmeat.net/browse/810/"/>
+	<category rdf:resource="http://freshmeat.net/browse/913/"/>
+
+</Project>
