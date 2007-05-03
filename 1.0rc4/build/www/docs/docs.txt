@@ -1,0 +1,27 @@
+
+=====================
+Restlet documentation
+=====================
+
+
+In this directory you will find three Javadocs subdirectories:
+ - api : Javadocs for the Restlet API
+ - ext : Javadocs for the Restlet Extensions (no dependency on NRE)
+ - nre : Javadocs for the Noelios Restlet Engine (Resltet API implementation)
+ 
+In addition, you can find many additional documentation on the Restlet Web site 
+(http://www.restlet.org). Here is a summary of the documents available:
+ - Introduction: http://www.restlet.org/introduction
+ - Tutorial    : http://www.restlet.org/tutorial
+ - FAQ         : http://www.restlet.org/faq
+ - Glossary    : http://www.restlet.org/glossary
+ - Sample      : http://www.restlet.org/sample
+ 
+Also, if you need help you can ask questions into our discussion list. See 
+subscription details at http://www.restlet.org/discuss. You can also report
+issues (bugs and enhancement requests) using our bugzilla database at 
+http://restlet.tigris.org/servlets/ProjectIssues. Finally, if you need 
+professional and timely assistance, you can contact Noelios Consulting at 
+http://www.noelios.com/.
+
+ 
