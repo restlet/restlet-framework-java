@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java bytecode optimizer and class rewriter
+Bundle-SymbolicName: edu.purdue.cs.bloat
+Bundle-Version: 1.0
+Bundle-ClassPath: edu.purdue.cs.bloat.jar
+Bundle-Vendor: Purdue University
+Bundle-Localization: plugin
+Export-Package: 
+ EDU.purdue.cs.bloat.benchmark,
+ EDU.purdue.cs.bloat.cfg,
+ EDU.purdue.cs.bloat.codegen,
+ EDU.purdue.cs.bloat.context,
+ EDU.purdue.cs.bloat.decorate,
+ EDU.purdue.cs.bloat.diva,
+ EDU.purdue.cs.bloat.dump,
+ EDU.purdue.cs.bloat.editor,
+ EDU.purdue.cs.bloat.file,
+ EDU.purdue.cs.bloat.inline,
+ EDU.purdue.cs.bloat.optimize,
+ EDU.purdue.cs.bloat.reflect,
+ EDU.purdue.cs.bloat.shrink,
+ EDU.purdue.cs.bloat.ssa,
+ EDU.purdue.cs.bloat.strip,
+ EDU.purdue.cs.bloat.tbaa,
+ EDU.purdue.cs.bloat.tools,
+ EDU.purdue.cs.bloat.trans,
+ EDU.purdue.cs.bloat.tree,
+ EDU.purdue.cs.bloat.util
