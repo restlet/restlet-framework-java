@@ -18,15 +18,18 @@
 
 package com.noelios.restlet.component;
 
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
+import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.Route;
+import org.restlet.Server;
 import org.restlet.VirtualHost;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -185,8 +188,20 @@ public class ComponentHelper extends ChainHelper {
 
                     for (Protocol clientProtocol : application
                             .getConnectorService().getClientProtocols()) {
-                        if (!getComponent().getClients().contains(
-                                clientProtocol)) {
+                        boolean clientFound = false;
+
+                        // Try to find a client connector matching the client
+                        // protocol
+                        Client client;
+                        for (Iterator<Client> iter = getComponent()
+                                .getClients().iterator(); !clientFound
+                                && iter.hasNext();) {
+                            client = iter.next();
+                            clientFound = client.getProtocols().contains(
+                                    clientProtocol);
+                        }
+
+                        if (!clientFound) {
                             getComponent()
                                     .getLogger()
                                     .severe(
@@ -201,8 +216,20 @@ public class ComponentHelper extends ChainHelper {
 
                     for (Protocol serverProtocol : application
                             .getConnectorService().getServerProtocols()) {
-                        if (!getComponent().getServers().contains(
-                                serverProtocol)) {
+                        boolean serverFound = false;
+
+                        // Try to find a server connector matching the server
+                        // protocol
+                        Server server;
+                        for (Iterator<Server> iter = getComponent()
+                                .getServers().iterator(); !serverFound
+                                && iter.hasNext();) {
+                            server = iter.next();
+                            serverFound = server.getProtocols().contains(
+                                    serverProtocol);
+                        }
+
+                        if (!serverFound) {
                             getComponent()
                                     .getLogger()
                                     .severe(

@@ -5,6 +5,9 @@ Changes log
 
 
 @version-full@ (@release-date@)
+[Bugs fixed]
+ - The Component was not correctly detecting the connectors necessary for the
+   attached applications, resulting in invalid log messages. Reported by Yuri de Wit.
 
 1.0.1 (2007-05-04)
 [Bugs fixed]
