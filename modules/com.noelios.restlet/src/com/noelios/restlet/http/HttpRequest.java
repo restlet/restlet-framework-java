@@ -409,4 +409,10 @@ public class HttpRequest extends Request {
 
         return result;
     }
+
+    @Override
+    public void setEntity(Representation entity) {
+        super.setEntity(entity);
+        this.entityAdded = true;
+    }
 }
