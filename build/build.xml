@@ -588,7 +588,7 @@
          <copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-full}.jar" overwrite="true" />
 
          <jar jarfile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-full}-sources.jar" filesetmanifest="merge">
-            <fileset dir="${mod}/${mod-api-id}/src" includes="**/*" />
+            <fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*" />
          </jar>
      
          <copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-full}.pom" overwrite="true" />
