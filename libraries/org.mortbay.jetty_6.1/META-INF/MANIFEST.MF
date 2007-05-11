@@ -7,7 +7,7 @@ Bundle-ClassPath: org.mortbay.jetty.util.jar,
  org.mortbay.jetty.jar, org.mortbay.jetty.ajp.jar, org.mortbay.jetty.https.jar
 Bundle-Vendor: Mortbay Consulting
 Bundle-Localization: plugin
-Require-Bundle: javax.servlet5
+Require-Bundle: javax.servlet
 Export-Package: org.mortbay.component,
  org.mortbay.io,
  org.mortbay.io.bio,
