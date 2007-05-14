@@ -78,8 +78,11 @@ public class DirectoryResource extends Resource {
     /** The context's target URI (file, clap URI). */
     private String targetUri;
 
-    /** Indicates if the target resource is a directory or a file. */
+    /** Indicates if the target resource is a directory. */
     private boolean targetDirectory;
+
+    /** Indicates if the target resource is a file. */
+    private boolean targetFile;
 
     /** Indicates if the target resource is a directory with an index. */
     private boolean targetIndex;
@@ -101,6 +104,9 @@ public class DirectoryResource extends Resource {
 
     /** If the resource is a directory, this contains its content. */
     private ReferenceList directoryContent;
+
+    /** If the resource is a file, this contains its content. */
+    private Representation fileContent;
 
     /**
      * If the resource is a directory, the non-trailing slash caracter leads to
@@ -129,6 +135,7 @@ public class DirectoryResource extends Resource {
             // We enforce the leading slash on the root URI
             this.relativePart = this.relativePart.substring(1);
         }
+
         // The target uri does not take into account the query and fragment
         // parts of the resource.
         this.targetUri = new Reference(directory.getRootRef().toString()
@@ -140,35 +147,45 @@ public class DirectoryResource extends Resource {
 
         // Try to detect the presence of a directory
         Response contextResponse = getDispatcher().get(this.targetUri);
-        if ((contextResponse.getEntity() != null)
-                && contextResponse.getEntity().getMediaType().equals(
-                        MediaType.TEXT_URI_LIST)) {
-            this.targetDirectory = true;
-            this.directoryContent = new ReferenceList(contextResponse
-                    .getEntity());
-            if (!request.getResourceRef().getIdentifier().endsWith("/")) {
-                this.directoryRedirection = true; // all request will be
-                // automatically redirected
-            }
+        if (contextResponse.getEntity() != null) {
+            if (MediaType.TEXT_URI_LIST.equals(contextResponse.getEntity()
+                    .getMediaType())) {
+                this.targetDirectory = true;
+                this.targetFile = false;
+                this.directoryContent = new ReferenceList(contextResponse
+                        .getEntity());
+                if (!request.getResourceRef().getIdentifier().endsWith("/")) {
+                    // All requests will be automatically redirected
+                    this.directoryRedirection = true;
+                }
 
-            if (!this.targetUri.endsWith("/")) {
-                this.targetUri += "/";
-                this.relativePart += "/";
-            }
+                if (!this.targetUri.endsWith("/")) {
+                    this.targetUri += "/";
+                    this.relativePart += "/";
+                }
 
-            // Append the index name
-            if (getDirectory().getIndexName() != null
-                    && getDirectory().getIndexName().length() > 0) {
-                this.directoryUri = this.targetUri;
-                this.baseName = getDirectory().getIndexName();
-                this.targetUri = this.directoryUri + this.baseName;
-                this.targetIndex = true;
+                // Append the index name
+                if (getDirectory().getIndexName() != null
+                        && getDirectory().getIndexName().length() > 0) {
+                    this.directoryUri = this.targetUri;
+                    this.baseName = getDirectory().getIndexName();
+                    this.targetUri = this.directoryUri + this.baseName;
+                    this.targetIndex = true;
+                } else {
+                    this.directoryUri = this.targetUri;
+                    this.baseName = null;
+                }
             } else {
-                this.directoryUri = this.targetUri;
-                this.baseName = null;
+                this.targetDirectory = false;
+                this.targetFile = true;
+                this.fileContent = contextResponse.getEntity();
             }
         } else {
             this.targetDirectory = false;
+            this.targetFile = false;
+        }
+
+        if (!this.targetDirectory) {
             int lastSlashIndex = targetUri.lastIndexOf('/');
             if (lastSlashIndex == -1) {
                 this.directoryUri = "";
@@ -180,8 +197,8 @@ public class DirectoryResource extends Resource {
 
             contextResponse = getDispatcher().get(this.directoryUri);
             if ((contextResponse.getEntity() != null)
-                    && contextResponse.getEntity().getMediaType().equals(
-                            MediaType.TEXT_URI_LIST)) {
+                    && MediaType.TEXT_URI_LIST.equals(contextResponse
+                            .getEntity().getMediaType())) {
                 this.directoryContent = new ReferenceList(contextResponse
                         .getEntity());
             }
@@ -379,23 +396,23 @@ public class DirectoryResource extends Resource {
 
         getLogger().info("Getting variants for : " + getTargetUri());
 
-        // Allows to sort the list of representations
-        SortedSet<Representation> resultSet = new TreeSet<Representation>(
-                getRepresentationsComparator());
-
-        // Compute the base reference (from a call's client point of view)
-        String baseRef = getRequest().getResourceRef().getBaseRef().toString(
-                false, false);
-        if (!baseRef.endsWith("/")) {
-            baseRef += "/";
-        }
-        int lastIndex = this.relativePart.lastIndexOf("/");
-        if (lastIndex != -1) {
-            baseRef += this.relativePart.substring(0, lastIndex);
-        }
-        int rootLength = getDirectoryUri().length();
-
         if (this.directoryContent != null) {
+            // Allows to sort the list of representations
+            SortedSet<Representation> resultSet = new TreeSet<Representation>(
+                    getRepresentationsComparator());
+
+            // Compute the base reference (from a call's client point of view)
+            String baseRef = getRequest().getResourceRef().getBaseRef()
+                    .toString(false, false);
+            if (!baseRef.endsWith("/")) {
+                baseRef += "/";
+            }
+            int lastIndex = this.relativePart.lastIndexOf("/");
+            if (lastIndex != -1) {
+                baseRef += this.relativePart.substring(0, lastIndex);
+            }
+            int rootLength = getDirectoryUri().length();
+
             if (this.baseName != null) {
                 String filePath;
                 for (Reference ref : getVariantsReferences()) {
@@ -444,7 +461,10 @@ public class DirectoryResource extends Resource {
 
                 }
             }
+        } else if (this.targetFile && (this.fileContent != null)) {
+            results.add(this.fileContent);
         }
+
         return results;
     }
 

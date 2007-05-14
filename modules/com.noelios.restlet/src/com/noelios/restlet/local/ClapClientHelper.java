@@ -30,6 +30,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.InputRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.service.MetadataService;
 
 /**
  * Connector to the class loaders.
@@ -95,15 +97,29 @@ public class ClapClientHelper extends LocalClientHelper {
      */
     protected void handleClassLoader(Request request, Response response,
             ClassLoader classLoader) {
+        MetadataService metadataService = getMetadataService(request);
+
         if (request.getMethod().equals(Method.GET)
                 || request.getMethod().equals(Method.HEAD)) {
-            URL url = classLoader.getResource(request.getResourceRef()
-                    .getPath());
+            String path = request.getResourceRef().getPath();
+
+            // Prepare a classloader URI, removing the leading slash
+            if ((path != null) && path.startsWith("/"))
+                path = path.substring(1);
+            URL url = classLoader.getResource(path);
 
             if (url != null) {
                 try {
-                    response.setEntity(new InputRepresentation(
-                            url.openStream(), null));
+                    Representation output = new InputRepresentation(url
+                            .openStream(), metadataService
+                            .getDefaultMediaType());
+
+                    // Update the metadata based on file extensions
+                    String name = path.substring(path.lastIndexOf('/') + 1);
+                    updateMetadata(metadataService, name, output);
+
+                    // Update the response
+                    response.setEntity(output);
                     response.setStatus(Status.SUCCESS_OK);
                 } catch (IOException ioe) {
                     getLogger().log(Level.WARNING,
