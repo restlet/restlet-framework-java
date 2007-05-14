@@ -10,6 +10,7 @@ Changes log
    attached applications, resulting in invalid log messages. Reported by Yuri de Wit.
  - If NRE's HttpRequest.setEntity() method is invoked before the first getEntity() call,
    subsequent getEntity() calls now return the entity set. Reported by Jonathan Hall.
+ - Fixed potential NPE with null passwords in ChallengeResponse. Reported by Yuri de Wit.
 
 1.0.1 (2007-05-04)
 [Bugs fixed]

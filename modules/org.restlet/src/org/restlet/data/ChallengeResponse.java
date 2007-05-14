@@ -185,8 +185,9 @@ public final class ChallengeResponse {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Engine.hashCode(getScheme(), getIdentifier(), new String(
-                getSecret()), getCredentials());
+        return Engine.hashCode(getScheme(), getIdentifier(),
+                (getSecret() == null) ? null : new String(getSecret()),
+                getCredentials());
     }
 
     /**
