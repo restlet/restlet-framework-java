@@ -649,6 +649,11 @@
          <istrue value="${nsis}" />
       </condition>
 
+      <!-- Set the property that will enable the stage-maven target -->
+      <condition property="do-maven">
+         <istrue value="${maven}" />
+      </condition>
+
       <!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
       <condition property="exclude-packages" value="">
          <isfalse value="${javadoc-hide}" />
@@ -1157,7 +1162,7 @@
       </copy>
    </target>
 
-   <target name="stage-maven" depends="stage-maven-2" description="Generate the maven distributions."/>
+   <target name="stage-maven" depends="stage-maven-2" if="do-maven" description="Generate the maven distributions."/>
    
    <!-- STAGE-MAVEN-2 target -->
    <target name="stage-maven-2" depends="init" if="do-nsis" description="Generate the maven-2.x distributions.">
