@@ -3,7 +3,7 @@ List of examples:
 -----------------
 
 Book package:
- - rest : Examples from the "REST Web Services" book from O'Reilly.
+ - rest : Examples from the "RESTful Web Services" book from O'Reilly.
 
 Misc package:
  - AwsTest		: Illustrates authentication to Amazon Web Services
