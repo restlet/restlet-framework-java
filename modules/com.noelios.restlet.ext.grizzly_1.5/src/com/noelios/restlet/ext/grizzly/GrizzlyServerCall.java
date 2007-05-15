@@ -51,9 +51,11 @@ public class GrizzlyServerCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
-     *            The server connector.
-     * @param context
-     *            The Grizzly handler context.
+     *            The parent server.
+     * @param byteBuffer
+     *            The NIO byte buffer.
+     * @param key
+     *            The NIO selection key.
      */
     public GrizzlyServerCall(Server server, ByteBuffer byteBuffer,
             SelectionKey key) {

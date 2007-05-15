@@ -938,7 +938,7 @@
             <package name="org.restlet.ext*" />
          </group>
 
-         <link href="http://freemarker.org/docs/api/" />
+         <link href="http://freemarker.sourceforge.net/docs/api/" />
          <link href="http://jakarta.apache.org/commons/codec/apidocs/" />
          <link href="http://jakarta.apache.org/commons/collections/api-release/" />
          <link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
