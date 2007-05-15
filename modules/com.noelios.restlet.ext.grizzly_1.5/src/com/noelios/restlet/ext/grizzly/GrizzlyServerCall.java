@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -86,10 +85,7 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public void writeResponseBody(Representation entity) throws IOException {
-        ReadableByteChannel channel = entity.getChannel();
-
-        if ((channel != null) && (channel instanceof FileChannel)) {
-            // Rely on the optimize FileChannel.transferTo() method
+        if (getResponseChannel() != null) {
             entity.write(getResponseChannel());
         } else {
             entity.write(getResponseStream());
