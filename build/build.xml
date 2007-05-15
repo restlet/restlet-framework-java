@@ -275,6 +275,10 @@
    </path>
 
    <path id="path-none" />
+
+   <path id="ant-contrib.path">
+      <fileset dir="tools/ant-contrib" includes="**/*.jar" />
+   </path>
    
    <pathconvert property="defaultbootclasspath">
       <path path="${sun.boot.class.path}"/>
@@ -319,6 +323,8 @@
        </classpath>
    </taskdef>
    
+   <!-- Ant Contrib -->
+   <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="ant-contrib.path" />
 
    <!-- ==================== -->
    <!-- ===  Ant Macros  === -->
