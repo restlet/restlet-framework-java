@@ -51,10 +51,10 @@ public class HttpServerHelper extends GrizzlyServerHelper {
     @Override
     protected void configure(Controller controller) throws Exception {
         // Create and configure a select handler
-        TCPSelectorHandler selectHandler = new TCPSelectorHandler();
-        selectHandler.setPort(getServer().getPort());
+        TCPSelectorHandler selectorHandler = new TCPSelectorHandler();
+        selectorHandler.setPort(getServer().getPort());
         if (getServer().getAddress() != null) {
-            selectHandler.setInet(InetAddress.getByName(getServer()
+            selectorHandler.setInet(InetAddress.getByName(getServer()
                     .getAddress()));
         }
 
@@ -63,7 +63,7 @@ public class HttpServerHelper extends GrizzlyServerHelper {
         final HttpParserFilter httpParserFilter = new HttpParserFilter(this);
 
         // Create the Grizzly controller
-        controller.setSelectHandler(selectHandler);
+        controller.setSelectorHandler(selectorHandler);
         controller
                 .setProtocolChainInstanceHandler(new DefaultProtocolChainInstanceHandler() {
                     public ProtocolChain poll() {
