@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -23,7 +23,7 @@ import org.restlet.util.Series;
 
 /**
  * Media type used in representations and preferences.
- * 
+ *
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -199,7 +199,7 @@ public final class MediaType extends Metadata {
     /**
      * Returns the media type associated to a name. If an existing constant
      * exists then it is returned, otherwise a new instance is created.
-     * 
+     *
      * @param name
      *            The name.
      * @return The associated media type.
@@ -328,7 +328,7 @@ public final class MediaType extends Metadata {
 
     /**
      * Constructor.
-     * 
+     *
      * @param name
      *            The name.
      */
@@ -338,7 +338,7 @@ public final class MediaType extends Metadata {
 
     /**
      * Constructor.
-     * 
+     *
      * @param name
      *            The name.
      * @param parameters
@@ -350,7 +350,7 @@ public final class MediaType extends Metadata {
 
     /**
      * Constructor.
-     * 
+     *
      * @param name
      *            The name.
      * @param parameters
@@ -366,7 +366,7 @@ public final class MediaType extends Metadata {
 
     /**
      * Constructor.
-     * 
+     *
      * @param name
      *            The name.
      * @param description
@@ -385,7 +385,7 @@ public final class MediaType extends Metadata {
     /**
      * Test the equality of two media types, with the possibility to ignore the
      * parameters.
-     * 
+     *
      * @param obj
      *            The object to compare to.
      * @param ignoreParameters
@@ -414,7 +414,7 @@ public final class MediaType extends Metadata {
 
     /**
      * Returns the main type.
-     * 
+     *
      * @return The main type.
      */
     public String getMainType() {
@@ -440,7 +440,7 @@ public final class MediaType extends Metadata {
 
     /**
      * Returns the list of parameters.
-     * 
+     *
      * @return The list of parameters.
      */
     public Series<Parameter> getParameters() {
@@ -451,7 +451,7 @@ public final class MediaType extends Metadata {
 
     /**
      * Returns the sub-type.
-     * 
+     *
      * @return The sub-type.
      */
     public String getSubType() {
@@ -486,14 +486,15 @@ public final class MediaType extends Metadata {
      * Indicates if a given media type is included in the current one. The test
      * is true if both types are equal or if the given media type is within the
      * range of the current one. For example, ALL includes all media types.
-     * Parameters are ignored for this comparison.
-     * 
+     * Parameters are ignored for this comparison. A null media type is
+     * considered as included into the current one.
+     *
      * @param included
      *            The media type to test for inclusion.
      * @return True if the given media type is included in the current one.
      */
     public boolean includes(MediaType included) {
-        boolean result = equals(ALL) || equals(included);
+        boolean result = equals(ALL) || included == null || equals(included);
 
         if (!result) {
             // Both media types are different
