@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -53,14 +53,14 @@ import org.restlet.util.ByteUtils;
 
 /**
  * Connector to the file resources accessible
- * 
+ *
  * @author Jerome Louvel (contact@noelios.com)
  * @author Thierry Boileau
  */
 public class FileClientHelper extends LocalClientHelper {
     /**
      * Constructor.
-     * 
+     *
      * @param client
      *            The client to help.
      */
@@ -71,7 +71,7 @@ public class FileClientHelper extends LocalClientHelper {
 
     /**
      * Handles a call.
-     * 
+     *
      * @param request
      *            The request to handle.
      * @param response
@@ -96,7 +96,7 @@ public class FileClientHelper extends LocalClientHelper {
 
     /**
      * Handles a call for the FILE protocol.
-     * 
+     *
      * @param request
      *            The request to handle.
      * @param response
@@ -504,7 +504,7 @@ public class FileClientHelper extends LocalClientHelper {
     /**
      * Returns the base name as the longest part of the name without known
      * extensions (beginning from the left)
-     * 
+     *
      * @param file
      * @param metadataService
      * @return the base name of the file
@@ -524,7 +524,7 @@ public class FileClientHelper extends LocalClientHelper {
 
     /**
      * Returns the Set of extensions of a file
-     * 
+     *
      * @param file
      * @param metadataService
      * @return
@@ -551,7 +551,7 @@ public class FileClientHelper extends LocalClientHelper {
      * Checks that the URI and the representation are compatible. The whole set
      * of metadata of the representation must be included in the set of those of
      * the URI
-     * 
+     *
      * @param fileName
      *            The name of the resource
      * @param metadataService
@@ -574,8 +574,8 @@ public class FileClientHelper extends LocalClientHelper {
                 result = false;
             }
             if (representation.getMediaType() != null
-                    && !representation.getMediaType().includes(
-                            var.getMediaType())) {
+                    && !(var.getMediaType() != null && var.getMediaType()
+                            .includes(representation.getMediaType()))) {
                 result = false;
             }
             if (!representation.getEncodings().isEmpty()
@@ -589,7 +589,7 @@ public class FileClientHelper extends LocalClientHelper {
 
     /**
      * Check that all extensions of the file correspond to a known metadata
-     * 
+     *
      * @param file
      * @param metadataService
      * @param representation
