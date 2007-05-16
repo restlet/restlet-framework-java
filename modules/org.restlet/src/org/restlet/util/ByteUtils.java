@@ -23,9 +23,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.Pipe;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SelectableChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -150,8 +155,23 @@ public final class ByteUtils {
      * @return An output stream based on a given writable byte channel.
      */
     public static OutputStream getStream(WritableByteChannel writableChannel) {
-        return (writableChannel != null) ? Channels
-                .newOutputStream(writableChannel) : null;
+        OutputStream result = null;
+
+        if (writableChannel instanceof SelectableChannel) {
+            SelectableChannel selectableChannel = (SelectableChannel) writableChannel;
+
+            synchronized (selectableChannel.blockingLock()) {
+                if (selectableChannel.isBlocking()) {
+                    result = Channels.newOutputStream(writableChannel);
+                } else {
+                    result = new NbChannelOutputStream(writableChannel);
+                }
+            }
+        } else {
+            result = new NbChannelOutputStream(writableChannel);
+        }
+
+        return result;
     }
 
     /**
@@ -317,6 +337,103 @@ public final class ByteUtils {
             };
         }
 
+    }
+
+    /**
+     * Output stream connected to a non-blocking writable channel.
+     */
+    private final static class NbChannelOutputStream extends OutputStream {
+        /** The channel to write to. */
+        private WritableByteChannel channel;
+
+        private Selector selector;
+
+        private SelectionKey selectionKey;
+
+        private SelectableChannel selectableChannel;
+
+        /**
+         * Constructor.
+         * 
+         * @param channel
+         *            The wrapped channel.
+         */
+        public NbChannelOutputStream(WritableByteChannel channel) {
+            this.channel = channel;
+
+            if (!(channel instanceof SelectableChannel)) {
+                throw new IllegalArgumentException(
+                        "Invalid channel provided. Please use only selectable channels.");
+            } else {
+                this.selectableChannel = (SelectableChannel) channel;
+                this.selector = null;
+                this.selectionKey = null;
+
+                if (this.selectableChannel.isBlocking()) {
+                    throw new IllegalArgumentException(
+                            "Invalid blocking channel provided. Please use only non-blocking channels.");
+                }
+            }
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            ByteBuffer bb = ByteBuffer.wrap(new byte[] { (byte) b });
+
+            if ((this.channel != null) && (bb != null)) {
+                try {
+                    int bytesWritten;
+
+                    while (bb.hasRemaining()) {
+                        bytesWritten = this.channel.write(bb);
+
+                        if (bytesWritten < 0) {
+                            throw new IOException(
+                                    "Unexpected negative number of bytes written.");
+                        } else if (bytesWritten == 0) {
+                            registerSelectionKey();
+
+                            if (getSelector().select(10000) == 0) {
+                                throw new IOException(
+                                        "Unable to select the channel to write to it. Selection timed out.");
+                            }
+                        }
+                    }
+                } catch (IOException ioe) {
+                    throw new IOException(
+                            "Unable to write to the non-blocking channel. "
+                                    + ioe.getLocalizedMessage());
+                }
+            } else {
+                throw new IOException(
+                        "Unable to write. Null byte buffer or channel detected.");
+            }
+        }
+
+        private Selector getSelector() throws IOException {
+            if (this.selector == null)
+                this.selector = Selector.open();
+
+            return this.selector;
+        }
+
+        private void registerSelectionKey() throws ClosedChannelException,
+                IOException {
+            this.selectionKey = this.selectableChannel.register(getSelector(),
+                    SelectionKey.OP_WRITE);
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (this.selectionKey != null) {
+                this.selectionKey.cancel();
+            }
+
+            if (this.selector != null)
+                this.selector.close();
+
+            super.close();
+        }
     }
 
 }

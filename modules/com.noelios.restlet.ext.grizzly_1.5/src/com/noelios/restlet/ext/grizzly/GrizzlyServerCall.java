@@ -18,7 +18,6 @@
 
 package com.noelios.restlet.ext.grizzly;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +32,7 @@ import java.util.logging.Level;
 import org.restlet.Server;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
+import org.restlet.util.ByteUtils;
 
 import com.noelios.restlet.http.HttpServerCall;
 import com.sun.grizzly.util.ByteBufferInputStream;
@@ -111,8 +111,7 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public OutputStream getResponseStream() {
-        return new BufferedOutputStream(new GrizzlyOutputStream(
-                getSocketChannel()));
+        return ByteUtils.getStream((WritableByteChannel) getSocketChannel());
     }
 
     /**
