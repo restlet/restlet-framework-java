@@ -486,24 +486,21 @@ public final class MediaType extends Metadata {
      * Indicates if a given media type is included in the current one. The test
      * is true if both types are equal or if the given media type is within the
      * range of the current one. For example, ALL includes all media types.
-     * Parameters are ignored for this comparison.
+     * Parameters are ignored for this comparison. A null media type is
+     * considered as included into the current one.
      * 
      * @param included
      *            The media type to test for inclusion.
      * @return True if the given media type is included in the current one.
      */
     public boolean includes(MediaType included) {
-        boolean result = false;
+        boolean result = equals(ALL) || included == null || equals(included);
 
-        if (included != null) {
-            result = equals(ALL) || equals(included);
-
-            if (!result) {
-                // Both media types are different
-                result = getMainType().equals(included.getMainType())
-                        && (getSubType().equals(included.getSubType()) || getSubType()
-                                .equals("*"));
-            }
+        if (!result) {
+            // Both media types are different
+            result = getMainType().equals(included.getMainType())
+                    && (getSubType().equals(included.getSubType()) || getSubType()
+                            .equals("*"));
         }
 
         return result;
