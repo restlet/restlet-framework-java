@@ -32,7 +32,6 @@ import java.util.logging.Level;
 import org.restlet.Server;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
-import org.restlet.util.ByteUtils;
 
 import com.noelios.restlet.http.HttpServerCall;
 import com.sun.grizzly.util.ByteBufferInputStream;
@@ -87,11 +86,7 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public void writeResponseBody(Representation entity) throws IOException {
-        if (getResponseChannel() != null) {
-            entity.write(getResponseChannel());
-        } else {
-            entity.write(getResponseStream());
-        }
+        entity.write(getResponseChannel());
     }
 
     @Override
@@ -111,7 +106,7 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public OutputStream getResponseStream() {
-        return ByteUtils.getStream((WritableByteChannel) getSocketChannel());
+        return null;
     }
 
     /**
