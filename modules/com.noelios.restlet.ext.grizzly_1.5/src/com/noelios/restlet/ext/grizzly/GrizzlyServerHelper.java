@@ -18,6 +18,9 @@
 
 package com.noelios.restlet.ext.grizzly;
 
+import java.io.IOException;
+import java.util.logging.Level;
+
 import org.restlet.Server;
 
 import com.noelios.restlet.http.HttpServerHelper;
@@ -54,7 +57,18 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
         }
 
         getLogger().info("Starting the Grizzly HTTP server");
-        this.controller.start();
+        final Controller controller = this.controller;
+        new Thread() {
+            public void run() {
+                try {
+                    controller.start();
+                } catch (IOException e) {
+                    getLogger().log(Level.WARNING,
+                            "Error while starting the Grizzly controller", e);
+                }
+            }
+        }.start();
+
     }
 
     /**

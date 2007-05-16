@@ -18,13 +18,11 @@
 
 package com.noelios.restlet.ext.grizzly;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -34,6 +32,7 @@ import java.util.logging.Level;
 import org.restlet.Server;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
+import org.restlet.util.ByteUtils;
 
 import com.noelios.restlet.http.HttpServerCall;
 import com.sun.grizzly.util.ByteBufferInputStream;
@@ -52,9 +51,11 @@ public class GrizzlyServerCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
-     *            The server connector.
-     * @param context
-     *            The Grizzly handler context.
+     *            The parent server.
+     * @param byteBuffer
+     *            The NIO byte buffer.
+     * @param key
+     *            The NIO selection key.
      */
     public GrizzlyServerCall(Server server, ByteBuffer byteBuffer,
             SelectionKey key) {
@@ -86,10 +87,7 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public void writeResponseBody(Representation entity) throws IOException {
-        ReadableByteChannel channel = entity.getChannel();
-
-        if ((channel != null) && (channel instanceof FileChannel)) {
-            // Rely on the optimize FileChannel.transferTo() method
+        if (getResponseChannel() != null) {
             entity.write(getResponseChannel());
         } else {
             entity.write(getResponseStream());
@@ -113,8 +111,7 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public OutputStream getResponseStream() {
-        return new BufferedOutputStream(new GrizzlyOutputStream(
-                getSocketChannel()));
+        return ByteUtils.getStream((WritableByteChannel) getSocketChannel());
     }
 
     /**
