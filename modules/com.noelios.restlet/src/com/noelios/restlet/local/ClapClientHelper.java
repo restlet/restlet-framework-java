@@ -18,6 +18,7 @@
 
 package com.noelios.restlet.local;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -107,6 +108,18 @@ public class ClapClientHelper extends LocalClientHelper {
             if ((path != null) && path.startsWith("/"))
                 path = path.substring(1);
             URL url = classLoader.getResource(path);
+
+            // The ClassLoader returns a directory listing in some cases.
+            // As this listing is partial, is it of little value in the context
+            // of the CLAP client, so we have to ignore them.
+            if (url != null) {
+                if (url.getProtocol().equals("file")) {
+                    File file = new File(url.getFile());
+                    if (file.isDirectory()) {
+                        url = null;
+                    }
+                }
+            }
 
             if (url != null) {
                 try {

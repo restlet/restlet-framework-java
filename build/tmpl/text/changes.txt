@@ -13,6 +13,8 @@ Changes log
  - Fixed potential NPE with null passwords in ChallengeResponse. Reported by Yuri de Wit.
  - Fixed several issues in the CLAP client (based on classloaders). Reported by Heinrich Klobuczek.
  - ByteUtils now knows how to write representations to non-blocking NIO channels.
+ - The CLAP client (ClassLoader Access Protocol) was unexpectedly exposing partial directory content
+   when the classloader is based on some local directories. Reported by Heinrich Klobuczek.
 
 [Enhancements] 
  - Updated Jetty to version 6.1.3.
