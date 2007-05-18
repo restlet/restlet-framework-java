@@ -102,9 +102,6 @@ public class Resource {
     /** The parent context. */
     private Context context;
 
-    /** The logger to use. */
-    private Logger logger;
-
     /** Indicates if the best content is automatically negotiated. */
     private boolean negotiateContent;
 
@@ -136,6 +133,26 @@ public class Resource {
      */
     public Resource(Context context, Request request, Response response) {
         init(context, request, response);
+    }
+
+    /**
+     * Initialize the resource with its context. If you override this method,
+     * make sure that you don't forget to call super.init() first, otherwise
+     * your Resource won't behave properly.
+     * 
+     * @param context
+     *            The parent context.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to return.
+     */
+    public void init(Context context, Request request, Response response) {
+        this.context = context;
+        this.negotiateContent = true;
+        this.request = request;
+        this.response = response;
+        this.variants = null;
     }
 
     /**
@@ -200,6 +217,15 @@ public class Resource {
     }
 
     /**
+     * Returns the parent application if it exists, or null.
+     * 
+     * @return The parent application if it exists, or null.
+     */
+    public Application getApplication() {
+        return getContext().getApplication();
+    }
+
+    /**
      * Returns the context.
      * 
      * @return The context.
@@ -216,9 +242,7 @@ public class Resource {
      * @return The logger to use.
      */
     public Logger getLogger() {
-        if (this.logger == null)
-            this.logger = getContext().getLogger();
-        return this.logger;
+        return getContext().getLogger();
     }
 
     /**
@@ -251,8 +275,8 @@ public class Resource {
                 language = ((Application) app).getMetadataService()
                         .getDefaultLanguage();
             }
-            result = getRequest().getClientInfo().getPreferredVariant(
-                    variants, language);
+            result = getRequest().getClientInfo().getPreferredVariant(variants,
+                    language);
 
         }
 
@@ -439,7 +463,8 @@ public class Resource {
             }
         }
 
-        // The given representation (even if null) must meet the request conditions
+        // The given representation (even if null) must meet the request
+        // conditions
         // (if any).
         if (getRequest().getConditions().hasSome()) {
             Status status = getRequest().getConditions().getStatus(
@@ -548,26 +573,6 @@ public class Resource {
                                 "Missing request entity"));
             }
         }
-    }
-
-    /**
-     * Initialize the resource with its context. If you override this method, make sure that you don't
-     * forget to call super.init() first, otherwise your Resource won't behave properly.
-     * 
-     * @param context
-     *            The parent context.
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to return.
-     */
-    public void init(Context context, Request request, Response response) {
-        this.context = context;
-        this.logger = (context != null) ? context.getLogger() : null;
-        this.negotiateContent = true;
-        this.request = request;
-        this.response = response;
-        this.variants = null;
     }
 
     /**

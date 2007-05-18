@@ -9,4 +9,5 @@ Changes log
  - 
 
 [Enhancements] 
- - 
+ - Added a getApplication() method to Context and Resource classes.
+

@@ -72,6 +72,15 @@ public class Context {
     }
 
     /**
+     * Returns the parent application if it exists, or null.
+     * 
+     * @return The parent application if it exists, or null.
+     */
+    public Application getApplication() {
+        return (Application) getAttributes().get(Application.KEY);
+    }
+
+    /**
      * Returns a modifiable attributes map that can be used by developers to
      * save information relative to the context. This is a convenient mean to
      * provide common objects to all the Restlets and Resources composing an

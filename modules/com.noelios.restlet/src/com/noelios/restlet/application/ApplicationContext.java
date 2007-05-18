@@ -96,7 +96,7 @@ public class ApplicationContext extends Context {
      * 
      * @return the application.
      */
-    protected Application getApplication() {
+    public Application getApplication() {
         return this.application;
     }
 
