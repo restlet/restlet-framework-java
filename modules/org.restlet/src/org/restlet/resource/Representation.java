@@ -28,7 +28,12 @@ import java.nio.channels.WritableByteChannel;
 import org.restlet.data.MediaType;
 
 /**
- * Current or intended state of a resource. For performance purpose, it is
+ * Current or intended state of a resource. The content of a representation can
+ * be retrieved several times if there is a stable and accessible source, like a
+ * local file or a string. When the representation is obtained via a temporary
+ * source like a network socket, its content can only be retrieved once. The
+ * "transient" and "available" properties are available to help you figure out
+ * those aspects at runtime.<br/><br/> For performance purpose, it is
  * essential that a minimal overhead occurs upon initialization. The main
  * overhead must only occur during invocation of content processing methods
  * (write, getStream, getChannel and toString).<br/><br/> "REST components
