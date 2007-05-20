@@ -46,7 +46,7 @@ public class Part06 {
         };
 
         // Attach the application to the component and start it
-        component.getDefaultHost().attach("", application);
+        component.getDefaultHost().attach(application);
         component.start();
     }
 
