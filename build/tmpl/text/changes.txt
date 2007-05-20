@@ -10,4 +10,5 @@ Changes log
 
 [Enhancements] 
  - Added a getApplication() method to Context and Resource classes.
+ - Upgraded Apache MINA to version 1.1.0.
 
