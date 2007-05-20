@@ -355,7 +355,7 @@ public abstract class HttpServerCall extends HttpCall {
         // Write the status line
         headStream.write(getVersion().getBytes());
         headStream.write(' ');
-        headStream.write(getStatusCode());
+        headStream.write(Integer.toString(getStatusCode()).getBytes());
         headStream.write(' ');
         headStream.write(getReasonPhrase().getBytes());
         headStream.write(13); // CR

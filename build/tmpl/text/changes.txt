@@ -15,10 +15,12 @@ Changes log
  - ByteUtils now knows how to write representations to non-blocking NIO channels.
  - The CLAP client (ClassLoader Access Protocol) was unexpectedly exposing partial directory content
    when the classloader is based on some local directories. Reported by Heinrich Klobuczek.
+ - Fixed bug in the internal HTTP connector causing the returning of a wrong status code.
 
 [Enhancements] 
  - Updated Jetty to version 6.1.3.
  - Clarified Representation Javadocs about transient content. Suggested by Philip Johnson.
+ - Tutorial part 6 now uses a simpler attach() method requiring no empty attachment path.
 
 1.0.1 (2007-05-04)
 [Bugs fixed]
