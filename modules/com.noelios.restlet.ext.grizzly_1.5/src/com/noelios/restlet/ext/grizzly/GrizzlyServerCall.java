@@ -36,6 +36,7 @@ import org.restlet.resource.Representation;
 import com.noelios.restlet.http.HttpServerCall;
 import com.sun.grizzly.util.ByteBufferInputStream;
 import com.sun.grizzly.util.OutputWriter;
+import com.sun.grizzly.util.SSLByteBufferInputStream;
 
 /**
  * HTTP server call specialized for Grizzly.
@@ -57,12 +58,19 @@ public class GrizzlyServerCall extends HttpServerCall {
      *            The NIO selection key.
      */
     public GrizzlyServerCall(Server server, ByteBuffer byteBuffer,
-            SelectionKey key) {
+            SelectionKey key, boolean secure) {
         super(server);
 
         try {
             // Initialize the call
-            ByteBufferInputStream headStream = new ByteBufferInputStream();
+            ByteBufferInputStream headStream = null;
+
+            if (secure) {
+                headStream = new SSLByteBufferInputStream();
+            } else {
+                headStream = new ByteBufferInputStream();
+            }
+
             headStream.setSelectionKey(key);
             headStream.setByteBuffer(byteBuffer);
             this.socketChannel = (SocketChannel) key.channel();
