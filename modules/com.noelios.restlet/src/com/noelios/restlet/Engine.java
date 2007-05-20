@@ -104,11 +104,6 @@ public class Engine extends org.restlet.util.Engine {
     @SuppressWarnings("unchecked")
     public Engine(boolean discoverConnectors) {
         if (discoverConnectors) {
-            // Register the default connectors that will be used if no
-            // other connector has been found
-            getRegisteredClients().add(new StreamClientHelper(null));
-            getRegisteredServers().add(new StreamServerHelper(null));
-
             // Find the factory class name
             String line = null;
             String provider = null;
@@ -218,6 +213,11 @@ public class Engine extends org.restlet.util.Engine {
                                 "Exception while detecting the client connectors.",
                                 ioe);
             }
+
+            // Register the default connectors that will be used if no
+            // other connector has been found
+            getRegisteredClients().add(new StreamClientHelper(null));
+            getRegisteredServers().add(new StreamServerHelper(null));
         }
     }
 
@@ -284,12 +284,15 @@ public class Engine extends org.restlet.util.Engine {
         Helper result = null;
 
         if (client.getProtocols().size() > 0) {
-            for (ConnectorHelper connector : getRegisteredClients()) {
+            ConnectorHelper connector = null;
+            for (Iterator<ConnectorHelper> iter = getRegisteredClients()
+                    .iterator(); (result == null) && iter.hasNext();) {
+                connector = iter.next();
+
                 if (connector.getProtocols().containsAll(client.getProtocols())) {
                     try {
-                        return connector.getClass()
-                                .getConstructor(Client.class).newInstance(
-                                        client);
+                        result = connector.getClass().getConstructor(
+                                Client.class).newInstance(client);
                     } catch (Exception e) {
                         logger
                                 .log(
@@ -297,8 +300,6 @@ public class Engine extends org.restlet.util.Engine {
                                         "Exception while instantiation the client connector.",
                                         e);
                     }
-
-                    result = connector;
                 }
             }
 
@@ -344,7 +345,11 @@ public class Engine extends org.restlet.util.Engine {
         Helper result = null;
 
         if (server.getProtocols().size() > 0) {
-            for (ConnectorHelper connector : getRegisteredServers()) {
+            ConnectorHelper connector = null;
+            for (Iterator<ConnectorHelper> iter = getRegisteredServers()
+                    .iterator(); (result == null) && iter.hasNext();) {
+                connector = iter.next();
+
                 if (connector.getProtocols().containsAll(server.getProtocols())) {
                     try {
                         result = connector.getClass().getConstructor(

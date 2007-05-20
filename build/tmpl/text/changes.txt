@@ -6,7 +6,9 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - 
+ - Fixed issue in the selection of connectors. The last connector in the classpath for
+   a given protocol was selected instead of the first one, leading to counter-intuitive 
+   behavior when multiple connectors were present in the classpath.
 
 [Enhancements] 
  - Added a getApplication() method to Context and Resource classes.
