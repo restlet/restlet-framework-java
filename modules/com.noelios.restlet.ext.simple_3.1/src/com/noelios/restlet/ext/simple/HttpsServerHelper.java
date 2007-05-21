@@ -24,6 +24,7 @@ import java.security.KeyStore;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -76,6 +77,19 @@ import simple.http.connect.ConnectionFactory;
  * <td>TLS</td>
  * <td>SSL protocol.</td>
  * </tr>
+ * <tr>
+ * <td>needClientAuthentication</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if we require client certificate authentication.</td>
+ * </tr>
+ * <tr>
+ * <td>wantClientAuthentication</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if we would like client certificate authentication (only for
+ * the BIO connector type).</td>
+ * </tr>
  * </table>
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a
@@ -106,9 +120,20 @@ public class HttpsServerHelper extends SimpleServerHelper {
         keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
         SSLContext sslContext = SSLContext.getInstance(getSslProtocol());
         sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
-        setSocket(sslContext.getServerSocketFactory().createServerSocket(
-                getServer().getPort()));
-        getSocket().setSoTimeout(60000);
+
+        // Initialize the socket
+        SSLServerSocket serverSocket = (SSLServerSocket) sslContext
+                .getServerSocketFactory().createServerSocket(
+                        getServer().getPort());
+        serverSocket.setSoTimeout(60000);
+
+        if (isNeedClientAuthentication()) {
+            serverSocket.setNeedClientAuth(true);
+        } else if (isWantClientAuthentication()) {
+            serverSocket.setWantClientAuth(true);
+        }
+
+        setSocket(serverSocket);
         fis.close();
 
         // Complete initialization
@@ -175,6 +200,26 @@ public class HttpsServerHelper extends SimpleServerHelper {
      */
     public String getSslProtocol() {
         return getParameters().getFirstValue("sslProtocol", "TLS");
+    }
+
+    /**
+     * Indicates if we require client certificate authentication.
+     * 
+     * @return True if we require client certificate authentication.
+     */
+    public boolean isNeedClientAuthentication() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "needClientAuthentication", "false"));
+    }
+
+    /**
+     * Indicates if we would like client certificate authentication.
+     * 
+     * @return True if we would like client certificate authentication.
+     */
+    public boolean isWantClientAuthentication() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "wantClientAuthentication", "false"));
     }
 
 }

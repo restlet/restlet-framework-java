@@ -83,6 +83,19 @@ import com.sun.grizzly.filter.SSLReadFilter;
  * <td>TLS</td>
  * <td>SSL protocol.</td>
  * </tr>
+ * <tr>
+ * <td>needClientAuthentication</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if we require client certificate authentication.</td>
+ * </tr>
+ * <tr>
+ * <td>wantClientAuthentication</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if we would like client certificate authentication (only for
+ * the BIO connector type).</td>
+ * </tr>
  * </table>
  * 
  * @author Jerome Louvel (contact@noelios.com)
@@ -115,6 +128,13 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
         // Create and configure a select handler
         SslTCPSelectorHandler selectorHandler = new SslTCPSelectorHandler();
         selectorHandler.setSSLContext(sslContext);
+
+        if (isNeedClientAuthentication()) {
+            selectorHandler.setNeedClientAuth(isNeedClientAuthentication());
+        } else if (isWantClientAuthentication()) {
+            selectorHandler.setWantClientAuth(isWantClientAuthentication());
+        }
+
         selectorHandler.setPort(getServer().getPort());
         if (getServer().getAddress() != null) {
             selectorHandler.setInet(InetAddress.getByName(getServer()
@@ -196,6 +216,26 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      */
     public String getSslProtocol() {
         return getParameters().getFirstValue("sslProtocol", "TLS");
+    }
+
+    /**
+     * Indicates if we require client certificate authentication.
+     * 
+     * @return True if we require client certificate authentication.
+     */
+    public boolean isNeedClientAuthentication() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "needClientAuthentication", "false"));
+    }
+
+    /**
+     * Indicates if we would like client certificate authentication.
+     * 
+     * @return True if we would like client certificate authentication.
+     */
+    public boolean isWantClientAuthentication() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "wantClientAuthentication", "false"));
     }
 
 }

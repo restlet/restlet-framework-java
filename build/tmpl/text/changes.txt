@@ -19,3 +19,7 @@ Changes log
    NIO based connectors such as Grizzly and MINA based ones. You don't have anything to do
    to configure them, just put the com.noelios.restlet.jar in your classpath along with the
    Restlet API's JAR. Note that they don't support HTTPS and persistent connections.
+ - All HTTPS server connectors (Grizzly, Jetty and Simple) now have two configuration
+   parameters to indicates whether a client authentication is wanted or required.
+   Suggested by Toby Thain and Chuck Hinson.
+   

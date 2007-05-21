@@ -139,7 +139,6 @@ public class HttpsServerHelper extends JettyServerHelper {
             nioResult.setKeyPassword(getKeyPassword());
             nioResult.setKeystore(getKeystorePath());
             nioResult.setKeystoreType(getKeystoreType());
-            nioResult.setNeedClientAuth(isNeedClientAuthentication());
             nioResult.setPassword(getKeystorePassword());
             nioResult.setProtocol(getSslProtocol());
             nioResult.setProvider(getSecurityProvider());
@@ -147,6 +146,13 @@ public class HttpsServerHelper extends JettyServerHelper {
             nioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
             nioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
             nioResult.setTrustPassword(getKeystorePassword());
+
+            if (isNeedClientAuthentication()) {
+                nioResult.setNeedClientAuth(true);
+            } else if (isWantClientAuthentication()) {
+                nioResult.setWantClientAuth(true);
+            }
+
             result = nioResult;
             break;
         case 2:
@@ -155,7 +161,6 @@ public class HttpsServerHelper extends JettyServerHelper {
             bioResult.setKeyPassword(getKeyPassword());
             bioResult.setKeystore(getKeystorePath());
             bioResult.setKeystoreType(getKeystoreType());
-            bioResult.setNeedClientAuth(isNeedClientAuthentication());
             bioResult.setPassword(getKeystorePassword());
             bioResult.setProtocol(getSslProtocol());
             bioResult.setProvider(getSecurityProvider());
@@ -163,7 +168,13 @@ public class HttpsServerHelper extends JettyServerHelper {
             bioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
             bioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
             bioResult.setTrustPassword(getKeystorePassword());
-            bioResult.setWantClientAuth(isWantClientAuthentication());
+
+            if (isNeedClientAuthentication()) {
+                bioResult.setNeedClientAuth(true);
+            } else if (isWantClientAuthentication()) {
+                bioResult.setWantClientAuth(true);
+            }
+
             result = bioResult;
             break;
         }
