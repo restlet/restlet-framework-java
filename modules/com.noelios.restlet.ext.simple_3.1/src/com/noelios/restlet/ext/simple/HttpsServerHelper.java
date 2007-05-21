@@ -25,6 +25,7 @@ import java.security.KeyStore;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -115,11 +116,18 @@ public class HttpsServerHelper extends SimpleServerHelper {
         KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
         FileInputStream fis = new FileInputStream(getKeystorePath());
         keyStore.load(fis, getKeystorePassword().toCharArray());
+
         KeyManagerFactory keyManagerFactory = KeyManagerFactory
                 .getInstance(getCertAlgorithm());
         keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
+
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                .getInstance(getCertAlgorithm());
+        trustManagerFactory.init(keyStore);
+
         SSLContext sslContext = SSLContext.getInstance(getSslProtocol());
-        sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+        sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory
+                .getTrustManagers(), null);
 
         // Initialize the socket
         SSLServerSocket serverSocket = (SSLServerSocket) sslContext

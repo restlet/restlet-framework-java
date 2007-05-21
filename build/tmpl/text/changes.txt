@@ -25,4 +25,5 @@ Changes log
  - A request attribute "org.restlet.https.clientCertificates" containing the list of SSL
    session certificates (if available and accessible) is now available. Currently, only
    the Simple connector is capable or setting it. Suggested by Toby Chain.
+ - Simple connector now initialize a trust manager.
    
