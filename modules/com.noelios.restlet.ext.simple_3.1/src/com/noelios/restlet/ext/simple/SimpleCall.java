@@ -25,6 +25,9 @@ import java.net.Socket;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
@@ -78,15 +81,35 @@ public class SimpleCall extends HttpServerCall {
     }
 
     @Override
+    public SSLSession getSslSession() {
+        SSLSession result = null;
+
+        if (getSocket() instanceof SSLSocket) {
+            result = ((SSLSocket) getSocket()).getSession();
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the request socket.
+     * 
+     * @return The request socket.
+     */
+    private Socket getSocket() {
+        return (Socket) this.request
+                .getAttribute(SimplePipelineFactory.PROPERTY_SOCKET);
+    }
+
+    @Override
     public String getClientAddress() {
         return request.getInetAddress().getHostAddress();
     }
 
     @Override
     public int getClientPort() {
-        Socket sock = (Socket) request
-                .getAttribute(SimplePipelineFactory.PROPERTY_SOCKET);
-        return (sock != null) ? sock.getPort() : -1;
+        Socket socket = getSocket();
+        return (socket != null) ? socket.getPort() : -1;
     }
 
     /**

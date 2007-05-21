@@ -85,6 +85,12 @@ public abstract class Message {
      * <b>non-standard</b> headers that should be added to the request or to
      * the response. </td>
      * </tr>
+     * <tr>
+     * <td>org.restlet.https.clientCertificates</td>
+     * <td>List<java.security.cert.Certificate></td>
+     * <td>For requests received via a secure connector, indicates the ordered
+     * list of client certificates, if they are available and accessible.</td>
+     * </tr>
      * </table> Adding standard HTTP headers is forbidden because it could
      * conflict with the connector's internal behavior, limit portability or
      * prevent future optimizations.</td>

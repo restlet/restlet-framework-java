@@ -56,16 +56,19 @@ public class GrizzlyServerCall extends HttpServerCall {
      *            The NIO byte buffer.
      * @param key
      *            The NIO selection key.
+     * @param confidential
+     *            Indicates if the call is confidential.
      */
     public GrizzlyServerCall(Server server, ByteBuffer byteBuffer,
-            SelectionKey key, boolean secure) {
+            SelectionKey key, boolean confidential) {
         super(server);
+        setConfidential(confidential);
 
         try {
             // Initialize the call
             ByteBufferInputStream headStream = null;
 
-            if (secure) {
+            if (confidential) {
                 headStream = new SSLByteBufferInputStream();
             } else {
                 headStream = new ByteBufferInputStream();

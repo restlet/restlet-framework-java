@@ -18,10 +18,14 @@
 
 package com.noelios.restlet.http;
 
+import java.security.cert.Certificate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+
+import javax.net.ssl.SSLPeerUnverifiedException;
 
 import org.restlet.Context;
 import org.restlet.data.CookieSetting;
@@ -70,6 +74,20 @@ public class HttpServerConverter extends HttpConverter {
                     httpCall.getVersion());
         }
 
+        if (httpCall.isConfidential() && (httpCall.getSslSession() != null)) {
+            try {
+                List<Certificate> clientCertificates = Arrays.asList(httpCall
+                        .getSslSession().getPeerCertificates());
+
+                result.getAttributes().put(
+                        HttpConstants.ATTRIBUTE_CLIENT_CERTIFICATES,
+                        clientCertificates);
+            } catch (SSLPeerUnverifiedException e) {
+                getLogger().log(Level.FINE,
+                        "Can't get the client certificates.", e);
+            }
+        }
+
         return result;
     }
 
@@ -90,7 +108,8 @@ public class HttpServerConverter extends HttpConverter {
             response.getHttpCall().sendResponse(response);
         } catch (Exception e) {
             getLogger().log(Level.INFO, "Exception intercepted", e);
-            response.getHttpCall().setStatusCode(Status.SERVER_ERROR_INTERNAL.getCode());
+            response.getHttpCall().setStatusCode(
+                    Status.SERVER_ERROR_INTERNAL.getCode());
             response.getHttpCall().setReasonPhrase(
                     "An unexpected exception occured");
         }

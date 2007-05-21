@@ -235,4 +235,6 @@ public final class HttpConstants {
     public static final String ATTRIBUTE_HEADERS = "org.restlet.http.headers";
 
     public static final String ATTRIBUTE_VERSION = "org.restlet.http.version";
+
+    public static final String ATTRIBUTE_CLIENT_CERTIFICATES = "org.restlet.https.clientCertificates";
 }

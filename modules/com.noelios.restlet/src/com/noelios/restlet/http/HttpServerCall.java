@@ -33,6 +33,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Logger;
 
+import javax.net.ssl.SSLSession;
+
 /**
  * Abstract HTTP server connector call.
  * 
@@ -181,6 +183,15 @@ public abstract class HttpServerCall extends HttpCall {
         if (!hostParsed)
             parseHost();
         return super.getHostPort();
+    }
+
+    /**
+     * Returns the SSL session if it is available and accessible.
+     * 
+     * @return The SSL session if it is available and accessible.
+     */
+    public SSLSession getSslSession() {
+        return null;
     }
 
     /**
