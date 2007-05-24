@@ -16,6 +16,8 @@ Changes log
  - The CLAP client (ClassLoader Access Protocol) was unexpectedly exposing partial directory content
    when the classloader is based on some local directories. Reported by Heinrich Klobuczek.
  - Fixed bug in the internal HTTP connector causing the returning of a wrong status code.
+ - Overrided the StringRepresentation#setCharacterSet method, in order to refresh the 
+   size of the representation. Reported by Calvin Cheng.
 
 [Enhancements] 
  - Updated Jetty to version 6.1.3.
