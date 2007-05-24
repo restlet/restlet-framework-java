@@ -10,7 +10,7 @@ Changes log
    a given protocol was selected instead of the first one, leading to counter-intuitive 
    behavior when multiple connectors were present in the classpath.
  - Overrided the StringRepresentation#setCharacterSet method, in order to refresh the 
-   size of the representation.
+   size of the representation. Reported by Calvin Cheng.
 
 [Enhancements] 
  - Added a getApplication() method to Context and Resource classes.
