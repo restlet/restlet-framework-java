@@ -161,6 +161,17 @@ public class StringRepresentation extends StreamRepresentation {
     }
 
     /**
+     * Sets the character set or null if not applicable.
+     * 
+     * @param characterSet
+     *            The character set or null if not applicable.
+     */
+    public void setCharacterSet(CharacterSet characterSet) {
+        super.setCharacterSet(characterSet);
+        updateSize();
+    }
+
+    /**
      * Updates the expected size according to the current string value.
      */
     protected void updateSize() {
