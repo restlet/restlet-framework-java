@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -33,7 +33,7 @@ import org.restlet.data.MediaType;
 /**
  * Represents an Unicode string that can be converted to any character set
  * supported by Java.
- * 
+ *
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StringRepresentation extends StreamRepresentation {
@@ -42,7 +42,7 @@ public class StringRepresentation extends StreamRepresentation {
     /**
      * Constructor. The following metadata are used by default: "text/plain"
      * media type, no language and the ISO-8859-1 character set.
-     * 
+     *
      * @param text
      *            The string value.
      */
@@ -53,7 +53,7 @@ public class StringRepresentation extends StreamRepresentation {
     /**
      * Constructor. The following metadata are used by default: "text/plain"
      * media type, no language and the ISO-8859-1 character set.
-     * 
+     *
      * @param text
      *            The string value.
      * @param language
@@ -66,7 +66,7 @@ public class StringRepresentation extends StreamRepresentation {
     /**
      * Constructor. The following metadata are used by default: no language and
      * the ISO-8859-1 character set.
-     * 
+     *
      * @param text
      *            The string value.
      * @param mediaType
@@ -79,7 +79,7 @@ public class StringRepresentation extends StreamRepresentation {
     /**
      * Constructor. The following metadata are used by default: ISO-8859-1
      * character set.
-     * 
+     *
      * @param text
      *            The string value.
      * @param mediaType
@@ -94,7 +94,7 @@ public class StringRepresentation extends StreamRepresentation {
 
     /**
      * Constructor.
-     * 
+     *
      * @param text
      *            The string value.
      * @param mediaType
@@ -121,7 +121,7 @@ public class StringRepresentation extends StreamRepresentation {
      * Returns a stream with the representation's content. This method is
      * ensured to return a fresh stream for each invocation unless it is a
      * transient representation, in which case null is returned.
-     * 
+     *
      * @return A stream with the representation's content.
      * @throws IOException
      */
@@ -142,7 +142,7 @@ public class StringRepresentation extends StreamRepresentation {
      * Converts the representation to a string value. Be careful when using this
      * method as the conversion of large content to a string fully stored in
      * memory can result in OutOfMemoryErrors being thrown.
-     * 
+     *
      * @return The representation as a string value.
      */
     public String getText() {
@@ -151,12 +151,23 @@ public class StringRepresentation extends StreamRepresentation {
 
     /**
      * Sets the string value.
-     * 
+     *
      * @param text
      *            The string value.
      */
     public void setText(String text) {
         this.text = text;
+        updateSize();
+    }
+
+    /**
+     * Sets the character set or null if not applicable.
+     *
+     * @param characterSet
+     *            The character set or null if not applicable.
+     */
+    public void setCharacterSet(CharacterSet characterSet) {
+        super.setCharacterSet(characterSet);
         updateSize();
     }
 
@@ -184,7 +195,7 @@ public class StringRepresentation extends StreamRepresentation {
      * Writes the representation to a byte stream. This method is ensured to
      * write the full content for each invocation unless it is a transient
      * representation, in which case an exception is thrown.
-     * 
+     *
      * @param outputStream
      *            The output stream.
      * @throws IOException
