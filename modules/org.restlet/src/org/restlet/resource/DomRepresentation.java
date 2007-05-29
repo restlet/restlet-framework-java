@@ -25,6 +25,8 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -148,8 +150,11 @@ public class DomRepresentation extends XmlRepresentation {
      */
     public void write(OutputStream outputStream) throws IOException {
         try {
-            TransformerFactory.newInstance().newTransformer().transform(
-                    new DOMSource(getDocument()),
+            Transformer transformer = TransformerFactory.newInstance()
+                    .newTransformer();
+            transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
+                    getDocument().getDoctype().getSystemId());
+            transformer.transform(new DOMSource(getDocument()),
                     new StreamResult(outputStream));
         } catch (TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
