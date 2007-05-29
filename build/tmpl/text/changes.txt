@@ -22,7 +22,8 @@ Changes log
    by Adam Taft.
  - Fixed bug in ServletConverter causing the caching of the base URI and inability to handle
    request with various base URI style (IP address and domain names for example). Report by Ryan Daum.
- - Fixed bug in DomRepresentation causing the loss of the DocType. Reported by Lee Saferite.
+ - Fixed bug in DomRepresentation causing the loss of both public and system DocTypes. 
+   Reported by Lee Saferite.
 
 [Enhancements] 
  - Updated Jetty to version 6.1.3.

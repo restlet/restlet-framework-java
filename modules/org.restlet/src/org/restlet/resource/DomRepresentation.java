@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -43,7 +43,7 @@ import org.xml.sax.SAXException;
 /**
  * XML representation based on a DOM document. DOM is a standard XML object
  * model defined by the W3C.
- * 
+ *
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class DomRepresentation extends XmlRepresentation {
@@ -55,7 +55,7 @@ public class DomRepresentation extends XmlRepresentation {
 
     /**
      * Constructor for an empty document.
-     * 
+     *
      * @param mediaType
      *            The representation's media type.
      */
@@ -66,7 +66,7 @@ public class DomRepresentation extends XmlRepresentation {
 
     /**
      * Constructor from an existing DOM document.
-     * 
+     *
      * @param mediaType
      *            The representation's media type.
      * @param xmlDocument
@@ -79,7 +79,7 @@ public class DomRepresentation extends XmlRepresentation {
 
     /**
      * Constructor.
-     * 
+     *
      * @param xmlRepresentation
      *            A source XML representation to parse.
      */
@@ -98,7 +98,7 @@ public class DomRepresentation extends XmlRepresentation {
 
     /**
      * Returns the wrapped DOM document.
-     * 
+     *
      * @return The wrapped DOM document.
      */
     public Document getDocument() throws IOException {
@@ -117,7 +117,7 @@ public class DomRepresentation extends XmlRepresentation {
 
     /**
      * Returns a document builder properly configured.
-     * 
+     *
      * @return A document builder properly configured.
      */
     private DocumentBuilder getDocumentBuilder() throws IOException {
@@ -134,7 +134,7 @@ public class DomRepresentation extends XmlRepresentation {
 
     /**
      * Sets the wrapped DOM document.
-     * 
+     *
      * @param dom
      *            The wrapped DOM document.
      */
@@ -144,7 +144,7 @@ public class DomRepresentation extends XmlRepresentation {
 
     /**
      * Writes the representation to a byte stream.
-     * 
+     *
      * @param outputStream
      *            The output stream.
      */
@@ -154,6 +154,8 @@ public class DomRepresentation extends XmlRepresentation {
                     .newTransformer();
             transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
                     getDocument().getDoctype().getSystemId());
+            transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
+                    getDocument().getDoctype().getPublicId());
             transformer.transform(new DOMSource(getDocument()),
                     new StreamResult(outputStream));
         } catch (TransformerConfigurationException tce) {
