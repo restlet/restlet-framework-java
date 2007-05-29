@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ClosedChannelException;
@@ -210,19 +211,41 @@ public final class ByteUtils {
 
         if (inputStream != null) {
             try {
-                StringBuilder sb = new StringBuilder();
-                InputStreamReader isr = null;
                 if (characterSet != null) {
-                    isr = new InputStreamReader(inputStream, characterSet
-                            .getName());
+                    result = toString(new InputStreamReader(inputStream,
+                            characterSet.getName()));
                 } else {
-                    isr = new InputStreamReader(inputStream);
+                    result = toString(new InputStreamReader(inputStream));
                 }
-                BufferedReader br = new BufferedReader(isr);
-                int nextByte = br.read();
-                while (nextByte != -1) {
-                    sb.append((char) nextByte);
-                    nextByte = br.read();
+            } catch (Exception e) {
+                // Returns an empty string
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Converts a reader to a string.
+     * 
+     * @see <a
+     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
+     *      class</a>
+     * @param reader
+     *            The characters reader.
+     * @return The converted string.
+     */
+    public static String toString(Reader reader) {
+        String result = null;
+
+        if (reader != null) {
+            try {
+                StringBuilder sb = new StringBuilder();
+                BufferedReader br = new BufferedReader(reader);
+                int nextChar = br.read();
+                while (nextChar != -1) {
+                    sb.append((char) nextChar);
+                    nextChar = br.read();
                 }
                 br.close();
                 result = sb.toString();

@@ -60,9 +60,19 @@ public class InputRepresentation extends StreamRepresentation {
             long expectedSize) {
         super(mediaType);
         setSize(expectedSize);
+        setTransient(true);
+        setInputStream(inputStream);
+    }
+
+    /**
+     * Sets the input stream to use.
+     * 
+     * @param inputStream
+     *            The input stream to use.
+     */
+    protected void setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
         setAvailable(inputStream != null);
-        setTransient(true);
     }
 
     /**
@@ -72,8 +82,7 @@ public class InputRepresentation extends StreamRepresentation {
      */
     public synchronized InputStream getStream() throws IOException {
         InputStream result = this.inputStream;
-        this.inputStream = null;
-        setAvailable(false);
+        setInputStream(null);
         return result;
     }
 
