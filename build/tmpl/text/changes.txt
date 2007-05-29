@@ -18,6 +18,8 @@ Changes log
  - Fixed bug in the internal HTTP connector causing the returning of a wrong status code.
  - Overrided the StringRepresentation#setCharacterSet method, in order to refresh the 
    size of the representation. Reported by Calvin Cheng.
+ - Fixed bug causing Component to not use the StatusService.getStatus() method. Reported
+   by Adam Taft.
 
 [Enhancements] 
  - Updated Jetty to version 6.1.3.
