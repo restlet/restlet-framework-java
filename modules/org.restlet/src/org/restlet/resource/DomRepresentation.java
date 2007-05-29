@@ -154,6 +154,8 @@ public class DomRepresentation extends XmlRepresentation {
                     .newTransformer();
             transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
                     getDocument().getDoctype().getSystemId());
+            transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
+                    getDocument().getDoctype().getPublicId());
             transformer.transform(new DOMSource(getDocument()),
                     new StreamResult(outputStream));
         } catch (TransformerConfigurationException tce) {
