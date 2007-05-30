@@ -6,13 +6,15 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - Overrided the StringRepresentation#setCharacterSet method, in order to refresh the 
+   size of the representation. Reported by Calvin Cheng.
  - Fixed issue in the selection of connectors. The last connector in the classpath for
    a given protocol was selected instead of the first one, leading to counter-intuitive 
    behavior when multiple connectors were present in the classpath.
-- Fixed bug in DomRepresentation causing the loss of both public and system DocType. 
-  Reported by Lee Saferite.
-[
-Enhancements] 
+-  Fixed bug in DomRepresentation causing the loss of both public and system DocTypes. 
+   Reported by Lee Saferite.
+
+[Enhancements] 
  - Added a getApplication() method to Context and Resource classes.
  - Added a new Grizzly based connector (full NIO).
  - Upgraded Apache MINA to version 1.1.0.
