@@ -387,11 +387,7 @@ public class HttpRequest extends Request {
         return super.getReferrerRef();
     }
 
-    /**
-     * Returns the authentication response sent by a client to an origin server.
-     * 
-     * @return The authentication response sent by a client to an origin server.
-     */
+    @Override
     public ChallengeResponse getChallengeResponse() {
         ChallengeResponse result = super.getChallengeResponse();
 
@@ -408,6 +404,12 @@ public class HttpRequest extends Request {
         }
 
         return result;
+    }
+
+    @Override
+    public void setChallengeResponse(ChallengeResponse response) {
+        super.setChallengeResponse(response);
+        this.securityAdded = true;
     }
 
     @Override
