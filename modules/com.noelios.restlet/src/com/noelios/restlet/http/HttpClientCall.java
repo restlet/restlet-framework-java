@@ -21,6 +21,8 @@ package com.noelios.restlet.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
@@ -229,6 +231,16 @@ public class HttpClientCall extends HttpCall {
                 @Override
                 public void write(WritableByteChannel writableChannel)
                         throws IOException {
+                    // Do nothing
+                }
+
+                @Override
+                public Reader getReader() throws IOException {
+                    return null;
+                }
+
+                @Override
+                public void write(Writer writer) throws IOException {
                     // Do nothing
                 }
             };

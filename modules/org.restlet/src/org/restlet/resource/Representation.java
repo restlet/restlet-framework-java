@@ -22,6 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
@@ -85,6 +87,18 @@ public abstract class Representation extends Variant {
      * @throws IOException
      */
     public abstract ReadableByteChannel getChannel() throws IOException;
+
+    /**
+     * Returns a characters reader with the representation's content. This
+     * method is ensured to return a fresh reader for each invocation unless it
+     * is a transient representation, in which case null is returned. If the
+     * representation has no character set defined, the system's default one
+     * will be used.
+     * 
+     * @return A reader with the representation's content.
+     * @throws IOException
+     */
+    public abstract Reader getReader() throws IOException;
 
     /**
      * Returns a stream with the representation's content. This method is
@@ -189,4 +203,14 @@ public abstract class Representation extends Variant {
     public abstract void write(WritableByteChannel writableChannel)
             throws IOException;
 
+    /**
+     * Writes the representation to a characters writer. This method is ensured
+     * to write the full content for each invocation unless it is a transient
+     * representation, in which case an exception is thrown.
+     * 
+     * @param writer
+     *            The characters writer.
+     * @throws IOException
+     */
+    public abstract void write(Writer writer) throws IOException;
 }

@@ -32,7 +32,7 @@ import org.restlet.util.ByteUtils;
  */
 public class InputRepresentation extends StreamRepresentation {
     /** The representation's stream. */
-    private InputStream inputStream;
+    private InputStream stream;
 
     /**
      * Constructor.
@@ -61,48 +61,33 @@ public class InputRepresentation extends StreamRepresentation {
         super(mediaType);
         setSize(expectedSize);
         setTransient(true);
-        setInputStream(inputStream);
+        setStream(inputStream);
     }
 
     /**
      * Sets the input stream to use.
      * 
-     * @param inputStream
+     * @param stream
      *            The input stream to use.
      */
-    protected void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
-        setAvailable(inputStream != null);
+    private void setStream(InputStream stream) {
+        this.stream = stream;
+        setAvailable(stream != null);
     }
 
-    /**
-     * Returns a stream with the representation's content.
-     * 
-     * @return A stream with the representation's content.
-     */
+    @Override
     public synchronized InputStream getStream() throws IOException {
-        InputStream result = this.inputStream;
-        setInputStream(null);
+        InputStream result = this.stream;
+        setStream(null);
         return result;
     }
 
-    /**
-     * Converts the representation to a string value. Be careful when using this
-     * method as the conversion of large content to a string fully stored in
-     * memory can result in OutOfMemoryErrors being thrown.
-     * 
-     * @return The representation as a string value.
-     */
+    @Override
     public String getText() throws IOException {
         return ByteUtils.toString(getStream(), this.getCharacterSet());
     }
 
-    /**
-     * Writes the representation to a byte stream.
-     * 
-     * @param outputStream
-     *            The output stream.
-     */
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         ByteUtils.write(getStream(), outputStream);
     }

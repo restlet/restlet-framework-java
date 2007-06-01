@@ -117,14 +117,7 @@ public class StringRepresentation extends StreamRepresentation {
         updateSize();
     }
 
-    /**
-     * Returns a stream with the representation's content. This method is
-     * ensured to return a fresh stream for each invocation unless it is a
-     * transient representation, in which case null is returned.
-     * 
-     * @return A stream with the representation's content.
-     * @throws IOException
-     */
+    @Override
     public InputStream getStream() throws IOException {
         if (getText() != null) {
             if (getCharacterSet() != null) {
@@ -138,13 +131,7 @@ public class StringRepresentation extends StreamRepresentation {
         }
     }
 
-    /**
-     * Converts the representation to a string value. Be careful when using this
-     * method as the conversion of large content to a string fully stored in
-     * memory can result in OutOfMemoryErrors being thrown.
-     * 
-     * @return The representation as a string value.
-     */
+    @Override
     public String getText() {
         return (this.text == null) ? null : this.text.toString();
     }
@@ -160,12 +147,7 @@ public class StringRepresentation extends StreamRepresentation {
         updateSize();
     }
 
-    /**
-     * Sets the character set or null if not applicable.
-     * 
-     * @param characterSet
-     *            The character set or null if not applicable.
-     */
+    @Override
     public void setCharacterSet(CharacterSet characterSet) {
         super.setCharacterSet(characterSet);
         updateSize();
@@ -191,15 +173,7 @@ public class StringRepresentation extends StreamRepresentation {
         }
     }
 
-    /**
-     * Writes the representation to a byte stream. This method is ensured to
-     * write the full content for each invocation unless it is a transient
-     * representation, in which case an exception is thrown.
-     * 
-     * @param outputStream
-     *            The output stream.
-     * @throws IOException
-     */
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         if (getText() != null) {
             OutputStreamWriter osw = null;

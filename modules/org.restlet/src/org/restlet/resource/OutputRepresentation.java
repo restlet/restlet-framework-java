@@ -20,7 +20,6 @@ package org.restlet.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
@@ -64,13 +63,5 @@ public abstract class OutputRepresentation extends StreamRepresentation {
     public InputStream getStream() throws IOException {
         return ByteUtils.getStream(this);
     }
-
-    /**
-     * Writes the representation to a byte stream.
-     * 
-     * @param outputStream
-     *            The output stream.
-     */
-    public abstract void write(OutputStream outputStream) throws IOException;
 
 }

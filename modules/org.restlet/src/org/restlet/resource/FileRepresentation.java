@@ -21,8 +21,11 @@ package org.restlet.resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
@@ -37,7 +40,23 @@ import org.restlet.util.ByteUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class FileRepresentation extends Representation {
-    /** The file descriptor. */
+    /**
+     * Creates a new file by detecting if the name is a URI or a simple path
+     * name.
+     * 
+     * @param path
+     *            The path name or file URI of the represented file.
+     * @return The associated File instance.
+     */
+    private static File createFile(String path) {
+        if (path.startsWith("file://")) {
+            return new LocalReference(path).getFile();
+        } else {
+            return new File(path);
+        }
+    }
+
+    /** The file handle. */
     private File file;
 
     /**
@@ -75,22 +94,6 @@ public class FileRepresentation extends Representation {
     }
 
     /**
-     * Creates a new file by detecting if the name is a URI or a simple path
-     * name.
-     * 
-     * @param path
-     *            The path name or file URI of the represented file.
-     * @return The associated File instance.
-     */
-    private static File createFile(String path) {
-        if (path.startsWith("file://")) {
-            return new LocalReference(path).getFile();
-        } else {
-            return new File(path);
-        }
-    }
-
-    /**
      * Returns a readable byte channel. If it is supported by a file a read-only
      * instance of FileChannel is returned.
      * 
@@ -105,10 +108,20 @@ public class FileRepresentation extends Representation {
     }
 
     /**
-     * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+     * Returns the file handle.
      * 
-     * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+     * @return the file handle.
      */
+    public File getFile() {
+        return file;
+    }
+
+    @Override
+    public Reader getReader() throws IOException {
+        return new FileReader(file);
+    }
+
+    @Override
     public long getSize() {
         if (super.getSize() != UNKNOWN_SIZE) {
             return super.getSize();
@@ -117,11 +130,7 @@ public class FileRepresentation extends Representation {
         }
     }
 
-    /**
-     * Returns a stream with the representation's content.
-     * 
-     * @return A stream with the representation's content.
-     */
+    @Override
     public FileInputStream getStream() throws IOException {
         try {
             return new FileInputStream(file);
@@ -130,23 +139,22 @@ public class FileRepresentation extends Representation {
         }
     }
 
-    /**
-     * Converts the representation to a string value. Be careful when using this
-     * method as the conversion of large content to a string fully stored in
-     * memory can result in OutOfMemoryErrors being thrown.
-     * 
-     * @return The representation as a string value.
-     */
+    @Override
     public String getText() throws IOException {
         return ByteUtils.toString(getStream(), this.getCharacterSet());
     }
 
     /**
-     * Writes the representation to a byte stream.
+     * Sets the file handle.
      * 
-     * @param outputStream
-     *            The output stream.
+     * @param file
+     *            The file handle.
      */
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         ByteUtils.write(getStream(), outputStream);
     }
@@ -169,6 +177,11 @@ public class FileRepresentation extends Representation {
             position += written;
             count -= written;
         }
+    }
+
+    @Override
+    public void write(Writer writer) throws IOException {
+        ByteUtils.write(getReader(), writer);
     }
 
 }

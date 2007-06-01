@@ -142,12 +142,7 @@ public class DomRepresentation extends XmlRepresentation {
         this.dom = dom;
     }
 
-    /**
-     * Writes the representation to a byte stream.
-     * 
-     * @param outputStream
-     *            The output stream.
-     */
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         try {
             Transformer transformer = TransformerFactory.newInstance()

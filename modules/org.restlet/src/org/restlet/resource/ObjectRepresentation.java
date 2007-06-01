@@ -52,7 +52,8 @@ public class ObjectRepresentation extends OutputRepresentation {
         super(MediaType.APPLICATION_JAVA_OBJECT);
         if (serializedRepresentation.getMediaType().equals(
                 MediaType.APPLICATION_JAVA_OBJECT)) {
-            ObjectInputStream ois = new ObjectInputStream(serializedRepresentation.getStream());
+            ObjectInputStream ois = new ObjectInputStream(
+                    serializedRepresentation.getStream());
             this.object = ois.readObject();
             ois.close();
         } else {
@@ -83,12 +84,7 @@ public class ObjectRepresentation extends OutputRepresentation {
         return this.object;
     }
 
-    /**
-     * Writes the datum as a stream of bytes.
-     * 
-     * @param outputStream
-     *            The stream to use when writing.
-     */
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(outputStream);
         oos.writeObject(getObject());

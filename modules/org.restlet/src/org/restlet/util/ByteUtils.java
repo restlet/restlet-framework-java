@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ClosedChannelException;
@@ -101,6 +102,25 @@ public final class ByteUtils {
     }
 
     /**
+     * Returns a reader from an input stream and a character set.
+     * 
+     * @param stream
+     *            The input stream.
+     * @param characterSet
+     *            The character set.
+     * @return The equivalent reader.
+     * @throws IOException
+     */
+    public static Reader getReader(InputStream stream, CharacterSet characterSet)
+            throws IOException {
+        if (characterSet != null) {
+            return new InputStreamReader(stream, characterSet.getName());
+        } else {
+            return new InputStreamReader(stream);
+        }
+    }
+
+    /**
      * Returns an input stream based on a given readable byte channel.
      * 
      * @param readableChannel
@@ -173,6 +193,16 @@ public final class ByteUtils {
         }
 
         return result;
+    }
+
+    /**
+     * Returns an output stream based on a given writer.
+     * 
+     * @param writer
+     *            The writer.
+     */
+    public static OutputStream getStream(Writer writer) throws IOException {
+        return null;
     }
 
     /**
@@ -293,6 +323,25 @@ public final class ByteUtils {
             write(Channels.newInputStream(readableChannel), Channels
                     .newOutputStream(writableChannel));
         }
+    }
+
+    /**
+     * Writes characters from a reader to a writer. When the reading is done,
+     * the reader is closed.
+     * 
+     * @param reader
+     *            The reader.
+     * @param writer
+     *            The writer.
+     * @throws IOException
+     */
+    public static void write(Reader reader, Writer writer) throws IOException {
+        int charsRead;
+        char[] buffer = new char[2048];
+        while ((charsRead = reader.read(buffer)) > 0) {
+            writer.write(buffer, 0, charsRead);
+        }
+        reader.close();
     }
 
     /**

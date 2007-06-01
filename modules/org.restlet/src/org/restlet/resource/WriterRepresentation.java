@@ -21,7 +21,6 @@ package org.restlet.resource;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 
 import org.restlet.data.MediaType;
 
@@ -31,7 +30,7 @@ import org.restlet.data.MediaType;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class WriterRepresentation extends OutputRepresentation {
+public abstract class WriterRepresentation extends CharacterRepresentation {
     /**
      * Constructor.
      * 
@@ -48,23 +47,16 @@ public abstract class WriterRepresentation extends OutputRepresentation {
      * @param mediaType
      *            The representation's mediaType.
      * @param expectedSize
-     *            The expected input stream size.
+     *            The expected writer size in bytes.
      */
     public WriterRepresentation(MediaType mediaType, long expectedSize) {
-        super(mediaType, expectedSize);
+        super(mediaType);
+        setSize(expectedSize);
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
         write(new OutputStreamWriter(outputStream, getCharacterSet().getName()));
     }
-
-    /**
-     * Writes the representation to a character stream.
-     * 
-     * @param writer
-     *            The characters writer.
-     */
-    public abstract void write(Writer writer) throws IOException;
 
 }

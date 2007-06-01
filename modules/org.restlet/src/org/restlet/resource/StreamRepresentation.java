@@ -19,6 +19,8 @@
 package org.restlet.resource;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
@@ -41,24 +43,24 @@ public abstract class StreamRepresentation extends Representation {
         super(mediaType);
     }
 
-    /**
-     * Returns a readable byte channel. If it is supported by a file a read-only
-     * instance of FileChannel is returned.
-     * 
-     * @return A readable byte channel.
-     */
+    @Override
     public ReadableByteChannel getChannel() throws IOException {
         return ByteUtils.getChannel(getStream());
     }
 
-    /**
-     * Writes the representation to a byte channel.
-     * 
-     * @param writableChannel
-     *            A writable byte channel.
-     */
+    @Override
+    public Reader getReader() throws IOException {
+        return ByteUtils.getReader(getStream(), getCharacterSet());
+    }
+
+    @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         write(ByteUtils.getStream(writableChannel));
+    }
+
+    @Override
+    public void write(Writer writer) throws IOException {
+        write(ByteUtils.getStream(writer));
     }
 
 }

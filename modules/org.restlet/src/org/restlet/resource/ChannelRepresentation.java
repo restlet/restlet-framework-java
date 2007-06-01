@@ -21,6 +21,8 @@ package org.restlet.resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
@@ -41,22 +43,24 @@ public abstract class ChannelRepresentation extends Representation {
         super(mediaType);
     }
 
-    /**
-     * Returns a stream with the representation's content.
-     * 
-     * @return A stream with the representation's content.
-     */
+    @Override
+    public Reader getReader() throws IOException {
+        return ByteUtils.getReader(getStream(), getCharacterSet());
+    }
+
+    @Override
     public InputStream getStream() throws IOException {
         return ByteUtils.getStream(getChannel());
     }
 
-    /**
-     * Writes the representation to a byte stream.
-     * 
-     * @param outputStream
-     *            The output stream.
-     */
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         write(ByteUtils.getChannel(outputStream));
     }
+
+    @Override
+    public void write(Writer writer) throws IOException {
+        write(ByteUtils.getStream(writer));
+    }
+
 }
