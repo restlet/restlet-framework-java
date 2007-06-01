@@ -24,6 +24,8 @@ Changes log
    request with various base URI style (IP address and domain names for example). Report by Ryan Daum.
  - Fixed bug in DomRepresentation causing the loss of both public and system DocTypes. 
    Reported by Lee Saferite.
+ - Fixed bug causing the Request.challengeResponse to be overriden after a setChallengeResponse() call
+   before the first getChallengeResponse() call.
 
 [Enhancements] 
  - Updated Jetty to version 6.1.3.
