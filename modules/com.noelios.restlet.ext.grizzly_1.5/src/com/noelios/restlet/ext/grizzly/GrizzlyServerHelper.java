@@ -56,7 +56,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
             configure(this.controller);
         }
 
-        getLogger().info("Starting the Grizzly HTTP server");
+        getLogger().info("Starting the Grizzly " + getProtocols() + " server");
         final Controller controller = this.controller;
         new Thread() {
             public void run() {
@@ -84,7 +84,8 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
         super.stop();
 
         if (this.controller != null) {
-            getLogger().info("Stopping the Grizzly HTTP server");
+            getLogger().info(
+                    "Stopping the Grizzly " + getProtocols() + " server");
             this.controller.stop();
         }
     }

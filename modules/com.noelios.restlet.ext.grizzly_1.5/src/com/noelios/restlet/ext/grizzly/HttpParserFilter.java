@@ -66,7 +66,11 @@ public class HttpParserFilter implements ProtocolFilter {
         if (serverCall == null) {
             serverCall = new GrizzlyServerCall(this.helper.getServer(),
                     byteBuffer, key, (helper instanceof HttpsServerHelper));
+        } else {
+            serverCall.init(byteBuffer, key,
+                    (helper instanceof HttpsServerHelper));
         }
+
         boolean keepAlive = false;
 
         // Handle the call

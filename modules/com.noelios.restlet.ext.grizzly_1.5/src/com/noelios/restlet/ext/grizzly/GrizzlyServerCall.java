@@ -72,6 +72,21 @@ public class GrizzlyServerCall extends HttpServerCall {
     public GrizzlyServerCall(Server server, ByteBuffer byteBuffer,
             SelectionKey key, boolean confidential) {
         super(server);
+        init(byteBuffer, key, confidential);
+    }
+
+    /**
+     * Initialize the call.
+     * 
+     * @param byteBuffer
+     *            The NIO byte buffer.
+     * @param key
+     *            The NIO selection key.
+     * @param confidential
+     *            Indicates if the call is confidential.
+     */
+    public void init(ByteBuffer byteBuffer, SelectionKey key,
+            boolean confidential) {
         setConfidential(confidential);
 
         try {
