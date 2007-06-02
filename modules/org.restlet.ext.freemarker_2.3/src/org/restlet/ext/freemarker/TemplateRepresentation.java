@@ -26,6 +26,7 @@ import java.io.Writer;
 
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
+import org.restlet.resource.Representation;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -39,11 +40,8 @@ import freemarker.template.TemplateException;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TemplateRepresentation extends OutputRepresentation {
-    /** The template's name. */
-    private String templateName;
-
-    /** The FreeMarker configuration. */
-    private Configuration config;
+    /** The template. */
+    private Template template;
 
     /** The template's data model. */
     private Object dataModel;
@@ -63,10 +61,78 @@ public class TemplateRepresentation extends OutputRepresentation {
      */
     public TemplateRepresentation(String templateName, Configuration config,
             Object dataModel, MediaType mediaType) {
+        this(getTemplate(templateName, config), dataModel, mediaType);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param templateRepresention
+     *            The FreeMarker template provided via a representation.
+     * @param config
+     *            The FreeMarker configuration.
+     * @param dataModel
+     *            The template's data model.
+     * @param mediaType
+     *            The representation's media type.
+     */
+    public TemplateRepresentation(Representation templateRepresention,
+            Configuration config, Object dataModel, MediaType mediaType) {
+        this(getTemplate(templateRepresention, config), dataModel, mediaType);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param template
+     *            The FreeMarker template.
+     * @param dataModel
+     *            The template's data model.
+     * @param mediaType
+     *            The representation's media type.
+     */
+    public TemplateRepresentation(Template template, Object dataModel,
+            MediaType mediaType) {
         super(mediaType);
-        this.config = config;
+        this.template = template;
         this.dataModel = dataModel;
-        this.templateName = templateName;
+    }
+
+    /**
+     * Returns a FreeMarker template from its name and a configuration.
+     * 
+     * @param templateName
+     *            The template name.
+     * @param config
+     *            The FreeMarker configuration.
+     * @return The template or null if not found.
+     */
+    private static Template getTemplate(String templateName,
+            Configuration config) {
+        try {
+            return config.getTemplate(templateName);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns a FreeMarker template from a representation and a configuration.
+     * 
+     * @param templateRepresentation
+     *            The template representation.
+     * @param config
+     *            The FreeMarker configuration.
+     * @return The template or null if not found.
+     */
+    private static Template getTemplate(Representation templateRepresentation,
+            Configuration config) {
+        try {
+            return new Template("template", templateRepresentation.getReader(),
+                    config);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     /**
@@ -100,16 +166,15 @@ public class TemplateRepresentation extends OutputRepresentation {
         Writer tmplWriter = null;
 
         try {
-            Template template = config.getTemplate(templateName);
             if (getCharacterSet() != null) {
                 tmplWriter = new BufferedWriter(new OutputStreamWriter(
                         outputStream, getCharacterSet().getName()));
             } else {
                 tmplWriter = new BufferedWriter(new OutputStreamWriter(
-                        outputStream, template.getEncoding()));
+                        outputStream, this.template.getEncoding()));
             }
 
-            template.process(getDataModel(), tmplWriter);
+            this.template.process(getDataModel(), tmplWriter);
             tmplWriter.flush();
         } catch (TemplateException te) {
             throw new IOException("Template processing error "
