@@ -26,6 +26,9 @@ Changes log
    Reported by Lee Saferite.
  - Fixed bug causing the Request.challengeResponse to be overriden after a setChallengeResponse() call
    before the first getChallengeResponse() call.
+ - When a Client HTTP connector receives a non HTTP URI, it now correctly sets the response status
+   to CONNECTOR_ERROR_INTERNAL instead of silently eating the internal exception. Reported by Jim
+   Alateras and Adam Taft.
 
 [Enhancements] 
  - Updated Jetty to version 6.1.3.
