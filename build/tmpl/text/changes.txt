@@ -16,7 +16,8 @@ Changes log
 
 [Enhancements] 
  - Added a getApplication() method to Context and Resource classes.
- - Added a new Grizzly based connector (full NIO).
+ - Added a new Grizzly based HTTP server connector (full NIO). Optmizations and support
+   contributed by Jean-François Arcand.
  - Upgraded Apache MINA to version 1.1.0.
  - There are now default internal HTTP client and server connectors exposed in the NRE core.
    If no other HTTP connectors are found in the classpath, those connectors will be used.

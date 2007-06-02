@@ -36,6 +36,7 @@ import org.restlet.resource.Representation;
 import com.noelios.restlet.http.HttpServerCall;
 import com.sun.grizzly.util.ByteBufferInputStream;
 import com.sun.grizzly.util.OutputWriter;
+import com.sun.grizzly.util.SSLOutputWriter;
 import com.sun.grizzly.util.SSLByteBufferInputStream;
 
 /**
@@ -46,6 +47,15 @@ import com.sun.grizzly.util.SSLByteBufferInputStream;
 public class GrizzlyServerCall extends HttpServerCall {
     /** The underlying socket channel. */
     private SocketChannel socketChannel;
+
+    /** Recycled unsecure stream. */
+    private ByteBufferInputStream unsecureHeadStream = new ByteBufferInputStream();
+
+    /** Recycled secure stream. */
+    private ByteBufferInputStream secureHeadStream = new SSLByteBufferInputStream();
+
+    /** Recycled stream. */
+    private ByteBufferInputStream headStream;
 
     /**
      * Constructor.
@@ -65,13 +75,10 @@ public class GrizzlyServerCall extends HttpServerCall {
         setConfidential(confidential);
 
         try {
-            // Initialize the call
-            ByteBufferInputStream headStream = null;
-
             if (confidential) {
-                headStream = new SSLByteBufferInputStream();
+                headStream = secureHeadStream;
             } else {
-                headStream = new ByteBufferInputStream();
+                headStream = unsecureHeadStream;
             }
 
             headStream.setSelectionKey(key);
@@ -91,8 +98,23 @@ public class GrizzlyServerCall extends HttpServerCall {
         ByteArrayOutputStream headStream = new ByteArrayOutputStream(4096);
         writeResponseHead(headStream);
         ByteBuffer buffer = ByteBuffer.wrap(headStream.toByteArray());
-        OutputWriter.flushChannel(getSocketChannel(), buffer);
+        if (isConfidential()) {
+            SSLOutputWriter.flushChannel(getSocketChannel(), buffer);
+        } else {
+            OutputWriter.flushChannel(getSocketChannel(), buffer);
+        }
         buffer.clear();
+    }
+
+    /**
+     * Recycles the call and its stream.
+     * 
+     * @return The recycled call.
+     */
+    public GrizzlyServerCall recycle() {
+        headStream.recycle();
+        socketChannel = null;
+        return this;
     }
 
     @Override
