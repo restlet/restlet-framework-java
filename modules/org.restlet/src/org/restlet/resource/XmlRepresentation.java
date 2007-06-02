@@ -18,6 +18,7 @@
 
 package org.restlet.resource;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,8 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPathConstants;
 
 import org.restlet.data.MediaType;
@@ -230,6 +235,73 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      */
     public void setNamespaceAware(boolean namespaceAware) {
         this.namespaceAware = namespaceAware;
+    }
+
+    /**
+     * Validates the XML representation against a given schema.
+     * 
+     * @param schemaRepresentation
+     *            The XML schema representation to use.
+     */
+    public void validate(Representation schemaRepresentation) throws Exception {
+        validate(getSchema(schemaRepresentation));
+    }
+
+    /**
+     * Validates the XML representation against a given schema.
+     * 
+     * @param schema
+     *            The XML schema to use.
+     */
+    public void validate(Schema schema) throws Exception {
+        StreamSource streamSource = new StreamSource(getStream());
+        schema.newValidator().validate(streamSource);
+    }
+
+    /**
+     * Returns the wrapped schema.
+     * 
+     * @return The wrapped schema.
+     * @throws IOException
+     */
+    private static Schema getSchema(Representation schemaRepresentation)
+            throws Exception {
+        Schema result = null;
+
+        if (schemaRepresentation != null) {
+            StreamSource streamSource = new StreamSource(schemaRepresentation
+                    .getStream());
+            result = SchemaFactory.newInstance(
+                    getSchemaLanguageUri(schemaRepresentation)).newSchema(
+                    streamSource);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the schema URI for the current schema media type.
+     * 
+     * @return The schema URI.
+     */
+    private static String getSchemaLanguageUri(
+            Representation schemaRepresentation) {
+        String result = null;
+
+        if (schemaRepresentation != null) {
+            if (MediaType.APPLICATION_W3C_SCHEMA_XML
+                    .equals(schemaRepresentation.getMediaType())) {
+                result = XMLConstants.W3C_XML_SCHEMA_NS_URI;
+            } else if (MediaType.APPLICATION_RELAXNG_COMPACT
+                    .equals(schemaRepresentation.getMediaType())) {
+                result = XMLConstants.RELAXNG_NS_URI;
+            } else if (MediaType.APPLICATION_RELAXNG_XML
+                    .equals(schemaRepresentation.getMediaType())) {
+                result = XMLConstants.RELAXNG_NS_URI;
+            }
+        }
+
+        return result;
     }
 
 }

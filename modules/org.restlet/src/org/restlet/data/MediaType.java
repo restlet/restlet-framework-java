@@ -85,6 +85,14 @@ public final class MediaType extends Metadata {
             "application/rdf+xml",
             "XML serialized Resource Description Framework document");
 
+    public static final MediaType APPLICATION_RELAXNG_COMPACT = new MediaType(
+            "application/relax-ng-compact-syntax",
+            "Relax NG Schema document, Compact syntax");
+
+    public static final MediaType APPLICATION_RELAXNG_XML = new MediaType(
+            "application/x-relax-ng+xml",
+            "Relax NG Schema document, XML syntax");
+
     public static final MediaType APPLICATION_RTF = new MediaType(
             "application/rtf", "Rich Text Format document");
 
@@ -96,6 +104,9 @@ public final class MediaType extends Metadata {
 
     public static final MediaType APPLICATION_WORD = new MediaType(
             "application/msword", "Microsoft Word document");
+
+    public static final MediaType APPLICATION_W3C_SCHEMA_XML = new MediaType(
+            "application/x-xsd+xml", "W3C XML Schema document");
 
     public static final MediaType APPLICATION_WWW_FORM = new MediaType(
             "application/x-www-form-urlencoded", "Web form (URL encoded)");
