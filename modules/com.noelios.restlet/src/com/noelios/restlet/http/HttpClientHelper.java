@@ -25,6 +25,7 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 import com.noelios.restlet.ClientHelper;
 
@@ -85,11 +86,9 @@ public abstract class HttpClientHelper extends ClientHelper {
             HttpClientCall httpCall = getConverter().toSpecific(this, request);
             getConverter().commit(httpCall, request, response);
         } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Error while handling an HTTP client call: ",
-                    e.getMessage());
             getLogger().log(Level.INFO,
                     "Error while handling an HTTP client call", e);
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e.getMessage());
         }
     }
 
