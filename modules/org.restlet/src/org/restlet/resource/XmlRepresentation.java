@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -255,7 +256,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      *            The XML schema representation to use.
      */
     public void validate(Representation schemaRepresentation) throws Exception {
-        validate(getSchema(schemaRepresentation));
+        validate(schemaRepresentation, null);
     }
 
     /**
@@ -265,8 +266,33 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      *            The XML schema to use.
      */
     public void validate(Schema schema) throws Exception {
+        validate(schema, null);
+    }
+
+    /**
+     * Validates the XML representation against a given schema.
+     * 
+     * @param schemaRepresentation
+     *            The XML schema representation to use.
+     * @param result
+     *            The Result object that receives (possibly augmented) XML.
+     */
+    public void validate(Representation schemaRepresentation, Result result)
+            throws Exception {
+        validate(getSchema(schemaRepresentation), result);
+    }
+
+    /**
+     * Validates the XML representation against a given schema.
+     * 
+     * @param schema
+     *            The XML schema to use.
+     * @param result
+     *            The Result object that receives (possibly augmented) XML.
+     */
+    public void validate(Schema schema, Result result) throws Exception {
         StreamSource streamSource = new StreamSource(getStream());
-        schema.newValidator().validate(streamSource);
+        schema.newValidator().validate(streamSource, result);
     }
 
     /**
