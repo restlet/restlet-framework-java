@@ -18,7 +18,6 @@
 
 package com.noelios.restlet.http;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
 import org.restlet.Client;
@@ -73,14 +72,7 @@ public abstract class HttpClientHelper extends ClientHelper {
      */
     public abstract HttpClientCall create(Request request);
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
+    @Override
     public void handle(Request request, Response response) {
         try {
             HttpClientCall httpCall = getConverter().toSpecific(this, request);
@@ -97,37 +89,13 @@ public abstract class HttpClientHelper extends ClientHelper {
      * 
      * @return the converter from uniform calls to HTTP calls.
      */
-    public HttpClientConverter getConverter() {
+    public HttpClientConverter getConverter() throws Exception {
         if (this.converter == null) {
-            try {
-                String converterClass = getParameters().getFirstValue(
-                        "converter",
-                        "com.noelios.restlet.http.HttpClientConverter");
-                this.converter = (HttpClientConverter) Class.forName(
-                        converterClass).getConstructor(Context.class)
-                        .newInstance(getContext());
-            } catch (IllegalArgumentException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
-            } catch (SecurityException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
-            } catch (InstantiationException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
-            } catch (IllegalAccessException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
-            } catch (InvocationTargetException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
-            } catch (NoSuchMethodException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
-            } catch (ClassNotFoundException e) {
-                getLogger().log(Level.SEVERE,
-                        "Unable to create the HTTP server converter", e);
-            }
+            String converterClass = getParameters().getFirstValue("converter",
+                    "com.noelios.restlet.http.HttpClientConverter");
+            this.converter = (HttpClientConverter) Class
+                    .forName(converterClass).getConstructor(Context.class)
+                    .newInstance(getContext());
         }
 
         return this.converter;
