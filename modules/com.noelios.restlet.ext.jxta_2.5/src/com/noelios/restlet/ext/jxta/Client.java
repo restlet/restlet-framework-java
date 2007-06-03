@@ -16,32 +16,20 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.jxta.prototype;
+package com.noelios.restlet.ext.jxta;
 
-import org.restlet.Restlet;
-import org.restlet.Server;
-import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import com.google.inject.BindingAnnotation;
+
+import java.lang.annotation.Target;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.ElementType;
 
 /**
- * JXTA test server.
- * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author james todd [james dot w dot todd at gmail dot com]
  */
-public class TestServer {
-    public static void main(String[] args) throws Exception {
-        // Creating a minimal Restlet returning "Hello World"
-        Restlet restlet = new Restlet() {
-            @Override
-            public void handle(Request request, Response response) {
-                response.setEntity("Hello World!", MediaType.TEXT_PLAIN);
-            }
-        };
-
-        // Create the HTTP server and listen on port 8182
-        new Server(Protocol.HTTP, restlet).start();
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target( { ElementType.FIELD, ElementType.PARAMETER })
+@BindingAnnotation
+public @interface Client {
 }

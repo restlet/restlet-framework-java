@@ -1,6 +1,23 @@
+/*
+ * Copyright 2005-2007 Noelios Consulting.
+ * 
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the "License"). You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at
+ * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL HEADER in each file and
+ * include the License file at http://www.opensource.org/licenses/cddl1.txt If
+ * applicable, add the following below this CDDL HEADER, with the fields
+ * enclosed by brackets "[]" replaced with your own identifying information:
+ * Portions Copyright [yyyy] [name of copyright owner]
+ */
+
 package com.noelios.restlet.ext.jxta;
 
-import com.noelios.restlet.ext.jxta.util.NetworkHandler;
 import net.jxta.ext.network.GroupEvent;
 import net.jxta.ext.network.NetworkEvent;
 import net.jxta.ext.network.NetworkListener;
@@ -19,15 +36,13 @@ class DefaultNetworkHandler extends NetworkHandler {
                 StringBuffer msg = new StringBuffer();
                 PeerGroup pg = ne.getPeerGroup();
 
-                msg.append("NetworkEvent: ").
-                        append(pg.getPeerGroupName()).
-                        append(" ");
+                msg.append("NetworkEvent: ").append(pg.getPeerGroupName())
+                        .append(" ");
 
                 EventObject cause = ne.getCause();
 
                 if (cause != null) {
-                    msg.append(cause.getClass().getName()).
-                            append(" ");
+                    msg.append(cause.getClass().getName()).append(" ");
 
                     if (cause instanceof RendezvousEvent) {
                         RendezvousEvent re = (RendezvousEvent) cause;
@@ -37,22 +52,15 @@ class DefaultNetworkHandler extends NetworkHandler {
 
                         pg = ne.getPeerGroup();
 
-                        msg.append(pg.getPeerGroupName()).
-                                append(" ").
-                                append(p).
-                                append(" ").
-                                append(pid).
-                                append(" ").
-                                append(t);
+                        msg.append(pg.getPeerGroupName()).append(" ").append(p)
+                                .append(" ").append(pid).append(" ").append(t);
                     } else if (cause instanceof GroupEvent) {
                         GroupEvent ge = (GroupEvent) cause;
                         int t = ge.getType();
 
                         pg = ge.getPeerGroup();
 
-                        msg.append(pg.getPeerGroupName()).
-                                append(" ").
-                                append(t);
+                        msg.append(pg.getPeerGroupName()).append(" ").append(t);
                     }
                 }
 

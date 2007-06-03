@@ -1,7 +1,22 @@
-package com.noelios.restlet.ext.jxta.prototype;
+/*
+ * Copyright 2005-2007 Noelios Consulting.
+ * 
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the "License"). You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at
+ * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL HEADER in each file and
+ * include the License file at http://www.opensource.org/licenses/cddl1.txt If
+ * applicable, add the following below this CDDL HEADER, with the fields
+ * enclosed by brackets "[]" replaced with your own identifying information:
+ * Portions Copyright [yyyy] [name of copyright owner]
+ */
 
-import com.noelios.restlet.ext.jxta.*;
-import com.noelios.restlet.ext.jxta.util.NetworkHandler;
+package com.noelios.restlet.ext.jxta;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,13 +33,19 @@ import java.util.Properties;
 public class Main {
 
     private static final String CLIENT = "client";
-    private static final String SERVER = "server";
-    private static final String JXTA_PROPERTIES =
-        "/com/noelios/restlet/ext/jxta/prototype/resources/jxta.properties";
+
+    // private static final String SERVER = "server";
+
+    private static final String JXTA_PROPERTIES = "/com/noelios/restlet/ext/jxta/prototype/resources/jxta.properties";
+
     private static final String CONNECTION_ID_KEY = "connection.id";
+
     private static final String CONNECTION_NAME_KEY = "connection.name";
+
     private static final String PEER_HOME = "peer.home";
+
     private static final String PROFILE_CLIENT = "profile.client";
+
     private static final String PROFILE_SERVER = "profile.server";
 
     public static void main(String[] args) {
@@ -39,18 +60,22 @@ public class Main {
             // ignore
         }
 
-        Main m = new Main();
-        String base = System.getProperty(config.getProperty(PEER_HOME)) + File.separator + ".restlet.jxta";
+        // Main m = new Main();
+        String base = System.getProperty(config.getProperty(PEER_HOME))
+                + File.separator + ".restlet.jxta";
         String home = base + (isClient ? ".client" : ".server");
         // todo: adhoc profile config not reflected in derived PlatformConfig
-        String profile = isClient ? config.getProperty(PROFILE_CLIENT) : config.getProperty(PROFILE_SERVER);;
+        String profile = isClient ? config.getProperty(PROFILE_CLIENT) : config
+                .getProperty(PROFILE_SERVER);
+        ;
         Peer peer = new DefaultPeer(home, profile);
         URI id = URI.create(config.getProperty(CONNECTION_ID_KEY));
         String name = config.getProperty(CONNECTION_NAME_KEY);
         NetworkHandler networkHandler = peer.getNetworkHandler();
 
         class EchoAsynchronousConnection extends DefaultAsynchronousConnection {
-            public EchoAsynchronousConnection(URI id, String name, NetworkHandler networkHandler) {
+            public EchoAsynchronousConnection(URI id, String name,
+                    NetworkHandler networkHandler) {
                 super(id, name, networkHandler, null);
 
                 setConnectionListener(new ConnectionListener() {
@@ -64,7 +89,8 @@ public class Main {
                             ba.write("echo: ".getBytes());
                             ba.write(data);
 
-                            EchoAsynchronousConnection.this.sendTo(ba.toByteArray(), from);
+                            EchoAsynchronousConnection.this.sendTo(ba
+                                    .toByteArray(), from);
                         } catch (IOException ioe) {
                             ioe.printStackTrace();
                         }
@@ -74,14 +100,14 @@ public class Main {
         }
 
         // todo: connection factory provisions connections based on scheme
-        AsynchronousConnection connection = isClient ?
-                new DefaultAsynchronousConnection(id, name, networkHandler, new ConnectionListener() {
+        AsynchronousConnection connection = isClient ? new DefaultAsynchronousConnection(
+                id, name, networkHandler, new ConnectionListener() {
                     public void receiveFrom(byte[] data, InetAddress from) {
                         System.out.println("inbound: " + new String(data));
                         System.out.println("from: " + from);
                     }
-                }) :
-                new EchoAsynchronousConnection(id, name, networkHandler);
+                })
+                : new EchoAsynchronousConnection(id, name, networkHandler);
 
         peer.addConnections(connection);
         peer.start();
@@ -104,6 +130,6 @@ public class Main {
             }
         }
 
-//        peer.stop();
+        // peer.stop();
     }
 }

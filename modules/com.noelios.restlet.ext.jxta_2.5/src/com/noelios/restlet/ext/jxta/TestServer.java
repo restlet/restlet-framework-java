@@ -18,14 +18,30 @@
 
 package com.noelios.restlet.ext.jxta;
 
-import org.restlet.Client;
+import org.restlet.Restlet;
+import org.restlet.Server;
+import org.restlet.data.MediaType;
+import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
-import com.noelios.restlet.http.StreamClientHelper;
+/**
+ * JXTA test server.
+ * 
+ * @author Jerome Louvel (contact@noelios.com)
+ */
+public class TestServer {
+    public static void main(String[] args) throws Exception {
+        // Creating a minimal Restlet returning "Hello World"
+        Restlet restlet = new Restlet() {
+            @Override
+            public void handle(Request request, Response response) {
+                response.setEntity("Hello World!", MediaType.TEXT_PLAIN);
+            }
+        };
 
-public abstract class JxtaClientHelper extends StreamClientHelper {
-
-    public JxtaClientHelper(Client client) {
-        super(client);
+        // Create the HTTP server and listen on port 8182
+        new Server(Protocol.HTTP, restlet).start();
     }
 
 }

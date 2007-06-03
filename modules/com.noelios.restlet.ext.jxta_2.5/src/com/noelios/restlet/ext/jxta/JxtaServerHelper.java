@@ -24,8 +24,6 @@ import net.jxta.protocol.PipeAdvertisement;
 
 import org.restlet.Server;
 
-import com.noelios.restlet.ext.jxta.util.NetworkHandler;
-import com.noelios.restlet.ext.jxta.util.PipeUtility;
 import com.noelios.restlet.http.StreamServerHelper;
 
 /**

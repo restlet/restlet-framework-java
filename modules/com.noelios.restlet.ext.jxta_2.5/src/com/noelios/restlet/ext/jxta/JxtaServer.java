@@ -1,14 +1,14 @@
 /*
  * Copyright 2007 Noelios Consulting.
- *
+ * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- *
+ * 
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -16,9 +16,8 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.jxta.net;
+package com.noelios.restlet.ext.jxta;
 
-import com.noelios.restlet.ext.jxta.Component;
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.ext.network.NetworkException;
 import net.jxta.peergroup.PeerGroup;
@@ -38,9 +37,19 @@ import java.util.concurrent.Executors;
 abstract class JxtaServer implements Component {
 
     private PipeAdvertisement pipe;
+
     private String name;
+
     private PeerGroup group;
+
     private ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    /**
+     * @return the executor
+     */
+    public ExecutorService getExecutor() {
+        return executor;
+    }
 
     public JxtaServer(PipeAdvertisement pipe, String name, PeerGroup group) {
         this.pipe = pipe;
@@ -53,7 +62,8 @@ abstract class JxtaServer implements Component {
     }
 
     public URI getId() {
-        return URI.create("p2p://" + getPipeAdvertisement().getPipeID() + "/" + getName());
+        return URI.create("p2p://" + getPipeAdvertisement().getPipeID() + "/"
+                + getName());
     }
 
     public PeerGroup getPeerGroup() {

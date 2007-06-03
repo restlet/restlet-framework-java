@@ -16,11 +16,8 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.jxta.net;
+package com.noelios.restlet.ext.jxta;
 
-import com.noelios.restlet.ext.jxta.AsynchronousConnection;
-import com.noelios.restlet.ext.jxta.ConnectionListener;
-import com.noelios.restlet.ext.jxta.util.PipeUtility;
 import net.jxta.ext.network.NetworkException;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.pipe.PipeID;

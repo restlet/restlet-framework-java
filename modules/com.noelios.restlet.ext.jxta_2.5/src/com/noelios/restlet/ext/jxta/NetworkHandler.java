@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.ext.jxta.util;
+package com.noelios.restlet.ext.jxta;
 
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.ext.configuration.AbstractConfigurator;
