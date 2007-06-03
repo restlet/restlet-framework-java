@@ -33,6 +33,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
@@ -41,6 +42,7 @@ import org.restlet.data.MediaType;
 import org.restlet.util.XmlWriter;
 import org.w3c.dom.Document;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
 
 /**
  * XML representation for SAX events processing. The purpose is to create a
@@ -166,6 +168,16 @@ public class SaxRepresentation extends XmlRepresentation {
             throw new IOException("Couldn't create the empty document: "
                     + pce.getMessage());
         }
+    }
+
+    /**
+     * Returns a SAXSource based on a SAX InputSource.
+     * 
+     * @return A SAXSource based on a SAX InputSource.
+     */
+    @Override
+    public Source getSource() throws IOException {
+        return new SAXSource(new InputSource(getStream()));
     }
 
     @Override

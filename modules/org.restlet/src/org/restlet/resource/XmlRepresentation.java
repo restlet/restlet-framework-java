@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -179,6 +180,16 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         }
 
         return Collections.unmodifiableList(result).iterator();
+    }
+
+    /**
+     * Returns an XML source or transformation instructions.
+     * 
+     * @return An XML source or transformation instructions.
+     * @throws IOException
+     */
+    public Source getSource() throws IOException {
+        return new StreamSource(getStream());
     }
 
     /**
