@@ -94,7 +94,7 @@ public class HttpParserFilter implements ProtocolFilter {
     }
 
     public boolean postExecute(Context context) throws IOException {
-        return false;
+        return true;
     }
 
 }

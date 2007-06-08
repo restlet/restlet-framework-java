@@ -6,6 +6,12 @@ Bundle-Version: 1.5.0
 Bundle-ClassPath: com.sun.grizzly.jar
 Bundle-Localization: plugin
 Export-Package: com.sun.grizzly,
+ com.sun.grizzly.connectioncache.client,
+ com.sun.grizzly.connectioncache.impl.concurrent,
+ com.sun.grizzly.connectioncache.impl.transport,
+ com.sun.grizzly.connectioncache.server,
+ com.sun.grizzly.connectioncache.spi.concurrent,
+ com.sun.grizzly.connectioncache.spi.transport,
  com.sun.grizzly.filter,
  com.sun.grizzly.util
 Bundle-Vendor: Sun Microsystems Inc.

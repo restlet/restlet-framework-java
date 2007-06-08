@@ -37,7 +37,6 @@ import com.noelios.restlet.http.HttpServerCall;
 import com.sun.grizzly.util.ByteBufferInputStream;
 import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.SSLOutputWriter;
-import com.sun.grizzly.util.SSLByteBufferInputStream;
 
 /**
  * HTTP server call specialized for Grizzly.
@@ -48,14 +47,8 @@ public class GrizzlyServerCall extends HttpServerCall {
     /** The underlying socket channel. */
     private SocketChannel socketChannel;
 
-    /** Recycled unsecure stream. */
-    private ByteBufferInputStream unsecureHeadStream = new ByteBufferInputStream();
-
-    /** Recycled secure stream. */
-    private ByteBufferInputStream secureHeadStream = new SSLByteBufferInputStream();
-
     /** Recycled stream. */
-    private ByteBufferInputStream headStream;
+    private ByteBufferInputStream headStream = new ByteBufferInputStream();
 
     /**
      * Constructor.
@@ -90,12 +83,6 @@ public class GrizzlyServerCall extends HttpServerCall {
         setConfidential(confidential);
 
         try {
-            if (confidential) {
-                headStream = secureHeadStream;
-            } else {
-                headStream = unsecureHeadStream;
-            }
-
             headStream.setSelectionKey(key);
             headStream.setByteBuffer(byteBuffer);
             this.socketChannel = (SocketChannel) key.channel();
@@ -110,13 +97,13 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public void writeResponseHead(Response response) throws IOException {
-        ByteArrayOutputStream headStream = new ByteArrayOutputStream(4096);
+        ByteArrayOutputStream headStream = new ByteArrayOutputStream(8192);
         writeResponseHead(headStream);
         ByteBuffer buffer = ByteBuffer.wrap(headStream.toByteArray());
         if (isConfidential()) {
-            SSLOutputWriter.flushChannel(getSocketChannel(), buffer);
+            SSLOutputWriter.flushChannel(socketChannel, buffer);
         } else {
-            OutputWriter.flushChannel(getSocketChannel(), buffer);
+            OutputWriter.flushChannel(socketChannel, buffer);
         }
         buffer.clear();
     }
@@ -139,7 +126,7 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public ReadableByteChannel getRequestChannel() {
-        return getSocketChannel();
+        return getReadableChannel();
     }
 
     @Override
@@ -149,7 +136,7 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public WritableByteChannel getResponseChannel() {
-        return getSocketChannel();
+        return getWritableChannel();
     }
 
     @Override
@@ -158,11 +145,38 @@ public class GrizzlyServerCall extends HttpServerCall {
     }
 
     /**
+     * Returns the readable socket channel.
+     * 
+     * @return The readable socket channel.
+     */
+    public ReadableByteChannel getReadableChannel() {
+        return this.socketChannel;
+    }
+
+    /**
      * Return the underlying socket channel.
      * 
      * @return The underlying socket channel.
      */
-    public SocketChannel getSocketChannel() {
-        return this.socketChannel;
+    public WritableByteChannel getWritableChannel() {
+        if (isConfidential()) {
+            return new WritableByteChannel() {
+                public void close() throws IOException {
+                    socketChannel.close();
+                }
+
+                public boolean isOpen() {
+                    return socketChannel.isOpen();
+                }
+
+                public int write(ByteBuffer src) throws IOException {
+                    int nWrite = src.limit();
+                    SSLOutputWriter.flushChannel(socketChannel, src);
+                    return nWrite;
+                }
+            };
+        } else {
+            return socketChannel;
+        }
     }
 }

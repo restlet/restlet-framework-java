@@ -422,7 +422,9 @@ public final class ByteUtils {
 
         private SelectionKey selectionKey;
 
-        private SelectableChannel selectableChannel;
+        // private SelectableChannel selectableChannel;
+
+        private ByteBuffer bb = ByteBuffer.allocate(8192);
 
         /**
          * Constructor.
@@ -433,24 +435,27 @@ public final class ByteUtils {
         public NbChannelOutputStream(WritableByteChannel channel) {
             this.channel = channel;
 
-            if (!(channel instanceof SelectableChannel)) {
-                throw new IllegalArgumentException(
-                        "Invalid channel provided. Please use only selectable channels.");
-            } else {
-                this.selectableChannel = (SelectableChannel) channel;
-                this.selector = null;
-                this.selectionKey = null;
-
-                if (this.selectableChannel.isBlocking()) {
-                    throw new IllegalArgumentException(
-                            "Invalid blocking channel provided. Please use only non-blocking channels.");
-                }
-            }
+            /*
+             * if (!(channel instanceof SelectableChannel)) { throw new
+             * IllegalArgumentException( "Invalid channel provided. Please use
+             * only selectable channels."); } else { this.selectableChannel =
+             * (SelectableChannel) channel; this.selector = null;
+             * this.selectionKey = null;
+             * 
+             * if (this.selectableChannel.isBlocking()) { throw new
+             * IllegalArgumentException( "Invalid blocking channel provided.
+             * Please use only non-blocking channels."); } }
+             */
         }
 
         @Override
         public void write(int b) throws IOException {
-            ByteBuffer bb = ByteBuffer.wrap(new byte[] { (byte) b });
+            write(new byte[] { (byte) b }, 0, 1);
+        }
+
+        public void write(byte b[], int off, int len) throws IOException {
+            bb.put(b, off, len);
+            bb.flip();
 
             if ((this.channel != null) && (bb != null)) {
                 try {
@@ -475,6 +480,8 @@ public final class ByteUtils {
                     throw new IOException(
                             "Unable to write to the non-blocking channel. "
                                     + ioe.getLocalizedMessage());
+                } finally {
+                    bb.clear();
                 }
             } else {
                 throw new IOException(
@@ -491,8 +498,11 @@ public final class ByteUtils {
 
         private void registerSelectionKey() throws ClosedChannelException,
                 IOException {
-            this.selectionKey = this.selectableChannel.register(getSelector(),
-                    SelectionKey.OP_WRITE);
+            /*
+             * this.selectionKey =
+             * this.selectableChannel.register(getSelector(),
+             * SelectionKey.OP_WRITE);
+             */
         }
 
         @Override

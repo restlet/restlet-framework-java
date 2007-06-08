@@ -33,9 +33,7 @@ import com.sun.grizzly.Controller;
 import com.sun.grizzly.DefaultProtocolChain;
 import com.sun.grizzly.DefaultProtocolChainInstanceHandler;
 import com.sun.grizzly.ProtocolChain;
-import com.sun.grizzly.SSLPipeline;
-import com.sun.grizzly.SslSelectionKeyHandler;
-import com.sun.grizzly.SslTCPSelectorHandler;
+import com.sun.grizzly.TCPSelectorHandler;
 import com.sun.grizzly.filter.SSLReadFilter;
 
 /**
@@ -126,13 +124,16 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
         sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
 
         // Create and configure a select handler
-        SslTCPSelectorHandler selectorHandler = new SslTCPSelectorHandler();
-        selectorHandler.setSSLContext(sslContext);
+        TCPSelectorHandler selectorHandler = new TCPSelectorHandler();
+
+        // Create the Grizzly filters
+        final SSLReadFilter readFilter = new SSLReadFilter();
+        readFilter.setSSLContext(sslContext);
 
         if (isNeedClientAuthentication()) {
-            selectorHandler.setNeedClientAuth(isNeedClientAuthentication());
+            readFilter.setNeedClientAuth(isNeedClientAuthentication());
         } else if (isWantClientAuthentication()) {
-            selectorHandler.setWantClientAuth(isWantClientAuthentication());
+            readFilter.setWantClientAuth(isWantClientAuthentication());
         }
 
         selectorHandler.setPort(getServer().getPort());
@@ -140,14 +141,9 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
             selectorHandler.setInet(InetAddress.getByName(getServer()
                     .getAddress()));
         }
-
-        // Create the Grizzly filters
-        final SSLReadFilter readFilter = new SSLReadFilter();
         final HttpParserFilter httpParserFilter = new HttpParserFilter(this);
 
         // Create the Grizzly controller
-        controller.setPipeline(new SSLPipeline());
-        controller.setSelectionKeyHandler(new SslSelectionKeyHandler());
         controller.setSelectorHandler(selectorHandler);
         controller
                 .setProtocolChainInstanceHandler(new DefaultProtocolChainInstanceHandler() {
