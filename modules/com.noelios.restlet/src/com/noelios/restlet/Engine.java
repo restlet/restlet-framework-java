@@ -493,10 +493,12 @@ public class Engine extends org.restlet.util.Engine {
             List<Preference<Language>> languagePrefs = client
                     .getAcceptedLanguages();
             List<Preference<Language>> primaryLanguagePrefs = new ArrayList<Preference<Language>>();
+            // A default language preference is defined with a better weight
+            // than the "All languages" preference
             Preference<Language> defaultLanguagePref = ((defaultLanguage == null) ? null
-                    : new Preference<Language>(defaultLanguage, 0.001f));
+                    : new Preference<Language>(defaultLanguage, 0.004f));
             Preference<Language> allLanguagesPref = new Preference<Language>(
-                    Language.ALL, 0.004f);
+                    Language.ALL, 0.001f);
 
             if (languagePrefs.isEmpty()) {
                 // All languages accepted.
@@ -522,6 +524,17 @@ public class Engine extends org.restlet.util.Engine {
             languagePrefs.addAll(primaryLanguagePrefs);
             if (defaultLanguagePref != null) {
                 languagePrefs.add(defaultLanguagePref);
+                // In this case, if the client adds the "all languages"
+                // preference, the latter is removed, in order to support the
+                // default preference defined by the server
+                List<Preference<Language>> list = new ArrayList<Preference<Language>>();
+                for (Preference<Language> preference : languagePrefs) {
+                    Language language = preference.getMetadata();
+                    if (!language.equals(Language.ALL)) {
+                        list.add(preference);
+                    }
+                }
+                languagePrefs = list;
             }
             languagePrefs.add(allLanguagesPref);
 
