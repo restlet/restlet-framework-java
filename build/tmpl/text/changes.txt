@@ -34,6 +34,8 @@ Changes log
  - Updated Jetty to version 6.1.3.
  - Clarified Representation Javadocs about transient content. Suggested by Philip Johnson.
  - Tutorial part 6 now uses a simpler attach() method requiring no empty attachment path.
+ - Updated the conneg algorithm in order to give precedence to the default language set by 
+   the server instead of the "All languages" preference set by the user. Reported by Billy Chan.
 
 1.0.1 (2007-05-04)
 [Bugs fixed]

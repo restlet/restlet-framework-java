@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -57,7 +57,7 @@ import com.noelios.restlet.util.FormUtils;
 
 /**
  * Restlet factory supported by the engine.
- * 
+ *
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Engine extends org.restlet.util.Engine {
@@ -95,7 +95,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Constructor.
-     * 
+     *
      * @param discoverConnectors
      *            True if connectors should be automatically discovered.
      */
@@ -216,7 +216,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Returns the list of available client connectors.
-     * 
+     *
      * @return The list of available client connectors.
      */
     public List<ConnectorHelper> getRegisteredClients() {
@@ -227,7 +227,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Returns the list of available server connectors.
-     * 
+     *
      * @return The list of available server connectors.
      */
     public List<ConnectorHelper> getRegisteredServers() {
@@ -238,7 +238,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Creates a directory resource.
-     * 
+     *
      * @param handler
      *            The parent directory handler.
      * @param request
@@ -255,7 +255,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Creates a new helper for a given component.
-     * 
+     *
      * @param application
      *            The application to help.
      * @param parentContext
@@ -268,7 +268,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Creates a new helper for a given client connector.
-     * 
+     *
      * @param client
      *            The client to help.
      * @return The new helper.
@@ -317,7 +317,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Creates a new helper for a given component.
-     * 
+     *
      * @param component
      *            The component to help.
      * @return The new helper.
@@ -328,7 +328,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Creates a new helper for a given server connector.
-     * 
+     *
      * @param server
      *            The server to help.
      * @return The new helper.
@@ -376,7 +376,7 @@ public class Engine extends org.restlet.util.Engine {
      * Parses the "java.version" system property and returns the first digit of
      * the version number of the Java Runtime Environment (e.g. "1" for
      * "1.3.0").
-     * 
+     *
      * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
      *      Java versioning</a>
      * @return The major version number of the Java Runtime Environment.
@@ -398,7 +398,7 @@ public class Engine extends org.restlet.util.Engine {
      * Parses the "java.version" system property and returns the second digit of
      * the version number of the Java Runtime Environment (e.g. "3" for
      * "1.3.0").
-     * 
+     *
      * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
      *      Java versioning</a>
      * @return The minor version number of the Java Runtime Environment.
@@ -418,7 +418,7 @@ public class Engine extends org.restlet.util.Engine {
     /**
      * Parses the "java.version" system property and returns the update release
      * number of the Java Runtime Environment (e.g. "10" for "1.3.0_10").
-     * 
+     *
      * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
      *      Java versioning</a>
      * @return The release number of the Java Runtime Environment or 0 if it
@@ -440,7 +440,7 @@ public class Engine extends org.restlet.util.Engine {
     /**
      * Returns the preferred variant representation for a given resource
      * according the the client preferences.
-     * 
+     *
      * @param client
      *            The client preferences.
      * @param variants
@@ -481,10 +481,12 @@ public class Engine extends org.restlet.util.Engine {
             List<Preference<Language>> languagePrefs = client
                     .getAcceptedLanguages();
             List<Preference<Language>> primaryLanguagePrefs = new ArrayList<Preference<Language>>();
+            // A default language preference is defined with a better weight
+            // than the "All languages" preference
             Preference<Language> defaultLanguagePref = ((defaultLanguage == null) ? null
-                    : new Preference<Language>(defaultLanguage, 0.001f));
+                    : new Preference<Language>(defaultLanguage, 0.004f));
             Preference<Language> allLanguagesPref = new Preference<Language>(
-                    Language.ALL, 0.004f);
+                    Language.ALL, 0.001f);
 
             if (languagePrefs.isEmpty()) {
                 // All languages accepted.
@@ -510,6 +512,17 @@ public class Engine extends org.restlet.util.Engine {
             languagePrefs.addAll(primaryLanguagePrefs);
             if (defaultLanguagePref != null) {
                 languagePrefs.add(defaultLanguagePref);
+                // In this case, if the client adds the "all languages"
+                // preference, the latter is removed, in order to support the
+                // default preference defined by the server
+                List<Preference<Language>> list = new ArrayList<Preference<Language>>();
+                for (Preference<Language> preference : languagePrefs) {
+                    Language language = preference.getMetadata();
+                    if (!language.equals(Language.ALL)) {
+                        list.add(preference);
+                    }
+                }
+                languagePrefs = list;
             }
             languagePrefs.add(allLanguagesPref);
 
@@ -615,7 +628,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Returns a matching score between 2 Languages
-     * 
+     *
      * @param variantLanguage
      * @param preferenceLanguage
      * @return the positive matching score or -1 if the languages are not
@@ -672,7 +685,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Returns a matching score between 2 Media types
-     * 
+     *
      * @param variantMediaType
      * @param preferenceMediaType
      * @return the positive matching score or -1 if the media types are not
@@ -727,7 +740,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Parses a line to extract the provider class name.
-     * 
+     *
      * @param line
      *            The line to parse.
      * @return The provider's class name or an empty string.
@@ -742,7 +755,7 @@ public class Engine extends org.restlet.util.Engine {
     /**
      * Indicates if the searched parameter is specified in the given media
      * range.
-     * 
+     *
      * @param searchedParam
      *            The searched parameter.
      * @param mediaRange
@@ -764,7 +777,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Parses an URL encoded Web form.
-     * 
+     *
      * @param logger
      *            The logger to use.
      * @param form
@@ -780,7 +793,7 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Parses an URL encoded query string into a given form.
-     * 
+     *
      * @param logger
      *            The logger to use.
      * @param form
