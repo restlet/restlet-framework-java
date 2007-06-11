@@ -841,6 +841,57 @@ public class Template {
     }
 
     /**
+     * Returns the list of variable names in the template.
+     * 
+     * @return The list of variable names.
+     */
+    public List<String> getVariableNames() {
+        List<String> result = new ArrayList<String>();
+        StringBuilder varBuffer = null;
+        char next;
+        boolean inVariable = false;
+        for (int i = 0; i < getPattern().length(); i++) {
+            next = getPattern().charAt(i);
+
+            if (inVariable) {
+                if (isUnreserved(next)) {
+                    // Append to the variable name
+                    varBuffer.append(next);
+                } else if (next == '}') {
+                    // End of variable detected
+                    if (varBuffer.length() == 0) {
+                        getLogger().warning(
+                                "Empty pattern variables are not allowed : "
+                                        + this.pattern);
+                    } else {
+                        result.add(varBuffer.toString());
+
+                        // Reset the variable name buffer
+                        varBuffer = new StringBuilder();
+                    }
+                    inVariable = false;
+
+                } else {
+                    getLogger().warning(
+                            "An invalid character was detected inside a pattern variable : "
+                                    + this.pattern);
+                }
+            } else {
+                if (next == '{') {
+                    inVariable = true;
+                    varBuffer = new StringBuilder();
+                } else if (next == '}') {
+                    getLogger().warning(
+                            "An invalid character was detected inside a pattern variable : "
+                                    + this.pattern);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Indicates if the current pattern matches the given formatted string.
      * 
      * @param formattedString

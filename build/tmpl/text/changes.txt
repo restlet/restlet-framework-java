@@ -48,6 +48,7 @@ Changes log
  - Added a getSource() method on XmlRepresentation that results a JAXP Source instance.
  - Added JAXB extension based on a contribution by Overstock.com (via Sean Landis).
  - Added JAXB 2.0 and StAX 1.0 libraries.
+ - Added a Template.getVariableNames() method. Suggested by Stian Soiland.
  
 [Misc]
  - Removed AsyncWeb connector, to be replaced by a custom MINA based one.
