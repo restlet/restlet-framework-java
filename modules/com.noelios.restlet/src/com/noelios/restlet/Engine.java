@@ -484,7 +484,7 @@ public class Engine extends org.restlet.util.Engine {
             // A default language preference is defined with a better weight
             // than the "All languages" preference
             Preference<Language> defaultLanguagePref = ((defaultLanguage == null) ? null
-                    : new Preference<Language>(defaultLanguage, 0.004f));
+                    : new Preference<Language>(defaultLanguage, 0.003f));
             Preference<Language> allLanguagesPref = new Preference<Language>(
                     Language.ALL, 0.001f);
 
@@ -502,10 +502,21 @@ public class Engine extends org.restlet.util.Engine {
                             list.add(language.getPrimaryTag());
                             primaryLanguagePrefs.add(new Preference<Language>(
                                     new Language(language.getPrimaryTag()),
-                                    0.002f));
+                                    0.005f));
                         }
                     }
                 }
+                // If the default language is a "primary" language but is not
+                // present in the list of all primary languages, add it.
+                if (defaultLanguage != null
+                        && !defaultLanguage.getSubTags().isEmpty()) {
+                    if (!list.contains(defaultLanguage.getPrimaryTag())) {
+                        primaryLanguagePrefs.add(new Preference<Language>(
+                                new Language(defaultLanguage.getPrimaryTag()),
+                                0.002f));
+                    }
+                }
+
             }
 
             // Client preferences are altered
