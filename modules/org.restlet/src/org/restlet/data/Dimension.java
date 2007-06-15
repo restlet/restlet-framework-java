@@ -28,6 +28,7 @@ package org.restlet.data;
  *      Vary header</a>
  */
 public enum Dimension {
+    AUTHORIZATION,
     CHARACTER_SET,
     CLIENT_ADDRESS,
     CLIENT_AGENT,

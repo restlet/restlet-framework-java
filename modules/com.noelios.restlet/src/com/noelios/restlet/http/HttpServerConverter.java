@@ -288,6 +288,8 @@ public class HttpServerConverter extends HttpConverter {
                                 sb.append(HttpConstants.HEADER_ACCEPT_LANGUAGE);
                             } else if (dim == Dimension.MEDIA_TYPE) {
                                 sb.append(HttpConstants.HEADER_ACCEPT);
+                            } else if (dim == Dimension.AUTHORIZATION) {
+                                sb.append(HttpConstants.HEADER_AUTHORIZATION);
                             }
                         }
 

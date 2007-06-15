@@ -392,6 +392,9 @@ public class HttpClientConverter extends HttpConverter {
                                 .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_LANGUAGE)) {
                             dimensions.add(Dimension.LANGUAGE);
                         } else if (value
+                                .equalsIgnoreCase(HttpConstants.HEADER_AUTHORIZATION)) {
+                            dimensions.add(Dimension.AUTHORIZATION);
+                        } else if (value
                                 .equalsIgnoreCase(HttpConstants.HEADER_USER_AGENT)) {
                             dimensions.add(Dimension.CLIENT_AGENT);
                         } else if (value.equals("*")) {
