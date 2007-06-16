@@ -138,9 +138,9 @@ public class ReferenceList extends WrapperList<Reference> {
     }
 
     /**
-     * Returns a representation of the list in the "text/uri-list" format.
+     * Returns a representation of the list in "text/html" format.
      * 
-     * @return A representation of the list in the "text/uri-list" format.
+     * @return A representation of the list in "text/html" format.
      */
     public Representation getWebRepresentation() {
         // Create a simple HTML list
