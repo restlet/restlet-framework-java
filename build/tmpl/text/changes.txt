@@ -31,7 +31,7 @@ Changes log
    Alateras and Adam Taft.
 
 [Enhancements] 
- - Updated Jetty to version 6.1.3.
+ - Updated Jetty to version 6.1.4.
  - Clarified Representation Javadocs about transient content. Suggested by Philip Johnson.
  - Tutorial part 6 now uses a simpler attach() method requiring no empty attachment path.
  - Updated the conneg algorithm in order to give precedence to the default language set by 
