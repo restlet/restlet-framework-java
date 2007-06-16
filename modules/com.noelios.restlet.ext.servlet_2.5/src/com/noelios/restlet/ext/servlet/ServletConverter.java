@@ -19,6 +19,7 @@
 package com.noelios.restlet.ext.servlet;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -131,6 +132,28 @@ public class ServletConverter extends HttpServerConverter {
         } else {
             getLogger().warning("Unable to find the Restlet target");
         }
+    }
+
+    /**
+     * Converts a low-level Servlet call into a high-level Restlet request.
+     * 
+     * @param servletCall
+     *            The low-level Servlet call.
+     * @return A new high-level uniform request.
+     */
+    public HttpRequest toRequest(ServletCall servletCall) {
+        HttpRequest result = super.toRequest(servletCall);
+
+        // Copy all Servlet's request attributes
+        String attributeName;
+        for (Enumeration namesEnum = servletCall.getRequest()
+                .getAttributeNames(); namesEnum.hasMoreElements();) {
+            attributeName = (String) namesEnum.nextElement();
+            result.getAttributes().put(attributeName,
+                    servletCall.getRequest().getAttribute(attributeName));
+        }
+
+        return result;
     }
 
     /**

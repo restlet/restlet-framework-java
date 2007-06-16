@@ -52,6 +52,8 @@ Changes log
  - Added new Dimension.AUTHORIZATION enum entry. Suggested by Stian Soiland.
  - Optimized the Resource handling of conditional gets. If the conditions are not met, the
    getRepresentation(Variant) method is never invoked. Suggested by Stian Soiland.
+ - The ServletConverter now also copy the Servlet's request attributes into the Restlet
+   attributes map. Suggested by Leigh Klotz.
 
 [Misc]
  - Removed AsyncWeb connector, to be replaced by a custom MINA based one.
