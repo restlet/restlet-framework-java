@@ -353,7 +353,7 @@ public class Resource {
      * (as provided by the 'findTarget' method).
      */
     public void handleDelete() {
-        boolean bContinue = true;
+        boolean canDelete = true;
         if (getRequest().getConditions().hasSome()) {
             Variant preferredVariant = null;
 
@@ -367,26 +367,26 @@ public class Resource {
                 } else {
                     getResponse().setStatus(
                             Status.CLIENT_ERROR_PRECONDITION_FAILED);
-                    bContinue = false;
+                    canDelete = false;
                 }
             }
-            // The conditions have to be checked even if there is no preferred
-            // variant.
-            if (bContinue) {
+
+            // The conditions have to be checked
+            // even if there is no preferred variant.
+            if (canDelete) {
                 Status status = getRequest().getConditions().getStatus(
                         getRequest().getMethod(), preferredVariant);
 
                 if (status != null) {
                     getResponse().setStatus(status);
-                    bContinue = false;
+                    canDelete = false;
                 }
             }
         }
 
-        if (bContinue) {
+        if (canDelete) {
             delete();
         }
-
     }
 
     /**
@@ -407,16 +407,9 @@ public class Resource {
             // Resource not found
             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         } else if (isNegotiateContent()) {
-            Variant preferredVariant = getPreferredVariant();
+            selectedVariant = getPreferredVariant();
 
-            // Set the variant dimensions used for content negotiation
-            getResponse().getDimensions().clear();
-            getResponse().getDimensions().add(Dimension.CHARACTER_SET);
-            getResponse().getDimensions().add(Dimension.ENCODING);
-            getResponse().getDimensions().add(Dimension.LANGUAGE);
-            getResponse().getDimensions().add(Dimension.MEDIA_TYPE);
-
-            if (preferredVariant == null) {
+            if (selectedVariant == null) {
                 // No variant was found matching the client preferences
                 getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 
@@ -428,16 +421,18 @@ public class Resource {
                     }
                 }
 
-                getResponse().setEntity(refs.getTextRepresentation());
+                selectedVariant = refs.getTextRepresentation();
             } else {
-                getResponse().setEntity(getRepresentation(preferredVariant));
-                selectedVariant = preferredVariant;
+                // Set the variant dimensions used for content negotiation
+                getResponse().getDimensions().clear();
+                getResponse().getDimensions().add(Dimension.CHARACTER_SET);
+                getResponse().getDimensions().add(Dimension.ENCODING);
+                getResponse().getDimensions().add(Dimension.LANGUAGE);
+                getResponse().getDimensions().add(Dimension.MEDIA_TYPE);
             }
-            selectedVariant = getResponse().getEntity();
         } else {
             if (variants.size() == 1) {
-                getResponse().setEntity(variants.get(0));
-                selectedVariant = getResponse().getEntity();
+                selectedVariant = variants.get(0);
             } else {
                 ReferenceList variantRefs = new ReferenceList();
 
@@ -455,24 +450,26 @@ public class Resource {
                     // Return the list of variants
                     getResponse()
                             .setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
-                    getResponse()
-                            .setEntity(variantRefs.getTextRepresentation());
+                    selectedVariant = variantRefs.getTextRepresentation();
                 } else {
                     getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 }
             }
         }
 
-        // The given representation (even if null) must meet the request
-        // conditions
-        // (if any).
+        // The selected variant must meet the request conditions (if any).
         if (getRequest().getConditions().hasSome()) {
             Status status = getRequest().getConditions().getStatus(
                     getRequest().getMethod(), selectedVariant);
+
             if (status != null) {
                 getResponse().setStatus(status);
                 getResponse().setEntity(null);
+            } else {
+                getResponse().setEntity(getRepresentation(selectedVariant));
             }
+        } else {
+            getResponse().setEntity(getRepresentation(selectedVariant));
         }
     }
 
@@ -512,7 +509,7 @@ public class Resource {
      * provided by the 'findTarget' method).
      */
     public void handlePut() {
-        boolean bContinue = true;
+        boolean canPut = true;
 
         if (getRequest().getConditions().hasSome()) {
             Variant preferredVariant = null;
@@ -527,24 +524,25 @@ public class Resource {
                 } else {
                     getResponse().setStatus(
                             Status.CLIENT_ERROR_PRECONDITION_FAILED);
-                    bContinue = false;
+                    canPut = false;
                 }
             }
-            // The conditions have to be checked even if there is no preferred
-            // variant.
-            if (bContinue) {
+
+            // The conditions have to be checked
+            // even if there is no preferred variant.
+            if (canPut) {
                 Status status = getRequest().getConditions().getStatus(
                         getRequest().getMethod(), preferredVariant);
                 if (status != null) {
                     getResponse().setStatus(status);
-                    bContinue = false;
+                    canPut = false;
                 }
             }
         }
 
-        if (bContinue) {
-            // Check the Content-Range HTTP Header in order to prevent usage of
-            // partial PUTs
+        if (canPut) {
+            // Check the Content-Range HTTP Header
+            // in order to prevent usage of partial PUTs
             Object oHeaders = getRequest().getAttributes().get(
                     "org.restlet.http.headers");
             if (oHeaders != null) {
@@ -555,17 +553,17 @@ public class Resource {
                                     new Status(
                                             Status.SERVER_ERROR_NOT_IMPLEMENTED,
                                             "the Content-Range header is not understood"));
-                    bContinue = false;
+                    canPut = false;
                 }
             }
         }
 
-        if (bContinue) {
+        if (canPut) {
             if (getRequest().isEntityAvailable()) {
                 put(getRequest().getEntity());
 
-                // HTTP spec says that PUT may return the list of allowed
-                // methods
+                // HTTP spec says that PUT may return
+                // the list of allowed methods
                 updateAllowedMethods();
             } else {
                 getResponse().setStatus(
