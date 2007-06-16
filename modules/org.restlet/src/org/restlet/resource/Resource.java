@@ -412,7 +412,7 @@ public class Resource {
             selectedVariant = getResponse().getEntity();
         } else {
             if (variants.size() == 1) {
-                getResponse().setEntity(variants.get(0));
+                getResponse().setEntity(getRepresentation(variants.get(0)));
                 selectedVariant = getResponse().getEntity();
             } else {
                 ReferenceList variantRefs = new ReferenceList();
