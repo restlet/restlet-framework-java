@@ -491,9 +491,9 @@ public class Engine extends org.restlet.util.Engine {
             // misconfigured and don't expose all the languages actually
             // understood by end users.
             // Thus, a few other preferences are added to the user's ones:
-            // - default language (if any) with quality 0.003
             // - primary languages inferred from and sorted according to the
-            // user's preferences with quality between 0.003 and 0.002
+            // user's preferences with quality between 0.005 and 0.006
+            // - default language (if any) with quality 0.003
             // - primary language of the default language (if available) with
             // quality 0.002
             // - all languages with quality 0.001
@@ -522,7 +522,7 @@ public class Engine extends org.restlet.util.Engine {
                             primaryLanguagePrefs
                                     .add(new Preference<Language>(new Language(
                                             language.getPrimaryTag()),
-                                            0.002f + (0.001f * preference
+                                            0.005f + (0.001f * preference
                                                     .getQuality())));
                         }
                     }
