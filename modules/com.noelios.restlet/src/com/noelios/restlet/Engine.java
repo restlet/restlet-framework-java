@@ -52,6 +52,8 @@ import org.restlet.util.Helper;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.component.ComponentHelper;
+import com.noelios.restlet.http.StreamClientHelper;
+import com.noelios.restlet.http.StreamServerHelper;
 import com.noelios.restlet.local.DirectoryResource;
 import com.noelios.restlet.util.FormUtils;
 
@@ -211,6 +213,11 @@ public class Engine extends org.restlet.util.Engine {
                                 "Exception while detecting the client connectors.",
                                 ioe);
             }
+
+            // Register the default connectors that will be used if no
+            // other connector has been found
+            getRegisteredClients().add(new StreamClientHelper(null));
+            getRegisteredServers().add(new StreamServerHelper(null));
         }
     }
 
@@ -277,12 +284,15 @@ public class Engine extends org.restlet.util.Engine {
         Helper result = null;
 
         if (client.getProtocols().size() > 0) {
-            for (ConnectorHelper connector : getRegisteredClients()) {
+            ConnectorHelper connector = null;
+            for (Iterator<ConnectorHelper> iter = getRegisteredClients()
+                    .iterator(); (result == null) && iter.hasNext();) {
+                connector = iter.next();
+
                 if (connector.getProtocols().containsAll(client.getProtocols())) {
                     try {
-                        return connector.getClass()
-                                .getConstructor(Client.class).newInstance(
-                                        client);
+                        result = connector.getClass().getConstructor(
+                                Client.class).newInstance(client);
                     } catch (Exception e) {
                         logger
                                 .log(
@@ -290,8 +300,6 @@ public class Engine extends org.restlet.util.Engine {
                                         "Exception while instantiation the client connector.",
                                         e);
                     }
-
-                    result = connector;
                 }
             }
 
@@ -337,7 +345,11 @@ public class Engine extends org.restlet.util.Engine {
         Helper result = null;
 
         if (server.getProtocols().size() > 0) {
-            for (ConnectorHelper connector : getRegisteredServers()) {
+            ConnectorHelper connector = null;
+            for (Iterator<ConnectorHelper> iter = getRegisteredServers()
+                    .iterator(); (result == null) && iter.hasNext();) {
+                connector = iter.next();
+
                 if (connector.getProtocols().containsAll(server.getProtocols())) {
                     try {
                         result = connector.getClass().getConstructor(
@@ -478,6 +490,13 @@ public class Engine extends org.restlet.util.Engine {
             // Based on experience, it appears that browsers are often
             // misconfigured and don't expose all the languages actually
             // understood by end users.
+            // Thus, a few other preferences are added to the user's ones:
+            // - default language (if any) with quality 0.003
+            // - primary languages inferred from and sorted according to the
+            // user's preferences with quality between 0.003 and 0.002
+            // - primary language of the default language (if available) with
+            // quality 0.002
+            // - all languages with quality 0.001
             List<Preference<Language>> languagePrefs = client
                     .getAcceptedLanguages();
             List<Preference<Language>> primaryLanguagePrefs = new ArrayList<Preference<Language>>();
@@ -500,9 +519,11 @@ public class Engine extends org.restlet.util.Engine {
                     if (!language.getSubTags().isEmpty()) {
                         if (!list.contains(language.getPrimaryTag())) {
                             list.add(language.getPrimaryTag());
-                            primaryLanguagePrefs.add(new Preference<Language>(
-                                    new Language(language.getPrimaryTag()),
-                                    0.005f));
+                            primaryLanguagePrefs
+                                    .add(new Preference<Language>(new Language(
+                                            language.getPrimaryTag()),
+                                            0.002f + (0.001f * preference
+                                                    .getQuality())));
                         }
                     }
                 }
