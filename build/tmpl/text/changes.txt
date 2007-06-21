@@ -6,6 +6,13 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - Fixed Javadoc issue in Reference.setQuery. Reported by Avi Flax.
+
+[Enhancements] 
+ - 
+
+1.0.2 (2007-06-20)
+[Bugs fixed]
  - The Component was not correctly detecting the connectors necessary for the
    attached applications, resulting in invalid log messages. Reported by Yuri de Wit.
  - If NRE's HttpRequest.setEntity() method is invoked before the first getEntity() call,
