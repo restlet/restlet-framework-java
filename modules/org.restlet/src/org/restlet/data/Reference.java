@@ -1715,7 +1715,7 @@ public class Reference {
     }
 
     /**
-     * Returns the query component for hierarchical identifiers.
+     * Sets the query component for hierarchical identifiers.
      * 
      * @param query
      *            The query component for hierarchical identifiers.
