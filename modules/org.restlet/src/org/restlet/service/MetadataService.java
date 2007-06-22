@@ -89,6 +89,7 @@ public class MetadataService {
         addExtension("es", Language.SPANISH);
         addExtension("fr", Language.FRENCH);
 
+        addExtension("atom", MediaType.APPLICATION_ATOM_XML);
         addExtension("css", MediaType.TEXT_CSS);
         addExtension("doc", MediaType.APPLICATION_WORD);
         addExtension("gif", MediaType.IMAGE_GIF);
@@ -102,11 +103,17 @@ public class MetadataService {
         addExtension("png", MediaType.IMAGE_PNG);
         addExtension("ppt", MediaType.APPLICATION_POWERPOINT);
         addExtension("rdf", MediaType.APPLICATION_RDF_XML);
+        addExtension("rnc", MediaType.APPLICATION_RELAXNG_COMPACT);
+        addExtension("rng", MediaType.APPLICATION_RELAXNG_XML);
+        addExtension("rss", MediaType.APPLICATION_RSS_XML);
+        addExtension("rtf", MediaType.APPLICATION_RTF);
         addExtension("txt", MediaType.TEXT_PLAIN);
         addExtension("svg", MediaType.IMAGE_SVG);
         addExtension("swf", MediaType.APPLICATION_FLASH);
+        addExtension("wadl", MediaType.APPLICATION_WADL_XML);
         addExtension("xhtml", MediaType.APPLICATION_XHTML_XML);
         addExtension("xml", MediaType.TEXT_XML);
+        addExtension("xsd", MediaType.APPLICATION_W3C_SCHEMA_XML);
         addExtension("zip", MediaType.APPLICATION_ZIP);
     }
 

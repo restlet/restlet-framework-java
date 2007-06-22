@@ -93,6 +93,9 @@ public final class MediaType extends Metadata {
             "application/x-relax-ng+xml",
             "Relax NG Schema document, XML syntax");
 
+    public static final MediaType APPLICATION_RSS_XML = new MediaType(
+            "application/rss+xml", "Really Simple Syndication document");
+
     public static final MediaType APPLICATION_RTF = new MediaType(
             "application/rtf", "Rich Text Format document");
 
@@ -101,6 +104,10 @@ public final class MediaType extends Metadata {
 
     public static final MediaType APPLICATION_TAR = new MediaType(
             "application/x-tar", "Tar archive");
+
+    public static final MediaType APPLICATION_WADL_XML = new MediaType(
+            "application/vnd.sun.wadl+xml",
+            "Web Application Description Language document");
 
     public static final MediaType APPLICATION_WORD = new MediaType(
             "application/msword", "Microsoft Word document");
@@ -253,12 +260,16 @@ public final class MediaType extends Metadata {
                 result = APPLICATION_POWERPOINT;
             else if (name.equals(APPLICATION_PROJECT.getName()))
                 result = APPLICATION_PROJECT;
+            else if (name.equals(APPLICATION_RSS_XML.getName()))
+                result = APPLICATION_RSS_XML;
             else if (name.equals(APPLICATION_RTF.getName()))
                 result = APPLICATION_RTF;
             else if (name.equals(APPLICATION_STUFFIT.getName()))
                 result = APPLICATION_STUFFIT;
             else if (name.equals(APPLICATION_TAR.getName()))
                 result = APPLICATION_TAR;
+            else if (name.equals(APPLICATION_WADL_XML.getName()))
+                result = APPLICATION_WADL_XML;
             else if (name.equals(APPLICATION_WORD.getName()))
                 result = APPLICATION_WORD;
             else if (name.equals(APPLICATION_WWW_FORM.getName()))
