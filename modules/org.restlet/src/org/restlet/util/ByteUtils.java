@@ -34,6 +34,8 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.WritableByteChannel;
+import java.util.EmptyStackException;
+import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -453,7 +455,9 @@ public final class ByteUtils {
             write(new byte[] { (byte) b }, 0, 1);
         }
 
+        @Override
         public void write(byte b[], int off, int len) throws IOException {
+            bb.clear();
             bb.put(b, off, len);
             bb.flip();
 
@@ -470,7 +474,7 @@ public final class ByteUtils {
                         } else if (bytesWritten == 0) {
                             registerSelectionKey();
 
-                            if (getSelector().select(10000) == 0) {
+                            if (SelectorFactory.getSelector().select(10000) == 0) {
                                 throw new IOException(
                                         "Unable to select the channel to write to it. Selection timed out.");
                             }
@@ -487,13 +491,6 @@ public final class ByteUtils {
                 throw new IOException(
                         "Unable to write. Null byte buffer or channel detected.");
             }
-        }
-
-        private Selector getSelector() throws IOException {
-            if (this.selector == null)
-                this.selector = Selector.open();
-
-            return this.selector;
         }
 
         private void registerSelectionKey() throws ClosedChannelException,
@@ -515,6 +512,87 @@ public final class ByteUtils {
                 this.selector.close();
 
             super.close();
+        }
+    }
+
+    /**
+     * Factory used to dispatch/share <code>Selector</code>.
+     * 
+     * @author Jean-Francois Arcand
+     */
+    private final static class SelectorFactory {
+        /**
+         * The timeout before we exit.
+         */
+        public static long timeout = 5000;
+
+        /**
+         * The number of <code>Selector</code> to create.
+         */
+        public static int maxSelectors = 20;
+
+        /**
+         * Cache of <code>Selector</code>
+         */
+        private final static Stack<Selector> selectors = new Stack<Selector>();
+
+        /**
+         * Creates the <code>Selector</code>
+         */
+        static {
+            try {
+                for (int i = 0; i < maxSelectors; i++)
+                    selectors.add(Selector.open());
+            } catch (IOException ex) {
+                // do nothing.
+            }
+        }
+
+        /**
+         * Get a exclusive <code>Selector</code>
+         * 
+         * @return <code>Selector</code>
+         */
+        public final static Selector getSelector() {
+            synchronized (selectors) {
+                Selector selector = null;
+                try {
+                    if (selectors.size() != 0)
+                        selector = selectors.pop();
+                } catch (EmptyStackException ex) {
+                }
+
+                int attempts = 0;
+                try {
+                    while (selector == null && attempts < 2) {
+                        selectors.wait(timeout);
+                        try {
+                            if (selectors.size() != 0)
+                                selector = selectors.pop();
+                        } catch (EmptyStackException ex) {
+                            break;
+                        }
+                        attempts++;
+                    }
+                } catch (InterruptedException ex) {
+                }
+
+                return selector;
+            }
+        }
+
+        /**
+         * Return the <code>Selector</code> to the cache
+         * 
+         * @param s
+         *            <code>Selector</code>
+         */
+        public final static void returnSelector(Selector s) {
+            synchronized (selectors) {
+                selectors.push(s);
+                if (selectors.size() == 1)
+                    selectors.notify();
+            }
         }
     }
 
