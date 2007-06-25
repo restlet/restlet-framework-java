@@ -1189,7 +1189,7 @@
 
    <!-- PACKAGE-NSIS target (generation of Windows installer) -->
    <target name="package-classic-nsis" depends="init" if="do-nsis" description="Generate the windows installer for the classic distribution.">
-      <nsis script="${temp}/setup.nsi" verbosity="2" uninstallfilelist="${dist-classic}/uninstall.log">
+      <nsis path="${nsis-makensis-path}" script="${temp}/setup.nsi" verbosity="2" uninstallfilelist="${dist-classic}/uninstall.log">
          <fileset dir="${dist-classic}" includes="**/*" />
       </nsis>
    </target>
