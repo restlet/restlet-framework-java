@@ -18,6 +18,9 @@
 
 package org.restlet.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
@@ -28,191 +31,210 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class MediaType extends Metadata {
-    public static final MediaType ALL = new MediaType("*/*", "All media");
+    /**
+     * The known media types registered with {@link #register(String, String)},
+     * retrievable using {@link #valueOf(String)}.
+     */
+    private static Map<String, MediaType> types = new HashMap<String, MediaType>();
 
-    public static final MediaType APPLICATION_ALL = new MediaType(
-            "application/*", "All application documents");
+    public static final MediaType ALL = register("*/*", "All media");
 
-    public static final MediaType APPLICATION_ATOM_XML = new MediaType(
+    public static final MediaType APPLICATION_ALL = register("application/*",
+            "All application documents");
+
+    public static final MediaType APPLICATION_ATOM_XML = register(
             "application/atom+xml", "Atom syndication documents");
 
-    public static final MediaType APPLICATION_CAB = new MediaType(
+    public static final MediaType APPLICATION_CAB = register(
             "application/vnd.ms-cab-compressed", "Microsoft Cabinet archive");
 
-    public static final MediaType APPLICATION_EXCEL = new MediaType(
+    public static final MediaType APPLICATION_EXCEL = register(
             "application/vnd.ms-excel", "Microsoft Excel document");
 
-    public static final MediaType APPLICATION_FLASH = new MediaType(
+    public static final MediaType APPLICATION_FLASH = register(
             "application/x-shockwave-flash", "Shockwave Flash object");
 
-    public static final MediaType APPLICATION_GNU_TAR = new MediaType(
+    public static final MediaType APPLICATION_GNU_TAR = register(
             "application/x-gtar", "GNU Tar archive");
 
-    public static final MediaType APPLICATION_GNU_ZIP = new MediaType(
+    public static final MediaType APPLICATION_GNU_ZIP = register(
             "application/x-gzip", "GNU Zip archive");
 
-    public static final MediaType APPLICATION_HTTP_COOKIES = new MediaType(
+    public static final MediaType APPLICATION_HTTP_COOKIES = register(
             "application/x-http-cookies", "HTTP cookies");
 
-    public static final MediaType APPLICATION_JAVA_ARCHIVE = new MediaType(
+    public static final MediaType APPLICATION_JAVA_ARCHIVE = register(
             "application/java-archive", "Java archive");
 
-    public static final MediaType APPLICATION_JAVA_OBJECT = new MediaType(
+    public static final MediaType APPLICATION_JAVA_OBJECT = register(
             "application/x-java-serialized-object", "Java serialized object");
 
-    public static final MediaType APPLICATION_JAVASCRIPT = new MediaType(
+    public static final MediaType APPLICATION_JAVASCRIPT = register(
             "application/x-javascript", "Javascript document");
 
-    public static final MediaType APPLICATION_JSON = new MediaType(
+    public static final MediaType APPLICATION_JSON = register(
             "application/json", "JavaScript Object Notation document");
 
-    public static final MediaType APPLICATION_OCTET_STREAM = new MediaType(
+    public static final MediaType APPLICATION_OCTET_STREAM = register(
             "application/octet-stream", "Raw octet stream");
 
-    public static final MediaType APPLICATION_PDF = new MediaType(
-            "application/pdf", "Adobe PDF document");
+    public static final MediaType APPLICATION_PDF = register("application/pdf",
+            "Adobe PDF document");
 
-    public static final MediaType APPLICATION_POSTSCRIPT = new MediaType(
+    public static final MediaType APPLICATION_POSTSCRIPT = register(
             "application/postscript", "Postscript document");
 
-    public static final MediaType APPLICATION_POWERPOINT = new MediaType(
+    public static final MediaType APPLICATION_POWERPOINT = register(
             "application/vnd.ms-powerpoint", "Microsoft Powerpoint document");
 
-    public static final MediaType APPLICATION_PROJECT = new MediaType(
+    public static final MediaType APPLICATION_PROJECT = register(
             "application/vnd.ms-project", "Microsoft Project document");
 
-    public static final MediaType APPLICATION_RDF_XML = new MediaType(
+    public static final MediaType APPLICATION_RDF_XML = register(
             "application/rdf+xml",
             "XML serialized Resource Description Framework document");
 
-    public static final MediaType APPLICATION_RELAXNG_COMPACT = new MediaType(
+    public static final MediaType APPLICATION_RELAXNG_COMPACT = register(
             "application/relax-ng-compact-syntax",
             "Relax NG Schema document, Compact syntax");
 
-    public static final MediaType APPLICATION_RELAXNG_XML = new MediaType(
+    public static final MediaType APPLICATION_RELAXNG_XML = register(
             "application/x-relax-ng+xml",
             "Relax NG Schema document, XML syntax");
 
-    public static final MediaType APPLICATION_RSS_XML = new MediaType(
+    public static final MediaType APPLICATION_RSS_XML = register(
             "application/rss+xml", "Really Simple Syndication document");
 
-    public static final MediaType APPLICATION_RTF = new MediaType(
-            "application/rtf", "Rich Text Format document");
+    public static final MediaType APPLICATION_RTF = register("application/rtf",
+            "Rich Text Format document");
 
-    public static final MediaType APPLICATION_STUFFIT = new MediaType(
+    public static final MediaType APPLICATION_STUFFIT = register(
             "application/x-stuffit", "Stuffit archive");
 
-    public static final MediaType APPLICATION_TAR = new MediaType(
+    public static final MediaType APPLICATION_TAR = register(
             "application/x-tar", "Tar archive");
 
-    public static final MediaType APPLICATION_WADL_XML = new MediaType(
+    public static final MediaType APPLICATION_WADL_XML = register(
             "application/vnd.sun.wadl+xml",
             "Web Application Description Language document");
 
-    public static final MediaType APPLICATION_WORD = new MediaType(
+    public static final MediaType APPLICATION_WORD = register(
             "application/msword", "Microsoft Word document");
 
-    public static final MediaType APPLICATION_W3C_SCHEMA_XML = new MediaType(
+    public static final MediaType APPLICATION_W3C_SCHEMA_XML = register(
             "application/x-xsd+xml", "W3C XML Schema document");
 
-    public static final MediaType APPLICATION_WWW_FORM = new MediaType(
+    public static final MediaType APPLICATION_WWW_FORM = register(
             "application/x-www-form-urlencoded", "Web form (URL encoded)");
 
-    public static final MediaType APPLICATION_XHTML_XML = new MediaType(
+    public static final MediaType APPLICATION_XHTML_XML = register(
             "application/xhtml+xml", "XHTML document");
 
-    public static final MediaType APPLICATION_XML = new MediaType(
-            "application/xml", "XML document");
+    public static final MediaType APPLICATION_XML = register("application/xml",
+            "XML document");
 
-    public static final MediaType APPLICATION_ZIP = new MediaType(
-            "application/zip", "Zip archive");
+    public static final MediaType APPLICATION_ZIP = register("application/zip",
+            "Zip archive");
 
-    public static final MediaType AUDIO_ALL = new MediaType("audio/*",
-            "All audios");
+    public static final MediaType AUDIO_ALL = register("audio/*", "All audios");
 
-    public static final MediaType AUDIO_MPEG = new MediaType("audio/mpeg",
+    public static final MediaType AUDIO_MPEG = register("audio/mpeg",
             "MPEG audio (MP3)");
 
-    public static final MediaType AUDIO_REAL = new MediaType(
-            "audio/x-pn-realaudio", "Real audio");
+    public static final MediaType AUDIO_REAL = register("audio/x-pn-realaudio",
+            "Real audio");
 
-    public static final MediaType AUDIO_WAV = new MediaType("audio/x-wav",
+    public static final MediaType AUDIO_WAV = register("audio/x-wav",
             "Waveform audio");
 
-    public static final MediaType IMAGE_ALL = new MediaType("image/*",
-            "All images");
+    public static final MediaType IMAGE_ALL = register("image/*", "All images");
 
-    public static final MediaType IMAGE_BMP = new MediaType("image/bmp",
+    public static final MediaType IMAGE_BMP = register("image/bmp",
             "Windows bitmap");
 
-    public static final MediaType IMAGE_GIF = new MediaType("image/gif",
-            "GIF image");
+    public static final MediaType IMAGE_GIF = register("image/gif", "GIF image");
 
-    public static final MediaType IMAGE_ICON = new MediaType("image/x-icon",
+    public static final MediaType IMAGE_ICON = register("image/x-icon",
             "Windows icon (Favicon)");
 
-    public static final MediaType IMAGE_JPEG = new MediaType("image/jpeg",
+    public static final MediaType IMAGE_JPEG = register("image/jpeg",
             "JPEG image");
 
-    public static final MediaType IMAGE_PNG = new MediaType("image/png",
-            "PNG image");
+    public static final MediaType IMAGE_PNG = register("image/png", "PNG image");
 
-    public static final MediaType IMAGE_SVG = new MediaType("image/svg+xml",
+    public static final MediaType IMAGE_SVG = register("image/svg+xml",
             "Scalable Vector Graphics");
 
-    public static final MediaType MESSAGE_ALL = new MediaType("message/*",
+    public static final MediaType MESSAGE_ALL = register("message/*",
             "All messages");
 
-    public static final MediaType MODEL_ALL = new MediaType("model/*",
-            "All models");
+    public static final MediaType MODEL_ALL = register("model/*", "All models");
 
-    public static final MediaType MULTIPART_ALL = new MediaType("multipart/*",
+    public static final MediaType MULTIPART_ALL = register("multipart/*",
             "All multipart data");
 
-    public static final MediaType MULTIPART_FORM_DATA = new MediaType(
+    public static final MediaType MULTIPART_FORM_DATA = register(
             "multipart/form-data", "Multipart form data");
 
-    public static final MediaType TEXT_ALL = new MediaType("text/*",
-            "All texts");
+    public static final MediaType TEXT_ALL = register("text/*", "All texts");
 
-    public static final MediaType TEXT_CALENDAR = new MediaType(
-            "text/calendar", "iCalendar event");
+    public static final MediaType TEXT_CALENDAR = register("text/calendar",
+            "iCalendar event");
 
-    public static final MediaType TEXT_CSS = new MediaType("text/css",
+    public static final MediaType TEXT_CSS = register("text/css",
             "CSS stylesheet");
 
-    public static final MediaType TEXT_HTML = new MediaType("text/html",
+    public static final MediaType TEXT_HTML = register("text/html",
             "HTML document");
 
-    public static final MediaType TEXT_PLAIN = new MediaType("text/plain",
+    public static final MediaType TEXT_PLAIN = register("text/plain",
             "Plain text");
 
-    public static final MediaType TEXT_RDF_N3 = new MediaType("text/rdf+n3",
+    public static final MediaType TEXT_RDF_N3 = register("text/rdf+n3",
             "N3 serialized Resource Description Framework document");
 
-    public static final MediaType TEXT_URI_LIST = new MediaType(
-            "text/uri-list", "List of URIs");
+    public static final MediaType TEXT_URI_LIST = register("text/uri-list",
+            "List of URIs");
 
-    public static final MediaType TEXT_VCARD = new MediaType("text/x-vcard",
-            "vCard");
+    public static final MediaType TEXT_VCARD = register("text/x-vcard", "vCard");
 
-    public static final MediaType TEXT_XML = new MediaType("text/xml",
-            "XML text");
+    public static final MediaType TEXT_XML = register("text/xml", "XML text");
 
-    public static final MediaType VIDEO_ALL = new MediaType("video/*",
-            "All videos");
+    public static final MediaType VIDEO_ALL = register("video/*", "All videos");
 
-    public static final MediaType VIDEO_AVI = new MediaType("video/x-msvideo",
+    public static final MediaType VIDEO_AVI = register("video/x-msvideo",
             "AVI video");
 
-    public static final MediaType VIDEO_MPEG = new MediaType("video/mpeg",
+    public static final MediaType VIDEO_MPEG = register("video/mpeg",
             "MPEG video");
 
-    public static final MediaType VIDEO_QUICKTIME = new MediaType(
-            "video/quicktime", "Quicktime video");
+    public static final MediaType VIDEO_QUICKTIME = register("video/quicktime",
+            "Quicktime video");
 
-    public static final MediaType VIDEO_WMV = new MediaType("video/x-ms-wmv",
+    public static final MediaType VIDEO_WMV = register("video/x-ms-wmv",
             "Windows movie");
+
+    /**
+     * Register a media type as a known type that can later be retrieved using
+     * {@link #valueOf(String)}. If the type already exists, the existing type
+     * is returned, otherwise a new instance is created.
+     * 
+     * @param name
+     *            The name.
+     * @param description
+     *            The description.
+     * @return The registered media type
+     */
+    public static MediaType register(String name, String description) {
+        synchronized (types) {
+            if (!types.containsKey(name)) {
+                MediaType type = new MediaType(name, description);
+                types.put(name, type);
+            }
+
+            return types.get(name);
+        }
+    }
 
     /**
      * Returns the media type associated to a name. If an existing constant
@@ -226,120 +248,10 @@ public final class MediaType extends Metadata {
         MediaType result = null;
 
         if (name != null) {
-            if (name.equals(ALL.getName()))
-                result = ALL;
-            else if (name.equals(APPLICATION_ALL.getName()))
-                result = APPLICATION_ALL;
-            else if (name.equals(APPLICATION_ATOM_XML.getName()))
-                result = APPLICATION_ATOM_XML;
-            else if (name.equals(APPLICATION_CAB.getName()))
-                result = APPLICATION_CAB;
-            else if (name.equals(APPLICATION_EXCEL.getName()))
-                result = APPLICATION_EXCEL;
-            else if (name.equals(APPLICATION_FLASH.getName()))
-                result = APPLICATION_FLASH;
-            else if (name.equals(APPLICATION_GNU_TAR.getName()))
-                result = APPLICATION_GNU_TAR;
-            else if (name.equals(APPLICATION_GNU_ZIP.getName()))
-                result = APPLICATION_GNU_ZIP;
-            else if (name.equals(APPLICATION_JAVA_ARCHIVE.getName()))
-                result = APPLICATION_JAVA_ARCHIVE;
-            else if (name.equals(APPLICATION_JAVA_OBJECT.getName()))
-                result = APPLICATION_JAVA_OBJECT;
-            else if (name.equals(APPLICATION_JAVASCRIPT.getName()))
-                result = APPLICATION_JAVASCRIPT;
-            else if (name.equals(APPLICATION_JSON.getName()))
-                result = APPLICATION_JSON;
-            else if (name.equals(APPLICATION_OCTET_STREAM.getName()))
-                result = APPLICATION_OCTET_STREAM;
-            else if (name.equals(APPLICATION_PDF.getName()))
-                result = APPLICATION_PDF;
-            else if (name.equals(APPLICATION_POSTSCRIPT.getName()))
-                result = APPLICATION_POSTSCRIPT;
-            else if (name.equals(APPLICATION_POWERPOINT.getName()))
-                result = APPLICATION_POWERPOINT;
-            else if (name.equals(APPLICATION_PROJECT.getName()))
-                result = APPLICATION_PROJECT;
-            else if (name.equals(APPLICATION_RSS_XML.getName()))
-                result = APPLICATION_RSS_XML;
-            else if (name.equals(APPLICATION_RTF.getName()))
-                result = APPLICATION_RTF;
-            else if (name.equals(APPLICATION_STUFFIT.getName()))
-                result = APPLICATION_STUFFIT;
-            else if (name.equals(APPLICATION_TAR.getName()))
-                result = APPLICATION_TAR;
-            else if (name.equals(APPLICATION_WADL_XML.getName()))
-                result = APPLICATION_WADL_XML;
-            else if (name.equals(APPLICATION_WORD.getName()))
-                result = APPLICATION_WORD;
-            else if (name.equals(APPLICATION_WWW_FORM.getName()))
-                result = APPLICATION_WWW_FORM;
-            else if (name.equals(APPLICATION_XHTML_XML.getName()))
-                result = APPLICATION_XHTML_XML;
-            else if (name.equals(APPLICATION_XML.getName()))
-                result = APPLICATION_XML;
-            else if (name.equals(APPLICATION_ZIP.getName()))
-                result = APPLICATION_ZIP;
-            else if (name.equals(AUDIO_ALL.getName()))
-                result = AUDIO_ALL;
-            else if (name.equals(AUDIO_MPEG.getName()))
-                result = AUDIO_MPEG;
-            else if (name.equals(AUDIO_REAL.getName()))
-                result = AUDIO_REAL;
-            else if (name.equals(AUDIO_WAV.getName()))
-                result = AUDIO_WAV;
-            else if (name.equals(IMAGE_ALL.getName()))
-                result = IMAGE_ALL;
-            else if (name.equals(IMAGE_BMP.getName()))
-                result = IMAGE_BMP;
-            else if (name.equals(IMAGE_GIF.getName()))
-                result = IMAGE_GIF;
-            else if (name.equals(IMAGE_ICON.getName()))
-                result = IMAGE_ICON;
-            else if (name.equals(IMAGE_JPEG.getName()))
-                result = IMAGE_JPEG;
-            else if (name.equals(IMAGE_PNG.getName()))
-                result = IMAGE_PNG;
-            else if (name.equals(IMAGE_SVG.getName()))
-                result = IMAGE_SVG;
-            else if (name.equals(MESSAGE_ALL.getName()))
-                result = MESSAGE_ALL;
-            else if (name.equals(MODEL_ALL.getName()))
-                result = MODEL_ALL;
-            else if (name.equals(MESSAGE_ALL.getName()))
-                result = MESSAGE_ALL;
-            else if (name.equals(MULTIPART_ALL.getName()))
-                result = MULTIPART_ALL;
-            else if (name.equals(MULTIPART_FORM_DATA.getName()))
-                result = MULTIPART_FORM_DATA;
-            else if (name.equals(TEXT_ALL.getName()))
-                result = TEXT_ALL;
-            else if (name.equals(TEXT_CALENDAR.getName()))
-                result = TEXT_CALENDAR;
-            else if (name.equals(TEXT_CSS.getName()))
-                result = TEXT_CSS;
-            else if (name.equals(TEXT_HTML.getName()))
-                result = TEXT_HTML;
-            else if (name.equals(TEXT_PLAIN.getName()))
-                result = TEXT_PLAIN;
-            else if (name.equals(TEXT_URI_LIST.getName()))
-                result = TEXT_URI_LIST;
-            else if (name.equals(TEXT_VCARD.getName()))
-                result = TEXT_VCARD;
-            else if (name.equals(TEXT_XML.getName()))
-                result = TEXT_XML;
-            else if (name.equals(VIDEO_ALL.getName()))
-                result = VIDEO_ALL;
-            else if (name.equals(VIDEO_AVI.getName()))
-                result = VIDEO_AVI;
-            else if (name.equals(VIDEO_MPEG.getName()))
-                result = VIDEO_MPEG;
-            else if (name.equals(VIDEO_QUICKTIME.getName()))
-                result = VIDEO_QUICKTIME;
-            else if (name.equals(VIDEO_WMV.getName()))
-                result = VIDEO_WMV;
-            else
+            result = types.get(name);
+            if (result == null) {
                 result = new MediaType(name);
+            }
         }
 
         return result;

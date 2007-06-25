@@ -101,4 +101,33 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertTrue(mt1.includes(mt2));
         assertFalse(mt2.includes(mt1));
     }
+
+    /**
+     * Testing {@link MediaType#valueOf(String)} and
+     * {@link MediaType#register(String, String)}
+     */
+    public void testValueOf() {
+        assertSame(MediaType.APPLICATION_XML, MediaType
+                .valueOf("application/xml"));
+        assertSame(MediaType.ALL, MediaType.valueOf("*/*"));
+        MediaType newType = MediaType.valueOf("application/x-restlet-test");
+        assertEquals("application", newType.getMainType());
+        assertEquals("x-restlet-test", newType.getSubType());
+        assertEquals("application/x-restlet-test", newType.getName());
+
+        // Should not have got registered by call to valueOf() alone
+        assertNotSame(newType, MediaType.valueOf("application/x-restlet-test"));
+
+        MediaType registeredType = MediaType.register(
+                "application/x-restlet-test", "Restlet testcase");
+        assertNotSame(newType, registeredType); // didn't touch old value
+        assertEquals("application/x-restlet-test", registeredType.getName());
+        assertEquals("Restlet testcase", registeredType.getDescription());
+
+        // Later valueOf calls always returns the registered type
+        assertSame(registeredType, MediaType
+                .valueOf("application/x-restlet-test"));
+        assertSame(registeredType, MediaType
+                .valueOf("application/x-restlet-test"));
+    }
 }
