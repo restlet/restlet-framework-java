@@ -64,7 +64,6 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE Bosnian
 !insertmacro MUI_LANGUAGE Breton
 !insertmacro MUI_LANGUAGE Bulgarian
-!insertmacro MUI_LANGUAGE Catalan
 !insertmacro MUI_LANGUAGE Croatian
 !insertmacro MUI_LANGUAGE Czech
 !insertmacro MUI_LANGUAGE Danish
@@ -206,7 +205,7 @@ Section un.post UNSEC0001
        ; Delete the temporary uninstall log file
        ${DeleteFile} "$INSTDIR\uninstall.log.bak"
 
-	   ; Remove the installation directory if it is empty
+      ; Remove the installation directory if it is empty
        ${RemoveDir} "$INSTDIR"
 
        ;Remove the Noelios directory (if so) if it is empty
@@ -233,51 +232,51 @@ FunctionEnd
 # Helper Functions
 
 Function un.RemoveFilesCallback
-	${un.TrimNewLines} "$R9" "$R9"
+   ${un.TrimNewLines} "$R9" "$R9"
     StrCpy $R1 "$INSTDIR\$R9"
     ${deleteFile} "$R1"
 
-	ClearErrors
-	Push 0
+   ClearErrors
+   Push 0
 FunctionEnd
 
 ; Using locate will leave file handles open to some of the directories which
 ; will prevent the deletion of these directories. This parses the uninstall.log
 ; and uses the file entries to find / remove empty directories.
 Function un.RemoveDirsCallback
-	${un.TrimNewLines} "$R9" "$R9"
-	StrCpy $R2 "$INSTDIR"
-	StrCpy $R1 "$INSTDIR\$R9"
+   ${un.TrimNewLines} "$R9" "$R9"
+   StrCpy $R2 "$INSTDIR"
+   StrCpy $R1 "$INSTDIR\$R9"
     loop:
-	   Push $R1
-	   ${GetParentDir}
-	   Pop $R0
-	   GetFullPathName $R1 "$R0"
-	   ; We only try to remove empty directories but the Desktop, StartMenu, and
-	   ; QuickLaunch directories can be empty so guard against removing them.
-	   ${If} "$R2" != "$INSTDIR"
-	       SetShellVarContext all
-	       ${If} $R1 == "$DESKTOP"
-	       ${OrIf} $R1 == "$STARTMENU"
-	           GoTo end
-	       ${EndIf}
-	       SetShellVarContext current
-	       ${If} $R1 == "$QUICKLAUNCH"
-	       ${OrIf} $R1 == "$DESKTOP"
-	       ${OrIf} $R1 == "$STARTMENU"
-	           GoTo end
-	       ${EndIf}
-	   ${ElseIf} "$R1" == "$INSTDIR"
-	       GoTo end
-	   ${EndIf}
-	   ${RemoveDir} "$R1"
+      Push $R1
+      ${GetParentDir}
+      Pop $R0
+      GetFullPathName $R1 "$R0"
+      ; We only try to remove empty directories but the Desktop, StartMenu, and
+      ; QuickLaunch directories can be empty so guard against removing them.
+      ${If} "$R2" != "$INSTDIR"
+          SetShellVarContext all
+          ${If} $R1 == "$DESKTOP"
+          ${OrIf} $R1 == "$STARTMENU"
+              GoTo end
+          ${EndIf}
+          SetShellVarContext current
+          ${If} $R1 == "$QUICKLAUNCH"
+          ${OrIf} $R1 == "$DESKTOP"
+          ${OrIf} $R1 == "$STARTMENU"
+              GoTo end
+          ${EndIf}
+      ${ElseIf} "$R1" == "$INSTDIR"
+          GoTo end
+      ${EndIf}
+      ${RemoveDir} "$R1"
 
-	   ${If} ${Errors}
-	   ${OrIf} "$R2" != "$INSTDIR"
-	       GoTo end
-	   ${EndIf}
-	   GoTo loop
-	end:
-	ClearErrors
+      ${If} ${Errors}
+      ${OrIf} "$R2" != "$INSTDIR"
+          GoTo end
+      ${EndIf}
+      GoTo loop
+   end:
+   ClearErrors
     Push 0
 FunctionEnd
