@@ -323,7 +323,7 @@ public class JaxbRepresentation extends XmlRepresentation {
                 javax.xml.bind.Marshaller m = null;
 
                 try {
-                    m = contexts.get(getPackage()).createMarshaller();
+                    m = getContext(getPackage()).createMarshaller();
                     m.setProperty("jaxb.formatted.output", true);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "Problem creating Marshaller", e);
@@ -435,7 +435,7 @@ public class JaxbRepresentation extends XmlRepresentation {
             protected synchronized javax.xml.bind.Unmarshaller initialValue() {
                 javax.xml.bind.Unmarshaller m = null;
                 try {
-                    m = contexts.get(getPackage()).createUnmarshaller();
+                    m = getContext(getPackage()).createUnmarshaller();
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "Problem creating Unmarshaller",
                             e);
