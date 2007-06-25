@@ -1,9 +1,0 @@
-<project>
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>@group-id@</groupId>
-   <artifactId>@artifact-id@</artifactId>
-   <version>@version@</version>
-
-   <name>The Bytecode-Level Optimizer and Analysis Tool</name>
-   <description>The Bytecode-Level Optimizer and Analysis Tool.</description>
-</project>
