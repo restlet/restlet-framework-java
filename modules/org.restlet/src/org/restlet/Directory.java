@@ -36,11 +36,15 @@ import org.restlet.util.Engine;
 
 /**
  * Finder mapping a directory of local resources. Those resources have
- * representations accessed by the file system or the class
- * loaders. An automatic content negotiation mechanism (similar to the one in
- * Apache HTTP server) is used to select the best representation of a resource
- * based on the available variants and on the client capabilities and
- * preferences.
+ * representations accessed by the file system or the class loaders.<br/>
+ * 
+ * An automatic content negotiation mechanism (similar to the one in Apache HTTP
+ * server) is used to select the best representation of a resource based on the
+ * available variants and on the client capabilities and preferences.<br/>
+ * 
+ * The directory can be used in read-only or modifiable mode. In the latter
+ * case, you just need to set the "modifiable" property to true. The currently
+ * supported methods are PUT and DELETE.
  * 
  * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving
  *      static files</a>
@@ -60,7 +64,7 @@ public class Directory extends Finder {
     private Reference rootRef;
 
     /**
-     * Indicates if modifications to context resources are allowed (false by
+     * Indicates if modifications to local resources are allowed (false by
      * default).
      */
     private boolean modifiable;
@@ -226,9 +230,10 @@ public class Directory extends Finder {
     }
 
     /**
-     * Indicates if modifications to context resources are allowed.
+     * Indicates if modifications to local resources (most likely files) are
+     * allowed. Returns false by default.
      * 
-     * @return True if modifications to context resources are allowed.
+     * @return True if modifications to local resources are allowed.
      */
     public boolean isModifiable() {
         return this.modifiable;
@@ -277,10 +282,10 @@ public class Directory extends Finder {
     }
 
     /**
-     * Indicates if modifications to context resources are allowed.
+     * Indicates if modifications to local resources are allowed.
      * 
      * @param modifiable
-     *            True if modifications to context resources are allowed.
+     *            True if modifications to local resources are allowed.
      */
     public void setModifiable(boolean modifiable) {
         this.modifiable = modifiable;
