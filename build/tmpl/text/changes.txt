@@ -9,6 +9,7 @@ Changes log
  - Fixed Javadoc issue in Reference.setQuery. Reported by Avi Flax.
  - Fixed bug with the nsis ant task that requires the path to the 
    "makensis" executable with NSIS 2.28.
+ - Clarified Javadocs for Directory about the modification mode. Suggested by Chuck Hinson.
 
 [Enhancements] 
  - 
