@@ -58,7 +58,6 @@ Changes log
  - Added Atom, Relax NG, RSS, RTF, WADL and XSD in the common extensions of MetadataService.
    Contributed by Avi Flax.
  - Simplified the management of MediaType constants. Contributed by Stian Soiland.
- - Clarified Javadocs for Directory about the modification mode. Suggested by Chuck Hinson.
 
 [Misc]
  - Removed AsyncWeb connector, to be replaced by a custom MINA based one.
