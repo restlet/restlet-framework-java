@@ -341,7 +341,7 @@ public class HttpClientConverter extends HttpConverter {
             for (Parameter header : httpCall.getResponseHeaders()) {
                 if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_LOCATION)) {
-                    response.setRedirectRef(header.getValue());
+                    response.setLocationRef(header.getValue());
                 } else if ((header.getName()
                         .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE))
                         || (header.getName()

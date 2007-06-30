@@ -157,10 +157,10 @@ public class HttpServerConverter extends HttpConverter {
                         CookieUtils.format(cookies.get(i)));
             }
 
-            // Set the redirection URI
-            if (response.getRedirectRef() != null) {
+            // Set the location URI (for redirections or creations)
+            if (response.getLocationRef() != null) {
                 responseHeaders.add(HttpConstants.HEADER_LOCATION, response
-                        .getRedirectRef().toString());
+                        .getLocationRef().toString());
             }
 
             // Set the security data

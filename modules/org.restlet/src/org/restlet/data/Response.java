@@ -47,8 +47,8 @@ public class Response extends Message {
     /** The set of dimensions on which the response entity may vary. */
     private Set<Dimension> dimensions;
 
-    /** The redirection reference. */
-    private Reference redirectRef;
+    /** The reference used for redirections or creations. */
+    private Reference locationRef;
 
     /** The associated request. */
     private Request request;
@@ -70,7 +70,7 @@ public class Response extends Message {
         this.challengeRequest = null;
         this.cookieSettings = null;
         this.dimensions = null;
-        this.redirectRef = null;
+        this.locationRef = null;
         this.request = request;
         this.serverInfo = null;
         this.status = Status.SUCCESS_OK;
@@ -128,8 +128,19 @@ public class Response extends Message {
      * 
      * @return The redirection reference.
      */
+    public Reference getLocationRef() {
+        return this.locationRef;
+    }
+
+    /**
+     * Returns the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @return The redirection reference.
+     * @deprecated Use getLocationRef() instead.
+     */
     public Reference getRedirectRef() {
-        return this.redirectRef;
+        return getLocationRef();
     }
 
     /**
@@ -251,25 +262,49 @@ public class Response extends Message {
      * Sets the reference that the client should follow for redirections or
      * resource creations.
      * 
-     * @param redirectRef
-     *            The redirection reference.
+     * @param locationRef
+     *            The reference to set.
      */
-    public void setRedirectRef(Reference redirectRef) {
-        this.redirectRef = redirectRef;
+    public void setLocationRef(Reference locationRef) {
+        this.locationRef = locationRef;
     }
 
     /**
      * Sets the reference that the client should follow for redirections or
      * resource creations.
      * 
-     * @param redirectUri
-     *            The redirection URI.
+     * @param locationUri
+     *            The URI to set.
      */
-    public void setRedirectRef(String redirectUri) {
+    public void setLocationRef(String locationUri) {
         Reference baseRef = (getRequest().getResourceRef() != null) ? getRequest()
                 .getResourceRef().getBaseRef()
                 : null;
-        setRedirectRef(new Reference(baseRef, redirectUri).getTargetRef());
+        setLocationRef(new Reference(baseRef, locationUri).getTargetRef());
+    }
+
+    /**
+     * Sets the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @param locationRef
+     *            The reference to set.
+     * @deprecated Use the setLocationRef() method instead.
+     */
+    public void setRedirectRef(Reference locationRef) {
+        setLocationRef(locationRef);
+    }
+
+    /**
+     * Sets the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @param locationUri
+     *            The URI to set.
+     * @deprecated Use the setLocationRef() method instead.
+     */
+    public void setRedirectRef(String locationUri) {
+        setLocationRef(locationUri);
     }
 
     /**

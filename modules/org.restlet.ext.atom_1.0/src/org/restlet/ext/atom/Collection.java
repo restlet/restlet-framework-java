@@ -159,7 +159,7 @@ public class Collection {
                 request);
 
         if (response.getStatus().equals(Status.SUCCESS_CREATED)) {
-            return response.getRedirectRef();
+            return response.getLocationRef();
         } else {
             throw new Exception(
                     "Couldn't post the member representation. Status returned: "

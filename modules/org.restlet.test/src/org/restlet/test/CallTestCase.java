@@ -191,12 +191,12 @@ public class CallTestCase extends RestletTestCase {
         Response response = getResponse(request);
         String uri = "http://www.restlet.org/";
         Reference reference = getReference(uri);
-        response.setRedirectRef(uri);
-        assertEquals(reference, response.getRedirectRef());
+        response.setLocationRef(uri);
+        assertEquals(reference, response.getLocationRef());
         uri = "http://www.restlet.org/something";
         reference = getReference(uri);
-        response.setRedirectRef(reference);
-        assertEquals(reference, response.getRedirectRef());
+        response.setLocationRef(reference);
+        assertEquals(reference, response.getLocationRef());
     }
 
     /**

@@ -1225,7 +1225,7 @@ public class Template {
                         }
                     } else if (variableName.startsWith("R")) {
                         result = getReferenceContent(variableName.substring(1),
-                                response.getRedirectRef());
+                                response.getLocationRef());
                     } else if (variableName.equals("S")) {
                         if (response.getStatus() != null) {
                             result = Integer.toString(response.getStatus()

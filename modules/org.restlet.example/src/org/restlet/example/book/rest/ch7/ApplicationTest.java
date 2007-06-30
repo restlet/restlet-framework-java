@@ -42,14 +42,14 @@ public class ApplicationTest {
         Request request = getAuthenticatedRequest(Method.DELETE,
                 getBookmarkUri(userName, uri), userName, password);
         Response resp = new Client(Protocol.HTTP).handle(request);
-        System.out.println(resp.getStatus() + " : " + resp.getRedirectRef());
+        System.out.println(resp.getStatus() + " : " + resp.getLocationRef());
     }
 
     public static void deleteUser(String userName, String password) {
         Request request = getAuthenticatedRequest(Method.DELETE,
                 getUserUri(userName), userName, password);
         Response resp = new Client(Protocol.HTTP).handle(request);
-        System.out.println(resp.getStatus() + " : " + resp.getRedirectRef());
+        System.out.println(resp.getStatus() + " : " + resp.getLocationRef());
     }
 
     /**

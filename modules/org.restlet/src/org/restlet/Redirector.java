@@ -138,7 +138,7 @@ public class Redirector extends Restlet {
         case MODE_CLIENT_FOUND:
             getLogger().log(Level.INFO,
                     "Redirecting client to found location: " + targetRef);
-            response.setRedirectRef(targetRef);
+            response.setLocationRef(targetRef);
             response.setStatus(Status.REDIRECTION_FOUND);
             break;
 

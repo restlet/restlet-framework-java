@@ -11,7 +11,7 @@ Changes log
  - Fixed issue in the selection of connectors. The last connector in the classpath for
    a given protocol was selected instead of the first one, leading to counter-intuitive 
    behavior when multiple connectors were present in the classpath.
--  Fixed bug in DomRepresentation causing the loss of both public and system DocTypes. 
+ - Fixed bug in DomRepresentation causing the loss of both public and system DocTypes. 
    Reported by Lee Saferite.
 
 [Enhancements] 
@@ -62,4 +62,6 @@ Changes log
 [Misc]
  - Removed AsyncWeb connector, to be replaced by a custom MINA based one.
  - Removed Jetty 5 connector from the code base. Jetty 6 connector is stable enough now.
+ - Added Response.locationRef property as a replacement for the Response.redirectRef
+   property that is now deprecated. Suggested by Michael Vogel and Avi Flax.
  

@@ -83,6 +83,17 @@ public class WrapperResponse extends Response {
      * 
      * @return The redirection reference.
      */
+    public Reference getLocationRef() {
+        return getWrappedResponse().getLocationRef();
+    }
+
+    /**
+     * Returns the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @return The redirection reference.
+     * @deprecated Use the getLocationRef() method instead.
+     */
     public Reference getRedirectRef() {
         return getWrappedResponse().getRedirectRef();
     }
@@ -138,8 +149,31 @@ public class WrapperResponse extends Response {
      * Sets the reference that the client should follow for redirections or
      * resource creations.
      * 
+     * @param locationRef
+     *            The reference to set.
+     */
+    public void setLocationRef(Reference locationRef) {
+        getWrappedResponse().setLocationRef(locationRef);
+    }
+
+    /**
+     * Sets the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @param locationUri
+     *            The URI to set.
+     */
+    public void setLocationRef(String locationUri) {
+        getWrappedResponse().setLocationRef(locationUri);
+    }
+
+    /**
+     * Sets the reference that the client should follow for redirections or
+     * resource creations.
+     * 
      * @param redirectRef
      *            The redirection reference.
+     * @deprecated Use the setLocationRef() method instead.
      */
     public void setRedirectRef(Reference redirectRef) {
         getWrappedResponse().setRedirectRef(redirectRef);
@@ -151,6 +185,7 @@ public class WrapperResponse extends Response {
      * 
      * @param redirectUri
      *            The redirection URI.
+     * @deprecated Use the setLocationRef() method instead.
      */
     public void setRedirectRef(String redirectUri) {
         getWrappedResponse().setRedirectRef(redirectUri);

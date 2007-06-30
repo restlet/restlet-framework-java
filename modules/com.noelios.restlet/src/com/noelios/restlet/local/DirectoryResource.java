@@ -264,7 +264,7 @@ public class DirectoryResource extends Resource {
 
         if (directoryRedirection && !targetIndex) {
             getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
-            getResponse().setRedirectRef(this.targetUri);
+            getResponse().setLocationRef(this.targetUri);
         } else {
             // We allow the transfer of the PUT calls only if the readOnly flag
             // is not set
@@ -320,7 +320,7 @@ public class DirectoryResource extends Resource {
 
         if (directoryRedirection && !targetIndex) {
             getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
-            getResponse().setRedirectRef(this.targetUri);
+            getResponse().setLocationRef(this.targetUri);
         }
 
         // We allow the transfer of the PUT calls only if the readOnly flag is
