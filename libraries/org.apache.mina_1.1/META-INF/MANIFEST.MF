@@ -6,7 +6,6 @@ Bundle-Version: 1.1.0
 Bundle-ClassPath: org.apache.mina.jar,
  org.apache.mina.ssl.jar
 Bundle-Vendor: Apache Software Foundation
-Bundle-Localization: plugin
 Export-Package: org.apache.mina.common,
  org.apache.mina.common.support,
  org.apache.mina.filter,

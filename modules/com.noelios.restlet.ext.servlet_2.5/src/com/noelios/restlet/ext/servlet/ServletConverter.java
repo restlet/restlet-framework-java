@@ -82,7 +82,7 @@ public class ServletConverter extends HttpServerConverter {
      * invoking the service() method.
      * 
      * @param context
-     *            The Servlet context.
+     *                The Servlet context.
      */
     public ServletConverter(ServletContext context) {
         this(context, null);
@@ -92,9 +92,9 @@ public class ServletConverter extends HttpServerConverter {
      * Constructor.
      * 
      * @param context
-     *            The Servlet context.
+     *                The Servlet context.
      * @param target
-     *            The target Restlet.
+     *                The target Restlet.
      */
     public ServletConverter(ServletContext context, Restlet target) {
         super(new Context(new ServletLogger(context)));
@@ -106,9 +106,9 @@ public class ServletConverter extends HttpServerConverter {
      * "target" Restlet.
      * 
      * @param request
-     *            The HTTP Servlet request.
+     *                The HTTP Servlet request.
      * @param response
-     *            The HTTP Servlet response.
+     *                The HTTP Servlet response.
      */
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -138,15 +138,16 @@ public class ServletConverter extends HttpServerConverter {
      * Converts a low-level Servlet call into a high-level Restlet request.
      * 
      * @param servletCall
-     *            The low-level Servlet call.
+     *                The low-level Servlet call.
      * @return A new high-level uniform request.
      */
+    @SuppressWarnings("unchecked")
     public HttpRequest toRequest(ServletCall servletCall) {
         HttpRequest result = super.toRequest(servletCall);
 
         // Copy all Servlet's request attributes
         String attributeName;
-        for (Enumeration namesEnum = servletCall.getRequest()
+        for (Enumeration<String> namesEnum = servletCall.getRequest()
                 .getAttributeNames(); namesEnum.hasMoreElements();) {
             attributeName = (String) namesEnum.nextElement();
             result.getAttributes().put(attributeName,
@@ -160,7 +161,7 @@ public class ServletConverter extends HttpServerConverter {
      * Returns the base reference of new Restlet requests.
      * 
      * @param request
-     *            The Servlet request.
+     *                The Servlet request.
      * @return The base reference of new Restlet requests.
      */
     public Reference getBaseRef(HttpServletRequest request) {
@@ -181,7 +182,7 @@ public class ServletConverter extends HttpServerConverter {
      * the result of getBaseRef().
      * 
      * @param request
-     *            The Servlet request.
+     *                The Servlet request.
      * @return The root reference of new Restlet requests.
      */
     public Reference getRootRef(HttpServletRequest request) {
@@ -201,7 +202,7 @@ public class ServletConverter extends HttpServerConverter {
      * Sets the target Restlet.
      * 
      * @param target
-     *            The target Restlet.
+     *                The target Restlet.
      */
     public void setTarget(Restlet target) {
         this.target = target;

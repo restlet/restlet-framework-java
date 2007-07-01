@@ -6,7 +6,6 @@ Bundle-Version: 6.1.501
 Bundle-ClassPath: com.db4o.jar,
  com.db4o.nativequery.jar
 Bundle-Vendor: db4objects Inc.
-Bundle-Localization: plugin
 Export-Package: 
  com.db4o,
  com.db4o.cluster,

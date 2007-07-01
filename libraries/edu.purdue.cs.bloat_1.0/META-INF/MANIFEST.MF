@@ -5,7 +5,6 @@ Bundle-SymbolicName: edu.purdue.cs.bloat
 Bundle-Version: 1.0
 Bundle-ClassPath: edu.purdue.cs.bloat.jar
 Bundle-Vendor: Purdue University
-Bundle-Localization: plugin
 Export-Package: 
  EDU.purdue.cs.bloat.benchmark,
  EDU.purdue.cs.bloat.cfg,

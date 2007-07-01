@@ -37,10 +37,10 @@ import org.restlet.data.Protocol;
 import com.noelios.restlet.http.HttpServerHelper;
 
 /**
- * Servlet acting like an HTTP server connector.
- * See <a href="/documentation/1.0/faq#02">Developper FAQ
- * #2</a> for details on how to integrate a Restlet application into a servlet
- * container.<br/> Here is a sample configuration for your Restlet webapp:
+ * Servlet acting like an HTTP server connector. See <a
+ * href="/documentation/1.0/faq#02">Developper FAQ #2</a> for details on how to
+ * integrate a Restlet application into a servlet container.<br/> Here is a
+ * sample configuration for your Restlet webapp:
  * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
@@ -132,7 +132,7 @@ public class ServerServlet extends HttpServlet {
      * Creates the single Application used by this Servlet.
      * 
      * @param context
-     *            The Context for the Application
+     *                The Context for the Application
      * 
      * @return The newly created Application or null if unable to create
      */
@@ -148,7 +148,7 @@ public class ServerServlet extends HttpServlet {
                 // According to
                 // http://www.caucho.com/resin-3.0/webapp/faq.xtp#Class.forName()-doesn't-seem-to-work-right
                 // this approach may need to used when loading classes.
-                Class targetClass;
+                Class<?> targetClass;
                 ClassLoader loader = Thread.currentThread()
                         .getContextClassLoader();
 
@@ -210,7 +210,7 @@ public class ServerServlet extends HttpServlet {
      * Creates the associated HTTP server handling calls.
      * 
      * @param request
-     *            The HTTP Servlet request.
+     *                The HTTP Servlet request.
      * @return The new HTTP server handling calls.
      */
     public HttpServerHelper createServer(HttpServletRequest request) {
@@ -316,9 +316,9 @@ public class ServerServlet extends HttpServlet {
      * Servlet configuration, then from the Web Application context.
      * 
      * @param name
-     *            The parameter name.
+     *                The parameter name.
      * @param defaultValue
-     *            The default to use in case the parameter is not found.
+     *                The default to use in case the parameter is not found.
      * @return The value of the parameter or null.
      */
     public String getInitParameter(String name, String defaultValue) {
@@ -341,7 +341,7 @@ public class ServerServlet extends HttpServlet {
      * if none exists.
      * 
      * @param request
-     *            The HTTP Servlet request.
+     *                The HTTP Servlet request.
      * @return The HTTP server handling calls.
      */
     public HttpServerHelper getServer(HttpServletRequest request) {
@@ -385,9 +385,9 @@ public class ServerServlet extends HttpServlet {
      * Services a HTTP Servlet request as an uniform call.
      * 
      * @param request
-     *            The HTTP Servlet request.
+     *                The HTTP Servlet request.
      * @param response
-     *            The HTTP Servlet response.
+     *                The HTTP Servlet response.
      */
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

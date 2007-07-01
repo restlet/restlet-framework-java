@@ -52,9 +52,9 @@ public class JettyCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
-     *            The parent server.
+     *                The parent server.
      * @param connection
-     *            The wrapped Jetty HTTP connection.
+     *                The wrapped Jetty HTTP connection.
      */
     public JettyCall(Server server, HttpConnection connection) {
         super(server);
@@ -104,6 +104,7 @@ public class JettyCall extends HttpServerCall {
      * 
      * @return The list of request headers.
      */
+    @SuppressWarnings("unchecked")
     public Series<Parameter> getRequestHeaders() {
         Series<Parameter> result = super.getRequestHeaders();
 
@@ -111,10 +112,10 @@ public class JettyCall extends HttpServerCall {
             // Copy the headers from the request object
             String headerName;
             String headerValue;
-            for (Enumeration names = getConnection().getRequest()
+            for (Enumeration<String> names = getConnection().getRequest()
                     .getHeaderNames(); names.hasMoreElements();) {
                 headerName = (String) names.nextElement();
-                for (Enumeration values = getConnection().getRequest()
+                for (Enumeration<String> values = getConnection().getRequest()
                         .getHeaders(headerName); values.hasMoreElements();) {
                     headerValue = (String) values.nextElement();
                     result.add(new Parameter(headerName, headerValue));

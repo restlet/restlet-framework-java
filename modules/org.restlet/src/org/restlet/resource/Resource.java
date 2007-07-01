@@ -29,6 +29,7 @@ import org.restlet.Context;
 import org.restlet.data.Dimension;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
@@ -125,11 +126,11 @@ public class Resource {
      * Constructor. This constructor will invoke the init() method by default.
      * 
      * @param context
-     *            The parent context.
+     *                The parent context.
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to return.
+     *                The response to return.
      */
     public Resource(Context context, Request request, Response response) {
         init(context, request, response);
@@ -141,11 +142,11 @@ public class Resource {
      * your Resource won't behave properly.
      * 
      * @param context
-     *            The parent context.
+     *                The parent context.
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to return.
+     *                The response to return.
      */
     public void init(Context context, Request request, Response response) {
         this.context = context;
@@ -208,7 +209,7 @@ public class Resource {
      * using the resource's request and response properties.
      * 
      * @param uriTemplate
-     *            The URI template to use for generation.
+     *                The URI template to use for generation.
      * @return The generated reference.
      */
     public Reference generateRef(String uriTemplate) {
@@ -296,7 +297,7 @@ public class Resource {
      * actually server the one selected via this method.
      * 
      * @param variant
-     *            The variant whose full representation must be returned.
+     *                The variant whose full representation must be returned.
      * @return The full representation for the variant.
      * @see #getVariants()
      */
@@ -508,6 +509,7 @@ public class Resource {
      * Handles a PUT call invoking the 'put' method of the target resource (as
      * provided by the 'findTarget' method).
      */
+    @SuppressWarnings("unchecked")
     public void handlePut() {
         boolean canPut = true;
 
@@ -546,7 +548,7 @@ public class Resource {
             Object oHeaders = getRequest().getAttributes().get(
                     "org.restlet.http.headers");
             if (oHeaders != null) {
-                Series headers = (Series) oHeaders;
+                Series<Parameter> headers = (Series<Parameter>) oHeaders;
                 if (headers.getFirst("Content-Range", true) != null) {
                     getResponse()
                             .setStatus(
@@ -577,9 +579,9 @@ public class Resource {
      * Invokes a method with the given arguments.
      * 
      * @param method
-     *            The method to invoke.
+     *                The method to invoke.
      * @param args
-     *            The arguments to pass.
+     *                The arguments to pass.
      * @return Invocation result.
      */
     private Object invoke(java.lang.reflect.Method method, Object... args) {
@@ -613,7 +615,7 @@ public class Resource {
      * Posts a representation to the resource.
      * 
      * @param entity
-     *            The posted entity.
+     *                The posted entity.
      */
     public void post(Representation entity) {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -623,7 +625,7 @@ public class Resource {
      * Puts a representation in the resource.
      * 
      * @param entity
-     *            A new or updated representation.
+     *                A new or updated representation.
      */
     public void put(Representation entity) {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -633,7 +635,7 @@ public class Resource {
      * Sets the parent context.
      * 
      * @param context
-     *            The parent context.
+     *                The parent context.
      */
     public void setContext(Context context) {
         this.context = context;
@@ -644,7 +646,7 @@ public class Resource {
      * is true.
      * 
      * @param negotiateContent
-     *            True if the best content is automatically negotiated.
+     *                True if the best content is automatically negotiated.
      */
     public void setNegotiateContent(boolean negotiateContent) {
         this.negotiateContent = negotiateContent;
@@ -654,7 +656,7 @@ public class Resource {
      * Sets the request to handle.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      */
     public void setRequest(Request request) {
         this.request = request;
@@ -664,7 +666,7 @@ public class Resource {
      * Sets the response to update.
      * 
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void setResponse(Response response) {
         this.response = response;

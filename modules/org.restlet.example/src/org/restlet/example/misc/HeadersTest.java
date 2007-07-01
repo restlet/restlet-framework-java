@@ -22,6 +22,7 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -35,12 +36,13 @@ import org.restlet.util.Series;
 public class HeadersTest {
     public static void main(String[] args) throws Exception {
         Restlet restlet = new Restlet() {
+            @SuppressWarnings("unchecked")
             @Override
             public void handle(Request request, Response response) {
                 // ------------------------------
                 // Getting an HTTP request header
                 // ------------------------------
-                Series headers = (Series) request.getAttributes()
+                Series<Parameter> headers = (Series) request.getAttributes()
                         .get("org.restlet.http.headers");
 
                 // The headers list contains all received HTTP headers, in raw

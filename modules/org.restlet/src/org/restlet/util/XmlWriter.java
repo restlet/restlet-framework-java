@@ -416,7 +416,7 @@ public final class XmlWriter extends XMLFilterImpl {
      * Constructor.
      * 
      * @param out
-     *            The underlying output stream.
+     *                The underlying output stream.
      */
     public XmlWriter(OutputStream out) {
         this(new OutputStreamWriter(out));
@@ -426,7 +426,7 @@ public final class XmlWriter extends XMLFilterImpl {
      * Constructor.
      * 
      * @param out
-     *            The underlying output stream.
+     *                The underlying output stream.
      */
     public XmlWriter(OutputStream out, Charset cs) {
         this(new OutputStreamWriter(out, cs));
@@ -436,7 +436,7 @@ public final class XmlWriter extends XMLFilterImpl {
      * Constructor.
      * 
      * @param out
-     *            The underlying output stream.
+     *                The underlying output stream.
      */
     public XmlWriter(OutputStream out, CharsetEncoder enc) {
         this(new OutputStreamWriter(out, enc));
@@ -446,7 +446,7 @@ public final class XmlWriter extends XMLFilterImpl {
      * Constructor.
      * 
      * @param out
-     *            The underlying output stream.
+     *                The underlying output stream.
      */
     public XmlWriter(OutputStream out, String charsetName)
             throws UnsupportedEncodingException {
@@ -460,7 +460,7 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param writer
-     *            The output destination, or null to use standard output.
+     *                The output destination, or null to use standard output.
      */
     public XmlWriter(Writer writer) {
         init(writer);
@@ -473,7 +473,7 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param xmlreader
-     *            The parent in the filter chain, or null for no parent.
+     *                The parent in the filter chain, or null for no parent.
      */
     public XmlWriter(XMLReader xmlreader) {
         super(xmlreader);
@@ -488,9 +488,9 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param xmlreader
-     *            The parent in the filter chain, or null for no parent.
+     *                The parent in the filter chain, or null for no parent.
      * @param writer
-     *            The output destination, or null to use standard output.
+     *                The output destination, or null to use standard output.
      */
     public XmlWriter(XMLReader xmlreader, Writer writer) {
         super(xmlreader);
@@ -502,14 +502,15 @@ public final class XmlWriter extends XMLFilterImpl {
      * processing.
      * 
      * @param ch
-     *            The array of characters to write.
+     *                The array of characters to write.
      * @param start
-     *            The starting position in the array.
+     *                The starting position in the array.
      * @param len
-     *            The number of characters to write.
+     *                The number of characters to write.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the characters, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the characters, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see org.xml.sax.ContentHandler#characters
      */
     private void characters(boolean dataFormat, char ch[], int start, int len)
@@ -534,10 +535,11 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param data
-     *            The character data.
+     *                The character data.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the string, or if a restlet
-     *                further down the filter chain raises an exception.
+     *                    If there is an error writing the string, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #characters(char[], int, int)
      */
     private void characters(boolean dataFormat, String data)
@@ -551,14 +553,15 @@ public final class XmlWriter extends XMLFilterImpl {
      * processing.
      * 
      * @param ch
-     *            The array of characters to write.
+     *                The array of characters to write.
      * @param start
-     *            The starting position in the array.
+     *                The starting position in the array.
      * @param len
-     *            The number of characters to write.
+     *                The number of characters to write.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the characters, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the characters, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see org.xml.sax.ContentHandler#characters
      */
     public void characters(char ch[], int start, int len) throws SAXException {
@@ -573,10 +576,11 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param data
-     *            The character data.
+     *                The character data.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the string, or if a restlet
-     *                further down the filter chain raises an exception.
+     *                    If there is an error writing the string, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #characters(char[], int, int)
      */
     public void characters(String data) throws SAXException {
@@ -602,12 +606,13 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param localName
-     *            The element's local name.
+     *                The element's local name.
      * @param content
-     *            The character data content.
+     *                The character data content.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the empty tag, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the empty tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #startElement(String, String, String, Attributes)
      * @see #characters(String)
      * @see #endElement(String, String, String)
@@ -634,14 +639,15 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param uri
-     *            The element's Namespace URI.
+     *                The element's Namespace URI.
      * @param localName
-     *            The element's local name.
+     *                The element's local name.
      * @param content
-     *            The character data content.
+     *                The character data content.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the empty tag, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the empty tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #startElement(String, String, String, Attributes)
      * @see #characters(String)
      * @see #endElement(String, String, String)
@@ -667,18 +673,19 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param uri
-     *            The element's Namespace URI.
+     *                The element's Namespace URI.
      * @param localName
-     *            The element's local name.
+     *                The element's local name.
      * @param qName
-     *            The element's default qualified name.
+     *                The element's default qualified name.
      * @param atts
-     *            The element's attributes.
+     *                The element's attributes.
      * @param content
-     *            The character data content.
+     *                The character data content.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the empty tag, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the empty tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #startElement(String, String, String, Attributes)
      * @see #characters(String)
      * @see #endElement(String, String, String)
@@ -694,8 +701,9 @@ public final class XmlWriter extends XMLFilterImpl {
      * Print indentation for the current level.
      * 
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the indentation characters,
-     *                or if a filter further down the chain raises an exception.
+     *                    If there is an error writing the indentation
+     *                    characters, or if a filter further down the chain
+     *                    raises an exception.
      */
     private void doIndent() throws SAXException {
         if ((indentStep > 0) && (depth > 0)) {
@@ -713,13 +721,13 @@ public final class XmlWriter extends XMLFilterImpl {
      * probably needs some cleanup.
      * 
      * @param uri
-     *            The Namespace URI.
+     *                The Namespace URI.
      * @param qName
-     *            The qualified name (optional); this will be used to indicate
-     *            the preferred prefix if none is currently bound.
+     *                The qualified name (optional); this will be used to
+     *                indicate the preferred prefix if none is currently bound.
      * @param isElement
-     *            true if this is an element name, false if it is an attribute
-     *            name (which cannot use the default Namespace).
+     *                true if this is an element name, false if it is an
+     *                attribute name (which cannot use the default Namespace).
      */
     private String doPrefix(String uri, String qName, boolean isElement) {
         String defaultNS = nsSupport.getURI("");
@@ -783,10 +791,11 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param localName
-     *            The element's local name.
+     *                The element's local name.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the empty tag, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the empty tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #emptyElement(String, String, String, Attributes)
      */
     public void emptyElement(String localName) throws SAXException {
@@ -803,12 +812,13 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param uri
-     *            The element's Namespace URI.
+     *                The element's Namespace URI.
      * @param localName
-     *            The element's local name.
+     *                The element's local name.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the empty tag, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the empty tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #emptyElement(String, String, String, Attributes)
      */
     public void emptyElement(String uri, String localName) throws SAXException {
@@ -822,21 +832,23 @@ public final class XmlWriter extends XMLFilterImpl {
      * event will be passed on down the filter chain.
      * 
      * @param uri
-     *            The element's Namespace URI, or the empty string if the
-     *            element has no Namespace or if Namespace processing is not
-     *            being performed.
+     *                The element's Namespace URI, or the empty string if the
+     *                element has no Namespace or if Namespace processing is not
+     *                being performed.
      * @param localName
-     *            The element's local name (without prefix). This parameter must
-     *            be provided.
+     *                The element's local name (without prefix). This parameter
+     *                must be provided.
      * @param qName
-     *            The element's qualified name (with prefix), or the empty
-     *            string if none is available. This parameter is strictly
-     *            advisory: the writer may or may not use the prefix attached.
+     *                The element's qualified name (with prefix), or the empty
+     *                string if none is available. This parameter is strictly
+     *                advisory: the writer may or may not use the prefix
+     *                attached.
      * @param atts
-     *            The element's attribute list.
+     *                The element's attribute list.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the empty tag, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the empty tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #startElement
      * @see #endElement
      */
@@ -868,8 +880,9 @@ public final class XmlWriter extends XMLFilterImpl {
      * filter chain for further processing.
      * 
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the newline, or if a restlet
-     *                further down the filter chain raises an exception.
+     *                    If there is an error writing the newline, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see org.xml.sax.ContentHandler#endDocument
      */
     public void endDocument() throws SAXException {
@@ -892,10 +905,11 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param localName
-     *            The element's local name.
+     *                The element's local name.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the end tag, or if a restlet
-     *                further down the filter chain raises an exception.
+     *                    If there is an error writing the end tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #endElement(String, String, String)
      */
     public void endElement(String localName) throws SAXException {
@@ -911,12 +925,13 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param uri
-     *            The element's Namespace URI.
+     *                The element's Namespace URI.
      * @param localName
-     *            The element's local name.
+     *                The element's local name.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the end tag, or if a restlet
-     *                further down the filter chain raises an exception.
+     *                    If there is an error writing the end tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #endElement(String, String, String)
      */
     public void endElement(String uri, String localName) throws SAXException {
@@ -928,17 +943,19 @@ public final class XmlWriter extends XMLFilterImpl {
      * processing.
      * 
      * @param uri
-     *            The Namespace URI, or the empty string if none is available.
+     *                The Namespace URI, or the empty string if none is
+     *                available.
      * @param localName
-     *            The element's local (unprefixed) name (required).
+     *                The element's local (unprefixed) name (required).
      * @param qName
-     *            The element's qualified (prefixed) name, or the empty string
-     *            is none is available. This method will use the qName as a
-     *            template for generating a prefix if necessary, but it is not
-     *            guaranteed to use the same qName.
+     *                The element's qualified (prefixed) name, or the empty
+     *                string is none is available. This method will use the
+     *                qName as a template for generating a prefix if necessary,
+     *                but it is not guaranteed to use the same qName.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the end tag, or if a restlet
-     *                further down the filter chain raises an exception.
+     *                    If there is an error writing the end tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see org.xml.sax.ContentHandler#endElement
      */
     public void endElement(String uri, String localName, String qName)
@@ -1002,7 +1019,7 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param uri
-     *            The Namespace URI to declare.
+     *                The Namespace URI to declare.
      * @see #forceNSDecl(java.lang.String,java.lang.String)
      * @see #setPrefix
      */
@@ -1022,10 +1039,10 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param uri
-     *            The Namespace URI to declare on the root element.
+     *                The Namespace URI to declare on the root element.
      * @param prefix
-     *            The preferred prefix for the Namespace, or "" for the default
-     *            Namespace.
+     *                The preferred prefix for the Namespace, or "" for the
+     *                default Namespace.
      * @see #setPrefix
      * @see #forceNSDecl(java.lang.String)
      */
@@ -1062,7 +1079,7 @@ public final class XmlWriter extends XMLFilterImpl {
      * Get the current or preferred prefix for a Namespace URI.
      * 
      * @param uri
-     *            The Namespace URI.
+     *                The Namespace URI.
      * @return The preferred prefix, or "" for the default Namespace.
      * @see #setPrefix
      */
@@ -1084,14 +1101,15 @@ public final class XmlWriter extends XMLFilterImpl {
      * further processing.
      * 
      * @param ch
-     *            The array of characters to write.
+     *                The array of characters to write.
      * @param start
-     *            The starting position in the array.
+     *                The starting position in the array.
      * @param length
-     *            The number of characters to write.
+     *                The number of characters to write.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the whitespace, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the whitespace, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see org.xml.sax.ContentHandler#ignorableWhitespace
      */
     public void ignorableWhitespace(char ch[], int start, int length)
@@ -1107,7 +1125,7 @@ public final class XmlWriter extends XMLFilterImpl {
      * All of the public constructors invoke this method.
      * 
      * @param writer
-     *            The output destination, or null to use standard output.
+     *                The output destination, or null to use standard output.
      */
     private void init(Writer writer) {
         setOutput(writer);
@@ -1126,12 +1144,12 @@ public final class XmlWriter extends XMLFilterImpl {
      * for further processing.
      * 
      * @param target
-     *            The PI target.
+     *                The PI target.
      * @param data
-     *            The PI data.
+     *                The PI data.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the PI, or if a restlet
-     *                further down the filter chain raises an exception.
+     *                    If there is an error writing the PI, or if a restlet
+     *                    further down the filter chain raises an exception.
      * @see org.xml.sax.ContentHandler#processingInstruction
      */
     public void processingInstruction(String target, String data)
@@ -1194,7 +1212,7 @@ public final class XmlWriter extends XMLFilterImpl {
      * Set the current indent step.
      * 
      * @param indentStep
-     *            The new indent step (0 or less for no indentation).
+     *                The new indent step (0 or less for no indentation).
      */
     public void setIndentStep(int indentStep) {
         this.indentStep = indentStep;
@@ -1204,7 +1222,7 @@ public final class XmlWriter extends XMLFilterImpl {
      * Set a new output destination for the document.
      * 
      * @param writer
-     *            The output destination, or null to use standard output.
+     *                The output destination, or null to use standard output.
      * @see #flush
      */
     public void setOutput(Writer writer) {
@@ -1224,9 +1242,10 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param uri
-     *            The Namespace URI.
+     *                The Namespace URI.
      * @param prefix
-     *            The preferred prefix, or "" to select the default Namespace.
+     *                The preferred prefix, or "" to select the default
+     *                Namespace.
      * @see #getPrefix
      * @see #forceNSDecl(java.lang.String)
      * @see #forceNSDecl(java.lang.String,java.lang.String)
@@ -1240,8 +1259,9 @@ public final class XmlWriter extends XMLFilterImpl {
      * event on down the filter chain for further processing.
      * 
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the XML declaration, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the XML declaration, or
+     *                    if a restlet further down the filter chain raises an
+     *                    exception.
      * @see org.xml.sax.ContentHandler#startDocument
      */
     public void startDocument() throws SAXException {
@@ -1260,10 +1280,11 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param localName
-     *            The element's local name.
+     *                The element's local name.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the start tag, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the start tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #startElement(String, String, String, Attributes)
      */
     public void startElement(String localName) throws SAXException {
@@ -1280,12 +1301,13 @@ public final class XmlWriter extends XMLFilterImpl {
      * </p>
      * 
      * @param uri
-     *            The element's Namespace URI.
+     *                The element's Namespace URI.
      * @param localName
-     *            The element's local name.
+     *                The element's local name.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the start tag, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the start tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see #startElement(String, String, String, Attributes)
      */
     public void startElement(String uri, String localName) throws SAXException {
@@ -1297,19 +1319,21 @@ public final class XmlWriter extends XMLFilterImpl {
      * processing.
      * 
      * @param uri
-     *            The Namespace URI, or the empty string if none is available.
+     *                The Namespace URI, or the empty string if none is
+     *                available.
      * @param localName
-     *            The element's local (unprefixed) name (required).
+     *                The element's local (unprefixed) name (required).
      * @param qName
-     *            The element's qualified (prefixed) name, or the empty string
-     *            is none is available. This method will use the qName as a
-     *            template for generating a prefix if necessary, but it is not
-     *            guaranteed to use the same qName.
+     *                The element's qualified (prefixed) name, or the empty
+     *                string is none is available. This method will use the
+     *                qName as a template for generating a prefix if necessary,
+     *                but it is not guaranteed to use the same qName.
      * @param atts
-     *            The element's attribute list (must not be null).
+     *                The element's attribute list (must not be null).
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the start tag, or if a
-     *                restlet further down the filter chain raises an exception.
+     *                    If there is an error writing the start tag, or if a
+     *                    restlet further down the filter chain raises an
+     *                    exception.
      * @see org.xml.sax.ContentHandler#startElement
      */
     public void startElement(String uri, String localName, String qName,
@@ -1344,10 +1368,11 @@ public final class XmlWriter extends XMLFilterImpl {
      * Write a raw character.
      * 
      * @param c
-     *            The character to write.
+     *                The character to write.
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the character, this method
-     *                will throw an IOException wrapped in a SAXException.
+     *                    If there is an error writing the character, this
+     *                    method will throw an IOException wrapped in a
+     *                    SAXException.
      */
     private void write(char c) throws SAXException {
         try {
@@ -1362,8 +1387,8 @@ public final class XmlWriter extends XMLFilterImpl {
      * 
      * @param s
      * @exception org.xml.sax.SAXException
-     *                If there is an error writing the string, this method will
-     *                throw an IOException wrapped in a SAXException
+     *                    If there is an error writing the string, this method
+     *                    will throw an IOException wrapped in a SAXException
      */
     private void write(String s) throws SAXException {
         try {
@@ -1378,11 +1403,11 @@ public final class XmlWriter extends XMLFilterImpl {
      * prefixes added to them.
      * 
      * @param atts
-     *            The attribute list to write.
+     *                The attribute list to write.
      * @exception org.xml.SAXException
-     *                If there is an error writing the attribute list, this
-     *                method will throw an IOException wrapped in a
-     *                SAXException.
+     *                    If there is an error writing the attribute list, this
+     *                    method will throw an IOException wrapped in a
+     *                    SAXException.
      */
     private void writeAttributes(Attributes atts) throws SAXException {
         int len = atts.getLength();
@@ -1401,16 +1426,17 @@ public final class XmlWriter extends XMLFilterImpl {
      * Write an array of data characters with escaping.
      * 
      * @param ch
-     *            The array of characters.
+     *                The array of characters.
      * @param start
-     *            The starting position.
+     *                The starting position.
      * @param length
-     *            The number of characters to use.
+     *                The number of characters to use.
      * @param isAttVal
-     *            true if this is an attribute value literal.
+     *                true if this is an attribute value literal.
      * @exception org.xml.SAXException
-     *                If there is an error writing the characters, this method
-     *                will throw an IOException wrapped in a SAXException.
+     *                    If there is an error writing the characters, this
+     *                    method will throw an IOException wrapped in a
+     *                    SAXException.
      */
     private void writeEsc(char ch[], int start, int length, boolean isAttVal)
             throws SAXException {
@@ -1448,17 +1474,17 @@ public final class XmlWriter extends XMLFilterImpl {
      * Write an element or attribute name.
      * 
      * @param uri
-     *            The Namespace URI.
+     *                The Namespace URI.
      * @param localName
-     *            The local name.
+     *                The local name.
      * @param qName
-     *            The prefixed name, if available, or the empty string.
+     *                The prefixed name, if available, or the empty string.
      * @param isElement
-     *            true if this is an element name, false if it is an attribute
-     *            name.
+     *                true if this is an element name, false if it is an
+     *                attribute name.
      * @exception org.xml.sax.SAXException
-     *                This method will throw an IOException wrapped in a
-     *                SAXException if there is an error writing the name.
+     *                    This method will throw an IOException wrapped in a
+     *                    SAXException if there is an error writing the name.
      */
     private void writeName(String uri, String localName, String qName,
             boolean isElement) throws SAXException {
@@ -1474,12 +1500,13 @@ public final class XmlWriter extends XMLFilterImpl {
      * Write out the list of Namespace declarations.
      * 
      * @exception org.xml.sax.SAXException
-     *                This method will throw an IOException wrapped in a
-     *                SAXException if there is an error writing the Namespace
-     *                declarations.
+     *                    This method will throw an IOException wrapped in a
+     *                    SAXException if there is an error writing the
+     *                    Namespace declarations.
      */
+    @SuppressWarnings("unchecked")
     private void writeNSDecls() throws SAXException {
-        Enumeration prefixes = nsSupport.getDeclaredPrefixes();
+        Enumeration<String> prefixes = nsSupport.getDeclaredPrefixes();
         while (prefixes.hasMoreElements()) {
             String prefix = (String) prefixes.nextElement();
             String uri = nsSupport.getURI(prefix);

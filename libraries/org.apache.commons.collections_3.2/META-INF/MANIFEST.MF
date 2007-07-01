@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.apache.commons.collections
 Bundle-Version: 3.2
 Bundle-ClassPath: org.apache.commons.collections.jar
 Bundle-Vendor: Apache Software Foundation
-Bundle-Localization: plugin
 Export-Package: org.apache.commons.collections,
  org.apache.commons.collections.bag,
  org.apache.commons.collections.bidimap,

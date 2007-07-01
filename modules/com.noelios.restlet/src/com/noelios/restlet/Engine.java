@@ -99,7 +99,7 @@ public class Engine extends org.restlet.util.Engine {
      * Constructor.
      * 
      * @param discoverConnectors
-     *            True if connectors should be automatically discovered.
+     *                True if connectors should be automatically discovered.
      */
     @SuppressWarnings("unchecked")
     public Engine(boolean discoverConnectors) {
@@ -247,11 +247,11 @@ public class Engine extends org.restlet.util.Engine {
      * Creates a directory resource.
      * 
      * @param handler
-     *            The parent directory handler.
+     *                The parent directory handler.
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to return.
+     *                The response to return.
      * @return A new directory resource.
      * @throws IOException
      */
@@ -264,9 +264,9 @@ public class Engine extends org.restlet.util.Engine {
      * Creates a new helper for a given component.
      * 
      * @param application
-     *            The application to help.
+     *                The application to help.
      * @param parentContext
-     *            The parent context, typically the component's context.
+     *                The parent context, typically the component's context.
      * @return The new helper.
      */
     public Helper createHelper(Application application, Context parentContext) {
@@ -277,7 +277,7 @@ public class Engine extends org.restlet.util.Engine {
      * Creates a new helper for a given client connector.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      * @return The new helper.
      */
     public Helper createHelper(Client client) {
@@ -327,7 +327,7 @@ public class Engine extends org.restlet.util.Engine {
      * Creates a new helper for a given component.
      * 
      * @param component
-     *            The component to help.
+     *                The component to help.
      * @return The new helper.
      */
     public Helper createHelper(Component component) {
@@ -338,7 +338,7 @@ public class Engine extends org.restlet.util.Engine {
      * Creates a new helper for a given server connector.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      * @return The new helper.
      */
     public Helper createHelper(Server server) {
@@ -454,9 +454,9 @@ public class Engine extends org.restlet.util.Engine {
      * according the the client preferences.
      * 
      * @param client
-     *            The client preferences.
+     *                The client preferences.
      * @param variants
-     *            The list of variants to compare.
+     *                The list of variants to compare.
      * @return The preferred variant.
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
@@ -746,7 +746,7 @@ public class Engine extends org.restlet.util.Engine {
                     preferenceMediaType.getSubType())) {
                 score += 100;
             } else if (!preferenceMediaType.getSubType().equals("*")) {
-                // Subtype are different
+                // Sub-type are different
                 comptabibleMediaType = false;
             }
 
@@ -756,8 +756,8 @@ public class Engine extends org.restlet.util.Engine {
                 // If current media type is compatible with the
                 // current media range then the parameters need to
                 // be checked too
-                for (Iterator iter3 = variantMediaType.getParameters()
-                        .iterator(); iter3.hasNext();) {
+                for (Iterator<Parameter> iter3 = variantMediaType
+                        .getParameters().iterator(); iter3.hasNext();) {
                     Parameter currentParam = (Parameter) iter3.next();
 
                     if (isParameterFound(currentParam, preferenceMediaType)) {
@@ -774,7 +774,7 @@ public class Engine extends org.restlet.util.Engine {
      * Parses a line to extract the provider class name.
      * 
      * @param line
-     *            The line to parse.
+     *                The line to parse.
      * @return The provider's class name or an empty string.
      */
     private String getProviderClassName(String line) {
@@ -789,9 +789,9 @@ public class Engine extends org.restlet.util.Engine {
      * range.
      * 
      * @param searchedParam
-     *            The searched parameter.
+     *                The searched parameter.
      * @param mediaRange
-     *            The media range to inspect.
+     *                The media range to inspect.
      * @return True if the searched parameter is specified in the given media
      *         range.
      */
@@ -799,7 +799,7 @@ public class Engine extends org.restlet.util.Engine {
             MediaType mediaRange) {
         boolean result = false;
 
-        for (Iterator iter = mediaRange.getParameters().iterator(); !result
+        for (Iterator<Parameter> iter = mediaRange.getParameters().iterator(); !result
                 && iter.hasNext();) {
             result = searchedParam.equals((Parameter) iter.next());
         }
@@ -811,11 +811,11 @@ public class Engine extends org.restlet.util.Engine {
      * Parses an URL encoded Web form.
      * 
      * @param logger
-     *            The logger to use.
+     *                The logger to use.
      * @param form
-     *            The target form.
+     *                The target form.
      * @param webForm
-     *            The posted form.
+     *                The posted form.
      */
     public void parse(Logger logger, Form form, Representation webForm) {
         if (webForm != null) {
@@ -827,13 +827,13 @@ public class Engine extends org.restlet.util.Engine {
      * Parses an URL encoded query string into a given form.
      * 
      * @param logger
-     *            The logger to use.
+     *                The logger to use.
      * @param form
-     *            The target form.
+     *                The target form.
      * @param queryString
-     *            Query string.
+     *                Query string.
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      */
     public void parse(Logger logger, Form form, String queryString,
             CharacterSet characterSet) {

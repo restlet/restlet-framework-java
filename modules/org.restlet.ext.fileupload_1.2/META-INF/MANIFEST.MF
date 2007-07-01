@@ -4,7 +4,6 @@ Bundle-Name: Restlet Extension - FileUpload
 Bundle-SymbolicName: org.restlet.ext.fileupload
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
-Bundle-Localization: plugin
 Require-Bundle: org.restlet;visibility:=reexport,
  org.apache.commons.fileupload;visibility:=reexport,
  javax.servlet;visibility:=reexport

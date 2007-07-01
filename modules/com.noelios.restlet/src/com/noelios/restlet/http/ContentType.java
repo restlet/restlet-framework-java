@@ -46,13 +46,13 @@ public class ContentType {
      * Constructor.
      * 
      * @param headerValue
-     *            The "Content-type" header to parse.
+     *                The "Content-type" header to parse.
      */
     public ContentType(String headerValue) {
         try {
-            PreferenceReader pr = new PreferenceReader(
+            PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
                     PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
-            Preference pref;
+            Preference<MediaType> pref;
             pref = pr.readPreference();
             this.mediaType = (MediaType) pref.getMetadata();
 

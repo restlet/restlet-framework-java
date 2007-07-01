@@ -66,7 +66,7 @@ public class Finder extends Restlet {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      */
     public Finder(Context context) {
         this(context, null);
@@ -76,9 +76,9 @@ public class Finder extends Restlet {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param targetClass
-     *            The target resource class.
+     *                The target resource class.
      */
     public Finder(Context context, Class<? extends Resource> targetClass) {
         super(context);
@@ -89,9 +89,9 @@ public class Finder extends Restlet {
      * Indicates if a method is allowed on a target resource.
      * 
      * @param method
-     *            The method to test.
+     *                The method to test.
      * @param target
-     *            The target resource.
+     *                The target resource.
      * @return True if a method is allowed on a target resource.
      */
     private boolean allowMethod(Method method, Resource target) {
@@ -127,9 +127,9 @@ public class Finder extends Restlet {
      * the {@link #createResource(Request, Response)} method.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      * @return The target resource if available or null.
      */
     public Resource findTarget(Request request, Response response) {
@@ -141,9 +141,9 @@ public class Finder extends Restlet {
      * "targetClass" property.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      * @return The created resource or null.
      */
     public Resource createResource(Request request, Response response) {
@@ -151,7 +151,7 @@ public class Finder extends Restlet {
 
         if (getTargetClass() != null) {
             try {
-                Constructor constructor;
+                Constructor<?> constructor;
                 try {
                     // Invoke the constructor with Context, Request and Response
                     // parameters
@@ -184,9 +184,9 @@ public class Finder extends Restlet {
      * Returns the allow method matching the given method name.
      * 
      * @param method
-     *            The method to match.
+     *                The method to match.
      * @param target
-     *            The target resource.
+     *                The target resource.
      * @return The allow method matching the given method name.
      */
     private java.lang.reflect.Method getAllowMethod(Method method,
@@ -198,7 +198,7 @@ public class Finder extends Restlet {
      * Returns the handle method matching the given method name.
      * 
      * @param method
-     *            The method to match.
+     *                The method to match.
      * @return The handle method matching the given method name.
      */
     private java.lang.reflect.Method getHandleMethod(Resource target,
@@ -210,13 +210,13 @@ public class Finder extends Restlet {
      * Returns the method matching the given prefix and method name.
      * 
      * @param prefix
-     *            The method prefix to match (ex: "allow" or "handle").
+     *                The method prefix to match (ex: "allow" or "handle").
      * @param method
-     *            The method to match.
+     *                The method to match.
      * @return The method matching the given prefix and method name.
      */
     private java.lang.reflect.Method getMethod(String prefix, Method method,
-            Object target, Class... classes) {
+            Object target, Class<?>... classes) {
         java.lang.reflect.Method result = null;
         StringBuilder sb = new StringBuilder();
         String methodName = method.getName().toLowerCase();
@@ -257,9 +257,9 @@ public class Finder extends Restlet {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         init(request, response);
@@ -320,11 +320,11 @@ public class Finder extends Restlet {
      * Invokes a method with the given arguments.
      * 
      * @param target
-     *            The target object.
+     *                The target object.
      * @param method
-     *            The method to invoke.
+     *                The method to invoke.
      * @param args
-     *            The arguments to pass.
+     *                The arguments to pass.
      * @return Invocation result.
      */
     private Object invoke(Object target, java.lang.reflect.Method method,
@@ -350,9 +350,9 @@ public class Finder extends Restlet {
      * resource.
      * 
      * @param response
-     *            The response to update.
+     *                The response to update.
      * @param target
-     *            The target resource.
+     *                The target resource.
      */
     private void updateAllowedMethods(Response response, Resource target) {
         Set<Method> allowedMethods = response.getAllowedMethods();

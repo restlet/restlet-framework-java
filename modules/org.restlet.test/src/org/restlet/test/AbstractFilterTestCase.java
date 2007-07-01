@@ -48,7 +48,7 @@ public abstract class AbstractFilterTestCase extends RestletTestCase {
      * Returns a response.
      * 
      * @param request
-     *            The associated request.
+     *                The associated request.
      * @return Response instance.
      */
     protected abstract Response getResponse(Request request);
@@ -65,7 +65,7 @@ public abstract class AbstractFilterTestCase extends RestletTestCase {
      * 
      * @return Restlet class.
      */
-    protected abstract Class getRestletClass();
+    protected abstract Class<?> getRestletClass();
 
     /**
      * Test Restlet instance attaching/detaching.

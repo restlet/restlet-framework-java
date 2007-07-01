@@ -51,9 +51,9 @@ public class ServletWarClientHelper extends WarClientHelper {
      * Constructor.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      * @param servletContext
-     *            The Servlet context
+     *                The Servlet context
      */
     public ServletWarClientHelper(Client client, ServletContext servletContext) {
         super(client);
@@ -69,6 +69,7 @@ public class ServletWarClientHelper extends WarClientHelper {
         return this.servletContext;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void handleWar(Request request, Response response) {
         if (request.getMethod().equals(Method.GET)
@@ -81,12 +82,13 @@ public class ServletWarClientHelper extends WarClientHelper {
 
             if (basePath.endsWith("/")) {
                 // Return the directory listing
-                Set entries = getServletContext().getResourcePaths(basePath);
+                Set<String> entries = getServletContext().getResourcePaths(
+                        basePath);
                 ReferenceList rl = new ReferenceList(entries.size());
                 rl.setIdentifier(request.getResourceRef());
 
-                for (Iterator iter = entries.iterator(); iter.hasNext();) {
-                    entry = (String) iter.next();
+                for (Iterator<String> iter = entries.iterator(); iter.hasNext();) {
+                    entry = iter.next();
                     rl.add(new Reference(basePath
                             + entry.substring(basePath.length())));
                 }

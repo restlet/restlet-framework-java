@@ -6,7 +6,6 @@ Bundle-Version: 2.0
 Bundle-ClassPath: jaxb-api.jar,
  jaxb-impl.jar
 Bundle-Vendor: Sun Microsystems Inc.
-Bundle-Localization: plugin
 Require-Bundle: javax.activation,
  javax.xml.stream
 Export-Package: javax.xml.bind,

@@ -43,12 +43,13 @@ public class ServletContextAdapter extends ApplicationContext {
      * Constructor.
      * 
      * @param servlet
-     *            The parent Servlet.
+     *                The parent Servlet.
      * @param parentContext
-     *            The parent context.
+     *                The parent context.
      * @param application
-     *            The parent application.
+     *                The parent application.
      */
+    @SuppressWarnings("unchecked")
     public ServletContextAdapter(Servlet servlet, Application application,
             Context parentContext) {
         super(application, parentContext, new ServletLogger(servlet
@@ -64,7 +65,7 @@ public class ServletContextAdapter extends ApplicationContext {
 
         // Copy all the Web component initialization parameters
         javax.servlet.ServletConfig servletConfig = servlet.getServletConfig();
-        for (Enumeration enum1 = servletConfig.getInitParameterNames(); enum1
+        for (Enumeration<String> enum1 = servletConfig.getInitParameterNames(); enum1
                 .hasMoreElements();) {
             initParam = (String) enum1.nextElement();
             getParameters().add(initParam,
@@ -72,8 +73,8 @@ public class ServletContextAdapter extends ApplicationContext {
         }
 
         // Copy all the Web Application initialization parameters
-        for (Enumeration enum1 = getServletContext().getInitParameterNames(); enum1
-                .hasMoreElements();) {
+        for (Enumeration<String> enum1 = getServletContext()
+                .getInitParameterNames(); enum1.hasMoreElements();) {
             initParam = (String) enum1.nextElement();
             getParameters().add(initParam,
                     getServletContext().getInitParameter(initParam));

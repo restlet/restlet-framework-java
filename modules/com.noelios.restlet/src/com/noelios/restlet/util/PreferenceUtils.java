@@ -43,15 +43,15 @@ public class PreferenceUtils {
      * Formats a list of preferences with a comma separator.
      * 
      * @param prefs
-     *            The list of preferences.
+     *                The list of preferences.
      * @return The formatted list of preferences.
      * @throws IOException
      */
-    public static String format(List<? extends Preference> prefs)
+    public static String format(List<? extends Preference<?>> prefs)
             throws IOException {
         StringBuilder sb = new StringBuilder();
 
-        Preference pref;
+        Preference<?> pref;
         for (int i = 0; i < prefs.size(); i++) {
             if (i > 0)
                 sb.append(", ");
@@ -66,9 +66,9 @@ public class PreferenceUtils {
      * Formats a preference.
      * 
      * @param pref
-     *            The preference to format.
+     *                The preference to format.
      * @param destination
-     *            The appendable destination.
+     *                The appendable destination.
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
@@ -125,9 +125,9 @@ public class PreferenceUtils {
      * IllegalArgumentException is thrown.
      * 
      * @param quality
-     *            The quality value as a float.
+     *                The quality value as a float.
      * @param destination
-     *            The appendable destination;
+     *                The appendable destination;
      * @throws IOException
      */
     public static void formatQuality(float quality, Appendable destination)
@@ -147,7 +147,7 @@ public class PreferenceUtils {
      * IllegalArgumentException is thrown.
      * 
      * @param quality
-     *            The quality value as a string.
+     *                The quality value as a string.
      * @return The parsed quality value as a float.
      */
     public static float parseQuality(String quality) {
@@ -170,7 +170,7 @@ public class PreferenceUtils {
      * Indicates if the quality value is valid.
      * 
      * @param quality
-     *            The quality value.
+     *                The quality value.
      * @return True if the quality value is valid.
      */
     public static boolean isQuality(float quality) {
@@ -181,9 +181,9 @@ public class PreferenceUtils {
      * Parses character set preferences from a header.
      * 
      * @param acceptCharsetHeader
-     *            The header to parse.
+     *                The header to parse.
      * @param client
-     *            The client preferences to update.
+     *                The client preferences to update.
      */
     @SuppressWarnings("unchecked")
     public static void parseCharacterSets(String acceptCharsetHeader,
@@ -221,9 +221,9 @@ public class PreferenceUtils {
      * Parses encoding preferences from a header.
      * 
      * @param acceptEncodingHeader
-     *            The header to parse.
+     *                The header to parse.
      * @param preference
-     *            The client preferences to update.
+     *                The client preferences to update.
      */
     @SuppressWarnings("unchecked")
     public static void parseEncodings(String acceptEncodingHeader,
@@ -252,9 +252,9 @@ public class PreferenceUtils {
      * Parses language preferences from a header.
      * 
      * @param acceptLanguageHeader
-     *            The header to parse.
+     *                The header to parse.
      * @param preference
-     *            The client preferences to update.
+     *                The client preferences to update.
      */
     @SuppressWarnings("unchecked")
     public static void parseLanguages(String acceptLanguageHeader,
@@ -282,9 +282,9 @@ public class PreferenceUtils {
      * Parses media type preferences from a header.
      * 
      * @param acceptMediaTypeHeader
-     *            The header to parse.
+     *                The header to parse.
      * @param preference
-     *            The client preferences to update.
+     *                The client preferences to update.
      */
     @SuppressWarnings("unchecked")
     public static void parseMediaTypes(String acceptMediaTypeHeader,

@@ -60,11 +60,11 @@ public class ServletCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
-     *            The parent server.
+     *                The parent server.
      * @param request
-     *            The HTTP Servlet request to wrap.
+     *                The HTTP Servlet request to wrap.
      * @param response
-     *            The HTTP Servlet response to wrap.
+     *                The HTTP Servlet response to wrap.
      */
     public ServletCall(Server server, HttpServletRequest request,
             HttpServletResponse response) {
@@ -77,11 +77,11 @@ public class ServletCall extends HttpServerCall {
      * Constructor.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param serverAddress
-     *            The server IP address.
+     *                The server IP address.
      * @param serverPort
-     *            The server port.
+     *                The server port.
      */
     public ServletCall(Logger logger, String serverAddress, int serverPort,
             HttpServletRequest request, HttpServletResponse response) {
@@ -151,6 +151,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The list of request headers.
      */
+    @SuppressWarnings("unchecked")
     public Series<Parameter> getRequestHeaders() {
         if (this.requestHeaders == null) {
             this.requestHeaders = new Form();
@@ -158,11 +159,11 @@ public class ServletCall extends HttpServerCall {
             // Copy the headers from the request object
             String headerName;
             String headerValue;
-            for (Enumeration names = getRequest().getHeaderNames(); names
+            for (Enumeration<String> names = getRequest().getHeaderNames(); names
                     .hasMoreElements();) {
                 headerName = (String) names.nextElement();
-                for (Enumeration values = getRequest().getHeaders(headerName); values
-                        .hasMoreElements();) {
+                for (Enumeration<String> values = getRequest().getHeaders(
+                        headerName); values.hasMoreElements();) {
                     headerValue = (String) values.nextElement();
                     this.requestHeaders.add(new Parameter(headerName,
                             headerValue));
@@ -278,7 +279,7 @@ public class ServletCall extends HttpServerCall {
      * optional entity and send them on the network.
      * 
      * @param response
-     *            The high-level response.
+     *                The high-level response.
      */
     public void sendResponse(Response response) throws IOException {
         // Add the response headers

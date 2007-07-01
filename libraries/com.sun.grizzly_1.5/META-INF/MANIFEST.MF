@@ -4,7 +4,6 @@ Bundle-Name: Grizzly NIO Framework
 Bundle-SymbolicName: com.sun.grizzly
 Bundle-Version: 1.5.0
 Bundle-ClassPath: com.sun.grizzly.jar
-Bundle-Localization: plugin
 Export-Package: com.sun.grizzly,
  com.sun.grizzly.connectioncache.client,
  com.sun.grizzly.connectioncache.impl.concurrent,

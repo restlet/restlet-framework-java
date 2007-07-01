@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.mortbay.jetty4
 Bundle-Version: 4.2.25
 Bundle-ClassPath: org.mortbay.jetty.jar
 Bundle-Vendor: Mortbay Consulting
-Bundle-Localization: plugin
 Export-Package: 
  org.mortbay.html,
  org.mortbay.http,

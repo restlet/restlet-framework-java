@@ -60,7 +60,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * Constructor.
      * 
      * @param mediaType
-     *            The representation's mediaType.
+     *                The representation's mediaType.
      */
     public XmlRepresentation(MediaType mediaType) {
         super(mediaType);
@@ -72,9 +72,9 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * Constructor.
      * 
      * @param mediaType
-     *            The representation's mediaType.
+     *                The representation's mediaType.
      * @param expectedSize
-     *            The expected input stream size.
+     *                The expected input stream size.
      */
     public XmlRepresentation(MediaType mediaType, long expectedSize) {
         super(mediaType, expectedSize);
@@ -87,7 +87,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * return type.
      * 
      * @param returnType
-     *            The qualified name of the return type.
+     *                The qualified name of the return type.
      * @return The evaluation result.
      * @see javax.xml.xpath.XPathException
      * @see javax.xml.xpath.XPathConstants
@@ -172,7 +172,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     /**
      * {@inheritDoc javax.xml.namespace.NamespaceContext#getPrefixes(java.lang.String}
      */
-    public Iterator getPrefixes(String namespaceURI) {
+    public Iterator<String> getPrefixes(String namespaceURI) {
         List<String> result = new ArrayList<String>();
 
         for (Entry<String, String> entry : getNamespaces().entrySet()) {
@@ -207,7 +207,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * return type.
      * 
      * @param returnType
-     *            The qualified name of the return type.
+     *                The qualified name of the return type.
      * @return The evaluation result.
      */
     private Object internalEval(String expression, QName returnType) {
@@ -231,9 +231,9 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * Puts a new mapping between a prefix and a namespace URI.
      * 
      * @param prefix
-     *            The namespace prefix.
+     *                The namespace prefix.
      * @param namespaceURI
-     *            The namespace URI.
+     *                The namespace URI.
      */
     public void putNamespace(String prefix, String namespaceURI) {
         getNamespaces().put(prefix, namespaceURI);
@@ -243,7 +243,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * Indicates if processing is namespace aware.
      * 
      * @param namespaceAware
-     *            Indicates if processing is namespace aware.
+     *                Indicates if processing is namespace aware.
      */
     public void setNamespaceAware(boolean namespaceAware) {
         this.namespaceAware = namespaceAware;
@@ -253,7 +253,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * Validates the XML representation against a given schema.
      * 
      * @param schemaRepresentation
-     *            The XML schema representation to use.
+     *                The XML schema representation to use.
      */
     public void validate(Representation schemaRepresentation) throws Exception {
         validate(schemaRepresentation, null);
@@ -263,7 +263,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * Validates the XML representation against a given schema.
      * 
      * @param schema
-     *            The XML schema to use.
+     *                The XML schema to use.
      */
     public void validate(Schema schema) throws Exception {
         validate(schema, null);
@@ -273,9 +273,9 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * Validates the XML representation against a given schema.
      * 
      * @param schemaRepresentation
-     *            The XML schema representation to use.
+     *                The XML schema representation to use.
      * @param result
-     *            The Result object that receives (possibly augmented) XML.
+     *                The Result object that receives (possibly augmented) XML.
      */
     public void validate(Representation schemaRepresentation, Result result)
             throws Exception {
@@ -286,9 +286,9 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * Validates the XML representation against a given schema.
      * 
      * @param schema
-     *            The XML schema to use.
+     *                The XML schema to use.
      * @param result
-     *            The Result object that receives (possibly augmented) XML.
+     *                The Result object that receives (possibly augmented) XML.
      */
     public void validate(Schema schema, Result result) throws Exception {
         StreamSource streamSource = new StreamSource(getStream());

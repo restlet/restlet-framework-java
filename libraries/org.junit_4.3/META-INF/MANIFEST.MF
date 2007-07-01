@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.junit4
 Bundle-Version: 4.3.1
 Bundle-ClassPath: org.junit.jar
 Bundle-Vendor: Object Mentor Inc.
-Bundle-Localization: plugin
 Export-Package: junit.extensions,
  junit.framework,
  junit.runner,

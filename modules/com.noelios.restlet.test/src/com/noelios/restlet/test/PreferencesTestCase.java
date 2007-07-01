@@ -24,6 +24,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 
 import com.noelios.restlet.util.PreferenceReader;
@@ -51,14 +52,14 @@ public class PreferencesTestCase extends TestCase {
      * Tests the parsing of a single preference header.
      * 
      * @param headerValue
-     *            The preference header.
+     *                The preference header.
      */
     private void testMediaType(String headerValue, boolean testEquals)
             throws IOException {
-        PreferenceReader pr = new PreferenceReader(
+        PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
                 PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
-        List<Preference> prefs = new ArrayList<Preference>();
-        Preference pref = pr.readPreference();
+        List<Preference<MediaType>> prefs = new ArrayList<Preference<MediaType>>();
+        Preference<MediaType> pref = pr.readPreference();
 
         while (pref != null) {
             prefs.add(pref);

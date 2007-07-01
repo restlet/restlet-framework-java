@@ -5,6 +5,5 @@ Bundle-SymbolicName: org.apache.commons.logging
 Bundle-Version: 1.1
 Bundle-ClassPath: org.apache.commons.logging.jar
 Bundle-Vendor: Apache Software Foundation
-Bundle-Localization: plugin
 Export-Package: org.apache.commons.logging,
  org.apache.commons.logging.impl

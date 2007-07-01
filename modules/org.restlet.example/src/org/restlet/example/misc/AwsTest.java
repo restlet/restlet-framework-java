@@ -23,6 +23,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -44,7 +45,7 @@ public class AwsTest {
                 "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"));
 
         // Add some extra headers
-        Series extraHeaders = new Form();
+        Series<Parameter> extraHeaders = new Form();
         extraHeaders.add("X-Amz-Meta-Author", "foo@bar.com");
         extraHeaders.add("X-Amz-Magic", "abracadabra");
 

@@ -4,7 +4,6 @@ Bundle-Name: Noelios Restlet Engine - Extension - Servlet
 Bundle-SymbolicName: com.noelios.restlet.ext.servlet
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
-Bundle-Localization: plugin
 Require-Bundle: com.noelios.restlet;visibility:=reexport,
  javax.servlet;visibility:=reexport
 Export-Package: com.noelios.restlet.ext.servlet

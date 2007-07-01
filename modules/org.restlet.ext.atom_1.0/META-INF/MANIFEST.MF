@@ -4,6 +4,5 @@ Bundle-Name: Restlet Extension - Atom
 Bundle-SymbolicName: org.restlet.ext.atom
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
-Bundle-Localization: plugin
 Require-Bundle: org.restlet;visibility:=reexport
 Export-Package: org.restlet.ext.atom

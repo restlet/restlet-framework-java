@@ -4,7 +4,6 @@ Bundle-Name: Bouncy Castle cryptography API
 Bundle-SymbolicName: org.bouncycastle
 Bundle-Version: 1.34
 Bundle-ClassPath: org.bouncycastle-jdk14.jar
-Bundle-Localization: plugin
 Export-Package: org.bouncycastle,
  org.bouncycastle.asn1,
  org.bouncycastle.asn1.cmp,
