@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Java Architecture for XML Binding
 Bundle-SymbolicName: javax.xml.bind
-Bundle-Version: 2.0
-Bundle-ClassPath: jaxb-api.jar,
- jaxb-impl.jar
+Bundle-Version: 2.1
+Bundle-ClassPath: javax.xml.bind.jar,
+ com.sun.jaxb.jar
 Bundle-Vendor: Sun Microsystems Inc.
 Require-Bundle: javax.activation,
  javax.xml.stream
