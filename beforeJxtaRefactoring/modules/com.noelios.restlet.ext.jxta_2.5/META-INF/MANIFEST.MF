@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Noelios Restlet Engine - Extension - JXTA
+Bundle-SymbolicName: com.noelios.restlet.ext.jxta
+Bundle-Version: 1.0.0
+Bundle-Vendor: Noelios Consulting
+Require-Bundle: net.jxta,
+ com.noelios.restlet,
+ org.bouncycastle,
+ org.mortbay.jetty4,
+ javax.servlet

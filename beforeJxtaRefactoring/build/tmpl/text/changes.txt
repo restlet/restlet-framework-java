@@ -1,0 +1,67 @@
+
+===========
+Changes log  
+===========
+
+
+@version-full@ (@release-date@)
+[Bugs fixed]
+ - Overrided the StringRepresentation#setCharacterSet method, in order to refresh the 
+   size of the representation. Reported by Calvin Cheng.
+ - Fixed issue in the selection of connectors. The last connector in the classpath for
+   a given protocol was selected instead of the first one, leading to counter-intuitive 
+   behavior when multiple connectors were present in the classpath.
+ - Fixed bug in DomRepresentation causing the loss of both public and system DocTypes. 
+   Reported by Lee Saferite.
+
+[Enhancements] 
+ - Added a getApplication() method to Context and Resource classes.
+ - Added a new Grizzly based HTTP server connector (full NIO). Optmizations and support
+   contributed by Jean-François Arcand.
+ - Upgraded Apache MINA to version 1.1.0.
+ - There are now default internal HTTP client and server connectors exposed in the NRE core.
+   If no other HTTP connectors are found in the classpath, those connectors will be used.
+   They should perform reasonably under normal workloads but won't be as scalable as the
+   NIO based connectors such as Grizzly and MINA based ones. You don't have anything to do
+   to configure them, just put the com.noelios.restlet.jar in your classpath along with the
+   Restlet API's JAR. Note that they don't support HTTPS and persistent connections.
+ - All HTTPS server connectors (Grizzly, Jetty and Simple) now have two configuration
+   parameters to indicates whether a client authentication is wanted or required.
+   Suggested by Toby Thain and Chuck Hinson.
+ - A request attribute "org.restlet.https.clientCertificates" containing the list of SSL
+   session certificates (if available and accessible) is now available. Currently, only
+   the Simple connector is capable or setting it. Suggested by Toby Thain.
+ - Simple connector now initialize a trust manager.
+ - Added abstract CharacterRepresentation for representations based on character streams.
+ - Added ReaderRepresentation for representations based on characters Readers.
+ - Added WriterRepresentation for representations based on characters Writers.
+ - Added ByteUtils.toString(Reader) method and refactored ByteUtils.toString(InputStream)
+   to reuse it.
+ - Added ByteUtils.getReader(InputStream, CharacterSet) method.
+ - Added getReader() and a write(Writer) methods on Representation class.
+ - Exposed the "file" property on the FileRepresentation class.
+ - Added two new FreeMarker's TemplateRepresentation constructor to allow more ways to
+   provide the template (via a representation or directly as a FreeMarker Template object).
+ - Added W3C XML Schema and Relax NG media types.
+ - Added validate() methods on XmlRepresentation to validate an XML representation against
+   a given schema.
+ - Added a getSource() method on XmlRepresentation that results a JAXP Source instance.
+ - Added JAXB extension based on a contribution by Overstock.com (via Sean Landis).
+ - Added JAXB 2.0 and StAX 1.0 libraries.
+ - Added a Template.getVariableNames() method. Suggested by Stian Soiland.
+ - Added new Dimension.AUTHORIZATION enum entry. Suggested by Stian Soiland.
+ - Optimized the Resource handling of conditional gets. If the conditions are not met, the
+   getRepresentation(Variant) method is never invoked. Suggested by Stian Soiland.
+ - The ServletConverter now also copy the Servlet's request attributes into the Restlet
+   attributes map. Suggested by Leigh Klotz.
+ - Added new media types for RSS and WADL. Contributed by Avi Flax.
+ - Added Atom, Relax NG, RSS, RTF, WADL and XSD in the common extensions of MetadataService.
+   Contributed by Avi Flax.
+ - Simplified the management of MediaType constants. Contributed by Stian Soiland.
+
+[Misc]
+ - Removed AsyncWeb connector, to be replaced by a custom MINA based one.
+ - Removed Jetty 5 connector from the code base. Jetty 6 connector is stable enough now.
+ - Added Response.locationRef property as a replacement for the Response.redirectRef
+   property that is now deprecated. Suggested by Michael Vogel and Avi Flax.
+ - Updated projects to Eclipse 3.3. Minor adjustments required.
