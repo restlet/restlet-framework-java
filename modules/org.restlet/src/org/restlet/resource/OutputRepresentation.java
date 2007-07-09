@@ -25,8 +25,11 @@ import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
 /**
- * Representation based on a BIO output stream. The write(OutputStream) method
- * needs to be overriden in subclasses.
+ * Representation based on a BIO output stream. This class is a good basis to write 
+ * your own representations, especially for the dynamic and large ones. For this you 
+ * just need to create a subclass and override the abstract 
+ * Representation.write(OutputStream) method. This method will later be called back
+ * by the connectors when the actual representation's content is needed.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
