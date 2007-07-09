@@ -28,7 +28,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 /**
- * Base JXTA connector.
+ * Concrete JXTA-based HTTP server connector helper.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

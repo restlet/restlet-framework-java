@@ -18,33 +18,40 @@
 
 package com.noelios.restlet.ext.jxta;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.EventObject;
+
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.ext.configuration.AbstractConfigurator;
 import net.jxta.ext.configuration.Configurator;
 import net.jxta.ext.configuration.Profile;
+import net.jxta.ext.network.GroupEvent;
 import net.jxta.ext.network.Network;
+import net.jxta.ext.network.NetworkEvent;
 import net.jxta.ext.network.NetworkException;
-import net.jxta.ext.network.NetworkListener;
 import net.jxta.impl.protocol.PlatformConfig;
-
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
+import net.jxta.peergroup.PeerGroup;
+import net.jxta.rendezvous.RendezvousEvent;
 
 /**
- * @author james todd [james dot w dot todd at gmail dot com]
+ * Handle the access to the JXTA network.
+ * 
+ * @author James Todd (james dot w dot todd at gmail dot com)
  */
-
 public class NetworkHandler {
 
-    // todo: configuration hack
-    private static final URI HOME = new File(System.getProperty(
-            Constants.JXTA_HOME, System.getProperty("user.dir")
-                    + File.separator + ".jxta")).toURI();
+    public static final String JXTA_HOME = "JXTA_HOME";
 
-    private static final String PROFILE_RESOURCE = System.getProperty(
-            Constants.PROFILE,
-            "/com/noelios/restlet/ext/jxta/resources/adhoc.xml");
+    public static final String PROFILE = "PROFILE";
+
+    // todo: configuration hack
+    private static final URI HOME = new File(System.getProperty(JXTA_HOME,
+            System.getProperty("user.dir") + File.separator + ".jxta")).toURI();
+
+    private static final String PROFILE_RESOURCE = System.getProperty(PROFILE,
+            "/com/noelios/restlet/ext/jxta/adhoc.xml");
 
     private static final String CONFIG_NAME = "restlet";
 
@@ -56,8 +63,8 @@ public class NetworkHandler {
 
     private NetworkListener listener = null;
 
-    public NetworkHandler(NetworkListener listener) {
-        this.listener = listener;
+    public NetworkHandler() {
+        this.listener = new NetworkListener();
     }
 
     public Network getNetwork() {
@@ -105,5 +112,44 @@ public class NetworkHandler {
         network.stop();
 
         network = null;
+    }
+
+    private class NetworkListener implements
+            net.jxta.ext.network.NetworkListener {
+
+        public void notify(NetworkEvent ne) {
+            StringBuffer msg = new StringBuffer();
+            PeerGroup pg = ne.getPeerGroup();
+
+            msg.append("NetworkEvent: ").append(pg.getPeerGroupName()).append(
+                    " ");
+
+            EventObject cause = ne.getCause();
+
+            if (cause != null) {
+                msg.append(cause.getClass().getName()).append(" ");
+
+                if (cause instanceof RendezvousEvent) {
+                    RendezvousEvent re = (RendezvousEvent) cause;
+                    String p = re.getPeer();
+                    String pid = re.getPeerID().toString();
+                    int t = re.getType();
+
+                    pg = ne.getPeerGroup();
+
+                    msg.append(pg.getPeerGroupName()).append(" ").append(p)
+                            .append(" ").append(pid).append(" ").append(t);
+                } else if (cause instanceof GroupEvent) {
+                    GroupEvent ge = (GroupEvent) cause;
+                    int t = ge.getType();
+
+                    pg = ge.getPeerGroup();
+
+                    msg.append(pg.getPeerGroupName()).append(" ").append(t);
+                }
+            }
+
+            System.out.println(msg);
+        }
     }
 }

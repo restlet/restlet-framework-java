@@ -33,46 +33,74 @@ import com.noelios.restlet.http.StreamServerHelper;
  */
 public abstract class JxtaServerHelper extends StreamServerHelper {
 
+    /** The JXTA network handler. */
     private NetworkHandler networkHandler;
 
+    /** The JXTA peer group. */
     private PeerGroup peerGroup;
 
+    /** The JXTA pipe advertisement. */
     private PipeAdvertisement pipeAdvertisement;
 
     /**
      * Constructor.
      * 
      * @param server
+     *                The parent server connector.
      */
     public JxtaServerHelper(Server server) {
         super(server);
     }
 
-    public String getName() {
+    /**
+     * Returns the JXTA connection name. Defaults to "restlet".
+     * 
+     * @return The JXTA connection name.
+     */
+    public String getConnectionName() {
         return getParameters().getFirstValue("connectionName", "restlet");
     }
 
+    /**
+     * Returns the JXTA network handler.
+     * 
+     * @return The JXTA network handler.
+     */
     public NetworkHandler getNetworkHandler() {
         return this.networkHandler;
     }
 
+    /**
+     * Returns the JXTA peer group.
+     * 
+     * @return The JXTA peer group.
+     */
     public PeerGroup getPeerGroup() {
         return this.peerGroup;
     }
 
+    /**
+     * Returns the JXTA pipe advertisement.
+     * 
+     * @return The JXTA pipe advertisement.
+     */
     public PipeAdvertisement getPipeAdvertisement() {
         return this.pipeAdvertisement;
     }
 
     @Override
     public void start() throws Exception {
-        this.networkHandler = new DefaultNetworkHandler();
+        // Start the network handler
+        this.networkHandler = new NetworkHandler();
         getNetworkHandler().start();
 
+        // Initialize the JXTA context
         this.peerGroup = getNetworkHandler().getNetwork().getNetPeerGroup();
-        this.pipeAdvertisement = PipeUtility.createPipeAdvertisement(getName(),
-                PipeService.UnicastType, this.peerGroup, PipeUtility
-                        .createPipeID(this.peerGroup));
+        this.pipeAdvertisement = PipeUtility.createPipeAdvertisement(
+                getConnectionName(), PipeService.UnicastType, this.peerGroup,
+                PipeUtility.createPipeID(this.peerGroup));
+
+        // Continue standard start
         super.start();
     }
 

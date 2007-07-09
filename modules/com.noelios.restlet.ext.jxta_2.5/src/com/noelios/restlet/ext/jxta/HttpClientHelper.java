@@ -18,22 +18,19 @@
 
 package com.noelios.restlet.ext.jxta;
 
-import java.util.Collection;
+import org.restlet.Client;
+import org.restlet.data.Protocol;
 
 /**
- * @author james todd [james dot w dot todd at gmail dot com]
+ * Concrete JXTA-based HTTP client connector helper.
+ * 
+ * @author Jerome Louvel (contact@noelios.com)
  */
-public interface Peer {
+public class HttpClientHelper extends JxtaClientHelper {
 
-    public void addConnections(Connection... connection);
+    public HttpClientHelper(Client client) {
+        super(client);
+        getProtocols().add(Protocol.HTTP);
+    }
 
-    public Collection<Connection> getConnections();
-
-    public void removeConnections(Connection... connection);
-
-    public void start();
-
-    public void stop();
-
-    public NetworkHandler getNetworkHandler();
 }

@@ -40,7 +40,7 @@ public class TestServer {
             }
         };
 
-        // Create the HTTP server and listen on port 8182
+        // Create the JXTA/HTTP server
         new Server(Protocol.HTTP, restlet).start();
     }
 

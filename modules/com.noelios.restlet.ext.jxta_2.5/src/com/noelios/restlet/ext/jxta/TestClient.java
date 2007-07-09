@@ -18,18 +18,19 @@
 
 package com.noelios.restlet.ext.jxta;
 
-import com.google.inject.BindingAnnotation;
-
-import java.lang.annotation.Target;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.ElementType;
+import org.restlet.Client;
+import org.restlet.data.Protocol;
 
 /**
- * @author james todd [james dot w dot todd at gmail dot com]
+ * JXTA test client.
+ * 
+ * @author Jerome Louvel (contact@noelios.com)
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target( { ElementType.FIELD, ElementType.PARAMETER })
-@BindingAnnotation
-public @interface Client {
+public class TestClient {
+    public static void main(String[] args) throws Exception {
+        // Create the HTTP client and listen on port 8182
+        Client client = new Client(Protocol.HTTP);
+        client.get("http://toto").getEntity().write(System.out);
+    }
+
 }

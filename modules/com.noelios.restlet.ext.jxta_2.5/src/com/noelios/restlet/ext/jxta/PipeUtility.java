@@ -18,13 +18,6 @@
 
 package com.noelios.restlet.ext.jxta;
 
-import net.jxta.document.AdvertisementFactory;
-import net.jxta.id.IDFactory;
-import net.jxta.peergroup.PeerGroup;
-import net.jxta.pipe.PipeID;
-import net.jxta.pipe.PipeService;
-import net.jxta.protocol.PipeAdvertisement;
-
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -34,14 +27,77 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.noelios.restlet.ext.jxta.Constants.Pipe;
-import static com.noelios.restlet.ext.jxta.Constants.Protocol;
+import net.jxta.document.AdvertisementFactory;
+import net.jxta.id.IDFactory;
+import net.jxta.peergroup.PeerGroup;
+import net.jxta.pipe.PipeID;
+import net.jxta.pipe.PipeService;
+import net.jxta.protocol.PipeAdvertisement;
 
 /**
- * @author james todd [james dot w dot todd at gmail dot com]
+ * JXTA pipe management utilities.
+ * 
+ * @author James Todd (james dot w dot todd at gmail dot com)
  */
-
 public class PipeUtility {
+
+    public enum Protocol {
+        P2PP("p2pp"), P2PSP("p2psp"), P2MP("p2mp"), HTTP2PP("http2pp"), HTTP2MP(
+                "http2mp"), HTTP("http");
+
+        private String protocol;
+
+        Protocol(final String protocol) {
+            this.protocol = protocol;
+        }
+
+        public String getProtocol() {
+            return protocol;
+        }
+    }
+
+    public enum Pipe {
+        P2PP_NAME("JXTA:HTTP2PP"), P2MP_NAME("JXTA:HTTP2MP"), P2PP_TYPE(
+                PipeService.UnicastType), P2MP_TYPE(PipeService.PropagateType);
+
+        public enum ATTRIBUTE {
+            BUFFER_SIZE(65536);
+
+            private int attribute;
+
+            ATTRIBUTE(final int attribute) {
+                this.attribute = attribute;
+            }
+
+            public int getAttribute() {
+                return attribute;
+            }
+        }
+
+        private String pipe;
+
+        Pipe(final String pipe) {
+            this.pipe = pipe;
+        }
+
+        public String getPipe() {
+            return pipe;
+        }
+    }
+
+    public enum Http {
+        HTTP_V1_0("HTTP/1.0"), CHARSET("US-ASCII");
+
+        private String http;
+
+        Http(final String http) {
+            this.http = http;
+        }
+
+        public String getHttp() {
+            return http;
+        }
+    }
 
     private static final String MESSAGE_DIGEST = "MD5";
 
@@ -129,8 +185,7 @@ public class PipeUtility {
         byte[] sb = null;
 
         if (pipeId != null) {
-            String s = pipeId.toString() + ":"
-                    + Constants.Http.HTTP_V1_0.getHttp();
+            String s = pipeId.toString() + ":" + Http.HTTP_V1_0.getHttp();
 
             try {
                 MessageDigest a = MessageDigest.getInstance(MESSAGE_DIGEST);

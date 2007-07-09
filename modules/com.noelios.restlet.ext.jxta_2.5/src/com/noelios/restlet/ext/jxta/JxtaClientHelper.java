@@ -18,14 +18,96 @@
 
 package com.noelios.restlet.ext.jxta;
 
+import net.jxta.peergroup.PeerGroup;
+import net.jxta.pipe.PipeService;
+import net.jxta.protocol.PipeAdvertisement;
+
 import org.restlet.Client;
 
 import com.noelios.restlet.http.StreamClientHelper;
 
+/**
+ * Abstract JXTA-based HTTP server connector helper.
+ * 
+ * @author Jerome Louvel (contact@noelios.com)
+ */
 public abstract class JxtaClientHelper extends StreamClientHelper {
 
+    /** The JXTA network handler. */
+    private NetworkHandler networkHandler;
+
+    /** The JXTA peer group. */
+    private PeerGroup peerGroup;
+
+    /** The JXTA pipe advertisement. */
+    private PipeAdvertisement pipeAdvertisement;
+
+    /**
+     * Constructor.
+     * 
+     * @param client
+     *                The parent client connector.
+     */
     public JxtaClientHelper(Client client) {
         super(client);
+    }
+
+    /**
+     * Returns the JXTA connection name. Defaults to "restlet".
+     * 
+     * @return The JXTA connection name.
+     */
+    public String getConnectionName() {
+        return getParameters().getFirstValue("connectionName", "restlet");
+    }
+
+    /**
+     * Returns the JXTA network handler.
+     * 
+     * @return The JXTA network handler.
+     */
+    public NetworkHandler getNetworkHandler() {
+        return this.networkHandler;
+    }
+
+    /**
+     * Returns the JXTA peer group.
+     * 
+     * @return The JXTA peer group.
+     */
+    public PeerGroup getPeerGroup() {
+        return this.peerGroup;
+    }
+
+    /**
+     * Returns the JXTA pipe advertisement.
+     * 
+     * @return The JXTA pipe advertisement.
+     */
+    public PipeAdvertisement getPipeAdvertisement() {
+        return this.pipeAdvertisement;
+    }
+
+    @Override
+    public void start() throws Exception {
+        // Start the network handler
+        this.networkHandler = new NetworkHandler();
+        getNetworkHandler().start();
+
+        // Initialize the JXTA context
+        this.peerGroup = getNetworkHandler().getNetwork().getNetPeerGroup();
+        this.pipeAdvertisement = PipeUtility.createPipeAdvertisement(
+                getConnectionName(), PipeService.UnicastType, this.peerGroup,
+                PipeUtility.createPipeID(this.peerGroup));
+
+        // Continue standard start
+        super.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        getNetworkHandler().stop();
     }
 
 }
