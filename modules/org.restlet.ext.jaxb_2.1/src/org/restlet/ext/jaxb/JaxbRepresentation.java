@@ -365,7 +365,7 @@ public class JaxbRepresentation extends XmlRepresentation {
      */
     @SuppressWarnings("unchecked")
     public JaxbRepresentation(Representation xmlRepresentation,
-            String contextPath) throws JAXBException, IOException {
+            String contextPath) {
         this(xmlRepresentation, contextPath, null);
     }
 
@@ -387,8 +387,7 @@ public class JaxbRepresentation extends XmlRepresentation {
      */
     @SuppressWarnings("unchecked")
     public JaxbRepresentation(Representation xmlRepresentation,
-            String contextPath, ValidationEventHandler validationHandler)
-            throws JAXBException, IOException {
+            String contextPath, ValidationEventHandler validationHandler) {
         super(xmlRepresentation.getMediaType());
         this.contextPath = contextPath;
         this.object = null;
