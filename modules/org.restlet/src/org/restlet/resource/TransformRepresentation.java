@@ -41,11 +41,11 @@ public class TransformRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param context
-     *            The parent context.
+     *                The parent context.
      * @param source
-     *            The source representation to transform.
+     *                The source representation to transform.
      * @param transformSheet
-     *            The XSLT transform sheet.
+     *                The XSLT transform sheet.
      */
     public TransformRepresentation(Context context, Representation source,
             Representation transformSheet) {
@@ -115,10 +115,37 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /**
+     * Releases the source and transform sheet representations, the transformer
+     * and the URI resolver.
+     */
+    @Override
+    public void release() {
+        if (this.source != null) {
+            this.source.release();
+            this.source = null;
+        }
+
+        if (this.transformer != null) {
+            this.transformer = null;
+        }
+
+        if (this.transformSheet != null) {
+            this.transformSheet.release();
+            this.transformSheet = null;
+        }
+
+        if (this.uriResolver != null) {
+            this.uriResolver = null;
+        }
+
+        super.release();
+    }
+
+    /**
      * Sets the XSLT transform sheet to apply to message entities.
      * 
      * @param transformSheet
-     *            The XSLT transform sheet to apply to message entities.
+     *                The XSLT transform sheet to apply to message entities.
      */
     public void setTransformSheet(Representation transformSheet) {
         this.transformSheet = transformSheet;
@@ -152,7 +179,7 @@ public class TransformRepresentation extends OutputRepresentation {
          * Constructor.
          * 
          * @param context
-         *            The Restlet context.
+         *                The Restlet context.
          */
         public ContextResolver(Context context) {
             this.context = context;

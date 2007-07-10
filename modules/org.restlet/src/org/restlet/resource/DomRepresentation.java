@@ -144,6 +144,21 @@ public class DomRepresentation extends XmlRepresentation {
     }
 
     /**
+     * Releases the wrapped DOM document and the source XML representation if
+     * they have been defined.
+     */
+    @Override
+    public void release() {
+        setDocument(null);
+
+        if (this.xmlRepresentation != null) {
+            this.xmlRepresentation.release();
+        }
+        
+        super.release();
+    }
+
+    /**
      * Sets the wrapped DOM document.
      * 
      * @param dom

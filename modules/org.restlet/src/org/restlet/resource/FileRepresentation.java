@@ -45,7 +45,7 @@ public class FileRepresentation extends Representation {
      * name.
      * 
      * @param path
-     *            The path name or file URI of the represented file.
+     *                The path name or file URI of the represented file.
      * @return The associated File instance.
      */
     private static File createFile(String path) {
@@ -63,11 +63,11 @@ public class FileRepresentation extends Representation {
      * Constructor.
      * 
      * @param file
-     *            The represented file.
+     *                The represented file.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      * @param timeToLive
-     *            The time to live before it expires (in seconds).
+     *                The time to live before it expires (in seconds).
      */
     public FileRepresentation(File file, MediaType mediaType, int timeToLive) {
         super(mediaType);
@@ -82,11 +82,11 @@ public class FileRepresentation extends Representation {
      * Constructor.
      * 
      * @param path
-     *            The path name or file URI of the represented file.
+     *                The path name or file URI of the represented file.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      * @param timeToLive
-     *            The time to live before it expires (in seconds).
+     *                The time to live before it expires (in seconds).
      * @see java.io.File#File(String)
      */
     public FileRepresentation(String path, MediaType mediaType, int timeToLive) {
@@ -113,7 +113,7 @@ public class FileRepresentation extends Representation {
      * @return the file handle.
      */
     public File getFile() {
-        return file;
+        return this.file;
     }
 
     @Override
@@ -145,10 +145,18 @@ public class FileRepresentation extends Representation {
     }
 
     /**
+     * Releases the file handle.
+     */
+    @Override
+    public void release() {
+        setFile(null);
+    }
+
+    /**
      * Sets the file handle.
      * 
      * @param file
-     *            The file handle.
+     *                The file handle.
      */
     public void setFile(File file) {
         this.file = file;
@@ -164,7 +172,7 @@ public class FileRepresentation extends Representation {
      * channel transferTo method.
      * 
      * @param writableChannel
-     *            A writable byte channel.
+     *                A writable byte channel.
      */
     public void write(WritableByteChannel writableChannel) throws IOException {
         FileChannel fc = getChannel();

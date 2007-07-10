@@ -44,7 +44,7 @@ public class StringRepresentation extends StreamRepresentation {
      * media type, no language and the ISO-8859-1 character set.
      * 
      * @param text
-     *            The string value.
+     *                The string value.
      */
     public StringRepresentation(CharSequence text) {
         this(text, MediaType.TEXT_PLAIN);
@@ -55,9 +55,9 @@ public class StringRepresentation extends StreamRepresentation {
      * media type, no language and the ISO-8859-1 character set.
      * 
      * @param text
-     *            The string value.
+     *                The string value.
      * @param language
-     *            The language.
+     *                The language.
      */
     public StringRepresentation(CharSequence text, Language language) {
         this(text, MediaType.TEXT_PLAIN, language);
@@ -68,9 +68,9 @@ public class StringRepresentation extends StreamRepresentation {
      * the ISO-8859-1 character set.
      * 
      * @param text
-     *            The string value.
+     *                The string value.
      * @param mediaType
-     *            The media type.
+     *                The media type.
      */
     public StringRepresentation(CharSequence text, MediaType mediaType) {
         this(text, mediaType, null);
@@ -81,11 +81,11 @@ public class StringRepresentation extends StreamRepresentation {
      * character set.
      * 
      * @param text
-     *            The string value.
+     *                The string value.
      * @param mediaType
-     *            The media type.
+     *                The media type.
      * @param language
-     *            The language.
+     *                The language.
      */
     public StringRepresentation(CharSequence text, MediaType mediaType,
             Language language) {
@@ -96,13 +96,13 @@ public class StringRepresentation extends StreamRepresentation {
      * Constructor.
      * 
      * @param text
-     *            The string value.
+     *                The string value.
      * @param mediaType
-     *            The media type.
+     *                The media type.
      * @param language
-     *            The language.
+     *                The language.
      * @param characterSet
-     *            The character set.
+     *                The character set.
      */
     public StringRepresentation(CharSequence text, MediaType mediaType,
             Language language, CharacterSet characterSet) {
@@ -137,10 +137,18 @@ public class StringRepresentation extends StreamRepresentation {
     }
 
     /**
+     * Closes and releases the input stream.
+     */
+    @Override
+    public void release() {
+        setText(null);
+    }
+
+    /**
      * Sets the string value.
      * 
      * @param text
-     *            The string value.
+     *                The string value.
      */
     public void setText(String text) {
         this.text = text;

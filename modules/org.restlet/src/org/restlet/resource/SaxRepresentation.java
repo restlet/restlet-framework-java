@@ -65,7 +65,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *            The representation media type.
+     *                The representation media type.
      */
     public SaxRepresentation(MediaType mediaType) {
         super(mediaType);
@@ -75,9 +75,9 @@ public class SaxRepresentation extends XmlRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      * @param xmlDocument
-     *            A source DOM representation to parse.
+     *                A source DOM representation to parse.
      */
     public SaxRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
@@ -88,7 +88,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * Constructor.
      * 
      * @param xmlRepresentation
-     *            A source XML representation to parse.
+     *                A source XML representation to parse.
      */
     public SaxRepresentation(Representation xmlRepresentation)
             throws IOException {
@@ -100,7 +100,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * Parses the source and sends SAX events to a content handler.
      * 
      * @param contentHandler
-     *            The SAX content handler to use for parsing.
+     *                The SAX content handler to use for parsing.
      */
     public void parse(ContentHandler contentHandler) throws IOException {
         if (contentHandler != null) {
@@ -136,6 +136,23 @@ public class SaxRepresentation extends XmlRepresentation {
         }
     }
 
+    /**
+     * Releases the namespaces map.
+     */
+    @Override
+    public void release() {
+        if (this.xmlDocument != null) {
+            this.xmlDocument = null;
+        }
+
+        if (this.xmlRepresentation != null) {
+            this.xmlRepresentation.release();
+            this.xmlRepresentation = null;
+        }
+
+        super.release();
+    }
+
     @Override
     public void write(OutputStream outputStream) throws IOException {
         write(new XmlWriter(outputStream, "UTF-8"));
@@ -146,7 +163,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * does nothing and is intended to be overriden.
      * 
      * @param writer
-     *            The XML writer to write to.
+     *                The XML writer to write to.
      * @throws IOException
      */
     public void write(XmlWriter writer) throws IOException {

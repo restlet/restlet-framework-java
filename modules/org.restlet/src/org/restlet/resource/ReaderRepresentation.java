@@ -21,6 +21,8 @@ package org.restlet.resource;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
@@ -31,6 +33,10 @@ import org.restlet.util.ByteUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ReaderRepresentation extends CharacterRepresentation {
+    /** Obtain a suitable logger. */
+    private static Logger logger = Logger.getLogger(ReaderRepresentation.class
+            .getCanonicalName());
+
     /** The representation's reader. */
     private Reader reader;
 
@@ -38,9 +44,9 @@ public class ReaderRepresentation extends CharacterRepresentation {
      * Constructor.
      * 
      * @param reader
-     *            The representation's stream.
+     *                The representation's stream.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public ReaderRepresentation(Reader reader, MediaType mediaType) {
         this(reader, mediaType, UNKNOWN_SIZE);
@@ -50,11 +56,11 @@ public class ReaderRepresentation extends CharacterRepresentation {
      * Constructor.
      * 
      * @param reader
-     *            The representation's stream.
+     *                The representation's stream.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      * @param expectedSize
-     *            The expected reader size in bytes.
+     *                The expected reader size in bytes.
      */
     public ReaderRepresentation(Reader reader, MediaType mediaType,
             long expectedSize) {
@@ -68,7 +74,7 @@ public class ReaderRepresentation extends CharacterRepresentation {
      * Sets the reader to use.
      * 
      * @param reader
-     *            The reader to use.
+     *                The reader to use.
      */
     private void setReader(Reader reader) {
         this.reader = reader;
@@ -85,6 +91,23 @@ public class ReaderRepresentation extends CharacterRepresentation {
     @Override
     public String getText() throws IOException {
         return ByteUtils.toString(getStream(), this.getCharacterSet());
+    }
+
+    /**
+     * Closes and releases the input stream.
+     */
+    @Override
+    public void release() {
+        if (this.reader != null) {
+            try {
+                this.reader.close();
+            } catch (IOException e) {
+                logger.log(Level.WARNING,
+                        "Error while releasing the representation.", e);
+            }
+
+            this.reader = null;
+        }
     }
 
     @Override

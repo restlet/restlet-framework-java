@@ -21,6 +21,8 @@ package org.restlet.resource;
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
@@ -31,6 +33,10 @@ import org.restlet.util.ByteUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ReadableRepresentation extends ChannelRepresentation {
+    /** Obtain a suitable logger. */
+    private static Logger logger = Logger
+            .getLogger(ReadableRepresentation.class.getCanonicalName());
+
     /** The representation's input stream. */
     private ReadableByteChannel readableChannel;
 
@@ -38,9 +44,9 @@ public class ReadableRepresentation extends ChannelRepresentation {
      * Constructor.
      * 
      * @param readableChannel
-     *            The representation's channel.
+     *                The representation's channel.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public ReadableRepresentation(ReadableByteChannel readableChannel,
             MediaType mediaType) {
@@ -51,11 +57,11 @@ public class ReadableRepresentation extends ChannelRepresentation {
      * Constructor.
      * 
      * @param readableChannel
-     *            The representation's channel.
+     *                The representation's channel.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      * @param expectedSize
-     *            The expected stream size.
+     *                The expected stream size.
      */
     public ReadableRepresentation(ReadableByteChannel readableChannel,
             MediaType mediaType, long expectedSize) {
@@ -72,6 +78,23 @@ public class ReadableRepresentation extends ChannelRepresentation {
         this.readableChannel = null;
         setAvailable(false);
         return result;
+    }
+
+    /**
+     * Closes and releases the readable channel.
+     */
+    @Override
+    public void release() {
+        if (this.readableChannel != null) {
+            try {
+                this.readableChannel.close();
+            } catch (IOException e) {
+                logger.log(Level.WARNING,
+                        "Error while releasing the representation.", e);
+            }
+
+            this.readableChannel = null;
+        }
     }
 
     @Override

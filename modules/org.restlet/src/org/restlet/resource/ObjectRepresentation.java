@@ -41,7 +41,7 @@ public class ObjectRepresentation extends OutputRepresentation {
      * "application/x-java-serialized-object".
      * 
      * @param serializedRepresentation
-     *            The serialized representation.
+     *                The serialized representation.
      * @throws IOException
      * @throws ClassNotFoundException
      * @throws IllegalArgumentException
@@ -67,7 +67,7 @@ public class ObjectRepresentation extends OutputRepresentation {
      * Constructor
      * 
      * @param object
-     *            The serializable object.
+     *                The serializable object.
      */
     public ObjectRepresentation(Serializable object) {
         super(MediaType.APPLICATION_JAVA_OBJECT);
@@ -82,6 +82,25 @@ public class ObjectRepresentation extends OutputRepresentation {
      */
     public Object getObject() throws IOException {
         return this.object;
+    }
+
+    /**
+     * Sets the represented object.
+     * 
+     * @param object
+     *                The represented object.
+     */
+    public void setObject(Serializable object) {
+        this.object = object;
+    }
+
+    /**
+     * Releases the represented object.
+     */
+    @Override
+    public void release() {
+        setObject(null);
+        super.release();
     }
 
     @Override

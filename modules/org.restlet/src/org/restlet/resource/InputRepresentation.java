@@ -21,6 +21,8 @@ package org.restlet.resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
@@ -31,6 +33,10 @@ import org.restlet.util.ByteUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class InputRepresentation extends StreamRepresentation {
+    /** Obtain a suitable logger. */
+    private static Logger logger = Logger.getLogger(InputRepresentation.class
+            .getCanonicalName());
+
     /** The representation's stream. */
     private InputStream stream;
 
@@ -38,9 +44,9 @@ public class InputRepresentation extends StreamRepresentation {
      * Constructor.
      * 
      * @param inputStream
-     *            The representation's stream.
+     *                The representation's stream.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public InputRepresentation(InputStream inputStream, MediaType mediaType) {
         this(inputStream, mediaType, UNKNOWN_SIZE);
@@ -50,11 +56,11 @@ public class InputRepresentation extends StreamRepresentation {
      * Constructor.
      * 
      * @param inputStream
-     *            The representation's stream.
+     *                The representation's stream.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      * @param expectedSize
-     *            The expected input stream size.
+     *                The expected input stream size.
      */
     public InputRepresentation(InputStream inputStream, MediaType mediaType,
             long expectedSize) {
@@ -62,17 +68,6 @@ public class InputRepresentation extends StreamRepresentation {
         setSize(expectedSize);
         setTransient(true);
         setStream(inputStream);
-    }
-
-    /**
-     * Sets the input stream to use.
-     * 
-     * @param stream
-     *            The input stream to use.
-     */
-    private void setStream(InputStream stream) {
-        this.stream = stream;
-        setAvailable(stream != null);
     }
 
     @Override
@@ -85,6 +80,34 @@ public class InputRepresentation extends StreamRepresentation {
     @Override
     public String getText() throws IOException {
         return ByteUtils.toString(getStream(), this.getCharacterSet());
+    }
+
+    /**
+     * Closes and releases the input stream.
+     */
+    @Override
+    public void release() {
+        if (this.stream != null) {
+            try {
+                this.stream.close();
+            } catch (IOException e) {
+                logger.log(Level.WARNING,
+                        "Error while releasing the representation.", e);
+            }
+
+            this.stream = null;
+        }
+    }
+
+    /**
+     * Sets the input stream to use.
+     * 
+     * @param stream
+     *                The input stream to use.
+     */
+    private void setStream(InputStream stream) {
+        this.stream = stream;
+        setAvailable(stream != null);
     }
 
     @Override

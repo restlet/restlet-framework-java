@@ -25,11 +25,11 @@ import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
 /**
- * Representation based on a BIO output stream. This class is a good basis to write 
- * your own representations, especially for the dynamic and large ones. For this you 
- * just need to create a subclass and override the abstract 
- * Representation.write(OutputStream) method. This method will later be called back
- * by the connectors when the actual representation's content is needed.
+ * Representation based on a BIO output stream. This class is a good basis to
+ * write your own representations, especially for the dynamic and large ones.
+ * For this you just need to create a subclass and override the abstract
+ * Representation.write(OutputStream) method. This method will later be called
+ * back by the connectors when the actual representation's content is needed.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -38,7 +38,7 @@ public abstract class OutputRepresentation extends StreamRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *            The representation's mediaType.
+     *                The representation's mediaType.
      */
     public OutputRepresentation(MediaType mediaType) {
         super(mediaType);
@@ -48,9 +48,9 @@ public abstract class OutputRepresentation extends StreamRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *            The representation's mediaType.
+     *                The representation's mediaType.
      * @param expectedSize
-     *            The expected input stream size.
+     *                The expected input stream size.
      */
     public OutputRepresentation(MediaType mediaType, long expectedSize) {
         super(mediaType);
@@ -67,4 +67,10 @@ public abstract class OutputRepresentation extends StreamRepresentation {
         return ByteUtils.getStream(this);
     }
 
+    /**
+     * Default implementation with no behavior.
+     */
+    @Override
+    public void release() {
+    }
 }

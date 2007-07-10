@@ -52,7 +52,7 @@ public class WrapperRepresentation extends Representation {
      * Constructor.
      * 
      * @param wrappedRepresentation
-     *            The wrapped representation.
+     *                The wrapped representation.
      */
     public WrapperRepresentation(Representation wrappedRepresentation) {
         this.wrappedRepresentation = wrappedRepresentation;
@@ -140,6 +140,11 @@ public class WrapperRepresentation extends Representation {
     @Override
     public boolean isTransient() {
         return getWrappedRepresentation().isTransient();
+    }
+
+    @Override
+    public void release() {
+        getWrappedRepresentation().release();
     }
 
     @Override

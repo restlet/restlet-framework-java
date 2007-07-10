@@ -26,8 +26,12 @@ import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
 /**
- * Representation based on a writable NIO byte channel. The
- * write(WritableByteChannel) method needs to be overriden in subclasses.
+ * Representation based on a writable NIO byte channel. This class is a good
+ * basis to write your own representations, especially for the dynamic and large
+ * ones. For this you just need to create a subclass and override the abstract
+ * Representation.write(WritableByteChannel) method. This method will later be
+ * called back by the connectors when the actual representation's content is
+ * needed.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -36,7 +40,7 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public WritableRepresentation(MediaType mediaType) {
         super(mediaType);
@@ -50,5 +54,12 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
     @Override
     public abstract void write(WritableByteChannel writableChannel)
             throws IOException;
+
+    /**
+     * Default implementation with no behavior.
+     */
+    @Override
+    public void release() {
+    }
 
 }

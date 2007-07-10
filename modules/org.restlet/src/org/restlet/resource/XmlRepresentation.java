@@ -240,6 +240,17 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     }
 
     /**
+     * Releases the namespaces map.
+     */
+    @Override
+    public void release() {
+        if (this.namespaces != null) {
+            this.namespaces.clear();
+            this.namespaces = null;
+        }
+    }
+
+    /**
      * Indicates if processing is namespace aware.
      * 
      * @param namespaceAware

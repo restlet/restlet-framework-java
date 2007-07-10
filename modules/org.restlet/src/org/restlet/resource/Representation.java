@@ -69,7 +69,7 @@ public abstract class Representation extends Variant {
      * Constructor.
      * 
      * @param mediaType
-     *            The media type.
+     *                The media type.
      */
     public Representation(MediaType mediaType) {
         super(mediaType);
@@ -161,10 +161,20 @@ public abstract class Representation extends Variant {
     }
 
     /**
+     * Releases the representation's content and all associated objects like
+     * sockets, channels or files. If the representation is transient and hasn't
+     * been read yet, all the remaining content will be discarded, any open
+     * socket, channel, file or similar source of content will be immediately
+     * closed.
+     */
+    public void release() {
+    }
+
+    /**
      * Indicates if some fresh content is available.
      * 
      * @param available
-     *            True if some fresh content is available.
+     *                True if some fresh content is available.
      */
     public void setAvailable(boolean available) {
         this.contentAvailable = available;
@@ -174,7 +184,7 @@ public abstract class Representation extends Variant {
      * Indicates if the representation's content is transient.
      * 
      * @param isTransient
-     *            True if the representation's content is transient.
+     *                True if the representation's content is transient.
      */
     public void setTransient(boolean isTransient) {
         this.contentTransient = isTransient;
@@ -186,7 +196,7 @@ public abstract class Representation extends Variant {
      * representation, in which case an exception is thrown.
      * 
      * @param outputStream
-     *            The output stream.
+     *                The output stream.
      * @throws IOException
      */
     public abstract void write(OutputStream outputStream) throws IOException;
@@ -197,7 +207,7 @@ public abstract class Representation extends Variant {
      * representation, in which case an exception is thrown.
      * 
      * @param writableChannel
-     *            A writable byte channel.
+     *                A writable byte channel.
      * @throws IOException
      */
     public abstract void write(WritableByteChannel writableChannel)
@@ -209,7 +219,7 @@ public abstract class Representation extends Variant {
      * representation, in which case an exception is thrown.
      * 
      * @param writer
-     *            The characters writer.
+     *                The characters writer.
      * @throws IOException
      */
     public abstract void write(Writer writer) throws IOException;
