@@ -58,7 +58,7 @@ public class DomRepresentation extends XmlRepresentation {
      * Constructor for an empty document.
      * 
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public DomRepresentation(MediaType mediaType) throws IOException {
         super(mediaType);
@@ -69,9 +69,9 @@ public class DomRepresentation extends XmlRepresentation {
      * Constructor from an existing DOM document.
      * 
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      * @param xmlDocument
-     *            The source DOM document.
+     *                The source DOM document.
      */
     public DomRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
@@ -82,7 +82,7 @@ public class DomRepresentation extends XmlRepresentation {
      * Constructor.
      * 
      * @param xmlRepresentation
-     *            A source XML representation to parse.
+     *                A source XML representation to parse.
      */
     public DomRepresentation(Representation xmlRepresentation) {
         super(xmlRepresentation.getMediaType());
@@ -147,7 +147,7 @@ public class DomRepresentation extends XmlRepresentation {
      * Sets the wrapped DOM document.
      * 
      * @param dom
-     *            The wrapped DOM document.
+     *                The wrapped DOM document.
      */
     public void setDocument(Document dom) {
         this.dom = dom;
@@ -156,14 +156,20 @@ public class DomRepresentation extends XmlRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         try {
-            Transformer transformer = TransformerFactory.newInstance()
-                    .newTransformer();
-            transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
-                    getDocument().getDoctype().getSystemId());
-            transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
-                    getDocument().getDoctype().getPublicId());
-            transformer.transform(new DOMSource(getDocument()),
-                    new StreamResult(outputStream));
+            if (getDocument() != null) {
+                Transformer transformer = TransformerFactory.newInstance()
+                        .newTransformer();
+
+                if (getDocument().getDoctype() != null) {
+                    transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
+                            getDocument().getDoctype().getSystemId());
+                    transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
+                            getDocument().getDoctype().getPublicId());
+                }
+
+                transformer.transform(new DOMSource(getDocument()),
+                        new StreamResult(outputStream));
+            }
         } catch (TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tce.getMessage());
