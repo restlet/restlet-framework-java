@@ -150,14 +150,20 @@ public class DomRepresentation extends XmlRepresentation {
      */
     public void write(OutputStream outputStream) throws IOException {
         try {
-            Transformer transformer = TransformerFactory.newInstance()
-                    .newTransformer();
-            transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
-                    getDocument().getDoctype().getSystemId());
-            transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
-                    getDocument().getDoctype().getPublicId());
-            transformer.transform(new DOMSource(getDocument()),
-                    new StreamResult(outputStream));
+            if (getDocument() != null) {
+                Transformer transformer = TransformerFactory.newInstance()
+                        .newTransformer();
+
+                if (getDocument().getDoctype() != null) {
+                    transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
+                            getDocument().getDoctype().getSystemId());
+                    transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
+                            getDocument().getDoctype().getPublicId());
+                }
+
+                transformer.transform(new DOMSource(getDocument()),
+                        new StreamResult(outputStream));
+            }
         } catch (TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tce.getMessage());
