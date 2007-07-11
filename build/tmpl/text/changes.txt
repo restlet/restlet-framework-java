@@ -14,6 +14,8 @@ Changes log
  - Fixed potential NPE in DomRepresentation.write() method. Reported by Dan Fitzgerald.
  - The ServletContextAdapter passed by the ServerServlet to the Restlet's Application was
    not given to the constructor but via the setContext() method. Reported by Tammy Croteau.
+ - Fixed bug in StreamClientCall which wasn't passing the query parameters in the request URI.
+   Reported by Michael Terrington.
 
 [Enhancements] 
  - 

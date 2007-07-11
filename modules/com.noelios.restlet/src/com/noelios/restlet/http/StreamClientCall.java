@@ -50,13 +50,13 @@ public class StreamClientCall extends HttpClientCall {
      * Constructor.
      * 
      * @param helper
-     *            The client connector helper.
+     *                The client connector helper.
      * @param request
-     *            The request to send.
+     *                The request to send.
      */
     public StreamClientCall(StreamClientHelper helper, Request request) {
         super(helper, request.getMethod().toString(), request.getResourceRef()
-                .getPath());
+                .getIdentifier());
 
         // Set the HTTP version
         setVersion("HTTP/1.1");
@@ -67,9 +67,9 @@ public class StreamClientCall extends HttpClientCall {
      * response.
      * 
      * @param hostDomain
-     *            The target host domain name.
+     *                The target host domain name.
      * @param hostPort
-     *            The target host port.
+     *                The target host port.
      * @return The created socket.
      * @throws UnknownHostException
      * @throws IOException
