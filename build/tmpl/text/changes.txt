@@ -12,6 +12,8 @@ Changes log
  - Clarified Javadocs for Directory about the modification mode. Suggested by Chuck Hinson.
  - Clarified Javadocs for OutputRepresentation. Suggested by Jon Lachelt.
  - Fixed potential NPE in DomRepresentation.write() method. Reported by Dan Fitzgerald.
+ - The ServletContextAdapter passed by the ServerServlet to the Restlet's Application was
+   not given to the constructor but via the setContext() method. Reported by Tammy Croteau.
 
 [Enhancements] 
  - 
