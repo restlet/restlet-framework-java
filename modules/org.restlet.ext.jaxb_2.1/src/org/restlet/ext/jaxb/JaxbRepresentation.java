@@ -296,14 +296,14 @@ public class JaxbRepresentation extends XmlRepresentation {
      * @return The JAXB context.
      * @throws JAXBException
      */
-    private static synchronized JAXBContext getContext(String pkg)
+    private static synchronized JAXBContext getContext(String contextPath)
             throws JAXBException {
         // Contexts are thread-safe so reuse those.
-        JAXBContext result = contexts.get(pkg);
+        JAXBContext result = contexts.get(contextPath);
 
         if (result == null) {
-            result = JAXBContext.newInstance(pkg);
-            contexts.put(pkg, result);
+            result = JAXBContext.newInstance(contextPath);
+            contexts.put(contextPath, result);
         }
 
         return result;
@@ -316,7 +316,7 @@ public class JaxbRepresentation extends XmlRepresentation {
      * The list of Java package names that contain schema derived class and/or
      * Java to schema (JAXB-annotated) mapped classes.
      */
-    private final String contextPath;
+    private String contextPath;
 
     /** The JAXB validation event handler. */
     private ValidationEventHandler validationEventHandler;
@@ -335,16 +335,14 @@ public class JaxbRepresentation extends XmlRepresentation {
      * 
      * @param mediaType
      *                The representation's media type.
-     * @param contextPath
-     *                The list of Java package names for JAXB.
      * @param object
      *                The Java object.
      */
-    public JaxbRepresentation(MediaType mediaType, String contextPath,
-            Object object) {
+    public JaxbRepresentation(MediaType mediaType, Object object) {
         super(mediaType);
-        this.contextPath = contextPath;
         this.object = object;
+        this.contextPath = (object != null) ? object.getClass().getPackage()
+                .getName() : null;
         this.validationEventHandler = null;
         this.xmlRepresentation = null;
     }
@@ -515,6 +513,17 @@ public class JaxbRepresentation extends XmlRepresentation {
      */
     public boolean isFormattedOutput() {
         return this.formattedOutput;
+    }
+
+    /**
+     * Sets the list of Java package names that contain schema derived class
+     * and/or Java to schema (JAXB-annotated) mapped classes.
+     * 
+     * @param contextPath
+     *                The JAXB context path.
+     */
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
     }
 
     /**
