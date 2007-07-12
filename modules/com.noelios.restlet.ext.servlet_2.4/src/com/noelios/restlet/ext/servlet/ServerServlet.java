@@ -148,7 +148,7 @@ public class ServerServlet extends HttpServlet {
                 // According to
                 // http://www.caucho.com/resin-3.0/webapp/faq.xtp#Class.forName()-doesn't-seem-to-work-right
                 // this approach may need to used when loading classes.
-                Class targetClass;
+                Class<?> targetClass;
                 ClassLoader loader = Thread.currentThread()
                         .getContextClassLoader();
 

@@ -5,7 +5,6 @@ Bundle-SymbolicName: javax.mail
 Bundle-Version: 1.4
 Bundle-ClassPath: mail.jar
 Bundle-Vendor: Sun Microsystems Inc.
-Bundle-Localization: plugin
 Export-Package: com.sun.mail.handlers,
  com.sun.mail.iap,
  com.sun.mail.imap,

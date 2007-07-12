@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.apache.velocity
 Bundle-Version: 1.5
 Bundle-ClassPath: org.apache.velocity.jar
 Bundle-Vendor: Apache Software Foundation
-Bundle-Localization: plugin
 Export-Package: org.apache.velocity,
  org.apache.velocity.anakia,
  org.apache.velocity.app,

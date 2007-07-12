@@ -4,7 +4,6 @@ Bundle-Name: Noelios Restlet Engine - Extension - Spring Framework
 Bundle-SymbolicName: org.restlet.ext.spring
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
-Bundle-Localization: plugin
 Require-Bundle: org.springframework;visibility:=reexport,
  org.restlet;visibility:=reexport
 Export-Package: org.restlet.ext.spring

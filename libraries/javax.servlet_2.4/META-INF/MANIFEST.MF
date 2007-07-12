@@ -4,7 +4,6 @@ Bundle-Name: Servlet API
 Bundle-SymbolicName: javax.servlet4
 Bundle-Version: 2.4
 Bundle-ClassPath: javax.servlet.jar
-Bundle-Localization: plugin
 Export-Package: javax.servlet,
  javax.servlet.http,
  javax.servlet.jsp,

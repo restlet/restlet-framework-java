@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.mortbay.jetty5
 Bundle-Version: 5.1.12
 Bundle-ClassPath: org.mortbay.jetty.jar
 Bundle-Vendor: Mortbay Consulting
-Bundle-Localization: plugin
 Export-Package: org.mortbay.html,
  org.mortbay.http,
  org.mortbay.http.ajp,

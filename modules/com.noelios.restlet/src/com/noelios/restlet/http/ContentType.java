@@ -32,56 +32,56 @@ import com.noelios.restlet.util.PreferenceReader;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ContentType {
-    /**
-     * The content media type.
-     */
-    private MediaType mediaType;
+	/**
+	 * The content media type.
+	 */
+	private MediaType mediaType;
 
-    /**
-     * The content character set.
-     */
-    private CharacterSet characterSet;
+	/**
+	 * The content character set.
+	 */
+	private CharacterSet characterSet;
 
-    /**
-     * Constructor.
-     * 
-     * @param headerValue
-     *            The "Content-type" header to parse.
-     */
-    public ContentType(String headerValue) {
-        try {
-            PreferenceReader pr = new PreferenceReader(
-                    PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
-            Preference pref;
-            pref = pr.readPreference();
-            this.mediaType = (MediaType) pref.getMetadata();
+	/**
+	 * Constructor.
+	 * 
+	 * @param headerValue
+	 *            The "Content-type" header to parse.
+	 */
+	public ContentType(String headerValue) {
+		try {
+			PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
+					PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
+			Preference<MediaType> pref;
+			pref = pr.readPreference();
+			this.mediaType = pref.getMetadata();
 
-            String charSet = this.mediaType.getParameters().getFirstValue(
-                    "charset");
-            if (charSet != null) {
-                this.characterSet = new CharacterSet(charSet);
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
+			String charSet = this.mediaType.getParameters().getFirstValue(
+					"charset");
+			if (charSet != null) {
+				this.characterSet = new CharacterSet(charSet);
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
 
-    /**
-     * Returns the media type.
-     * 
-     * @return The media type.
-     */
-    public MediaType getMediaType() {
-        return mediaType;
-    }
+	/**
+	 * Returns the media type.
+	 * 
+	 * @return The media type.
+	 */
+	public MediaType getMediaType() {
+		return mediaType;
+	}
 
-    /**
-     * Returns the character set.
-     * 
-     * @return The character set.
-     */
-    public CharacterSet getCharacterSet() {
-        return characterSet;
-    }
+	/**
+	 * Returns the character set.
+	 * 
+	 * @return The character set.
+	 */
+	public CharacterSet getCharacterSet() {
+		return characterSet;
+	}
 
 }

@@ -45,142 +45,144 @@ import com.noelios.restlet.http.HttpServerCall;
  *         href="http://www.semagia.com/">Semagia</a>
  */
 public class AsyncWebServerCall extends HttpServerCall {
-    /** AsyncWeb request. */
-    private Request request;
+	/** AsyncWeb request. */
+	private Request request;
 
-    /** Indicates if the request headers were parsed and added. */
-    private boolean requestHeadersAdded;
+	/** Indicates if the request headers were parsed and added. */
+	private boolean requestHeadersAdded;
 
-    /**
-     * AsyncWeb response.
-     */
-    private Response response;
+	/**
+	 * AsyncWeb response.
+	 */
+	private Response response;
 
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The parent server connector.
-     * @param request
-     *            The AsyncWebRequest.
-     * @param response
-     *            The AsyncWebResponse.
-     * @param confidential
-     *            Indicates if the server is acting in HTTPS mode.
-     */
-    public AsyncWebServerCall(Server server, HttpRequest request,
-            HttpResponse response, boolean confidential) {
-        super(server);
-        this.request = (Request) request;
-        this.requestHeadersAdded = false;
-        this.response = (Response) response;
-        setConfidential(confidential);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param server
+	 *            The parent server connector.
+	 * @param request
+	 *            The AsyncWebRequest.
+	 * @param response
+	 *            The AsyncWebResponse.
+	 * @param confidential
+	 *            Indicates if the server is acting in HTTPS mode.
+	 */
+	public AsyncWebServerCall(Server server, HttpRequest request,
+			HttpResponse response, boolean confidential) {
+		super(server);
+		this.request = (Request) request;
+		this.requestHeadersAdded = false;
+		this.response = (Response) response;
+		setConfidential(confidential);
+	}
 
-    @Override
-    public String getClientAddress() {
-        return request.getRemoteAddress();
-    }
+	@Override
+	public String getClientAddress() {
+		return request.getRemoteAddress();
+	}
 
-    @Override
-    public int getClientPort() {
-        return request.getRemotePort();
-    }
+	@Override
+	public int getClientPort() {
+		return request.getRemotePort();
+	}
 
-    @Override
-    public String getRequestUri() {
-        StringBuilder stringBuilder = new StringBuilder(request.getRequestURI());
+	@SuppressWarnings("unchecked")
+	@Override
+	public String getRequestUri() {
+		StringBuilder stringBuilder = new StringBuilder(request.getRequestURI());
 
-        // The query seems to be automatically parsed and decoded by AsyncWeb.
-        // Therefore, we should rebuild the entire query string in order to
-        // generate a proper URI.
-        if (request.getParameterNames().hasNext()) {
-            stringBuilder.append("?");
-            for (Iterator iterName = request.getParameterNames(); iterName
-                    .hasNext();) {
-                String name = (String) iterName.next();
-                if (request.getParameterValues(name).hasNext()) {
-                    for (Iterator iterValue = request.getParameterValues(name); iterValue
-                            .hasNext();) {
-                        String value = (String) iterValue.next();
-                        // As the query seems to be decoded in the Latin1
-                        // character set, we should encode it.
-                        stringBuilder
-                                .append(
-                                        Reference.encode(name,
-                                                CharacterSet.ISO_8859_1))
-                                .append("=").append(
-                                        Reference.encode(value,
-                                                CharacterSet.ISO_8859_1));
-                        if (iterValue.hasNext()) {
-                            stringBuilder.append("&");
-                        }
-                    }
+		// The query seems to be automatically parsed and decoded by AsyncWeb.
+		// Therefore, we should rebuild the entire query string in order to
+		// generate a proper URI.
+		if (request.getParameterNames().hasNext()) {
+			stringBuilder.append("?");
+			for (Iterator<String> iterName = request.getParameterNames(); iterName
+					.hasNext();) {
+				String name = (String) iterName.next();
+				if (request.getParameterValues(name).hasNext()) {
+					for (Iterator<String> iterValue = request
+							.getParameterValues(name); iterValue.hasNext();) {
+						String value = (String) iterValue.next();
+						// As the query seems to be decoded in the Latin1
+						// character set, we should encode it.
+						stringBuilder
+								.append(
+										Reference.encode(name,
+												CharacterSet.ISO_8859_1))
+								.append("=").append(
+										Reference.encode(value,
+												CharacterSet.ISO_8859_1));
+						if (iterValue.hasNext()) {
+							stringBuilder.append("&");
+						}
+					}
 
-                }
-                if (iterName.hasNext()) {
-                    stringBuilder.append("&");
-                }
-            }
-        }
-        return stringBuilder.toString();
-    }
+				}
+				if (iterName.hasNext()) {
+					stringBuilder.append("&");
+				}
+			}
+		}
+		return stringBuilder.toString();
+	}
 
-    @Override
-    public String getMethod() {
-        return request.getMethod().getName();
-    }
+	@Override
+	public String getMethod() {
+		return request.getMethod().getName();
+	}
 
-    @Override
-    public Series<Parameter> getRequestHeaders() {
-        Series<Parameter> result = super.getRequestHeaders();
+	@Override
+	public Series<Parameter> getRequestHeaders() {
+		Series<Parameter> result = super.getRequestHeaders();
 
-        if (!this.requestHeadersAdded) {
-            HttpHeaders headers = request.getHeaders();
-            int headerCount = headers.getSize();
-            for (int i = 0; i < headerCount; i++) {
-                result.add(headers.getHeaderName(i).getValue(), headers
-                        .getHeaderValue(i).getValue());
-            }
+		if (!this.requestHeadersAdded) {
+			HttpHeaders headers = request.getHeaders();
+			int headerCount = headers.getSize();
+			for (int i = 0; i < headerCount; i++) {
+				result.add(headers.getHeaderName(i).getValue(), headers
+						.getHeaderValue(i).getValue());
+			}
 
-            this.requestHeadersAdded = true;
-        }
+			this.requestHeadersAdded = true;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public void writeResponseHead(org.restlet.data.Response restletResponse) throws IOException {
-        response.setStatus(ResponseStatus.forId(getStatusCode()),
-                getReasonPhrase());
+	@Override
+	public void writeResponseHead(org.restlet.data.Response restletResponse)
+			throws IOException {
+		response.setStatus(ResponseStatus.forId(getStatusCode()),
+				getReasonPhrase());
 
-        // Ensure that headers are empty
-        response.getHeaders().dispose();
-        for (Parameter header : super.getResponseHeaders()) {
-            response.addHeader(header.getName(), header.getValue());
-        }
-    }
+		// Ensure that headers are empty
+		response.getHeaders().dispose();
+		for (Parameter header : super.getResponseHeaders()) {
+			response.addHeader(header.getName(), header.getValue());
+		}
+	}
 
-    @Override
-    public ReadableByteChannel getRequestChannel() {
-        // Unsupported.
-        return null;
-    }
+	@Override
+	public ReadableByteChannel getRequestChannel() {
+		// Unsupported.
+		return null;
+	}
 
-    @Override
-    public InputStream getRequestStream() {
-        return request.getInputStream();
-    }
+	@Override
+	public InputStream getRequestStream() {
+		return request.getInputStream();
+	}
 
-    @Override
-    public WritableByteChannel getResponseChannel() {
-        // Unsupported.
-        return null;
-    }
+	@Override
+	public WritableByteChannel getResponseChannel() {
+		// Unsupported.
+		return null;
+	}
 
-    @Override
-    public OutputStream getResponseStream() {
-        return response.getOutputStream();
-    }
+	@Override
+	public OutputStream getResponseStream() {
+		return response.getOutputStream();
+	}
 
 }

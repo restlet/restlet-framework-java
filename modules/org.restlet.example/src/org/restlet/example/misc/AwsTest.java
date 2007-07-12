@@ -23,6 +23,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -35,35 +36,35 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class AwsTest {
-    public static void main(String[] args) throws Exception {
-        // Prepare the request
-        Request request = new Request(Method.GET,
-                "http://s3.amazonaws.com/quotes/nelson");
-        request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.HTTP_AWS, "44CF9590006BF252F707",
-                "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"));
+	public static void main(String[] args) throws Exception {
+		// Prepare the request
+		Request request = new Request(Method.GET,
+				"http://s3.amazonaws.com/quotes/nelson");
+		request.setChallengeResponse(new ChallengeResponse(
+				ChallengeScheme.HTTP_AWS, "44CF9590006BF252F707",
+				"OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"));
 
-        // Add some extra headers
-        Series extraHeaders = new Form();
-        extraHeaders.add("X-Amz-Meta-Author", "foo@bar.com");
-        extraHeaders.add("X-Amz-Magic", "abracadabra");
+		// Add some extra headers
+		Series<Parameter> extraHeaders = new Form();
+		extraHeaders.add("X-Amz-Meta-Author", "foo@bar.com");
+		extraHeaders.add("X-Amz-Magic", "abracadabra");
 
-        // For the test we hard coded a special date header. Normally you don't
-        // need this as the
-        // HTTP client connector will automatically provide an accurate Date
-        // header and use it
-        // for authentication.
-        // extraHeaders.add("X-Amz-Date", "Thu, 17 Nov 2005 18:49:58 GMT");
+		// For the test we hard coded a special date header. Normally you don't
+		// need this as the
+		// HTTP client connector will automatically provide an accurate Date
+		// header and use it
+		// for authentication.
+		// extraHeaders.add("X-Amz-Date", "Thu, 17 Nov 2005 18:49:58 GMT");
 
-        request.getAttributes().put("org.restlet.http.headers", extraHeaders);
+		request.getAttributes().put("org.restlet.http.headers", extraHeaders);
 
-        // Handle it using an HTTP client connector
-        Client client = new Client(Protocol.HTTP);
-        Response response = client.handle(request);
+		// Handle it using an HTTP client connector
+		Client client = new Client(Protocol.HTTP);
+		Response response = client.handle(request);
 
-        // Write the response entity on the console
-        Representation output = response.getEntity();
-        output.write(System.out);
-    }
+		// Write the response entity on the console
+		Representation output = response.getEntity();
+		output.write(System.out);
+	}
 
 }

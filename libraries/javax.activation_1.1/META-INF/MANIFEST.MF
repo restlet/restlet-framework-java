@@ -5,7 +5,6 @@ Bundle-SymbolicName: javax.activation
 Bundle-Version: 1.1
 Bundle-ClassPath: activation.jar
 Bundle-Vendor: Sun Microsystems Inc.
-Bundle-Localization: plugin
 Export-Package: com.sun.activation.registries,
  com.sun.activation.viewers,
  javax.activation

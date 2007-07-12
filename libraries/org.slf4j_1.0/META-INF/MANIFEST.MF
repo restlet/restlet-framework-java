@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.slf4j
 Bundle-Version: 1.0.2
 Bundle-ClassPath: org.slf4j.jar
 Bundle-Vendor: slf4j.org
-Bundle-Localization: plugin
 Export-Package: org.slf4j,
  org.slf4j.impl,
  org.slf4j.spi

@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.apache.mina
 Bundle-Version: 0.8.4
 Bundle-ClassPath: org.apache.mina.jar
 Bundle-Vendor: Apache Software Foundation
-Bundle-Localization: plugin
 Export-Package: org.apache.mina.common,
  org.apache.mina.examples.echoserver,
  org.apache.mina.examples.echoserver.ssl,

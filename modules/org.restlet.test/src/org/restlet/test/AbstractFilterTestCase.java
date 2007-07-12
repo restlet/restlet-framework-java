@@ -65,7 +65,7 @@ public abstract class AbstractFilterTestCase extends RestletTestCase {
      * 
      * @return Restlet class.
      */
-    protected abstract Class getRestletClass();
+    protected abstract Class<?> getRestletClass();
 
     /**
      * Test Restlet instance attaching/detaching.

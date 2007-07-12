@@ -7,7 +7,6 @@ Bundle-ClassPath: org.springframework.context.jar,
  org.springframework.core.jar,
  org.springframework.beans.jar
 Bundle-Vendor: Spring Framework
-Bundle-Localization: plugin
 Export-Package: 
  org.springframework.beans,
  org.springframework.beans.annotation,

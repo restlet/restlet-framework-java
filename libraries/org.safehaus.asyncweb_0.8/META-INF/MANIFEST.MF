@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.safehaus.asyncweb
 Bundle-Version: 0.8.2
 Bundle-ClassPath: org.safehaus.asyncweb.jar
 Bundle-Vendor: Safehaus
-Bundle-Localization: plugin
 Export-Package: org.safehaus.asyncweb.codec,
  org.safehaus.asyncweb.container,
  org.safehaus.asyncweb.container.basic,

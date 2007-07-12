@@ -22,6 +22,7 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -33,47 +34,48 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HeadersTest {
-    public static void main(String[] args) throws Exception {
-        Restlet restlet = new Restlet() {
-            @Override
-            public void handle(Request request, Response response) {
-                // ------------------------------
-                // Getting an HTTP request header
-                // ------------------------------
-                Series headers = (Series) request.getAttributes()
-                        .get("org.restlet.http.headers");
+	public static void main(String[] args) throws Exception {
+		Restlet restlet = new Restlet() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void handle(Request request, Response response) {
+				// ------------------------------
+				// Getting an HTTP request header
+				// ------------------------------
+				Series<Parameter> headers = (Series<Parameter>) request
+						.getAttributes().get("org.restlet.http.headers");
 
-                // The headers list contains all received HTTP headers, in raw
-                // format.
-                // Below, we simply display the standard "Accept" HTTP header.
-                response.setEntity("Accept header: "
-                        + headers.getFirstValue("accept", true),
-                        MediaType.TEXT_PLAIN);
+				// The headers list contains all received HTTP headers, in raw
+				// format.
+				// Below, we simply display the standard "Accept" HTTP header.
+				response.setEntity("Accept header: "
+						+ headers.getFirstValue("accept", true),
+						MediaType.TEXT_PLAIN);
 
-                // -----------------------
-                // Adding response headers
-                // -----------------------
-                headers = new Form();
+				// -----------------------
+				// Adding response headers
+				// -----------------------
+				headers = new Form();
 
-                // Non-standard headers are allowed
-                headers.add("X-Test", "Test value");
+				// Non-standard headers are allowed
+				headers.add("X-Test", "Test value");
 
-                // Standard HTTP headers are forbidden. If you happen to add one
-                // like the "Location"
-                // header below, it will be ignored and a warning message will
-                // be displayed in the logs.
-                headers.add("Location", "http://www.restlet.org");
+				// Standard HTTP headers are forbidden. If you happen to add one
+				// like the "Location"
+				// header below, it will be ignored and a warning message will
+				// be displayed in the logs.
+				headers.add("Location", "http://www.restlet.org");
 
-                // Setting the additional headers into the shared call's
-                // attribute
-                response.getAttributes().put("org.restlet.http.headers",
-                        headers);
-            }
-        };
+				// Setting the additional headers into the shared call's
+				// attribute
+				response.getAttributes().put("org.restlet.http.headers",
+						headers);
+			}
+		};
 
-        // Create the HTTP server and listen on port 8182
-        Server server = new Server(Protocol.HTTP, 8182, restlet);
-        server.start();
-    }
+		// Create the HTTP server and listen on port 8182
+		Server server = new Server(Protocol.HTTP, 8182, restlet);
+		server.start();
+	}
 
 }
