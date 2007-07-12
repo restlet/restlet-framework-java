@@ -52,8 +52,6 @@ import org.restlet.util.Helper;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.component.ComponentHelper;
-import com.noelios.restlet.http.StreamClientHelper;
-import com.noelios.restlet.http.StreamServerHelper;
 import com.noelios.restlet.local.DirectoryResource;
 import com.noelios.restlet.util.FormUtils;
 
@@ -213,11 +211,6 @@ public class Engine extends org.restlet.util.Engine {
 								"Exception while detecting the client connectors.",
 								ioe);
 			}
-
-			// Register the default connectors that will be used if no
-			// other connector has been found
-			getRegisteredClients().add(new StreamClientHelper(null));
-			getRegisteredServers().add(new StreamServerHelper(null));
 		}
 	}
 

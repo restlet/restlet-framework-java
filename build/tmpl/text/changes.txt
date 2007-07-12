@@ -16,6 +16,8 @@ Changes log
    not given to the constructor but via the setContext() method. Reported by Tammy Croteau.
  - Fixed bug in StreamClientCall which wasn't passing the query parameters in the request URI.
    Reported by Michael Terrington.
+ - Removed unwanted exposing of internal HTTP client and server connector, introduced
+   in version 1.0.2. Those connectors are experimental and not ready for public usage.
 
 [Enhancements] 
  - Clean up of all the project to support Eclipse 3.3.
