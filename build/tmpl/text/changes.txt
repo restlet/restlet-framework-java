@@ -6,6 +6,10 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - Fixed spacing issue in HTTP reading/writing code (NRE's HttpUtils class). Reported by Ilya Klyuchnikov.
+
+1.0.3 (2007-07-15)
+[Bugs fixed]
  - Fixed Javadoc issue in Reference.setQuery. Reported by Avi Flax.
  - Fixed bug with the nsis ant task that requires the path to the 
    "makensis" executable with NSIS 2.28.
