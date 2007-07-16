@@ -36,9 +36,9 @@ public class HttpUtils {
      * Appends a source string as an HTTP comment.
      * 
      * @param source
-     *            The source string to format.
+     *                The source string to format.
      * @param destination
-     *            The appendable destination.
+     *                The appendable destination.
      * @throws IOException
      */
     public Appendable appendComment(CharSequence source, Appendable destination)
@@ -68,9 +68,9 @@ public class HttpUtils {
      * Creates a parameter.
      * 
      * @param name
-     *            The parameter name buffer.
+     *                The parameter name buffer.
      * @param value
-     *            The parameter value buffer (can be null).
+     *                The parameter value buffer (can be null).
      * @return The created parameter.
      * @throws IOException
      */
@@ -87,9 +87,9 @@ public class HttpUtils {
      * Appends a source string as an HTTP quoted string.
      * 
      * @param source
-     *            The unquoted source string.
+     *                The unquoted source string.
      * @param destination
-     *            The destination to append to.
+     *                The destination to append to.
      * @throws IOException
      */
     public static Appendable appendQuote(CharSequence source,
@@ -117,11 +117,11 @@ public class HttpUtils {
      * Appends a source string as an URI encoded string.
      * 
      * @param source
-     *            The source string to format.
+     *                The source string to format.
      * @param destination
-     *            The appendable destination.
+     *                The appendable destination.
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      * @throws IOException
      */
     public static Appendable appendUriEncoded(CharSequence source,
@@ -135,11 +135,11 @@ public class HttpUtils {
      * Formats a product description.
      * 
      * @param nameToken
-     *            The product name token.
+     *                The product name token.
      * @param versionToken
-     *            The product version token.
+     *                The product version token.
      * @param destination
-     *            The appendable destination;
+     *                The appendable destination;
      * @throws IOException
      */
     public static void formatProduct(CharSequence nameToken,
@@ -166,7 +166,7 @@ public class HttpUtils {
      * Indicates if the given character is in ASCII range.
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is in ASCII range.
      */
     public static boolean isAsciiChar(int character) {
@@ -177,7 +177,7 @@ public class HttpUtils {
      * Indicates if the given character is upper case (A-Z).
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is upper case (A-Z).
      */
     public static boolean isUpperCase(int character) {
@@ -188,7 +188,7 @@ public class HttpUtils {
      * Indicates if the given character is lower case (a-z).
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is lower case (a-z).
      */
     public static boolean isLowerCase(int character) {
@@ -199,7 +199,7 @@ public class HttpUtils {
      * Indicates if the given character is alphabetical (a-z or A-Z).
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is alphabetical (a-z or A-Z).
      */
     public static boolean isAlpha(int character) {
@@ -210,7 +210,7 @@ public class HttpUtils {
      * Indicates if the given character is a digit (0-9).
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is a digit (0-9).
      */
     public static boolean isDigit(int character) {
@@ -221,7 +221,7 @@ public class HttpUtils {
      * Indicates if the given character is a control character.
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is a control character.
      */
     public static boolean isControlChar(int character) {
@@ -232,7 +232,7 @@ public class HttpUtils {
      * Indicates if the given character is a carriage return.
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is a carriage return.
      */
     public static boolean isCarriageReturn(int character) {
@@ -243,7 +243,7 @@ public class HttpUtils {
      * Indicates if the given character is a line feed.
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is a line feed.
      */
     public static boolean isLineFeed(int character) {
@@ -254,7 +254,7 @@ public class HttpUtils {
      * Indicates if the given character is a space.
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is a space.
      */
     public static boolean isSpace(int character) {
@@ -265,7 +265,7 @@ public class HttpUtils {
      * Indicates if the given character is an horizontal tab.
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is an horizontal tab.
      */
     public static boolean isHorizontalTab(int character) {
@@ -276,7 +276,7 @@ public class HttpUtils {
      * Indicates if the given character is a double quote.
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is a double quote.
      */
     public static boolean isDoubleQuote(int character) {
@@ -288,7 +288,7 @@ public class HttpUtils {
      * character).
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is textual (ASCII and not a control
      *         character).
      */
@@ -300,7 +300,7 @@ public class HttpUtils {
      * Indicates if the given character is a separator.
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is a separator.
      */
     public static boolean isSeparator(int character) {
@@ -336,7 +336,7 @@ public class HttpUtils {
      * separator).
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is a token character (text and not a
      *         separator).
      */
@@ -349,7 +349,7 @@ public class HttpUtils {
      * characters.
      * 
      * @param token
-     *            The token to check
+     *                The token to check
      * @return True if the token is valid.
      */
     public static boolean isToken(CharSequence token) {
@@ -365,9 +365,9 @@ public class HttpUtils {
      * Read a header. Return null if the last header was already read.
      * 
      * @param is
-     *            The message input stream.
+     *                The message input stream.
      * @param sb
-     *            The string builder to reuse.
+     *                The string builder to reuse.
      * @return The header read or null.
      * @throws IOException
      */
@@ -400,32 +400,32 @@ public class HttpUtils {
                 sb.delete(0, sb.length());
 
                 next = is.read();
-                if (HttpUtils.isSpace(next)) {
-                    // Parse the header value
+                while (HttpUtils.isSpace(next)) {
+                    // Skip any separator space between colon and header value
                     next = is.read();
-                    while ((next != -1) && (!HttpUtils.isCarriageReturn(next))) {
-                        sb.append((char) next);
-                        next = is.read();
-                    }
-
-                    if (next == -1) {
-                        throw new IOException(
-                                "Unable to parse the header value. End of stream reached too early.");
-                    } else {
-                        next = is.read();
-
-                        if (HttpUtils.isLineFeed(next)) {
-                            result.setValue(sb.toString());
-                            sb.delete(0, sb.length());
-                        } else {
-                            throw new IOException(
-                                    "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
-                        }
-                    }
-                } else {
-                    throw new IOException(
-                            "Unable to parse the HTTP header value. Missing space after the colon.");
                 }
+
+                // Parse the header value
+                while ((next != -1) && (!HttpUtils.isCarriageReturn(next))) {
+                    sb.append((char) next);
+                    next = is.read();
+                }
+
+                if (next == -1) {
+                    throw new IOException(
+                            "Unable to parse the header value. End of stream reached too early.");
+                } else {
+                    next = is.read();
+
+                    if (HttpUtils.isLineFeed(next)) {
+                        result.setValue(sb.toString());
+                        sb.delete(0, sb.length());
+                    } else {
+                        throw new IOException(
+                                "Unable to parse the HTTP header value. The carriage return must be followed by a line feed.");
+                    }
+                }
+
             }
         }
 
@@ -436,15 +436,16 @@ public class HttpUtils {
      * Writes a header line.
      * 
      * @param header
-     *            The header to write.
+     *                The header to write.
      * @param os
-     *            The output stream.
+     *                The output stream.
      * @throws IOException
      */
     public static void writeHeader(Parameter header, OutputStream os)
             throws IOException {
         os.write(header.getName().getBytes());
         os.write(':');
+        os.write(' ');
         os.write(header.getValue().getBytes());
         os.write(13); // CR
         os.write(10); // LF
