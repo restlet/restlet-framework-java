@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<!-- Content Stylesheet for Site -->
+
+    
+    
+
+    
+<!-- start the processing -->
+    <!-- ====================================================================== -->
+    <!-- GENERATED FILE, DO NOT EDIT, EDIT THE XML FILE IN xdocs INSTEAD! -->
+    <!-- Main Page Section -->
+    <!-- ====================================================================== -->
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type" />
+
+                          <meta name="author" content="Checkstyle Development Team">
+            <meta name="email" content="checkstyle-devel@lists.sourceforge.net">
+    
+    
+            
+        
+    <title>Checkstyle - Duplicate code</title>
+
+    <style type="text/css" media="all">
+      @import url("./css/cs-layout.css");
+      @import url("./css/cs-style.css");
+    </style>
+  </head>
+
+  <body>
+    <div class="csTopBar">
+      <div class="csTopBarContents">
+        <div class="csLeft">
+          <h1>Duplicate code</h1>
+        </div>
+        <div class="csRight">
+          <a href="http://checkstyle.sourceforge.net/">
+            <img src="images/logo.png" alt="Checkstyle Logo" height="70"/>
+          </a>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="csMiddleContainer">
+      <div class="csLeftBar">
+        <div class="csLeftBarContents">
+            <!-- ============================================================ -->
+  <!-- start makeNavigationBar -->
+  
+  <ul>
+          <li>
+        <strong>About</strong>
+      </li>
+                        <li>    <a href="./index.html">Checkstyle</a>
+</li>
+                    
+  
+          <li>
+        <strong>Documentation</strong>
+      </li>
+                        <li>    <a href="./releasenotes.html">Release Notes</a>
+</li>
+                    
+                  <li>    <a href="./config.html">Configuration</a>
+</li>
+                                    <li>    <a href="./property_types.html">&nbsp;&nbsp;&nbsp;Property Types</a>
+</li>
+                    
+  
+                  <li>    <a href="./running.html">Running</a>
+</li>
+                                    <li>    <a href="./anttask.html">&nbsp;&nbsp;&nbsp;Ant Task</a>
+</li>
+                    
+                  <li>    <a href="./cmdline.html">&nbsp;&nbsp;&nbsp;Command Line</a>
+</li>
+                    
+  
+                  <li>    <a href="./availablechecks.html">Available Checks</a>
+</li>
+                    
+                  <li>    <a href="./checks.html">Standard Checks</a>
+</li>
+                                    <li>    <a href="./config_javadoc.html">&nbsp;&nbsp;&nbsp;Javadoc Comments</a>
+</li>
+                    
+                  <li>    <a href="./config_naming.html">&nbsp;&nbsp;&nbsp;Naming Conventions</a>
+</li>
+                    
+                  <li>    <a href="./config_header.html">&nbsp;&nbsp;&nbsp;Headers</a>
+</li>
+                    
+                  <li>    <a href="./config_imports.html">&nbsp;&nbsp;&nbsp;Imports</a>
+</li>
+                    
+                  <li>    <a href="./config_sizes.html">&nbsp;&nbsp;&nbsp;Size Violations</a>
+</li>
+                    
+                  <li>    <a href="./config_whitespace.html">&nbsp;&nbsp;&nbsp;Whitespace</a>
+</li>
+                    
+                  <li>    <a href="./config_modifier.html">&nbsp;&nbsp;&nbsp;Modifiers</a>
+</li>
+                    
+                  <li>    <a href="./config_blocks.html">&nbsp;&nbsp;&nbsp;Block Checks</a>
+</li>
+                    
+                  <li>    <a href="./config_coding.html">&nbsp;&nbsp;&nbsp;Coding</a>
+</li>
+                    
+                  <li>    <a href="./config_design.html">&nbsp;&nbsp;&nbsp;Class Design</a>
+</li>
+                    
+                  <li><b>    <a href="./config_duplicates.html">&nbsp;&nbsp;&nbsp;Duplicate Code</a>
+</b></li>
+                                                                                                                                                                                                                                                      <li><a href="#StrictDuplicateCode">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StrictDuplicateCode</a></li>
+                                      
+                  <li>    <a href="./config_metrics.html">&nbsp;&nbsp;&nbsp;Metrics</a>
+</li>
+                    
+                  <li>    <a href="./config_misc.html">&nbsp;&nbsp;&nbsp;Miscellaneous</a>
+</li>
+                    
+  
+                  <li>    <a href="./optional.html">Optional Checks</a>
+</li>
+                                    <li>    <a href="./config_j2ee.html">&nbsp;&nbsp;&nbsp;J2EE Checks</a>
+</li>
+                    
+  
+                  <li>    <a href="./extending.html">Extending Checkstyle</a>
+</li>
+                                    <li>    <a href="./writingchecks.html">&nbsp;&nbsp;&nbsp;Writing checks</a>
+</li>
+                    
+                  <li>    <a href="./writingfilters.html">&nbsp;&nbsp;&nbsp;Writing filters</a>
+</li>
+                    
+                  <li>    <a href="./writinglisteners.html">&nbsp;&nbsp;&nbsp;Writing listeners</a>
+</li>
+                    
+  
+                  <li>    <a href="./api/index.html">Javadoc</a>
+</li>
+                    
+  
+          <li>
+        <strong>SourceForge</strong>
+      </li>
+                        <li>    <a href="http://sourceforge.net/mail/?group_id=29721">Mailing Lists</a>
+</li>
+                    
+                  <li>    <a href="http://sourceforge.net/tracker/?atid=397078&group_id=29721&func=browse">Bug Database</a>
+</li>
+                    
+                  <li>    <a href="http://sourceforge.net/tracker/?atid=397081&group_id=29721&func=browse">Feature Requests</a>
+</li>
+                    
+  
+          <li>
+        <strong>Developers</strong>
+      </li>
+                        <li>    <a href="http://sourceforge.net/projects/checkstyle">Project Page</a>
+</li>
+                    
+                  <li>    <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/checkstyle/">CVS Repository</a>
+</li>
+                    
+                  <li>    <a href="./contributing.html">Contributing</a>
+</li>
+                    
+  
+      </ul>
+
+  <ul>
+    <li>
+      <strong>Hosted by:</strong>
+      <div align="center">
+        <p><a href="http://sourceforge.net">
+        <img src="http://sourceforge.net/sflogo.php?group_id=29721&amp;type=1" width="88" height="31" alt="SourceForge Logo"/></a>
+         </p>
+       </div>
+    </li>
+  </ul>
+
+  <!-- end makeNavigationBar -->
+  <!-- ============================================================ -->
+        </div>
+      </div>
+
+      <div class="csMain">
+                       <p>
+<span class="xdocspagetitle">Duplicate code</span> detection allows you to find
+code that has been generated by Copy/Paste programming. Duplicate code typically
+leads to higher maintainance cost because bugs will need to be fixed twice,
+more code needs to be tested, etc.
+</p>
+                               <p>
+There are many trade-offs when writing a duplicate code detection tool.
+Some of the conflicting goals are:
+</p>
+                               <ul>
+<li>Fast</li>
+<li>Low memory usage</li>
+<li>Avoid false alarms</li>
+<li>Support multiple/arbitrary languages (Java, JSP, C++, ...)</li>
+<li>Support Fuzzy matches (comments, whitespace, linebreaks, variable renaming, etc.)</li>
+</ul>
+                               <p>
+The check provided here, StrictDuplicateCode, is fast enough to facilitate checking very large code
+bases in acceptable time (minutes). It consumes very little memory, false
+alarms are not impossible but a really rare case. While it supports multiple
+languages it does not support fuzzy matches (that's why it's called Strict).
+</p>
+                               <p>
+Note that there are brilliant commercial implementations of duplicate code
+detection tools. One that is particularly noteworthy is
+<a href="http://www.redhillconsulting.com.au/products/simian/">Simian</a>
+from RedHill Consulting, Inc.
+Simian has managed to find a very good balance of the above tradeoffs.
+It is superior to the checks in this package in many repects.
+Simian is reasonably priced (free for noncommercial projects)
+and includes a Checkstyle plugin.
+</p>
+                               <p>
+The following table summarizes the characteristics of the available
+Checkstyle plugins for duplicate code detection:
+</p>
+                                <table>
+                                            <tr class="even">
+                        <th valign="top" align="left"
+>
+                Name
+        </th>
+                                <th valign="top" align="left"
+>
+                Speed
+        </th>
+                                <th valign="top" align="left"
+>
+                Memory Usage
+        </th>
+                                <th valign="top" align="left"
+>
+                False Alarms
+        </th>
+                                <th valign="top" align="left"
+>
+                Supported languages
+        </th>
+                                <th valign="top" align="left"
+>
+                Fuzzy matches
+        </th>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                StrictDuplicateCode
+        </td>
+                                <td class="odd"
+>
+                Medium
+        </td>
+                                <td class="odd"
+>
+                Very Low
+        </td>
+                                <td class="odd"
+>
+                Possible but very unlikely
+        </td>
+                                <td class="odd"
+>
+                any language
+        </td>
+                                <td class="odd"
+>
+                No
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                Simian
+        </td>
+                                <td class="even"
+>
+                Very high
+        </td>
+                                <td class="even"
+>
+                Low
+        </td>
+                                <td class="even"
+>
+                Possible but very unlikely
+        </td>
+                                <td class="even"
+>
+                many languages, including Java and C/C++/C#
+        </td>
+                                <td class="even"
+>
+                Limited support
+        </td>
+            </tr>
+            </table>
+                               <p>
+<strong>
+We encourage all users of Checkstyle to evaluate Simian as an
+alternative to the Checks we offer in our distribution.
+</strong>
+</p>
+                                  <a id="StrictDuplicateCode"></a>
+  <h2>StrictDuplicateCode</h2>
+                                    <p>
+ Performs a line-by-line comparison of all code lines and reports
+ duplicate code if a sequence of lines differs only in
+ indentation.  All import statements in Java code are ignored, any
+ other line - including javadoc, whitespace lines between methods,
+ etc. - is considered (which is why the check is called
+ <em>strict</em>).
+ </p>
+                                                        <h3>Properties</h3>
+                                    <table>
+                                            <tr class="even">
+                        <th valign="top" align="left"
+>
+                name
+        </th>
+                                <th valign="top" align="left"
+>
+                description
+        </th>
+                                <th valign="top" align="left"
+>
+                type
+        </th>
+                                <th valign="top" align="left"
+>
+                default value
+        </th>
+            </tr>
+                                                <tr class="odd">
+                        <td class="odd"
+>
+                min
+        </td>
+                                <td class="odd"
+>
+                how many lines must be equal to be considered a duplicate
+        </td>
+                                <td class="odd"
+>
+                <a href="property_types.html#int">int</a>
+        </td>
+                                <td class="odd"
+>
+                <span class="default">12</span>
+        </td>
+            </tr>
+                                                <tr class="even">
+                        <td class="even"
+>
+                charset
+        </td>
+                                <td class="even"
+>
+                name of the file charset
+        </td>
+                                <td class="even"
+>
+                <a href="property_types.html#string">String</a>
+        </td>
+                                <td class="even"
+>
+                System property "file.encoding"
+        </td>
+            </tr>
+            </table>
+                                                                            <h3>Examples</h3>
+                                    <p> To configure the check: </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;StrictDuplicateCode&quot;/&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+ To configure the check so that it allows larger equivalent blocks:
+ </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;StrictDuplicateCode&quot;&gt;
+   &lt;property name=&quot;min&quot; value=&quot;15&quot;/&gt;
+ &lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                <p>
+ To configure the check so that it handles files with the <span class="code">UTF-8</span> charset:
+ </p>
+                                                    <div align="left">
+    <table cellspacing="4" cellpadding="0" border="0">
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#ffffff"><pre>&lt;module name=&quot;StrictDuplicateCode&quot;&gt;
+    &lt;property name=&quot;charset&quot; value=&quot;UTF-8&quot;/&gt;
+ &lt;/module&gt;</pre></td>
+      <td bgcolor="#023264" width="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    <tr>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+      <td bgcolor="#023264" width="1" height="1"><img src="/images/void.gif" width="1" height="1" vspace="0" hspace="0" border="0"/></td>
+    </tr>
+    </table>
+    </div>
+                                                                            <h3>Package</h3>
+                                    <p>com.puppycrawl.tools.checkstyle.checks.duplicates</p>
+                                                                            <h3>Parent Module</h3>
+                                    <p>
+ <a href="config.html#Checker">Checker</a>
+ </p>
+                                                            </div>
+    </div>
+
+    <div class="csBottomBar">
+      <div class="csBottomBarContents">
+        Copyright &copy; 2001-2005, Oliver Burn
+      </div>
+    </div>
+  </body>
+</html>
+
+<!-- end the processing -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

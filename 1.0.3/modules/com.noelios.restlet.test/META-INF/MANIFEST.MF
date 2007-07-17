@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Noelios Restlet Engine - Tests
+Bundle-SymbolicName: com.noelios.restlet.test
+Bundle-Version: 1.0.0
+Bundle-Vendor: Noelios Consulting
+Require-Bundle: com.noelios.restlet,
+ com.noelios.restlet.ext.net,
+ com.noelios.restlet.ext.jetty,
+ com.noelios.restlet.ext.simple;resolution:=optional,
+ com.noelios.restlet.ext.asyncweb;resolution:=optional,
+ org.junit4,
+ org.restlet.ext.freemarker
+Export-Package: com.noelios.restlet.test
