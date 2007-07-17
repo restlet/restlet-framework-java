@@ -226,7 +226,7 @@ public class StreamClientCall extends HttpClientCall {
             getRequestStream().write(10); // LF
 
             // Write the request body
-            super.sendRequest(request);
+            result = super.sendRequest(request);
 
             // Parse the response
             parseResponse();
@@ -234,7 +234,7 @@ public class StreamClientCall extends HttpClientCall {
             getHelper()
                     .getLogger()
                     .log(
-                            Level.FINE,
+                            Level.WARNING,
                             "An error occured during the communication with the remote HTTP server.",
                             ioe);
             result = new Status(
