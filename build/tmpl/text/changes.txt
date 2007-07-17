@@ -7,6 +7,8 @@ Changes log
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Fixed spacing issue in HTTP reading/writing code (NRE's HttpUtils class). Reported by Ilya Klyuchnikov.
+ - Fixed issue that makes the server to return a 304 status even if the resource is modified 
+   (the "if-none-match" condition was badly implemented). Reported by Vladimir Djurovic and Adam Taft.
 
 1.0.3 (2007-07-15)
 [Bugs fixed]

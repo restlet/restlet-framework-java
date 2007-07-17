@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -28,7 +28,7 @@ import org.restlet.util.DateUtils;
 /**
  * Set of conditions applying to a request. This is equivalent to the HTTP
  * conditional headers.
- * 
+ *
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24">If-Match</a>
  * @see <a
@@ -37,7 +37,7 @@ import org.restlet.util.DateUtils;
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26">If-None-Match</a>
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.28">If-Unmodified-Since</a>
- * 
+ *
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class Conditions {
@@ -61,7 +61,7 @@ public final class Conditions {
 
     /**
      * Returns the "if-match" condition.
-     * 
+     *
      * @return The "if-match" condition.
      */
     public List<Tag> getMatch() {
@@ -70,7 +70,7 @@ public final class Conditions {
 
     /**
      * Returns the "if-modified-since" condition.
-     * 
+     *
      * @return The "if-modified-since" condition.
      */
     public Date getModifiedSince() {
@@ -79,7 +79,7 @@ public final class Conditions {
 
     /**
      * Returns the "if-none-match" condition.
-     * 
+     *
      * @return The "if-none-match" condition.
      */
     public List<Tag> getNoneMatch() {
@@ -88,7 +88,7 @@ public final class Conditions {
 
     /**
      * Returns the conditional status of a variant using a given method.
-     * 
+     *
      * @param method
      *            The request method.
      * @param variant
@@ -147,12 +147,19 @@ public final class Conditions {
                         matched = tag.equals(variant.getTag(), (Method.GET
                                 .equals(method) || Method.HEAD.equals(method)));
                     }
-                    if (!matched) {
+                    // The current representation matches one of those already
+                    // cached by the client
+                    if (matched) {
+                        // Check if the current representation has been updated
+                        // since the "if-modified-since" date. In this case, the
+                        // rule is followed.
                         Date modifiedSince = getModifiedSince();
-                        matched = ((modifiedSince == null)
+                        boolean isModifiedSince = ((modifiedSince == null)
+                                || DateUtils.after(new Date(), modifiedSince)
                                 || (variant.getModificationDate() == null) || DateUtils
                                 .after(modifiedSince, variant
                                         .getModificationDate()));
+                        matched = !isModifiedSince;
                     }
                 }
             } else {
@@ -172,6 +179,7 @@ public final class Conditions {
             if (variant != null) {
                 Date modifiedSince = getModifiedSince();
                 boolean isModifiedSince = ((modifiedSince == null)
+                        || DateUtils.after(new Date(), modifiedSince)
                         || (variant.getModificationDate() == null) || DateUtils
                         .after(modifiedSince, variant.getModificationDate()));
                 if (!isModifiedSince) {
@@ -198,7 +206,7 @@ public final class Conditions {
 
     /**
      * Returns the "if-unmodified-since" condition.
-     * 
+     *
      * @return The "if-unmodified-since" condition.
      */
     public Date getUnmodifiedSince() {
@@ -207,7 +215,7 @@ public final class Conditions {
 
     /**
      * Indicates if there are some conditions set.
-     * 
+     *
      * @return True if there are some conditions set.
      */
     public boolean hasSome() {
@@ -218,7 +226,7 @@ public final class Conditions {
 
     /**
      * Sets the "if-match" condition.
-     * 
+     *
      * @param tags
      *            The "if-match" condition.
      */
@@ -228,7 +236,7 @@ public final class Conditions {
 
     /**
      * Sets the "if-modified-since" condition.
-     * 
+     *
      * @param date
      *            The "if-modified-since" condition.
      */
@@ -238,7 +246,7 @@ public final class Conditions {
 
     /**
      * Sets the "if-none-match" condition.
-     * 
+     *
      * @param tags
      *            The "if-none-match" condition.
      */
@@ -248,7 +256,7 @@ public final class Conditions {
 
     /**
      * Sets the "if-unmodified-since" condition.
-     * 
+     *
      * @param date
      *            The "if-unmodified-since" condition.
      */
