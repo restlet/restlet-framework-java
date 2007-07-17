@@ -147,12 +147,19 @@ public final class Conditions {
                         matched = tag.equals(variant.getTag(), (Method.GET
                                 .equals(method) || Method.HEAD.equals(method)));
                     }
-                    if (!matched) {
+                    // The current representation matches one of those already
+                    // cached by the client
+                    if (matched) {
+                        // Check if the current representation has been updated
+                        // since the "if-modified-since" date. In this case, the
+                        // rule is followed.
                         Date modifiedSince = getModifiedSince();
-                        matched = ((modifiedSince == null)
+                        boolean isModifiedSince = ((modifiedSince == null)
+                                || DateUtils.after(new Date(), modifiedSince)
                                 || (variant.getModificationDate() == null) || DateUtils
                                 .after(modifiedSince, variant
                                         .getModificationDate()));
+                        matched = !isModifiedSince;
                     }
                 }
             } else {
@@ -172,6 +179,7 @@ public final class Conditions {
             if (variant != null) {
                 Date modifiedSince = getModifiedSince();
                 boolean isModifiedSince = ((modifiedSince == null)
+                        || DateUtils.after(new Date(), modifiedSince)
                         || (variant.getModificationDate() == null) || DateUtils
                         .after(modifiedSince, variant.getModificationDate()));
                 if (!isModifiedSince) {
