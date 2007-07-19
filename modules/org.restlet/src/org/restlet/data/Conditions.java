@@ -154,11 +154,11 @@ public final class Conditions {
                         // since the "if-modified-since" date. In this case, the
                         // rule is followed.
                         Date modifiedSince = getModifiedSince();
-                        boolean isModifiedSince = ((modifiedSince == null)
-                                || DateUtils.after(new Date(), modifiedSince)
-                                || (variant.getModificationDate() == null) || DateUtils
-                                .after(modifiedSince, variant
-                                        .getModificationDate()));
+                        boolean isModifiedSince = (modifiedSince != null)
+                                && (DateUtils.after(new Date(), modifiedSince)
+                                        || (variant.getModificationDate() == null) || DateUtils
+                                        .after(modifiedSince, variant
+                                                .getModificationDate()));
                         matched = !isModifiedSince;
                     }
                 }
@@ -178,8 +178,8 @@ public final class Conditions {
         if (result == null && getModifiedSince() != null) {
             if (variant != null) {
                 Date modifiedSince = getModifiedSince();
-                boolean isModifiedSince = ((modifiedSince == null)
-                        || DateUtils.after(new Date(), modifiedSince)
+                boolean isModifiedSince = (DateUtils.after(new Date(),
+                        modifiedSince)
                         || (variant.getModificationDate() == null) || DateUtils
                         .after(modifiedSince, variant.getModificationDate()));
                 if (!isModifiedSince) {
