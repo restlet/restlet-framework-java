@@ -54,6 +54,8 @@ public class StreamServerHelper extends HttpServerHelper {
                 this.helper.handle(new StreamServerCall(
                         this.helper.getServer(), this.socket.getInputStream(),
                         this.socket.getOutputStream()));
+                this.socket.getOutputStream().close();
+                this.socket.close();
             } catch (IOException ioe) {
                 getLogger().log(Level.WARNING,
                         "Unexpected error while handle a call", ioe);
