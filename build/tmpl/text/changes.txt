@@ -10,6 +10,7 @@ Changes log
  - Fixed bug in StreamClientCall causing the response's status to always be null. Reported by Ilya Klyuchnikov.
  - Fixed issue that makes the server to return a 304 status even if the resource is modified 
    (the "if-none-match" condition was badly implemented). Reported by Vladimir Djurovic and Adam Taft.
+ - Fixed closing issue in internal HTTP server causing the browser to hang on requests. Reported by Serge.
 
 1.0.3 (2007-07-15)
 [Bugs fixed]
