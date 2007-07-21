@@ -18,15 +18,10 @@
 
 package com.noelios.restlet.ext.servlet;
 
-import java.util.Enumeration;
-
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
-import org.restlet.Application;
 import org.restlet.Context;
-
-import com.noelios.restlet.application.ApplicationContext;
 
 /**
  * Context allowing access to the component's connectors, reusing the Servlet's
@@ -35,7 +30,7 @@ import com.noelios.restlet.application.ApplicationContext;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ServletContextAdapter extends ApplicationContext {
+public class ServletContextAdapter extends Context {
     /** The Servlet context. */
     private ServletContext servletContext;
 
@@ -49,36 +44,9 @@ public class ServletContextAdapter extends ApplicationContext {
      * @param application
      *                The parent application.
      */
-    @SuppressWarnings("unchecked")
-    public ServletContextAdapter(Servlet servlet, Application application,
-            Context parentContext) {
-        super(application, parentContext, new ServletLogger(servlet
-                .getServletConfig().getServletContext()));
+    public ServletContextAdapter(Servlet servlet) {
+        super(new ServletLogger(servlet.getServletConfig().getServletContext()));
         this.servletContext = servlet.getServletConfig().getServletContext();
-
-        // Set the special WAR client
-        setWarClient(new ServletWarClient(parentContext, servlet
-                .getServletConfig().getServletContext()));
-
-        // Copy all the servlet parameters into the context
-        String initParam;
-
-        // Copy all the Web component initialization parameters
-        javax.servlet.ServletConfig servletConfig = servlet.getServletConfig();
-        for (Enumeration<String> enum1 = servletConfig.getInitParameterNames(); enum1
-                .hasMoreElements();) {
-            initParam = (String) enum1.nextElement();
-            getParameters().add(initParam,
-                    servletConfig.getInitParameter(initParam));
-        }
-
-        // Copy all the Web Application initialization parameters
-        for (Enumeration<String> enum1 = getServletContext()
-                .getInitParameterNames(); enum1.hasMoreElements();) {
-            initParam = (String) enum1.nextElement();
-            getParameters().add(initParam,
-                    getServletContext().getInitParameter(initParam));
-        }
     }
 
     /**

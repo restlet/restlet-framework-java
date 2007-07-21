@@ -19,9 +19,9 @@
 package com.noelios.restlet.ext.servlet;
 
 import java.io.IOException;
-import java.util.List;
-
 import java.lang.reflect.InvocationTargetException;
+import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,6 +34,7 @@ import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
+import com.noelios.restlet.application.ApplicationContext;
 import com.noelios.restlet.http.HttpServerHelper;
 
 /**
@@ -136,6 +137,7 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The newly created Application or null if unable to create
      */
+    @SuppressWarnings("unchecked")
     public Application createApplication(Context context) {
         Application application = null;
         // Try to instantiate a new target application
@@ -163,12 +165,11 @@ public class ServerServlet extends HttpServlet {
                     // invoking the constructor with the Context parameter.
                     application = (Application) targetClass.getConstructor(
                             Context.class).newInstance(
-                            new ServletContextAdapter(this, application,
-                                    context));
+                            new ServletContextAdapter(this));
                 } catch (NoSuchMethodException e) {
                     log(
-                            "[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context. The empty constructor and the context setter wille used instead. "
-                                    + applicationClassName, e);
+                            "[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of type Context. The empty constructor and the context setter will be used instead.",
+                            e);
                     // The constructor with the Context parameter does not
                     // exist. Instantiate an application with the default
                     // constructor then invoke the setContext method.
@@ -176,8 +177,11 @@ public class ServerServlet extends HttpServlet {
                             .newInstance();
 
                     // Set the context based on the Servlet's context
-                    application.setContext(new ServletContextAdapter(this,
-                            application, context));
+                    ApplicationContext applicationContext = (ApplicationContext) application
+                            .getContext();
+                    application.setContext(new ApplicationContext(application,
+                            new ServletContextAdapter(this), applicationContext
+                                    .getLogger()));
                 }
             } catch (ClassNotFoundException e) {
                 log(
@@ -200,6 +204,36 @@ public class ServerServlet extends HttpServlet {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
                                 + applicationClassName, e);
+            }
+        }
+
+        if (application != null) {
+            ApplicationContext applicationContext = (ApplicationContext) application
+                    .getContext();
+
+            // Set the special WAR client
+            applicationContext.setWarClient(new ServletWarClient(
+                    applicationContext, this.getServletConfig()
+                            .getServletContext()));
+
+            // Copy all the servlet parameters into the context
+            String initParam;
+
+            // Copy all the Web component initialization parameters
+            javax.servlet.ServletConfig servletConfig = getServletConfig();
+            for (Enumeration<String> enum1 = servletConfig
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = (String) enum1.nextElement();
+                applicationContext.getParameters().add(initParam,
+                        servletConfig.getInitParameter(initParam));
+            }
+
+            // Copy all the Web Application initialization parameters
+            for (Enumeration<String> enum1 = getServletContext()
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = (String) enum1.nextElement();
+                applicationContext.getParameters().add(initParam,
+                        getServletContext().getInitParameter(initParam));
             }
         }
 
