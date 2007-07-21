@@ -4,18 +4,17 @@ Plugins and third-party libraries
 =================================
 
 
-The content of this directory can be directly copied inside the plugins 
-directory of your Eclipse IDE (see http://www.eclipse.org for details).
-When you restart the IDE, you will see that all the plugins were automatically
-registered and can directly be used within your applications and your own 
-plugins.
+Below is a list of the dependencies between Restlet libraries. You need to ensure 
+that all the dependencies of the libraries that you are using are on the classpath
+of your Restlet program, otherwise ClassNotFound exceptions will be thrown.
 
-Below is a list of the dependencies between Restlet plugins. If you use the 
-plugins (either as a JAR or as a directory) withing an Eclipse IDE, then the 
-dependencies are automatically declared. However, if you add them directly on 
-your classpath, you need to ensure that all the dependencies are also on the 
-classpath, otherwise ClassNotFound exceptions will be thrown.
+A minimal Restlet program needs the following libraries:
+ - org.restlet
+ - com.noelios.com
  
+To configure connectors such as HTTP server or HTTP client connectors, please refer
+to this page: http://www.restlet.org/documentation/1.0/connectors
+
  
 org.restlet (Restlet API)
 -----------

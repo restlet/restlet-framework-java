@@ -11,7 +11,10 @@ Changes log
  - Fixed issue that makes the server to return a 304 status even if the resource is modified 
    (the "if-none-match" condition was badly implemented). Reported by Vladimir Djurovic and Adam Taft.
  - Fixed closing issue in internal HTTP server causing the browser to hang on requests. Reported by Serge.
-
+ - Reverted changes to the ServerServlet back to the 1.0.2 behavior (application context set after construction 
+   via setContext() method). The new behavior requires NRE API changes and will only be available in the 
+   Restlet 1.1. Issue reported by Richard Wallace. 
+ 
 1.0.3 (2007-07-15)
 [Bugs fixed]
  - Fixed Javadoc issue in Reference.setQuery. Reported by Avi Flax.
