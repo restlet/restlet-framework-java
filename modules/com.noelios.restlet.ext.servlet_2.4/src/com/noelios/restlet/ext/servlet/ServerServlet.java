@@ -65,7 +65,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  *                 &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
  *                 &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
  *         &lt;/servlet-mapping&gt;
- * &lt;/web-app&gt;}
+ * &lt;/web-app&gt;
  * </pre>
  * 
  * The enumeration of initParameters of your Servlet will be copied to the
