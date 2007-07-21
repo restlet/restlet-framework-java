@@ -50,8 +50,6 @@ Changes log
  - Added JAXB 2.0 and StAX 1.0 libraries.
  - Added a Template.getVariableNames() method. Suggested by Stian Soiland.
  - Added new Dimension.AUTHORIZATION enum entry. Suggested by Stian Soiland.
- - Optimized the Resource handling of conditional gets. If the conditions are not met, the
-   getRepresentation(Variant) method is never invoked. Suggested by Stian Soiland.
  - The ServletConverter now also copy the Servlet's request attributes into the Restlet
    attributes map. Suggested by Leigh Klotz.
  - Added new media types for RSS and WADL. Contributed by Avi Flax.
@@ -62,6 +60,10 @@ Changes log
    a read for example or manually closing the socket, the channel, the file, etc.
  - Added a Message.release() method to have an easy way to release the message's entity. Suggested
    by Stian Soiland.
+
+[API changes]
+ - Moved the "expirationDate", "modificationDate", "tag", "size" properties from Variant to 
+   Representation. The old properties are only deprecated for now but will be removed in a later version. 
 
 [Misc]
  - Removed AsyncWeb connector, to be replaced by a custom MINA based one.

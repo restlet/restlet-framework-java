@@ -91,7 +91,7 @@ public class Variant {
      * Constructor.
      * 
      * @param mediaType
-     *            The media type.
+     *                The media type.
      */
     public Variant(MediaType mediaType) {
         this.characterSet = null;
@@ -126,22 +126,22 @@ public class Variant {
             encodings = new WrapperList<Encoding>() {
 
                 @Override
-                public void add(int index, Encoding element) {
-                    if (element == null) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null encoding.");
-                    } else {
-                        super.add(index, element);
-                    }
-                }
-
-                @Override
                 public boolean add(Encoding element) {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
                     } else {
                         return super.add(element);
+                    }
+                }
+
+                @Override
+                public void add(int index, Encoding element) {
+                    if (element == null) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    } else {
+                        super.add(index, element);
                     }
                 }
 
@@ -189,9 +189,21 @@ public class Variant {
      * information is not known, returns null.
      * 
      * @return The expiration date.
+     * @deprecated Use the {@link Representation#getExpirationDate()} method
+     *             instead.
      */
+    @Deprecated
     public Date getExpirationDate() {
         return this.expirationDate;
+    }
+
+    /**
+     * Returns the identifier.
+     * 
+     * @return The identifier.
+     */
+    public Reference getIdentifier() {
+        return this.identifier;
     }
 
     /**
@@ -277,7 +289,10 @@ public class Variant {
      * information is not known, returns null.
      * 
      * @return The modification date.
+     * @deprecated Use the {@link Representation#getModificationDate()} method
+     *             instead.
      */
+    @Deprecated
     public Date getModificationDate() {
         return this.modificationDate;
     }
@@ -286,7 +301,9 @@ public class Variant {
      * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      * 
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+     * @deprecated Use the {@link Representation#getSize()} method instead.
      */
+    @Deprecated
     public long getSize() {
         return this.size;
     }
@@ -295,7 +312,9 @@ public class Variant {
      * Returns the tag.
      * 
      * @return The tag.
+     * @deprecated Use the {@link Representation#getTag()} method instead.
      */
+    @Deprecated
     public Tag getTag() {
         return this.tag;
     }
@@ -304,7 +323,7 @@ public class Variant {
      * Sets the character set or null if not applicable.
      * 
      * @param characterSet
-     *            The character set or null if not applicable.
+     *                The character set or null if not applicable.
      */
     public void setCharacterSet(CharacterSet characterSet) {
         this.characterSet = characterSet;
@@ -315,17 +334,40 @@ public class Variant {
      * is not known, pass null.
      * 
      * @param expirationDate
-     *            The expiration date.
+     *                The expiration date.
+     * @deprecated Use the {@link Representation#setExpirationDate(Date)} method
+     *             instead.
      */
+    @Deprecated
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = DateUtils.unmodifiable(expirationDate);
+    }
+
+    /**
+     * Sets the identifier.
+     * 
+     * @param identifier
+     *                The identifier.
+     */
+    public void setIdentifier(Reference identifier) {
+        this.identifier = identifier;
+    }
+
+    /**
+     * Sets the identifier from a URI string.
+     * 
+     * @param identifierUri
+     *                The identifier to parse.
+     */
+    public void setIdentifier(String identifierUri) {
+        setIdentifier(new Reference(identifierUri));
     }
 
     /**
      * Sets the media type.
      * 
      * @param mediaType
-     *            The media type.
+     *                The media type.
      */
     public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
@@ -336,8 +378,11 @@ public class Variant {
      * information is not known, pass null.
      * 
      * @param modificationDate
-     *            The modification date.
+     *                The modification date.
+     * @deprecated Use the {@link Representation#setModificationDate(Date)}
+     *             method instead.
      */
+    @Deprecated
     public void setModificationDate(Date modificationDate) {
         this.modificationDate = DateUtils.unmodifiable(modificationDate);
     }
@@ -346,8 +391,10 @@ public class Variant {
      * Sets the expected size in bytes if known, -1 otherwise.
      * 
      * @param expectedSize
-     *            The expected size in bytes if known, -1 otherwise.
+     *                The expected size in bytes if known, -1 otherwise.
+     * @deprecated Use the {@link Representation#setSize(long)} method instead.
      */
+    @Deprecated
     public void setSize(long expectedSize) {
         this.size = expectedSize;
     }
@@ -356,39 +403,12 @@ public class Variant {
      * Sets the tag.
      * 
      * @param tag
-     *            The tag.
+     *                The tag.
+     * @deprecated Use the {@link Representation#setTag(Tag)} method instead.
      */
+    @Deprecated
     public void setTag(Tag tag) {
         this.tag = tag;
-    }
-
-    /**
-     * Returns the identifier.
-     * 
-     * @return The identifier.
-     */
-    public Reference getIdentifier() {
-        return this.identifier;
-    }
-
-    /**
-     * Sets the identifier.
-     * 
-     * @param identifier
-     *            The identifier.
-     */
-    public void setIdentifier(Reference identifier) {
-        this.identifier = identifier;
-    }
-
-    /**
-     * Sets the identifier from a URI string.
-     * 
-     * @param identifierUri
-     *            The identifier to parse.
-     */
-    public void setIdentifier(String identifierUri) {
-        setIdentifier(new Reference(identifierUri));
     }
 
 }

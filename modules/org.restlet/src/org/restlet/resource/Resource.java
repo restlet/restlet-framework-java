@@ -376,7 +376,8 @@ public class Resource {
             // even if there is no preferred variant.
             if (canDelete) {
                 Status status = getRequest().getConditions().getStatus(
-                        getRequest().getMethod(), preferredVariant);
+                        getRequest().getMethod(),
+                        getRepresentation(preferredVariant));
 
                 if (status != null) {
                     getResponse().setStatus(status);
@@ -401,16 +402,16 @@ public class Resource {
      */
     public void handleGet() {
         // The variant that may need to meet the request conditions
-        Variant selectedVariant = null;
+        Representation selectedRepresentation = null;
 
         List<Variant> variants = getVariants();
         if ((variants == null) || (variants.isEmpty())) {
             // Resource not found
             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         } else if (isNegotiateContent()) {
-            selectedVariant = getPreferredVariant();
+            Variant preferredVariant = getPreferredVariant();
 
-            if (selectedVariant == null) {
+            if (preferredVariant == null) {
                 // No variant was found matching the client preferences
                 getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 
@@ -422,7 +423,7 @@ public class Resource {
                     }
                 }
 
-                selectedVariant = refs.getTextRepresentation();
+                getResponse().setEntity(refs.getTextRepresentation());
             } else {
                 // Set the variant dimensions used for content negotiation
                 getResponse().getDimensions().clear();
@@ -430,10 +431,16 @@ public class Resource {
                 getResponse().getDimensions().add(Dimension.ENCODING);
                 getResponse().getDimensions().add(Dimension.LANGUAGE);
                 getResponse().getDimensions().add(Dimension.MEDIA_TYPE);
+
+                // Set the negotiated representation as response entity
+                getResponse().setEntity(getRepresentation(preferredVariant));
             }
+
+            selectedRepresentation = getResponse().getEntity();
         } else {
             if (variants.size() == 1) {
-                selectedVariant = variants.get(0);
+                getResponse().setEntity(variants.get(0));
+                selectedRepresentation = getResponse().getEntity();
             } else {
                 ReferenceList variantRefs = new ReferenceList();
 
@@ -451,26 +458,27 @@ public class Resource {
                     // Return the list of variants
                     getResponse()
                             .setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
-                    selectedVariant = variantRefs.getTextRepresentation();
+                    getResponse()
+                            .setEntity(variantRefs.getTextRepresentation());
                 } else {
                     getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 }
             }
         }
 
-        // The selected variant must meet the request conditions (if any).
+        // The given representation (even if null) must meet the request
+        // conditions
+        // (if any).
         if (getRequest().getConditions().hasSome()) {
             Status status = getRequest().getConditions().getStatus(
-                    getRequest().getMethod(), selectedVariant);
+                    getRequest().getMethod(), selectedRepresentation);
 
             if (status != null) {
                 getResponse().setStatus(status);
                 getResponse().setEntity(null);
-            } else {
-                getResponse().setEntity(getRepresentation(selectedVariant));
+
             }
-        } else {
-            getResponse().setEntity(getRepresentation(selectedVariant));
+
         }
     }
 
@@ -534,7 +542,8 @@ public class Resource {
             // even if there is no preferred variant.
             if (canPut) {
                 Status status = getRequest().getConditions().getStatus(
-                        getRequest().getMethod(), preferredVariant);
+                        getRequest().getMethod(),
+                        getRepresentation(preferredVariant));
                 if (status != null) {
                     getResponse().setStatus(status);
                     canPut = false;

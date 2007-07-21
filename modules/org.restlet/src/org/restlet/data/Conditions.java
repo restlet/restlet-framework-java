@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.resource.Variant;
+import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
 
 /**
@@ -91,13 +91,13 @@ public final class Conditions {
      * 
      * @param method
      *            The request method.
-     * @param variant
+     * @param representation
      *            The representation whose entity tag or date of modification
      *            will be tested
      * @return Null if the requested method can be performed, the status of the
      *         response otherwise.
      */
-    public Status getStatus(Method method, Variant variant) {
+    public Status getStatus(Method method, Representation representation) {
         Status result = null;
 
         // Is the "if-Match" rule followed or not?
@@ -105,16 +105,16 @@ public final class Conditions {
             boolean matched = false;
             boolean failed = false;
 
-            if (variant != null) {
+            if (representation != null) {
                 // If a tag exists
-                if (variant.getTag() != null) {
+                if (representation.getTag() != null) {
                     // Check if it matches one of the representations already
                     // cached by the client
                     Tag tag;
                     for (Iterator<Tag> iter = getMatch().iterator(); !matched
                             && iter.hasNext();) {
                         tag = iter.next();
-                        matched = tag.equals(variant.getTag(), false);
+                        matched = tag.equals(representation.getTag(), false);
                     }
                 }
             } else {
@@ -135,16 +135,16 @@ public final class Conditions {
         if (result == null && getNoneMatch() != null
                 && getNoneMatch().size() != 0) {
             boolean matched = false;
-            if (variant != null) {
+            if (representation != null) {
                 // If a tag exists
-                if (variant.getTag() != null) {
+                if (representation.getTag() != null) {
                     // Check if it matches one of the representations
                     // already cached by the client
                     Tag tag;
                     for (Iterator<Tag> iter = getNoneMatch().iterator(); !matched
                             && iter.hasNext();) {
                         tag = iter.next();
-                        matched = tag.equals(variant.getTag(), (Method.GET
+                        matched = tag.equals(representation.getTag(), (Method.GET
                                 .equals(method) || Method.HEAD.equals(method)));
                     }
                     // The current representation matches one of those already
@@ -156,8 +156,8 @@ public final class Conditions {
                         Date modifiedSince = getModifiedSince();
                         boolean isModifiedSince = (modifiedSince != null)
                                 && (DateUtils.after(new Date(), modifiedSince)
-                                        || (variant.getModificationDate() == null) || DateUtils
-                                        .after(modifiedSince, variant
+                                        || (representation.getModificationDate() == null) || DateUtils
+                                        .after(modifiedSince, representation
                                                 .getModificationDate()));
                         matched = !isModifiedSince;
                     }
@@ -176,12 +176,12 @@ public final class Conditions {
 
         // Is the "if-Modified-Since" rule followed or not?
         if (result == null && getModifiedSince() != null) {
-            if (variant != null) {
+            if (representation != null) {
                 Date modifiedSince = getModifiedSince();
                 boolean isModifiedSince = (DateUtils.after(new Date(),
                         modifiedSince)
-                        || (variant.getModificationDate() == null) || DateUtils
-                        .after(modifiedSince, variant.getModificationDate()));
+                        || (representation.getModificationDate() == null) || DateUtils
+                        .after(modifiedSince, representation.getModificationDate()));
                 if (!isModifiedSince) {
                     result = Status.REDIRECTION_NOT_MODIFIED;
                 }
@@ -190,11 +190,11 @@ public final class Conditions {
 
         // Is the "if-Unmodified-Since" rule followed or not?
         if (result == null && getUnmodifiedSince() != null) {
-            if (variant != null) {
+            if (representation != null) {
                 Date unModifiedSince = getUnmodifiedSince();
                 boolean isUnModifiedSince = ((unModifiedSince == null)
-                        || (variant.getModificationDate() == null) || DateUtils
-                        .after(variant.getModificationDate(), unModifiedSince));
+                        || (representation.getModificationDate() == null) || DateUtils
+                        .after(representation.getModificationDate(), unModifiedSince));
                 if (!isUnModifiedSince) {
                     result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
                 }

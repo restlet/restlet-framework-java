@@ -26,8 +26,10 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.Date;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Tag;
 
 /**
  * Current or intended state of a resource. The content of a representation can
@@ -89,6 +91,28 @@ public abstract class Representation extends Variant {
     public abstract ReadableByteChannel getChannel() throws IOException;
 
     /**
+     * Returns the future date when this representation expire. If this
+     * information is not known, returns null.
+     * 
+     * @return The expiration date.
+     */
+    @SuppressWarnings("deprecation")
+    public Date getExpirationDate() {
+        return super.getExpirationDate();
+    }
+
+    /**
+     * Returns the last date when this representation was modified. If this
+     * information is not known, returns null.
+     * 
+     * @return The modification date.
+     */
+    @SuppressWarnings("deprecation")
+    public Date getModificationDate() {
+        return super.getModificationDate();
+    }
+
+    /**
      * Returns a characters reader with the representation's content. This
      * method is ensured to return a fresh reader for each invocation unless it
      * is a transient representation, in which case null is returned. If the
@@ -101,6 +125,16 @@ public abstract class Representation extends Variant {
     public abstract Reader getReader() throws IOException;
 
     /**
+     * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+     * 
+     * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+     */
+    @SuppressWarnings("deprecation")
+    public long getSize() {
+        return super.getSize();
+    }
+
+    /**
      * Returns a stream with the representation's content. This method is
      * ensured to return a fresh stream for each invocation unless it is a
      * transient representation, in which case null is returned.
@@ -109,6 +143,16 @@ public abstract class Representation extends Variant {
      * @throws IOException
      */
     public abstract InputStream getStream() throws IOException;
+
+    /**
+     * Returns the tag.
+     * 
+     * @return The tag.
+     */
+    @SuppressWarnings("deprecation")
+    public Tag getTag() {
+        return super.getTag();
+    }
 
     /**
      * Converts the representation to a string value. Be careful when using this
@@ -181,6 +225,52 @@ public abstract class Representation extends Variant {
     }
 
     /**
+     * Sets the future date when this representation expire. If this information
+     * is not known, pass null.
+     * 
+     * @param expirationDate
+     *                The expiration date.
+     */
+    @SuppressWarnings("deprecation")
+    public void setExpirationDate(Date expirationDate) {
+        super.setExpirationDate(expirationDate);
+    }
+
+    /**
+     * Sets the last date when this representation was modified. If this
+     * information is not known, pass null.
+     * 
+     * @param modificationDate
+     *                The modification date.
+     */
+    @SuppressWarnings("deprecation")
+    public void setModificationDate(Date modificationDate) {
+        super.setModificationDate(modificationDate);
+    }
+
+    /**
+     * Sets the expected size in bytes if known, -1 otherwise.
+     * 
+     * @param expectedSize
+     *                The expected size in bytes if known, -1 otherwise.
+     */
+    @SuppressWarnings("deprecation")
+    public void setSize(long expectedSize) {
+        super.setSize(expectedSize);
+    }
+
+    /**
+     * Sets the tag.
+     * 
+     * @param tag
+     *                The tag.
+     */
+    @SuppressWarnings("deprecation")
+    public void setTag(Tag tag) {
+        super.setTag(tag);
+    }
+
+    /**
      * Indicates if the representation's content is transient.
      * 
      * @param isTransient
@@ -223,4 +313,5 @@ public abstract class Representation extends Variant {
      * @throws IOException
      */
     public abstract void write(Writer writer) throws IOException;
+
 }
