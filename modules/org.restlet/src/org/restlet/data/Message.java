@@ -52,7 +52,7 @@ public abstract class Message {
      * Constructor.
      * 
      * @param entity
-     *            The payload of the message.
+     *                The payload of the message.
      */
     public Message(Representation entity) {
         this.attributes = null;
@@ -200,6 +200,17 @@ public abstract class Message {
     }
 
     /**
+     * Releases the message's entity. If the entity is transient and hasn't been
+     * read yet, all the remaining content will be discarded, any open socket,
+     * channel, file or similar source of content will be immediately closed.
+     */
+    public void release() {
+        if (getEntity() != null) {
+            getEntity().release();
+        }
+    }
+
+    /**
      * Sets the entity from a higher-level object. This object is converted to a
      * representation using the Application's converter service. If you want to
      * use this method to facilitate the setting of entities, you need to
@@ -207,7 +218,7 @@ public abstract class Message {
      * the toRepresentation(Object) method.
      * 
      * @param object
-     *            The higher-level object.
+     *                The higher-level object.
      */
     public void setEntity(Object object) {
         if (object instanceof Representation) {
@@ -221,7 +232,7 @@ public abstract class Message {
      * Sets the entity representation.
      * 
      * @param entity
-     *            The entity representation.
+     *                The entity representation.
      */
     public void setEntity(Representation entity) {
         this.entity = entity;
@@ -231,9 +242,9 @@ public abstract class Message {
      * Sets a textual entity.
      * 
      * @param value
-     *            The represented string.
+     *                The represented string.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public void setEntity(String value, MediaType mediaType) {
         setEntity(new StringRepresentation(value, mediaType));
