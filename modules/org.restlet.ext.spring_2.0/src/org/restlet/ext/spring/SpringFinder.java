@@ -45,6 +45,10 @@ import org.restlet.resource.Resource;
  *      &lt;/bean>
  * </pre>
  * 
+ * Note that the <a href="http://cglib.sourceforge.net/">Code Generation Library</a>
+ * (cglib) will be required in order to use the Spring's lookup method
+ * mechanism.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SpringFinder extends Finder {

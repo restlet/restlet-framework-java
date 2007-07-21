@@ -14,6 +14,7 @@ Changes log
  - Reverted changes to the ServerServlet back to the 1.0.2 behavior (application context set after construction 
    via setContext() method). The new behavior requires NRE API changes and will only be available in the 
    Restlet 1.1. Issue reported by Richard Wallace. 
+ - Mentionned the additional dependency on the cglib in the SpringRouter class.
  
 1.0.3 (2007-07-15)
 [Bugs fixed]
