@@ -26,24 +26,28 @@ import org.restlet.data.Response;
 import org.restlet.resource.Resource;
 
 /**
- * Finder that is specialized for easier usage by Spring wiring services. The idea
- * is to create a singleton Spring bean based on that SpringFinder and configure
- * it using Spring's "lookup-method" element to return instances of a
+ * Finder that is specialized for easier usage by Spring wiring services. The
+ * idea is to create a singleton Spring bean based on that SpringFinder and
+ * configure it using Spring's "lookup-method" element to return instances of a
  * "prototype" bean for {@link #createResource()}. Finally, attach the
  * SpringFinder to your Router. When the createResource() method is invoked, a
- * new instance of your prototype bean will be created and returned.
- * A sample xml for "lookup-method":
- *
+ * new instance of your prototype bean will be created and returned. A sample
+ * xml for "lookup-method":
+ * 
  * <pre>
- *      &lt;bean id="myFinder" class="org.restlet.ext.spring.SpringFinder"> 
- *              &lt;lookup-method name="createResource" bean="myResource"/> 
- *      &lt;/bean>
+ *      &lt;bean id=&quot;myFinder&quot; class=&quot;org.restlet.ext.spring.SpringFinder&quot;&gt; 
+ *              &lt;lookup-method name=&quot;createResource&quot; bean=&quot;myResource&quot;/&gt; 
+ *      &lt;/bean&gt;
  *       
- *      &lt;bean id="myResource" class="com.mycompany.rest.resource.MyResource" scope="prototype"> 
- *              &lt;property name="aProperty" value="anotherOne"/> 
- *              &lt;property name="oneMore" value="true"/>
- *      &lt;/bean>
+ *      &lt;bean id=&quot;myResource&quot; class=&quot;com.mycompany.rest.resource.MyResource&quot; scope=&quot;prototype&quot;&gt; 
+ *              &lt;property name=&quot;aProperty&quot; value=&quot;anotherOne&quot;/&gt; 
+ *              &lt;property name=&quot;oneMore&quot; value=&quot;true&quot;/&gt;
+ *      &lt;/bean&gt;
  * </pre>
+ * 
+ * Note that the <a href="http://cglib.sourceforge.net/">Code Generation Library</a>
+ * (cglib) will be required in order to use the Spring's lookup method
+ * mechanism.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -60,7 +64,7 @@ public class SpringFinder extends Finder {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      */
     public SpringFinder(Context context) {
         super(context);
@@ -70,9 +74,9 @@ public class SpringFinder extends Finder {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param targetClass
-     *            The target resource class.
+     *                The target resource class.
      */
     public SpringFinder(Context context, Class<? extends Resource> targetClass) {
         super(context, targetClass);
