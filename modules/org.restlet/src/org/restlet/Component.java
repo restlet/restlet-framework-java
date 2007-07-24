@@ -98,63 +98,6 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the modifiable list of server connectors.
-     * 
-     * @return The modifiable list of server connectors.
-     */
-    public ServerList getServers() {
-        if (this.servers == null)
-            this.servers = new ServerList(getContext(), this);
-        return this.servers;
-    }
-
-    /**
-     * Starts the component and all its connectors.
-     */
-    @Override
-    public void start() throws Exception {
-        if (this.clients != null) {
-            for (Client client : this.clients) {
-                client.start();
-            }
-        }
-
-        if (this.servers != null) {
-            for (Server server : this.servers) {
-                server.start();
-            }
-        }
-
-        if (getHelper() != null)
-            getHelper().start();
-
-        super.start();
-    }
-
-    /**
-     * Stops the component and all its connectors.
-     */
-    @Override
-    public void stop() throws Exception {
-        if (getHelper() != null)
-            getHelper().stop();
-
-        if (this.clients != null) {
-            for (Client client : this.clients) {
-                client.stop();
-            }
-        }
-
-        if (this.servers != null) {
-            for (Server server : this.servers) {
-                server.stop();
-            }
-        }
-
-        super.stop();
-    }
-
-    /**
      * Returns the default virtual host.
      * 
      * @return The default virtual host.
@@ -204,6 +147,17 @@ public class Component extends Restlet {
     }
 
     /**
+     * Returns the modifiable list of server connectors.
+     * 
+     * @return The modifiable list of server connectors.
+     */
+    public ServerList getServers() {
+        if (this.servers == null)
+            this.servers = new ServerList(getContext(), this);
+        return this.servers;
+    }
+
+    /**
      * Returns the status service. This service is enabled by default.
      * 
      * @return The status service.
@@ -218,9 +172,9 @@ public class Component extends Restlet {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         init(request, response);
@@ -229,10 +183,20 @@ public class Component extends Restlet {
     }
 
     /**
+     * Sets the default virtual host.
+     * 
+     * @param defaultHost
+     *                The default virtual host.
+     */
+    public void setDefaultHost(VirtualHost defaultHost) {
+        this.defaultHost = defaultHost;
+    }
+
+    /**
      * Sets the global log service.
      * 
      * @param logService
-     *            The global log service.
+     *                The global log service.
      */
     public void setLogService(LogService logService) {
         this.logService = logService;
@@ -242,10 +206,56 @@ public class Component extends Restlet {
      * Sets the status service.
      * 
      * @param statusService
-     *            The status service.
+     *                The status service.
      */
     public void setStatusService(StatusService statusService) {
         this.statusService = statusService;
+    }
+
+    /**
+     * Starts the component and all its connectors.
+     */
+    @Override
+    public void start() throws Exception {
+        if (this.clients != null) {
+            for (Client client : this.clients) {
+                client.start();
+            }
+        }
+
+        if (this.servers != null) {
+            for (Server server : this.servers) {
+                server.start();
+            }
+        }
+
+        if (getHelper() != null)
+            getHelper().start();
+
+        super.start();
+    }
+
+    /**
+     * Stops the component and all its connectors.
+     */
+    @Override
+    public void stop() throws Exception {
+        if (getHelper() != null)
+            getHelper().stop();
+
+        if (this.clients != null) {
+            for (Client client : this.clients) {
+                client.stop();
+            }
+        }
+
+        if (this.servers != null) {
+            for (Server server : this.servers) {
+                server.stop();
+            }
+        }
+
+        super.stop();
     }
 
 }

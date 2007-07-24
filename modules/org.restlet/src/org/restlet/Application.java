@@ -56,7 +56,7 @@ import org.restlet.util.Helper;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class Application extends Restlet {
+public class Application extends Restlet {
     /**
      * Name of the attribute key containing a reference to the current
      * application.
@@ -113,7 +113,7 @@ public abstract class Application extends Restlet {
      * Constructor.
      * 
      * @param parentContext
-     *            The parent context. Typically the component's context.
+     *                The parent context. Typically the component's context.
      */
     public Application(Context parentContext) {
         super(null);
@@ -152,7 +152,9 @@ public abstract class Application extends Restlet {
      * 
      * @return The root Restlet.
      */
-    public abstract Restlet createRoot();
+    public Restlet createRoot() {
+        return null;
+    }
 
     /**
      * Returns the author(s).
@@ -283,9 +285,9 @@ public abstract class Application extends Restlet {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         init(request, response);
@@ -297,7 +299,7 @@ public abstract class Application extends Restlet {
      * Sets the author(s).
      * 
      * @param author
-     *            The author(s).
+     *                The author(s).
      */
     public void setAuthor(String author) {
         this.author = author;
@@ -307,7 +309,7 @@ public abstract class Application extends Restlet {
      * Sets the description.
      * 
      * @param description
-     *            The description.
+     *                The description.
      */
     public void setDescription(String description) {
         this.description = description;
@@ -317,7 +319,7 @@ public abstract class Application extends Restlet {
      * Sets the display name.
      * 
      * @param name
-     *            The display name.
+     *                The display name.
      */
     public void setName(String name) {
         this.name = name;
@@ -327,7 +329,7 @@ public abstract class Application extends Restlet {
      * Sets the owner(s).
      * 
      * @param owner
-     *            The owner(s).
+     *                The owner(s).
      */
     public void setOwner(String owner) {
         this.owner = owner;
@@ -351,7 +353,7 @@ public abstract class Application extends Restlet {
      * Sets the connector service.
      * 
      * @param connectorService
-     *            The connector service.
+     *                The connector service.
      */
     public void setConnectorService(ConnectorService connectorService) {
         this.connectorService = connectorService;
@@ -361,7 +363,7 @@ public abstract class Application extends Restlet {
      * Sets the converter service.
      * 
      * @param converterService
-     *            The converter service.
+     *                The converter service.
      */
     public void setConverterService(ConverterService converterService) {
         this.converterService = converterService;
@@ -371,7 +373,7 @@ public abstract class Application extends Restlet {
      * Sets the decoder service.
      * 
      * @param decoderService
-     *            The decoder service.
+     *                The decoder service.
      */
     public void setDecoderService(DecoderService decoderService) {
         this.decoderService = decoderService;
@@ -381,17 +383,27 @@ public abstract class Application extends Restlet {
      * Sets the metadata service.
      * 
      * @param metadataService
-     *            The metadata service.
+     *                The metadata service.
      */
     public void setMetadataService(MetadataService metadataService) {
         this.metadataService = metadataService;
     }
 
     /**
+     * Sets the root Restlet.
+     * 
+     * @param root
+     *                The root Restlet.
+     */
+    public void setRoot(Restlet root) {
+        this.root = root;
+    }
+
+    /**
      * Sets the status service.
      * 
      * @param statusService
-     *            The status service.
+     *                The status service.
      */
     public void setStatusService(StatusService statusService) {
         this.statusService = statusService;
@@ -401,7 +413,7 @@ public abstract class Application extends Restlet {
      * Sets the tunnel service.
      * 
      * @param tunnelService
-     *            The tunnel service.
+     *                The tunnel service.
      */
     public void setTunnelService(TunnelService tunnelService) {
         this.tunnelService = tunnelService;
