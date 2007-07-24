@@ -490,15 +490,6 @@ public class Router extends Restlet {
     }
 
     /**
-     * Sets the list of routes.
-     * 
-     * @param routes The modifiable list of routes.
-     */
-    public void setRoutes(RouteList routes) {
-        this.routes = routes;
-    }
-
-    /**
      * Sets the routing mode.
      * 
      * @param routingMode

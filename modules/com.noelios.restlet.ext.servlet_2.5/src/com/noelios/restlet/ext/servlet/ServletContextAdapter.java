@@ -39,10 +39,6 @@ public class ServletContextAdapter extends Context {
      * 
      * @param servlet
      *                The parent Servlet.
-     * @param parentContext
-     *                The parent context.
-     * @param application
-     *                The parent application.
      */
     public ServletContextAdapter(Servlet servlet) {
         super(new ServletLogger(servlet.getServletConfig().getServletContext()));

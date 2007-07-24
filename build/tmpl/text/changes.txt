@@ -62,11 +62,10 @@ Changes log
    by Stian Soiland.
  - Application is now concrete and has a setRoot() method.
  - Added Component.setDefaultHost() method.
- - Added Router.setRoutes() method.
-
-[API changes]
  - Moved the "expirationDate", "modificationDate", "tag", "size" properties from Variant to 
    Representation. The old properties are only deprecated for now but will be removed in a later version. 
+ - Added SpringApplication, SpringComponent, SpringHost, SpringRouter, SpringServer to the 
+   Spring extension to facilitate the wiring by Spring IoC. 
 
 [Misc]
  - Removed AsyncWeb connector, to be replaced by a custom MINA based one.

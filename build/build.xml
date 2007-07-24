@@ -85,6 +85,10 @@
       <pathelement path="${classes}/${mod-jaxb-id}" />
       <pathelement path="${mod}/${mod-jaxb-id}/src" />
 
+	  <path refid="mod-spring-path" />
+      <pathelement path="${classes}/${mod-spring-id}" />
+      <pathelement path="${mod}/${mod-spring-id}/src" />
+
       <path refid="mod-velocity-path" />
       <pathelement path="${classes}/${mod-velocity-id}" />
       <pathelement path="${mod}/${mod-velocity-id}/src" />

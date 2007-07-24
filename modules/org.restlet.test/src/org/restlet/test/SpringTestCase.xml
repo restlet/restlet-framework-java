@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="component"
+		class="org.restlet.ext.spring.SpringComponent">
+		<property name="server" ref="server" />
+		<property name="defaultTarget" ref="application" />
+	</bean>
+
+	<bean id="server" class="org.restlet.ext.spring.SpringServer">
+		<constructor-arg value="http" />
+		<constructor-arg value="8182" />
+	</bean>
+
+	<bean id="application"
+		class="org.restlet.ext.spring.SpringApplication">
+		<constructor-arg ref="component" />
+
+		<property name="root">
+			<bean class="org.restlet.ext.spring.SpringRouter">
+				<constructor-arg ref="application" />
+
+				<property name="attachments">
+					<map>
+						<entry key="/users/{user}"
+							value="org.restlet.example.tutorial.UserResource" />
+
+						<entry key="/users/{user}/orders"
+							value="org.restlet.example.tutorial.OrdersResource" />
+
+						<entry key="/users/{user}/orders/{order}"
+							value="org.restlet.example.tutorial.OrderResource" />
+					</map>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+</beans>

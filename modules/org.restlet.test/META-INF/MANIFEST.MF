@@ -10,4 +10,6 @@ Require-Bundle: com.noelios.restlet,
  org.junit4,
  org.restlet.ext.atom,
  org.restlet.ext.freemarker,
- org.restlet.ext.velocity
+ org.restlet.ext.velocity,
+ org.restlet.ext.spring,
+ org.restlet.example

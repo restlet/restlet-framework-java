@@ -49,6 +49,7 @@ import org.restlet.resource.Resource;
  * (cglib) will be required in order to use the Spring's lookup method
  * mechanism.
  * 
+ * @see <a href="http://www.springframework.org/">Spring home page</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SpringFinder extends Finder {
