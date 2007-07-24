@@ -39,9 +39,9 @@ public final class ServerList extends WrapperList<Server> {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param target
-     *            The target Restlet of added servers.
+     *                The target Restlet of added servers.
      */
     public ServerList(Context context, Restlet target) {
         this.context = context;
@@ -52,7 +52,7 @@ public final class ServerList extends WrapperList<Server> {
      * Adds a new server connector in the map supporting the given protocol.
      * 
      * @param protocol
-     *            The connector protocol.
+     *                The connector protocol.
      * @return The added server.
      */
     public Server add(Protocol protocol) {
@@ -67,9 +67,9 @@ public final class ServerList extends WrapperList<Server> {
      * the specified port.
      * 
      * @param protocol
-     *            The connector protocol.
+     *                The connector protocol.
      * @param port
-     *            The listening port.
+     *                The listening port.
      * @return The added server.
      */
     public Server add(Protocol protocol, int port) {
@@ -84,12 +84,12 @@ public final class ServerList extends WrapperList<Server> {
      * the specified IP address and port.
      * 
      * @param protocol
-     *            The connector protocol.
+     *                The connector protocol.
      * @param address
-     *            The optional listening IP address (useful if multiple IP
-     *            addresses available).
+     *                The optional listening IP address (useful if multiple IP
+     *                addresses available).
      * @param port
-     *            The listening port.
+     *                The listening port.
      * @return The added server.
      */
     public Server add(Protocol protocol, String address, int port) {
@@ -105,6 +105,7 @@ public final class ServerList extends WrapperList<Server> {
      * @return True (as per the general contract of the Collection.add method).
      */
     public boolean add(Server server) {
+        server.setTarget(getTarget());
         return super.add(server);
     }
 
