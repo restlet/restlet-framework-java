@@ -17,6 +17,8 @@ Changes log
  - Mentionned the additional dependency on the cglib in the SpringRouter class.
  - Clarified and fixed SpringContext Javadocs.
  - Restlet.getContext() now always return a non-null context.
+ - ServerList.addServer(Server), returned by the Component.getServers() method, wasn't properly setting the 
+   component as the server's target.
  
 1.0.3 (2007-07-15)
 [Bugs fixed]
