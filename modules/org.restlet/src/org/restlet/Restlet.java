@@ -58,7 +58,7 @@ public class Restlet extends Uniform {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      */
     public Restlet(Context context) {
         this.context = context;
@@ -82,16 +82,17 @@ public class Restlet extends Uniform {
      * @return The context's logger.
      */
     public Logger getLogger() {
-        return (getContext() != null) ? getContext().getLogger() : null;
+        return (getContext() != null) ? getContext().getLogger() : Logger
+                .getLogger(getClass().getCanonicalName());
     }
 
     /**
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         init(request, response);
@@ -103,9 +104,9 @@ public class Restlet extends Uniform {
      * response status is set to {@link Status#SERVER_ERROR_INTERNAL}.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     protected synchronized void init(Request request, Response response) {
         // Check if the Restlet was started
@@ -149,7 +150,7 @@ public class Restlet extends Uniform {
      * Sets the context.
      * 
      * @param context
-     *            The context.
+     *                The context.
      */
     public void setContext(Context context) {
         this.context = context;
