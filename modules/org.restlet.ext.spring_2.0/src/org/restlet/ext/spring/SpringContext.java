@@ -28,24 +28,34 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 
 /**
- * Spring application context based on a Restlet context.
+ * Spring application context based on a Restlet context. Here is an example
+ * illustrating the various ways to use this class:
  * 
- * @author Jerome Louvel (contact@noelios.com) <a
- *         href="http://www.noelios.com/">Noelios Consulting</a>
+ * <pre>
+ * SpringContext springContext = new SpringContext(getContext());
+ * springContext.getPropertyConfigRefs().add(&quot;war://config/database.properties&quot;);
+ * springContext.getXmlConfigRefs().add(&quot;war://config/applicationContext.xml&quot;);
+ * springContext.getXmlConfigRefs().add(
+ *         &quot;file:///C/myApp/config/applicationContext.xml&quot;);
+ * springContext.getXmlConfigRefs().add(
+ *         &quot;clap://thread/config/applicationContext.xml&quot;);
+ * </pre>
+ * 
+ * @author Jerome Louvel (contact@noelios.com)</a>
  */
 public class SpringContext extends GenericApplicationContext {
     /** The parent Restlet context. */
     private Context restletContext;
 
     /**
-     * The modifiable list of configuration URIs for bean definition via
-     * properties.
+     * The modifiable list of configuration URIs for beans definitions via
+     * property representations.
      */
     private List<String> propertyConfigRefs;
 
     /**
-     * The modifiable list of configuration URIs for XML definition via
-     * properties.
+     * The modifiable list of configuration URIs for beans definitions via XML
+     * representations.
      */
     private List<String> xmlConfigRefs;
 
@@ -56,7 +66,7 @@ public class SpringContext extends GenericApplicationContext {
      * Constructor.
      * 
      * @param restletContext
-     *            The parent Restlet context.
+     *                The parent Restlet context.
      */
     public SpringContext(Context restletContext) {
         this.restletContext = restletContext;
@@ -75,11 +85,10 @@ public class SpringContext extends GenericApplicationContext {
     }
 
     /**
-     * Returns the modifiable list of configuration URIs for XML definition via
-     * properties.
+     * Returns the modifiable list of configuration URIs for beans definitions
+     * via property representations.
      * 
-     * @return The modifiable list of configuration URIs for XML definition via
-     *         properties.
+     * @return The modifiable list of configuration URIs.
      */
     public List<String> getPropertyConfigRefs() {
         if (this.propertyConfigRefs == null)
@@ -88,11 +97,10 @@ public class SpringContext extends GenericApplicationContext {
     }
 
     /**
-     * Returns the modifiable list of configuration URIs for bean definition via
-     * properties.
+     * Returns the modifiable list of configuration URIs for beans definitions
+     * via XML representations.
      * 
-     * @return The modifiable list of configuration URIs for bean definition via
-     *         properties.
+     * @return The modifiable list of configuration URIs.
      */
     public List<String> getXmlConfigRefs() {
         if (this.xmlConfigRefs == null)
