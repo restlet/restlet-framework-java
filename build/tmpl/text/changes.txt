@@ -18,6 +18,9 @@ Changes log
  - ServerList.addServer(Server), returned by the Component.getServers() method, wasn't properly setting the 
    component as the server's target.
  - Fixed potential NPE in DirectoryResource when no request's baseRef was set. Reported by Joe Holloway.
+ - Fixed issue detected when Directory are based on a symbolic link since the directory path was mistakenly 
+   resolved due to the usage of the getCanonicalPath() method instead of getAbsolutePath() in class 
+   LocalReference. Reported by Marc Portier.
 
 [Enhancements] 
  - Mentionned the additional dependency on the cglib in the SpringRouter class.

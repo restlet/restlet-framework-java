@@ -19,7 +19,6 @@
 package org.restlet.data;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Reference to a local (i.e. non remote) resource. It has helper methods for
@@ -81,11 +80,10 @@ public final class LocalReference extends Reference {
      * 
      * @param file
      *            The file whose path must be used.
-     * @throws IOException
+
      */
-    public static LocalReference createFileReference(File file)
-            throws IOException {
-        return createFileReference(file.getCanonicalPath());
+    public static LocalReference createFileReference(File file) {
+        return createFileReference(file.getAbsolutePath());
     }
 
     /**
