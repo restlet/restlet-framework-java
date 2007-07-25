@@ -57,7 +57,7 @@ public class DirectoryResource extends Resource {
      * Returns the set of extensions contained in a given directory entry name.
      * 
      * @param entryName
-     *            The directory entry name.
+     *                The directory entry name.
      * @return The set of extensions.
      */
     public static Set<String> getExtensions(String entryName) {
@@ -118,9 +118,9 @@ public class DirectoryResource extends Resource {
      * Constructor.
      * 
      * @param directory
-     *            The parent directory handler.
+     *                The parent directory handler.
      * @param request
-     *            The handled call.
+     *                The handled call.
      * @throws IOException
      */
     public DirectoryResource(Directory directory, Request request,
@@ -313,7 +313,7 @@ public class DirectoryResource extends Resource {
      * Puts a variant representation in the resource.
      * 
      * @param variant
-     *            A new or updated variant representation.
+     *                A new or updated variant representation.
      */
     public void put(Representation variant) {
         Status status;
@@ -396,7 +396,10 @@ public class DirectoryResource extends Resource {
 
         getLogger().info("Getting variants for : " + getTargetUri());
 
-        if (this.directoryContent != null) {
+        if ((this.directoryContent != null)
+                && (getRequest().getResourceRef() != null)
+                && (getRequest().getResourceRef().getBaseRef() != null)) {
+
             // Allows to sort the list of representations
             SortedSet<Representation> resultSet = new TreeSet<Representation>(
                     getRepresentationsComparator());
@@ -404,13 +407,17 @@ public class DirectoryResource extends Resource {
             // Compute the base reference (from a call's client point of view)
             String baseRef = getRequest().getResourceRef().getBaseRef()
                     .toString(false, false);
+
             if (!baseRef.endsWith("/")) {
                 baseRef += "/";
             }
+
             int lastIndex = this.relativePart.lastIndexOf("/");
+
             if (lastIndex != -1) {
                 baseRef += this.relativePart.substring(0, lastIndex);
             }
+
             int rootLength = getDirectoryUri().length();
 
             if (this.baseName != null) {
@@ -429,7 +436,9 @@ public class DirectoryResource extends Resource {
                     }
                 }
             }
+
             results.addAll(resultSet);
+
             if (resultSet.isEmpty()) {
                 if (this.targetDirectory && getDirectory().isListingAllowed()) {
                     ReferenceList userList = new ReferenceList(
@@ -605,7 +614,7 @@ public class DirectoryResource extends Resource {
      * Sets the context's target URI (file, clap URI).
      * 
      * @param targetUri
-     *            The context's target URI.
+     *                The context's target URI.
      */
     public void setTargetUri(String targetUri) {
         this.targetUri = targetUri;
