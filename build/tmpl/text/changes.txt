@@ -19,6 +19,7 @@ Changes log
  - Restlet.getContext() now always return a non-null context.
  - ServerList.addServer(Server), returned by the Component.getServers() method, wasn't properly setting the 
    component as the server's target.
+ - Fixed potential NPE in DirectoryResource when no request's baseRef was set. Reported by Joe Holloway.
  
 1.0.3 (2007-07-15)
 [Bugs fixed]
