@@ -14,12 +14,15 @@ Changes log
  - Reverted changes to the ServerServlet back to the 1.0.2 behavior (application context set after construction 
    via setContext() method). The new behavior requires NRE API changes and will only be available in the 
    Restlet 1.1. Issue reported by Richard Wallace. 
- - Mentionned the additional dependency on the cglib in the SpringRouter class.
- - Clarified and fixed SpringContext Javadocs.
  - Restlet.getContext() now always return a non-null context.
  - ServerList.addServer(Server), returned by the Component.getServers() method, wasn't properly setting the 
    component as the server's target.
  - Fixed potential NPE in DirectoryResource when no request's baseRef was set. Reported by Joe Holloway.
+
+[Enhancements] 
+ - Mentionned the additional dependency on the cglib in the SpringRouter class.
+ - Clarified and fixed SpringContext Javadocs.
+ - Upgraded Jetty to version 6.1.5.
  
 1.0.3 (2007-07-15)
 [Bugs fixed]
