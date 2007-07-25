@@ -124,19 +124,14 @@ public class FileClientHelper extends LocalClientHelper {
                 // 1- set up base name as the longest part of the name without
                 // known extensions (beginning from the left)
                 String baseName = getBaseName(file, metadataService);
-                // 2- loooking for resources with the same base name
+                // 2- looking for resources with the same base name
                 File[] files = file.getParentFile().listFiles();
                 ReferenceList rl = new ReferenceList(files.length);
                 rl.setIdentifier(request.getResourceRef());
 
                 for (File entry : files) {
-                    try {
-                        if (entry.getName().startsWith(baseName)) {
-                            rl.add(LocalReference.createFileReference(entry));
-                        }
-                    } catch (IOException ioe) {
-                        getLogger().log(Level.WARNING,
-                                "Unable to create file reference", ioe);
+                    if (entry.getName().startsWith(baseName)) {
+                        rl.add(LocalReference.createFileReference(entry));
                     }
                 }
                 output = rl.getTextRepresentation();
@@ -149,13 +144,7 @@ public class FileClientHelper extends LocalClientHelper {
                         rl.setIdentifier(request.getResourceRef());
 
                         for (File entry : files) {
-                            try {
-                                rl.add(LocalReference
-                                        .createFileReference(entry));
-                            } catch (IOException ioe) {
-                                getLogger().log(Level.WARNING,
-                                        "Unable to create file reference", ioe);
-                            }
+                            rl.add(LocalReference.createFileReference(entry));
                         }
 
                         output = rl.getTextRepresentation();
