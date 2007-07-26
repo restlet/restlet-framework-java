@@ -56,11 +56,11 @@ public class UserResource extends Resource {
      * Constructor.
      * 
      * @param context
-     *            The parent context.
+     *                The parent context.
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to return.
+     *                The response to return.
      */
     public UserResource(Context context, Request request, Response response) {
         super(context, request, response);
@@ -195,7 +195,8 @@ public class UserResource extends Resource {
     public Representation getRepresentation(Variant variant) {
         Representation result = null;
 
-        if (variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
+        if ((variant != null)
+                && variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
             // Creates a text representation
             StringBuilder sb = new StringBuilder();
             sb.append("------------\n");
@@ -220,7 +221,7 @@ public class UserResource extends Resource {
 
     @Override
     public void put(Representation entity) {
-        if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
+        if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM, true)) {
             boolean canSet = true;
 
             if (getUser() == null) {
@@ -265,7 +266,7 @@ public class UserResource extends Resource {
      * Sets the associated user.
      * 
      * @param user
-     *            The user to set.
+     *                The user to set.
      */
     public void setUser(User user) {
         this.user = user;
