@@ -363,7 +363,9 @@ public class Variant {
     }
 
     /**
-     * Returns the identifier.
+     * Returns an optional identifier. This is useful when the representation is
+     * accessible from a location separate from the representation's resource
+     * URI, for example when content negotiation occurs.
      * 
      * @return The identifier.
      */
@@ -372,10 +374,12 @@ public class Variant {
     }
 
     /**
-     * Sets the identifier.
+     * Sets the optional identifier. This is useful when the representation is
+     * accessible from a location separate from the representation's resource
+     * URI, for example when content negotiation occurs.
      * 
      * @param identifier
-     *            The identifier.
+     *                The identifier.
      */
     public void setIdentifier(Reference identifier) {
         this.identifier = identifier;
@@ -385,7 +389,7 @@ public class Variant {
      * Sets the identifier from a URI string.
      * 
      * @param identifierUri
-     *            The identifier to parse.
+     *                The identifier to parse.
      */
     public void setIdentifier(String identifierUri) {
         setIdentifier(new Reference(identifierUri));

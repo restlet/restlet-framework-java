@@ -6,6 +6,13 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - 
+ 
+[Enhancements] 
+ - Clarified the Javadocs for the Variant's "identifier" property. Reported by Joe Holloway.
+
+1.0.4 (2007-07-25)
+[Bugs fixed]
  - Fixed spacing issue in HTTP reading/writing code (NRE's HttpUtils class). Reported by Ilya Klyuchnikov.
  - Fixed bug in StreamClientCall causing the response's status to always be null. Reported by Ilya Klyuchnikov.
  - Fixed issue that makes the server to return a 304 status even if the resource is modified 
