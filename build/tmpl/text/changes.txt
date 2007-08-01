@@ -11,6 +11,7 @@ Changes log
  
 [Enhancements] 
  - Clarified the Javadocs for the Variant's "identifier" property. Reported by Joe Holloway.
+ - Clarified the Javadocs for the Resource.getVariants() method. Suggested by John D. Mitchell.
 
 1.0.4 (2007-07-25)
 [Bugs fixed]
