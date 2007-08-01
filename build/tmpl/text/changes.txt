@@ -7,6 +7,7 @@ Changes log
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Potential NPE in REST book example (ch7, UserResource). Reported by Marc Portier.
+ - Potential NPE during KeyStore initialization for Simple HTTPS connector. Report by Quintin May.
  
 [Enhancements] 
  - Clarified the Javadocs for the Variant's "identifier" property. Reported by Joe Holloway.
