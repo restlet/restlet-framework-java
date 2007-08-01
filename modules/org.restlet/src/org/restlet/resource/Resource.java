@@ -335,10 +335,15 @@ public class Resource {
      * can also be a full representation in case a resource has only one variant
      * or if the initialization cost is very low.<br>
      * <br>
+     * Note that the order in which the variants are inserted in the list
+     * matters. For example, if the client has no preference defined, or if the
+     * acceptable variants have the same quality level for the client, the first
+     * acceptable variant in the list will be returned.<br>
+     * <br>
      * It is recommended to not override this method and to simply use it at
      * construction time to initialize the list of available variants.
-     * Overriding it will force you to reconstruct the list for each call which
-     * is expensive.
+     * Overriding it may lead you to reconstruct the list for each call which is
+     * expensive.
      * 
      * @return The list of variants.
      * @see #getRepresentation(Variant)
