@@ -103,7 +103,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * Constructor.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      */
     public HttpsServerHelper(Server server) {
         super(server);
@@ -114,8 +114,11 @@ public class HttpsServerHelper extends SimpleServerHelper {
     public void start() throws Exception {
         // Initialize the SSL context
         KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
-        FileInputStream fis = new FileInputStream(getKeystorePath());
-        keyStore.load(fis, getKeystorePassword().toCharArray());
+        FileInputStream fis = getKeystorePath() == null ? null
+                : new FileInputStream(getKeystorePath());
+        char[] password = getKeystorePassword() == null ? null
+                : getKeystorePassword().toCharArray();
+        keyStore.load(fis, password);
 
         KeyManagerFactory keyManagerFactory = KeyManagerFactory
                 .getInstance(getCertAlgorithm());
