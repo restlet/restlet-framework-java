@@ -509,13 +509,13 @@ public class Resource {
      * provided by the 'findTarget' method).
      */
     public void handlePost() {
-        if (getRequest().isEntityAvailable()) {
-            post(getRequest().getEntity());
-        } else {
-            getResponse().setStatus(
-                    new Status(Status.CLIENT_ERROR_BAD_REQUEST,
-                            "Missing request entity"));
+        if (!getRequest().isEntityAvailable()) {
+            getLogger()
+                    .fine(
+                            "POST request received without any entity. Continuing processing.");
         }
+
+        post(getRequest().getEntity());
     }
 
     /**
