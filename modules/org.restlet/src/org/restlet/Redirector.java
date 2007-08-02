@@ -30,7 +30,7 @@ import org.restlet.util.Template;
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
  * 
- * @see org.restlet.util.Template
+ * @see {@link org.restlet.util.Template}
  * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting
  *      and redirection</a>
  * @author Jerome Louvel (contact@noelios.com)
@@ -90,9 +90,9 @@ public class Redirector extends Restlet {
      * Constructor for the connector mode.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param targetTemplate
-     *            The template to build the target URI.
+     *                The template to build the target URI.
      * @see org.restlet.util.Template
      */
     public Redirector(Context context, String targetTemplate) {
@@ -103,12 +103,12 @@ public class Redirector extends Restlet {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param targetPattern
-     *            The pattern to build the target URI (using StringTemplate
-     *            syntax and the CallModel for variables).
+     *                The pattern to build the target URI (using StringTemplate
+     *                syntax and the CallModel for variables).
      * @param mode
-     *            The redirection mode.
+     *                The redirection mode.
      */
     public Redirector(Context context, String targetPattern, int mode) {
         super(context);
@@ -117,13 +117,49 @@ public class Redirector extends Restlet {
     }
 
     /**
-     * Handles a call to a resource or a set of resources.
+     * Returns the redirection mode.
+     * 
+     * @return The redirection mode.
+     */
+    public int getMode() {
+        return mode;
+    }
+
+    /**
+     * Returns the target reference to redirect to.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
+     * @return The target reference to redirect to.
      */
+    protected Reference getTargetRef(Request request, Response response) {
+        // Create the template
+        Template rt = new Template(getLogger(), this.targetTemplate);
+
+        // Return the formatted target URI
+        return new Reference(rt.format(request, response));
+    }
+
+    /**
+     * Returns the target URI pattern.
+     * 
+     * @return The target URI pattern.
+     */
+    public String getTargetTemplate() {
+        return targetTemplate;
+    }
+
+    /**
+     * Handles a call by redirecting using the selected redirection mode.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     */
+    @Override
     public void handle(Request request, Response response) {
         // Generate the target reference
         Reference targetRef = getTargetRef(request, response);
@@ -164,11 +200,11 @@ public class Redirector extends Restlet {
      * call.
      * 
      * @param targetRef
-     *            The target reference with URI variables resolved.
+     *                The target reference with URI variables resolved.
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     protected void redirectDispatcher(Reference targetRef, Request request,
             Response response) {
@@ -180,33 +216,36 @@ public class Redirector extends Restlet {
     }
 
     /**
-     * Returns the target reference to redirect to.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @return The target reference to redirect to.
-     */
-    protected Reference getTargetRef(Request request, Response response) {
-        // Create the template
-        Template rt = new Template(getLogger(), this.targetTemplate);
-
-        // Return the formatted target URI
-        return new Reference(rt.format(request, response));
-    }
-
-    /**
      * Optionnaly rewrites the response entity returned in the MODE_CONNECTOR
      * mode. By default, it just returns the initial entity without any
      * modification.
      * 
      * @param initialEntity
-     *            The initial entity returned.
+     *                The initial entity returned.
      * @return The rewritten entity.
      */
     protected Representation rewrite(Representation initialEntity) {
         return initialEntity;
+    }
+
+    /**
+     * Sets the redirection mode.
+     * 
+     * @param mode
+     *                The redirection mode.
+     */
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
+    /**
+     * Sets the target URI pattern.
+     * 
+     * @param targetTemplate
+     *                The target URI pattern.
+     */
+    public void setTargetTemplate(String targetTemplate) {
+        this.targetTemplate = targetTemplate;
     }
 
 }

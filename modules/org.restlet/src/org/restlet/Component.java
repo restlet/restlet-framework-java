@@ -87,9 +87,10 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the modifiable list of client connectors.
+     * Returns a modifiable list of client connectors. Creates a new instance if
+     * no one has been set.
      * 
-     * @return The modifiable list of client connectors.
+     * @return A modifiable list of client connectors.
      */
     public ClientList getClients() {
         if (this.clients == null)
@@ -116,9 +117,10 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the modifiable list of host routers.
+     * Returns the modifiable list of virtual hosts. Creates a new instance if
+     * no one has been set.
      * 
-     * @return The modifiable list of host routers.
+     * @return The modifiable list of virtual hosts.
      */
     public List<VirtualHost> getHosts() {
         if (this.hosts == null)
@@ -147,7 +149,8 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the modifiable list of server connectors.
+     * Returns the modifiable list of server connectors. Creates a new instance
+     * if no one has been set.
      * 
      * @return The modifiable list of server connectors.
      */
@@ -158,7 +161,8 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the status service. This service is enabled by default.
+     * Returns the status service, enabled by default. Creates a new instance if
+     * no one has been set.
      * 
      * @return The status service.
      */
@@ -168,18 +172,21 @@ public class Component extends Restlet {
         return this.statusService;
     }
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     */
+    @Override
     public void handle(Request request, Response response) {
         init(request, response);
         if (getHelper() != null)
             getHelper().handle(request, response);
+    }
+
+    /**
+     * Sets a modifiable list of client connectors.
+     * 
+     * @param clients
+     *                A modifiable list of client connectors.
+     */
+    public void setClients(ClientList clients) {
+        this.clients = clients;
     }
 
     /**
@@ -193,6 +200,16 @@ public class Component extends Restlet {
     }
 
     /**
+     * Sets the modifiable list of virtual hosts.
+     * 
+     * @param hosts
+     *                The modifiable list of virtual hosts.
+     */
+    public void setHosts(List<VirtualHost> hosts) {
+        this.hosts = hosts;
+    }
+
+    /**
      * Sets the global log service.
      * 
      * @param logService
@@ -200,6 +217,16 @@ public class Component extends Restlet {
      */
     public void setLogService(LogService logService) {
         this.logService = logService;
+    }
+
+    /**
+     * Sets a modifiable list of server connectors.
+     * 
+     * @param servers
+     *                A modifiable list of server connectors.
+     */
+    public void setServers(ServerList servers) {
+        this.servers = servers;
     }
 
     /**
@@ -213,7 +240,7 @@ public class Component extends Restlet {
     }
 
     /**
-     * Starts the component and all its connectors.
+     * Starts all the connectors then the component.
      */
     @Override
     public void start() throws Exception {

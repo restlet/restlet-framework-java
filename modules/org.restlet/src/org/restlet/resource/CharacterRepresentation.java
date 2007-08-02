@@ -39,7 +39,7 @@ public abstract class CharacterRepresentation extends Representation {
      * Constructor.
      * 
      * @param mediaType
-     *            The media type.
+     *                The media type.
      */
     public CharacterRepresentation(MediaType mediaType) {
         super(mediaType);
@@ -69,9 +69,9 @@ public abstract class CharacterRepresentation extends Representation {
      * Input stream based on a reader.
      * 
      * @param reader
-     *            The characters reader.
+     *                The characters reader.
      * @param source
-     *            The source representation with the target character set.
+     *                The source representation with the target character set.
      * @return The encoding input stream.
      */
     class ReaderInputStream extends InputStream {

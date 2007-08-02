@@ -47,7 +47,7 @@ public abstract class Filter extends Restlet {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      */
     public Filter(Context context) {
         this(context, null);
@@ -57,9 +57,9 @@ public abstract class Filter extends Restlet {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param next
-     *            The next Restlet.
+     *                The next Restlet.
      */
     public Filter(Context context, Restlet next) {
         super(context);
@@ -71,9 +71,9 @@ public abstract class Filter extends Restlet {
      * default.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     protected void afterHandle(Request request, Response response) {
         // To be overriden
@@ -84,9 +84,9 @@ public abstract class Filter extends Restlet {
      * default.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     protected void beforeHandle(Request request, Response response) {
         // To be overriden
@@ -96,9 +96,9 @@ public abstract class Filter extends Restlet {
      * Handles the call by distributing it to the next Restlet.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     protected void doHandle(Request request, Response response) {
         if (getNext() != null) {
@@ -124,9 +124,9 @@ public abstract class Filter extends Restlet {
      * afterHandle() method for post-filtering.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public final void handle(Request request, Response response) {
         init(request, response);
@@ -145,25 +145,25 @@ public abstract class Filter extends Restlet {
     }
 
     /**
-     * Sets the next Restlet.
-     * 
-     * @param next
-     *            The next Restlet.
-     */
-    public void setNext(Restlet next) {
-        this.next = next;
-    }
-
-    /**
      * Sets the next Restlet as a Finder for a given Resource class. When the
      * call is delegated to the Finder instance, a new instance of the Resource
      * class will be created and will actually handle the request.
      * 
      * @param targetClass
-     *            The target Resource class to attach.
+     *                The target Resource class to attach.
      */
     public void setNext(Class<? extends Resource> targetClass) {
         setNext(new Finder(getContext(), targetClass));
+    }
+
+    /**
+     * Sets the next Restlet.
+     * 
+     * @param next
+     *                The next Restlet.
+     */
+    public void setNext(Restlet next) {
+        this.next = next;
     }
 
 }

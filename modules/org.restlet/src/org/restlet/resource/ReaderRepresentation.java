@@ -76,7 +76,7 @@ public class ReaderRepresentation extends CharacterRepresentation {
      * @param reader
      *                The reader to use.
      */
-    private void setReader(Reader reader) {
+    public void setReader(Reader reader) {
         this.reader = reader;
         setAvailable(reader != null);
     }

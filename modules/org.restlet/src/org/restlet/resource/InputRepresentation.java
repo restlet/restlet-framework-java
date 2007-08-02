@@ -105,7 +105,7 @@ public class InputRepresentation extends StreamRepresentation {
      * @param stream
      *                The input stream to use.
      */
-    private void setStream(InputStream stream) {
+    public void setStream(InputStream stream) {
         this.stream = stream;
         setAvailable(stream != null);
     }

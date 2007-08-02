@@ -136,7 +136,7 @@ public class Router extends Restlet {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      */
     public Router(Context context) {
         super(context);
@@ -154,7 +154,7 @@ public class Router extends Restlet {
      * route will be added routing to the target when any call is received.
      * 
      * @param target
-     *            The target Restlet to attach.
+     *                The target Restlet to attach.
      * @return The created route.
      */
     public Route attach(Restlet target) {
@@ -167,10 +167,10 @@ public class Router extends Restlet {
      * a URI matching the pattern will be received.
      * 
      * @param uriPattern
-     *            The URI pattern that must match the relative part of the
-     *            resource URI.
+     *                The URI pattern that must match the relative part of the
+     *                resource URI.
      * @param targetClass
-     *            The target Resource class to attach.
+     *                The target Resource class to attach.
      * @return The created route.
      */
     public Route attach(String uriPattern, Class<? extends Resource> targetClass) {
@@ -178,10 +178,56 @@ public class Router extends Restlet {
     }
 
     /**
+     * Attaches a target Restlet to this router based on a given URI pattern. A
+     * new route will be added routing to the target when calls with a URI
+     * matching the pattern will be received.
+     * 
+     * @param uriPattern
+     *                The URI pattern that must match the relative part of the
+     *                resource URI.
+     * @param target
+     *                The target Restlet to attach.
+     * @return The created route.
+     */
+    public Route attach(String uriPattern, Restlet target) {
+        Route result = createRoute(uriPattern, target);
+        getRoutes().add(result);
+        return result;
+    }
+
+    /**
+     * Attaches a Resource class to this router as the default target to invoke
+     * when no route matches. It actually sets a default route that scores all
+     * calls to 1.0.
+     * 
+     * @param defaultTargetClass
+     *                The target Resource class to attach.
+     * @return The created route.
+     */
+    public Route attachDefault(Class<? extends Resource> defaultTargetClass) {
+        return attachDefault(createFinder(defaultTargetClass));
+    }
+
+    /**
+     * Attaches a Restlet to this router as the default target to invoke when no
+     * route matches. It actually sets a default route that scores all calls to
+     * 1.0.
+     * 
+     * @param defaultTarget
+     *                The Restlet to use as the default target.
+     * @return The created route.
+     */
+    public Route attachDefault(Restlet defaultTarget) {
+        Route result = createRoute("", defaultTarget);
+        setDefaultRoute(result);
+        return result;
+    }
+
+    /**
      * Creates a new finder instance based on the "targetClass" property.
      * 
      * @param targetClass
-     *            The target Resource class to attach.
+     *                The target Resource class to attach.
      * @return The new finder instance.
      */
     private Finder createFinder(Class<? extends Resource> targetClass) {
@@ -205,59 +251,13 @@ public class Router extends Restlet {
     }
 
     /**
-     * Attaches a target Restlet to this router based on a given URI pattern. A
-     * new route will be added routing to the target when calls with a URI
-     * matching the pattern will be received.
-     * 
-     * @param uriPattern
-     *            The URI pattern that must match the relative part of the
-     *            resource URI.
-     * @param target
-     *            The target Restlet to attach.
-     * @return The created route.
-     */
-    public Route attach(String uriPattern, Restlet target) {
-        Route result = createRoute(uriPattern, target);
-        getRoutes().add(result);
-        return result;
-    }
-
-    /**
-     * Attaches a Resource class to this router as the default target to invoke
-     * when no route matches. It actually sets a default route that scores all
-     * calls to 1.0.
-     * 
-     * @param defaultTargetClass
-     *            The target Resource class to attach.
-     * @return The created route.
-     */
-    public Route attachDefault(Class<? extends Resource> defaultTargetClass) {
-        return attachDefault(createFinder(defaultTargetClass));
-    }
-
-    /**
-     * Attaches a Restlet to this router as the default target to invoke when no
-     * route matches. It actually sets a default route that scores all calls to
-     * 1.0.
-     * 
-     * @param defaultTarget
-     *            The Restlet to use as the default target.
-     * @return The created route.
-     */
-    public Route attachDefault(Restlet defaultTarget) {
-        Route result = createRoute("", defaultTarget);
-        setDefaultRoute(result);
-        return result;
-    }
-
-    /**
      * Creates a new route for the given URI pattern and target.
      * 
      * @param uriPattern
-     *            The URI pattern that must match the relative part of the
-     *            resource URI.
+     *                The URI pattern that must match the relative part of the
+     *                resource URI.
      * @param target
-     *            The target Restlet to attach.
+     *                The target Restlet to attach.
      * @return The created route.
      */
     protected Route createRoute(String uriPattern, Restlet target) {
@@ -270,7 +270,7 @@ public class Router extends Restlet {
      * to null.
      * 
      * @param target
-     *            The target Restlet to detach.
+     *                The target Restlet to detach.
      */
     public void detach(Restlet target) {
         getRoutes().removeAll(target);
@@ -285,9 +285,9 @@ public class Router extends Restlet {
      * implementation (to be overriden), returns null.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      * @return The matched route if available or null.
      */
     protected Route getCustom(Request request, Response response) {
@@ -302,6 +302,15 @@ public class Router extends Restlet {
      */
     public Route getDefaultRoute() {
         return this.defaultRoute;
+    }
+
+    /**
+     * Returns the finder class to instantiate.
+     * 
+     * @return the finder class to instantiate.
+     */
+    public Class<? extends Finder> getFinderClass() {
+        return this.finderClass;
     }
 
     /**
@@ -321,9 +330,9 @@ public class Router extends Restlet {
      * Returns the next Restlet if available.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      * @return The next Restlet if available or null.
      */
     public Restlet getNext(Request request, Response response) {
@@ -409,7 +418,8 @@ public class Router extends Restlet {
     }
 
     /**
-     * Returns the modifiable list of routes.
+     * Returns the modifiable list of routes. Creates a new instance if no one
+     * has been set.
      * 
      * @return The modifiable list of routes.
      */
@@ -432,9 +442,9 @@ public class Router extends Restlet {
      * Handles a call by invoking the next Restlet if it is available.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         init(request, response);
@@ -451,10 +461,20 @@ public class Router extends Restlet {
      * Sets the default route tested if no other one was available.
      * 
      * @param defaultRoute
-     *            The default route tested if no other one was available.
+     *                The default route tested if no other one was available.
      */
     public void setDefaultRoute(Route defaultRoute) {
         this.defaultRoute = defaultRoute;
+    }
+
+    /**
+     * Sets the finder class to instantiate.
+     * 
+     * @param finderClass
+     *                The finder class to instantiate.
+     */
+    public void setFinderClass(Class<? extends Finder> finderClass) {
+        this.finderClass = finderClass;
     }
 
     /**
@@ -463,7 +483,7 @@ public class Router extends Restlet {
      * and therefore could change on a retry.
      * 
      * @param maxAttempts
-     *            The maximum number of attempts.
+     *                The maximum number of attempts.
      */
     public void setMaxAttempts(int maxAttempts) {
         this.maxAttempts = maxAttempts;
@@ -473,7 +493,7 @@ public class Router extends Restlet {
      * Sets the score required to have a match.
      * 
      * @param score
-     *            The score required to have a match.
+     *                The score required to have a match.
      */
     public void setRequiredScore(float score) {
         this.requiredScore = score;
@@ -483,39 +503,30 @@ public class Router extends Restlet {
      * Sets the delay (in seconds) before a new attempt.
      * 
      * @param retryDelay
-     *            The delay (in seconds) before a new attempt.
+     *                The delay (in seconds) before a new attempt.
      */
     public void setRetryDelay(long retryDelay) {
         this.retryDelay = retryDelay;
     }
 
     /**
+     * Sets the modifiable list of routes.
+     * 
+     * @param routes
+     *                The modifiable list of routes.
+     */
+    public void setRoutes(RouteList routes) {
+        this.routes = routes;
+    }
+
+    /**
      * Sets the routing mode.
      * 
      * @param routingMode
-     *            The routing mode.
+     *                The routing mode.
      */
     public void setRoutingMode(int routingMode) {
         this.routingMode = routingMode;
-    }
-
-    /**
-     * Returns the finder class to instantiate.
-     * 
-     * @return the finder class to instantiate.
-     */
-    public Class<? extends Finder> getFinderClass() {
-        return this.finderClass;
-    }
-
-    /**
-     * Sets the finder class to instantiate.
-     * 
-     * @param finderClass
-     *            The finder class to instantiate.
-     */
-    public void setFinderClass(Class<? extends Finder> finderClass) {
-        this.finderClass = finderClass;
     }
 
 }

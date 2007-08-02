@@ -52,175 +52,11 @@ public class WrapperResponse extends Response {
      * Constructor.
      * 
      * @param wrappedResponse
-     *            The wrapped response.
+     *                The wrapped response.
      */
     public WrapperResponse(Response wrappedResponse) {
         super((Request) null);
         this.wrappedResponse = wrappedResponse;
-    }
-
-    /**
-     * Returns the authentication request sent by an origin server to a client.
-     * 
-     * @return The authentication request sent by an origin server to a client.
-     */
-    public ChallengeRequest getChallengeRequest() {
-        return getWrappedResponse().getChallengeRequest();
-    }
-
-    /**
-     * Returns the cookie settings provided by the server.
-     * 
-     * @return The cookie settings provided by the server.
-     */
-    public Series<CookieSetting> getCookieSettings() {
-        return getWrappedResponse().getCookieSettings();
-    }
-
-    /**
-     * Returns the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @return The redirection reference.
-     */
-    public Reference getLocationRef() {
-        return getWrappedResponse().getLocationRef();
-    }
-
-    /**
-     * Returns the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @return The redirection reference.
-     * @deprecated Use the getLocationRef() method instead.
-     */
-    public Reference getRedirectRef() {
-        return getWrappedResponse().getRedirectRef();
-    }
-
-    /**
-     * Returns the associated request
-     * 
-     * @return The associated request
-     */
-    public Request getRequest() {
-        return getWrappedResponse().getRequest();
-    }
-
-    /**
-     * Returns the server-specific information.
-     * 
-     * @return The server-specific information.
-     */
-    public ServerInfo getServerInfo() {
-        return getWrappedResponse().getServerInfo();
-    }
-
-    /**
-     * Returns the status.
-     * 
-     * @return The status.
-     */
-    public Status getStatus() {
-        return getWrappedResponse().getStatus();
-    }
-
-    /**
-     * Returns the wrapped response.
-     * 
-     * @return The wrapped response.
-     */
-    protected Response getWrappedResponse() {
-        return this.wrappedResponse;
-    }
-
-    /**
-     * Sets the authentication request sent by an origin server to a client.
-     * 
-     * @param request
-     *            The authentication request sent by an origin server to a
-     *            client.
-     */
-    public void setChallengeRequest(ChallengeRequest request) {
-        getWrappedResponse().setChallengeRequest(request);
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param locationRef
-     *            The reference to set.
-     */
-    public void setLocationRef(Reference locationRef) {
-        getWrappedResponse().setLocationRef(locationRef);
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param locationUri
-     *            The URI to set.
-     */
-    public void setLocationRef(String locationUri) {
-        getWrappedResponse().setLocationRef(locationUri);
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param redirectRef
-     *            The redirection reference.
-     * @deprecated Use the setLocationRef() method instead.
-     */
-    public void setRedirectRef(Reference redirectRef) {
-        getWrappedResponse().setRedirectRef(redirectRef);
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param redirectUri
-     *            The redirection URI.
-     * @deprecated Use the setLocationRef() method instead.
-     */
-    public void setRedirectRef(String redirectUri) {
-        getWrappedResponse().setRedirectRef(redirectUri);
-    }
-
-    /**
-     * Sets the associated request.
-     * 
-     * @param request
-     *            The associated request
-     */
-    public void setRequest(WrapperRequest request) {
-        getWrappedResponse().setRequest(request);
-    }
-
-    /**
-     * Sets the status.
-     * 
-     * @param status
-     *            The status to set.
-     */
-    public void setStatus(Status status) {
-        getWrappedResponse().setStatus(status);
-    }
-
-    /**
-     * Sets the status.
-     * 
-     * @param status
-     *            The status to set.
-     * @param message
-     *            The status message.
-     */
-    public void setStatus(Status status, String message) {
-        getWrappedResponse().setStatus(status, message);
     }
 
     /**
@@ -232,99 +68,6 @@ public class WrapperResponse extends Response {
      */
     public Set<Method> getAllowedMethods() {
         return getWrappedResponse().getAllowedMethods();
-    }
-
-    /**
-     * Returns the set of selecting dimensions on which the response entity may
-     * vary. If some server-side content negotiation is done, this set should be
-     * properly updated, other it can be left empty.
-     * 
-     * @return The set of dimensions on which the response entity may vary.
-     */
-    public Set<Dimension> getDimensions() {
-        return getWrappedResponse().getDimensions();
-    }
-
-    /**
-     * Permanently redirects the client to a target URI. The client is expected
-     * to reuse the same method for the new request.
-     * 
-     * @param targetRef
-     *            The target URI reference.
-     */
-    public void redirectPermanent(Reference targetRef) {
-        getWrappedResponse().redirectPermanent(targetRef);
-    }
-
-    /**
-     * Permanently redirects the client to a target URI. The client is expected
-     * to reuse the same method for the new request.
-     * 
-     * @param targetUri
-     *            The target URI.
-     */
-    public void redirectPermanent(String targetUri) {
-        getWrappedResponse().redirectPermanent(targetUri);
-    }
-
-    /**
-     * Redirects the client to a different URI that SHOULD be retrieved using a
-     * GET method on that resource. This method exists primarily to allow the
-     * output of a POST-activated script to redirect the user agent to a
-     * selected resource. The new URI is not a substitute reference for the
-     * originally requested resource.
-     * 
-     * @param targetRef
-     *            The target reference.
-     */
-    public void redirectSeeOther(Reference targetRef) {
-        getWrappedResponse().redirectSeeOther(targetRef);
-    }
-
-    /**
-     * Redirects the client to a different URI that SHOULD be retrieved using a
-     * GET method on that resource. This method exists primarily to allow the
-     * output of a POST-activated script to redirect the user agent to a
-     * selected resource. The new URI is not a substitute reference for the
-     * originally requested resource.
-     * 
-     * @param targetUri
-     *            The target URI.
-     */
-    public void redirectSeeOther(String targetUri) {
-        getWrappedResponse().redirectSeeOther(targetUri);
-    }
-
-    /**
-     * Temporarily redirects the client to a target URI. The client is expected
-     * to reuse the same method for the new request.
-     * 
-     * @param targetRef
-     *            The target reference.
-     */
-    public void redirectTemporary(Reference targetRef) {
-        getWrappedResponse().redirectTemporary(targetRef);
-    }
-
-    /**
-     * Temporarily redirects the client to a target URI. The client is expected
-     * to reuse the same method for the new request.
-     * 
-     * @param targetUri
-     *            The target URI.
-     */
-    public void redirectTemporary(String targetUri) {
-        getWrappedResponse().redirectTemporary(targetUri);
-    }
-
-    /**
-     * Sets the associated request.
-     * 
-     * @param request
-     *            The associated request
-     */
-    public void setRequest(Request request) {
-        getWrappedResponse().setRequest(request);
     }
 
     /**
@@ -361,6 +104,35 @@ public class WrapperResponse extends Response {
      */
     public Map<String, Object> getAttributes() {
         return getWrappedResponse().getAttributes();
+    }
+
+    /**
+     * Returns the authentication request sent by an origin server to a client.
+     * 
+     * @return The authentication request sent by an origin server to a client.
+     */
+    public ChallengeRequest getChallengeRequest() {
+        return getWrappedResponse().getChallengeRequest();
+    }
+
+    /**
+     * Returns the cookie settings provided by the server.
+     * 
+     * @return The cookie settings provided by the server.
+     */
+    public Series<CookieSetting> getCookieSettings() {
+        return getWrappedResponse().getCookieSettings();
+    }
+
+    /**
+     * Returns the set of selecting dimensions on which the response entity may
+     * vary. If some server-side content negotiation is done, this set should be
+     * properly updated, other it can be left empty.
+     * 
+     * @return The set of dimensions on which the response entity may vary.
+     */
+    public Set<Dimension> getDimensions() {
+        return getWrappedResponse().getDimensions();
     }
 
     /**
@@ -425,6 +197,63 @@ public class WrapperResponse extends Response {
     }
 
     /**
+     * Returns the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @return The redirection reference.
+     */
+    public Reference getLocationRef() {
+        return getWrappedResponse().getLocationRef();
+    }
+
+    /**
+     * Returns the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @return The redirection reference.
+     * @deprecated Use the getLocationRef() method instead.
+     */
+    public Reference getRedirectRef() {
+        return getWrappedResponse().getRedirectRef();
+    }
+
+    /**
+     * Returns the associated request
+     * 
+     * @return The associated request
+     */
+    public Request getRequest() {
+        return getWrappedResponse().getRequest();
+    }
+
+    /**
+     * Returns the server-specific information.
+     * 
+     * @return The server-specific information.
+     */
+    public ServerInfo getServerInfo() {
+        return getWrappedResponse().getServerInfo();
+    }
+
+    /**
+     * Returns the status.
+     * 
+     * @return The status.
+     */
+    public Status getStatus() {
+        return getWrappedResponse().getStatus();
+    }
+
+    /**
+     * Returns the wrapped response.
+     * 
+     * @return The wrapped response.
+     */
+    protected Response getWrappedResponse() {
+        return this.wrappedResponse;
+    }
+
+    /**
      * Indicates if a content is available and can be sent. Several conditions
      * must be met: the content must exists and have some available data.
      * 
@@ -435,6 +264,89 @@ public class WrapperResponse extends Response {
     }
 
     /**
+     * Permanently redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
+     * 
+     * @param targetRef
+     *                The target URI reference.
+     */
+    public void redirectPermanent(Reference targetRef) {
+        getWrappedResponse().redirectPermanent(targetRef);
+    }
+
+    /**
+     * Permanently redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
+     * 
+     * @param targetUri
+     *                The target URI.
+     */
+    public void redirectPermanent(String targetUri) {
+        getWrappedResponse().redirectPermanent(targetUri);
+    }
+
+    /**
+     * Redirects the client to a different URI that SHOULD be retrieved using a
+     * GET method on that resource. This method exists primarily to allow the
+     * output of a POST-activated script to redirect the user agent to a
+     * selected resource. The new URI is not a substitute reference for the
+     * originally requested resource.
+     * 
+     * @param targetRef
+     *                The target reference.
+     */
+    public void redirectSeeOther(Reference targetRef) {
+        getWrappedResponse().redirectSeeOther(targetRef);
+    }
+
+    /**
+     * Redirects the client to a different URI that SHOULD be retrieved using a
+     * GET method on that resource. This method exists primarily to allow the
+     * output of a POST-activated script to redirect the user agent to a
+     * selected resource. The new URI is not a substitute reference for the
+     * originally requested resource.
+     * 
+     * @param targetUri
+     *                The target URI.
+     */
+    public void redirectSeeOther(String targetUri) {
+        getWrappedResponse().redirectSeeOther(targetUri);
+    }
+
+    /**
+     * Temporarily redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
+     * 
+     * @param targetRef
+     *                The target reference.
+     */
+    public void redirectTemporary(Reference targetRef) {
+        getWrappedResponse().redirectTemporary(targetRef);
+    }
+
+    /**
+     * Temporarily redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
+     * 
+     * @param targetUri
+     *                The target URI.
+     */
+    public void redirectTemporary(String targetUri) {
+        getWrappedResponse().redirectTemporary(targetUri);
+    }
+
+    /**
+     * Sets the authentication request sent by an origin server to a client.
+     * 
+     * @param request
+     *                The authentication request sent by an origin server to a
+     *                client.
+     */
+    public void setChallengeRequest(ChallengeRequest request) {
+        getWrappedResponse().setChallengeRequest(request);
+    }
+
+    /**
      * Sets the entity from a higher-level object. This object is converted to a
      * representation using the Application's converter service. If you want to
      * use this method to facilitate the setting of entities, you need to
@@ -442,7 +354,7 @@ public class WrapperResponse extends Response {
      * the toRepresentation(Object) method.
      * 
      * @param object
-     *            The higher-level object.
+     *                The higher-level object.
      */
     public void setEntity(Object object) {
         getWrappedResponse().setEntity(object);
@@ -452,7 +364,7 @@ public class WrapperResponse extends Response {
      * Sets the entity representation.
      * 
      * @param entity
-     *            The entity representation.
+     *                The entity representation.
      */
     public void setEntity(Representation entity) {
         getWrappedResponse().setEntity(entity);
@@ -462,12 +374,100 @@ public class WrapperResponse extends Response {
      * Sets a textual entity.
      * 
      * @param value
-     *            The represented string.
+     *                The represented string.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public void setEntity(String value, MediaType mediaType) {
         getWrappedResponse().setEntity(value, mediaType);
+    }
+
+    /**
+     * Sets the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @param locationRef
+     *                The reference to set.
+     */
+    public void setLocationRef(Reference locationRef) {
+        getWrappedResponse().setLocationRef(locationRef);
+    }
+
+    /**
+     * Sets the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @param locationUri
+     *                The URI to set.
+     */
+    public void setLocationRef(String locationUri) {
+        getWrappedResponse().setLocationRef(locationUri);
+    }
+
+    /**
+     * Sets the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @param redirectRef
+     *                The redirection reference.
+     * @deprecated Use the setLocationRef() method instead.
+     */
+    public void setRedirectRef(Reference redirectRef) {
+        getWrappedResponse().setRedirectRef(redirectRef);
+    }
+
+    /**
+     * Sets the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @param redirectUri
+     *                The redirection URI.
+     * @deprecated Use the setLocationRef() method instead.
+     */
+    public void setRedirectRef(String redirectUri) {
+        getWrappedResponse().setRedirectRef(redirectUri);
+    }
+
+    /**
+     * Sets the associated request.
+     * 
+     * @param request
+     *                The associated request
+     */
+    public void setRequest(Request request) {
+        getWrappedResponse().setRequest(request);
+    }
+
+    /**
+     * Sets the associated request.
+     * 
+     * @param request
+     *                The associated request
+     */
+    public void setRequest(WrapperRequest request) {
+        getWrappedResponse().setRequest(request);
+    }
+
+    /**
+     * Sets the status.
+     * 
+     * @param status
+     *                The status to set.
+     */
+    public void setStatus(Status status) {
+        getWrappedResponse().setStatus(status);
+    }
+
+    /**
+     * Sets the status.
+     * 
+     * @param status
+     *                The status to set.
+     * @param message
+     *                The status message.
+     */
+    public void setStatus(Status status, String message) {
+        getWrappedResponse().setStatus(status, message);
     }
 
 }

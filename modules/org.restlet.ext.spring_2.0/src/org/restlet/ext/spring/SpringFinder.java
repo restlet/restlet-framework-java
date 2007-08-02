@@ -123,4 +123,40 @@ public class SpringFinder extends Finder {
         return result;
     }
 
+    /**
+     * Sets the target Resource class, provided either as qualified class name
+     * or class instance.
+     * 
+     * @param targetClass
+     *                The target Resource class.
+     */
+    @SuppressWarnings("unchecked")
+    public void setTargetClass(Object targetClass) {
+        Class resourceClass;
+
+        if (targetClass instanceof String) {
+            try {
+                resourceClass = Class.forName((String) targetClass);
+
+                if (Resource.class.isAssignableFrom(resourceClass)) {
+                    super
+                            .setTargetClass((Class<? extends Resource>) resourceClass);
+                } else {
+                    getLogger()
+                            .warning(
+                                    "Unknown class set. Only subclasses of org.restlet.resource.Resource are allowed.");
+                }
+            } catch (ClassNotFoundException e) {
+                getLogger().log(Level.WARNING,
+                        "Unable to set the target resource class", e);
+            }
+        } else if (targetClass instanceof Class) {
+            super.setTargetClass((Class<? extends Resource>) targetClass);
+        } else {
+            getLogger()
+                    .warning(
+                            "Unknown object set. Only instances of Restlet and subclasses of org.restlet.resource.Resource are allowed.");
+        }
+    }
+
 }

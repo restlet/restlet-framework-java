@@ -26,14 +26,51 @@ import org.restlet.util.Series;
 /**
  * Generic request sent by client connectors. It is then received by server
  * connectors and processed by Restlets. This request can also be processed by a
- * chain of Restlets, on both client and server sides. Requests are uniform across
- * all types of connectors, protocols and components.
+ * chain of Restlets, on both client and server sides. Requests are uniform
+ * across all types of connectors, protocols and components.
  * 
  * @see org.restlet.data.Response
  * @see org.restlet.Uniform
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Request extends Message {
+    /**
+     * Private cookie series.
+     * 
+     * @author Jerome Louvel (contact@noelios.com)
+     */
+    private static class CookieSeries extends Series<Cookie> {
+        /**
+         * Constructor.
+         */
+        public CookieSeries() {
+            super();
+        }
+
+        /**
+         * Constructor.
+         * 
+         * @param delegate
+         *                The delegate list.
+         */
+        public CookieSeries(List<Cookie> delegate) {
+            super(delegate);
+        }
+
+        @Override
+        public Cookie createEntry(String name, String value) {
+            return new Cookie(name, value);
+        }
+
+        @Override
+        public Series<Cookie> createSeries(List<Cookie> delegate) {
+            if (delegate != null)
+                return new CookieSeries(delegate);
+            else
+                return new CookieSeries();
+        }
+    }
+
     /** The authentication response sent by a client to an origin server. */
     private ChallengeResponse challengeResponse;
 
@@ -75,9 +112,9 @@ public class Request extends Message {
      * Constructor.
      * 
      * @param method
-     *            The call's method.
+     *                The call's method.
      * @param resourceRef
-     *            The resource reference.
+     *                The resource reference.
      */
     public Request(Method method, Reference resourceRef) {
         this(method, resourceRef, null);
@@ -87,11 +124,11 @@ public class Request extends Message {
      * Constructor.
      * 
      * @param method
-     *            The call's method.
+     *                The call's method.
      * @param resourceRef
-     *            The resource reference.
+     *                The resource reference.
      * @param entity
-     *            The entity.
+     *                The entity.
      */
     public Request(Method method, Reference resourceRef, Representation entity) {
         super(entity);
@@ -103,9 +140,9 @@ public class Request extends Message {
      * Constructor.
      * 
      * @param method
-     *            The call's method.
+     *                The call's method.
      * @param resourceUri
-     *            The resource URI.
+     *                The resource URI.
      */
     public Request(Method method, String resourceUri) {
         this(method, new Reference(resourceUri));
@@ -115,11 +152,11 @@ public class Request extends Message {
      * Constructor.
      * 
      * @param method
-     *            The call's method.
+     *                The call's method.
      * @param resourceUri
-     *            The resource URI.
+     *                The resource URI.
      * @param entity
-     *            The entity.
+     *                The entity.
      */
     public Request(Method method, String resourceUri, Representation entity) {
         this(method, new Reference(resourceUri), entity);
@@ -135,7 +172,8 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the client-specific information.
+     * Returns the client-specific information. Creates a new instance if no one
+     * has been set.
      * 
      * @return The client-specific information.
      */
@@ -146,7 +184,8 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the conditions applying to this call.
+     * Returns the conditions applying to this request. Creates a new instance
+     * if no one has been set.
      * 
      * @return The conditions applying to this call.
      */
@@ -157,7 +196,8 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the cookies provided by the client.
+     * Returns the cookies provided by the client. Creates a new instance if no
+     * one has been set.
      * 
      * @return The cookies provided by the client.
      */
@@ -267,11 +307,31 @@ public class Request extends Message {
      * Sets the authentication response sent by a client to an origin server.
      * 
      * @param response
-     *            The authentication response sent by a client to an origin
-     *            server.
+     *                The authentication response sent by a client to an origin
+     *                server.
      */
     public void setChallengeResponse(ChallengeResponse response) {
         this.challengeResponse = response;
+    }
+
+    /**
+     * Sets the client-specific information.
+     * 
+     * @param clientInfo
+     *                The client-specific information.
+     */
+    public void setClientInfo(ClientInfo clientInfo) {
+        this.clientInfo = clientInfo;
+    }
+
+    /**
+     * Sets the conditions applying to this request.
+     * 
+     * @param conditions
+     *                The conditions applying to this request.
+     */
+    public void setConditions(Conditions conditions) {
+        this.conditions = conditions;
     }
 
     /**
@@ -279,17 +339,27 @@ public class Request extends Message {
      * SSL-secured connection.
      * 
      * @param confidential
-     *            True if the call came over a confidential channel.
+     *                True if the call came over a confidential channel.
      */
     public void setConfidential(boolean confidential) {
         this.confidential = confidential;
     }
 
     /**
+     * Sets the cookies provided by the client.
+     * 
+     * @param cookies
+     *                The cookies provided by the client.
+     */
+    public void setCookies(Series<Cookie> cookies) {
+        this.cookies = cookies;
+    }
+
+    /**
      * Sets the host reference.
      * 
      * @param hostRef
-     *            The host reference.
+     *                The host reference.
      */
     public void setHostRef(Reference hostRef) {
         this.hostRef = hostRef;
@@ -299,7 +369,7 @@ public class Request extends Message {
      * Sets the host reference using an URI string.
      * 
      * @param hostUri
-     *            The host URI.
+     *                The host URI.
      */
     public void setHostRef(String hostUri) {
         setHostRef(new Reference(hostUri));
@@ -309,7 +379,7 @@ public class Request extends Message {
      * Sets the method called.
      * 
      * @param method
-     *            The method called.
+     *                The method called.
      */
     public void setMethod(Method method) {
         this.method = method;
@@ -319,7 +389,7 @@ public class Request extends Message {
      * Sets the referrer reference if available.
      * 
      * @param referrerRef
-     *            The referrer reference.
+     *                The referrer reference.
      */
     public void setReferrerRef(Reference referrerRef) {
         this.referrerRef = referrerRef;
@@ -334,7 +404,7 @@ public class Request extends Message {
      * Sets the referrer reference if available using an URI string.
      * 
      * @param referrerUri
-     *            The referrer URI.
+     *                The referrer URI.
      */
     public void setReferrerRef(String referrerUri) {
         setReferrerRef(new Reference(referrerUri));
@@ -347,7 +417,7 @@ public class Request extends Message {
      * consistent handling of the call.
      * 
      * @param resourceRef
-     *            The resource reference.
+     *                The resource reference.
      */
     public void setResourceRef(Reference resourceRef) {
         this.resourceRef = resourceRef;
@@ -358,7 +428,7 @@ public class Request extends Message {
      * can be either absolute or relative to the context's base reference.
      * 
      * @param resourceUri
-     *            The resource URI.
+     *                The resource URI.
      */
     public void setResourceRef(String resourceUri) {
         if (getResourceRef() != null) {
@@ -374,47 +444,10 @@ public class Request extends Message {
      * Sets the application root reference.
      * 
      * @param rootRef
-     *            The application root reference.
+     *                The application root reference.
      */
     public void setRootRef(Reference rootRef) {
         this.rootRef = rootRef;
-    }
-
-    /**
-     * Private cookie series.
-     * 
-     * @author Jerome Louvel (contact@noelios.com)
-     */
-    private static class CookieSeries extends Series<Cookie> {
-        /**
-         * Constructor.
-         */
-        public CookieSeries() {
-            super();
-        }
-
-        /**
-         * Constructor.
-         * 
-         * @param delegate
-         *            The delegate list.
-         */
-        public CookieSeries(List<Cookie> delegate) {
-            super(delegate);
-        }
-
-        @Override
-        public Cookie createEntry(String name, String value) {
-            return new Cookie(name, value);
-        }
-
-        @Override
-        public Series<Cookie> createSeries(List<Cookie> delegate) {
-            if (delegate != null)
-                return new CookieSeries(delegate);
-            else
-                return new CookieSeries();
-        }
     }
 
 }

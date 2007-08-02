@@ -25,147 +25,6 @@ import org.restlet.data.Response;
  *         href="http://www.noelios.com/">Noelios Consulting</a>
  */
 public class TransformRepresentation extends OutputRepresentation {
-    /** The source representation to transform. */
-    private Representation source;
-
-    /** The transformer to be used and reused. */
-    private Transformer transformer;
-
-    /** The XSLT transform sheet to apply to message entities. */
-    private Representation transformSheet;
-
-    /** The URI resolver. */
-    private URIResolver uriResolver;
-
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *                The parent context.
-     * @param source
-     *                The source representation to transform.
-     * @param transformSheet
-     *                The XSLT transform sheet.
-     */
-    public TransformRepresentation(Context context, Representation source,
-            Representation transformSheet) {
-        super(null);
-        this.source = source;
-        this.transformSheet = transformSheet;
-        this.uriResolver = (context == null) ? null : new ContextResolver(
-                context);
-    }
-
-    /**
-     * Returns the source representation to transform.
-     * 
-     * @return The source representation to transform.
-     */
-    public Representation getSourceRepresentation() {
-        return this.source;
-    }
-
-    /**
-     * Returns the transformer to be used and reused.
-     * 
-     * @return The transformer to be used and reused.
-     */
-    public Transformer getTransformer() throws IOException {
-        if (this.transformer == null) {
-            try {
-                // Prepare the XSLT transformer documents
-                StreamSource transformSheet = new StreamSource(
-                        getTransformSheet().getStream());
-
-                // Create a new transformer as they are not thread safe
-                this.transformer = TransformerFactory.newInstance()
-                        .newTransformer(transformSheet);
-
-                // Set the URI resolver
-                transformer.setURIResolver(getURIResolver());
-            } catch (TransformerConfigurationException tce) {
-                throw new IOException("Transformer configuration exception. "
-                        + tce.getMessage());
-            } catch (TransformerFactoryConfigurationError tfce) {
-                throw new IOException(
-                        "Transformer factory configuration exception. "
-                                + tfce.getMessage());
-            }
-        }
-
-        return this.transformer;
-    }
-
-    /**
-     * Returns the XSLT transform sheet to apply to message entities.
-     * 
-     * @return The XSLT transform sheet to apply to message entities.
-     */
-    public Representation getTransformSheet() {
-        return this.transformSheet;
-    }
-
-    /**
-     * Returns the URI resolver.
-     * 
-     * @return The URI resolver.
-     */
-    public URIResolver getURIResolver() {
-        return this.uriResolver;
-    }
-
-    /**
-     * Releases the source and transform sheet representations, the transformer
-     * and the URI resolver.
-     */
-    @Override
-    public void release() {
-        if (this.source != null) {
-            this.source.release();
-            this.source = null;
-        }
-
-        if (this.transformer != null) {
-            this.transformer = null;
-        }
-
-        if (this.transformSheet != null) {
-            this.transformSheet.release();
-            this.transformSheet = null;
-        }
-
-        if (this.uriResolver != null) {
-            this.uriResolver = null;
-        }
-
-        super.release();
-    }
-
-    /**
-     * Sets the XSLT transform sheet to apply to message entities.
-     * 
-     * @param transformSheet
-     *                The XSLT transform sheet to apply to message entities.
-     */
-    public void setTransformSheet(Representation transformSheet) {
-        this.transformSheet = transformSheet;
-    }
-
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        try {
-            // Prepare the source and result documents
-            StreamSource sourceDocument = new StreamSource(
-                    getSourceRepresentation().getStream());
-            StreamResult resultDocument = new StreamResult(outputStream);
-
-            // Generates the result of the transformation
-            getTransformer().transform(sourceDocument, resultDocument);
-        } catch (TransformerException te) {
-            throw new IOException("Transformer exception. " + te.getMessage());
-        }
-    }
-
     /**
      * URI resolver based on a Restlet Context instance.
      * 
@@ -223,6 +82,190 @@ public class TransformRepresentation extends OutputRepresentation {
             }
 
             return result;
+        }
+    }
+
+    /** The source representation to transform. */
+    private Representation sourceRepresentation;
+
+    /** The transformer to be used and reused. */
+    private Transformer transformer;
+
+    /** The XSLT transform sheet to apply to message entities. */
+    private Representation transformSheet;
+
+    /** The URI resolver. */
+    private URIResolver uriResolver;
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *                The parent context.
+     * @param source
+     *                The source representation to transform.
+     * @param transformSheet
+     *                The XSLT transform sheet.
+     */
+    public TransformRepresentation(Context context, Representation source,
+            Representation transformSheet) {
+        super(null);
+        this.sourceRepresentation = source;
+        this.transformSheet = transformSheet;
+        this.uriResolver = (context == null) ? null : new ContextResolver(
+                context);
+    }
+
+    /**
+     * Returns the source representation to transform.
+     * 
+     * @return The source representation to transform.
+     */
+    public Representation getSourceRepresentation() {
+        return this.sourceRepresentation;
+    }
+
+    /**
+     * Returns the transformer to be used and reused. Creates a new one based on
+     * the transformSheet representation and on the URI resolver if no one
+     * exists.
+     * 
+     * @return The transformer to be used and reused.
+     */
+    public Transformer getTransformer() throws IOException {
+        if (this.transformer == null) {
+            try {
+                // Prepare the XSLT transformer documents
+                StreamSource transformSheet = new StreamSource(
+                        getTransformSheet().getStream());
+
+                // Create a new transformer as they are not thread safe
+                this.transformer = TransformerFactory.newInstance()
+                        .newTransformer(transformSheet);
+
+                // Set the URI resolver
+                transformer.setURIResolver(getURIResolver());
+            } catch (TransformerConfigurationException tce) {
+                throw new IOException("Transformer configuration exception. "
+                        + tce.getMessage());
+            } catch (TransformerFactoryConfigurationError tfce) {
+                throw new IOException(
+                        "Transformer factory configuration exception. "
+                                + tfce.getMessage());
+            }
+        }
+
+        return this.transformer;
+    }
+
+    /**
+     * Returns the XSLT transform sheet to apply to message entities.
+     * 
+     * @return The XSLT transform sheet to apply to message entities.
+     */
+    public Representation getTransformSheet() {
+        return this.transformSheet;
+    }
+
+    /**
+     * Returns the URI resolver.
+     * 
+     * @return The URI resolver.
+     */
+    public URIResolver getUriResolver() {
+        return this.uriResolver;
+    }
+
+    /**
+     * Returns the URI resolver.
+     * 
+     * @return The URI resolver.
+     * @deprecated Use the getUriResolver method instead.
+     */
+    @Deprecated
+    public URIResolver getURIResolver() {
+        return this.uriResolver;
+    }
+
+    /**
+     * Releases the source and transform sheet representations, the transformer
+     * and the URI resolver.
+     */
+    @Override
+    public void release() {
+        if (this.sourceRepresentation != null) {
+            this.sourceRepresentation.release();
+            this.sourceRepresentation = null;
+        }
+
+        if (this.transformer != null) {
+            this.transformer = null;
+        }
+
+        if (this.transformSheet != null) {
+            this.transformSheet.release();
+            this.transformSheet = null;
+        }
+
+        if (this.uriResolver != null) {
+            this.uriResolver = null;
+        }
+
+        super.release();
+    }
+
+    /**
+     * Sets the source representation to transform.
+     * 
+     * @param source
+     *                The source representation to transform.
+     */
+    public void setSourceRepresentation(Representation source) {
+        this.sourceRepresentation = source;
+    }
+
+    /**
+     * Sets the transformer to be used and reused.
+     * 
+     * @param transformer
+     *                The transformer to be used and reused.
+     */
+    public void setTransformer(Transformer transformer) {
+        this.transformer = transformer;
+    }
+
+    /**
+     * Sets the XSLT transform sheet to apply to message entities.
+     * 
+     * @param transformSheet
+     *                The XSLT transform sheet to apply to message entities.
+     */
+    public void setTransformSheet(Representation transformSheet) {
+        this.transformSheet = transformSheet;
+    }
+
+    /**
+     * Sets the URI resolver.
+     * 
+     * @param uriResolver
+     *                The URI resolver.
+     */
+    public void setUriResolver(URIResolver uriResolver) {
+        this.uriResolver = uriResolver;
+    }
+
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
+        try {
+            // Prepare the source and result documents
+            StreamSource sourceDocument = new StreamSource(
+                    getSourceRepresentation().getStream());
+            StreamResult resultDocument = new StreamResult(outputStream);
+
+            // Generates the result of the transformation
+            getTransformer().transform(sourceDocument, resultDocument);
+        } catch (TransformerException te) {
+            throw new IOException("Transformer exception. " + te.getMessage());
         }
     }
 }

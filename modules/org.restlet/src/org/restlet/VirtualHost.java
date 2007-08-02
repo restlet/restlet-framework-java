@@ -58,7 +58,7 @@ public class VirtualHost extends Router {
      * Returns the IP address of a given domain name.
      * 
      * @param domain
-     *            The domain name.
+     *                The domain name.
      * @return The IP address.
      */
     public static String getIpAddress(String domain) {
@@ -145,7 +145,7 @@ public class VirtualHost extends Router {
      * methods to restrict the matchable patterns.
      * 
      * @param context
-     *            The context.
+     *                The context.
      */
     public VirtualHost(Context context) {
         this(context, ".*", ".*", ".*", ".*", ".*", ".*", ".*", ".*");
@@ -155,23 +155,23 @@ public class VirtualHost extends Router {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param hostDomain
-     *            The hostRef host domain pattern to match.
+     *                The hostRef host domain pattern to match.
      * @param hostPort
-     *            The hostRef host port pattern to match.
+     *                The hostRef host port pattern to match.
      * @param hostScheme
-     *            The hostRef scheme protocol pattern to match.
+     *                The hostRef scheme protocol pattern to match.
      * @param resourceDomain
-     *            The resourceRef host domain pattern to match.
+     *                The resourceRef host domain pattern to match.
      * @param resourcePort
-     *            The resourceRef host port pattern to match.
+     *                The resourceRef host port pattern to match.
      * @param resourceScheme
-     *            The resourceRef scheme protocol pattern to match.
+     *                The resourceRef scheme protocol pattern to match.
      * @param serverAddress
-     *            The listening server address pattern to match.
+     *                The listening server address pattern to match.
      * @param serverPort
-     *            The listening server port pattern to match.
+     *                The listening server port pattern to match.
      */
     public VirtualHost(Context context, String hostDomain, String hostPort,
             String hostScheme, String resourceDomain, String resourcePort,
@@ -291,7 +291,7 @@ public class VirtualHost extends Router {
      * Sets the hostRef host domain to match. Uses patterns in java.util.regex.
      * 
      * @param hostDomain
-     *            The hostRef host domain to match.
+     *                The hostRef host domain to match.
      */
     public void setHostDomain(String hostDomain) {
         this.hostDomain = hostDomain;
@@ -301,7 +301,7 @@ public class VirtualHost extends Router {
      * Sets the hostRef host port to match. Uses patterns in java.util.regex.
      * 
      * @param hostPort
-     *            The hostRef host port to match.
+     *                The hostRef host port to match.
      */
     public void setHostPort(String hostPort) {
         this.hostPort = hostPort;
@@ -311,7 +311,7 @@ public class VirtualHost extends Router {
      * Sets the hostRef scheme to match. Uses patterns in java.util.regex.
      * 
      * @param hostScheme
-     *            The hostRef scheme to match.
+     *                The hostRef scheme to match.
      */
     public void setHostScheme(String hostScheme) {
         this.hostScheme = hostScheme;
@@ -321,7 +321,7 @@ public class VirtualHost extends Router {
      * Sets the display name.
      * 
      * @param name
-     *            The display name.
+     *                The display name.
      */
     public void setName(String name) {
         this.name = name;
@@ -332,7 +332,7 @@ public class VirtualHost extends Router {
      * java.util.regex.
      * 
      * @param resourceDomain
-     *            The resourceRef host domain to match.
+     *                The resourceRef host domain to match.
      */
     public void setResourceDomain(String resourceDomain) {
         this.resourceDomain = resourceDomain;
@@ -343,7 +343,7 @@ public class VirtualHost extends Router {
      * java.util.regex.
      * 
      * @param resourcePort
-     *            The resourceRef host port to match.
+     *                The resourceRef host port to match.
      */
     public void setResourcePort(String resourcePort) {
         this.resourcePort = resourcePort;
@@ -353,7 +353,7 @@ public class VirtualHost extends Router {
      * Sets the resourceRef scheme to match. Uses patterns in java.util.regex.
      * 
      * @param resourceScheme
-     *            The resourceRef scheme to match.
+     *                The resourceRef scheme to match.
      */
     public void setResourceScheme(String resourceScheme) {
         this.resourceScheme = resourceScheme;
@@ -363,7 +363,7 @@ public class VirtualHost extends Router {
      * Sets the listening server address. Uses patterns in java.util.regex.
      * 
      * @param serverAddress
-     *            The listening server address.
+     *                The listening server address.
      */
     public void setServerAddress(String serverAddress) {
         this.serverAddress = serverAddress;
@@ -373,7 +373,7 @@ public class VirtualHost extends Router {
      * Sets the listening server port. Uses patterns in java.util.regex.
      * 
      * @param serverPort
-     *            The listening server port.
+     *                The listening server port.
      */
     public void setServerPort(String serverPort) {
         this.serverPort = serverPort;

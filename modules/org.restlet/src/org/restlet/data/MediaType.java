@@ -220,9 +220,9 @@ public final class MediaType extends Metadata {
      * is returned, otherwise a new instance is created.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @param description
-     *            The description.
+     *                The description.
      * @return The registered media type
      */
     public static MediaType register(String name, String description) {
@@ -241,7 +241,7 @@ public final class MediaType extends Metadata {
      * exists then it is returned, otherwise a new instance is created.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @return The associated media type.
      */
     public static MediaType valueOf(String name) {
@@ -264,7 +264,7 @@ public final class MediaType extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      */
     public MediaType(String name) {
         this(name, null, "Media type or range of media types");
@@ -274,9 +274,9 @@ public final class MediaType extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @param parameters
-     *            The list of parameters.
+     *                The list of parameters.
      */
     public MediaType(String name, Series<Parameter> parameters) {
         this(name, parameters, "Media type or range of media types");
@@ -286,11 +286,11 @@ public final class MediaType extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @param parameters
-     *            The list of parameters.
+     *                The list of parameters.
      * @param description
-     *            The description.
+     *                The description.
      */
     public MediaType(String name, Series<Parameter> parameters,
             String description) {
@@ -302,9 +302,9 @@ public final class MediaType extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @param description
-     *            The description.
+     *                The description.
      */
     public MediaType(String name, String description) {
         this(name, null, description);
@@ -321,9 +321,10 @@ public final class MediaType extends Metadata {
      * parameters.
      * 
      * @param obj
-     *            The object to compare to.
+     *                The object to compare to.
      * @param ignoreParameters
-     *            Indicates if parameters should be ignored during comparison.
+     *                Indicates if parameters should be ignored during
+     *                comparison.
      * @return True if both media types are equal.
      */
     public boolean equals(Object obj, boolean ignoreParameters) {
@@ -373,7 +374,8 @@ public final class MediaType extends Metadata {
     }
 
     /**
-     * Returns the list of parameters.
+     * Returns the modifiable list of parameters. Creates a new instance if no
+     * one has been set.
      * 
      * @return The list of parameters.
      */
@@ -424,7 +426,7 @@ public final class MediaType extends Metadata {
      * considered as included into the current one.
      * 
      * @param included
-     *            The media type to test for inclusion.
+     *                The media type to test for inclusion.
      * @return True if the given media type is included in the current one.
      */
     public boolean includes(MediaType included) {

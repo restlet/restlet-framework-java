@@ -85,7 +85,7 @@ public final class Variable {
      * Constructor. Default value is "", required is true and fixed is false.
      * 
      * @param type
-     *            The type of variable. See TYPE_* constants.
+     *                The type of variable. See TYPE_* constants.
      */
     public Variable(int type) {
         this(type, "", true, false);
@@ -95,15 +95,15 @@ public final class Variable {
      * Constructor.
      * 
      * @param type
-     *            The type of variable. See TYPE_* constants.
+     *                The type of variable. See TYPE_* constants.
      * @param defaultValue
-     *            The default value to use if the key couldn't be found in the
-     *            model.
+     *                The default value to use if the key couldn't be found in
+     *                the model.
      * @param required
-     *            Indicates if the variable is required or optional.
+     *                Indicates if the variable is required or optional.
      * @param fixed
-     *            Indicates if the value is fixed, in which case the
-     *            "defaultValue" property is always used.
+     *                Indicates if the value is fixed, in which case the
+     *                "defaultValue" property is always used.
      */
     public Variable(int type, String defaultValue, boolean required,
             boolean fixed) {
@@ -111,15 +111,6 @@ public final class Variable {
         this.defaultValue = defaultValue;
         this.required = required;
         this.fixed = fixed;
-    }
-
-    /**
-     * Returns the type of variable. See TYPE_* constants.
-     * 
-     * @return The type of variable. See TYPE_* constants.
-     */
-    public int getType() {
-        return this.type;
     }
 
     /**
@@ -134,12 +125,12 @@ public final class Variable {
     }
 
     /**
-     * Returns true if the variable is required or optional.
+     * Returns the type of variable. See TYPE_* constants.
      * 
-     * @return True if the variable is required or optional.
+     * @return The type of variable. See TYPE_* constants.
      */
-    public boolean isRequired() {
-        return this.required;
+    public int getType() {
+        return this.type;
     }
 
     /**
@@ -151,6 +142,56 @@ public final class Variable {
      */
     public boolean isFixed() {
         return this.fixed;
+    }
+
+    /**
+     * Returns true if the variable is required or optional.
+     * 
+     * @return True if the variable is required or optional.
+     */
+    public boolean isRequired() {
+        return this.required;
+    }
+
+    /**
+     * Sets the default value to use if the key couldn't be found in the model.
+     * 
+     * @param defaultValue
+     *                The default value to use if the key couldn't be found in
+     *                the model.
+     */
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    /**
+     * Indicates if the value is fixed
+     * 
+     * @param fixed
+     *                True if the value is fixed
+     */
+    public void setFixed(boolean fixed) {
+        this.fixed = fixed;
+    }
+
+    /**
+     * Indicates if the variable is required or optional.
+     * 
+     * @param required
+     *                True if the variable is required or optional.
+     */
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    /**
+     * Sets the type of variable. See TYPE_* constants.
+     * 
+     * @param type
+     *                The type of variable.
+     */
+    public void setType(int type) {
+        this.type = type;
     }
 
 }

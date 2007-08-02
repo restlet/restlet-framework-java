@@ -37,6 +37,8 @@ import org.restlet.data.MediaType;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StringRepresentation extends StreamRepresentation {
+
+    /** The string value. */
     private CharSequence text;
 
     /**

@@ -166,7 +166,8 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the connector service.
+     * Returns the connector service. Creates a new instance if no one has been
+     * set.
      * 
      * @return The connector service.
      */
@@ -177,7 +178,8 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the converter service.
+     * Returns the converter service. Creates a new instance if no one has been
+     * set.
      * 
      * @return The converter service.
      */
@@ -188,7 +190,8 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the decoder service. This service is enabled by default.
+     * Returns the decoder service, enabled by default. Creates a new instance
+     * if no one has been set.
      * 
      * @return The decoderservice.
      */
@@ -217,7 +220,8 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the metadata service.
+     * Returns the metadata service. Creates a new instance if no one has been
+     * set.
      * 
      * @return The metadata service.
      */
@@ -246,8 +250,8 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the root Restlet. Invokes the createRoot() method if no Restlet
-     * exists.
+     * Returns the root Restlet. Invokes the createRoot() method if no root has
+     * been set, and stores the Restlet created for future uses.
      * 
      * @return The root Restlet.
      */
@@ -260,7 +264,8 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the status service. This service is enabled by default.
+     * Returns the status service, enabled by default. Creates a new instance if
+     * no one has been set.
      * 
      * @return The status service.
      */
@@ -271,7 +276,8 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the tunnel service. This service is enabled by default.
+     * Returns the tunnel service, enabled by default. Creates a new instance if
+     * no one has been set.
      * 
      * @return The tunnel service.
      */
@@ -281,14 +287,7 @@ public class Application extends Restlet {
         return this.tunnelService;
     }
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     */
+    @Override
     public void handle(Request request, Response response) {
         init(request, response);
         if (getHelper() != null)

@@ -89,7 +89,7 @@ public final class Protocol extends Metadata {
      * constant exists then it is returned, otherwise a new instance is created.
      * 
      * @param schemeName
-     *            The scheme name.
+     *                The scheme name.
      * @return The associated protocol.
      */
     public static Protocol valueOf(final String schemeName) {
@@ -129,7 +129,7 @@ public final class Protocol extends Metadata {
      * Constructor.
      * 
      * @param schemeName
-     *            The scheme name.
+     *                The scheme name.
      */
     public Protocol(final String schemeName) {
         this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase()
@@ -140,16 +140,16 @@ public final class Protocol extends Metadata {
      * Constructor.
      * 
      * @param schemeName
-     *            The scheme name.
+     *                The scheme name.
      * @param name
-     *            The unique name.
+     *                The unique name.
      * @param description
-     *            The description.
+     *                The description.
      * @param defaultPort
-     *            The default port.
+     *                The default port.
      */
-    public Protocol(final String schemeName, final String name, final String description,
-            int defaultPort) {
+    public Protocol(final String schemeName, final String name,
+            final String description, int defaultPort) {
         super(name, description);
         this.schemeName = schemeName;
         this.defaultPort = defaultPort;

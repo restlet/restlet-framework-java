@@ -50,6 +50,53 @@ import org.w3c.dom.NodeList;
  */
 public abstract class XmlRepresentation extends OutputRepresentation implements
         NamespaceContext {
+
+    /**
+     * Returns the wrapped schema.
+     * 
+     * @return The wrapped schema.
+     * @throws IOException
+     */
+    private static Schema getSchema(Representation schemaRepresentation)
+            throws Exception {
+        Schema result = null;
+
+        if (schemaRepresentation != null) {
+            StreamSource streamSource = new StreamSource(schemaRepresentation
+                    .getStream());
+            result = SchemaFactory.newInstance(
+                    getSchemaLanguageUri(schemaRepresentation)).newSchema(
+                    streamSource);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the schema URI for the current schema media type.
+     * 
+     * @return The schema URI.
+     */
+    private static String getSchemaLanguageUri(
+            Representation schemaRepresentation) {
+        String result = null;
+
+        if (schemaRepresentation != null) {
+            if (MediaType.APPLICATION_W3C_SCHEMA_XML
+                    .equals(schemaRepresentation.getMediaType())) {
+                result = XMLConstants.W3C_XML_SCHEMA_NS_URI;
+            } else if (MediaType.APPLICATION_RELAXNG_COMPACT
+                    .equals(schemaRepresentation.getMediaType())) {
+                result = XMLConstants.RELAXNG_NS_URI;
+            } else if (MediaType.APPLICATION_RELAXNG_XML
+                    .equals(schemaRepresentation.getMediaType())) {
+                result = XMLConstants.RELAXNG_NS_URI;
+            }
+        }
+
+        return result;
+    }
+
     /** Internal map of namespaces. */
     private Map<String, String> namespaces;
 
@@ -273,16 +320,6 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     /**
      * Validates the XML representation against a given schema.
      * 
-     * @param schema
-     *                The XML schema to use.
-     */
-    public void validate(Schema schema) throws Exception {
-        validate(schema, null);
-    }
-
-    /**
-     * Validates the XML representation against a given schema.
-     * 
      * @param schemaRepresentation
      *                The XML schema representation to use.
      * @param result
@@ -298,58 +335,22 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * 
      * @param schema
      *                The XML schema to use.
+     */
+    public void validate(Schema schema) throws Exception {
+        validate(schema, null);
+    }
+
+    /**
+     * Validates the XML representation against a given schema.
+     * 
+     * @param schema
+     *                The XML schema to use.
      * @param result
      *                The Result object that receives (possibly augmented) XML.
      */
     public void validate(Schema schema, Result result) throws Exception {
         StreamSource streamSource = new StreamSource(getStream());
         schema.newValidator().validate(streamSource, result);
-    }
-
-    /**
-     * Returns the wrapped schema.
-     * 
-     * @return The wrapped schema.
-     * @throws IOException
-     */
-    private static Schema getSchema(Representation schemaRepresentation)
-            throws Exception {
-        Schema result = null;
-
-        if (schemaRepresentation != null) {
-            StreamSource streamSource = new StreamSource(schemaRepresentation
-                    .getStream());
-            result = SchemaFactory.newInstance(
-                    getSchemaLanguageUri(schemaRepresentation)).newSchema(
-                    streamSource);
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the schema URI for the current schema media type.
-     * 
-     * @return The schema URI.
-     */
-    private static String getSchemaLanguageUri(
-            Representation schemaRepresentation) {
-        String result = null;
-
-        if (schemaRepresentation != null) {
-            if (MediaType.APPLICATION_W3C_SCHEMA_XML
-                    .equals(schemaRepresentation.getMediaType())) {
-                result = XMLConstants.W3C_XML_SCHEMA_NS_URI;
-            } else if (MediaType.APPLICATION_RELAXNG_COMPACT
-                    .equals(schemaRepresentation.getMediaType())) {
-                result = XMLConstants.RELAXNG_NS_URI;
-            } else if (MediaType.APPLICATION_RELAXNG_XML
-                    .equals(schemaRepresentation.getMediaType())) {
-                result = XMLConstants.RELAXNG_NS_URI;
-            }
-        }
-
-        return result;
     }
 
 }

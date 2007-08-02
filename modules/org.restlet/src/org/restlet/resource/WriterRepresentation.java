@@ -34,6 +34,7 @@ import org.restlet.data.MediaType;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class WriterRepresentation extends CharacterRepresentation {
+
     /**
      * Constructor.
      * 

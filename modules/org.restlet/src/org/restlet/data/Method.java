@@ -227,7 +227,7 @@ public final class Method extends Metadata {
      * constant exists then it is returned, otherwise a new instance is created.
      * 
      * @param methodName
-     *            The method name.
+     *                The method name.
      * @return The associated method.
      */
     public static Method valueOf(final String methodName) {
@@ -278,20 +278,24 @@ public final class Method extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The technical name of the method.
+     *                The technical name of the method.
      * @see org.restlet.data.Method#valueOf(String)
      */
     public Method(final String name) {
         this(name, null, null);
     }
 
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
     /**
      * Constructor.
      * 
      * @param name
-     *            The technical name of the method.
+     *                The technical name of the method.
      * @param description
-     *            The description.
+     *                The description.
      * @see org.restlet.data.Method#valueOf(String)
      */
     public Method(final String name, final String description) {
@@ -302,11 +306,11 @@ public final class Method extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The technical name.
+     *                The technical name.
      * @param description
-     *            The description.
+     *                The description.
      * @param uri
-     *            The URI of the specification describing the method.
+     *                The URI of the specification describing the method.
      * @see org.restlet.data.Method#valueOf(String)
      */
     public Method(final String name, final String description, final String uri) {

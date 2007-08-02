@@ -59,7 +59,7 @@ public final class Language extends Metadata {
      * then it is returned, otherwise a new instance is created.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @return The associated language.
      */
     public static Language valueOf(final String name) {
@@ -89,7 +89,7 @@ public final class Language extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      */
     public Language(final String name) {
         this(name, "Language or range of languages");
@@ -99,9 +99,9 @@ public final class Language extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @param description
-     *            The description.
+     *                The description.
      */
     public Language(final String name, final String description) {
         super(name, description);

@@ -123,20 +123,6 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Finds the target Resource if available. The default behavior is to invoke
-     * the {@link #createResource(Request, Response)} method.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     * @return The target resource if available or null.
-     */
-    public Resource findTarget(Request request, Response response) {
-        return createResource(request, response);
-    }
-
-    /**
      * Creates a new instance of the resource class designated by the
      * "targetClass" property.
      * 
@@ -178,6 +164,20 @@ public class Finder extends Restlet {
         }
 
         return result;
+    }
+
+    /**
+     * Finds the target Resource if available. The default behavior is to invoke
+     * the {@link #createResource(Request, Response)} method.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     * @return The target resource if available or null.
+     */
+    public Resource findTarget(Request request, Response response) {
+        return createResource(request, response);
     }
 
     /**
@@ -343,6 +343,16 @@ public class Finder extends Restlet {
         }
 
         return result;
+    }
+
+    /**
+     * Sets the target Resource class.
+     * 
+     * @param targetClass
+     *                The target Resource class.
+     */
+    public void setTargetClass(Class<? extends Resource> targetClass) {
+        this.targetClass = targetClass;
     }
 
     /**

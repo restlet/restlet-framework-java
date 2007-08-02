@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- *
+ * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- *
+ * 
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -45,10 +45,11 @@ import org.restlet.resource.Variant;
 /**
  * Facade to the engine implementating the Restlet API. Note that this is an SPI
  * class that is not intended for public usage.
- *
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Engine {
+
     /** Obtain a suitable logger. */
     private static Logger logger = Logger.getLogger(Engine.class
             .getCanonicalName());
@@ -85,7 +86,7 @@ public abstract class Engine {
 
     /**
      * Returns the registered Restlet engine.
-     *
+     * 
      * @return The registered Restlet engine.
      */
     public static Engine getInstance() {
@@ -170,7 +171,7 @@ public abstract class Engine {
     /**
      * Computes the hash code of a set of objects. Follows the algorithm
      * specified in List.hasCode().
-     *
+     * 
      * @return The hash code of a set of objects.
      */
     public static int hashCode(Object... objects) {
@@ -188,9 +189,9 @@ public abstract class Engine {
     /**
      * Sets a new class loader to use when creating instantiating implementation
      * classes.
-     *
+     * 
      * @param newClassloader
-     *            The new class loader to use.
+     *                The new class loader to use.
      */
     public static void setClassLoader(ClassLoader newClassloader) {
         classloader = newClassloader;
@@ -198,9 +199,9 @@ public abstract class Engine {
 
     /**
      * Sets the registered Restlet engine.
-     *
+     * 
      * @param engine
-     *            The registered Restlet engine.
+     *                The registered Restlet engine.
      */
     public static void setInstance(Engine engine) {
         instance = engine;
@@ -208,13 +209,13 @@ public abstract class Engine {
 
     /**
      * Creates a directory resource.
-     *
+     * 
      * @param handler
-     *            The parent directory handler.
+     *                The parent directory handler.
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to return.
+     *                The response to return.
      * @return A new directory resource.
      * @throws IOException
      */
@@ -223,11 +224,11 @@ public abstract class Engine {
 
     /**
      * Creates a new helper for a given component.
-     *
+     * 
      * @param application
-     *            The application to help.
+     *                The application to help.
      * @param parentContext
-     *            The parent context, typically the component's context.
+     *                The parent context, typically the component's context.
      * @return The new helper.
      */
     public abstract Helper createHelper(Application application,
@@ -235,27 +236,27 @@ public abstract class Engine {
 
     /**
      * Creates a new helper for a given client connector.
-     *
+     * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      * @return The new helper.
      */
     public abstract Helper createHelper(Client client);
 
     /**
      * Creates a new helper for a given component.
-     *
+     * 
      * @param component
-     *            The component to help.
+     *                The component to help.
      * @return The new helper.
      */
     public abstract Helper createHelper(Component component);
 
     /**
      * Creates a new helper for a given server connector.
-     *
+     * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      * @return The new helper.
      */
     public abstract Helper createHelper(Server server);
@@ -264,13 +265,13 @@ public abstract class Engine {
      * Returns the best variant representation for a given resource according
      * the the client preferences.<br/>A default language is provided in case
      * the variants don't match the client preferences.
-     *
+     * 
      * @param client
-     *            The client preferences.
+     *                The client preferences.
      * @param variants
-     *            The list of variants to compare.
+     *                The list of variants to compare.
      * @param defaultLanguage
-     *            The default language.
+     *                The default language.
      * @return The preferred variant.
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
@@ -281,28 +282,28 @@ public abstract class Engine {
 
     /**
      * Parses a representation into a form.
-     *
+     * 
      * @param logger
-     *            The logger to use.
+     *                The logger to use.
      * @param form
-     *            The target form.
+     *                The target form.
      * @param representation
-     *            The representation to parse.
+     *                The representation to parse.
      */
     public abstract void parse(Logger logger, Form form,
             Representation representation);
 
     /**
      * Parses an URL encoded query string into a given form.
-     *
+     * 
      * @param logger
-     *            The logger to use.
+     *                The logger to use.
      * @param form
-     *            The target form.
+     *                The target form.
      * @param queryString
-     *            Query string.
+     *                Query string.
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      */
     public abstract void parse(Logger logger, Form form, String queryString,
             CharacterSet characterSet);

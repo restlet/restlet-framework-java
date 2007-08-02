@@ -41,9 +41,9 @@ public class Client extends Connector {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param protocols
-     *            The connector protocols.
+     *                The connector protocols.
      */
     public Client(Context context, List<Protocol> protocols) {
         super(context, protocols);
@@ -59,9 +59,9 @@ public class Client extends Connector {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param protocol
-     *            The connector protocol.
+     *                The connector protocol.
      */
     public Client(Context context, Protocol protocol) {
         this(context, Arrays.asList(protocol));
@@ -71,7 +71,7 @@ public class Client extends Connector {
      * Constructor.
      * 
      * @param protocols
-     *            The connector protocols.
+     *                The connector protocols.
      */
     public Client(List<Protocol> protocols) {
         this(null, protocols);
@@ -81,7 +81,7 @@ public class Client extends Connector {
      * Constructor.
      * 
      * @param protocol
-     *            The connector protocol.
+     *                The connector protocol.
      */
     public Client(Protocol protocol) {
         this(null, protocol);
@@ -96,14 +96,7 @@ public class Client extends Connector {
         return this.helper;
     }
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
+    @Override
     public void handle(Request request, Response response) {
         init(request, response);
         if (getHelper() != null)

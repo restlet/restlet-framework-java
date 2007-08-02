@@ -42,9 +42,9 @@ public final class ChallengeResponse {
      * Constructor.
      * 
      * @param scheme
-     *            The challenge scheme.
+     *                The challenge scheme.
      * @param credentials
-     *            The raw credentials for custom challenge schemes.
+     *                The raw credentials for custom challenge schemes.
      */
     public ChallengeResponse(final ChallengeScheme scheme,
             final String credentials) {
@@ -58,11 +58,12 @@ public final class ChallengeResponse {
      * Constructor.
      * 
      * @param scheme
-     *            The challenge scheme.
+     *                The challenge scheme.
      * @param identifier
-     *            The user identifier, such as a login name or an access key.
+     *                The user identifier, such as a login name or an access
+     *                key.
      * @param secret
-     *            The user secret, such as a password or a secret key.
+     *                The user secret, such as a password or a secret key.
      */
     public ChallengeResponse(final ChallengeScheme scheme,
             final String identifier, String secret) {
@@ -76,11 +77,12 @@ public final class ChallengeResponse {
      * Constructor.
      * 
      * @param scheme
-     *            The challenge scheme.
+     *                The challenge scheme.
      * @param identifier
-     *            The user identifier, such as a login name or an access key.
+     *                The user identifier, such as a login name or an access
+     *                key.
      * @param secret
-     *            The user secret, such as a password or a secret key.
+     *                The user secret, such as a password or a secret key.
      */
     public ChallengeResponse(final ChallengeScheme scheme,
             final String identifier, char[] secret) {
@@ -194,7 +196,7 @@ public final class ChallengeResponse {
      * Sets the credentials.
      * 
      * @param credentials
-     *            The credentials.
+     *                The credentials.
      */
     public void setCredentials(String credentials) {
         this.credentials = credentials;
@@ -204,7 +206,8 @@ public final class ChallengeResponse {
      * Sets the user identifier, such as a login name or an access key.
      * 
      * @param identifier
-     *            The user identifier, such as a login name or an access key.
+     *                The user identifier, such as a login name or an access
+     *                key.
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -214,7 +217,7 @@ public final class ChallengeResponse {
      * Sets the scheme used.
      * 
      * @param scheme
-     *            The scheme used.
+     *                The scheme used.
      */
     public void setScheme(ChallengeScheme scheme) {
         this.scheme = scheme;
@@ -224,7 +227,7 @@ public final class ChallengeResponse {
      * Sets the user secret, such as a password or a secret key.
      * 
      * @param secret
-     *            The user secret, such as a password or a secret key.
+     *                The user secret, such as a password or a secret key.
      */
     public void setSecret(String secret) {
         this.secret = (secret == null) ? null : secret.toCharArray();
@@ -234,7 +237,7 @@ public final class ChallengeResponse {
      * Sets the user secret, such as a password or a secret key.
      * 
      * @param secret
-     *            The user secret, such as a password or a secret key.
+     *                The user secret, such as a password or a secret key.
      */
     public void setSecret(char[] secret) {
         this.secret = secret;

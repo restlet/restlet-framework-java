@@ -55,7 +55,7 @@ public class Context {
      * Constructor.
      * 
      * @param logger
-     *            The logger instance of use.
+     *                The logger instance of use.
      */
     public Context(Logger logger) {
         this.logger = logger;
@@ -65,7 +65,7 @@ public class Context {
      * Constructor.
      * 
      * @param loggerName
-     *            The name of the logger to use.
+     *                The name of the logger to use.
      */
     public Context(String loggerName) {
         this(Logger.getLogger(loggerName));
@@ -82,9 +82,9 @@ public class Context {
 
     /**
      * Returns a modifiable attributes map that can be used by developers to
-     * save information relative to the context. This is a convenient mean to
-     * provide common objects to all the Restlets and Resources composing an
-     * Application.<br/> <br/>
+     * save information relative to the context. Creates a new instance if no
+     * one has been set. This is a convenient mean to provide common objects to
+     * all the Restlets and Resources composing an Application.<br/> <br/>
      * 
      * In addition, this map is a shared space between the developer and the
      * Restlet implementation. For this purpose, all attribute names starting
@@ -135,10 +135,11 @@ public class Context {
     }
 
     /**
-     * Returns the modifiable series of parameters. A parameter is a pair
-     * composed of a name and a value and is typically used for configuration
-     * purpose, like Java properties. Note that multiple parameters with the
-     * same name can be declared and accessed.
+     * Returns the modifiable series of parameters. Creates a new instance if no
+     * one has been set. A parameter is a pair composed of a name and a value
+     * and is typically used for configuration purpose, like Java properties.
+     * Note that multiple parameters with the same name can be declared and
+     * accessed.
      * 
      * @return The modifiable series of parameters.
      */
@@ -149,13 +150,33 @@ public class Context {
     }
 
     /**
+     * Sets the modifiable map of attributes.
+     * 
+     * @param attributes
+     *                The modifiable map of attributes.
+     */
+    public void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
+    }
+
+    /**
      * Sets the logger.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      */
     public void setLogger(Logger logger) {
         this.logger = logger;
+    }
+
+    /**
+     * Sets the modifiable series of parameters.
+     * 
+     * @param parameters
+     *                The modifiable series of parameters.
+     */
+    public void setParameters(Series<Parameter> parameters) {
+        this.parameters = parameters;
     }
 
 }

@@ -50,240 +50,10 @@ public class WrapperRequest extends Request {
      * Constructor.
      * 
      * @param wrappedRequest
-     *            The wrapped request.
+     *                The wrapped request.
      */
     public WrapperRequest(Request wrappedRequest) {
         this.wrappedRequest = wrappedRequest;
-    }
-
-    /**
-     * Returns the authentication response sent by a client to an origin server.
-     * 
-     * @return The authentication response sent by a client to an origin server.
-     */
-    public ChallengeResponse getChallengeResponse() {
-        return getWrappedRequest().getChallengeResponse();
-    }
-
-    /**
-     * Returns the client-specific information.
-     * 
-     * @return The client-specific information.
-     */
-    public ClientInfo getClientInfo() {
-        return getWrappedRequest().getClientInfo();
-    }
-
-    /**
-     * Returns the conditions applying to this call.
-     * 
-     * @return The conditions applying to this call.
-     */
-    public Conditions getConditions() {
-        return getWrappedRequest().getConditions();
-    }
-
-    /**
-     * Returns the cookies provided by the client.
-     * 
-     * @return The cookies provided by the client.
-     */
-    public Series<Cookie> getCookies() {
-        return getWrappedRequest().getCookies();
-    }
-
-    /**
-     * Returns the method.
-     * 
-     * @return The method.
-     */
-    public Method getMethod() {
-        return getWrappedRequest().getMethod();
-    }
-
-    /**
-     * Returns the referrer reference if available.
-     * 
-     * @return The referrer reference.
-     */
-    public Reference getReferrerRef() {
-        return getWrappedRequest().getReferrerRef();
-    }
-
-    /**
-     * Returns the reference of the target resource.
-     * 
-     * @return The reference of the target resource.
-     */
-    public Reference getResourceRef() {
-        return getWrappedRequest().getResourceRef();
-    }
-
-    /**
-     * Returns the wrapped request.
-     * 
-     * @return The wrapped request.
-     */
-    protected Request getWrappedRequest() {
-        return this.wrappedRequest;
-    }
-
-    /**
-     * Indicates if the call came over a confidential channel such as an
-     * SSL-secured connection.
-     * 
-     * @return True if the call came over a confidential channel.
-     */
-    public boolean isConfidential() {
-        return getWrappedRequest().isConfidential();
-    }
-
-    /**
-     * Indicates if a content is available and can be sent. Several conditions
-     * must be met: the method must allow the sending of content, the content
-     * must exists and have some available data.
-     * 
-     * @return True if a content is available and can be sent.
-     */
-    public boolean isEntityAvailable() {
-        return getWrappedRequest().isEntityAvailable();
-    }
-
-    /**
-     * Sets the authentication response sent by a client to an origin server.
-     * 
-     * @param response
-     *            The authentication response sent by a client to an origin
-     *            server.
-     */
-    public void setChallengeResponse(ChallengeResponse response) {
-        getWrappedRequest().setChallengeResponse(response);
-    }
-
-    /**
-     * Indicates if the call came over a confidential channel such as an
-     * SSL-secured connection.
-     * 
-     * @param confidential
-     *            True if the call came over a confidential channel.
-     */
-    public void setConfidential(boolean confidential) {
-        getWrappedRequest().setConfidential(confidential);
-    }
-
-    /**
-     * Sets the method called.
-     * 
-     * @param method
-     *            The method called.
-     */
-    public void setMethod(Method method) {
-        getWrappedRequest().setMethod(method);
-    }
-
-    /**
-     * Sets the referrer reference if available.
-     * 
-     * @param referrerRef
-     *            The referrer reference.
-     */
-    public void setReferrerRef(Reference referrerRef) {
-        getWrappedRequest().setReferrerRef(referrerRef);
-    }
-
-    /**
-     * Sets the referrer reference if available using an URI string.
-     * 
-     * @param referrerUri
-     *            The referrer URI.
-     */
-    public void setReferrerRef(String referrerUri) {
-        getWrappedRequest().setReferrerRef(referrerUri);
-    }
-
-    /**
-     * Sets the target resource reference. If the reference is relative, it will
-     * be resolved as an absolute reference. Also, the context's base reference
-     * will be reset. Finally, the reference will be normalized to ensure a
-     * consistent handling of the call.
-     * 
-     * @param resourceRef
-     *            The resource reference.
-     */
-    public void setResourceRef(Reference resourceRef) {
-        getWrappedRequest().setResourceRef(resourceRef);
-    }
-
-    /**
-     * Sets the target resource reference using an URI string. Note that the URI
-     * can be either absolute or relative to the context's base reference.
-     * 
-     * @param resourceUri
-     *            The resource URI.
-     */
-    public void setResourceRef(String resourceUri) {
-        getWrappedRequest().setResourceRef(resourceUri);
-    }
-
-    /**
-     * Returns the host reference. This may be different from the resourceRef's
-     * host, for example for URNs and other URIs that don't contain host
-     * information.
-     * 
-     * @return The host reference.
-     */
-    public Reference getHostRef() {
-        return getWrappedRequest().getHostRef();
-    }
-
-    /**
-     * Returns the protocol by first returning the baseRef.schemeProtocol
-     * property if it is set, or the resourceRef.schemeProtocol property
-     * otherwise.
-     * 
-     * @return The protocol or null if not available.
-     */
-    public Protocol getProtocol() {
-        return getWrappedRequest().getProtocol();
-    }
-
-    /**
-     * Returns the application root reference.
-     * 
-     * @return The application root reference.
-     */
-    public Reference getRootRef() {
-        return getWrappedRequest().getRootRef();
-    }
-
-    /**
-     * Sets the host reference.
-     * 
-     * @param hostRef
-     *            The host reference.
-     */
-    public void setHostRef(Reference hostRef) {
-        getWrappedRequest().setHostRef(hostRef);
-    }
-
-    /**
-     * Sets the host reference using an URI string.
-     * 
-     * @param hostUri
-     *            The host URI.
-     */
-    public void setHostRef(String hostUri) {
-        getWrappedRequest().setHostRef(hostUri);
-    }
-
-    /**
-     * Sets the application root reference.
-     * 
-     * @param rootRef
-     *            The application root reference.
-     */
-    public void setRootRef(Reference rootRef) {
-        getWrappedRequest().setRootRef(rootRef);
     }
 
     /**
@@ -320,6 +90,42 @@ public class WrapperRequest extends Request {
      */
     public Map<String, Object> getAttributes() {
         return getWrappedRequest().getAttributes();
+    }
+
+    /**
+     * Returns the authentication response sent by a client to an origin server.
+     * 
+     * @return The authentication response sent by a client to an origin server.
+     */
+    public ChallengeResponse getChallengeResponse() {
+        return getWrappedRequest().getChallengeResponse();
+    }
+
+    /**
+     * Returns the client-specific information.
+     * 
+     * @return The client-specific information.
+     */
+    public ClientInfo getClientInfo() {
+        return getWrappedRequest().getClientInfo();
+    }
+
+    /**
+     * Returns the conditions applying to this call.
+     * 
+     * @return The conditions applying to this call.
+     */
+    public Conditions getConditions() {
+        return getWrappedRequest().getConditions();
+    }
+
+    /**
+     * Returns the cookies provided by the client.
+     * 
+     * @return The cookies provided by the client.
+     */
+    public Series<Cookie> getCookies() {
+        return getWrappedRequest().getCookies();
     }
 
     /**
@@ -377,6 +183,116 @@ public class WrapperRequest extends Request {
     }
 
     /**
+     * Returns the host reference. This may be different from the resourceRef's
+     * host, for example for URNs and other URIs that don't contain host
+     * information.
+     * 
+     * @return The host reference.
+     */
+    public Reference getHostRef() {
+        return getWrappedRequest().getHostRef();
+    }
+
+    /**
+     * Returns the method.
+     * 
+     * @return The method.
+     */
+    public Method getMethod() {
+        return getWrappedRequest().getMethod();
+    }
+
+    /**
+     * Returns the protocol by first returning the baseRef.schemeProtocol
+     * property if it is set, or the resourceRef.schemeProtocol property
+     * otherwise.
+     * 
+     * @return The protocol or null if not available.
+     */
+    public Protocol getProtocol() {
+        return getWrappedRequest().getProtocol();
+    }
+
+    /**
+     * Returns the referrer reference if available.
+     * 
+     * @return The referrer reference.
+     */
+    public Reference getReferrerRef() {
+        return getWrappedRequest().getReferrerRef();
+    }
+
+    /**
+     * Returns the reference of the target resource.
+     * 
+     * @return The reference of the target resource.
+     */
+    public Reference getResourceRef() {
+        return getWrappedRequest().getResourceRef();
+    }
+
+    /**
+     * Returns the application root reference.
+     * 
+     * @return The application root reference.
+     */
+    public Reference getRootRef() {
+        return getWrappedRequest().getRootRef();
+    }
+
+    /**
+     * Returns the wrapped request.
+     * 
+     * @return The wrapped request.
+     */
+    protected Request getWrappedRequest() {
+        return this.wrappedRequest;
+    }
+
+    /**
+     * Indicates if the call came over a confidential channel such as an
+     * SSL-secured connection.
+     * 
+     * @return True if the call came over a confidential channel.
+     */
+    public boolean isConfidential() {
+        return getWrappedRequest().isConfidential();
+    }
+
+    /**
+     * Indicates if a content is available and can be sent. Several conditions
+     * must be met: the method must allow the sending of content, the content
+     * must exists and have some available data.
+     * 
+     * @return True if a content is available and can be sent.
+     */
+    public boolean isEntityAvailable() {
+        return getWrappedRequest().isEntityAvailable();
+    }
+
+    /**
+     * Sets the authentication response sent by a client to an origin server.
+     * 
+     * @param response
+     *                The authentication response sent by a client to an origin
+     *                server.
+     */
+    public void setChallengeResponse(ChallengeResponse response) {
+        getWrappedRequest().setChallengeResponse(response);
+    }
+
+    /**
+     * Indicates if the call came over a confidential channel such as an
+     * SSL-secured connection.
+     * 
+     * @param confidential
+     *                True if the call came over a confidential channel.
+     */
+    public void setConfidential(boolean confidential) {
+        getWrappedRequest().setConfidential(confidential);
+    }
+
+    /**
      * Sets the entity from a higher-level object. This object is converted to a
      * representation using the Application's converter service. If you want to
      * use this method to facilitate the setting of entities, you need to
@@ -384,7 +300,7 @@ public class WrapperRequest extends Request {
      * the toRepresentation(Object) method.
      * 
      * @param object
-     *            The higher-level object.
+     *                The higher-level object.
      */
     public void setEntity(Object object) {
         getWrappedRequest().setEntity(object);
@@ -394,7 +310,7 @@ public class WrapperRequest extends Request {
      * Sets the entity representation.
      * 
      * @param entity
-     *            The entity representation.
+     *                The entity representation.
      */
     public void setEntity(Representation entity) {
         getWrappedRequest().setEntity(entity);
@@ -404,12 +320,96 @@ public class WrapperRequest extends Request {
      * Sets a textual entity.
      * 
      * @param value
-     *            The represented string.
+     *                The represented string.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public void setEntity(String value, MediaType mediaType) {
         getWrappedRequest().setEntity(value, mediaType);
+    }
+
+    /**
+     * Sets the host reference.
+     * 
+     * @param hostRef
+     *                The host reference.
+     */
+    public void setHostRef(Reference hostRef) {
+        getWrappedRequest().setHostRef(hostRef);
+    }
+
+    /**
+     * Sets the host reference using an URI string.
+     * 
+     * @param hostUri
+     *                The host URI.
+     */
+    public void setHostRef(String hostUri) {
+        getWrappedRequest().setHostRef(hostUri);
+    }
+
+    /**
+     * Sets the method called.
+     * 
+     * @param method
+     *                The method called.
+     */
+    public void setMethod(Method method) {
+        getWrappedRequest().setMethod(method);
+    }
+
+    /**
+     * Sets the referrer reference if available.
+     * 
+     * @param referrerRef
+     *                The referrer reference.
+     */
+    public void setReferrerRef(Reference referrerRef) {
+        getWrappedRequest().setReferrerRef(referrerRef);
+    }
+
+    /**
+     * Sets the referrer reference if available using an URI string.
+     * 
+     * @param referrerUri
+     *                The referrer URI.
+     */
+    public void setReferrerRef(String referrerUri) {
+        getWrappedRequest().setReferrerRef(referrerUri);
+    }
+
+    /**
+     * Sets the target resource reference. If the reference is relative, it will
+     * be resolved as an absolute reference. Also, the context's base reference
+     * will be reset. Finally, the reference will be normalized to ensure a
+     * consistent handling of the call.
+     * 
+     * @param resourceRef
+     *                The resource reference.
+     */
+    public void setResourceRef(Reference resourceRef) {
+        getWrappedRequest().setResourceRef(resourceRef);
+    }
+
+    /**
+     * Sets the target resource reference using an URI string. Note that the URI
+     * can be either absolute or relative to the context's base reference.
+     * 
+     * @param resourceUri
+     *                The resource URI.
+     */
+    public void setResourceRef(String resourceUri) {
+        getWrappedRequest().setResourceRef(resourceUri);
+    }
+
+    /**
+     * Sets the application root reference.
+     * 
+     * @param rootRef
+     *                The application root reference.
+     */
+    public void setRootRef(Reference rootRef) {
+        getWrappedRequest().setRootRef(rootRef);
     }
 
 }

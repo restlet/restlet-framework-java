@@ -51,7 +51,7 @@ public final class Encoding extends Metadata {
      * then it is returned, otherwise a new instance is created.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @return The associated encoding.
      */
     public static Encoding valueOf(final String name) {
@@ -81,7 +81,7 @@ public final class Encoding extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      */
     public Encoding(final String name) {
         this(name, "Encoding applied to a representation");
@@ -91,9 +91,9 @@ public final class Encoding extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @param description
-     *            The description.
+     *                The description.
      */
     public Encoding(final String name, final String description) {
         super(name, description);

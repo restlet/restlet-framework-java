@@ -44,7 +44,7 @@ public class Metadata {
      * Constructor.
      * 
      * @param name
-     *            The unique name.
+     *                The unique name.
      */
     public Metadata(String name) {
         this(name, null);
@@ -54,9 +54,9 @@ public class Metadata {
      * Constructor.
      * 
      * @param name
-     *            The unique name.
+     *                The unique name.
      * @param description
-     *            The description.
+     *                The description.
      */
     public Metadata(String name, String description) {
         this.name = name;
@@ -92,6 +92,28 @@ public class Metadata {
     @Override
     public int hashCode() {
         return (getName() == null) ? 0 : getName().hashCode();
+    }
+
+    /**
+     * Sets the description.
+     * 
+     * @param description
+     *                The description.
+     */
+    @SuppressWarnings("unused")
+    private void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Sets the metadata name.
+     * 
+     * @param name
+     *                The metadata name.
+     */
+    @SuppressWarnings("unused")
+    private void setName(String name) {
+        this.name = name;
     }
 
     /**

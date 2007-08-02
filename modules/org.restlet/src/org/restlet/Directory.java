@@ -79,9 +79,9 @@ public class Directory extends Finder {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param rootLocalReference
-     *            The root Uri.
+     *                The root Uri.
      */
     public Directory(Context context, LocalReference rootLocalReference) {
         super(context);
@@ -104,19 +104,20 @@ public class Directory extends Finder {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param rootUri
-     *            The absolute root URI. <br>
-     *            <br>
-     *            If you serve files from the file system, use file:// URIs and
-     *            make sure that you register a FILE connector with your parent
-     *            Component. On Windows, make sure that you add enough slash
-     *            characters at the beginning, for example: file:///c:/dir/file<br>
-     *            <br>
-     *            If you serve files from a class loader, use clap:// URIs and
-     *            make sure that you register a CLAP connector with your parent
-     *            Component.<br>
-     *            <br>
+     *                The absolute root URI. <br>
+     *                <br>
+     *                If you serve files from the file system, use file:// URIs
+     *                and make sure that you register a FILE connector with your
+     *                parent Component. On Windows, make sure that you add
+     *                enough slash characters at the beginning, for example:
+     *                file:///c:/dir/file<br>
+     *                <br>
+     *                If you serve files from a class loader, use clap:// URIs
+     *                and make sure that you register a CLAP connector with your
+     *                parent Component.<br>
+     *                <br>
      */
     public Directory(Context context, String rootUri) {
         super(context);
@@ -139,9 +140,9 @@ public class Directory extends Finder {
      * Finds the target Resource if available.
      * 
      * @param request
-     *            The request to filter.
+     *                The request to filter.
      * @param response
-     *            The response to filter.
+     *                The response to filter.
      * @return The target resource if available or null.
      */
     public Resource findTarget(Request request, Response response) {
@@ -168,9 +169,9 @@ public class Directory extends Finder {
      * Returns an actual index representation for a given variant.
      * 
      * @param variant
-     *            The selected variant.
+     *                The selected variant.
      * @param indexContent
-     *            The directory index to represent.
+     *                The directory index to represent.
      * @return The actual index representation.
      */
     public Representation getIndexRepresentation(Variant variant,
@@ -190,7 +191,7 @@ public class Directory extends Finder {
      * it returns a simple HTML document and a textual URI list as variants.
      * 
      * @param indexContent
-     *            The list of references contained in the directory index.
+     *                The list of references contained in the directory index.
      * @return The variant representations of a directory.
      */
     public List<Variant> getIndexVariants(ReferenceList indexContent) {
@@ -201,7 +202,8 @@ public class Directory extends Finder {
     }
 
     /**
-     * Returns the root URI.
+     * Returns the root URI from which the relative resource URIs will be lookep
+     * up.
      * 
      * @return The root URI.
      */
@@ -253,7 +255,7 @@ public class Directory extends Finder {
      * Indicates if the subdirectories are deeply accessible (true by default).
      * 
      * @param deeplyAccessible
-     *            True if the subdirectories are deeply accessible.
+     *                True if the subdirectories are deeply accessible.
      */
     public void setDeeplyAccessible(boolean deeplyAccessible) {
         this.deeplyAccessible = deeplyAccessible;
@@ -263,7 +265,7 @@ public class Directory extends Finder {
      * Sets the index name, without extensions.
      * 
      * @param indexName
-     *            The index name.
+     *                The index name.
      */
     public void setIndexName(String indexName) {
         this.indexName = indexName;
@@ -274,8 +276,8 @@ public class Directory extends Finder {
      * file is found.
      * 
      * @param listingAllowed
-     *            True if the display of directory listings is allowed when no
-     *            index file is found.
+     *                True if the display of directory listings is allowed when
+     *                no index file is found.
      */
     public void setListingAllowed(boolean listingAllowed) {
         this.listingAllowed = listingAllowed;
@@ -285,7 +287,7 @@ public class Directory extends Finder {
      * Indicates if modifications to local resources are allowed.
      * 
      * @param modifiable
-     *            True if modifications to local resources are allowed.
+     *                True if modifications to local resources are allowed.
      */
     public void setModifiable(boolean modifiable) {
         this.modifiable = modifiable;
@@ -296,10 +298,21 @@ public class Directory extends Finder {
      * is true.
      * 
      * @param negotiateContent
-     *            True if the best content is automatically negotiated.
+     *                True if the best content is automatically negotiated.
      */
     public void setNegotiateContent(boolean negotiateContent) {
         this.negotiateContent = negotiateContent;
+    }
+
+    /**
+     * Sets the root URI from which the relative resource URIs will be lookep
+     * up.
+     * 
+     * @param rootRef
+     *                The root URI.
+     */
+    public void setRootRef(Reference rootRef) {
+        this.rootRef = rootRef;
     }
 
 }

@@ -53,7 +53,7 @@ public final class ChallengeScheme extends Metadata {
      * constant exists then it is returned, otherwise a new instance is created.
      * 
      * @param name
-     *            The scheme name.
+     *                The scheme name.
      * @return The associated challenge scheme.
      */
     public static ChallengeScheme valueOf(final String name) {
@@ -87,9 +87,9 @@ public final class ChallengeScheme extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The unique name.
+     *                The unique name.
      * @param technicalName
-     *            The technical name.
+     *                The technical name.
      */
     public ChallengeScheme(final String name, final String technicalName) {
         this(name, technicalName, null);
@@ -99,13 +99,14 @@ public final class ChallengeScheme extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The unique name.
+     *                The unique name.
      * @param technicalName
-     *            The technical name.
+     *                The technical name.
      * @param description
-     *            The description.
+     *                The description.
      */
-    public ChallengeScheme(final String name, final String technicalName, final String description) {
+    public ChallengeScheme(final String name, final String technicalName,
+            final String description) {
         super(name, description);
         this.technicalName = technicalName;
     }
@@ -131,5 +132,16 @@ public final class ChallengeScheme extends Metadata {
     @Override
     public int hashCode() {
         return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
+    }
+
+    /**
+     * Sets the technical name (ex: BASIC).
+     * 
+     * @param technicalName
+     *                The technical name (ex: BASIC).
+     */
+    @SuppressWarnings("unused")
+    private void setTechnicalName(String technicalName) {
+        this.technicalName = technicalName;
     }
 }

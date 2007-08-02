@@ -50,7 +50,7 @@ public abstract class Connector extends Restlet {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      */
     public Connector(Context context) {
         this(context, null);
@@ -60,9 +60,9 @@ public abstract class Connector extends Restlet {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param protocols
-     *            The supported protocols.
+     *                The supported protocols.
      */
     public Connector(Context context, List<Protocol> protocols) {
         super(context);
@@ -78,6 +78,16 @@ public abstract class Connector extends Restlet {
         if (this.protocols == null)
             this.protocols = new ArrayList<Protocol>();
         return this.protocols;
+    }
+
+    /**
+     * Sets the protocols simultaneously supported.
+     * 
+     * @param protocols
+     *                The protocols simultaneously supported.
+     */
+    public void setProtocols(List<Protocol> protocols) {
+        this.protocols = protocols;
     }
 
 }

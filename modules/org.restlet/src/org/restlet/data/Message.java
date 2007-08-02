@@ -60,10 +60,10 @@ public abstract class Message {
     }
 
     /**
-     * Returns a modifiable attributes map that can be used by developers to
-     * save information relative to the message. This is an easier alternative
-     * to the creation of a wrapper instance around the whole message.<br/>
-     * <br/>
+     * Returns the modifiable map of attributes that can be used by developers
+     * to save information relative to the message. Creates a new instance if no
+     * one has been set. This is an easier alternative to the creation of a
+     * wrapper instance around the whole message.<br/> <br/>
      * 
      * In addition, this map is a shared space between the developer and the
      * connectors. In this case, it is used to exchange information that is not
@@ -208,6 +208,16 @@ public abstract class Message {
         if (getEntity() != null) {
             getEntity().release();
         }
+    }
+
+    /**
+     * Sets the modifiable map of attributes
+     * 
+     * @param attributes
+     *                The modifiable map of attributes
+     */
+    public void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
     }
 
     /**

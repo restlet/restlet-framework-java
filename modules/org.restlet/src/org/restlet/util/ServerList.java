@@ -29,6 +29,7 @@ import org.restlet.data.Protocol;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class ServerList extends WrapperList<Server> {
+
     /** The context. */
     private Context context;
 
@@ -125,6 +126,26 @@ public final class ServerList extends WrapperList<Server> {
      */
     public Restlet getTarget() {
         return this.target;
+    }
+
+    /**
+     * Sets the context.
+     * 
+     * @param context
+     *                The context.
+     */
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    /**
+     * Sets the target Restlet.
+     * 
+     * @param target
+     *                The target Restlet.
+     */
+    public void setTarget(Restlet target) {
+        this.target = target;
     }
 
 }

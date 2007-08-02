@@ -41,16 +41,16 @@ public final class ClientInfo {
     private int port;
 
     /** The character set preferences. */
-    private List<Preference<CharacterSet>> characterSetPrefs;
+    private List<Preference<CharacterSet>> acceptedCharacterSets;
 
     /** The encoding preferences. */
-    private List<Preference<Encoding>> encodingPrefs;
+    private List<Preference<Encoding>> acceptedEncodings;
 
     /** The language preferences. */
-    private List<Preference<Language>> languagePrefs;
+    private List<Preference<Language>> acceptedLanguages;
 
     /** The media preferences. */
-    private List<Preference<MediaType>> mediaTypePrefs;
+    private List<Preference<MediaType>> acceptedMediaTypes;
 
     /**
      * Constructor.
@@ -59,58 +59,63 @@ public final class ClientInfo {
         this.addresses = null;
         this.agent = null;
         this.port = -1;
-        this.characterSetPrefs = null;
-        this.encodingPrefs = null;
-        this.languagePrefs = null;
-        this.mediaTypePrefs = null;
+        this.acceptedCharacterSets = null;
+        this.acceptedEncodings = null;
+        this.acceptedLanguages = null;
+        this.acceptedMediaTypes = null;
     }
 
     /**
-     * Returns the character set preferences.
+     * Returns the character set preferences. Creates a new instance if no one
+     * has been set.
      * 
      * @return The character set preferences.
      */
     public List<Preference<CharacterSet>> getAcceptedCharacterSets() {
-        if (this.characterSetPrefs == null)
-            this.characterSetPrefs = new ArrayList<Preference<CharacterSet>>();
-        return this.characterSetPrefs;
+        if (this.acceptedCharacterSets == null)
+            this.acceptedCharacterSets = new ArrayList<Preference<CharacterSet>>();
+        return this.acceptedCharacterSets;
     }
 
     /**
-     * Returns the encoding preferences.
+     * Returns the encoding preferences. Creates a new instance if no one has
+     * been set.
      * 
      * @return The encoding preferences.
      */
     public List<Preference<Encoding>> getAcceptedEncodings() {
-        if (this.encodingPrefs == null)
-            this.encodingPrefs = new ArrayList<Preference<Encoding>>();
-        return this.encodingPrefs;
+        if (this.acceptedEncodings == null)
+            this.acceptedEncodings = new ArrayList<Preference<Encoding>>();
+        return this.acceptedEncodings;
     }
 
     /**
-     * Returns the language preferences.
+     * Returns the language preferences. Creates a new instance if no one has
+     * been set.
      * 
      * @return The language preferences.
      */
     public List<Preference<Language>> getAcceptedLanguages() {
-        if (this.languagePrefs == null)
-            this.languagePrefs = new ArrayList<Preference<Language>>();
-        return this.languagePrefs;
+        if (this.acceptedLanguages == null)
+            this.acceptedLanguages = new ArrayList<Preference<Language>>();
+        return this.acceptedLanguages;
     }
 
     /**
-     * Returns the media type preferences.
+     * Returns the media type preferences. Creates a new instance if no one has
+     * been set.
      * 
      * @return The media type preferences.
      */
     public List<Preference<MediaType>> getAcceptedMediaTypes() {
-        if (this.mediaTypePrefs == null)
-            this.mediaTypePrefs = new ArrayList<Preference<MediaType>>();
-        return this.mediaTypePrefs;
+        if (this.acceptedMediaTypes == null)
+            this.acceptedMediaTypes = new ArrayList<Preference<MediaType>>();
+        return this.acceptedMediaTypes;
     }
 
     /**
-     * Returns the client's IP address.
+     * Returns the client's IP address which is the first address in the list of
+     * client addresses, if this list exists and isn't empty.
      * 
      * @return The client's IP address.
      */
@@ -125,7 +130,7 @@ public final class ClientInfo {
      * getClientAdress() method and the last address should correspond to the
      * origin client (frequently a user agent). This is useful when the user
      * agent is separated from the origin server by a chain of intermediary
-     * components.
+     * components. Creates a new instance if no one has been set.
      * 
      * @return The client IP addresses.
      */
@@ -161,9 +166,9 @@ public final class ClientInfo {
      * the variants don't match the client preferences.
      * 
      * @param variants
-     *            The list of variants to compare.
+     *                The list of variants to compare.
      * @param defaultLanguage
-     *            The default language.
+     *                The default language.
      * @return The best variant.
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
@@ -181,10 +186,10 @@ public final class ClientInfo {
      * variants don't match the client preferences.
      * 
      * @param resource
-     *            The resource for which the best representation needs to be
-     *            set.
+     *                The resource for which the best representation needs to be
+     *                set.
      * @param defaultLanguage
-     *            The default language.
+     *                The default language.
      * @return The best variant.
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
@@ -196,10 +201,54 @@ public final class ClientInfo {
     }
 
     /**
+     * Sets the character set preferences.
+     * 
+     * @param acceptedCharacterSets
+     *                The character set preferences.
+     */
+    public void setAcceptedCharacterSets(
+            List<Preference<CharacterSet>> acceptedCharacterSets) {
+        this.acceptedCharacterSets = acceptedCharacterSets;
+    }
+
+    /**
+     * Sets the encoding preferences.
+     * 
+     * @param acceptedEncodings
+     *                The encoding preferences.
+     */
+    public void setAcceptedEncodings(
+            List<Preference<Encoding>> acceptedEncodings) {
+        this.acceptedEncodings = acceptedEncodings;
+    }
+
+    /**
+     * Sets the language preferences.
+     * 
+     * @param acceptedLanguages
+     *                The language preferences.
+     */
+    public void setAcceptedLanguages(
+            List<Preference<Language>> acceptedLanguages) {
+        this.acceptedLanguages = acceptedLanguages;
+    }
+
+    /**
+     * Sets the media type preferences.
+     * 
+     * @param acceptedMediaTypes
+     *                The media type preferences.
+     */
+    public void setAcceptedMediaTypes(
+            List<Preference<MediaType>> acceptedMediaTypes) {
+        this.acceptedMediaTypes = acceptedMediaTypes;
+    }
+
+    /**
      * Sets the client's IP address.
      * 
      * @param address
-     *            The client's IP address.
+     *                The client's IP address.
      */
     public void setAddress(String address) {
         if (getAddresses().isEmpty()) {
@@ -210,10 +259,20 @@ public final class ClientInfo {
     }
 
     /**
+     * Sets the list of client IP addresses.
+     * 
+     * @param addresses
+     *                The list of client IP addresses.
+     */
+    public void setAddresses(List<String> addresses) {
+        this.addresses = addresses;
+    }
+
+    /**
      * Sets the agent name (ex: "Noelios Restlet Engine/1.0").
      * 
      * @param agent
-     *            The agent name.
+     *                The agent name.
      */
     public void setAgent(String agent) {
         this.agent = agent;
@@ -223,7 +282,7 @@ public final class ClientInfo {
      * Sets the port number which sent the call.
      * 
      * @param port
-     *            The port number which sent the call.
+     *                The port number which sent the call.
      */
     public void setPort(int port) {
         this.port = port;

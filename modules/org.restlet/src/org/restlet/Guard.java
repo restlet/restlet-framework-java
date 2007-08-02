@@ -39,7 +39,7 @@ public class Guard extends Filter {
     /** Map of secrets (login/password combinations). */
     private Map<String, char[]> secrets;
 
-    /** The authentication scheme. */
+    /** The authentication challenge scheme. */
     private ChallengeScheme scheme;
 
     /** The authentication realm. */
@@ -49,11 +49,11 @@ public class Guard extends Filter {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param scheme
-     *            The authentication scheme to use.
+     *                The authentication scheme to use.
      * @param realm
-     *            The authentication realm.
+     *                The authentication realm.
      */
     public Guard(Context context, ChallengeScheme scheme, String realm) {
         super(context);
@@ -74,9 +74,9 @@ public class Guard extends Filter {
      * call.
      * 
      * @param request
-     *            The request to accept.
+     *                The request to accept.
      * @param response
-     *            The response to accept.
+     *                The response to accept.
      */
     public void accept(Request request, Response response) {
         // Invoke the attached Restlet
@@ -88,7 +88,7 @@ public class Guard extends Filter {
      * delegates credential checking to checkSecret().
      * 
      * @param request
-     *            The request to authenticate.
+     *                The request to authenticate.
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
      * @see #checkSecret(String, char[])
@@ -125,14 +125,41 @@ public class Guard extends Filter {
     }
 
     /**
+     * Indicates if the request is authorized to pass through the Guard. This
+     * method is only called if the call was sucessfully authenticated. It
+     * always returns true by default. If specific checks are required, they
+     * could be added by overriding this method.
+     * 
+     * @param request
+     *                The request to authorize.
+     * @return True if the request is authorized.
+     */
+    public boolean authorize(Request request) {
+        return true;
+    }
+
+    /**
+     * Challenges the client by adding a challenge request to the response and
+     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
+     * 
+     * @param response
+     *                The response to update.
+     */
+    public void challenge(Response response) {
+        response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+        response.setChallengeRequest(new ChallengeRequest(this.scheme,
+                this.realm));
+    }
+
+    /**
      * Indicates if the secret is valid for the given identifier. By default,
      * this returns true given the correct login/password couple as verified via
      * the findSecret() method.
      * 
      * @param identifier
-     *            the identifier
+     *                the identifier
      * @param secret
-     *            the identifier's secret
+     *                the identifier's secret
      * @return true if the secret is valid for the given identifier
      */
     protected boolean checkSecret(String identifier, char[] secret) {
@@ -155,39 +182,12 @@ public class Guard extends Filter {
     }
 
     /**
-     * Indicates if the request is authorized to pass through the Guard. This
-     * method is only called if the call was sucessfully authenticated. It
-     * always returns true by default. If specific checks are required, they
-     * could be added by overriding this method.
-     * 
-     * @param request
-     *            The request to authorize.
-     * @return True if the request is authorized.
-     */
-    public boolean authorize(Request request) {
-        return true;
-    }
-
-    /**
-     * Challenges the client by adding a challenge request to the response and
-     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
-     * 
-     * @param response
-     *            The response to update.
-     */
-    public void challenge(Response response) {
-        response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-        response.setChallengeRequest(new ChallengeRequest(this.scheme,
-                this.realm));
-    }
-
-    /**
      * Handles the call by distributing it to the next Restlet.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void doHandle(Request request, Response response) {
         switch (authenticate(request)) {
@@ -215,7 +215,7 @@ public class Guard extends Filter {
      * into the secrets map, but this behavior can be overriden.
      * 
      * @param identifier
-     *            The identifier to lookup.
+     *                The identifier to lookup.
      * @return The secret associated to the identifier or null.
      */
     protected char[] findSecret(String identifier) {
@@ -230,14 +230,33 @@ public class Guard extends Filter {
      * CLIENT_ERROR_FORBIDDEN.
      * 
      * @param response
-     *            The reject response.
+     *                The reject response.
      */
     public void forbid(Response response) {
         response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
     }
 
     /**
-     * Returns the map of identifiers and secrets.
+     * Returns the authentication realm.
+     * 
+     * @return The authentication realm.
+     */
+    public String getRealm() {
+        return realm;
+    }
+
+    /**
+     * Returns the authentication challenge scheme.
+     * 
+     * @return The authentication challenge scheme.
+     */
+    public ChallengeScheme getScheme() {
+        return scheme;
+    }
+
+    /**
+     * Returns the map of identifiers and secrets. Creates a new instance if no
+     * one has been set.
      * 
      * @return The map of identifiers and secrets.
      */
@@ -245,6 +264,36 @@ public class Guard extends Filter {
         if (this.secrets == null)
             this.secrets = new TreeMap<String, char[]>();
         return this.secrets;
+    }
+
+    /**
+     * Sets the authentication realm.
+     * 
+     * @param realm
+     *                The authentication realm.
+     */
+    public void setRealm(String realm) {
+        this.realm = realm;
+    }
+
+    /**
+     * Sets the authentication challenge scheme.
+     * 
+     * @param scheme
+     *                The authentication challenge scheme.
+     */
+    public void setScheme(ChallengeScheme scheme) {
+        this.scheme = scheme;
+    }
+
+    /**
+     * Sets the map of identifiers and secrets.
+     * 
+     * @param secrets
+     *                The map of identifiers and secrets.
+     */
+    public void setSecrets(Map<String, char[]> secrets) {
+        this.secrets = secrets;
     }
 
 }

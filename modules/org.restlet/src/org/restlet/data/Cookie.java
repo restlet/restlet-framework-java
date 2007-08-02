@@ -46,11 +46,11 @@ public class Cookie extends Parameter {
      * Constructor.
      * 
      * @param version
-     *            The version number.
+     *                The version number.
      * @param name
-     *            The name.
+     *                The name.
      * @param value
-     *            The value.
+     *                The value.
      */
     public Cookie(int version, String name, String value) {
         this(version, name, value, null, null);
@@ -60,15 +60,15 @@ public class Cookie extends Parameter {
      * Constructor.
      * 
      * @param version
-     *            The version number.
+     *                The version number.
      * @param name
-     *            The name.
+     *                The name.
      * @param value
-     *            The value.
+     *                The value.
      * @param path
-     *            The validity path.
+     *                The validity path.
      * @param domain
-     *            The domain name.
+     *                The domain name.
      */
     public Cookie(int version, String name, String value, String path,
             String domain) {
@@ -82,9 +82,9 @@ public class Cookie extends Parameter {
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @param value
-     *            The value.
+     *                The value.
      */
     public Cookie(String name, String value) {
         this(0, name, value, null, null);
@@ -169,7 +169,7 @@ public class Cookie extends Parameter {
      * Sets the domain name.
      * 
      * @param domain
-     *            The domain name.
+     *                The domain name.
      */
     public void setDomain(String domain) {
         this.domain = domain;
@@ -179,7 +179,7 @@ public class Cookie extends Parameter {
      * Sets the validity path.
      * 
      * @param path
-     *            The validity path.
+     *                The validity path.
      */
     public void setPath(String path) {
         this.path = path;
@@ -189,7 +189,7 @@ public class Cookie extends Parameter {
      * Sets the cookie specification version.
      * 
      * @param version
-     *            The cookie specification version.
+     *                The cookie specification version.
      */
     public void setVersion(int version) {
         this.version = version;

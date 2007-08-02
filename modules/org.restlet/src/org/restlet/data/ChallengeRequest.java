@@ -40,9 +40,9 @@ public final class ChallengeRequest {
      * Constructor.
      * 
      * @param scheme
-     *            The challenge scheme.
+     *                The challenge scheme.
      * @param realm
-     *            The authentication realm.
+     *                The authentication realm.
      */
     public ChallengeRequest(ChallengeScheme scheme, String realm) {
         this.scheme = scheme;
@@ -85,9 +85,10 @@ public final class ChallengeRequest {
     }
 
     /**
-     * Returns the scheme parameters.
+     * Returns the modifiable series of scheme parameters. Creates a new
+     * instance if no one has been set.
      * 
-     * @return The scheme parameters.
+     * @return The modifiable series of scheme parameters.
      */
     public Series<Parameter> getParameters() {
         if (this.parameters == null)
@@ -120,10 +121,20 @@ public final class ChallengeRequest {
     }
 
     /**
+     * Sets the modifiable series of scheme parameters.
+     * 
+     * @param parameters
+     *                The modifiable series of scheme parameters.
+     */
+    public void setParameters(Series<Parameter> parameters) {
+        this.parameters = parameters;
+    }
+
+    /**
      * Sets the realm name.
      * 
      * @param realm
-     *            The realm name.
+     *                The realm name.
      */
     public void setRealm(String realm) {
         this.realm = realm;
@@ -133,7 +144,7 @@ public final class ChallengeRequest {
      * Sets the scheme used.
      * 
      * @param scheme
-     *            The scheme used.
+     *                The scheme used.
      */
     public void setScheme(ChallengeScheme scheme) {
         this.scheme = scheme;

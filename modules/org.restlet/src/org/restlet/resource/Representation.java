@@ -55,10 +55,10 @@ import org.restlet.data.Tag;
  */
 public abstract class Representation extends Variant {
     /** Indicates if the representation's content is available. */
-    private boolean contentAvailable;
+    private boolean available;
 
     /** Indicates if the representation's content is transient. */
-    private boolean contentTransient;
+    private boolean isTransient;
 
     /**
      * Default constructor.
@@ -75,8 +75,8 @@ public abstract class Representation extends Variant {
      */
     public Representation(MediaType mediaType) {
         super(mediaType);
-        this.contentAvailable = true;
-        this.contentTransient = false;
+        this.available = true;
+        this.isTransient = false;
     }
 
     /**
@@ -188,7 +188,7 @@ public abstract class Representation extends Variant {
      * @return True if some fresh content is available.
      */
     public boolean isAvailable() {
-        return this.contentAvailable;
+        return this.available;
     }
 
     /**
@@ -201,7 +201,7 @@ public abstract class Representation extends Variant {
      * @return True if the representation's content is transient.
      */
     public boolean isTransient() {
-        return this.contentTransient;
+        return this.isTransient;
     }
 
     /**
@@ -221,7 +221,7 @@ public abstract class Representation extends Variant {
      *                True if some fresh content is available.
      */
     public void setAvailable(boolean available) {
-        this.contentAvailable = available;
+        this.available = available;
     }
 
     /**
@@ -277,7 +277,7 @@ public abstract class Representation extends Variant {
      *                True if the representation's content is transient.
      */
     public void setTransient(boolean isTransient) {
-        this.contentTransient = isTransient;
+        this.isTransient = isTransient;
     }
 
     /**

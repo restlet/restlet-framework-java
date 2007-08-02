@@ -65,7 +65,7 @@ public final class CharacterSet extends Metadata {
      * exists then it is returned, otherwise a new instance is created.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @return The associated character set.
      */
     public static CharacterSet valueOf(final String name) {
@@ -93,7 +93,7 @@ public final class CharacterSet extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      */
     public CharacterSet(final String name) {
         this(name == null ? null : name.toUpperCase(),
@@ -104,9 +104,9 @@ public final class CharacterSet extends Metadata {
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @param description
-     *            The description.
+     *                The description.
      */
     public CharacterSet(final String name, final String description) {
         super(name == null ? null : name.toUpperCase(), description);

@@ -46,7 +46,7 @@ public class StatusService {
      * Constructor.
      * 
      * @param enabled
-     *            True if the service has been enabled.
+     *                True if the service has been enabled.
      */
     public StatusService(boolean enabled) {
         this.enabled = enabled;
@@ -80,11 +80,11 @@ public class StatusService {
      * returns null by default.
      * 
      * @param status
-     *            The status to represent.
+     *                The status to represent.
      * @param request
-     *            The request handled.
+     *                The request handled.
      * @param response
-     *            The response updated.
+     *                The response updated.
      * @return The representation of the given status.
      */
     public Representation getRepresentation(Status status, Request request,
@@ -98,11 +98,11 @@ public class StatusService {
      * In order to customize the default behavior, this method can be overriden.
      * 
      * @param throwable
-     *            The exception or error caught.
+     *                The exception or error caught.
      * @param request
-     *            The request handled.
+     *                The request handled.
      * @param response
-     *            The response updated.
+     *                The response updated.
      * @return The representation of the given status.
      */
     public Status getStatus(Throwable throwable, Request request,
@@ -133,7 +133,7 @@ public class StatusService {
      * used when creating the status representations.
      * 
      * @param contactEmail
-     *            The email address to contact in case of error.
+     *                The email address to contact in case of error.
      */
     public void setContactEmail(String contactEmail) {
         this.contactEmail = contactEmail;
@@ -143,7 +143,7 @@ public class StatusService {
      * Indicates if the service should be enabled.
      * 
      * @param enabled
-     *            True if the service should be enabled.
+     *                True if the service should be enabled.
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -153,7 +153,7 @@ public class StatusService {
      * Sets the home URI to propose in case of error.
      * 
      * @param homeRef
-     *            The home URI to propose in case of error.
+     *                The home URI to propose in case of error.
      */
     public void setHomeRef(Reference homeRef) {
         this.homeRef = homeRef;
@@ -163,7 +163,7 @@ public class StatusService {
      * Indicates if an existing entity should be overwritten.
      * 
      * @param overwrite
-     *            True if an existing entity should be overwritten.
+     *                True if an existing entity should be overwritten.
      */
     public void setOverwrite(boolean overwrite) {
         this.overwrite = overwrite;

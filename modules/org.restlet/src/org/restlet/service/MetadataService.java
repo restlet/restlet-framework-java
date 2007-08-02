@@ -42,7 +42,7 @@ public class MetadataService {
     private MediaType defaultMediaType;
 
     /** The mappings from extension names to metadata. */
-    private Map<String, Metadata> metadataMappings;
+    private Map<String, Metadata> mappings;
 
     /**
      * Constructor.
@@ -51,7 +51,7 @@ public class MetadataService {
         this.defaultEncoding = Encoding.IDENTITY;
         this.defaultLanguage = Language.ENGLISH_US;
         this.defaultMediaType = MediaType.APPLICATION_OCTET_STREAM;
-        this.metadataMappings = new TreeMap<String, Metadata>();
+        this.mappings = null;
         addCommonExtensions();
     }
 
@@ -122,12 +122,12 @@ public class MetadataService {
      * set) to an extension.
      * 
      * @param extension
-     *            The extension name.
+     *                The extension name.
      * @param metadata
-     *            The metadata to map.
+     *                The metadata to map.
      */
     public void addExtension(String extension, Metadata metadata) {
-        this.metadataMappings.put(extension, metadata);
+        this.mappings.put(extension, metadata);
     }
 
     /**
@@ -161,7 +161,7 @@ public class MetadataService {
      * Returns the first extension mapping to this metadata.
      * 
      * @param metadata
-     *            The metadata to find.
+     *                The metadata to find.
      * @return The first extension mapping to this metadata.
      */
     public String getExtension(Metadata metadata) {
@@ -175,12 +175,15 @@ public class MetadataService {
     }
 
     /**
-     * Returns the mappings from extension names to metadata.
+     * Returns the mappings from extension names to metadata. Creates a new
+     * instance if no one has been set.
      * 
      * @return The mappings from extension names to metadata.
      */
     public Map<String, Metadata> getMappings() {
-        return this.metadataMappings;
+        if (this.mappings == null)
+            this.mappings = new TreeMap<String, Metadata>();
+        return this.mappings;
     }
 
     /**
@@ -188,7 +191,7 @@ public class MetadataService {
      * extension was not declared.
      * 
      * @param extension
-     *            The extension name without any delimiter.
+     *                The extension name without any delimiter.
      * @return The metadata associated to this extension.
      */
     public Metadata getMetadata(String extension) {
@@ -199,7 +202,7 @@ public class MetadataService {
      * Sets the default encoding for local representations.
      * 
      * @param defaultEncoding
-     *            The default encoding for local representations.
+     *                The default encoding for local representations.
      */
     public void setDefaultEncoding(Encoding defaultEncoding) {
         this.defaultEncoding = defaultEncoding;
@@ -209,7 +212,7 @@ public class MetadataService {
      * Sets the default language for local representations.
      * 
      * @param defaultLanguage
-     *            The default language for local representations.
+     *                The default language for local representations.
      */
     public void setDefaultLanguage(Language defaultLanguage) {
         this.defaultLanguage = defaultLanguage;
@@ -219,10 +222,20 @@ public class MetadataService {
      * Sets the default media type for local representations.
      * 
      * @param defaultMediaType
-     *            The default media type for local representations.
+     *                The default media type for local representations.
      */
     public void setDefaultMediaType(MediaType defaultMediaType) {
         this.defaultMediaType = defaultMediaType;
+    }
+
+    /**
+     * Sets the mappings from extension names to metadata.
+     * 
+     * @param mappings
+     *                The mappings from extension names to metadata.
+     */
+    public void setMappings(Map<String, Metadata> mappings) {
+        this.mappings = mappings;
     }
 
 }

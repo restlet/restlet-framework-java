@@ -76,7 +76,7 @@ public class LogService {
      * Constructor.
      * 
      * @param enabled
-     *            True if the service has been enabled.
+     *                True if the service has been enabled.
      */
     public LogService(boolean enabled) {
         this.loggerName = null;
@@ -128,7 +128,7 @@ public class LogService {
      * one of IIS 6.
      * 
      * @param format
-     *            The format to use when loggin calls.
+     *                The format to use when loggin calls.
      * @see org.restlet.util.Template for format syntax and variables.
      */
     public void setLogFormat(String format) {
@@ -139,7 +139,7 @@ public class LogService {
      * Sets the name of the JDK's logger to use when logging calls.
      * 
      * @param name
-     *            The name of the JDK's logger to use when logging calls.
+     *                The name of the JDK's logger to use when logging calls.
      */
     public void setLoggerName(String name) {
         this.loggerName = name;
@@ -149,7 +149,7 @@ public class LogService {
      * Indicates if the service should be enabled.
      * 
      * @param enabled
-     *            True if the service should be enabled.
+     *                True if the service should be enabled.
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -159,7 +159,7 @@ public class LogService {
      * Indicates if the identity check (as specified by RFC1413) is enabled.
      * 
      * @param enabled
-     *            True if the identity check is enabled.
+     *                True if the identity check is enabled.
      */
     public void setIdentityCheck(boolean enabled) {
         this.identityCheck = enabled;

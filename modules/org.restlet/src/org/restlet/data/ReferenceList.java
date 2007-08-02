@@ -48,7 +48,7 @@ public class ReferenceList extends WrapperList<Reference> {
      * Constructor.
      * 
      * @param initialCapacity
-     *            The initial list capacity.
+     *                The initial list capacity.
      */
     public ReferenceList(int initialCapacity) {
         super(new ArrayList<Reference>(initialCapacity));
@@ -58,7 +58,7 @@ public class ReferenceList extends WrapperList<Reference> {
      * Constructor.
      * 
      * @param delegate
-     *            The delegate list.
+     *                The delegate list.
      */
     public ReferenceList(List<Reference> delegate) {
         super(delegate);
@@ -68,7 +68,7 @@ public class ReferenceList extends WrapperList<Reference> {
      * Constructor from a "text/uri-list" representation.
      * 
      * @param uriList
-     *            The "text/uri-list" representation to parse.
+     *                The "text/uri-list" representation to parse.
      * @throws IOException
      */
     public ReferenceList(Representation uriList) throws IOException {
@@ -102,7 +102,7 @@ public class ReferenceList extends WrapperList<Reference> {
      * Creates then adds a reference at the end of the list.
      * 
      * @param uri
-     *            The uri of the reference to add.
+     *                The uri of the reference to add.
      * @return True (as per the general contract of the Collection.add method).
      */
     public boolean add(String uri) {
@@ -172,7 +172,7 @@ public class ReferenceList extends WrapperList<Reference> {
      * Sets the list reference.
      * 
      * @param identifier
-     *            The list identifier.
+     *                The list identifier.
      */
     public void setIdentifier(Reference identifier) {
         this.identifier = identifier;
@@ -182,7 +182,7 @@ public class ReferenceList extends WrapperList<Reference> {
      * Sets the list reference.
      * 
      * @param identifier
-     *            The list identifier as a URI.
+     *                The list identifier as a URI.
      */
     public void setIdentifier(String identifier) {
         setIdentifier(new Reference(identifier));
@@ -193,9 +193,9 @@ public class ReferenceList extends WrapperList<Reference> {
      * fromIndex, inclusive, and toIndex, exclusive.
      * 
      * @param fromIndex
-     *            The start position.
+     *                The start position.
      * @param toIndex
-     *            The end position (exclusive).
+     *                The end position (exclusive).
      * @return The sub-list.
      */
     @Override

@@ -48,310 +48,107 @@ import org.restlet.resource.Representation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class ByteUtils {
-    /**
-     * Returns a readable byte channel based on a given inputstream. If it is
-     * supported by a file a read-only instance of FileChannel is returned.
-     * 
-     * @param inputStream
-     *            The input stream to convert.
-     * @return A readable byte channel.
-     */
-    public static ReadableByteChannel getChannel(InputStream inputStream)
-            throws IOException {
-        return (inputStream != null) ? Channels.newChannel(inputStream) : null;
-    }
 
     /**
-     * Returns a writable byte channel based on a given output stream.
-     * 
-     * @param outputStream
-     *            The output stream.
+     * Output stream connected to a non-blocking writable channel.
      */
-    public static WritableByteChannel getChannel(OutputStream outputStream)
-            throws IOException {
-        return (outputStream != null) ? Channels.newChannel(outputStream)
-                : null;
-    }
+    private final static class NbChannelOutputStream extends OutputStream {
+        /** The channel to write to. */
+        private WritableByteChannel channel;
 
-    /**
-     * Returns a readable byte channel based on the given representation's
-     * content and its write(WritableByteChannel) method. Internally, it uses a
-     * writer thread and a pipe stream.
-     * 
-     * @return A readable byte channel.
-     */
-    public static ReadableByteChannel getChannel(
-            final Representation representation) throws IOException {
-        final Pipe pipe = Pipe.open();
+        private Selector selector;
 
-        // Creates a thread that will handle the task of continuously
-        // writing the representation into the input side of the pipe
-        Thread writer = new Thread() {
-            public void run() {
+        private SelectionKey selectionKey;
+
+        // private SelectableChannel selectableChannel;
+
+        private ByteBuffer bb = ByteBuffer.allocate(8192);
+
+        /**
+         * Constructor.
+         * 
+         * @param channel
+         *                The wrapped channel.
+         */
+        public NbChannelOutputStream(WritableByteChannel channel) {
+            this.channel = channel;
+
+            /*
+             * if (!(channel instanceof SelectableChannel)) { throw new
+             * IllegalArgumentException( "Invalid channel provided. Please use
+             * only selectable channels."); } else { this.selectableChannel =
+             * (SelectableChannel) channel; this.selector = null;
+             * this.selectionKey = null;
+             * 
+             * if (this.selectableChannel.isBlocking()) { throw new
+             * IllegalArgumentException( "Invalid blocking channel provided.
+             * Please use only non-blocking channels."); } }
+             */
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (this.selectionKey != null) {
+                this.selectionKey.cancel();
+            }
+
+            if (this.selector != null)
+                this.selector.close();
+
+            super.close();
+        }
+
+        private void registerSelectionKey() throws ClosedChannelException,
+                IOException {
+            /*
+             * this.selectionKey =
+             * this.selectableChannel.register(getSelector(),
+             * SelectionKey.OP_WRITE);
+             */
+        }
+
+        @Override
+        public void write(byte b[], int off, int len) throws IOException {
+            bb.clear();
+            bb.put(b, off, len);
+            bb.flip();
+
+            if ((this.channel != null) && (bb != null)) {
                 try {
-                    WritableByteChannel wbc = pipe.sink();
-                    representation.write(wbc);
-                    wbc.close();
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-            }
-        };
+                    int bytesWritten;
 
-        // Starts the writer thread
-        writer.start();
-        return pipe.source();
-    }
+                    while (bb.hasRemaining()) {
+                        bytesWritten = this.channel.write(bb);
 
-    /**
-     * Returns a reader from an input stream and a character set.
-     * 
-     * @param stream
-     *            The input stream.
-     * @param characterSet
-     *            The character set.
-     * @return The equivalent reader.
-     * @throws IOException
-     */
-    public static Reader getReader(InputStream stream, CharacterSet characterSet)
-            throws IOException {
-        if (characterSet != null) {
-            return new InputStreamReader(stream, characterSet.getName());
-        } else {
-            return new InputStreamReader(stream);
-        }
-    }
+                        if (bytesWritten < 0) {
+                            throw new IOException(
+                                    "Unexpected negative number of bytes written.");
+                        } else if (bytesWritten == 0) {
+                            registerSelectionKey();
 
-    /**
-     * Returns an input stream based on a given readable byte channel.
-     * 
-     * @param readableChannel
-     *            The readable byte channel.
-     * @return An input stream based on a given readable byte channel.
-     */
-    public static InputStream getStream(ReadableByteChannel readableChannel)
-            throws IOException {
-        return (readableChannel != null) ? Channels
-                .newInputStream(readableChannel) : null;
-    }
-
-    /**
-     * Returns an input stream based on the given representation's content and
-     * its write(OutputStream) method. Internally, it uses a writer thread and a
-     * pipe stream.
-     * 
-     * @return A stream with the representation's content.
-     */
-    public static InputStream getStream(final Representation representation)
-            throws IOException {
-        if (representation != null) {
-            final PipeStream pipe = new PipeStream();
-
-            // Creates a thread that will handle the task of continuously
-            // writing the representation into the input side of the pipe
-            Thread writer = new Thread() {
-                public void run() {
-                    try {
-                        OutputStream os = pipe.getOutputStream();
-                        representation.write(os);
-                        os.write(-1);
-                        os.close();
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
+                            if (SelectorFactory.getSelector().select(10000) == 0) {
+                                throw new IOException(
+                                        "Unable to select the channel to write to it. Selection timed out.");
+                            }
+                        }
                     }
+                } catch (IOException ioe) {
+                    throw new IOException(
+                            "Unable to write to the non-blocking channel. "
+                                    + ioe.getLocalizedMessage());
+                } finally {
+                    bb.clear();
                 }
-            };
-
-            // Starts the writer thread
-            writer.start();
-            return pipe.getInputStream();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Returns an output stream based on a given writable byte channel.
-     * 
-     * @param writableChannel
-     *            The writable byte channel.
-     * @return An output stream based on a given writable byte channel.
-     */
-    public static OutputStream getStream(WritableByteChannel writableChannel) {
-        OutputStream result = null;
-
-        if (writableChannel instanceof SelectableChannel) {
-            SelectableChannel selectableChannel = (SelectableChannel) writableChannel;
-
-            synchronized (selectableChannel.blockingLock()) {
-                if (selectableChannel.isBlocking()) {
-                    result = Channels.newOutputStream(writableChannel);
-                } else {
-                    result = new NbChannelOutputStream(writableChannel);
-                }
-            }
-        } else {
-            result = new NbChannelOutputStream(writableChannel);
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns an output stream based on a given writer.
-     * 
-     * @param writer
-     *            The writer.
-     */
-    public static OutputStream getStream(Writer writer) throws IOException {
-        return null;
-    }
-
-    /**
-     * Converts an input stream to a string.<br/>As this method uses the
-     * InputstreamReader class, the default character set is used for decoding
-     * the input stream.
-     * 
-     * @see <a
-     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
-     *      class</a>
-     * @see #toString(InputStream, CharacterSet)
-     * @param inputStream
-     *            The input stream.
-     * @return The converted string.
-     */
-    public static String toString(InputStream inputStream) {
-        return toString(inputStream, null);
-    }
-
-    /**
-     * Converts an input stream to a string using the specified character set
-     * for decoding the input stream.
-     * 
-     * @see <a
-     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
-     *      class</a>
-     * @param inputStream
-     *            The input stream.
-     * @param characterSet
-     *            The character set
-     * @return The converted string.
-     */
-    public static String toString(InputStream inputStream,
-            CharacterSet characterSet) {
-        String result = null;
-
-        if (inputStream != null) {
-            try {
-                if (characterSet != null) {
-                    result = toString(new InputStreamReader(inputStream,
-                            characterSet.getName()));
-                } else {
-                    result = toString(new InputStreamReader(inputStream));
-                }
-            } catch (Exception e) {
-                // Returns an empty string
+            } else {
+                throw new IOException(
+                        "Unable to write. Null byte buffer or channel detected.");
             }
         }
 
-        return result;
-    }
-
-    /**
-     * Converts a reader to a string.
-     * 
-     * @see <a
-     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
-     *      class</a>
-     * @param reader
-     *            The characters reader.
-     * @return The converted string.
-     */
-    public static String toString(Reader reader) {
-        String result = null;
-
-        if (reader != null) {
-            try {
-                StringBuilder sb = new StringBuilder();
-                BufferedReader br = new BufferedReader(reader);
-                int nextChar = br.read();
-                while (nextChar != -1) {
-                    sb.append((char) nextChar);
-                    nextChar = br.read();
-                }
-                br.close();
-                result = sb.toString();
-            } catch (Exception e) {
-                // Returns an empty string
-            }
+        @Override
+        public void write(int b) throws IOException {
+            write(new byte[] { (byte) b }, 0, 1);
         }
-
-        return result;
-    }
-
-    /**
-     * Writes an input stream to an output stream. When the reading is done, the
-     * input stream is closed.
-     * 
-     * @param inputStream
-     *            The input stream.
-     * @param outputStream
-     *            The output stream.
-     * @throws IOException
-     */
-    public static void write(InputStream inputStream, OutputStream outputStream)
-            throws IOException {
-        int bytesRead;
-        byte[] buffer = new byte[2048];
-        while ((bytesRead = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, bytesRead);
-        }
-        inputStream.close();
-    }
-
-    /**
-     * Writes a readable channel to a writable channel. It assumes that the
-     * readable and writable channels are both in NIO blocking mode.
-     * 
-     * @param readableChannel
-     *            The readable channel.
-     * @param writableChannel
-     *            The writable channel.
-     * @throws IOException
-     */
-    public static void write(ReadableByteChannel readableChannel,
-            WritableByteChannel writableChannel) throws IOException {
-        if ((readableChannel != null) && (writableChannel != null)) {
-            write(Channels.newInputStream(readableChannel), Channels
-                    .newOutputStream(writableChannel));
-        }
-    }
-
-    /**
-     * Writes characters from a reader to a writer. When the reading is done,
-     * the reader is closed.
-     * 
-     * @param reader
-     *            The reader.
-     * @param writer
-     *            The writer.
-     * @throws IOException
-     */
-    public static void write(Reader reader, Writer writer) throws IOException {
-        int charsRead;
-        char[] buffer = new char[2048];
-        while ((charsRead = reader.read(buffer)) > 0) {
-            writer.write(buffer, 0, charsRead);
-        }
-        reader.close();
-    }
-
-    /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
-     */
-    private ByteUtils() {
-
     }
 
     /**
@@ -411,108 +208,6 @@ public final class ByteUtils {
             };
         }
 
-    }
-
-    /**
-     * Output stream connected to a non-blocking writable channel.
-     */
-    private final static class NbChannelOutputStream extends OutputStream {
-        /** The channel to write to. */
-        private WritableByteChannel channel;
-
-        private Selector selector;
-
-        private SelectionKey selectionKey;
-
-        // private SelectableChannel selectableChannel;
-
-        private ByteBuffer bb = ByteBuffer.allocate(8192);
-
-        /**
-         * Constructor.
-         * 
-         * @param channel
-         *            The wrapped channel.
-         */
-        public NbChannelOutputStream(WritableByteChannel channel) {
-            this.channel = channel;
-
-            /*
-             * if (!(channel instanceof SelectableChannel)) { throw new
-             * IllegalArgumentException( "Invalid channel provided. Please use
-             * only selectable channels."); } else { this.selectableChannel =
-             * (SelectableChannel) channel; this.selector = null;
-             * this.selectionKey = null;
-             * 
-             * if (this.selectableChannel.isBlocking()) { throw new
-             * IllegalArgumentException( "Invalid blocking channel provided.
-             * Please use only non-blocking channels."); } }
-             */
-        }
-
-        @Override
-        public void write(int b) throws IOException {
-            write(new byte[] { (byte) b }, 0, 1);
-        }
-
-        @Override
-        public void write(byte b[], int off, int len) throws IOException {
-            bb.clear();
-            bb.put(b, off, len);
-            bb.flip();
-
-            if ((this.channel != null) && (bb != null)) {
-                try {
-                    int bytesWritten;
-
-                    while (bb.hasRemaining()) {
-                        bytesWritten = this.channel.write(bb);
-
-                        if (bytesWritten < 0) {
-                            throw new IOException(
-                                    "Unexpected negative number of bytes written.");
-                        } else if (bytesWritten == 0) {
-                            registerSelectionKey();
-
-                            if (SelectorFactory.getSelector().select(10000) == 0) {
-                                throw new IOException(
-                                        "Unable to select the channel to write to it. Selection timed out.");
-                            }
-                        }
-                    }
-                } catch (IOException ioe) {
-                    throw new IOException(
-                            "Unable to write to the non-blocking channel. "
-                                    + ioe.getLocalizedMessage());
-                } finally {
-                    bb.clear();
-                }
-            } else {
-                throw new IOException(
-                        "Unable to write. Null byte buffer or channel detected.");
-            }
-        }
-
-        private void registerSelectionKey() throws ClosedChannelException,
-                IOException {
-            /*
-             * this.selectionKey =
-             * this.selectableChannel.register(getSelector(),
-             * SelectionKey.OP_WRITE);
-             */
-        }
-
-        @Override
-        public void close() throws IOException {
-            if (this.selectionKey != null) {
-                this.selectionKey.cancel();
-            }
-
-            if (this.selector != null)
-                this.selector.close();
-
-            super.close();
-        }
     }
 
     /**
@@ -585,7 +280,7 @@ public final class ByteUtils {
          * Return the <code>Selector</code> to the cache
          * 
          * @param s
-         *            <code>Selector</code>
+         *                <code>Selector</code>
          */
         public final static void returnSelector(Selector s) {
             synchronized (selectors) {
@@ -594,6 +289,312 @@ public final class ByteUtils {
                     selectors.notify();
             }
         }
+    }
+
+    /**
+     * Returns a readable byte channel based on a given inputstream. If it is
+     * supported by a file a read-only instance of FileChannel is returned.
+     * 
+     * @param inputStream
+     *                The input stream to convert.
+     * @return A readable byte channel.
+     */
+    public static ReadableByteChannel getChannel(InputStream inputStream)
+            throws IOException {
+        return (inputStream != null) ? Channels.newChannel(inputStream) : null;
+    }
+
+    /**
+     * Returns a writable byte channel based on a given output stream.
+     * 
+     * @param outputStream
+     *                The output stream.
+     */
+    public static WritableByteChannel getChannel(OutputStream outputStream)
+            throws IOException {
+        return (outputStream != null) ? Channels.newChannel(outputStream)
+                : null;
+    }
+
+    /**
+     * Returns a readable byte channel based on the given representation's
+     * content and its write(WritableByteChannel) method. Internally, it uses a
+     * writer thread and a pipe stream.
+     * 
+     * @return A readable byte channel.
+     */
+    public static ReadableByteChannel getChannel(
+            final Representation representation) throws IOException {
+        final Pipe pipe = Pipe.open();
+
+        // Creates a thread that will handle the task of continuously
+        // writing the representation into the input side of the pipe
+        Thread writer = new Thread() {
+            public void run() {
+                try {
+                    WritableByteChannel wbc = pipe.sink();
+                    representation.write(wbc);
+                    wbc.close();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        };
+
+        // Starts the writer thread
+        writer.start();
+        return pipe.source();
+    }
+
+    /**
+     * Returns a reader from an input stream and a character set.
+     * 
+     * @param stream
+     *                The input stream.
+     * @param characterSet
+     *                The character set.
+     * @return The equivalent reader.
+     * @throws IOException
+     */
+    public static Reader getReader(InputStream stream, CharacterSet characterSet)
+            throws IOException {
+        if (characterSet != null) {
+            return new InputStreamReader(stream, characterSet.getName());
+        } else {
+            return new InputStreamReader(stream);
+        }
+    }
+
+    /**
+     * Returns an input stream based on a given readable byte channel.
+     * 
+     * @param readableChannel
+     *                The readable byte channel.
+     * @return An input stream based on a given readable byte channel.
+     */
+    public static InputStream getStream(ReadableByteChannel readableChannel)
+            throws IOException {
+        return (readableChannel != null) ? Channels
+                .newInputStream(readableChannel) : null;
+    }
+
+    /**
+     * Returns an input stream based on the given representation's content and
+     * its write(OutputStream) method. Internally, it uses a writer thread and a
+     * pipe stream.
+     * 
+     * @return A stream with the representation's content.
+     */
+    public static InputStream getStream(final Representation representation)
+            throws IOException {
+        if (representation != null) {
+            final PipeStream pipe = new PipeStream();
+
+            // Creates a thread that will handle the task of continuously
+            // writing the representation into the input side of the pipe
+            Thread writer = new Thread() {
+                public void run() {
+                    try {
+                        OutputStream os = pipe.getOutputStream();
+                        representation.write(os);
+                        os.write(-1);
+                        os.close();
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                    }
+                }
+            };
+
+            // Starts the writer thread
+            writer.start();
+            return pipe.getInputStream();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns an output stream based on a given writable byte channel.
+     * 
+     * @param writableChannel
+     *                The writable byte channel.
+     * @return An output stream based on a given writable byte channel.
+     */
+    public static OutputStream getStream(WritableByteChannel writableChannel) {
+        OutputStream result = null;
+
+        if (writableChannel instanceof SelectableChannel) {
+            SelectableChannel selectableChannel = (SelectableChannel) writableChannel;
+
+            synchronized (selectableChannel.blockingLock()) {
+                if (selectableChannel.isBlocking()) {
+                    result = Channels.newOutputStream(writableChannel);
+                } else {
+                    result = new NbChannelOutputStream(writableChannel);
+                }
+            }
+        } else {
+            result = new NbChannelOutputStream(writableChannel);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns an output stream based on a given writer.
+     * 
+     * @param writer
+     *                The writer.
+     */
+    public static OutputStream getStream(Writer writer) throws IOException {
+        return null;
+    }
+
+    /**
+     * Converts an input stream to a string.<br/>As this method uses the
+     * InputstreamReader class, the default character set is used for decoding
+     * the input stream.
+     * 
+     * @see <a
+     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
+     *      class</a>
+     * @see #toString(InputStream, CharacterSet)
+     * @param inputStream
+     *                The input stream.
+     * @return The converted string.
+     */
+    public static String toString(InputStream inputStream) {
+        return toString(inputStream, null);
+    }
+
+    /**
+     * Converts an input stream to a string using the specified character set
+     * for decoding the input stream.
+     * 
+     * @see <a
+     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
+     *      class</a>
+     * @param inputStream
+     *                The input stream.
+     * @param characterSet
+     *                The character set
+     * @return The converted string.
+     */
+    public static String toString(InputStream inputStream,
+            CharacterSet characterSet) {
+        String result = null;
+
+        if (inputStream != null) {
+            try {
+                if (characterSet != null) {
+                    result = toString(new InputStreamReader(inputStream,
+                            characterSet.getName()));
+                } else {
+                    result = toString(new InputStreamReader(inputStream));
+                }
+            } catch (Exception e) {
+                // Returns an empty string
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Converts a reader to a string.
+     * 
+     * @see <a
+     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
+     *      class</a>
+     * @param reader
+     *                The characters reader.
+     * @return The converted string.
+     */
+    public static String toString(Reader reader) {
+        String result = null;
+
+        if (reader != null) {
+            try {
+                StringBuilder sb = new StringBuilder();
+                BufferedReader br = new BufferedReader(reader);
+                int nextChar = br.read();
+                while (nextChar != -1) {
+                    sb.append((char) nextChar);
+                    nextChar = br.read();
+                }
+                br.close();
+                result = sb.toString();
+            } catch (Exception e) {
+                // Returns an empty string
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Writes an input stream to an output stream. When the reading is done, the
+     * input stream is closed.
+     * 
+     * @param inputStream
+     *                The input stream.
+     * @param outputStream
+     *                The output stream.
+     * @throws IOException
+     */
+    public static void write(InputStream inputStream, OutputStream outputStream)
+            throws IOException {
+        int bytesRead;
+        byte[] buffer = new byte[2048];
+        while ((bytesRead = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+        inputStream.close();
+    }
+
+    /**
+     * Writes a readable channel to a writable channel. It assumes that the
+     * readable and writable channels are both in NIO blocking mode.
+     * 
+     * @param readableChannel
+     *                The readable channel.
+     * @param writableChannel
+     *                The writable channel.
+     * @throws IOException
+     */
+    public static void write(ReadableByteChannel readableChannel,
+            WritableByteChannel writableChannel) throws IOException {
+        if ((readableChannel != null) && (writableChannel != null)) {
+            write(Channels.newInputStream(readableChannel), Channels
+                    .newOutputStream(writableChannel));
+        }
+    }
+
+    /**
+     * Writes characters from a reader to a writer. When the reading is done,
+     * the reader is closed.
+     * 
+     * @param reader
+     *                The reader.
+     * @param writer
+     *                The writer.
+     * @throws IOException
+     */
+    public static void write(Reader reader, Writer writer) throws IOException {
+        int charsRead;
+        char[] buffer = new char[2048];
+        while ((charsRead = reader.read(buffer)) > 0) {
+            writer.write(buffer, 0, charsRead);
+        }
+        reader.close();
+    }
+
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private ByteUtils() {
+
     }
 
 }

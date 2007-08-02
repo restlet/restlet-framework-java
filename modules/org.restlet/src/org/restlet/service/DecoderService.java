@@ -31,7 +31,7 @@ public class DecoderService {
      * Constructor.
      * 
      * @param enabled
-     *            True if the service has been enabled.
+     *                True if the service has been enabled.
      */
     public DecoderService(boolean enabled) {
         this.enabled = enabled;
@@ -50,7 +50,7 @@ public class DecoderService {
      * Indicates if the service should be enabled.
      * 
      * @param enabled
-     *            True if the service should be enabled.
+     *                True if the service should be enabled.
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;

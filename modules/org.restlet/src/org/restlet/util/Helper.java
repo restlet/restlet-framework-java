@@ -29,11 +29,12 @@ import org.restlet.data.Response;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Helper {
+
     /**
      * Creates a new context.
      * 
      * @param loggerName
-     *            The JDK's logger name to use for contextual logging.
+     *                The JDK's logger name to use for contextual logging.
      * @return The new context.
      */
     public abstract Context createContext(String loggerName);
@@ -42,9 +43,9 @@ public abstract class Helper {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public abstract void handle(Request request, Response response);
 

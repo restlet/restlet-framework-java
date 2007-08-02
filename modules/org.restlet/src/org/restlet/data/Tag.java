@@ -41,10 +41,10 @@ public final class Tag extends Metadata {
      * Parses a tag formatted as defined by the HTTP standard.
      * 
      * @param httpTag
-     *            The HTTP tag string; if it starts with a 'W' the tag will be
-     *            marked as weak and the data following the 'W' used as the tag;
-     *            otherwise it should be surrounded with quotes (e.g.,
-     *            "sometag").
+     *                The HTTP tag string; if it starts with a 'W' the tag will
+     *                be marked as weak and the data following the 'W' used as
+     *                the tag; otherwise it should be surrounded with quotes
+     *                (e.g., "sometag").
      * @return A new tag instance.
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
@@ -88,7 +88,7 @@ public final class Tag extends Metadata {
      * Constructor of weak tags.
      * 
      * @param opaqueTag
-     *            The tag value.
+     *                The tag value.
      */
     public Tag(final String opaqueTag) {
         this(opaqueTag, true);
@@ -98,9 +98,9 @@ public final class Tag extends Metadata {
      * Constructor.
      * 
      * @param opaqueTag
-     *            The tag value.
+     *                The tag value.
      * @param weak
-     *            The weakness indicator.
+     *                The weakness indicator.
      */
     public Tag(final String opaqueTag, boolean weak) {
         super(opaqueTag);
@@ -111,7 +111,7 @@ public final class Tag extends Metadata {
      * Indicates if both tags are equal.
      * 
      * @param object
-     *            The object to compare to.
+     *                The object to compare to.
      * @return True if both tags are equal.
      */
     @Override
@@ -123,9 +123,9 @@ public final class Tag extends Metadata {
      * Indicates if both tags are equal.
      * 
      * @param object
-     *            The object to compare to.
+     *                The object to compare to.
      * @param checkWeakness
-     *            the equality test takes care or not of the weakness.
+     *                the equality test takes care or not of the weakness.
      * 
      * @return True if both tags are equal.
      */

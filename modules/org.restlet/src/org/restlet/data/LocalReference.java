@@ -65,9 +65,9 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param authorityType
-     *            The authority type for the resource path.
+     *                The authority type for the resource path.
      * @param path
-     *            The resource path.
+     *                The resource path.
      */
     public static LocalReference createClapReference(int authorityType,
             String path) {
@@ -79,8 +79,8 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param file
-     *            The file whose path must be used.
-
+     *                The file whose path must be used.
+     * 
      */
     public static LocalReference createFileReference(File file) {
         return createFileReference(file.getAbsolutePath());
@@ -90,7 +90,7 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param filePath
-     *            The local file path.
+     *                The local file path.
      */
     public static LocalReference createFileReference(String filePath) {
         return createFileReference("", filePath);
@@ -100,10 +100,10 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param hostName
-     *            The authority (can be a host name or the special "localhost"
-     *            or an empty value).
+     *                The authority (can be a host name or the special
+     *                "localhost" or an empty value).
      * @param filePath
-     *            The file path.
+     *                The file path.
      */
     public static LocalReference createFileReference(String hostName,
             String filePath) {
@@ -115,9 +115,9 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param jarFile
-     *            The JAR file reference.
+     *                The JAR file reference.
      * @param entryPath
-     *            The entry path inside the JAR file.
+     *                The entry path inside the JAR file.
      */
     public static LocalReference createJarReference(Reference jarFile,
             String entryPath) {
@@ -129,7 +129,7 @@ public final class LocalReference extends Reference {
      * Returns an authority name.
      * 
      * @param authority
-     *            The authority.
+     *                The authority.
      * @return The name.
      */
     public static String getAuthorityName(int authority) {
@@ -155,7 +155,7 @@ public final class LocalReference extends Reference {
      * system-dependant separator character.
      * 
      * @param path
-     *            The path to localize.
+     *                The path to localize.
      * @return The localized path.
      */
     public static String localizePath(String path) {
@@ -180,7 +180,7 @@ public final class LocalReference extends Reference {
      * characters to the standard '/' separator character.
      * 
      * @param path
-     *            The path to normalize.
+     *                The path to normalize.
      * @return The normalize path.
      */
     public static String normalizePath(String path) {
@@ -204,7 +204,7 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param localRef
-     *            The local reference.
+     *                The local reference.
      */
     public LocalReference(Reference localRef) {
         super(localRef.toString());
@@ -214,7 +214,7 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param localUri
-     *            The local URI.
+     *                The local URI.
      */
     public LocalReference(String localUri) {
         super(localUri);

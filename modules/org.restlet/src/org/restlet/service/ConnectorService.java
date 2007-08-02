@@ -52,7 +52,7 @@ public class ConnectorService {
      * does nothing.
      * 
      * @param entity
-     *            The entity about to be committed.
+     *                The entity about to be committed.
      */
     public void afterSend(Representation entity) {
         // Do nothing by default.
@@ -64,16 +64,16 @@ public class ConnectorService {
      * does nothing.
      * 
      * @param entity
-     *            The entity about to be committed.
+     *                The entity about to be committed.
      */
     public void beforeSend(Representation entity) {
         // Do nothing by default.
     }
 
     /**
-     * Returns the list of required client protocols. You need to update
-     * this list if you need the parent component to provide additional client
-     * connectors.
+     * Returns the list of required client protocols. You need to update this
+     * list if you need the parent component to provide additional client
+     * connectors. Creates a new instance if no one has been set.
      * 
      * @return The list of required client protocols.
      */
@@ -87,6 +87,7 @@ public class ConnectorService {
      * Returns the list of required server protocols. An empty list means that
      * all protocols are potentially supported (default case). You should update
      * this list to restrict the actual protocols supported by your application.
+     * Creates a new instance if no one has been set.
      * 
      * @return The list of required server protocols.
      */
@@ -94,6 +95,26 @@ public class ConnectorService {
         if (this.serverProtocols == null)
             this.serverProtocols = new ArrayList<Protocol>();
         return this.serverProtocols;
+    }
+
+    /**
+     * Sets the list of required client protocols.
+     * 
+     * @param clientProtocols
+     *                The list of required client protocols.
+     */
+    public void setClientProtocols(List<Protocol> clientProtocols) {
+        this.clientProtocols = clientProtocols;
+    }
+
+    /**
+     * Sets he list of required server protocols.
+     * 
+     * @param serverProtocols
+     *                The list of required server protocols.
+     */
+    public void setServerProtocols(List<Protocol> serverProtocols) {
+        this.serverProtocols = serverProtocols;
     }
 
 }

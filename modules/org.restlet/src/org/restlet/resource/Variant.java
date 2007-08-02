@@ -115,9 +115,9 @@ public class Variant {
     }
 
     /**
-     * Returns the list of encodings applied to the entity-body. An
-     * "IllegalArgumentException" exception is thrown when adding a null
-     * encoding to this list.
+     * Returns the list of encodings applied to the entity-body. Creates a new
+     * instance if no one has been set. An "IllegalArgumentException" exception
+     * is thrown when adding a null encoding to this list.
      * 
      * @return The list of encodings applied to the entity-body.
      */
@@ -181,6 +181,7 @@ public class Variant {
                 }
             };
         }
+
         return this.encodings;
     }
 
@@ -209,8 +210,9 @@ public class Variant {
     }
 
     /**
-     * Returns the list of languages. An "IllegalArgumentException" exception is
-     * thrown when adding a null language to this list.
+     * Returns the list of languages. Creates a new instance if no one has been
+     * set. An "IllegalArgumentException" exception is thrown when adding a null
+     * language to this list.
      * 
      * @return The list of languages.
      */
@@ -332,6 +334,16 @@ public class Variant {
     }
 
     /**
+     * Sets the list of encodings applied to the entity-body.
+     * 
+     * @param encodings
+     *                The list of encodings applied to the entity-body.
+     */
+    public void setEncodings(List<Encoding> encodings) {
+        this.encodings = encodings;
+    }
+
+    /**
      * Sets the future date when this representation expire. If this information
      * is not known, pass null.
      * 
@@ -365,6 +377,16 @@ public class Variant {
      */
     public void setIdentifier(String identifierUri) {
         setIdentifier(new Reference(identifierUri));
+    }
+
+    /**
+     * Sets the list of languages.
+     * 
+     * @param languages
+     *                The list of languages.
+     */
+    public void setLanguages(List<Language> languages) {
+        this.languages = languages;
     }
 
     /**

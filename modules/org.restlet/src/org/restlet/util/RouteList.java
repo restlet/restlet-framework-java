@@ -40,6 +40,7 @@ import org.restlet.data.Response;
  * @see java.util.List
  */
 public final class RouteList extends WrapperList<Route> {
+
     /** The index of the last route used in the round robin mode. */
     private int lastIndex;
 
@@ -54,7 +55,7 @@ public final class RouteList extends WrapperList<Route> {
      * Constructor.
      * 
      * @param initialCapacity
-     *            The initial list capacity.
+     *                The initial list capacity.
      */
     public RouteList(int initialCapacity) {
         this(new ArrayList<Route>(initialCapacity));
@@ -64,7 +65,7 @@ public final class RouteList extends WrapperList<Route> {
      * Constructor.
      * 
      * @param delegate
-     *            The delegate list.
+     *                The delegate list.
      */
     public RouteList(List<Route> delegate) {
         super(delegate);
@@ -75,11 +76,11 @@ public final class RouteList extends WrapperList<Route> {
      * Returns the best route match for a given call.
      * 
      * @param request
-     *            The request to score.
+     *                The request to score.
      * @param response
-     *            The response to score.
+     *                The response to score.
      * @param requiredScore
-     *            The minimum score required to have a match.
+     *                The minimum score required to have a match.
      * @return The best route match or null.
      */
     public synchronized Route getBest(Request request, Response response,
@@ -103,11 +104,11 @@ public final class RouteList extends WrapperList<Route> {
      * Returns the first route match for a given call.
      * 
      * @param request
-     *            The request to score.
+     *                The request to score.
      * @param response
-     *            The response to score.
+     *                The response to score.
      * @param requiredScore
-     *            The minimum score required to have a match.
+     *                The minimum score required to have a match.
      * @return The first route match or null.
      */
     public synchronized Route getFirst(Request request, Response response,
@@ -125,11 +126,11 @@ public final class RouteList extends WrapperList<Route> {
      * Returns the last route match for a given call.
      * 
      * @param request
-     *            The request to score.
+     *                The request to score.
      * @param response
-     *            The response to score.
+     *                The response to score.
      * @param requiredScore
-     *            The minimum score required to have a match.
+     *                The minimum score required to have a match.
      * @return The last route match or null.
      */
     public synchronized Route getLast(Request request, Response response,
@@ -147,11 +148,11 @@ public final class RouteList extends WrapperList<Route> {
      * Returns a next route match in a round robin mode for a given call.
      * 
      * @param request
-     *            The request to score.
+     *                The request to score.
      * @param response
-     *            The response to score.
+     *                The response to score.
      * @param requiredScore
-     *            The minimum score required to have a match.
+     *                The minimum score required to have a match.
      * @return A next route or null.
      */
     public synchronized Route getNext(Request request, Response response,
@@ -173,11 +174,11 @@ public final class RouteList extends WrapperList<Route> {
      * Returns a random route match for a given call.
      * 
      * @param request
-     *            The request to score.
+     *                The request to score.
      * @param response
-     *            The response to score.
+     *                The response to score.
      * @param requiredScore
-     *            The minimum score required to have a match.
+     *                The minimum score required to have a match.
      * @return A random route or null.
      */
     public synchronized Route getRandom(Request request, Response response,
@@ -203,7 +204,7 @@ public final class RouteList extends WrapperList<Route> {
      * Removes all routes routing to a given target.
      * 
      * @param target
-     *            The target Restlet to detach.
+     *                The target Restlet to detach.
      */
     public void removeAll(Restlet target) {
         for (int i = size() - 1; i >= 0; i--) {
@@ -217,9 +218,9 @@ public final class RouteList extends WrapperList<Route> {
      * fromIndex, inclusive, and toIndex, exclusive.
      * 
      * @param fromIndex
-     *            The start position.
+     *                The start position.
      * @param toIndex
-     *            The end position (exclusive).
+     *                The end position (exclusive).
      * @return The sub-list.
      */
     public synchronized RouteList subList(int fromIndex, int toIndex) {

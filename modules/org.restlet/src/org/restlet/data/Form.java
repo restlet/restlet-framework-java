@@ -44,7 +44,7 @@ public class Form extends Series<Parameter> {
      * Constructor.
      * 
      * @param initialCapacity
-     *            The initial list capacity.
+     *                The initial list capacity.
      */
     public Form(int initialCapacity) {
         super(initialCapacity);
@@ -54,7 +54,7 @@ public class Form extends Series<Parameter> {
      * Constructor.
      * 
      * @param delegate
-     *            The delegate list.
+     *                The delegate list.
      */
     public Form(List<Parameter> delegate) {
         super(delegate);
@@ -64,9 +64,10 @@ public class Form extends Series<Parameter> {
      * Constructor.
      * 
      * @param logger
-     *            The logger to use.
+     *                The logger to use.
      * @param representation
-     *            The representation to parse (URL encoded Web form supported).
+     *                The representation to parse (URL encoded Web form
+     *                supported).
      * @throws IOException
      */
     public Form(Logger logger, Representation representation) {
@@ -77,11 +78,11 @@ public class Form extends Series<Parameter> {
      * Constructor.
      * 
      * @param logger
-     *            The logger to use.
+     *                The logger to use.
      * @param queryString
-     *            The Web form parameters as a string.
+     *                The Web form parameters as a string.
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      * @throws IOException
      */
     public Form(Logger logger, String queryString, CharacterSet characterSet) {
@@ -92,7 +93,7 @@ public class Form extends Series<Parameter> {
      * Constructor.
      * 
      * @param webForm
-     *            The URL encoded Web form.
+     *                The URL encoded Web form.
      * @throws IOException
      */
     public Form(Representation webForm) {
@@ -104,7 +105,7 @@ public class Form extends Series<Parameter> {
      * characters.
      * 
      * @param queryString
-     *            The Web form parameters as a string.
+     *                The Web form parameters as a string.
      * @throws IOException
      */
     public Form(String queryString) {
@@ -116,9 +117,9 @@ public class Form extends Series<Parameter> {
      * Constructor.
      * 
      * @param queryString
-     *            The Web form parameters as a string.
+     *                The Web form parameters as a string.
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      * @throws IOException
      */
     public Form(String queryString, CharacterSet characterSet) {
@@ -153,7 +154,7 @@ public class Form extends Series<Parameter> {
      * Formats the form as a query string.
      * 
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      * @return The form as a query string.
      */
     public String getQueryString(CharacterSet characterSet) {
@@ -180,7 +181,7 @@ public class Form extends Series<Parameter> {
      * (MediaType.APPLICATION_WWW_FORM).
      * 
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      * @return The form as a Web representation.
      */
     public Representation getWebRepresentation(CharacterSet characterSet) {
@@ -203,7 +204,7 @@ public class Form extends Series<Parameter> {
      * URL encodes the form.
      * 
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      * @return The encoded form.
      * @throws IOException
      */

@@ -110,7 +110,7 @@ public class Reference {
      * UTF-8 character set.
      * 
      * @param toDecode
-     *            The string to decode.
+     *                The string to decode.
      * @return The decoded string.
      */
     public static String decode(String toDecode) {
@@ -135,7 +135,7 @@ public class Reference {
      * UTF-8 character set.
      * 
      * @param toEncode
-     *            The string to encode.
+     *                The string to encode.
      * @return The encoded string.
      */
     public static String encode(String toEncode) {
@@ -165,9 +165,9 @@ public class Reference {
      * used. Not doing so may introduce incompatibilites.</em>
      * 
      * @param toEncode
-     *            The string to encode.
+     *                The string to encode.
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      * @return The encoded string or null if the named character encoding is not
      *         supported.
      */
@@ -198,9 +198,9 @@ public class Reference {
      * used. Not doing so may introduce incompatibilites.</em>
      * 
      * @param toDecode
-     *            The string to decode.
+     *                The string to decode.
      * @param characterSet
-     *            The name of a supported character encoding.
+     *                The name of a supported character encoding.
      * @return The decoded string or null if the named character encoding is not
      *         supported.
      */
@@ -226,17 +226,17 @@ public class Reference {
      * Creates a reference string from its parts.
      * 
      * @param scheme
-     *            The scheme ("http", "https" or "ftp").
+     *                The scheme ("http", "https" or "ftp").
      * @param hostName
-     *            The host name or IP address.
+     *                The host name or IP address.
      * @param hostPort
-     *            The host port (default ports are correctly ignored).
+     *                The host port (default ports are correctly ignored).
      * @param path
-     *            The path component for hierarchical identifiers.
+     *                The path component for hierarchical identifiers.
      * @param query
-     *            The optional query component for hierarchical identifiers.
+     *                The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optional fragment identifier.
+     *                The optional fragment identifier.
      */
     public static String toString(String scheme, String hostName,
             Integer hostPort, String path, String query, String fragment) {
@@ -257,11 +257,11 @@ public class Reference {
      * Creates a relative reference string from its parts.
      * 
      * @param relativePart
-     *            The relative part component.
+     *                The relative part component.
      * @param query
-     *            The optional query component for hierarchical identifiers.
+     *                The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optional fragment identifier.
+     *                The optional fragment identifier.
      */
     public static String toString(String relativePart, String query,
             String fragment) {
@@ -290,15 +290,15 @@ public class Reference {
      * Creates a reference string from its parts.
      * 
      * @param scheme
-     *            The scheme ("http", "https" or "ftp").
+     *                The scheme ("http", "https" or "ftp").
      * @param host
-     *            The host name or IP address plus the optional port number.
+     *                The host name or IP address plus the optional port number.
      * @param path
-     *            The path component for hierarchical identifiers.
+     *                The path component for hierarchical identifiers.
      * @param query
-     *            The optional query component for hierarchical identifiers.
+     *                The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optional fragment identifier.
+     *                The optional fragment identifier.
      */
     public static String toString(String scheme, String host, String path,
             String query, String fragment) {
@@ -354,7 +354,7 @@ public class Reference {
      * Clone constructor.
      * 
      * @param ref
-     *            The reference to clone.
+     *                The reference to clone.
      */
     public Reference(Reference ref) {
         this(ref.baseRef, ref.internalRef);
@@ -364,9 +364,9 @@ public class Reference {
      * Constructor from an URI reference (most likely relative).
      * 
      * @param baseRef
-     *            The base reference.
+     *                The base reference.
      * @param uriReference
-     *            The URI reference, either absolute or relative.
+     *                The URI reference, either absolute or relative.
      */
     public Reference(Reference baseRef, String uriReference) {
         this.baseRef = baseRef;
@@ -378,14 +378,14 @@ public class Reference {
      * Constructor of relative reference from its parts.
      * 
      * @param baseRef
-     *            The base reference.
+     *                The base reference.
      * @param relativePart
-     *            The relative part component (most of the time it is the path
-     *            component).
+     *                The relative part component (most of the time it is the
+     *                path component).
      * @param query
-     *            The optional query component for hierarchical identifiers.
+     *                The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optional fragment identifier.
+     *                The optional fragment identifier.
      */
     public Reference(Reference baseRef, String relativePart, String query,
             String fragment) {
@@ -396,7 +396,7 @@ public class Reference {
      * Constructor from an URI reference.
      * 
      * @param uriReference
-     *            The URI reference, either absolute or relative.
+     *                The URI reference, either absolute or relative.
      */
     public Reference(String uriReference) {
         this((Reference) null, uriReference);
@@ -406,9 +406,9 @@ public class Reference {
      * Constructor from an identifier and a fragment.
      * 
      * @param identifier
-     *            The resource identifier.
+     *                The resource identifier.
      * @param fragment
-     *            The fragment identifier.
+     *                The fragment identifier.
      */
     public Reference(String identifier, String fragment) {
         this((fragment == null) ? identifier : identifier + '#' + fragment);
@@ -418,17 +418,17 @@ public class Reference {
      * Constructor of absolute reference from its parts.
      * 
      * @param scheme
-     *            The scheme ("http", "https" or "ftp").
+     *                The scheme ("http", "https" or "ftp").
      * @param hostName
-     *            The host name or IP address.
+     *                The host name or IP address.
      * @param hostPort
-     *            The host port (default ports are correctly ignored).
+     *                The host port (default ports are correctly ignored).
      * @param path
-     *            The path component for hierarchical identifiers.
+     *                The path component for hierarchical identifiers.
      * @param query
-     *            The optional query component for hierarchical identifiers.
+     *                The optional query component for hierarchical identifiers.
      * @param fragment
-     *            The optional fragment identifier.
+     *                The optional fragment identifier.
      */
     public Reference(String scheme, String hostName, int hostPort, String path,
             String query, String fragment) {
@@ -439,7 +439,7 @@ public class Reference {
      * Indicates whether some other object is "equal to" this one.
      * 
      * @param object
-     *            The object to compare to.
+     *                The object to compare to.
      * @return True if this object is the same as the obj argument.
      */
     @Override
@@ -772,7 +772,7 @@ public class Reference {
      * Returns the optional query component as a form submission.
      * 
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      * @return The optional query component as a form submission.
      * @throws IOException
      */
@@ -838,10 +838,11 @@ public class Reference {
      * IllegalArgumentException will be raised.
      * 
      * @throws IllegalArgumentException
-     *             If the relative reference is computed although the reference
-     *             or the base reference are not absolute or not hierarchical.
+     *                 If the relative reference is computed although the
+     *                 reference or the base reference are not absolute or not
+     *                 hierarchical.
      * @param base
-     *            The base reference to use.
+     *                The base reference to use.
      * @return The current reference relatively to a base reference.
      */
     public Reference getRelativeRef(Reference base) {
@@ -1122,10 +1123,10 @@ public class Reference {
      * against the base reference then normalize them.
      * 
      * @throws IllegalArgumentException
-     *             If the base reference (after resolution) is not absolute.
+     *                 If the base reference (after resolution) is not absolute.
      * @throws IllegalArgumentException
-     *             If the reference is relative and not base reference has been
-     *             provided.
+     *                 If the reference is relative and not base reference has
+     *                 been provided.
      * 
      * @return The target reference.
      */
@@ -1262,7 +1263,7 @@ public class Reference {
      * to the same target reference.
      * 
      * @param ref
-     *            The reference to compare.
+     *                The reference to compare.
      * @return True if both reference are equivalent.
      */
     public boolean isEquivalentTo(Reference ref) {
@@ -1292,7 +1293,7 @@ public class Reference {
      * reference.
      * 
      * @param childRef
-     *            The hierarchical reference.
+     *                The hierarchical reference.
      * @return True if the reference is a parent of the hierarchical child
      *         reference.
      */
@@ -1422,7 +1423,7 @@ public class Reference {
      * Removes the last segement from the output builder.
      * 
      * @param output
-     *            The output builder to update.
+     *                The output builder to update.
      */
     private void removeLastSegment(StringBuilder output) {
         int min = -1;
@@ -1445,7 +1446,7 @@ public class Reference {
      * Sets the authority component for hierarchical identifiers.
      * 
      * @param authority
-     *            The authority component for hierarchical identifiers.
+     *                The authority component for hierarchical identifiers.
      */
     public void setAuthority(String authority) {
         String oldPart = isRelative() ? getRelativePart()
@@ -1481,7 +1482,7 @@ public class Reference {
      * Sets the base reference for relative references.
      * 
      * @param baseUri
-     *            The base URI for relative references.
+     *                The base URI for relative references.
      */
     public void setBaseRef(String baseUri) {
         setBaseRef(new Reference(baseUri));
@@ -1491,7 +1492,7 @@ public class Reference {
      * Sets the base reference for relative references.
      * 
      * @param baseRef
-     *            The base reference for relative references.
+     *                The base reference for relative references.
      */
     public void setBaseRef(Reference baseRef) {
         this.baseRef = baseRef;
@@ -1501,11 +1502,11 @@ public class Reference {
      * Sets the fragment identifier.
      * 
      * @throws IllegalArgumentException
-     *             if the fragment parameter contains the fragment delimiter
-     *             ('#').
+     *                 if the fragment parameter contains the fragment delimiter
+     *                 ('#').
      * 
      * @param fragment
-     *            The fragment identifier.
+     *                The fragment identifier.
      */
     public void setFragment(String fragment) {
         if ((fragment != null) && (fragment.indexOf('#') != -1)) {
@@ -1543,7 +1544,8 @@ public class Reference {
      * Sets the host domain component for server based hierarchical identifiers.
      * 
      * @param domain
-     *            The host component for server based hierarchical identifiers.
+     *                The host component for server based hierarchical
+     *                identifiers.
      */
     public void setHostDomain(String domain) {
         String authority = getAuthority();
@@ -1587,10 +1589,10 @@ public class Reference {
      * Sets the optional port number for server based hierarchical identifiers.
      * 
      * @throws IllegalArgumentException
-     *             If the autority has not been defined.
+     *                 If the autority has not been defined.
      * @param port
-     *            The optional port number for server based hierarchical
-     *            identifiers.
+     *                The optional port number for server based hierarchical
+     *                identifiers.
      */
     public void setHostPort(Integer port) {
         String authority = getAuthority();
@@ -1614,11 +1616,11 @@ public class Reference {
      * Sets the absolute resource identifier.
      * 
      * @throws IllegalArgumentException
-     *             If the identifier parameter contains the fragment delimiter
-     *             ('#').
+     *                 If the identifier parameter contains the fragment
+     *                 delimiter ('#').
      * 
      * @param identifier
-     *            The absolute resource identifier.
+     *                The absolute resource identifier.
      */
     public void setIdentifier(String identifier) {
         if (identifier == null)
@@ -1644,7 +1646,7 @@ public class Reference {
      * Sets the path component for hierarchical identifiers.
      * 
      * @param path
-     *            The path component for hierarchical identifiers.
+     *                The path component for hierarchical identifiers.
      */
     public void setPath(String path) {
         String oldPart = isRelative() ? getRelativePart()
@@ -1708,7 +1710,7 @@ public class Reference {
      * Sets the scheme component based on this protocol.
      * 
      * @param protocol
-     *            The protocol of the scheme component.
+     *                The protocol of the scheme component.
      */
     public void setProtocol(Protocol protocol) {
         setScheme(protocol.getSchemeName());
@@ -1718,7 +1720,7 @@ public class Reference {
      * Sets the query component for hierarchical identifiers.
      * 
      * @param query
-     *            The query component for hierarchical identifiers.
+     *                The query component for hierarchical identifiers.
      */
     public void setQuery(String query) {
         if (queryIndex != -1) {
@@ -1779,7 +1781,7 @@ public class Reference {
      * Sets the relative part for relative references only.
      * 
      * @param relativePart
-     *            The relative part to set.
+     *                The relative part to set.
      */
     public void setRelativePart(String relativePart) {
         if (relativePart == null)
@@ -1807,7 +1809,7 @@ public class Reference {
      * Sets the scheme component.
      * 
      * @param scheme
-     *            The scheme component.
+     *                The scheme component.
      */
     public void setScheme(String scheme) {
         if (scheme != null) {
@@ -1842,7 +1844,7 @@ public class Reference {
      * Sets the scheme specific part.
      * 
      * @param schemeSpecificPart
-     *            The scheme specific part.
+     *                The scheme specific part.
      */
     public void setSchemeSpecificPart(String schemeSpecificPart) {
         if (schemeSpecificPart == null)
@@ -1881,7 +1883,7 @@ public class Reference {
      * replace any existing one.
      * 
      * @param segments
-     *            The segments of the hierarchical path.
+     *                The segments of the hierarchical path.
      */
     public void setSegments(List<String> segments) {
         StringBuilder sb = new StringBuilder();
@@ -1895,11 +1897,11 @@ public class Reference {
      * Sets the user info component for server based hierarchical identifiers.
      * 
      * @throws IllegalArgumentException
-     *             If the autority part has not been defined.
+     *                 If the autority part has not been defined.
      * 
      * @param userInfo
-     *            The user info component for server based hierarchical
-     *            identifiers.
+     *                The user info component for server based hierarchical
+     *                identifiers.
      */
     public void setUserInfo(String userInfo) {
         String authority = getAuthority();
@@ -1933,9 +1935,9 @@ public class Reference {
      * Returns the URI reference string.
      * 
      * @param query
-     *            Indicates if the query should be included;
+     *                Indicates if the query should be included;
      * @param fragment
-     *            Indicates if the fragment should be included;
+     *                Indicates if the fragment should be included;
      * @return The URI reference string.
      */
     public String toString(boolean query, boolean fragment) {

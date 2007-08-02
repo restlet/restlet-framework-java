@@ -55,7 +55,7 @@ public class HttpClientConverter extends HttpConverter {
      * Constructor.
      * 
      * @param context
-     *            The context to use.
+     *                The context to use.
      */
     public HttpClientConverter(Context context) {
         super(context);
@@ -65,9 +65,9 @@ public class HttpClientConverter extends HttpConverter {
      * Converts a low-level HTTP call into a high-level uniform call.
      * 
      * @param client
-     *            The HTTP client that will handle the call.
+     *                The HTTP client that will handle the call.
      * @param request
-     *            The high-level request.
+     *                The high-level request.
      * @return A new high-level uniform call.
      */
     public HttpClientCall toSpecific(HttpClientHelper client, Request request) {
@@ -87,11 +87,11 @@ public class HttpClientConverter extends HttpConverter {
      * to the client.
      * 
      * @param httpCall
-     *            The original HTTP call.
+     *                The original HTTP call.
      * @param request
-     *            The high-level request.
+     *                The high-level request.
      * @param response
-     *            The high-level response.
+     *                The high-level response.
      */
     public void commit(HttpClientCall httpCall, Request request,
             Response response) {
@@ -115,9 +115,9 @@ public class HttpClientConverter extends HttpConverter {
      * Adds the request headers of a uniform call to a HTTP client call.
      * 
      * @param httpCall
-     *            The HTTP client call.
+     *                The HTTP client call.
      * @param request
-     *            The high-level request.
+     *                The high-level request.
      */
     @SuppressWarnings("unchecked")
     protected void addRequestHeaders(HttpClientCall httpCall, Request request) {
@@ -155,7 +155,7 @@ public class HttpClientConverter extends HttpConverter {
 
             // Add the conditions
             Conditions condition = request.getConditions();
-            if (condition.getMatch() != null) {
+            if (!condition.getMatch().isEmpty()) {
                 StringBuilder value = new StringBuilder();
 
                 for (int i = 0; i < condition.getMatch().size(); i++) {
@@ -175,7 +175,7 @@ public class HttpClientConverter extends HttpConverter {
                         imsDate);
             }
 
-            if (condition.getNoneMatch() != null) {
+            if (!condition.getNoneMatch().isEmpty()) {
                 StringBuilder value = new StringBuilder();
 
                 for (int i = 0; i < condition.getNoneMatch().size(); i++) {
@@ -326,9 +326,9 @@ public class HttpClientConverter extends HttpConverter {
      * original uniform call.
      * 
      * @param httpCall
-     *            The handled HTTP client call.
+     *                The handled HTTP client call.
      * @param response
-     *            The high-level response to update.
+     *                The high-level response to update.
      */
     protected void readResponseHeaders(HttpClientCall httpCall,
             Response response) {

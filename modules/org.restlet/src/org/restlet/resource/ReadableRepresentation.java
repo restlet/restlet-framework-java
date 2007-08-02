@@ -38,7 +38,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
             .getLogger(ReadableRepresentation.class.getCanonicalName());
 
     /** The representation's input stream. */
-    private ReadableByteChannel readableChannel;
+    private ReadableByteChannel channel;
 
     /**
      * Constructor.
@@ -56,28 +56,38 @@ public class ReadableRepresentation extends ChannelRepresentation {
     /**
      * Constructor.
      * 
-     * @param readableChannel
+     * @param channel
      *                The representation's channel.
      * @param mediaType
      *                The representation's media type.
      * @param expectedSize
      *                The expected stream size.
      */
-    public ReadableRepresentation(ReadableByteChannel readableChannel,
+    public ReadableRepresentation(ReadableByteChannel channel,
             MediaType mediaType, long expectedSize) {
         super(mediaType);
         setSize(expectedSize);
-        this.readableChannel = readableChannel;
-        setAvailable(readableChannel != null);
+        this.channel = channel;
+        setAvailable(channel != null);
         setTransient(true);
     }
 
     @Override
     public synchronized ReadableByteChannel getChannel() throws IOException {
-        ReadableByteChannel result = this.readableChannel;
-        this.readableChannel = null;
+        ReadableByteChannel result = this.channel;
+        this.channel = null;
         setAvailable(false);
         return result;
+    }
+
+    /**
+     * Sets the readable channel.
+     * 
+     * @param channel
+     *                The readable channel.
+     */
+    public void setChannel(ReadableByteChannel channel) {
+        this.channel = channel;
     }
 
     /**
@@ -85,15 +95,15 @@ public class ReadableRepresentation extends ChannelRepresentation {
      */
     @Override
     public void release() {
-        if (this.readableChannel != null) {
+        if (this.channel != null) {
             try {
-                this.readableChannel.close();
+                this.channel.close();
             } catch (IOException e) {
                 logger.log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }
 
-            this.readableChannel = null;
+            this.channel = null;
         }
     }
 

@@ -154,7 +154,7 @@ public class DomRepresentation extends XmlRepresentation {
         if (this.xmlRepresentation != null) {
             this.xmlRepresentation.release();
         }
-        
+
         super.release();
     }
 

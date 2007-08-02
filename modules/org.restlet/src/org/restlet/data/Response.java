@@ -35,6 +35,43 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Response extends Message {
+    /**
+     * Private cookie setting series.
+     * 
+     * @author Jerome Louvel (contact@noelios.com)
+     */
+    private static class CookieSettingSeries extends Series<CookieSetting> {
+        /**
+         * Constructor.
+         */
+        public CookieSettingSeries() {
+            super();
+        }
+
+        /**
+         * Constructor.
+         * 
+         * @param delegate
+         *                The delegate list.
+         */
+        public CookieSettingSeries(List<CookieSetting> delegate) {
+            super(delegate);
+        }
+
+        @Override
+        public CookieSetting createEntry(String name, String value) {
+            return new CookieSetting(name, value);
+        }
+
+        @Override
+        public Series<CookieSetting> createSeries(List<CookieSetting> delegate) {
+            if (delegate != null)
+                return new CookieSettingSeries(delegate);
+            else
+                return new CookieSettingSeries();
+        }
+    }
+
     /** The set of methods allowed on the requested resource. */
     private Set<Method> allowedMethods;
 
@@ -63,7 +100,7 @@ public class Response extends Message {
      * Constructor.
      * 
      * @param request
-     *            The request associated to this response.
+     *                The request associated to this response.
      */
     public Response(Request request) {
         this.allowedMethods = null;
@@ -79,7 +116,8 @@ public class Response extends Message {
     /**
      * Returns the set of methods allowed on the requested resource. This
      * property only has to be updated when a status
-     * CLIENT_ERROR_METHOD_NOT_ALLOWED is set.
+     * CLIENT_ERROR_METHOD_NOT_ALLOWED is set. Creates a new instance if no one
+     * has been set.
      * 
      * @return The list of allowed methods.
      */
@@ -99,7 +137,8 @@ public class Response extends Message {
     }
 
     /**
-     * Returns the cookie settings provided by the server.
+     * Returns the cookie settings provided by the server. Creates a new
+     * instance if no one has been set.
      * 
      * @return The cookie settings provided by the server.
      */
@@ -112,7 +151,8 @@ public class Response extends Message {
     /**
      * Returns the set of selecting dimensions on which the response entity may
      * vary. If some server-side content negotiation is done, this set should be
-     * properly updated, other it can be left empty.
+     * properly updated, other it can be left empty. Creates a new instance if
+     * no one has been set.
      * 
      * @return The set of dimensions on which the response entity may vary.
      */
@@ -153,7 +193,8 @@ public class Response extends Message {
     }
 
     /**
-     * Returns the server-specific information.
+     * Returns the server-specific information. Creates a new instance if no one
+     * has been set.
      * 
      * @return The server-specific information.
      */
@@ -176,19 +217,8 @@ public class Response extends Message {
      * Permanently redirects the client to a target URI. The client is expected
      * to reuse the same method for the new request.
      * 
-     * @param targetUri
-     *            The target URI.
-     */
-    public void redirectPermanent(String targetUri) {
-        redirectPermanent(new Reference(targetUri));
-    }
-
-    /**
-     * Permanently redirects the client to a target URI. The client is expected
-     * to reuse the same method for the new request.
-     * 
      * @param targetRef
-     *            The target URI reference.
+     *                The target URI reference.
      */
     public void redirectPermanent(Reference targetRef) {
         setRedirectRef(targetRef);
@@ -196,17 +226,14 @@ public class Response extends Message {
     }
 
     /**
-     * Redirects the client to a different URI that SHOULD be retrieved using a
-     * GET method on that resource. This method exists primarily to allow the
-     * output of a POST-activated script to redirect the user agent to a
-     * selected resource. The new URI is not a substitute reference for the
-     * originally requested resource.
+     * Permanently redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
      * 
      * @param targetUri
-     *            The target URI.
+     *                The target URI.
      */
-    public void redirectSeeOther(String targetUri) {
-        redirectSeeOther(new Reference(targetUri));
+    public void redirectPermanent(String targetUri) {
+        redirectPermanent(new Reference(targetUri));
     }
 
     /**
@@ -217,7 +244,7 @@ public class Response extends Message {
      * originally requested resource.
      * 
      * @param targetRef
-     *            The target reference.
+     *                The target reference.
      */
     public void redirectSeeOther(Reference targetRef) {
         setRedirectRef(targetRef);
@@ -225,14 +252,17 @@ public class Response extends Message {
     }
 
     /**
-     * Temporarily redirects the client to a target URI. The client is expected
-     * to reuse the same method for the new request.
+     * Redirects the client to a different URI that SHOULD be retrieved using a
+     * GET method on that resource. This method exists primarily to allow the
+     * output of a POST-activated script to redirect the user agent to a
+     * selected resource. The new URI is not a substitute reference for the
+     * originally requested resource.
      * 
      * @param targetUri
-     *            The target URI.
+     *                The target URI.
      */
-    public void redirectTemporary(String targetUri) {
-        redirectTemporary(new Reference(targetUri));
+    public void redirectSeeOther(String targetUri) {
+        redirectSeeOther(new Reference(targetUri));
     }
 
     /**
@@ -240,7 +270,7 @@ public class Response extends Message {
      * to reuse the same method for the new request.
      * 
      * @param targetRef
-     *            The target reference.
+     *                The target reference.
      */
     public void redirectTemporary(Reference targetRef) {
         setRedirectRef(targetRef);
@@ -248,14 +278,56 @@ public class Response extends Message {
     }
 
     /**
+     * Temporarily redirects the client to a target URI. The client is expected
+     * to reuse the same method for the new request.
+     * 
+     * @param targetUri
+     *                The target URI.
+     */
+    public void redirectTemporary(String targetUri) {
+        redirectTemporary(new Reference(targetUri));
+    }
+
+    /**
+     * Sets the set of methods allowed on the requested resource.
+     * 
+     * @param allowedMethods
+     *                The set of methods allowed on the requested resource.
+     */
+    public void setAllowedMethods(Set<Method> allowedMethods) {
+        this.allowedMethods = allowedMethods;
+    }
+
+    /**
      * Sets the authentication request sent by an origin server to a client.
      * 
      * @param request
-     *            The authentication request sent by an origin server to a
-     *            client.
+     *                The authentication request sent by an origin server to a
+     *                client.
      */
     public void setChallengeRequest(ChallengeRequest request) {
         this.challengeRequest = request;
+    }
+
+    /**
+     * Sets the cookie settings provided by the server.
+     * 
+     * @param cookieSettings
+     *                The cookie settings provided by the server.
+     */
+    public void setCookieSettings(Series<CookieSetting> cookieSettings) {
+        this.cookieSettings = cookieSettings;
+    }
+
+    /**
+     * Sets the set of dimensions on which the response entity may vary.
+     * 
+     * @param dimensions
+     *                The set of dimensions on which the response entity may
+     *                vary.
+     */
+    public void setDimensions(Set<Dimension> dimensions) {
+        this.dimensions = dimensions;
     }
 
     /**
@@ -263,7 +335,7 @@ public class Response extends Message {
      * resource creations.
      * 
      * @param locationRef
-     *            The reference to set.
+     *                The reference to set.
      */
     public void setLocationRef(Reference locationRef) {
         this.locationRef = locationRef;
@@ -274,7 +346,7 @@ public class Response extends Message {
      * resource creations.
      * 
      * @param locationUri
-     *            The URI to set.
+     *                The URI to set.
      */
     public void setLocationRef(String locationUri) {
         Reference baseRef = (getRequest().getResourceRef() != null) ? getRequest()
@@ -288,7 +360,7 @@ public class Response extends Message {
      * resource creations.
      * 
      * @param locationRef
-     *            The reference to set.
+     *                The reference to set.
      * @deprecated Use the setLocationRef() method instead.
      */
     public void setRedirectRef(Reference locationRef) {
@@ -300,7 +372,7 @@ public class Response extends Message {
      * resource creations.
      * 
      * @param locationUri
-     *            The URI to set.
+     *                The URI to set.
      * @deprecated Use the setLocationRef() method instead.
      */
     public void setRedirectRef(String locationUri) {
@@ -311,17 +383,27 @@ public class Response extends Message {
      * Sets the associated request.
      * 
      * @param request
-     *            The associated request
+     *                The associated request
      */
     public void setRequest(Request request) {
         this.request = request;
     }
 
     /**
+     * Sets the server-specific information.
+     * 
+     * @param serverInfo
+     *                The server-specific information.
+     */
+    public void setServerInfo(ServerInfo serverInfo) {
+        this.serverInfo = serverInfo;
+    }
+
+    /**
      * Sets the status.
      * 
      * @param status
-     *            The status to set.
+     *                The status to set.
      */
     public void setStatus(Status status) {
         this.status = status;
@@ -331,49 +413,12 @@ public class Response extends Message {
      * Sets the status.
      * 
      * @param status
-     *            The status to set.
+     *                The status to set.
      * @param message
-     *            The status message.
+     *                The status message.
      */
     public void setStatus(Status status, String message) {
         setStatus(new Status(status, message));
-    }
-
-    /**
-     * Private cookie setting series.
-     * 
-     * @author Jerome Louvel (contact@noelios.com)
-     */
-    private static class CookieSettingSeries extends Series<CookieSetting> {
-        /**
-         * Constructor.
-         */
-        public CookieSettingSeries() {
-            super();
-        }
-
-        /**
-         * Constructor.
-         * 
-         * @param delegate
-         *            The delegate list.
-         */
-        public CookieSettingSeries(List<CookieSetting> delegate) {
-            super(delegate);
-        }
-
-        @Override
-        public CookieSetting createEntry(String name, String value) {
-            return new CookieSetting(name, value);
-        }
-
-        @Override
-        public Series<CookieSetting> createSeries(List<CookieSetting> delegate) {
-            if (delegate != null)
-                return new CookieSettingSeries(delegate);
-            else
-                return new CookieSettingSeries();
-        }
     }
 
 }

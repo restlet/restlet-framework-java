@@ -25,7 +25,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 
 /**
- * Base class exposing the uniform REST interface. 
+ * Base class exposing the uniform REST interface.
  * 
  * "The central feature that distinguishes the REST architectural style from
  * other network-based styles is its emphasis on a uniform interface between
@@ -44,19 +44,8 @@ public abstract class Uniform {
     /**
      * Deletes the identified resource.
      * 
-     * @param resourceUri
-     *            The URI of the resource to delete.
-     * @return The response.
-     */
-    public final Response delete(String resourceUri) {
-        return handle(new Request(Method.DELETE, resourceUri));
-    }
-
-    /**
-     * Deletes the identified resource.
-     * 
      * @param resourceRef
-     *            The reference of the resource to delete.
+     *                The reference of the resource to delete.
      * @return The response.
      */
     public final Response delete(Reference resourceRef) {
@@ -64,21 +53,21 @@ public abstract class Uniform {
     }
 
     /**
-     * Gets the identified resource.
+     * Deletes the identified resource.
      * 
      * @param resourceUri
-     *            The URI of the resource to get.
+     *                The URI of the resource to delete.
      * @return The response.
      */
-    public final Response get(String resourceUri) {
-        return handle(new Request(Method.GET, resourceUri));
+    public final Response delete(String resourceUri) {
+        return handle(new Request(Method.DELETE, resourceUri));
     }
 
     /**
      * Gets the identified resource.
      * 
      * @param resourceRef
-     *            The reference of the resource to get.
+     *                The reference of the resource to get.
      * @return The response.
      */
     public final Response get(Reference resourceRef) {
@@ -86,10 +75,21 @@ public abstract class Uniform {
     }
 
     /**
+     * Gets the identified resource.
+     * 
+     * @param resourceUri
+     *                The URI of the resource to get.
+     * @return The response.
+     */
+    public final Response get(String resourceUri) {
+        return handle(new Request(Method.GET, resourceUri));
+    }
+
+    /**
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @return The returned response.
      */
     public final Response handle(Request request) {
@@ -102,28 +102,17 @@ public abstract class Uniform {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public abstract void handle(Request request, Response response);
 
     /**
      * Gets the identified resource without its representation's content.
      * 
-     * @param resourceUri
-     *            The URI of the resource to get.
-     * @return The response.
-     */
-    public final Response head(String resourceUri) {
-        return handle(new Request(Method.HEAD, resourceUri));
-    }
-
-    /**
-     * Gets the identified resource without its representation's content.
-     * 
      * @param resourceRef
-     *            The reference of the resource to get.
+     *                The reference of the resource to get.
      * @return The response.
      */
     public final Response head(Reference resourceRef) {
@@ -131,21 +120,21 @@ public abstract class Uniform {
     }
 
     /**
-     * Gets the options for the identified resource.
+     * Gets the identified resource without its representation's content.
      * 
      * @param resourceUri
-     *            The URI of the resource to get.
+     *                The URI of the resource to get.
      * @return The response.
      */
-    public final Response options(String resourceUri) {
-        return handle(new Request(Method.OPTIONS, resourceUri));
+    public final Response head(String resourceUri) {
+        return handle(new Request(Method.HEAD, resourceUri));
     }
 
     /**
      * Gets the options for the identified resource.
      * 
      * @param resourceRef
-     *            The reference of the resource to get.
+     *                The reference of the resource to get.
      * @return The response.
      */
     public final Response options(Reference resourceRef) {
@@ -153,25 +142,23 @@ public abstract class Uniform {
     }
 
     /**
-     * Posts a representation to the identified resource.
+     * Gets the options for the identified resource.
      * 
      * @param resourceUri
-     *            The URI of the resource to post to.
-     * @param entity
-     *            The entity to post.
+     *                The URI of the resource to get.
      * @return The response.
      */
-    public final Response post(String resourceUri, Representation entity) {
-        return handle(new Request(Method.POST, resourceUri, entity));
+    public final Response options(String resourceUri) {
+        return handle(new Request(Method.OPTIONS, resourceUri));
     }
 
     /**
      * Posts a representation to the identified resource.
      * 
      * @param resourceRef
-     *            The reference of the resource to post to.
+     *                The reference of the resource to post to.
      * @param entity
-     *            The entity to post.
+     *                The entity to post.
      * @return The response.
      */
     public final Response post(Reference resourceRef, Representation entity) {
@@ -179,29 +166,42 @@ public abstract class Uniform {
     }
 
     /**
-     * Puts a representation in the identified resource.
+     * Posts a representation to the identified resource.
      * 
      * @param resourceUri
-     *            The URI of the resource to modify.
+     *                The URI of the resource to post to.
      * @param entity
-     *            The entity to put.
+     *                The entity to post.
      * @return The response.
      */
-    public final Response put(String resourceUri, Representation entity) {
-        return handle(new Request(Method.PUT, resourceUri, entity));
+    public final Response post(String resourceUri, Representation entity) {
+        return handle(new Request(Method.POST, resourceUri, entity));
     }
 
     /**
      * Puts a representation in the identified resource.
      * 
      * @param resourceRef
-     *            The reference of the resource to modify.
+     *                The reference of the resource to modify.
      * @param entity
-     *            The entity to put.
+     *                The entity to put.
      * @return The response.
      */
     public final Response put(Reference resourceRef, Representation entity) {
         return handle(new Request(Method.PUT, resourceRef, entity));
+    }
+
+    /**
+     * Puts a representation in the identified resource.
+     * 
+     * @param resourceUri
+     *                The URI of the resource to modify.
+     * @param entity
+     *                The entity to put.
+     * @return The response.
+     */
+    public final Response put(String resourceUri, Representation entity) {
+        return handle(new Request(Method.PUT, resourceUri, entity));
     }
 
 }

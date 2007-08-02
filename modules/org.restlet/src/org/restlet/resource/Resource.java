@@ -137,26 +137,6 @@ public class Resource {
     }
 
     /**
-     * Initialize the resource with its context. If you override this method,
-     * make sure that you don't forget to call super.init() first, otherwise
-     * your Resource won't behave properly.
-     * 
-     * @param context
-     *                The parent context.
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to return.
-     */
-    public void init(Context context, Request request, Response response) {
-        this.context = context;
-        this.negotiateContent = true;
-        this.request = request;
-        this.response = response;
-        this.variants = null;
-    }
-
-    /**
      * Indicates if it is allowed to delete the resource. The default value is
      * false.
      * 
@@ -330,10 +310,11 @@ public class Resource {
     }
 
     /**
-     * Returns the modifiable list of variants. A variant can be a purely
-     * descriptive representation, with no actual content that can be served. It
-     * can also be a full representation in case a resource has only one variant
-     * or if the initialization cost is very low.<br>
+     * Returns the modifiable list of variants. Creates a new instance if no one
+     * has been set. A variant can be a purely descriptive representation, with
+     * no actual content that can be served. It can also be a full
+     * representation in case a resource has only one variant or if the
+     * initialization cost is very low.<br>
      * <br>
      * Note that the order in which the variants are inserted in the list
      * matters. For example, if the client has no preference defined, or if the
@@ -342,7 +323,7 @@ public class Resource {
      * <br>
      * It is recommended to not override this method and to simply use it at
      * construction time to initialize the list of available variants.
-     * Overriding it may lead you to reconstruct the list for each call which is
+     * Overriding it may reconstruct the list for each call which can be
      * expensive.
      * 
      * @return The list of variants.
@@ -590,6 +571,26 @@ public class Resource {
     }
 
     /**
+     * Initialize the resource with its context. If you override this method,
+     * make sure that you don't forget to call super.init() first, otherwise
+     * your Resource won't behave properly.
+     * 
+     * @param context
+     *                The parent context.
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to return.
+     */
+    public void init(Context context, Request request, Response response) {
+        this.context = context;
+        this.negotiateContent = true;
+        this.request = request;
+        this.response = response;
+        this.variants = null;
+    }
+
+    /**
      * Invokes a method with the given arguments.
      * 
      * @param method
@@ -684,6 +685,16 @@ public class Resource {
      */
     public void setResponse(Response response) {
         this.response = response;
+    }
+
+    /**
+     * Sets the modifiable list of variants.
+     * 
+     * @param variants
+     *                The modifiable list of variants.
+     */
+    public void setVariants(List<Variant> variants) {
+        this.variants = variants;
     }
 
     /**

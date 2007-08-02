@@ -58,8 +58,8 @@ public final class Status extends Metadata {
      * server has a reasonable expectation that the request will take
      * significant time to complete.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_102">WEBDAV RFC - 10.1 102
-     *      Processing</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_102">WEBDAV
+     *      RFC - 10.1 102 Processing</a>
      */
     public static final Status INFO_PROCESSING = new Status(102);
 
@@ -139,8 +139,8 @@ public final class Status extends Metadata {
      * This response is used to inform the client that the HTTP response entity
      * contains a set of status codes generated during the method invocation.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_207">WEBDAV RFC - 10.2 207
-     *      Multi-Status</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_207">WEBDAV
+     *      RFC - 10.2 207 Multi-Status</a>
      */
     public static final Status SUCCESS_MULTI_STATUS = new Status(207);
 
@@ -410,8 +410,8 @@ public final class Status extends Metadata {
      * request entity (syntactically correct) but was unable to process the
      * contained instructions.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_422">WEBDAV RFC - 10.3 422
-     *      Unprocessable Entity</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_422">WEBDAV
+     *      RFC - 10.3 422 Unprocessable Entity</a>
      */
     public static final Status CLIENT_ERROR_UNPROCESSABLE_ENTITY = new Status(
             422);
@@ -420,8 +420,8 @@ public final class Status extends Metadata {
      * The source or destination resource of a method is locked (or temporarily
      * involved in another process).
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_423">WEBDAV RFC - 10.4 423
-     *      Locked</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_423">WEBDAV
+     *      RFC - 10.4 423 Locked</a>
      */
     public static final Status CLIENT_ERROR_LOCKED = new Status(423);
 
@@ -430,8 +430,8 @@ public final class Status extends Metadata {
      * resource because the requested action depended on another action and that
      * action failed.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_424">WEBDAV RFC - 10.5 424
-     *      Failed Dependency</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_424">WEBDAV
+     *      RFC - 10.5 424 Failed Dependency</a>
      */
     public static final Status CLIENT_ERROR_FAILED_DEPENDENCY = new Status(424);
 
@@ -503,8 +503,8 @@ public final class Status extends Metadata {
      * because the server is unable to store the representation needed to
      * successfully complete the request.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_507">WEBDAV RFC - 10.6 507
-     *      Insufficient Storage</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_507">WEBDAV
+     *      RFC - 10.6 507 Insufficient Storage</a>
      */
     public static final Status SERVER_ERROR_INSUFFICIENT_STORAGE = new Status(
             507);
@@ -531,7 +531,7 @@ public final class Status extends Metadata {
      * Indicates if the status is a client error status.
      * 
      * @param code
-     *            The code of the status.
+     *                The code of the status.
      * @return True if the status is a client error status.
      */
     public static boolean isClientError(int code) {
@@ -570,7 +570,7 @@ public final class Status extends Metadata {
      * Indicates if the status is a connector error status.
      * 
      * @param code
-     *            The code of the status.
+     *                The code of the status.
      * @return True if the status is a server error status.
      */
     public static boolean isConnectorError(int code) {
@@ -591,7 +591,7 @@ public final class Status extends Metadata {
      * Indicates if the status is an error (client or server) status.
      * 
      * @param code
-     *            The code of the status.
+     *                The code of the status.
      * @return True if the status is an error (client or server) status.
      */
     public static boolean isError(int code) {
@@ -603,7 +603,7 @@ public final class Status extends Metadata {
      * Indicates if the status is an information status.
      * 
      * @param code
-     *            The code of the status.
+     *                The code of the status.
      * @return True if the status is an information status.
      */
     public static boolean isInfo(int code) {
@@ -624,7 +624,7 @@ public final class Status extends Metadata {
      * Indicates if the status is a redirection status.
      * 
      * @param code
-     *            The code of the status.
+     *                The code of the status.
      * @return True if the status is a redirection status.
      */
     public static boolean isRedirection(int code) {
@@ -649,7 +649,7 @@ public final class Status extends Metadata {
      * Indicates if the status is a server error status.
      * 
      * @param code
-     *            The code of the status.
+     *                The code of the status.
      * @return True if the status is a server error status.
      */
     public static boolean isServerError(int code) {
@@ -674,7 +674,7 @@ public final class Status extends Metadata {
      * Indicates if the status is a success status.
      * 
      * @param code
-     *            The code of the status.
+     *                The code of the status.
      * @return True if the status is a success status.
      */
     public static boolean isSuccess(int code) {
@@ -701,7 +701,7 @@ public final class Status extends Metadata {
      * then it is returned, otherwise a new instance is created.
      * 
      * @param code
-     *            The code.
+     *                The code.
      * @return The associated status.
      */
     public static Status valueOf(int code) {
@@ -875,7 +875,7 @@ public final class Status extends Metadata {
      * Constructor.
      * 
      * @param code
-     *            The specification code.
+     *                The specification code.
      */
     public Status(int code) {
         this(code, null, null, null);
@@ -885,13 +885,13 @@ public final class Status extends Metadata {
      * Constructor.
      * 
      * @param code
-     *            The specification code.
+     *                The specification code.
      * @param name
-     *            The name.
+     *                The name.
      * @param description
-     *            The description.
+     *                The description.
      * @param uri
-     *            The URI of the specification describing the method.
+     *                The URI of the specification describing the method.
      */
     public Status(int code, final String name, final String description,
             final String uri) {
@@ -904,9 +904,9 @@ public final class Status extends Metadata {
      * Constructor.
      * 
      * @param status
-     *            The status to copy.
+     *                The status to copy.
      * @param description
-     *            The description to associate.
+     *                The description to associate.
      */
     public Status(final Status status, final String description) {
         this(status.getCode(), status.getName(), description, status.getUri());
@@ -916,7 +916,7 @@ public final class Status extends Metadata {
      * Indicates if the status is equal to a given one.
      * 
      * @param object
-     *            The object to compare to.
+     *                The object to compare to.
      * @return True if the status is equal to a given one.
      */
     @Override

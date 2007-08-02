@@ -35,8 +35,19 @@ public class NodeSet extends AbstractList<Node> implements List<Node>, NodeList 
     /** The wrapped node list. */
     private NodeList nodes;
 
+    /**
+     * Constructor.
+     * 
+     * @param nodes
+     *                The node list to wrap.
+     */
     public NodeSet(NodeList nodes) {
         this.nodes = nodes;
+    }
+
+    @Override
+    public Node get(int index) {
+        return this.nodes.item(index);
     }
 
     /**
@@ -50,11 +61,6 @@ public class NodeSet extends AbstractList<Node> implements List<Node>, NodeList 
      * {@inheritDoc org.w3c.dom.NodeList#item(int)}
      */
     public Node item(int index) {
-        return this.nodes.item(index);
-    }
-
-    @Override
-    public Node get(int index) {
         return this.nodes.item(index);
     }
 

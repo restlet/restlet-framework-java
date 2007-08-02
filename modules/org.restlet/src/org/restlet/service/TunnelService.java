@@ -96,11 +96,11 @@ public class TunnelService {
      * Constructor.
      * 
      * @param enabled
-     *            True if the service has been enabled.
+     *                True if the service has been enabled.
      * @param methodTunnel
-     *            Indicates if the method name can be tunneled.
+     *                Indicates if the method name can be tunneled.
      * @param preferencesTunnel
-     *            Indicates if the client preferences can be tunneled.
+     *                Indicates if the client preferences can be tunneled.
      */
     public TunnelService(boolean enabled, boolean methodTunnel,
             boolean preferencesTunnel) {
@@ -120,7 +120,7 @@ public class TunnelService {
      * restrict the usage of the tunnel service.
      * 
      * @param client
-     *            The client to test.
+     *                The client to test.
      * @return True if the request from a given client can be tunnelled.
      */
     public boolean allowClient(ClientInfo client) {
@@ -131,8 +131,19 @@ public class TunnelService {
      * Returns the character set parameter name.
      * 
      * @return The character set parameter name.
+     * @deprecated Use getCharacterSetParameter instead.
      */
+    @Deprecated
     public String getCharacterSetAttribute() {
+        return this.characterSetParameter;
+    }
+
+    /**
+     * Returns the character set parameter name.
+     * 
+     * @return The character set parameter name.
+     */
+    public String getCharacterSetParameter() {
         return this.characterSetParameter;
     }
 
@@ -140,8 +151,19 @@ public class TunnelService {
      * Returns the name of the parameter containing the accepted encoding.
      * 
      * @return The name of the parameter containing the accepted encoding.
+     * @deprecated Use getEncodingParameter instead.
      */
+    @Deprecated
     public String getEncodingAttribute() {
+        return this.encodingParameter;
+    }
+
+    /**
+     * Returns the name of the parameter containing the accepted encoding.
+     * 
+     * @return The name of the parameter containing the accepted encoding.
+     */
+    public String getEncodingParameter() {
         return this.encodingParameter;
     }
 
@@ -149,8 +171,19 @@ public class TunnelService {
      * Returns the name of the parameter containing the accepted language.
      * 
      * @return The name of the parameter containing the accepted language.
+     * @deprecated Use getLanguageParameter instead.
      */
+    @Deprecated
     public String getLanguageAttribute() {
+        return this.languageParameter;
+    }
+
+    /**
+     * Returns the name of the parameter containing the accepted language.
+     * 
+     * @return The name of the parameter containing the accepted language.
+     */
+    public String getLanguageParameter() {
         return this.languageParameter;
     }
 
@@ -158,8 +191,19 @@ public class TunnelService {
      * Returns the name of the parameter containing the accepted media type.
      * 
      * @return The name of the parameter containing the accepted media type.
+     * @deprecated Use getMediaTypeParameter instead.
      */
+    @Deprecated
     public String getMediaTypeAttribute() {
+        return this.mediaTypeParameter;
+    }
+
+    /**
+     * Returns the name of the parameter containing the accepted media type.
+     * 
+     * @return The name of the parameter containing the accepted media type.
+     */
+    public String getMediaTypeParameter() {
         return this.mediaTypeParameter;
     }
 
@@ -203,9 +247,21 @@ public class TunnelService {
      * Sets the character set parameter name.
      * 
      * @param parameterName
-     *            The character set parameter name.
+     *                The character set parameter name.
+     * @deprecated Use setCharacterSetParameter instead.
      */
+    @Deprecated
     public void setCharacterSetAttribute(String parameterName) {
+        this.characterSetParameter = parameterName;
+    }
+
+    /**
+     * Sets the character set parameter name.
+     * 
+     * @param parameterName
+     *                The character set parameter name.
+     */
+    public void setCharacterSetParameter(String parameterName) {
         this.characterSetParameter = parameterName;
     }
 
@@ -213,7 +269,7 @@ public class TunnelService {
      * Indicates if the service should be enabled.
      * 
      * @param enabled
-     *            True if the service should be enabled.
+     *                True if the service should be enabled.
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -223,9 +279,23 @@ public class TunnelService {
      * Sets the name of the parameter containing the accepted encoding.
      * 
      * @param parameterName
-     *            The name of the parameter containing the accepted encoding.
+     *                The name of the parameter containing the accepted
+     *                encoding.
+     * @deprecated Use setEncodingParameter instead.
      */
+    @Deprecated
     public void setEncodingAttribute(String parameterName) {
+        this.encodingParameter = parameterName;
+    }
+
+    /**
+     * Sets the name of the parameter containing the accepted encoding.
+     * 
+     * @param parameterName
+     *                The name of the parameter containing the accepted
+     *                encoding.
+     */
+    public void setEncodingParameter(String parameterName) {
         this.encodingParameter = parameterName;
     }
 
@@ -233,9 +303,23 @@ public class TunnelService {
      * Sets the name of the parameter containing the accepted language.
      * 
      * @param parameterName
-     *            The name of the parameter containing the accepted language.
+     *                The name of the parameter containing the accepted
+     *                language.
+     * @deprecated Use setLanguageParameter instead.
      */
+    @Deprecated
     public void setLanguageAttribute(String parameterName) {
+        this.languageParameter = parameterName;
+    }
+
+    /**
+     * Sets the name of the parameter containing the accepted language.
+     * 
+     * @param parameterName
+     *                The name of the parameter containing the accepted
+     *                language.
+     */
+    public void setLanguageParameter(String parameterName) {
         this.languageParameter = parameterName;
     }
 
@@ -243,9 +327,23 @@ public class TunnelService {
      * Sets the name of the parameter containing the accepted media type.
      * 
      * @param parameterName
-     *            The name of the parameter containing the accepted media type.
+     *                The name of the parameter containing the accepted media
+     *                type.
+     * @deprecated Use setMediaTypeParameter instead.
      */
+    @Deprecated
     public void setMediaTypeAttribute(String parameterName) {
+        this.mediaTypeParameter = parameterName;
+    }
+
+    /**
+     * Sets the name of the parameter containing the accepted media type.
+     * 
+     * @param parameterName
+     *                The name of the parameter containing the accepted media
+     *                type.
+     */
+    public void setMediaTypeParameter(String parameterName) {
         this.mediaTypeParameter = parameterName;
     }
 
@@ -253,7 +351,7 @@ public class TunnelService {
      * Sets the method parameter name.
      * 
      * @param parameterName
-     *            The method parameter name.
+     *                The method parameter name.
      */
     public void setMethodParameter(String parameterName) {
         this.methodParameter = parameterName;
@@ -263,7 +361,7 @@ public class TunnelService {
      * Indicates if the method name can be tunneled.
      * 
      * @param methodTunnel
-     *            True if the method name can be tunneled.
+     *                True if the method name can be tunneled.
      */
     public void setMethodTunnel(boolean methodTunnel) {
         this.methodTunnel = methodTunnel;
@@ -273,7 +371,7 @@ public class TunnelService {
      * Indicates if the client preferences can be tunneled.
      * 
      * @param preferencesTunnel
-     *            True if the client preferences can be tunneled.
+     *                True if the client preferences can be tunneled.
      */
     public void setPreferencesTunnel(boolean preferencesTunnel) {
         this.preferencesTunnel = preferencesTunnel;
