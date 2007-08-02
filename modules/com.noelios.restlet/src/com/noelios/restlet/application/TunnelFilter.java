@@ -46,7 +46,7 @@ public class TunnelFilter extends Filter {
      * Constructor.
      * 
      * @param application
-     *            The parent application.
+     *                The parent application.
      */
     public TunnelFilter(Application application) {
         super(application.getContext());
@@ -67,9 +67,9 @@ public class TunnelFilter extends Filter {
      * by default.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void beforeHandle(Request request, Response response) {
         super.beforeHandle(request, response);
@@ -96,13 +96,13 @@ public class TunnelFilter extends Filter {
                 && getApplication().getTunnelService().isPreferencesTunnel()) {
             // Extract the header values
             String acceptCharset = query.getFirstValue(getApplication()
-                    .getTunnelService().getCharacterSetAttribute());
+                    .getTunnelService().getCharacterSetParameter());
             String acceptEncoding = query.getFirstValue(getApplication()
-                    .getTunnelService().getEncodingAttribute());
+                    .getTunnelService().getEncodingParameter());
             String acceptLanguage = query.getFirstValue(getApplication()
-                    .getTunnelService().getLanguageAttribute());
+                    .getTunnelService().getLanguageParameter());
             String acceptMediaType = query.getFirstValue(getApplication()
-                    .getTunnelService().getMediaTypeAttribute());
+                    .getTunnelService().getMediaTypeParameter());
 
             // Parse the headers and update the call preferences
             Metadata metadata = null;
@@ -118,7 +118,7 @@ public class TunnelFilter extends Filter {
 
                     // The parameter is removed from the query
                     query.removeFirst(getApplication().getTunnelService()
-                            .getCharacterSetAttribute());
+                            .getCharacterSetParameter());
                     queryModified = true;
                 }
             }
@@ -134,7 +134,7 @@ public class TunnelFilter extends Filter {
 
                     // The parameter is removed from the query
                     query.removeFirst(getApplication().getTunnelService()
-                            .getEncodingAttribute());
+                            .getEncodingParameter());
                     queryModified = true;
                 }
             }
@@ -150,7 +150,7 @@ public class TunnelFilter extends Filter {
 
                     // The parameter is removed from the query
                     query.removeFirst(getApplication().getTunnelService()
-                            .getLanguageAttribute());
+                            .getLanguageParameter());
                     queryModified = true;
                 }
             }
@@ -166,7 +166,7 @@ public class TunnelFilter extends Filter {
 
                     // The parameter is removed from the query
                     query.removeFirst(getApplication().getTunnelService()
-                            .getMediaTypeAttribute());
+                            .getMediaTypeParameter());
                     queryModified = true;
                 }
             }
