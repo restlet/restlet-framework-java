@@ -127,7 +127,7 @@ public class MetadataService {
      *                The metadata to map.
      */
     public void addExtension(String extension, Metadata metadata) {
-        this.mappings.put(extension, metadata);
+        getMappings().put(extension, metadata);
     }
 
     /**

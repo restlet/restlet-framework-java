@@ -425,7 +425,7 @@ public class Resource {
             selectedRepresentation = getResponse().getEntity();
         } else {
             if (variants.size() == 1) {
-                getResponse().setEntity(variants.get(0));
+                getResponse().setEntity(getRepresentation(variants.get(0)));
                 selectedRepresentation = getResponse().getEntity();
             } else {
                 ReferenceList variantRefs = new ReferenceList();
@@ -452,19 +452,20 @@ public class Resource {
             }
         }
 
-        // The given representation (even if null) must meet the request
-        // conditions
-        // (if any).
-        if (getRequest().getConditions().hasSome()) {
-            Status status = getRequest().getConditions().getStatus(
-                    getRequest().getMethod(), selectedRepresentation);
+        if (selectedRepresentation == null) {
+            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        } else {
+            // The given representation (even if null) must meet the request
+            // conditions (if any).
+            if (getRequest().getConditions().hasSome()) {
+                Status status = getRequest().getConditions().getStatus(
+                        getRequest().getMethod(), selectedRepresentation);
 
-            if (status != null) {
-                getResponse().setStatus(status);
-                getResponse().setEntity(null);
-
+                if (status != null) {
+                    getResponse().setStatus(status);
+                    getResponse().setEntity(null);
+                }
             }
-
         }
     }
 

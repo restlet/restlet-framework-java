@@ -31,6 +31,7 @@ public class RestartTestCase extends TestCase {
         connector.start();
         System.out.println("done");
         Thread.sleep(waitTime);
+        connector.stop();
     }
 
 }

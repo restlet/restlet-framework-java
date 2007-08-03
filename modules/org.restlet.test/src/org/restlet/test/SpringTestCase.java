@@ -41,7 +41,8 @@ public class SpringTestCase extends TestCase {
         // Start the Restlet component
         Component component = (Component) factory.getBean("component");
         component.start();
-        Thread.currentThread().join();
+        Thread.sleep(500);
+        component.stop();
     }
 
 }

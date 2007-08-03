@@ -41,7 +41,7 @@ import org.restlet.util.Variable;
  * extractions can be defined, based on the query string of the resource
  * reference, on the request form (ex: posted from a browser) or on cookies.
  * 
- * @see {@link org.restlet.util.Template}
+ * @see org.restlet.util.Template
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Route extends Filter {

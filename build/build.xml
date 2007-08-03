@@ -61,6 +61,9 @@
       <pathelement path="${mod}/${mod-ri-id}/src" />
 
       <pathelement path="${classes}/${mod-api-test-id}" />
+      <pathelement path="${mod}/${mod-api-test-id}/src" />
+
+      <pathelement path="${classes}/${mod-example-id}" />
 
       <path refid="mod-ri-test-path" />
       <pathelement path="${classes}/${mod-ri-test-id}" />
