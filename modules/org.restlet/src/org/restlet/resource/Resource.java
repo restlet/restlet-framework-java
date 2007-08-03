@@ -453,7 +453,13 @@ public class Resource {
         }
 
         if (selectedRepresentation == null) {
-            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            if ((getResponse().getStatus() == null)
+                    || getResponse().getStatus().isSuccess()) {
+                getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            } else {
+                // Keep the current status as the developer might prefer a
+                // special status like 'method not authorized'.
+            }
         } else {
             // The given representation (even if null) must meet the request
             // conditions (if any).
