@@ -6,7 +6,7 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - Overrided the StringRepresentation#setCharacterSet method, in order to refresh the 
+ - Overridden the StringRepresentation#setCharacterSet method, in order to refresh the 
    size of the representation. Reported by Calvin Cheng.
  - Fixed issue in the selection of connectors. The last connector in the classpath for
    a given protocol was selected instead of the first one, leading to counter-intuitive 
