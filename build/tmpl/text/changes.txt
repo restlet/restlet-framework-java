@@ -71,7 +71,6 @@ Changes log
  - Added setters and getters for all the properties of all the classes in the API, including 
    the collection properties. Clarified the Javadocs for the default collection creations.
    This will greatly facilitate the usage of the API in IoC containers like Spring.
- - Added a commodity setTargetClass() method on SpringFinder, accepting strings.
  - Renamed "URIResolver" property to "uriResolver" in TransformRepresentation.
  - Renamed "*Attribute" properties to "*Parameter" in TunnelService.
  
