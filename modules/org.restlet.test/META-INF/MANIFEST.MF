@@ -12,4 +12,5 @@ Require-Bundle: com.noelios.restlet,
  org.restlet.ext.freemarker,
  org.restlet.ext.velocity,
  org.restlet.ext.spring,
- org.restlet.example
+ org.restlet.example,
+ org.restlet.ext.wadl

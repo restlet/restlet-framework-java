@@ -75,7 +75,9 @@ Changes log
  - Renamed "*Attribute" properties to "*Parameter" in TunnelService.
  - If Resource.getRepresentation(Variant) returns 'null', the Resource.handleGet() method now
    returns a NOT_FOUND (404) status. Suggested by John D. Mitchell. 
- 
+ - Added WADL extension with a WadlComponent capable of automatically wiring a Restlet component,
+   application and resource classes. Suggested by Avi Flax. 
+    
 [Misc]
  - Removed AsyncWeb connector, to be replaced by a custom MINA based one.
  - Removed Jetty 5 connector from the code base. Jetty 6 connector is stable enough now.
