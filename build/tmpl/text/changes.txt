@@ -12,6 +12,7 @@ Changes log
 [Enhancements] 
  - Clarified the Javadocs for the Variant's "identifier" property. Reported by Joe Holloway.
  - Clarified the Javadocs for the Resource.getVariants() method. Suggested by John D. Mitchell.
+ - An exception is not thrown anymore when the Etag can not be successfully parsed.
 
 1.0.4 (2007-07-25)
 [Bugs fixed]
