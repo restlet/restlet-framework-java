@@ -135,7 +135,9 @@ public class ServletConverter extends HttpServerConverter {
     }
 
     /**
-     * Converts a low-level Servlet call into a high-level Restlet request.
+     * Converts a low-level Servlet call into a high-level Restlet request. In
+     * addition to the parent HttpServerConverter class, it also copies the
+     * Servlet's request attributes into the Restlet's request attributes map.
      * 
      * @param servletCall
      *                The low-level Servlet call.
