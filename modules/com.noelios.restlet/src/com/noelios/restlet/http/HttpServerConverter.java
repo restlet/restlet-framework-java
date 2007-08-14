@@ -110,7 +110,8 @@ public class HttpServerConverter extends HttpConverter {
                     .getResponseHeaders();
 
             if (response.getStatus().equals(
-                    Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)) {
+                    Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
+                    || Method.OPTIONS.equals(response.getRequest().getMethod())) {
                 // Format the "Allow" header
                 StringBuilder sb = new StringBuilder();
                 boolean first = true;

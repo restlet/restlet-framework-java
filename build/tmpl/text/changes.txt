@@ -13,6 +13,8 @@ Changes log
  - Clarified the Javadocs for the Variant's "identifier" property. Reported by Joe Holloway.
  - Clarified the Javadocs for the Resource.getVariants() method. Suggested by John D. Mitchell.
  - An exception is not thrown anymore when the Etag can not be successfully parsed.
+ - The OPTIONS method now always returns an "Allow" HTTP header to more closely match the HTTP 1.1
+   and WebDAV specifications. Suggested by Rob Heittman.
 
 1.0.4 (2007-07-25)
 [Bugs fixed]
