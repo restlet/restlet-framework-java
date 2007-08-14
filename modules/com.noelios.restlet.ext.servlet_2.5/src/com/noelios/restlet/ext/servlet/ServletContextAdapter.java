@@ -22,6 +22,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
 import org.restlet.Context;
+import org.restlet.Uniform;
 
 /**
  * Context allowing access to the component's connectors, reusing the Servlet's
@@ -34,15 +35,35 @@ public class ServletContextAdapter extends Context {
     /** The Servlet context. */
     private ServletContext servletContext;
 
+    /** The parent context. */
+    private Context parentContext;
+
     /**
      * Constructor.
      * 
      * @param servlet
-     *                The parent Servlet.
+     *            The parent Servlet.
+     * @deprecated Use this constructor ServletContextAdapter(Servlet, Context)
+     *             instead.
      */
+    @Deprecated
     public ServletContextAdapter(Servlet servlet) {
         super(new ServletLogger(servlet.getServletConfig().getServletContext()));
         this.servletContext = servlet.getServletConfig().getServletContext();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param servlet
+     *            The parent Servlet.
+     * @param parentContext
+     *            The parent Context.
+     */
+    public ServletContextAdapter(Servlet servlet, Context parentContext) {
+        super(new ServletLogger(servlet.getServletConfig().getServletContext()));
+        this.servletContext = servlet.getServletConfig().getServletContext();
+        this.parentContext = parentContext;
     }
 
     /**
@@ -52,6 +73,18 @@ public class ServletContextAdapter extends Context {
      */
     public ServletContext getServletContext() {
         return this.servletContext;
+    }
+
+    /**
+     * Return a call dispatcher
+     */
+    @Override
+    public Uniform getDispatcher() {
+        if (parentContext != null) {
+            return parentContext.getDispatcher();
+        }
+
+        return null;
     }
 
 }
