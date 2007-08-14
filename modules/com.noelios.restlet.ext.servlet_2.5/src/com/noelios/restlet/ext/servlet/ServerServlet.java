@@ -241,6 +241,15 @@ public class ServerServlet extends HttpServlet {
     }
 
     /**
+     * Creates the single Component used by this Servlet.
+     * 
+     * @return The newly created Component or null if unable to create
+     */
+    public Component createComponent() {
+        return new Component();
+    }
+
+    /**
      * Creates the associated HTTP server handling calls.
      * 
      * @param request
@@ -333,7 +342,7 @@ public class ServerServlet extends HttpServlet {
                         componentAttributeName);
 
                 if (result == null) {
-                    result = new Component();
+                    result = createComponent();
                     getServletContext().setAttribute(componentAttributeName,
                             result);
                 }
