@@ -51,7 +51,7 @@ public class HttpServerConverter extends HttpConverter {
      * Constructor.
      * 
      * @param context
-     *            The client context.
+     *                The client context.
      */
     public HttpServerConverter(Context context) {
         super(context);
@@ -61,7 +61,7 @@ public class HttpServerConverter extends HttpConverter {
      * Converts a low-level HTTP call into a high-level uniform request.
      * 
      * @param httpCall
-     *            The low-level HTTP call.
+     *                The low-level HTTP call.
      * @return A new high-level uniform request.
      */
     public HttpRequest toRequest(HttpServerCall httpCall) {
@@ -97,7 +97,7 @@ public class HttpServerConverter extends HttpConverter {
      * then asks the "htppCall" to send the response back to the client.
      * 
      * @param response
-     *            The high-level response.
+     *                The high-level response.
      */
     public void commit(HttpResponse response) {
         try {
@@ -119,7 +119,7 @@ public class HttpServerConverter extends HttpConverter {
      * Adds the response headers for the handled uniform call.
      * 
      * @param response
-     *            The response returned.
+     *                The response returned.
      */
     @SuppressWarnings("unchecked")
     protected void addResponseHeaders(HttpResponse response) {
@@ -129,7 +129,8 @@ public class HttpServerConverter extends HttpConverter {
                     .getResponseHeaders();
 
             if (response.getStatus().equals(
-                    Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)) {
+                    Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
+                    || Method.OPTIONS.equals(response.getRequest().getMethod())) {
                 // Format the "Allow" header
                 StringBuilder sb = new StringBuilder();
                 boolean first = true;
