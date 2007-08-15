@@ -127,7 +127,6 @@ public class FileClientHelper extends LocalClientHelper {
                 // 2- looking for resources with the same base name
                 File[] files = file.getParentFile().listFiles();
                 ReferenceList rl = new ReferenceList(files.length);
-                rl.setIdentifier(request.getResourceRef());
 
                 for (File entry : files) {
                     if (entry.getName().startsWith(baseName)) {
@@ -141,7 +140,6 @@ public class FileClientHelper extends LocalClientHelper {
                         // Return the directory listing
                         File[] files = file.listFiles();
                         ReferenceList rl = new ReferenceList(files.length);
-                        rl.setIdentifier(request.getResourceRef());
 
                         for (File entry : files) {
                             rl.add(LocalReference.createFileReference(entry));
@@ -160,6 +158,7 @@ public class FileClientHelper extends LocalClientHelper {
             if (output == null) {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
+                output.setIdentifier(request.getResourceRef());
                 response.setEntity(output);
                 response.setStatus(Status.SUCCESS_OK);
             }

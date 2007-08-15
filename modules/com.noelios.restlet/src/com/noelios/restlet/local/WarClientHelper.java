@@ -153,6 +153,7 @@ public class WarClientHelper extends FileClientHelper {
                     // Return the file content
                     Representation output = new InputRepresentation(war
                             .getInputStream(entry), null);
+                    output.setIdentifier(request.getResourceRef());
                     updateMetadata(getMetadataService(request), path, output);
                     response.setEntity(output);
                     response.setStatus(Status.SUCCESS_OK);

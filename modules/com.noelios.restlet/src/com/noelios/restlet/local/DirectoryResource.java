@@ -57,7 +57,7 @@ public class DirectoryResource extends Resource {
      * Returns the set of extensions contained in a given directory entry name.
      * 
      * @param entryName
-     *                The directory entry name.
+     *            The directory entry name.
      * @return The set of extensions.
      */
     public static Set<String> getExtensions(String entryName) {
@@ -118,9 +118,9 @@ public class DirectoryResource extends Resource {
      * Constructor.
      * 
      * @param directory
-     *                The parent directory handler.
+     *            The parent directory handler.
      * @param request
-     *                The handled call.
+     *            The handled call.
      * @throws IOException
      */
     public DirectoryResource(Directory directory, Request request,
@@ -313,7 +313,7 @@ public class DirectoryResource extends Resource {
      * Puts a variant representation in the resource.
      * 
      * @param variant
-     *                A new or updated variant representation.
+     *            A new or updated variant representation.
      */
     public void put(Representation variant) {
         Status status;
@@ -554,52 +554,62 @@ public class DirectoryResource extends Resource {
         ReferenceList result = new ReferenceList(0);
         try {
             Request contextCall = new Request(Method.GET, this.targetUri);
+            // Ask for the list of all variants of this resource
             contextCall.getClientInfo().getAcceptedMediaTypes().add(
                     new Preference<MediaType>(MediaType.TEXT_URI_LIST));
             Response contextResponse = getDispatcher().handle(contextCall);
             if (contextResponse.getEntity() != null) {
-                ReferenceList listVariants = new ReferenceList(contextResponse
-                        .getEntity());
-                Set<String> extensions = null;
-                String entryUri;
-                String fullEntryName;
-                String baseEntryName;
-                int lastSlashIndex;
-                int firstDotIndex;
-                for (Reference ref : listVariants) {
-                    entryUri = ref.toString();
-                    lastSlashIndex = entryUri.lastIndexOf('/');
-                    fullEntryName = (lastSlashIndex == -1) ? entryUri
-                            : entryUri.substring(lastSlashIndex + 1);
-                    baseEntryName = fullEntryName;
+                // Test if the given response is the list of all variants for
+                // this resource
+                if (MediaType.TEXT_URI_LIST.equals(contextResponse.getEntity()
+                        .getMediaType())) {
+                    ReferenceList listVariants = new ReferenceList(
+                            contextResponse.getEntity());
+                    Set<String> extensions = null;
+                    String entryUri;
+                    String fullEntryName;
+                    String baseEntryName;
+                    int lastSlashIndex;
+                    int firstDotIndex;
+                    for (Reference ref : listVariants) {
+                        entryUri = ref.toString();
+                        lastSlashIndex = entryUri.lastIndexOf('/');
+                        fullEntryName = (lastSlashIndex == -1) ? entryUri
+                                : entryUri.substring(lastSlashIndex + 1);
+                        baseEntryName = fullEntryName;
 
-                    // Remove the extensions from the base name
-                    firstDotIndex = fullEntryName.indexOf('.');
-                    if (firstDotIndex != -1) {
-                        baseEntryName = fullEntryName.substring(0,
-                                firstDotIndex);
-                    }
-
-                    // Check if the current file is a valid variant
-                    if (baseEntryName.equals(this.baseName)) {
-                        boolean validVariant = true;
-
-                        // Verify that the extensions are compatible
-                        extensions = getExtensions(fullEntryName);
-                        validVariant = (((extensions == null) && (this.baseExtensions == null))
-                                || (this.baseExtensions == null) || extensions
-                                .containsAll(this.baseExtensions));
-
-                        if (validVariant && (this.baseExtensions != null)
-                                && this.baseExtensions.containsAll(extensions)) {
-                            // The unique reference has been found.
-                            uniqueReference = ref;
+                        // Remove the extensions from the base name
+                        firstDotIndex = fullEntryName.indexOf('.');
+                        if (firstDotIndex != -1) {
+                            baseEntryName = fullEntryName.substring(0,
+                                    firstDotIndex);
                         }
 
-                        if (validVariant) {
-                            result.add(ref);
+                        // Check if the current file is a valid variant
+                        if (baseEntryName.equals(this.baseName)) {
+                            boolean validVariant = true;
+
+                            // Verify that the extensions are compatible
+                            extensions = getExtensions(fullEntryName);
+                            validVariant = (((extensions == null) && (this.baseExtensions == null))
+                                    || (this.baseExtensions == null) || extensions
+                                    .containsAll(this.baseExtensions));
+
+                            if (validVariant
+                                    && (this.baseExtensions != null)
+                                    && this.baseExtensions
+                                            .containsAll(extensions)) {
+                                // The unique reference has been found.
+                                uniqueReference = ref;
+                            }
+
+                            if (validVariant) {
+                                result.add(ref);
+                            }
                         }
                     }
+                } else {
+                    result.add(contextResponse.getEntity().getIdentifier());
                 }
             }
         } catch (IOException ioe) {
@@ -614,7 +624,7 @@ public class DirectoryResource extends Resource {
      * Sets the context's target URI (file, clap URI).
      * 
      * @param targetUri
-     *                The context's target URI.
+     *            The context's target URI.
      */
     public void setTargetUri(String targetUri) {
         this.targetUri = targetUri;
