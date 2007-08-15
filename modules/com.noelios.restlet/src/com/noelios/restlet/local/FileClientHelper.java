@@ -121,13 +121,13 @@ public class FileClientHelper extends LocalClientHelper {
                 found = pref.getMetadata().equals(MediaType.TEXT_URI_LIST);
             }
             if (found) {
-                // 1- set up base name as the longest part of the name without
+                // Try to list all variants of this resource
+            	// 1- set up base name as the longest part of the name without
                 // known extensions (beginning from the left)
                 String baseName = getBaseName(file, metadataService);
                 // 2- looking for resources with the same base name
                 File[] files = file.getParentFile().listFiles();
                 ReferenceList rl = new ReferenceList(files.length);
-                rl.setIdentifier(request.getResourceRef());
 
                 for (File entry : files) {
                     if (entry.getName().startsWith(baseName)) {
@@ -160,7 +160,8 @@ public class FileClientHelper extends LocalClientHelper {
             if (output == null) {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
-                response.setEntity(output);
+                output.setIdentifier(request.getResourceRef());
+            	response.setEntity(output);
                 response.setStatus(Status.SUCCESS_OK);
             }
         } else if (request.getMethod().equals(Method.PUT)) {

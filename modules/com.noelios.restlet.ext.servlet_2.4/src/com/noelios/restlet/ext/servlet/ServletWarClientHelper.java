@@ -18,6 +18,7 @@
 
 package com.noelios.restlet.ext.servlet;
 
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -97,16 +98,22 @@ public class ServletWarClientHelper extends WarClientHelper {
 			} else {
 				// Return the entry content
 				MetadataService metadataService = getMetadataService(request);
-				output = new InputRepresentation(getServletContext()
-						.getResourceAsStream(basePath), metadataService
-						.getDefaultMediaType());
-				updateMetadata(metadataService, entry, output);
+				InputStream ris = getServletContext().getResourceAsStream(
+						basePath);
+				if (ris != null) {
+					output = new InputRepresentation(ris, metadataService
+							.getDefaultMediaType());
+					output.setIdentifier(request.getResourceRef());
+					updateMetadata(metadataService, entry, output);
 
-				// See if the Servlet context specified a particular Mime Type
-				String mediaType = getServletContext().getMimeType(basePath);
+					// See if the Servlet context specified a particular Mime
+					// Type
+					String mediaType = getServletContext()
+							.getMimeType(basePath);
 
-				if (mediaType != null) {
-					output.setMediaType(new MediaType(mediaType));
+					if (mediaType != null) {
+						output.setMediaType(new MediaType(mediaType));
+					}
 				}
 			}
 

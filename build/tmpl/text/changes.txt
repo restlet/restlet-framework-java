@@ -8,6 +8,8 @@ Changes log
 [Bugs fixed]
  - Potential NPE in REST book example (ch7, UserResource). Reported by Marc Portier.
  - Potential NPE during KeyStore initialization for Simple HTTPS connector. Report by Quintin May.
+ - Transmit the Component dispatcher to the ServletContextAdapter. Reported by Mike Moran.
+ - Fixed bug in the DirectoryResource when looking for variant references. Reported by Mike Moran.
  
 [Enhancements] 
  - Clarified the Javadocs for the Variant's "identifier" property. Reported by Joe Holloway.
