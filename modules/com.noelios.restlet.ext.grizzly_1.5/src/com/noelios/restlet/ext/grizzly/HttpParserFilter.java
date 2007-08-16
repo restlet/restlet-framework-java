@@ -25,7 +25,6 @@ import java.nio.channels.SelectionKey;
 import com.sun.grizzly.Context;
 import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.util.WorkerThread;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * HTTP parser filter for Grizzly.
@@ -37,14 +36,11 @@ public class HttpParserFilter implements ProtocolFilter {
     /** The parent HTTP server helper. */
     private GrizzlyServerHelper helper;
 
-    /** The pool of server calls. */
-    private ConcurrentLinkedQueue<GrizzlyServerCall> serverCalls = new ConcurrentLinkedQueue<GrizzlyServerCall>();
-
     /**
      * Constructor.
      * 
      * @param helper
-     *            The parent HTTP server helper.
+     *                The parent HTTP server helper.
      */
     public HttpParserFilter(GrizzlyServerHelper helper) {
         this.helper = helper;
@@ -54,7 +50,7 @@ public class HttpParserFilter implements ProtocolFilter {
      * Execute a call.
      * 
      * @param context
-     *            The call's context.
+     *                The call's context.
      */
     public boolean execute(Context context) throws IOException {
         // Create the HTTP call
@@ -62,14 +58,9 @@ public class HttpParserFilter implements ProtocolFilter {
                 .getByteBuffer();
         byteBuffer.flip();
         SelectionKey key = context.getSelectionKey();
-        GrizzlyServerCall serverCall = serverCalls.poll();
-        if (serverCall == null) {
-            serverCall = new GrizzlyServerCall(this.helper.getServer(),
-                    byteBuffer, key, (helper instanceof HttpsServerHelper));
-        } else {
-            serverCall.init(byteBuffer, key,
-                    (helper instanceof HttpsServerHelper));
-        }
+        GrizzlyServerCall serverCall = new GrizzlyServerCall(this.helper
+                .getServer(), byteBuffer, key,
+                (helper instanceof HttpsServerHelper));
 
         boolean keepAlive = false;
 
@@ -87,7 +78,6 @@ public class HttpParserFilter implements ProtocolFilter {
 
         // Clean up
         byteBuffer.clear();
-        serverCalls.offer(serverCall.recycle());
 
         // This is the last filter
         return true;

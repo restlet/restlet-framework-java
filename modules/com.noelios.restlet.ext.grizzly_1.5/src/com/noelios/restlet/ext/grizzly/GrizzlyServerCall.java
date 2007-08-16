@@ -54,38 +54,24 @@ public class GrizzlyServerCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
-     *            The parent server.
+     *                The parent server.
      * @param byteBuffer
-     *            The NIO byte buffer.
+     *                The NIO byte buffer.
      * @param key
-     *            The NIO selection key.
+     *                The NIO selection key.
      * @param confidential
-     *            Indicates if the call is confidential.
+     *                Indicates if the call is confidential.
      */
     public GrizzlyServerCall(Server server, ByteBuffer byteBuffer,
             SelectionKey key, boolean confidential) {
         super(server);
-        init(byteBuffer, key, confidential);
-    }
-
-    /**
-     * Initialize the call.
-     * 
-     * @param byteBuffer
-     *            The NIO byte buffer.
-     * @param key
-     *            The NIO selection key.
-     * @param confidential
-     *            Indicates if the call is confidential.
-     */
-    public void init(ByteBuffer byteBuffer, SelectionKey key,
-            boolean confidential) {
         setConfidential(confidential);
 
         try {
-            headStream.setSelectionKey(key);
-            headStream.setByteBuffer(byteBuffer);
+            this.headStream.setSelectionKey(key);
+            this.headStream.setByteBuffer(byteBuffer);
             this.socketChannel = (SocketChannel) key.channel();
+            this.getRequestHeaders().clear();
 
             // Read the request header
             readRequestHead(headStream);
@@ -106,17 +92,6 @@ public class GrizzlyServerCall extends HttpServerCall {
             OutputWriter.flushChannel(socketChannel, buffer);
         }
         buffer.clear();
-    }
-
-    /**
-     * Recycles the call and its stream.
-     * 
-     * @return The recycled call.
-     */
-    public GrizzlyServerCall recycle() {
-        headStream.recycle();
-        socketChannel = null;
-        return this;
     }
 
     @Override
@@ -162,11 +137,11 @@ public class GrizzlyServerCall extends HttpServerCall {
         if (isConfidential()) {
             return new WritableByteChannel() {
                 public void close() throws IOException {
-                    socketChannel.close();
+                    getReadableChannel().close();
                 }
 
                 public boolean isOpen() {
-                    return socketChannel.isOpen();
+                    return getReadableChannel().isOpen();
                 }
 
                 public int write(ByteBuffer src) throws IOException {
@@ -176,7 +151,7 @@ public class GrizzlyServerCall extends HttpServerCall {
                 }
             };
         } else {
-            return socketChannel;
+            return this.socketChannel;
         }
     }
 }

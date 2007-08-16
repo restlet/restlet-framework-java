@@ -27,7 +27,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.Pipe;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
@@ -50,6 +49,101 @@ import org.restlet.resource.Representation;
 public final class ByteUtils {
 
     /**
+     * Input stream connected to a non-blocking readable channel.
+     */
+    private final static class NbChannelInputStream extends InputStream {
+        /** The channel to read from. */
+        private ReadableByteChannel channel;
+
+        /** The selectable channel to read from. */
+        private SelectableChannel selectableChannel;
+
+        private ByteBuffer bb;
+
+        /**
+         * Constructor.
+         * 
+         * @param channel
+         * @param channelBuffer
+         */
+        public NbChannelInputStream(ReadableByteChannel channel) {
+            this.channel = channel;
+            this.selectableChannel = (SelectableChannel) channel;
+            this.bb = ByteBuffer.allocate(8192);
+        }
+
+        @Override
+        public int read() throws IOException {
+            int result = 0;
+            Selector selector = null;
+            SelectionKey selectionKey = null;
+
+            try {
+                // Are there available byte in the buffer?
+                if (bb.hasRemaining()) {
+                    // Yes, let's return the next one
+                    result = bb.get();
+                } else {
+                    // No, let's try to read more
+                    int bytesRead = readChannel();
+
+                    // If no bytes were read, try to register a select key to
+                    // get more
+                    if (bytesRead == 0) {
+                        selector = SelectorFactory.getSelector();
+
+                        if (selector != null) {
+                            selectionKey = selectableChannel.register(selector,
+                                    SelectionKey.OP_READ);
+                            selector.select(10000);
+                        }
+
+                        bytesRead = readChannel();
+                    }
+
+                    if (bytesRead == 0) {
+                        result = -1;
+                    } else {
+                        result = bb.get();
+                    }
+                }
+            } finally {
+                // Workaround for bug #6403933
+                if (selectionKey != null) {
+                    // The key you registered on the temporary selector
+                    selectionKey.cancel();
+
+                    // Flush the cancelled key
+                    selector.selectNow();
+                    SelectorFactory.returnSelector(selector);
+                }
+            }
+
+            if (result == -1) {
+                System.out.println();
+            } else {
+                System.out.print((char) result);
+            }
+            return result;
+        }
+
+        /**
+         * Reads the available bytes from the channel into the byte buffer.
+         * 
+         * @return The number of bytes read or -1 if the end of channel has been
+         *         reached.
+         * @throws IOException
+         */
+        private int readChannel() throws IOException {
+            int result = 0;
+            bb.clear();
+            result = channel.read(bb);
+            bb.flip();
+            return result;
+        }
+    }
+
+    /**
      * Output stream connected to a non-blocking writable channel.
      */
     private final static class NbChannelOutputStream extends OutputStream {
@@ -59,8 +153,6 @@ public final class ByteUtils {
         private Selector selector;
 
         private SelectionKey selectionKey;
-
-        // private SelectableChannel selectableChannel;
 
         private ByteBuffer bb = ByteBuffer.allocate(8192);
 
@@ -72,18 +164,6 @@ public final class ByteUtils {
          */
         public NbChannelOutputStream(WritableByteChannel channel) {
             this.channel = channel;
-
-            /*
-             * if (!(channel instanceof SelectableChannel)) { throw new
-             * IllegalArgumentException( "Invalid channel provided. Please use
-             * only selectable channels."); } else { this.selectableChannel =
-             * (SelectableChannel) channel; this.selector = null;
-             * this.selectionKey = null;
-             * 
-             * if (this.selectableChannel.isBlocking()) { throw new
-             * IllegalArgumentException( "Invalid blocking channel provided.
-             * Please use only non-blocking channels."); } }
-             */
         }
 
         @Override
@@ -96,15 +176,6 @@ public final class ByteUtils {
                 this.selector.close();
 
             super.close();
-        }
-
-        private void registerSelectionKey() throws ClosedChannelException,
-                IOException {
-            /*
-             * this.selectionKey =
-             * this.selectableChannel.register(getSelector(),
-             * SelectionKey.OP_WRITE);
-             */
         }
 
         @Override
@@ -124,8 +195,6 @@ public final class ByteUtils {
                             throw new IOException(
                                     "Unexpected negative number of bytes written.");
                         } else if (bytesWritten == 0) {
-                            registerSelectionKey();
-
                             if (SelectorFactory.getSelector().select(10000) == 0) {
                                 throw new IOException(
                                         "Unable to select the channel to write to it. Selection timed out.");
@@ -374,8 +443,13 @@ public final class ByteUtils {
      */
     public static InputStream getStream(ReadableByteChannel readableChannel)
             throws IOException {
-        return (readableChannel != null) ? Channels
-                .newInputStream(readableChannel) : null;
+        InputStream result = null;
+
+        if (readableChannel != null) {
+            result = new NbChannelInputStream(readableChannel);
+        }
+
+        return result;
     }
 
     /**
