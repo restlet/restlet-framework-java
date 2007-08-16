@@ -55,7 +55,7 @@ public class SecurityUtils {
      * Formats a challenge request as a HTTP header value.
      * 
      * @param request
-     *            The challenge request to format.
+     *                The challenge request to format.
      * @return The authenticate header value.
      */
     public static String format(ChallengeRequest request) {
@@ -69,11 +69,11 @@ public class SecurityUtils {
      * Formats a challenge response as raw credentials.
      * 
      * @param challenge
-     *            The challenge response to format.
+     *                The challenge response to format.
      * @param request
-     *            The parent request.
+     *                The parent request.
      * @param httpHeaders
-     *            The current request HTTP headers.
+     *                The current request HTTP headers.
      * @return The authorization header value.
      */
     public static String format(ChallengeResponse challenge, Request request,
@@ -190,7 +190,7 @@ public class SecurityUtils {
      * Returns the canonicalized AMZ headers.
      * 
      * @param requestHeaders
-     *            The list of request headers.
+     *                The list of request headers.
      * @return The canonicalized AMZ headers.
      */
     private static String getCanonicalizedAmzHeaders(
@@ -222,7 +222,7 @@ public class SecurityUtils {
      * Returns the canonicalized resource name.
      * 
      * @param resourceRef
-     *            The resource reference.
+     *                The resource reference.
      * @return The canonicalized resource name.
      */
     private static String getCanonicalizedResourceName(Reference resourceRef) {
@@ -243,7 +243,7 @@ public class SecurityUtils {
      * Parses an authenticate header into a challenge request.
      * 
      * @param header
-     *            The HTTP header value to parse.
+     *                The HTTP header value to parse.
      * @return The parsed challenge request.
      */
     public static ChallengeRequest parseRequest(String header) {
@@ -270,11 +270,11 @@ public class SecurityUtils {
      * Parses an authorization header into a challenge response.
      * 
      * @param request
-     *            The request.
+     *                The request.
      * @param logger
-     *            The logger to use.
+     *                The logger to use.
      * @param header
-     *            The header value to parse.
+     *                The header value to parse.
      * @return The parsed challenge response.
      */
     public static ChallengeResponse parseResponse(Request request,
@@ -292,8 +292,15 @@ public class SecurityUtils {
 
                 if (result.getScheme().equals(ChallengeScheme.HTTP_BASIC)) {
                     try {
-                        credentials = new String(Base64.decode(result
-                                .getCredentials()), "US-ASCII");
+                        byte[] credentialsEncoded = Base64.decode(result
+                                .getCredentials());
+                        if (credentialsEncoded == null) {
+                            logger.warning("Cannot decode credentials: "
+                                    + result.getCredentials());
+                            return null;
+                        }
+
+                        credentials = new String(credentialsEncoded, "US-ASCII");
                         int separator = credentials.indexOf(':');
 
                         if (separator == -1) {
@@ -339,9 +346,9 @@ public class SecurityUtils {
      * Converts a source string to its HMAC/SHA-1 value.
      * 
      * @param source
-     *            The source string to convert.
+     *                The source string to convert.
      * @param secretKey
-     *            The secret key to use for conversion.
+     *                The secret key to use for conversion.
      * @return The HMac value of the source string.
      */
     public static byte[] toHMac(String source, String secretKey) {
