@@ -19,6 +19,7 @@
 package com.noelios.restlet.ext.simple;
 
 import java.net.ServerSocket;
+import java.net.InetAddress;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -29,34 +30,43 @@ import simple.http.connect.ConnectionFactory;
 /**
  * Simple HTTPS server connector.
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://semagia.com/">Semagia</a>
- * @author Jerome Louvel (contact@noelios.com) <a
- *         href="http://www.noelios.com">Noelios Consulting</a>
+ * @author Lars Heuer (heuer[at]semagia.com)
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpServerHelper extends SimpleServerHelper {
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server to help.
-     */
-    public HttpServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTP);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param server
+	 *            The server to help.
+	 */
+	public HttpServerHelper(Server server) {
+		super(server);
+		getProtocols().add(Protocol.HTTP);
+	}
 
-    /** Starts the Restlet. */
-    public void start() throws Exception {
-        setSocket(new ServerSocket(getServer().getPort()));
-        setConfidential(false);
-        setHandler(PipelineHandlerFactory.getInstance(
-                new SimpleProtocolHandler(this), getDefaultThreads(),
-                getMaxWaitTimeMs()));
-        setConnection(ConnectionFactory.getConnection(getHandler(),
-                new SimplePipelineFactory()));
-        getConnection().connect(getSocket());
-        super.start();
-    }
+	/** Starts the Restlet. */
+	public void start() throws Exception {
+		String addr = getServer().getAddress();
+		if (addr != null) {
+			// This call may throw UnknownHostException and otherwise always
+			// returns an instance of INetAddress.
+			// Note: textual representation of inet addresses are supported
+			InetAddress iaddr = InetAddress.getByName(addr);
+
+			// Note: the backlog of 50 is the default
+			setSocket(new ServerSocket(getServer().getPort(), 50, iaddr));
+		} else {
+			setSocket(new ServerSocket(getServer().getPort()));
+		}
+		setConfidential(false);
+		setHandler(PipelineHandlerFactory.getInstance(
+				new SimpleProtocolHandler(this), getDefaultThreads(),
+				getMaxWaitTimeMs()));
+		setConnection(ConnectionFactory.getConnection(getHandler(),
+				new SimplePipelineFactory()));
+		getConnection().connect(getSocket());
+		super.start();
+	}
 
 }

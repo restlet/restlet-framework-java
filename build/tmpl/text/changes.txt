@@ -10,6 +10,7 @@ Changes log
  - Potential NPE during KeyStore initialization for Simple HTTPS connector. Report by Quintin May.
  - Transmit the Component dispatcher to the ServletContextAdapter. Reported by Mike Moran.
  - Fixed bug in the DirectoryResource when looking for variant references. Reported by Mike Moran.
+ - Fixed address binding issue with Simple HTTP/HTTPS connectors. Contributed by Alex Milowski.
  
 [Enhancements] 
  - Clarified the Javadocs for the Variant's "identifier" property. Reported by Joe Holloway.
