@@ -20,6 +20,7 @@ Changes log
  - An exception is not thrown anymore when the Etag can not be successfully parsed.
  - The OPTIONS method now always returns an "Allow" HTTP header to more closely match the HTTP 1.1
    and WebDAV specifications. Suggested by Rob Heittman.
+ - Replaced the System.out.println() and System.err.println() calls by logger calls. Suggested by Alex Milowski.
 
 1.0.4 (2007-07-25)
 [Bugs fixed]
