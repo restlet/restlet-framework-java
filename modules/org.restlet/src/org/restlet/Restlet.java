@@ -71,8 +71,16 @@ public class Restlet extends Uniform {
      * @return The context.
      */
     public Context getContext() {
-        if (this.context == null)
-            this.context = new Context(getClass().getCanonicalName());
+        if (this.context == null) {
+            String logName = getClass().getCanonicalName();
+
+            if (logName == null) {
+                logName = Restlet.class.getCanonicalName();
+            }
+
+            this.context = new Context(logName);
+        }
+
         return this.context;
     }
 
