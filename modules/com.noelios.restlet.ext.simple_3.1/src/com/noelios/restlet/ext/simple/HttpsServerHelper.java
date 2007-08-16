@@ -21,6 +21,7 @@ package com.noelios.restlet.ext.simple;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
+import java.net.InetAddress;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -93,10 +94,8 @@ import simple.http.connect.ConnectionFactory;
  * </tr>
  * </table>
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://semagia.com/">Semagia</a>
- * @author Jerome Louvel (contact@noelios.com) <a
- *         href="http://www.noelios.com">Noelios Consulting</a>
+ * @author Lars Heuer (heuer[at]semagia.com)
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpsServerHelper extends SimpleServerHelper {
     /**
@@ -133,17 +132,30 @@ public class HttpsServerHelper extends SimpleServerHelper {
                 .getTrustManagers(), null);
 
         // Initialize the socket
-        SSLServerSocket serverSocket = (SSLServerSocket) sslContext
-                .getServerSocketFactory().createServerSocket(
-                        getServer().getPort());
-        serverSocket.setSoTimeout(60000);
-
+        SSLServerSocket serverSocket = null;
+        String addr = getServer().getAddress();
+        if (addr != null) {
+            // this call may throw UnknownHostException and otherwise always
+            // returns an instance of INetAddress
+            // Note: textual representation of inet addresses are supported
+            InetAddress iaddr = InetAddress.getByName(addr);
+            // Note: the backlog of 50 is the default
+            serverSocket = (SSLServerSocket) sslContext
+                    .getServerSocketFactory().createServerSocket(
+                            getServer().getPort(), 50, iaddr);
+        } else {
+            serverSocket = (SSLServerSocket) sslContext
+                    .getServerSocketFactory().createServerSocket(
+                            getServer().getPort());
+        }
+        
         if (isNeedClientAuthentication()) {
             serverSocket.setNeedClientAuth(true);
         } else if (isWantClientAuthentication()) {
             serverSocket.setWantClientAuth(true);
         }
 
+        serverSocket.setSoTimeout(60000);
         setSocket(serverSocket);
         fis.close();
 
