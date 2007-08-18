@@ -13,7 +13,9 @@ Changes log
  - Fixed address binding issue with Simple HTTP/HTTPS connectors. Patch contributed by Alex Milowski.
  - Fixed potential NPE in Restlet.getContext() method. Patch contributed by Alex Milowski.
  - Fixed potential NPE in SecurityUtils. Patch contributed by Alex Milowski.
- 
+ - When a component is restarted, the new applications and virtual hosts are no taken into account. 
+   Patch from Alex Milowski.
+
 [Enhancements] 
  - Clarified the Javadocs for the Variant's "identifier" property. Reported by Joe Holloway.
  - Clarified the Javadocs for the Resource.getVariants() method. Suggested by John D. Mitchell.

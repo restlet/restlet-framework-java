@@ -41,7 +41,7 @@ public class ServerRouter extends Router {
      * Constructor.
      * 
      * @param component
-     *            The parent component.
+     *                The parent component.
      */
     public ServerRouter(Component component) {
         super(component.getContext());
@@ -73,6 +73,12 @@ public class ServerRouter extends Router {
 
         // Start the router
         super.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        getRoutes().clear();
+        super.stop();
     }
 
     /**
