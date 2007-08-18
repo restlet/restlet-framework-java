@@ -58,7 +58,7 @@ public class ComponentHelper extends ChainHelper {
      * Constructor.
      * 
      * @param component
-     *            The helper component.
+     *                The helper component.
      */
     public ComponentHelper(Component component) {
         super(null);
@@ -71,7 +71,7 @@ public class ComponentHelper extends ChainHelper {
      * Creates a new context.
      * 
      * @param loggerName
-     *            The JDK's logger name to use for contextual logging.
+     *                The JDK's logger name to use for contextual logging.
      * @return The new context.
      */
     public Context createContext(String loggerName) {
@@ -109,9 +109,9 @@ public class ComponentHelper extends ChainHelper {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         if (getFirst() != null) {
@@ -172,7 +172,7 @@ public class ComponentHelper extends ChainHelper {
      * Check the applications attached to a virtual host.
      * 
      * @param host
-     *            The parent virtual host.
+     *                The parent virtual host.
      * @return True if the check succeeded.
      * @throws Exception
      */
@@ -256,7 +256,7 @@ public class ComponentHelper extends ChainHelper {
      * Creates a new status filter. Allows overriding.
      * 
      * @param component
-     *            The parent component.
+     *                The parent component.
      * @return The new status filter.
      */
     protected StatusFilter createStatusFilter(Component component) {
@@ -265,6 +265,9 @@ public class ComponentHelper extends ChainHelper {
 
     /** Stop callback. */
     public void stop() throws Exception {
+        // Stop the server's router
+        getServerRouter().stop();
+
         // Stop all applications
         stopVirtualHostApplications(getComponent().getDefaultHost());
         for (VirtualHost host : getComponent().getHosts()) {
