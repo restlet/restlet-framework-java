@@ -63,13 +63,13 @@ public class SimpleCall extends HttpServerCall {
      * {@link simple.http.Response}.
      * 
      * @param server
-     *            The parent server.
+     *                The parent server.
      * @param request
-     *            Request to wrap.
+     *                Request to wrap.
      * @param response
-     *            Response to wrap.
+     *                Response to wrap.
      * @param confidential
-     *            Indicates if this call is acting in HTTP or HTTPS mode.
+     *                Indicates if this call is acting in HTTP or HTTPS mode.
      */
     SimpleCall(Server server, Request request, Response response,
             boolean confidential) {
@@ -78,27 +78,6 @@ public class SimpleCall extends HttpServerCall {
         this.response = response;
         setConfidential(confidential);
         this.requestHeadersAdded = false;
-    }
-
-    @Override
-    public SSLSession getSslSession() {
-        SSLSession result = null;
-
-        if (getSocket() instanceof SSLSocket) {
-            result = ((SSLSocket) getSocket()).getSession();
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the request socket.
-     * 
-     * @return The request socket.
-     */
-    private Socket getSocket() {
-        return (Socket) this.request
-                .getAttribute(SimplePipelineFactory.PROPERTY_SOCKET);
     }
 
     @Override
@@ -121,13 +100,24 @@ public class SimpleCall extends HttpServerCall {
         return request.getMethod();
     }
 
-    /**
-     * Returns the request entity channel if it exists.
-     * 
-     * @return The request entity channel if it exists.
-     */
-    public ReadableByteChannel getRequestChannel() {
+    @Override
+    public ReadableByteChannel getRequestEntityChannel(long size) {
         // Unsupported.
+        return null;
+    }
+
+    @Override
+    public InputStream getRequestEntityStream(long size) {
+        try {
+            return request.getInputStream();
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public ReadableByteChannel getRequestHeadChannel() {
+        // Not available
         return null;
     }
 
@@ -152,17 +142,10 @@ public class SimpleCall extends HttpServerCall {
         return result;
     }
 
-    /**
-     * Returns the request entity stream if it exists.
-     * 
-     * @return The request entity stream if it exists.
-     */
-    public InputStream getRequestStream() {
-        try {
-            return request.getInputStream();
-        } catch (IOException ex) {
-            return null;
-        }
+    @Override
+    public InputStream getRequestHeadStream() {
+        // Not available
+        return null;
     }
 
     /**
@@ -179,7 +162,7 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The response channel if it exists.
      */
-    public WritableByteChannel getResponseChannel() {
+    public WritableByteChannel getResponseEntityChannel() {
         // Unsupported.
         return null;
     }
@@ -189,12 +172,33 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The response stream if it exists.
      */
-    public OutputStream getResponseStream() {
+    public OutputStream getResponseEntityStream() {
         try {
             return response.getOutputStream();
         } catch (IOException ex) {
             return null;
         }
+    }
+
+    /**
+     * Returns the request socket.
+     * 
+     * @return The request socket.
+     */
+    private Socket getSocket() {
+        return (Socket) this.request
+                .getAttribute(SimplePipelineFactory.PROPERTY_SOCKET);
+    }
+
+    @Override
+    public SSLSession getSslSession() {
+        SSLSession result = null;
+
+        if (getSocket() instanceof SSLSocket) {
+            result = ((SSLSocket) getSocket()).getSession();
+        }
+
+        return result;
     }
 
     @Override

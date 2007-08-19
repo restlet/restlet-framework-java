@@ -72,7 +72,8 @@ public class Server extends Connector {
      *                The connector protocols.
      * @param address
      *                The optional listening IP address (useful if multiple IP
-     *                addresses available).
+     *                addresses available). You can also use a domain name as an
+     *                alias for the IP address to listen to.
      * @param port
      *                The listening port.
      * @param target
@@ -129,7 +130,8 @@ public class Server extends Connector {
      *                The connector protocol.
      * @param address
      *                The optional listening IP address (useful if multiple IP
-     *                addresses available).
+     *                addresses available). You can also use a domain name as an
+     *                alias for the IP address to listen to.
      * @param port
      *                The listening port.
      * @param target
@@ -161,7 +163,8 @@ public class Server extends Connector {
      *                The connector protocols.
      * @param address
      *                The optional listening IP address (useful if multiple IP
-     *                addresses available).
+     *                addresses available). You can also use a domain name as an
+     *                alias for the IP address to listen to.
      * @param port
      *                The listening port.
      * @param target
@@ -205,7 +208,8 @@ public class Server extends Connector {
      *                The connector protocol.
      * @param address
      *                The optional listening IP address (useful if multiple IP
-     *                addresses available).
+     *                addresses available). You can also use a domain name as an
+     *                alias for the IP address to listen to.
      * @param port
      *                The listening port.
      * @param target
@@ -222,7 +226,8 @@ public class Server extends Connector {
      *                The connector protocol.
      * @param address
      *                The listening IP address (useful if multiple IP addresses
-     *                available).
+     *                available). You can also use a domain name as an alias for
+     *                the IP address to listen to.
      * @param target
      *                The target Restlet.
      */

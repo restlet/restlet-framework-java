@@ -34,6 +34,7 @@ import org.restlet.data.Response;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StreamServerCall extends HttpServerCall {
+
     /** The request input stream. */
     private InputStream requestStream;
 
@@ -44,11 +45,11 @@ public class StreamServerCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
-     *            The server connector.
+     *                The server connector.
      * @param requestStream
-     *            The request input stream.
+     *                The request input stream.
      * @param responseStream
-     *            The response output stream.
+     *                The response output stream.
      */
     public StreamServerCall(Server server, InputStream requestStream,
             OutputStream responseStream) {
@@ -57,7 +58,7 @@ public class StreamServerCall extends HttpServerCall {
         this.responseStream = responseStream;
 
         try {
-            readRequestHead(getRequestStream());
+            readRequestHead(getRequestHeadStream());
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING, "Unable to parse the HTTP request",
                     ioe);
@@ -65,28 +66,46 @@ public class StreamServerCall extends HttpServerCall {
     }
 
     @Override
-    public ReadableByteChannel getRequestChannel() {
+    public ReadableByteChannel getRequestEntityChannel(long size) {
         return null;
     }
 
     @Override
-    public InputStream getRequestStream() {
-        return this.requestStream;
+    public InputStream getRequestEntityStream(long size) {
+        return new InputEntityStream(getRequestStream(), size);
     }
 
     @Override
-    public WritableByteChannel getResponseChannel() {
+    public ReadableByteChannel getRequestHeadChannel() {
         return null;
     }
 
     @Override
-    public OutputStream getResponseStream() {
-        return this.responseStream;
+    public InputStream getRequestHeadStream() {
+        return getRequestStream();
+    }
+
+    private InputStream getRequestStream() {
+        return requestStream;
+    }
+
+    @Override
+    public WritableByteChannel getResponseEntityChannel() {
+        return null;
+    }
+
+    @Override
+    public OutputStream getResponseEntityStream() {
+        return getResponseStream();
+    }
+
+    private OutputStream getResponseStream() {
+        return responseStream;
     }
 
     @Override
     public void writeResponseHead(Response response) throws IOException {
-        writeResponseHead(getResponseStream());
+        writeResponseHead(getResponseEntityStream());
     }
 
 }

@@ -59,23 +59,6 @@ public class ServletCall extends HttpServerCall {
     /**
      * Constructor.
      * 
-     * @param server
-     *                The parent server.
-     * @param request
-     *                The HTTP Servlet request to wrap.
-     * @param response
-     *                The HTTP Servlet response to wrap.
-     */
-    public ServletCall(Server server, HttpServletRequest request,
-            HttpServletResponse response) {
-        super(server);
-        this.request = request;
-        this.response = response;
-    }
-
-    /**
-     * Constructor.
-     * 
      * @param logger
      *                The logger.
      * @param serverAddress
@@ -86,6 +69,23 @@ public class ServletCall extends HttpServerCall {
     public ServletCall(Logger logger, String serverAddress, int serverPort,
             HttpServletRequest request, HttpServletResponse response) {
         super(logger, serverAddress, serverPort);
+        this.request = request;
+        this.response = response;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param server
+     *                The parent server.
+     * @param request
+     *                The HTTP Servlet request to wrap.
+     * @param response
+     *                The HTTP Servlet response to wrap.
+     */
+    public ServletCall(Server server, HttpServletRequest request,
+            HttpServletResponse response) {
+        super(server);
         this.request = request;
         this.response = response;
     }
@@ -136,13 +136,24 @@ public class ServletCall extends HttpServerCall {
         return this.request;
     }
 
-    /**
-     * Returns the request entity channel if it exists.
-     * 
-     * @return The request entity channel if it exists.
-     */
-    public ReadableByteChannel getRequestChannel() {
+    @Override
+    public ReadableByteChannel getRequestEntityChannel(long size) {
         // Can't do anything
+        return null;
+    }
+
+    @Override
+    public InputStream getRequestEntityStream(long size) {
+        try {
+            return getRequest().getInputStream();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public ReadableByteChannel getRequestHeadChannel() {
+        // Not available
         return null;
     }
 
@@ -174,17 +185,10 @@ public class ServletCall extends HttpServerCall {
         return this.requestHeaders;
     }
 
-    /**
-     * Returns the request entity stream if it exists.
-     * 
-     * @return The request entity stream if it exists.
-     */
-    public InputStream getRequestStream() {
-        try {
-            return getRequest().getInputStream();
-        } catch (IOException e) {
-            return null;
-        }
+    @Override
+    public InputStream getRequestHeadStream() {
+        // Not available
+        return null;
     }
 
     /**
@@ -216,7 +220,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The response channel if it exists.
      */
-    public WritableByteChannel getResponseChannel() {
+    public WritableByteChannel getResponseEntityChannel() {
         // Can't do anything
         return null;
     }
@@ -226,7 +230,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The response stream if it exists.
      */
-    public OutputStream getResponseStream() {
+    public OutputStream getResponseEntityStream() {
         try {
             return getResponse().getOutputStream();
         } catch (IOException e) {

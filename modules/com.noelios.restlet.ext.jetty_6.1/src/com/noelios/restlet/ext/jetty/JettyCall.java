@@ -90,12 +90,23 @@ public class JettyCall extends HttpServerCall {
         return getConnection().getRequest().getMethod();
     }
 
-    /**
-     * Returns the request entity channel if it exists.
-     * 
-     * @return The request entity channel if it exists.
-     */
-    public ReadableByteChannel getRequestChannel() {
+    @Override
+    public ReadableByteChannel getRequestEntityChannel(long size) {
+        return null;
+    }
+
+    @Override
+    public InputStream getRequestEntityStream(long size) {
+        try {
+            return getConnection().getRequest().getInputStream();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public ReadableByteChannel getRequestHeadChannel() {
+        // Not available
         return null;
     }
 
@@ -128,17 +139,10 @@ public class JettyCall extends HttpServerCall {
         return result;
     }
 
-    /**
-     * Returns the request entity stream if it exists.
-     * 
-     * @return The request entity stream if it exists.
-     */
-    public InputStream getRequestStream() {
-        try {
-            return getConnection().getRequest().getInputStream();
-        } catch (IOException e) {
-            return null;
-        }
+    @Override
+    public InputStream getRequestHeadStream() {
+        // Not available
+        return null;
     }
 
     /**
@@ -156,7 +160,7 @@ public class JettyCall extends HttpServerCall {
      * 
      * @return The response channel if it exists.
      */
-    public WritableByteChannel getResponseChannel() {
+    public WritableByteChannel getResponseEntityChannel() {
         return null;
     }
 
@@ -165,7 +169,7 @@ public class JettyCall extends HttpServerCall {
      * 
      * @return The response stream if it exists.
      */
-    public OutputStream getResponseStream() {
+    public OutputStream getResponseEntityStream() {
         try {
             return getConnection().getResponse().getOutputStream();
         } catch (IOException e) {

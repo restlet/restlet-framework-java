@@ -48,7 +48,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Constructor.
      * 
      * @param server
-     *            The parent server connector.
+     *                The parent server connector.
      */
     public HttpServerCall(Server server) {
         this(server.getLogger(), server.getAddress(), server.getPort());
@@ -58,11 +58,11 @@ public abstract class HttpServerCall extends HttpCall {
      * Constructor.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param serverAddress
-     *            The server IP address.
+     *                The server IP address.
      * @param serverPort
-     *            The server port.
+     *                The server port.
      */
     public HttpServerCall(Logger logger, String serverAddress, int serverPort) {
         setLogger(logger);
@@ -72,32 +72,58 @@ public abstract class HttpServerCall extends HttpCall {
     }
 
     /**
+     * Returns the request head channel if it exists.
+     * 
+     * @param size
+     *                The total size that will be read from the channel.
+     * 
+     * @return The request head channel if it exists.
+     */
+    public abstract ReadableByteChannel getRequestHeadChannel();
+
+    /**
+     * Returns the request head stream if it exists.
+     * 
+     * @param size
+     *                The total size that will be read from the stream.
+     * 
+     * @return The request head stream if it exists.
+     */
+    public abstract InputStream getRequestHeadStream();
+
+    /**
      * Returns the request entity channel if it exists.
+     * 
+     * @param size
+     *                The total size that will be read from the channel.
      * 
      * @return The request entity channel if it exists.
      */
-    public abstract ReadableByteChannel getRequestChannel();
+    public abstract ReadableByteChannel getRequestEntityChannel(long size);
 
     /**
      * Returns the request entity stream if it exists.
      * 
+     * @param size
+     *                The total size that will be read from the stream.
+     * 
      * @return The request entity stream if it exists.
      */
-    public abstract InputStream getRequestStream();
+    public abstract InputStream getRequestEntityStream(long size);
 
     /**
      * Returns the response channel if it exists.
      * 
      * @return The response channel if it exists.
      */
-    public abstract WritableByteChannel getResponseChannel();
+    public abstract WritableByteChannel getResponseEntityChannel();
 
     /**
-     * Returns the response stream if it exists.
+     * Returns the response entity stream if it exists.
      * 
-     * @return The response stream if it exists.
+     * @return The response entity stream if it exists.
      */
-    public abstract OutputStream getResponseStream();
+    public abstract OutputStream getResponseEntityStream();
 
     /**
      * Returns the request entity if available.
@@ -106,57 +132,58 @@ public abstract class HttpServerCall extends HttpCall {
      */
     public Representation getRequestEntity() {
         Representation result = null;
-        InputStream requestStream = getRequestStream();
-        ReadableByteChannel requestChannel = getRequestChannel();
+        long contentLength = Representation.UNKNOWN_SIZE;
 
-        if (((requestStream != null) || (requestChannel != null))) {
-            // Extract the header values
-            MediaType contentMediaType = null;
-            long contentLength = Representation.UNKNOWN_SIZE;
-
-            if (requestStream != null) {
-                result = new InputRepresentation(requestStream,
-                        contentMediaType, contentLength);
-            } else {
-                result = new ReadableRepresentation(requestChannel,
-                        contentMediaType, contentLength);
-            }
-
-            for (Parameter header : getRequestHeaders()) {
-                if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_ENCODING)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-                    while (value != null) {
-                        Encoding encoding = Encoding.valueOf(value);
-                        if (!encoding.equals(Encoding.IDENTITY)) {
-                            result.getEncodings().add(encoding);
-                        }
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_LANGUAGE)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-                    while (value != null) {
-                        result.getLanguages().add(Language.valueOf(value));
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_TYPE)) {
-                    ContentType contentType = new ContentType(header.getValue());
-                    result.setMediaType(contentType.getMediaType());
-                    result.setCharacterSet(contentType.getCharacterSet());
-
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_LENGTH)) {
-                    try {
-                        contentLength = Long.parseLong(header.getValue());
-                    } catch (NumberFormatException e) {
-                        contentLength = Representation.UNKNOWN_SIZE;
-                    }
-                    result.setSize(contentLength);
+        // Extract the content length header
+        for (Parameter header : getRequestHeaders()) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_LENGTH)) {
+                try {
+                    contentLength = Long.parseLong(header.getValue());
+                } catch (NumberFormatException e) {
+                    contentLength = Representation.UNKNOWN_SIZE;
                 }
+            }
+        }
+
+        // Create the result representation
+        InputStream requestStream = getRequestEntityStream(contentLength);
+        ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
+
+        if (requestStream != null) {
+            result = new InputRepresentation(requestStream, null, contentLength);
+        } else if (requestChannel != null) {
+            result = new ReadableRepresentation(requestChannel, null,
+                    contentLength);
+        }
+        result.setSize(contentLength);
+
+        // Extract some interesting header values
+        for (Parameter header : getRequestHeaders()) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_ENCODING)) {
+                HeaderReader hr = new HeaderReader(header.getValue());
+                String value = hr.readValue();
+                while (value != null) {
+                    Encoding encoding = Encoding.valueOf(value);
+                    if (!encoding.equals(Encoding.IDENTITY)) {
+                        result.getEncodings().add(encoding);
+                    }
+                    value = hr.readValue();
+                }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_LANGUAGE)) {
+                HeaderReader hr = new HeaderReader(header.getValue());
+                String value = hr.readValue();
+                while (value != null) {
+                    result.getLanguages().add(Language.valueOf(value));
+                    value = hr.readValue();
+                }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_TYPE)) {
+                ContentType contentType = new ContentType(header.getValue());
+                result.setMediaType(contentType.getMediaType());
+                result.setCharacterSet(contentType.getCharacterSet());
             }
         }
 
@@ -295,7 +322,7 @@ public abstract class HttpServerCall extends HttpCall {
      * status.
      * 
      * @param response
-     *            The high-level response.
+     *                The high-level response.
      */
     public void sendResponse(Response response) throws IOException {
         if (response != null) {
@@ -319,8 +346,8 @@ public abstract class HttpServerCall extends HttpCall {
                     connectorService.afterSend(entity);
             }
 
-            if (getResponseStream() != null) {
-                getResponseStream().flush();
+            if (getResponseEntityStream() != null) {
+                getResponseEntityStream().flush();
             }
         }
     }
@@ -331,15 +358,15 @@ public abstract class HttpServerCall extends HttpCall {
      * response stream by default.
      * 
      * @param entity
-     *            The representation to write as entity of the body.
+     *                The representation to write as entity of the body.
      * @throws IOException
      */
     public void writeResponseBody(Representation entity) throws IOException {
         // Send the entity to the client
-        if (getResponseChannel() != null) {
-            entity.write(getResponseChannel());
-        } else if (getResponseStream() != null) {
-            entity.write(getResponseStream());
+        if (getResponseEntityChannel() != null) {
+            entity.write(getResponseEntityChannel());
+        } else if (getResponseEntityStream() != null) {
+            entity.write(getResponseEntityStream());
         }
     }
 
@@ -347,7 +374,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Writes the response status line and headers. Does nothing by default.
      * 
      * @param response
-     *            The response.
+     *                The response.
      * @throws IOException
      */
     public void writeResponseHead(Response response) throws IOException {
@@ -358,7 +385,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Writes the response head to the given output stream.
      * 
      * @param headStream
-     *            The output stream to write to.
+     *                The output stream to write to.
      * @throws IOException
      */
     protected void writeResponseHead(OutputStream headStream)
