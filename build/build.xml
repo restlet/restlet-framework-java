@@ -104,10 +104,6 @@
       <pathelement path="${classes}/${mod-velocity-id}" />
       <pathelement path="${mod}/${mod-velocity-id}/src" />
 
-	  <path refid="mod-wadl-path" />
-      <pathelement path="${classes}/${mod-wadl-id}" />
-      <pathelement path="${mod}/${mod-wadl-id}/src" />
-
       <fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-lang-id}" includes="*.jar" />
@@ -248,11 +244,6 @@
       <fileset dir="${lib}/${lib-velocity-id}" includes="*.jar" />
    </path>
 
-   <path id="mod-wadl-path">
-      <path refid="mod-ri-path" />
-      <pathelement path="${classes}/${mod-ri-id}" />
-   </path>
-
    <path id="path-all">
       <pathelement path="${classes}/${mod-api-id}" />
       <pathelement path="${classes}/${mod-ri-id}" />
@@ -271,7 +262,6 @@
       <pathelement path="${classes}/${mod-servlet-id}" />
       <pathelement path="${classes}/${mod-spring-id}" />
       <pathelement path="${classes}/${mod-velocity-id}" />
-      <pathelement path="${classes}/${mod-wadl-id}" />
       <path refid="mod-fileupload-path" />
       <path refid="mod-freemarker-path" />
       <path refid="mod-grizzly-path" />
@@ -781,7 +771,6 @@
       <pomModule name="simple" />
       <pomModule name="spring" />
       <pomModule name="velocity" />
-      <pomModule name="wadl" />
       <pomModule name="example" />
 
       <pomLibrary name="simple"/>
@@ -811,6 +800,7 @@
       <replace file="${temp}/javadocs/overview-api.html" token="@version-minor@" value="${version-minor}" />
       <replace file="${temp}/javadocs/overview-nre.html" token="@version-minor@" value="${version-minor}" />
       <replace file="${temp}/javadocs/overview-ext.html" token="@version-minor@" value="${version-minor}" />
+
    </target>
    
    <!-- COMPILE target -->
@@ -841,7 +831,6 @@
       <compileModule name="simple" />
       <compileModule name="spring" />
       <compileModule name="velocity" />
-      <compileModule name="wadl" />
       <compileModule name="example" />
       <compileModule name="api-test" />
       <compileModule name="ri-test" />
@@ -868,7 +857,6 @@
       <backportModule name="simple" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="spring" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="velocity" failonwarning="@{backport-failonwarning}"/>
-      <backportModule name="wadl" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="example" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="api-test" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="ri-test" failonwarning="@{backport-failonwarning}"/>
@@ -971,7 +959,6 @@
             <pathelement path="${mod}/${mod-simple-id}/src/" />
             <pathelement path="${mod}/${mod-spring-id}/src/" />
             <pathelement path="${mod}/${mod-velocity-id}/src/" />
-            <pathelement path="${mod}/${mod-wadl-id}/src/" />
          </sourcepath>
 
          <bottom>
@@ -1049,7 +1036,6 @@
       <findbugsModule name="simple" />
       <findbugsModule name="spring" />
       <findbugsModule name="velocity" />
-      <findbugsModule name="wadl" />
       <findbugsModule name="example" />
    </target>
      
@@ -1074,7 +1060,6 @@
       <checkstyleModule name="simple" />
       <checkstyleModule name="spring" />
       <checkstyleModule name="velocity" />
-      <checkstyleModule name="wadl" />
       <checkstyleModule name="example" />
    </target>
 
@@ -1171,7 +1156,6 @@
       <stageModule name="simple" />
       <stageModule name="spring" />
       <stageModule name="velocity" />
-      <stageModule name="wadl" />
       <stageModule name="example" />
 
       <!-- Copy the POM files -->
@@ -1201,7 +1185,6 @@
       <maven2Module name="simple" />
       <maven2Module name="spring" />
       <maven2Module name="velocity" />
-      <maven2Module name="wadl" />
       <maven2Library name="simple" />
       <maven2Library name="json" />
       <maven2Library name="db4o" />
