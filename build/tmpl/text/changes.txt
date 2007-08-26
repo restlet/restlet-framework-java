@@ -13,7 +13,7 @@ Changes log
    behavior when multiple connectors were present in the classpath.
  - Fixed bug in DomRepresentation causing the loss of both public and system DocTypes. 
    Reported by Lee Saferite.
-
+ - Fixed path error in test cases  module. Reported by Sean Landis, contributed by Alex Milowski.
 [Enhancements] 
  - Added a getApplication() method to Context and Resource classes.
  - Added a new Grizzly based HTTP server connector (full NIO). Optmizations and support

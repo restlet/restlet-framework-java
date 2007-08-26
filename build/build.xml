@@ -119,6 +119,12 @@
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
+      <path refid="mod-grizzly-path" />
+      <pathelement path="${classes}/${mod-grizzly-id}" />
+   	  <pathelement path="${mod}/${mod-grizzly-id}/src" />
+   	  <path refid="mod-net-path" />
+   	  <pathelement path="${classes}/${mod-net-id}" />
+   	  <pathelement path="${mod}/${mod-net-id}/src" />
    </path>
 
    <path id="mod-atom-path">
