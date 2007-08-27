@@ -67,19 +67,11 @@
 
       <path refid="mod-ri-test-path" />
       <pathelement path="${classes}/${mod-ri-test-id}" />
-
-      <path refid="mod-grizzly-path" />
-      <pathelement path="${classes}/${mod-grizzly-id}" />
-   	  <pathelement path="${mod}/${mod-grizzly-id}/src" />
- 	
-   	  <path refid="mod-net-path" />
- 	  <pathelement path="${classes}/${mod-net-id}" />
-	  <pathelement path="${mod}/${mod-net-id}/src" />
-   
+      
       <path refid="mod-atom-path" />
       <pathelement path="${classes}/${mod-atom-id}" />
       <pathelement path="${mod}/${mod-atom-id}/src" />
-   	
+      
       <path refid="mod-net-path" />
       <pathelement path="${classes}/${mod-net-id}" />
       <pathelement path="${mod}/${mod-net-id}/src" />
@@ -96,13 +88,17 @@
       <pathelement path="${classes}/${mod-jaxb-id}" />
       <pathelement path="${mod}/${mod-jaxb-id}/src" />
 
-	  <path refid="mod-spring-path" />
+      <path refid="mod-spring-path" />
       <pathelement path="${classes}/${mod-spring-id}" />
       <pathelement path="${mod}/${mod-spring-id}/src" />
 
       <path refid="mod-velocity-path" />
       <pathelement path="${classes}/${mod-velocity-id}" />
       <pathelement path="${mod}/${mod-velocity-id}/src" />
+
+      <path refid="mod-wadl-path" />
+      <pathelement path="${classes}/${mod-wadl-id}" />
+      <pathelement path="${mod}/${mod-wadl-id}/src" />
 
       <fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
@@ -123,6 +119,12 @@
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
+      <path refid="mod-grizzly-path" />
+      <pathelement path="${classes}/${mod-grizzly-id}" />
+      <pathelement path="${mod}/${mod-grizzly-id}/src" />
+      <path refid="mod-net-path" />
+      <pathelement path="${classes}/${mod-net-id}" />
+      <pathelement path="${mod}/${mod-net-id}/src" />
    </path>
 
    <path id="mod-atom-path">
@@ -244,6 +246,11 @@
       <fileset dir="${lib}/${lib-velocity-id}" includes="*.jar" />
    </path>
 
+   <path id="mod-wadl-path">
+      <path refid="mod-ri-path" />
+      <pathelement path="${classes}/${mod-ri-id}" />
+   </path>
+
    <path id="path-all">
       <pathelement path="${classes}/${mod-api-id}" />
       <pathelement path="${classes}/${mod-ri-id}" />
@@ -262,6 +269,7 @@
       <pathelement path="${classes}/${mod-servlet-id}" />
       <pathelement path="${classes}/${mod-spring-id}" />
       <pathelement path="${classes}/${mod-velocity-id}" />
+      <pathelement path="${classes}/${mod-wadl-id}" />
       <path refid="mod-fileupload-path" />
       <path refid="mod-freemarker-path" />
       <path refid="mod-grizzly-path" />
@@ -278,6 +286,7 @@
       <path refid="mod-simple-path" />
       <path refid="mod-spring-path" />
       <path refid="mod-velocity-path" />
+      <path refid="mod-wadl-path" />
    </path>
 
    <path id="path-none" />
@@ -369,6 +378,7 @@
    <macrodef name="compileModule">
       <attribute name="name" />
       <sequential>
+         <echo message="@{name}" />
          <compile srcdir="${mod}/${mod-@{name}-id}/src"
                   destdir="${classes}/${mod-@{name}-id}"
                   classpathref="mod-@{name}-path" />
@@ -771,6 +781,7 @@
       <pomModule name="simple" />
       <pomModule name="spring" />
       <pomModule name="velocity" />
+      <pomModule name="wadl" />
       <pomModule name="example" />
 
       <pomLibrary name="simple"/>
@@ -831,6 +842,7 @@
       <compileModule name="simple" />
       <compileModule name="spring" />
       <compileModule name="velocity" />
+      <compileModule name="wadl" />
       <compileModule name="example" />
       <compileModule name="api-test" />
       <compileModule name="ri-test" />
@@ -857,6 +869,7 @@
       <backportModule name="simple" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="spring" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="velocity" failonwarning="@{backport-failonwarning}"/>
+      <backportModule name="wadl" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="example" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="api-test" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="ri-test" failonwarning="@{backport-failonwarning}"/>
@@ -959,6 +972,7 @@
             <pathelement path="${mod}/${mod-simple-id}/src/" />
             <pathelement path="${mod}/${mod-spring-id}/src/" />
             <pathelement path="${mod}/${mod-velocity-id}/src/" />
+            <pathelement path="${mod}/${mod-wadl-id}/src/" />
          </sourcepath>
 
          <bottom>
@@ -1036,6 +1050,7 @@
       <findbugsModule name="simple" />
       <findbugsModule name="spring" />
       <findbugsModule name="velocity" />
+      <findbugsModule name="wadl" />
       <findbugsModule name="example" />
    </target>
      
@@ -1060,6 +1075,7 @@
       <checkstyleModule name="simple" />
       <checkstyleModule name="spring" />
       <checkstyleModule name="velocity" />
+      <checkstyleModule name="wadl" />
       <checkstyleModule name="example" />
    </target>
 
@@ -1156,6 +1172,7 @@
       <stageModule name="simple" />
       <stageModule name="spring" />
       <stageModule name="velocity" />
+      <stageModule name="wadl" />
       <stageModule name="example" />
 
       <!-- Copy the POM files -->
@@ -1185,6 +1202,7 @@
       <maven2Module name="simple" />
       <maven2Module name="spring" />
       <maven2Module name="velocity" />
+      <maven2Module name="wadl" />
       <maven2Library name="simple" />
       <maven2Library name="json" />
       <maven2Library name="db4o" />
