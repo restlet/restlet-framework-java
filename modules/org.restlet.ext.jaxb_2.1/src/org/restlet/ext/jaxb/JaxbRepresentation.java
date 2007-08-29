@@ -110,11 +110,11 @@ public class JaxbRepresentation extends XmlRepresentation {
          * stream.
          * 
          * @param jaxbElement
-         *                The root of the content tree to be marshalled.
+         *            The root of the content tree to be marshalled.
          * @param stream
-         *                The target output stream write the XML to.
+         *            The target output stream write the XML to.
          * @throws JAXBException
-         *                 If any unexpected problem occurs during marshalling.
+         *             If any unexpected problem occurs during marshalling.
          */
         public void marshal(Object jaxbElement, OutputStream stream)
                 throws JAXBException {
@@ -126,11 +126,11 @@ public class JaxbRepresentation extends XmlRepresentation {
          * String representation.
          * 
          * @param jaxbElement
-         *                The root of the content tree to be marshalled.
+         *            The root of the content tree to be marshalled.
          * @param rep
-         *                The target string representation write the XML to.
+         *            The target string representation write the XML to.
          * @throws JAXBException
-         *                 If any unexpected problem occurs during marshalling.
+         *             If any unexpected problem occurs during marshalling.
          */
         public void marshal(Object jaxbElement, StringRepresentation rep)
                 throws JAXBException {
@@ -143,11 +143,11 @@ public class JaxbRepresentation extends XmlRepresentation {
          * Marshal the content tree rooted at {@code jaxbElement} into a writer.
          * 
          * @param jaxbElement
-         *                The root of the content tree to be marshalled.
+         *            The root of the content tree to be marshalled.
          * @param writer
-         *                The target writer to write the XML to.
+         *            The target writer to write the XML to.
          * @throws JAXBException
-         *                 If any unexpected problem occurs during marshalling.
+         *             If any unexpected problem occurs during marshalling.
          */
         public void marshal(Object jaxbElement, Writer writer)
                 throws JAXBException {
@@ -158,10 +158,10 @@ public class JaxbRepresentation extends XmlRepresentation {
          * Sets the validation handler for this marshaller.
          * 
          * @param handler
-         *                A validation handler.
+         *            A validation handler.
          * @throws JAXBException
-         *                 If an error was encountered while setting the event
-         *                 handler.
+         *             If an error was encountered while setting the event
+         *             handler.
          */
         public void setEventHandler(ValidationEventHandler handler)
                 throws JAXBException {
@@ -217,10 +217,10 @@ public class JaxbRepresentation extends XmlRepresentation {
          * Sets the validation handler for this unmarshaller.
          * 
          * @param handler
-         *                A validation handler.
+         *            A validation handler.
          * @throws JAXBException
-         *                 If an error was encountered while setting the event
-         *                 handler.
+         *             If an error was encountered while setting the event
+         *             handler.
          */
         public void setEventHandler(ValidationEventHandler handler)
                 throws JAXBException {
@@ -232,14 +232,12 @@ public class JaxbRepresentation extends XmlRepresentation {
          * resulting Java content tree.
          * 
          * @param stream
-         *                The source input stream.
+         *            The source input stream.
          * @return The newly created root object of the Java content tree.
          * @throws JAXBException
-         *                 If any unexpected problem occurs during
-         *                 unmarshalling.
+         *             If any unexpected problem occurs during unmarshalling.
          * @throws IOException
-         *                 If an error occurs accessing the string
-         *                 representation.
+         *             If an error occurs accessing the string representation.
          */
         public Object unmarshal(InputStream stream) throws JAXBException {
             return getUnmarshaller().unmarshal(stream);
@@ -250,14 +248,12 @@ public class JaxbRepresentation extends XmlRepresentation {
          * Java content tree.
          * 
          * @param reader
-         *                The source reader.
+         *            The source reader.
          * @return The newly created root object of the Java content tree.
          * @throws JAXBException
-         *                 If any unexpected problem occurs during
-         *                 unmarshalling.
+         *             If any unexpected problem occurs during unmarshalling.
          * @throws IOException
-         *                 If an error occurs accessing the string
-         *                 representation.
+         *             If an error occurs accessing the string representation.
          */
         public Object unmarshal(Reader reader) throws JAXBException {
             return getUnmarshaller().unmarshal(reader);
@@ -268,14 +264,12 @@ public class JaxbRepresentation extends XmlRepresentation {
          * and return the resulting Java content tree.
          * 
          * @param rep
-         *                The source string representation.
+         *            The source string representation.
          * @return The newly created root object of the Java content tree.
          * @throws JAXBException
-         *                 If any unexpected problem occurs during
-         *                 unmarshalling.
+         *             If any unexpected problem occurs during unmarshalling.
          * @throws IOException
-         *                 If an error occurs accessing the string
-         *                 representation.
+         *             If an error occurs accessing the string representation.
          */
         public Object unmarshal(StringRepresentation rep) throws JAXBException,
                 IOException {
@@ -334,9 +328,9 @@ public class JaxbRepresentation extends XmlRepresentation {
      * Creates a JAXB representation from an existing JAXB content tree.
      * 
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      * @param object
-     *                The Java object.
+     *            The Java object.
      */
     public JaxbRepresentation(MediaType mediaType, Object object) {
         super(mediaType);
@@ -352,14 +346,14 @@ public class JaxbRepresentation extends XmlRepresentation {
      * content tree. The XML is validated.
      * 
      * @param contextPath
-     *                The list of Java package names for JAXB.
+     *            The list of Java package names for JAXB.
      * @param xmlRepresentation
-     *                The XML wrapped in a representation.
+     *            The XML wrapped in a representation.
      * 
      * @throws JAXBException
-     *                 If the incoming XML does not validate against the schema.
+     *             If the incoming XML does not validate against the schema.
      * @throws IOException
-     *                 If unmarshalling XML fails.
+     *             If unmarshalling XML fails.
      */
     @SuppressWarnings("unchecked")
     public JaxbRepresentation(Representation xmlRepresentation,
@@ -372,16 +366,16 @@ public class JaxbRepresentation extends XmlRepresentation {
      * content tree. The XML is validated.
      * 
      * @param contextPath
-     *                The list of Java package names for JAXB.
+     *            The list of Java package names for JAXB.
      * @param xmlRepresentation
-     *                The XML wrapped in a representation.
+     *            The XML wrapped in a representation.
      * @param validationHandler
-     *                A handler for dealing with validation failures.
+     *            A handler for dealing with validation failures.
      * 
      * @throws JAXBException
-     *                 If the incoming XML does not validate against the schema.
+     *             If the incoming XML does not validate against the schema.
      * @throws IOException
-     *                 If unmarshalling XML fails.
+     *             If unmarshalling XML fails.
      */
     @SuppressWarnings("unchecked")
     public JaxbRepresentation(Representation xmlRepresentation,
@@ -456,27 +450,18 @@ public class JaxbRepresentation extends XmlRepresentation {
      * Returns the wrapped Java object.
      * 
      * @return The wrapped Java object.
+     * @throws JAXBException
+     * @throws IOException
      */
-    public Object getObject() throws IOException {
+    public Object getObject() throws JAXBException, IOException {
         if ((this.object == null) && (this.xmlRepresentation != null)) {
             // Try to unmarshal the wrapped XML representation
-            try {
-                Unmarshaller u = new Unmarshaller(this.contextPath);
-
-                if (getValidationEventHandler() != null) {
-                    u.setEventHandler(getValidationEventHandler());
-                }
-
-                this.object = u.unmarshal(this.xmlRepresentation.getStream());
-            } catch (Exception e) {
-                logger
-                        .log(
-                                Level.WARNING,
-                                "Error while unmarshalling the XML representation with JAXB",
-                                e);
+            Unmarshaller u = new Unmarshaller(this.contextPath);
+            if (getValidationEventHandler() != null) {
+                u.setEventHandler(getValidationEventHandler());
             }
+            this.object = u.unmarshal(this.xmlRepresentation.getStream());
         }
-
         return this.object;
     }
 
@@ -520,7 +505,7 @@ public class JaxbRepresentation extends XmlRepresentation {
      * and/or Java to schema (JAXB-annotated) mapped classes.
      * 
      * @param contextPath
-     *                The JAXB context path.
+     *            The JAXB context path.
      */
     public void setContextPath(String contextPath) {
         this.contextPath = contextPath;
@@ -531,7 +516,7 @@ public class JaxbRepresentation extends XmlRepresentation {
      * and indentation.
      * 
      * @param formattedOutput
-     *                True if the resulting XML data should be formatted.
+     *            True if the resulting XML data should be formatted.
      */
     public void setFormattedOutput(boolean formattedOutput) {
         this.formattedOutput = formattedOutput;
@@ -541,7 +526,7 @@ public class JaxbRepresentation extends XmlRepresentation {
      * Sets the wrapped Java object.
      * 
      * @param object
-     *                The Java object to set.
+     *            The Java object to set.
      */
     public void setObject(Object object) {
         this.object = object;
@@ -551,10 +536,10 @@ public class JaxbRepresentation extends XmlRepresentation {
      * Writes the representation to a byte stream.
      * 
      * @param outputStream
-     *                The output stream.
+     *            The output stream.
      * 
      * @throws IOException
-     *                 If any error occurs attempting to write the stream.
+     *             If any error occurs attempting to write the stream.
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {
