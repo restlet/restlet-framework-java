@@ -378,7 +378,6 @@
    <macrodef name="compileModule">
       <attribute name="name" />
       <sequential>
-         <echo message="@{name}" />
          <compile srcdir="${mod}/${mod-@{name}-id}/src"
                   destdir="${classes}/${mod-@{name}-id}"
                   classpathref="mod-@{name}-path" />
