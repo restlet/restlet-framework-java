@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -32,7 +32,7 @@ import org.restlet.resource.Variant;
 
 /**
  * Resource for a user's bookmark.
- * 
+ *
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class BookmarkResource extends UserResource {
@@ -43,7 +43,7 @@ public class BookmarkResource extends UserResource {
 
     /**
      * Constructor.
-     * 
+     *
      * @param context
      *            The parent context.
      * @param request
@@ -129,7 +129,7 @@ public class BookmarkResource extends UserResource {
     @Override
     public void put(Representation entity) {
         if (checkAuthorization() == 1) {
-            if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
+            if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM, true)) {
                 // Parse the entity as a web form
                 Form form = new Form(entity);
 
