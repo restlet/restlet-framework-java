@@ -15,6 +15,7 @@ Changes log
  - Fixed potential NPE in SecurityUtils. Patch contributed by Alex Milowski.
  - When a component is restarted, the new applications and virtual hosts are no taken into account. 
    Patch from Alex Milowski.
+ - Relaxed media-type equality test in ch7/BookmarkResource#put method. Reported by Katrin.
 
 [Enhancements] 
  - Clarified the Javadocs for the Variant's "identifier" property. Reported by Joe Holloway.
