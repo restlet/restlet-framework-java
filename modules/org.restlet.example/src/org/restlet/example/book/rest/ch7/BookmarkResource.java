@@ -129,7 +129,7 @@ public class BookmarkResource extends UserResource {
     @Override
     public void put(Representation entity) {
         if (checkAuthorization() == 1) {
-            if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
+            if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM, true)) {
                 // Parse the entity as a web form
                 Form form = new Form(entity);
 
