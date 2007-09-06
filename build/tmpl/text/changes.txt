@@ -16,6 +16,8 @@ Changes log
  - When a component is restarted, the new applications and virtual hosts are no taken into account. 
    Patch from Alex Milowski.
  - Relaxed media-type equality test in ch7/BookmarkResource#put method. Reported by Katrin.
+ - Fixed bug when decoding percent-encoded sequences in lowercase (see rfc 3986, chapter 2.1). 
+   Reported by Paul Kaiser and contributed by Rob Heittman.
 
 [Enhancements] 
  - Clarified the Javadocs for the Variant's "identifier" property. Reported by Joe Holloway.
