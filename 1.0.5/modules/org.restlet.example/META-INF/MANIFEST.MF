@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Examples
+Bundle-SymbolicName: org.restlet.example
+Bundle-Version: 1.0.0
+Bundle-Vendor: Noelios Consulting
+Export-Package: org.restlet.example
+Require-Bundle: com.noelios.restlet.ext.jetty,
+ com.noelios.restlet.ext.net,
+ org.restlet.ext.json,
+ com.db4o
