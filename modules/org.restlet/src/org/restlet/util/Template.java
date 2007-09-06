@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -36,7 +36,7 @@ import org.restlet.data.Response;
  * and described using the modifiable map of variable descriptors. When no
  * descriptor is found for a given variable, the template logic uses its default
  * variable property initialized using the default {@link Variable} constructor.
- * 
+ *
  * <table>
  * <tr>
  * <th>Model property</th>
@@ -204,10 +204,10 @@ import org.restlet.data.Response;
  * <td>Integer</td>
  * </tr>
  * </table> <br/>
- * 
+ *
  * Below is the list of name sub-parts, for Reference variables, that can
  * replace the asterix in the variable names above:<br/><br/>
- * 
+ *
  * <table>
  * <tr>
  * <th>Reference property</th>
@@ -260,7 +260,7 @@ import org.restlet.data.Response;
  * <td>String</td>
  * </tr>
  * </table>
- * 
+ *
  * @see <a href="http://bitworking.org/projects/URI-Templates/">URI Template
  *      specification</a>
  * @author Jerome Louvel (contact@noelios.com)
@@ -269,7 +269,7 @@ public class Template {
 
     /**
      * Resolves variable values based on a request and a response.
-     * 
+     *
      * @author Jerome Louvel (contact@noelios.com)
      */
     private class CallVariableResolver extends VariableResolver {
@@ -281,7 +281,7 @@ public class Template {
 
         /**
          * Constructor.
-         * 
+         *
          * @param request
          *                The request to use as a model.
          * @param response
@@ -516,7 +516,7 @@ public class Template {
 
     /**
      * Resolves variable values based on a map.
-     * 
+     *
      * @author Jerome Louvel (contact@noelios.com)
      */
     private class MapVariableResolver extends VariableResolver {
@@ -525,7 +525,7 @@ public class Template {
 
         /**
          * Constructor.
-         * 
+         *
          * @param map
          *                The variables to use when formatting.
          */
@@ -542,7 +542,7 @@ public class Template {
 
     /**
      * Resolves variable values.
-     * 
+     *
      * @author Jerome Louvel (contact@noelios.com)
      */
     private abstract class VariableResolver {
@@ -555,7 +555,7 @@ public class Template {
 
     /**
      * Indicates if the given character is alphabetical (a-z or A-Z).
-     * 
+     *
      * @param character
      *                The character to test.
      * @return True if the given character is alphabetical (a-z or A-Z).
@@ -566,7 +566,7 @@ public class Template {
 
     /**
      * Indicates if the given character is a digit (0-9).
-     * 
+     *
      * @param character
      *                The character to test.
      * @return True if the given character is a digit (0-9).
@@ -577,7 +577,7 @@ public class Template {
 
     /**
      * Indicates if the given character is lower case (a-z).
-     * 
+     *
      * @param character
      *                The character to test.
      * @return True if the given character is lower case (a-z).
@@ -588,7 +588,7 @@ public class Template {
 
     /**
      * Indicates if the given character is an unreserved URI character.
-     * 
+     *
      * @param character
      *                The character to test.
      * @return True if the given character is an unreserved URI character.
@@ -601,7 +601,7 @@ public class Template {
 
     /**
      * Indicates if the given character is upper case (A-Z).
-     * 
+     *
      * @param character
      *                The character to test.
      * @return True if the given character is upper case (A-Z).
@@ -636,7 +636,7 @@ public class Template {
      * default. When parsing, the template will attempt to match the whole
      * template. When formatting, the variable are replaced by an empty string
      * if they don't exist in the model.
-     * 
+     *
      * @param logger
      *                The logger to use.
      * @param pattern
@@ -648,7 +648,7 @@ public class Template {
 
     /**
      * Constructor.
-     * 
+     *
      * @param logger
      *                The logger to use.
      * @param pattern
@@ -663,7 +663,7 @@ public class Template {
 
     /**
      * Constructor.
-     * 
+     *
      * @param logger
      *                The logger to use.
      * @param pattern
@@ -697,7 +697,7 @@ public class Template {
     /**
      * Appends to a pattern a repeating group of a given content based on a
      * class of characters.
-     * 
+     *
      * @param pattern
      *                The pattern to append to.
      * @param content
@@ -731,7 +731,7 @@ public class Template {
     /**
      * Appends to a pattern a repeating group of a given content based on a
      * non-capturing group.
-     * 
+     *
      * @param pattern
      *                The pattern to append to.
      * @param content
@@ -754,7 +754,7 @@ public class Template {
 
     /**
      * Creates a formatted string based on the given request.
-     * 
+     *
      * @param variables
      *                The variables to use when formatting.
      * @return The formatted string.
@@ -765,7 +765,7 @@ public class Template {
 
     /**
      * Creates a formatted string based on the given request.
-     * 
+     *
      * @param request
      *                The request to use as a model.
      * @param response
@@ -778,7 +778,7 @@ public class Template {
 
     /**
      * Creates a formatted string based on the given variable resolver.
-     * 
+     *
      * @param resolver
      *                The variable resolver to use.
      * @return The formatted string.
@@ -833,7 +833,7 @@ public class Template {
 
     /**
      * Returns the default variable.
-     * 
+     *
      * @return The default variable.
      */
     public Variable getDefaultVariable() {
@@ -842,7 +842,7 @@ public class Template {
 
     /**
      * Returns the logger to use.
-     * 
+     *
      * @return The logger to use.
      */
     public Logger getLogger() {
@@ -851,7 +851,7 @@ public class Template {
 
     /**
      * Returns the matching mode to use when parsing a formatted reference.
-     * 
+     *
      * @return The matching mode to use when parsing a formatted reference.
      */
     public int getMatchingMode() {
@@ -860,7 +860,7 @@ public class Template {
 
     /**
      * Returns the pattern to use for formatting or parsing.
-     * 
+     *
      * @return The pattern to use for formatting or parsing.
      */
     public String getPattern() {
@@ -869,7 +869,7 @@ public class Template {
 
     /**
      * Returns the content corresponding to a reference property.
-     * 
+     *
      * @param partName
      *                The variable sub-part name.
      * @param reference
@@ -907,7 +907,7 @@ public class Template {
 
     /**
      * Compiles the URI pattern into a Regex pattern.
-     * 
+     *
      * @param uriPattern
      *                The URI pattern.
      * @return The Regex pattern.
@@ -983,7 +983,7 @@ public class Template {
     /**
      * Returns the sequence of Regex variable names as found in the pattern
      * string.
-     * 
+     *
      * @return The sequence of Regex variable names as found in the pattern
      *         string.
      */
@@ -995,7 +995,7 @@ public class Template {
 
     /**
      * Returns the list of variable names in the template.
-     * 
+     *
      * @return The list of variable names.
      */
     public List<String> getVariableNames() {
@@ -1046,7 +1046,7 @@ public class Template {
 
     /**
      * Returns the Regex pattern string corresponding to a variable.
-     * 
+     *
      * @param variable
      *                The variable.
      * @return The Regex pattern string corresponding to a variable.
@@ -1062,7 +1062,7 @@ public class Template {
             final String ALPHA = "a-zA-Z";
             final String DIGIT = "0-9";
             final String ALPHA_DIGIT = ALPHA + DIGIT;
-            final String HEXA = DIGIT + "ABCDEF";
+            final String HEXA = DIGIT + "ABCDEFabcdef";
             final String URI_UNRESERVED = ALPHA_DIGIT + "\\-\\.\\_\\~";
             final String URI_GEN_DELIMS = "\\:\\/\\?\\#\\[\\]\\@";
             final String URI_SUB_DELIMS = "\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=";
@@ -1124,7 +1124,7 @@ public class Template {
     /**
      * Returns the modifiable map of variables. Creates a new instance if no one
      * has been set.
-     * 
+     *
      * @return The modifiable map of variables.
      */
     public Map<String, Variable> getVariables() {
@@ -1135,7 +1135,7 @@ public class Template {
 
     /**
      * Indicates if the current pattern matches the given formatted string.
-     * 
+     *
      * @param formattedString
      *                The formatted string to match.
      * @return The number of matched characters or -1 if the match failed.
@@ -1166,7 +1166,7 @@ public class Template {
     /**
      * Attempts to parse a formatted reference. If the parsing succeeds, the
      * given request's attributes are updated.
-     * 
+     *
      * @param formattedString
      *                The string to parse.
      * @param variables
@@ -1208,7 +1208,7 @@ public class Template {
     /**
      * Attempts to parse a formatted reference. If the parsing succeeds, the
      * given request's attributes are updated.
-     * 
+     *
      * @param formattedString
      *                The string to parse.
      * @param request
@@ -1222,7 +1222,7 @@ public class Template {
     /**
      * Quotes special characters that could be taken for special Regex
      * characters.
-     * 
+     *
      * @param character
      *                The character to quote if necessary.
      * @return The quoted character.
@@ -1272,7 +1272,7 @@ public class Template {
 
     /**
      * Sets the logger to use.
-     * 
+     *
      * @param logger
      *                The logger to use.
      */
@@ -1282,7 +1282,7 @@ public class Template {
 
     /**
      * Sets the matching mode to use when parsing a formatted reference.
-     * 
+     *
      * @param matchingMode
      *                The matching mode to use when parsing a formatted
      *                reference.
@@ -1293,7 +1293,7 @@ public class Template {
 
     /**
      * Sets the pattern to use for formatting or parsing.
-     * 
+     *
      * @param pattern
      *                The pattern to use for formatting or parsing.
      */
@@ -1303,7 +1303,7 @@ public class Template {
 
     /**
      * Sets the modifiable map of variables.
-     * 
+     *
      * @param variables
      *                The modifiable map of variables.
      */
