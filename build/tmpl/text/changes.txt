@@ -3,8 +3,10 @@
 Changes log  
 ===========
 
-
 @version-full@ (@release-date@)
+ - Fixed error when parsing weak Etag. Reported and contributed by Larry Gately.
+
+1.0.5 (2007-09-06)
 [Bugs fixed]
  - Potential NPE in REST book example (ch7, UserResource). Reported by Marc Portier.
  - Potential NPE during KeyStore initialization for Simple HTTPS connector. Report by Quintin May.
