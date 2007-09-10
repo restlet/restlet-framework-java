@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  * equality.<br/> A weak entity tag may be shared by two entities of a resource
  * only if the entities are equivalent and could be substituted for each other
  * with no significant change in semantics."
- * 
+ *
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
  *      Entity Tags</a>
@@ -42,10 +42,10 @@ public final class Tag extends Metadata {
 
     /**
      * Parses a tag formatted as defined by the HTTP standard.
-     * 
+     *
      * @param httpTag
-     *            The HTTP tag string; if it starts with a 'W' the tag will be
-     *            marked as weak and the data following the 'W' used as the tag;
+     *            The HTTP tag string; if it starts with 'W/' the tag will be
+     *            marked as weak and the data following the 'W/' used as the tag;
      *            otherwise it should be surrounded with quotes (e.g.,
      *            "sometag").
      * @return A new tag instance.
@@ -58,9 +58,9 @@ public final class Tag extends Metadata {
         boolean weak = false;
         String httpTagCopy = httpTag;
 
-        if (httpTagCopy.startsWith("W")) {
+        if (httpTagCopy.startsWith("W/")) {
             weak = true;
-            httpTagCopy = httpTagCopy.substring(1);
+            httpTagCopy = httpTagCopy.substring(2);
         }
 
         if (httpTagCopy.startsWith("\"") && httpTagCopy.endsWith("\"")) {
@@ -89,7 +89,7 @@ public final class Tag extends Metadata {
 
     /**
      * Constructor of weak tags.
-     * 
+     *
      * @param opaqueTag
      *            The tag value.
      */
@@ -99,7 +99,7 @@ public final class Tag extends Metadata {
 
     /**
      * Constructor.
-     * 
+     *
      * @param opaqueTag
      *            The tag value.
      * @param weak
@@ -112,7 +112,7 @@ public final class Tag extends Metadata {
 
     /**
      * Indicates if both tags are equal.
-     * 
+     *
      * @param object
      *            The object to compare to.
      * @return True if both tags are equal.
@@ -124,12 +124,12 @@ public final class Tag extends Metadata {
 
     /**
      * Indicates if both tags are equal.
-     * 
+     *
      * @param object
      *            The object to compare to.
      * @param checkWeakness
      *            the equality test takes care or not of the weakness.
-     * 
+     *
      * @return True if both tags are equal.
      */
     public boolean equals(final Object object, boolean checkWeakness) {
@@ -153,7 +153,7 @@ public final class Tag extends Metadata {
 
     /**
      * Returns tag formatted as an HTTP tag string.
-     * 
+     *
      * @return The formatted HTTP tag string.
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
@@ -172,7 +172,7 @@ public final class Tag extends Metadata {
 
     /**
      * Returns the description.
-     * 
+     *
      * @return The description.
      */
     public String getDescription() {
@@ -181,7 +181,7 @@ public final class Tag extends Metadata {
 
     /**
      * Returns the name, corresponding to an HTTP opaque tag value.
-     * 
+     *
      * @return The name, corresponding to an HTTP opaque tag value.
      */
     public String getName() {
@@ -196,7 +196,7 @@ public final class Tag extends Metadata {
 
     /**
      * Indicates if the tag is weak.
-     * 
+     *
      * @return True if the tag is weak, false if the tag is strong.
      */
     public boolean isWeak() {
