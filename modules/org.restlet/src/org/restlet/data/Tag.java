@@ -44,8 +44,8 @@ public final class Tag extends Metadata {
      * Parses a tag formatted as defined by the HTTP standard.
      *
      * @param httpTag
-     *            The HTTP tag string; if it starts with a 'W' the tag will be
-     *            marked as weak and the data following the 'W' used as the tag;
+     *            The HTTP tag string; if it starts with 'W/' the tag will be
+     *            marked as weak and the data following the 'W/' used as the tag;
      *            otherwise it should be surrounded with quotes (e.g.,
      *            "sometag").
      * @return A new tag instance.
@@ -58,9 +58,9 @@ public final class Tag extends Metadata {
         boolean weak = false;
         String httpTagCopy = httpTag;
 
-        if (httpTagCopy.startsWith("W")) {
+        if (httpTagCopy.startsWith("W/")) {
             weak = true;
-            httpTagCopy = httpTagCopy.substring(1);
+            httpTagCopy = httpTagCopy.substring(2);
         }
 
         if (httpTagCopy.startsWith("\"") && httpTagCopy.endsWith("\"")) {
