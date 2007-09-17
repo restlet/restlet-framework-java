@@ -21,6 +21,8 @@ package org.restlet.data;
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.resource.DomRepresentation;
@@ -35,11 +37,24 @@ import org.restlet.service.ConverterService;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Message {
+    /** Obtain a suitable logger. */
+    private static Logger logger = Logger.getLogger(Message.class
+            .getCanonicalName());
+
     /** The modifiable attributes map. */
     private Map<String, Object> attributes;
 
     /** The payload of the message. */
     private Representation entity;
+
+    /** The optional cached DOM representation. */
+    private DomRepresentation domRepresentation;
+
+    /** The optional cached Form. */
+    private Form form;
+
+    /** The optional cached SAX representation. */
+    private SaxRepresentation saxRepresentation;
 
     /**
      * Constructor.
@@ -57,6 +72,9 @@ public abstract class Message {
     public Message(Representation entity) {
         this.attributes = null;
         this.entity = entity;
+        this.domRepresentation = null;
+        this.form = null;
+        this.saxRepresentation = null;
     }
 
     /**
@@ -134,36 +152,44 @@ public abstract class Message {
     }
 
     /**
-     * Returns the entity as a DOM representation.<br/> Note that this triggers
-     * the parsing of the entity into a reusable DOM document stored in memory.<br/>
-     * This method and the related getEntity*() methods can only be invoked
-     * once.
+     * Returns the entity as a DOM representation.<br/> This method can be
+     * called several times and will always return the same representation
+     * instance. Note that if the entity is large this method can result in
+     * large memory consumption. In this case, consider using a SAX
+     * representation.
      * 
      * @return The entity as a DOM representation.
      */
     public DomRepresentation getEntityAsDom() {
-        return new DomRepresentation(getEntity());
+        if (this.domRepresentation == null) {
+            this.domRepresentation = new DomRepresentation(getEntity());
+        }
+
+        return this.domRepresentation;
     }
 
     /**
-     * Returns the entity as a form.<br/> Note that this triggers the parsing
-     * of the entity.<br/> This method and the related getEntity*() methods can
-     * only be invoked once.
+     * Returns the entity as a form.<br/> This method can be called several
+     * times and will always return the same form instance. Note that if the
+     * entity is large this method can result in large memory consumption.
      * 
      * @return The entity as a form.
      */
     public Form getEntityAsForm() {
-        return new Form(getEntity());
+        if (this.form == null) {
+            this.form = new Form(getEntity());
+        }
+
+        return this.form;
     }
 
     /**
      * Returns the entity as a higher-level object. This object is created by
-     * the Application's converter service. If you want to use this method to
-     * facilitate the processing of request entities, you need to provide a
-     * custom implementation of the ConverterService class, overriding the
-     * toObject(Representation) method. <br/> Note that this triggers the
-     * parsing of the entity.<br/> This method and the related getEntity*()
-     * methods can only be invoked once.
+     * the Application's converter service. In order to use this method to
+     * facilitate the parsing of entities, you need to set an instance of a
+     * subclass of ConverterService onto your Restlet Application, overriding
+     * the toObject(Representation) method. <br/> Note that this triggers the
+     * parsing of the entity.
      * 
      * @return The entity as a higher-level object.
      */
@@ -172,20 +198,26 @@ public abstract class Message {
     }
 
     /**
-     * Returns the entity as a SAX representation.<br/> Note that this kind of
-     * representation can only be parsed once. If you evaluate an XPath
-     * expression, it can also only be done once. If you need to reuse the
-     * entity multiple times, consider using the getEntityAsDom() method
-     * instead.
+     * Returns the entity as a SAX representation.<br/> This method can be
+     * called several times and will always return the same form instance. Note
+     * that generally this type of representation can only be parsed once. If
+     * you evaluate an XPath expression, it can also only be done once. If you
+     * need to reuse the entity multiple times, consider using the
+     * getEntityAsDom() method instead.
      * 
      * @return The entity as a SAX representation.
      */
     public SaxRepresentation getEntityAsSax() {
-        try {
-            return new SaxRepresentation(getEntity());
-        } catch (IOException e) {
-            return null;
+        if (this.saxRepresentation == null) {
+            try {
+                this.saxRepresentation = new SaxRepresentation(getEntity());
+            } catch (IOException ioe) {
+                logger.log(Level.WARNING,
+                        "Unable to create the SAX representation", ioe);
+            }
         }
+
+        return this.saxRepresentation;
     }
 
     /**

@@ -14,6 +14,7 @@ Changes log
  - Fixed bug in DomRepresentation causing the loss of both public and system DocTypes. 
    Reported by Lee Saferite.
  - Fixed path error in test cases  module. Reported by Sean Landis, contributed by Alex Milowski.
+
 [Enhancements] 
  - Added a getApplication() method to Context and Resource classes.
  - Added a new Grizzly based HTTP server connector (full NIO). Optmizations and support
@@ -81,6 +82,8 @@ Changes log
    component for a Servlet.
  - Updated the JaxbRepresentation#getObject so that JaxbException are not swallowed. Reported and contributed 
    by Sean Landis.
+ - The Message's getEntityAsDom(), getEntityAsSax() and getEntityAsForm() are now caching the result
+   representation for easier reuse in a Restlet filters chain. Suggested by Rob Heittman.
      
 [Misc]
  - Removed AsyncWeb connector, to be replaced by a custom MINA based one.
@@ -88,3 +91,4 @@ Changes log
  - Added Response.locationRef property as a replacement for the Response.redirectRef
    property that is now deprecated. Suggested by Michael Vogel and Avi Flax.
  - Updated projects to Eclipse 3.3. Minor adjustments required.
+ 
