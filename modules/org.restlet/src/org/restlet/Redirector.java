@@ -178,6 +178,13 @@ public class Redirector extends Restlet {
             response.setStatus(Status.REDIRECTION_FOUND);
             break;
 
+        case MODE_CLIENT_SEE_OTHER:
+            getLogger().log(Level.INFO,
+                    "Redirecting client to another location: " + targetRef);
+            response.setLocationRef(targetRef);
+            response.setStatus(Status.REDIRECTION_SEE_OTHER);
+            break;
+
         case MODE_CLIENT_TEMPORARY:
             getLogger().log(Level.INFO,
                     "Temporarily redirecting client to: " + targetRef);
