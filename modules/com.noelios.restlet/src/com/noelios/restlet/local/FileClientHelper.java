@@ -62,7 +62,7 @@ public class FileClientHelper extends LocalClientHelper {
      * Constructor.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      */
     public FileClientHelper(Client client) {
         super(client);
@@ -73,9 +73,9 @@ public class FileClientHelper extends LocalClientHelper {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         String scheme = request.getResourceRef().getScheme();
@@ -98,11 +98,11 @@ public class FileClientHelper extends LocalClientHelper {
      * Handles a call for the FILE protocol.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      * @param path
-     *            The file or directory path.
+     *                The file or directory path.
      */
     protected void handleFile(Request request, Response response, String path) {
         File file = new File(LocalReference.localizePath(path));
@@ -140,9 +140,16 @@ public class FileClientHelper extends LocalClientHelper {
                         // Return the directory listing
                         File[] files = file.listFiles();
                         ReferenceList rl = new ReferenceList(files.length);
+                        String directoryUri = request.getResourceRef()
+                                .toString();
+
+                        // Ensures that the directory URI ends with a slash
+                        if (!directoryUri.endsWith("/")) {
+                            directoryUri += "/";
+                        }
 
                         for (File entry : files) {
-                            rl.add(LocalReference.createFileReference(entry));
+                            rl.add(directoryUri + entry.getName());
                         }
 
                         output = rl.getTextRepresentation();
@@ -541,11 +548,11 @@ public class FileClientHelper extends LocalClientHelper {
      * the URI
      * 
      * @param fileName
-     *            The name of the resource
+     *                The name of the resource
      * @param metadataService
-     *            metadata helper
+     *                metadata helper
      * @param representation
-     *            the provided representation
+     *                the provided representation
      * @return true if the metadata of the representation are compatible with
      *         the metadata extracted from the filename
      */
