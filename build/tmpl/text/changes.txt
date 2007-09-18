@@ -7,6 +7,7 @@ Changes log
 [Bugs fixed]
  - Fixed error when parsing weak Etags. Reported by Larry Gately and John R. Fallows.
  - Fixed Redirector which didn't implement the SEE_OTHER type of redirections.
+ - Fixed directory listing error in the File connector. Reported by Jochen Bedersdorfer.
 
 1.0.5 (2007-09-06)
 [Bugs fixed]

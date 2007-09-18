@@ -142,9 +142,16 @@ public class FileClientHelper extends LocalClientHelper {
                         File[] files = file.listFiles();
                         ReferenceList rl = new ReferenceList(files.length);
                         rl.setIdentifier(request.getResourceRef());
+                        String directoryUri = request.getResourceRef()
+                                .toString();
+
+                        // Ensures that the directory URI ends with a slash
+                        if (!directoryUri.endsWith("/")) {
+                            directoryUri += "/";
+                        }
 
                         for (File entry : files) {
-                            rl.add(LocalReference.createFileReference(entry));
+                            rl.add(directoryUri + entry.getName());
                         }
 
                         output = rl.getTextRepresentation();
