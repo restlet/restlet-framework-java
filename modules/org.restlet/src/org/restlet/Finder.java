@@ -19,6 +19,7 @@
 package org.restlet;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -153,6 +154,16 @@ public class Finder extends Restlet {
                         result = (Resource) constructor.newInstance();
                         result.init(getContext(), request, response);
                     }
+                }
+            } catch (InvocationTargetException e) {
+                if (e.getCause() instanceof Error) {
+                    throw (Error) e.getCause();
+                } else {
+                    getLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "Exception while instantiating the target resource.",
+                                    e);
                 }
             } catch (Exception e) {
                 getLogger()

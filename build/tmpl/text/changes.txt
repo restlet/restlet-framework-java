@@ -84,6 +84,8 @@ Changes log
    by Sean Landis.
  - The Message's getEntityAsDom(), getEntityAsSax() and getEntityAsForm() are now caching the result
    representation for easier reuse in a Restlet filters chain. Suggested by Rob Heittman.
+ - Finder.createResource() method now rethrows the Error exceptions thrown by Resource constructors.
+   Suggested by Vincent Lari.
      
 [Misc]
  - Removed AsyncWeb connector, to be replaced by a custom MINA based one.
