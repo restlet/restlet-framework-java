@@ -125,7 +125,9 @@ public class Finder extends Restlet {
 
     /**
      * Creates a new instance of the resource class designated by the
-     * "targetClass" property.
+     * "targetClass" property. Note that Error and RuntimeException thrown by
+     * Resource constructors are rethrown by this method. Other exception are
+     * caught and logged.
      * 
      * @param request
      *                The request to handle.
@@ -158,6 +160,8 @@ public class Finder extends Restlet {
             } catch (InvocationTargetException e) {
                 if (e.getCause() instanceof Error) {
                     throw (Error) e.getCause();
+                } else if (e.getCause() instanceof RuntimeException) {
+                    throw (RuntimeException) e.getCause();
                 } else {
                     getLogger()
                             .log(
