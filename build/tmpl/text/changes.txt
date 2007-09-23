@@ -89,7 +89,6 @@ Changes log
  - Added "accessRestricted" property to CookieSetting, currently mapped to the "httpOnly" Cookie attribute
    supported by recent browsers to prevent XSS attacks. Contributed by Rob Heittman.
  - Added logger-less constructors to Template. Suggested by Justin Makeig.
- - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
  - A custom classloader can now be specified when using the CLAP URIs. Just set the attribute
    "org.restlet.clap.classloader" on your Request instances with your classloader instance. This will
    be automatically be picked up by the CLAP connector. Reported by Alex Milowski.
