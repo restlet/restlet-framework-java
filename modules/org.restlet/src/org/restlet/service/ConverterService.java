@@ -30,8 +30,8 @@ import org.restlet.resource.Representation;
  * message's representation into a higher-level object and the setEntity(Object)
  * method to convert a higher-level object into a representation.
  * 
- * @see {@link org.restlet.data.Message#getEntityAsObject()}
- * @see {@link org.restlet.data.Message#setEntity(Object)}
+ * @see org.restlet.data.Message#getEntityAsObject()
+ * @see org.restlet.data.Message#setEntity(Object)
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ConverterService {

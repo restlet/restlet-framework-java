@@ -74,18 +74,12 @@ public abstract class HttpServerCall extends HttpCall {
     /**
      * Returns the request head channel if it exists.
      * 
-     * @param size
-     *                The total size that will be read from the channel.
-     * 
      * @return The request head channel if it exists.
      */
     public abstract ReadableByteChannel getRequestHeadChannel();
 
     /**
      * Returns the request head stream if it exists.
-     * 
-     * @param size
-     *                The total size that will be read from the stream.
      * 
      * @return The request head stream if it exists.
      */

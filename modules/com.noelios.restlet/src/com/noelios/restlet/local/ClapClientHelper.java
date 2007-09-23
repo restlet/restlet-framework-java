@@ -35,7 +35,12 @@ import org.restlet.resource.Representation;
 import org.restlet.service.MetadataService;
 
 /**
- * Connector to the class loaders.
+ * Connector to the class loaders.<br/> <br/>
+ * 
+ * Note that if you use the class authority for your CLAP URIs, you can provide
+ * a custom classloader instead of the one of the connector. For this, your
+ * requests need to have a "org.restlet.clap.classloader" attribute set with the
+ * instance of your classloader.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -45,7 +50,7 @@ public class ClapClientHelper extends LocalClientHelper {
      * extensions is added, see the addCommonExtensions() method.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      */
     public ClapClientHelper(Client client) {
         super(client);
@@ -56,9 +61,9 @@ public class ClapClientHelper extends LocalClientHelper {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         String scheme = request.getResourceRef().getScheme();
@@ -69,17 +74,25 @@ public class ClapClientHelper extends LocalClientHelper {
 
         if (scheme.equalsIgnoreCase(Protocol.CLAP.getSchemeName())) {
             LocalReference cr = new LocalReference(request.getResourceRef());
+            ClassLoader classLoader = null;
 
             if (cr.getClapAuthorityType() == LocalReference.CLAP_CLASS) {
-                handleClassLoader(request, response, getClass()
-                        .getClassLoader());
+                // Sometimes, a specific class loader needs to be used,
+                // make sure that it can be provided as a request's attribute
+                Object classLoaderAttribute = request.getAttributes().get(
+                        "org.restlet.clap.classloader");
+                if (classLoaderAttribute != null) {
+                    classLoader = (ClassLoader) classLoaderAttribute;
+                } else {
+                    classLoader = getClass().getClassLoader();
+                }
             } else if (cr.getClapAuthorityType() == LocalReference.CLAP_SYSTEM) {
-                handleClassLoader(request, response, ClassLoader
-                        .getSystemClassLoader());
+                classLoader = ClassLoader.getSystemClassLoader();
             } else if (cr.getClapAuthorityType() == LocalReference.CLAP_THREAD) {
-                handleClassLoader(request, response, Thread.currentThread()
-                        .getContextClassLoader());
+                classLoader = Thread.currentThread().getContextClassLoader();
             }
+
+            handleClassLoader(request, response, classLoader);
         } else {
             throw new IllegalArgumentException(
                     "Protocol \""
@@ -92,9 +105,9 @@ public class ClapClientHelper extends LocalClientHelper {
      * Handles a call with a given class loader.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     protected void handleClassLoader(Request request, Response response,
             ClassLoader classLoader) {
