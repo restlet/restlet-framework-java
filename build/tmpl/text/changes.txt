@@ -8,6 +8,8 @@ Changes log
  - Fixed error when parsing weak Etags. Reported by Larry Gately and John R. Fallows.
  - Fixed Redirector which didn't implement the SEE_OTHER type of redirections.
  - Fixed directory listing error in the File connector. Reported by Jochen Bedersdorfer.
+ - The lack of root URI normalization by Directory could lead to listing issues.
+   Reported by Joel Nelson and Rob Heittman.
 
 1.0.5 (2007-09-06)
 [Bugs fixed]

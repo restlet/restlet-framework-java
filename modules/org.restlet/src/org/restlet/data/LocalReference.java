@@ -318,4 +318,19 @@ public final class LocalReference extends Reference {
         return result;
     }
 
+    @Override
+    public LocalReference getParentRef() {
+        return (LocalReference) super.getParentRef();
+    }
+
+    @Override
+    public LocalReference getRelativeRef() {
+        return (LocalReference) super.getRelativeRef();
+    }
+
+    @Override
+    public LocalReference getTargetRef() {
+        return (LocalReference) super.getTargetRef();
+    }
+
 }
