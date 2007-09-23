@@ -61,6 +61,8 @@ public class CookieReader extends HeaderReader {
 
     private static final String NAME_SET_SECURE = "secure";
 
+    private static final String NAME_SET_ACCESS_RESTRICTED = "httpOnly";
+    
     private static final String NAME_SET_VERSION = "version";
 
     /** The logger to use. */
@@ -217,6 +219,11 @@ public class CookieReader extends HeaderReader {
                 if ((pair.getValue() == null)
                         || (pair.getValue().length() == 0)) {
                     result.setSecure(true);
+                }
+            } else if (pair.getName().equalsIgnoreCase(NAME_SET_ACCESS_RESTRICTED)) {
+                if ((pair.getValue() == null)
+                        || (pair.getValue().length() == 0)) {
+                    result.setAccessRestricted(true);
                 }
             } else if (pair.getName().equalsIgnoreCase(NAME_SET_VERSION)) {
                 result.setVersion(Integer.valueOf(pair.getValue()));

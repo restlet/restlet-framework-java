@@ -37,6 +37,11 @@ public final class CookieSetting extends Cookie {
     /** Indicates if cookie should only be transmitted by secure means. */
     private boolean secure;
 
+    /** Indicates whether to restrict cookie access to untrusted parties.
+     *  Currently this toggles the non-standard but widely supported
+     *  HttpOnly cookie parameter. */
+    private boolean accessRestricted;
+
     /**
      * Default constructor.
      */
@@ -78,6 +83,7 @@ public final class CookieSetting extends Cookie {
         this.comment = null;
         this.maxAge = -1;
         this.secure = false;
+        this.accessRestricted = false;
     }
 
     /**
@@ -202,5 +208,29 @@ public final class CookieSetting extends Cookie {
     public void setSecure(boolean secure) {
         this.secure = secure;
     }
+
+	/**
+	 * Indicates if cookie access is restricted for untrusted parties.
+     * Currently this toggles the non-standard but widely supported
+     * HttpOnly cookie parameter.
+     * 
+	 * @return accessRestricted
+	 * 				  True if cookie access should be restricted
+	 */
+	public boolean isAccessRestricted() {
+		return accessRestricted;
+	}
+
+	/**
+	 * Indicates whether to restrict cookie access to untrusted parties.
+     * Currently this toggles the non-standard but widely supported
+     * HttpOnly cookie parameter.
+     *  
+	 * @param accessRestricted
+	 * 				  True if cookie access should be restricted
+	 */
+	public void setAccessRestricted(boolean accessRestricted) {
+		this.accessRestricted = accessRestricted;
+	}
 
 }

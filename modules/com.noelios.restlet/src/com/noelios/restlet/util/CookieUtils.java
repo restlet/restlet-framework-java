@@ -165,6 +165,11 @@ public class CookieUtils {
                 destination.append("; Secure");
             }
 
+            // Append the secure flag
+            if (cookieSetting.isAccessRestricted()) {
+                destination.append("; HttpOnly");
+            }
+
             // Append the comment
             if (version > 0) {
                 String comment = cookieSetting.getComment();

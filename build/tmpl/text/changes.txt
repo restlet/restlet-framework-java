@@ -86,6 +86,8 @@ Changes log
    representation for easier reuse in a Restlet filters chain. Suggested by Rob Heittman.
  - Finder.createResource() method now rethrows the Error exceptions thrown by Resource constructors.
    Suggested by Vincent Lari.
+ - Added "accessRestricted" property to CookieSetting, currently mapped to the "httpOnly" Cookie attribute
+   supported by recent browsers to prevent XSS attacks. Contributed by Rob Heittman.
      
 [Misc]
  - Removed AsyncWeb connector, to be replaced by a custom MINA based one.
