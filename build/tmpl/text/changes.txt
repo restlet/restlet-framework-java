@@ -11,6 +11,9 @@ Changes log
  - The lack of root URI normalization by Directory could lead to listing issues.
    Reported by Joel Nelson and Rob Heittman.
 
+[Enhancements] 
+ - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
+
 1.0.5 (2007-09-06)
 [Bugs fixed]
  - Potential NPE in REST book example (ch7, UserResource). Reported by Marc Portier.

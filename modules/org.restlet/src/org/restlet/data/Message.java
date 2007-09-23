@@ -160,6 +160,7 @@ public abstract class Message {
      * methods can only be invoked once.
      * 
      * @return The entity as a higher-level object.
+     * @see org.restlet.service.ConverterService
      */
     public Object getEntityAsObject() {
         return getConverterService().toObject(getEntity());
@@ -202,6 +203,7 @@ public abstract class Message {
      * 
      * @param object
      *            The higher-level object.
+     * @see org.restlet.service.ConverterService
      */
     public void setEntity(Object object) {
         if (object instanceof Representation) {
