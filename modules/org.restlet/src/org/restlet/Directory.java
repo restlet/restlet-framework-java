@@ -86,18 +86,23 @@ public class Directory extends Finder {
     public Directory(Context context, LocalReference rootLocalReference) {
         super(context);
 
-        if (rootLocalReference.getIdentifier().endsWith("/")) {
-            this.rootRef = new Reference(rootLocalReference.getIdentifier());
+        // First, let's normalize the root reference to prevent any issue with
+        // relative paths inside the reference leading to listing issues.
+        rootLocalReference = rootLocalReference.getTargetRef();
+
+        String rootIdentifier = rootLocalReference.getIdentifier();
+        if (rootIdentifier.endsWith("/")) {
+            this.rootRef = new Reference(rootIdentifier);
         } else {
             // We don't take the risk of exposing directory "file:///C:/AA"
             // if only "file:///C:/A" was intended
-            this.rootRef = new Reference(rootLocalReference.getIdentifier()
-                    + "/");
+            this.rootRef = new Reference(rootIdentifier + "/");
         }
 
         this.deeplyAccessible = true;
-        this.modifiable = false;
+        this.indexName = "index";
         this.listingAllowed = false;
+        this.modifiable = false;
     }
 
     /**
@@ -120,20 +125,7 @@ public class Directory extends Finder {
      *                <br>
      */
     public Directory(Context context, String rootUri) {
-        super(context);
-
-        if (rootUri.endsWith("/")) {
-            this.rootRef = new Reference(rootUri);
-        } else {
-            // We don't take the risk of exposing directory "file:///C:/AA"
-            // if only "file:///C:/A" was intended
-            this.rootRef = new Reference(rootUri + "/");
-        }
-
-        this.deeplyAccessible = true;
-        this.indexName = "index";
-        this.listingAllowed = false;
-        this.modifiable = false;
+        this(context, new LocalReference(rootUri));
     }
 
     /**
