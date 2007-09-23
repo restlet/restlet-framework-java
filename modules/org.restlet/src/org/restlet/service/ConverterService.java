@@ -21,8 +21,17 @@ package org.restlet.service;
 import org.restlet.resource.Representation;
 
 /**
- * Service converting message entities into higher-level objects.
+ * Service converting message entities into higher-level objects. As the default
+ * implementation doesn't do any convertion by default, you have to subclass it
+ * and update the Application's "converterService" property with your own
+ * instance. Once this done, any Restlet or Resource that is part of this
+ * application can easily convert from representations to objects and the other
+ * way around. You just have to use the getEntityAsObject() method to convert a
+ * message's representation into a higher-level object and the setEntity(Object)
+ * method to convert a higher-level object into a representation.
  * 
+ * @see {@link org.restlet.data.Message#getEntityAsObject()}
+ * @see {@link org.restlet.data.Message#setEntity(Object)}
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ConverterService {
