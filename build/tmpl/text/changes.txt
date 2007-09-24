@@ -13,6 +13,7 @@ Changes log
 
 [Enhancements] 
  - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
+ - Clarified the dependencies in the "lib/readme.txt" file. Reported by Mike Leary.
 
 1.0.5 (2007-09-06)
 [Bugs fixed]
