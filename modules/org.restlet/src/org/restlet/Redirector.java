@@ -145,7 +145,7 @@ public class Redirector extends Restlet {
         case MODE_CLIENT_SEE_OTHER:
             getLogger().log(Level.INFO,
                     "Redirecting client to another location: " + targetRef);
-            response.setLocationRef(targetRef);
+            response.setRedirectRef(targetRef);
             response.setStatus(Status.REDIRECTION_SEE_OTHER);
             break;
 
