@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
@@ -81,16 +80,16 @@ public class Directory extends Finder {
      * @param context
      *                The context.
      * @param rootLocalReference
-     *                The root Uri.
+     *                The root URI.
      */
-    public Directory(Context context, LocalReference rootLocalReference) {
+    public Directory(Context context, Reference rootLocalReference) {
         super(context);
 
         // First, let's normalize the root reference to prevent any issue with
         // relative paths inside the reference leading to listing issues.
-        rootLocalReference = rootLocalReference.getTargetRef();
+        String rootIdentifier = rootLocalReference.getTargetRef()
+                .getIdentifier();
 
-        String rootIdentifier = rootLocalReference.getIdentifier();
         if (rootIdentifier.endsWith("/")) {
             this.rootRef = new Reference(rootIdentifier);
         } else {
@@ -125,7 +124,7 @@ public class Directory extends Finder {
      *                <br>
      */
     public Directory(Context context, String rootUri) {
-        this(context, new LocalReference(rootUri));
+        this(context, new Reference(rootUri));
     }
 
     /**
