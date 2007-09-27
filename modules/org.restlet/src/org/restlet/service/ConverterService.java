@@ -33,6 +33,9 @@ import org.restlet.resource.Representation;
  * @see org.restlet.data.Message#getEntityAsObject()
  * @see org.restlet.data.Message#setEntity(Object)
  * @author Jerome Louvel (contact@noelios.com)
+ * @deprecated Since 1.1 with no replacement as it doesn't fit well with content
+ *             negotiation. Most users prefer to handle those conversion in
+ *             Resource subclasses.
  */
 public class ConverterService {
     /**

@@ -99,4 +99,8 @@ Changes log
  - Added Response.locationRef property as a replacement for the Response.redirectRef
    property that is now deprecated. Suggested by Michael Vogel and Avi Flax.
  - Updated projects to Eclipse 3.3. Minor adjustments required.
+ - The ConverterService and all related methods on Message are deprecated, with no replacement as it 
+   doesn't fit well with content negotiation. Most users prefer to handle those conversion in Resource
+   subclasses. Suggested by Justin Makeig, Rob Heittman, Sumit Lohia.
+ 
  

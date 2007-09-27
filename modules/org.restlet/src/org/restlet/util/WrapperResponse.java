@@ -178,6 +178,10 @@ public class WrapperResponse extends Response {
      * methods can only be invoked once.
      * 
      * @return The entity as a higher-level object.
+     * @deprecated Since 1.1, the ConverterService is deprecated, with no
+     *             replacement as it doesn't fit well with content negotiation.
+     *             Most users prefer to handle those conversion in Resource
+     *             subclasses.
      */
     public Object getEntityAsObject() {
         return getWrappedResponse().getEntityAsObject();
@@ -355,6 +359,10 @@ public class WrapperResponse extends Response {
      * 
      * @param object
      *                The higher-level object.
+     * @deprecated Since 1.1, the ConverterService is deprecated, with no
+     *             replacement as it doesn't fit well with content negotiation.
+     *             Most users prefer to handle those conversion in Resource
+     *             subclasses.
      */
     public void setEntity(Object object) {
         getWrappedResponse().setEntity(object);

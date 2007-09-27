@@ -21,7 +21,6 @@ package org.restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.ConnectorService;
-import org.restlet.service.ConverterService;
 import org.restlet.service.DecoderService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.StatusService;
@@ -81,8 +80,14 @@ public class Application extends Restlet {
     /** The connector service. */
     private ConnectorService connectorService;
 
-    /** The converter service. */
-    private ConverterService converterService;
+    /**
+     * The converter service.
+     * 
+     * @deprecated Since 1.1 with no replacement as it doesn't fit well with
+     *             content negotiation. Most users prefer to handle those
+     *             conversion in Resource subclasses.
+     */
+    private org.restlet.service.ConverterService converterService;
 
     /** The decoder service. */
     private DecoderService decoderService;
@@ -182,10 +187,13 @@ public class Application extends Restlet {
      * set.
      * 
      * @return The converter service.
+     * @deprecated Since 1.1 with no replacement as it doesn't fit well with
+     *             content negotiation. Most users prefer to handle those
+     *             conversion in Resource subclasses.
      */
-    public ConverterService getConverterService() {
+    public org.restlet.service.ConverterService getConverterService() {
         if (this.converterService == null)
-            this.converterService = new ConverterService();
+            this.converterService = new org.restlet.service.ConverterService();
         return this.converterService;
     }
 
@@ -363,8 +371,12 @@ public class Application extends Restlet {
      * 
      * @param converterService
      *                The converter service.
+     * @deprecated Since 1.1 with no replacement as it doesn't fit well with
+     *             content negotiation. Most users prefer to handle those
+     *             conversion in Resource subclasses.
      */
-    public void setConverterService(ConverterService converterService) {
+    public void setConverterService(
+            org.restlet.service.ConverterService converterService) {
         this.converterService = converterService;
     }
 

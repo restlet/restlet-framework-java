@@ -164,6 +164,10 @@ public class WrapperRequest extends Request {
      * methods can only be invoked once.
      * 
      * @return The entity as a higher-level object.
+     * @deprecated Since 1.1, the ConverterService is deprecated, with no
+     *             replacement as it doesn't fit well with content negotiation.
+     *             Most users prefer to handle those conversion in Resource
+     *             subclasses.
      */
     public Object getEntityAsObject() {
         return getWrappedRequest().getEntityAsObject();
@@ -301,6 +305,10 @@ public class WrapperRequest extends Request {
      * 
      * @param object
      *                The higher-level object.
+     * @deprecated Since 1.1, the ConverterService is deprecated, with no
+     *             replacement as it doesn't fit well with content negotiation.
+     *             Most users prefer to handle those conversion in Resource
+     *             subclasses.
      */
     public void setEntity(Object object) {
         getWrappedRequest().setEntity(object);

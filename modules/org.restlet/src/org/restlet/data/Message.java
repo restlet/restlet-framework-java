@@ -29,7 +29,6 @@ import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.SaxRepresentation;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.service.ConverterService;
 
 /**
  * Generic message exchanged between client and server connectors.
@@ -127,16 +126,20 @@ public abstract class Message {
      * Returns the converter service.
      * 
      * @return The converter service.
+     * @deprecated Since 1.1, the ConverterService is deprecated, with no
+     *             replacement as it doesn't fit well with content negotiation.
+     *             Most users prefer to handle those conversion in Resource
+     *             subclasses.
      */
-    private ConverterService getConverterService() {
-        ConverterService result = null;
+    private org.restlet.service.ConverterService getConverterService() {
+        org.restlet.service.ConverterService result = null;
         Application application = (Application) getAttributes().get(
                 Application.KEY);
 
         if (application != null) {
             result = application.getConverterService();
         } else {
-            result = new ConverterService();
+            result = new org.restlet.service.ConverterService();
         }
 
         return result;
@@ -193,6 +196,10 @@ public abstract class Message {
      * 
      * @return The entity as a higher-level object.
      * @see org.restlet.service.ConverterService
+     * @deprecated Since 1.1, the ConverterService is deprecated, with no
+     *             replacement as it doesn't fit well with content negotiation.
+     *             Most users prefer to handle those conversion in Resource
+     *             subclasses.
      */
     public Object getEntityAsObject() {
         return getConverterService().toObject(getEntity());
@@ -263,6 +270,10 @@ public abstract class Message {
      * @param object
      *                The higher-level object.
      * @see org.restlet.service.ConverterService
+     * @deprecated Since 1.1, the ConverterService is deprecated, with no
+     *             replacement as it doesn't fit well with content negotiation.
+     *             Most users prefer to handle those conversion in Resource
+     *             subclasses.
      */
     public void setEntity(Object object) {
         if (object instanceof Representation) {
