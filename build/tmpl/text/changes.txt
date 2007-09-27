@@ -10,7 +10,9 @@ Changes log
  - Fixed directory listing error in the File connector. Reported by Jochen Bedersdorfer.
  - The lack of root URI normalization by Directory could lead to listing issues.
    Reported by Joel Nelson and Rob Heittman.
-
+ - Fixed bug in the SimpleWeb connector which requires the request input stream to be 
+   fully read. Otherwise, the connectors hangs. Reported by Adam Taft, Nicolas Capdevila 
+   and Rob Heittman.
 [Enhancements] 
  - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
  - Clarified the dependencies in the "lib/readme.txt" file. Reported by Mike Leary.

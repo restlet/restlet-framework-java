@@ -68,6 +68,14 @@ public class SimpleProtocolHandler implements ProtocolHandler {
                         getHelper().isConfidential()));
 
         try {
+            // Once the request is handled, the request input stream must be
+            // entirely consumed. Not doing so blocks invariably the transaction
+            // managed by the SimpleWeb connector.
+            if (request.getInputStream() != null) {
+                while (request.getInputStream().read() != -1) {
+                    // just consume the stream
+                }
+            }
             response.getOutputStream().close();
         } catch (IOException ioe) {
             getHelper()
