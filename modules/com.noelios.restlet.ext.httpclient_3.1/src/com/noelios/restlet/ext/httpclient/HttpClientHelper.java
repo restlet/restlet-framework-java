@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -32,7 +32,13 @@ import com.noelios.restlet.http.HttpClientCall;
 
 /**
  * HTTP client connector using the HttpMethodCall and Apache HTTP Client
- * project. Here is the list of parameters that are supported: <table>
+ * project. Note that the response must be fully read in all cases in order to
+ * surely release the underlying connection. Not doing so may cause future
+ * requests to block.
+ *
+ * @see http://jakarta.apache.org/httpcomponents/httpclient-3.x/tutorial.html
+ *
+ * Here is the list of parameters that are supported: <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -81,7 +87,7 @@ import com.noelios.restlet.http.HttpClientCall;
  * of zero is interpreted as an infinite timeout.</td>
  * </tr>
  * </table>
- * 
+ *
  * @see <a
  *      href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>
@@ -92,7 +98,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
 
     /**
      * Constructor.
-     * 
+     *
      * @param client
      *            The client to help.
      */
@@ -136,7 +142,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
 
     /**
      * Creates a low-level HTTP client call from a high-level uniform call.
-     * 
+     *
      * @param request
      *            The high-level request.
      * @return A low-level HTTP client call.
@@ -158,7 +164,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
 
     /**
      * Indicates if the protocol will automatically follow redirects.
-     * 
+     *
      * @return True if the protocol will automatically follow redirects.
      */
     public boolean isFollowRedirects() {
@@ -169,7 +175,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
     /**
      * Returns the maximum number of connections that will be created for any
      * particular host.
-     * 
+     *
      * @return The maximum number of connections that will be created for any
      *         particular host.
      */
@@ -180,7 +186,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
 
     /**
      * Returns the maximum number of active connections.
-     * 
+     *
      * @return The maximum number of active connections.
      */
     public int getMaxTotalConnections() {
@@ -191,7 +197,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
     /**
      * Returns the timeout in milliseconds used when retrieving an HTTP
      * connection from the HTTP connection manager.
-     * 
+     *
      * @return The timeout in milliseconds used when retrieving an HTTP
      *         connection from the HTTP connection manager.
      */
@@ -203,7 +209,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
     /**
      * Returns the minimum idle time, in milliseconds, for connections to be
      * closed when stopping the connector.
-     * 
+     *
      * @return The minimum idle time, in milliseconds, for connections to be
      *         closed when stopping the connector.
      */
@@ -215,7 +221,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
     /**
      * Returns the read timeout value. A timeout of zero is interpreted as an
      * infinite timeout.
-     * 
+     *
      * @return The read timeout value.
      */
     public int getReadTimeout() {
