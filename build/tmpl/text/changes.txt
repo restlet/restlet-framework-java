@@ -13,9 +13,12 @@ Changes log
  - Fixed bug in the SimpleWeb connector which requires the request input stream to be 
    fully read. Otherwise, the connectors hangs. Reported by Adam Taft, Nicolas Capdevila 
    and Rob Heittman.
+
 [Enhancements] 
  - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
  - Clarified the dependencies in the "lib/readme.txt" file. Reported by Mike Leary.
+ - Updated javadocs in order to precise crucial apache HTTPClient behaviour. Reported by 
+   Nicolas Capdevila.
 
 1.0.5 (2007-09-06)
 [Bugs fixed]

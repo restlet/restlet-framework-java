@@ -32,7 +32,13 @@ import com.noelios.restlet.http.HttpClientCall;
 
 /**
  * HTTP client connector using the HttpMethodCall and Apache HTTP Client
- * project. Here is the list of parameters that are supported: <table>
+ * project. Note that the response must be fully read in all cases in order to
+ * surely release the underlying connection. Not doing so may cause future
+ * requests to block.
+ * 
+ * @see http://jakarta.apache.org/httpcomponents/httpclient-3.x/tutorial.html
+ * 
+ * Here is the list of parameters that are supported: <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
