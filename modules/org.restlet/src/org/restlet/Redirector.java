@@ -179,11 +179,33 @@ public class Redirector extends Restlet {
      */
     protected void redirectDispatcher(Reference targetRef, Request request,
             Response response) {
-        request.setResourceRef(targetRef);
-        request.getAttributes().remove("org.restlet.http.headers");
-        getContext().getDispatcher().handle(request, response);
-        response.setEntity(rewrite(response.getEntity()));
-        response.getAttributes().remove("org.restlet.http.headers");
+		// Save the base URI if it exists as we might need it for redirections
+		Reference baseRef = request.getResourceRef().getBaseRef();
+
+		// Update the request to cleanly go to the target URI
+		request.setResourceRef(targetRef);
+		request.getAttributes().remove("org.restlet.http.headers");
+		getContext().getDispatcher().handle(request, response);
+
+		// Allow for response rewriting and clean the headers
+		response.setEntity(rewrite(response.getEntity()));
+		response.getAttributes().remove("org.restlet.http.headers");
+
+		// In case of redirection, we may have to rewrite the redirect URI
+		if (response.getRedirectRef() != null) {
+			Template rt = new Template(getLogger(), this.targetTemplate);
+			int matched = rt.parse(response.getRedirectRef().toString(),
+					request);
+
+			if (matched > 0) {
+				String remainingPart = (String) request.getAttributes().get(
+						"rr");
+
+				if (remainingPart != null) {
+					response.setRedirectRef(baseRef.toString() + remainingPart);
+				}
+			}
+		}
     }
 
     /**

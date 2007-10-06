@@ -17,6 +17,7 @@ Changes log
  - The message logged when an authentication scheme is not supported by NRE is now only 
    of FINE level instead of WARNING level. Reported by Sumit Lohia.
  - Guard.getSecrets() method was not properly synchronized. Reported by Tim Peierls.
+ - The Redirector wasn't properly rewriting the redirection URIs in the dispatcher mode.
  
 [Enhancements] 
  - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
