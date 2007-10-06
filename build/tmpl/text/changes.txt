@@ -13,6 +13,7 @@ Changes log
  - Fixed bug in the SimpleWeb connector which requires the request input stream to be 
    fully read. Otherwise, the connectors hangs. Reported by Adam Taft, Nicolas Capdevila 
    and Rob Heittman.
+ - ChallengeRequests with a null realm are properly formatted. Reported by Sumit Lohia.
 
 [Enhancements] 
  - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
