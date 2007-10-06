@@ -16,7 +16,8 @@ Changes log
  - ChallengeRequests with a null realm are properly formatted. Reported by Sumit Lohia.
  - The message logged when an authentication scheme is not supported by NRE is now only 
    of FINE level instead of WARNING level. Reported by Sumit Lohia.
-   
+ - Guard.getSecrets() method was not properly synchronized. Reported by Tim Peierls.
+ 
 [Enhancements] 
  - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
  - Clarified the dependencies in the "lib/readme.txt" file. Reported by Mike Leary.

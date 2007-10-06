@@ -19,7 +19,7 @@
 package org.restlet;
 
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
@@ -242,9 +242,15 @@ public class Guard extends Filter {
      * @return The map of identifiers and secrets.
      */
     public Map<String, char[]> getSecrets() {
-        if (this.secrets == null)
-            this.secrets = new TreeMap<String, char[]>();
-        return this.secrets;
+		if (this.secrets == null) {
+			synchronized (this) {
+				if (this.secrets == null) {
+					this.secrets = new ConcurrentHashMap<String, char[]>();
+				}
+			}
+		}
+
+		return this.secrets;
     }
 
 }
