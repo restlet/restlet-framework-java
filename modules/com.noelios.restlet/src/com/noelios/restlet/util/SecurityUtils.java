@@ -332,13 +332,13 @@ public class SecurityUtils {
                                 e);
                     }
                 } else {
-                    // Authentication failed, scheme not supported
+                    // Authentication impossible, scheme not supported
                     logger
                             .log(
-                                    Level.WARNING,
-                                    "Authentication failed: unsupported scheme used: "
+                                    Level.FINE,
+                                    "Authentication impossible: scheme not supported: "
                                             + result.getScheme().getName()
-                                            + ". Please override the authenticate method.");
+                                            + ". Please override the Guard.authenticate method.");
                 }
             }
         }
