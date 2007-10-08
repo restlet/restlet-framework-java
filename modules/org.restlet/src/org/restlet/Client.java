@@ -34,94 +34,98 @@ import org.restlet.util.Helper;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Client extends Connector {
-    /** The helper provided by the implementation. */
-    private Helper helper;
+	/** The helper provided by the implementation. */
+	private Helper helper;
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     * @param protocols
-     *            The connector protocols.
-     */
-    public Client(Context context, List<Protocol> protocols) {
-        super(context, protocols);
+	/**
+	 * Constructor.
+	 * 
+	 * @param context
+	 *            The context.
+	 * @param protocols
+	 *            The connector protocols.
+	 */
+	public Client(Context context, List<Protocol> protocols) {
+		super(context, protocols);
 
-        if ((protocols != null) && (protocols.size() > 0)) {
-            if (Engine.getInstance() != null) {
-                this.helper = Engine.getInstance().createHelper(this);
-            }
-        }
-    }
+		if ((protocols != null) && (protocols.size() > 0)) {
+			if (Engine.getInstance() != null) {
+				this.helper = Engine.getInstance().createHelper(this);
+			}
+		}
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     * @param protocol
-     *            The connector protocol.
-     */
-    public Client(Context context, Protocol protocol) {
-        this(context, Arrays.asList(protocol));
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param context
+	 *            The context.
+	 * @param protocol
+	 *            The connector protocol.
+	 */
+	public Client(Context context, Protocol protocol) {
+		this(context, Arrays.asList(protocol));
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param protocols
-     *            The connector protocols.
-     */
-    public Client(List<Protocol> protocols) {
-        this(null, protocols);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param protocols
+	 *            The connector protocols.
+	 */
+	public Client(List<Protocol> protocols) {
+		this(null, protocols);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param protocol
-     *            The connector protocol.
-     */
-    public Client(Protocol protocol) {
-        this(null, protocol);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param protocol
+	 *            The connector protocol.
+	 */
+	public Client(Protocol protocol) {
+		this(null, protocol);
+	}
 
-    /**
-     * Returns the helper provided by the implementation.
-     * 
-     * @return The helper provided by the implementation.
-     */
-    private Helper getHelper() {
-        return this.helper;
-    }
+	/**
+	 * Returns the helper provided by the implementation.
+	 * 
+	 * @return The helper provided by the implementation.
+	 */
+	private Helper getHelper() {
+		return this.helper;
+	}
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    public void handle(Request request, Response response) {
-        init(request, response);
-        if (getHelper() != null)
-            getHelper().handle(request, response);
-    }
+	/**
+	 * Handles a call.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
+	 */
+	public void handle(Request request, Response response) {
+		init(request, response);
+		if (getHelper() != null)
+			getHelper().handle(request, response);
+	}
 
-    @Override
-    public void start() throws Exception {
-        super.start();
-        if (getHelper() != null)
-            getHelper().start();
-    }
+	@Override
+	public void start() throws Exception {
+		if (isStopped()) {
+			super.start();
+			if (getHelper() != null)
+				getHelper().start();
+		}
+	}
 
-    @Override
-    public void stop() throws Exception {
-        if (getHelper() != null)
-            getHelper().stop();
-        super.stop();
-    }
+	@Override
+	public void stop() throws Exception {
+		if (isStarted()) {
+			if (getHelper() != null)
+				getHelper().stop();
+			super.stop();
+		}
+	}
 
 }

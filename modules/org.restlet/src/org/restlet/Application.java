@@ -57,354 +57,358 @@ import org.restlet.util.Helper;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Application extends Restlet {
-    /**
-     * Name of the attribute key containing a reference to the current
-     * application.
-     */
-    public static final String KEY = "org.restlet.application";
+	/**
+	 * Name of the attribute key containing a reference to the current
+	 * application.
+	 */
+	public static final String KEY = "org.restlet.application";
 
-    /** The display name. */
-    private String name;
+	/** The display name. */
+	private String name;
 
-    /** The description. */
-    private String description;
+	/** The description. */
+	private String description;
 
-    /** The author(s). */
-    private String author;
+	/** The author(s). */
+	private String author;
 
-    /** The owner(s). */
-    private String owner;
+	/** The owner(s). */
+	private String owner;
 
-    /** The root Restlet. */
-    private Restlet root;
+	/** The root Restlet. */
+	private Restlet root;
 
-    /** The connector service. */
-    private ConnectorService connectorService;
+	/** The connector service. */
+	private ConnectorService connectorService;
 
-    /** The converter service. */
-    private ConverterService converterService;
+	/** The converter service. */
+	private ConverterService converterService;
 
-    /** The decoder service. */
-    private DecoderService decoderService;
+	/** The decoder service. */
+	private DecoderService decoderService;
 
-    /** The local service. */
-    private MetadataService metadataService;
+	/** The local service. */
+	private MetadataService metadataService;
 
-    /** The status service. */
-    private StatusService statusService;
+	/** The status service. */
+	private StatusService statusService;
 
-    /** The tunnel service. */
-    private TunnelService tunnelService;
+	/** The tunnel service. */
+	private TunnelService tunnelService;
 
-    /** The helper provided by the implementation. */
-    private Helper helper;
+	/** The helper provided by the implementation. */
+	private Helper helper;
 
-    /**
-     * Constructor. Note that usage of this constructor is not recommended as
-     * your application won't have access to the parent component context. For
-     * example, no dispatching will be possible as it requires access to the
-     * component's client connectors.
-     */
-    public Application() {
-        this((Context) null);
-    }
+	/**
+	 * Constructor. Note that usage of this constructor is not recommended as
+	 * your application won't have access to the parent component context. For
+	 * example, no dispatching will be possible as it requires access to the
+	 * component's client connectors.
+	 */
+	public Application() {
+		this((Context) null);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param parentContext
-     *            The parent context. Typically the component's context.
-     */
-    public Application(Context parentContext) {
-        super(null);
+	/**
+	 * Constructor.
+	 * 
+	 * @param parentContext
+	 *            The parent context. Typically the component's context.
+	 */
+	public Application(Context parentContext) {
+		super(null);
 
-        if (Engine.getInstance() != null) {
-            this.helper = Engine.getInstance()
-                    .createHelper(this, parentContext);
+		if (Engine.getInstance() != null) {
+			this.helper = Engine.getInstance()
+					.createHelper(this, parentContext);
 
-            // Compose the logger name
-            String applicationName = (getName() == null) ? Integer
-                    .toString(hashCode()) : getName();
-            String loggerName = Application.class.getCanonicalName() + "."
-                    + applicationName;
+			// Compose the logger name
+			String applicationName = (getName() == null) ? Integer
+					.toString(hashCode()) : getName();
+			String loggerName = Application.class.getCanonicalName() + "."
+					+ applicationName;
 
-            // Create the application context
-            setContext(this.helper.createContext(loggerName));
-        }
+			// Create the application context
+			setContext(this.helper.createContext(loggerName));
+		}
 
-        this.name = null;
-        this.description = null;
-        this.author = null;
-        this.owner = null;
-        this.root = null;
-        this.connectorService = null;
-        this.decoderService = null;
-        this.metadataService = null;
-        this.statusService = null;
-        this.tunnelService = null;
-    }
+		this.name = null;
+		this.description = null;
+		this.author = null;
+		this.owner = null;
+		this.root = null;
+		this.connectorService = null;
+		this.decoderService = null;
+		this.metadataService = null;
+		this.statusService = null;
+		this.tunnelService = null;
+	}
 
-    /**
-     * Creates a root Restlet that will receive all incoming calls. In general,
-     * instances of Router, Filter or Handler classes will be used as initial
-     * application Restlet. The default implementation returns null by default.
-     * This method is intended to be overriden by subclasses.
-     * 
-     * @return The root Restlet.
-     */
-    public abstract Restlet createRoot();
+	/**
+	 * Creates a root Restlet that will receive all incoming calls. In general,
+	 * instances of Router, Filter or Handler classes will be used as initial
+	 * application Restlet. The default implementation returns null by default.
+	 * This method is intended to be overriden by subclasses.
+	 * 
+	 * @return The root Restlet.
+	 */
+	public abstract Restlet createRoot();
 
-    /**
-     * Returns the author(s).
-     * 
-     * @return The author(s).
-     */
-    public String getAuthor() {
-        return this.author;
-    }
+	/**
+	 * Returns the author(s).
+	 * 
+	 * @return The author(s).
+	 */
+	public String getAuthor() {
+		return this.author;
+	}
 
-    /**
-     * Returns the connector service.
-     * 
-     * @return The connector service.
-     */
-    public ConnectorService getConnectorService() {
-        if (this.connectorService == null)
-            this.connectorService = new ConnectorService();
-        return this.connectorService;
-    }
+	/**
+	 * Returns the connector service.
+	 * 
+	 * @return The connector service.
+	 */
+	public ConnectorService getConnectorService() {
+		if (this.connectorService == null)
+			this.connectorService = new ConnectorService();
+		return this.connectorService;
+	}
 
-    /**
-     * Returns the converter service.
-     * 
-     * @return The converter service.
-     */
-    public ConverterService getConverterService() {
-        if (this.converterService == null)
-            this.converterService = new ConverterService();
-        return this.converterService;
-    }
+	/**
+	 * Returns the converter service.
+	 * 
+	 * @return The converter service.
+	 */
+	public ConverterService getConverterService() {
+		if (this.converterService == null)
+			this.converterService = new ConverterService();
+		return this.converterService;
+	}
 
-    /**
-     * Returns the decoder service. This service is enabled by default.
-     * 
-     * @return The decoderservice.
-     */
-    public DecoderService getDecoderService() {
-        if (this.decoderService == null)
-            this.decoderService = new DecoderService(true);
-        return this.decoderService;
-    }
+	/**
+	 * Returns the decoder service. This service is enabled by default.
+	 * 
+	 * @return The decoderservice.
+	 */
+	public DecoderService getDecoderService() {
+		if (this.decoderService == null)
+			this.decoderService = new DecoderService(true);
+		return this.decoderService;
+	}
 
-    /**
-     * Returns the description.
-     * 
-     * @return The description
-     */
-    public String getDescription() {
-        return this.description;
-    }
+	/**
+	 * Returns the description.
+	 * 
+	 * @return The description
+	 */
+	public String getDescription() {
+		return this.description;
+	}
 
-    /**
-     * Returns the helper provided by the implementation.
-     * 
-     * @return The helper provided by the implementation.
-     */
-    private Helper getHelper() {
-        return this.helper;
-    }
+	/**
+	 * Returns the helper provided by the implementation.
+	 * 
+	 * @return The helper provided by the implementation.
+	 */
+	private Helper getHelper() {
+		return this.helper;
+	}
 
-    /**
-     * Returns the metadata service.
-     * 
-     * @return The metadata service.
-     */
-    public MetadataService getMetadataService() {
-        if (this.metadataService == null)
-            this.metadataService = new MetadataService();
-        return this.metadataService;
-    }
+	/**
+	 * Returns the metadata service.
+	 * 
+	 * @return The metadata service.
+	 */
+	public MetadataService getMetadataService() {
+		if (this.metadataService == null)
+			this.metadataService = new MetadataService();
+		return this.metadataService;
+	}
 
-    /**
-     * Returns the display name.
-     * 
-     * @return The display name.
-     */
-    public String getName() {
-        return this.name;
-    }
+	/**
+	 * Returns the display name.
+	 * 
+	 * @return The display name.
+	 */
+	public String getName() {
+		return this.name;
+	}
 
-    /**
-     * Returns the owner(s).
-     * 
-     * @return The owner(s).
-     */
-    public String getOwner() {
-        return this.owner;
-    }
+	/**
+	 * Returns the owner(s).
+	 * 
+	 * @return The owner(s).
+	 */
+	public String getOwner() {
+		return this.owner;
+	}
 
-    /**
-     * Returns the root Restlet. Invokes the createRoot() method if no Restlet
-     * exists.
-     * 
-     * @return The root Restlet.
-     */
-    public Restlet getRoot() {
-        if (this.root == null) {
-            this.root = createRoot();
-        }
+	/**
+	 * Returns the root Restlet. Invokes the createRoot() method if no Restlet
+	 * exists.
+	 * 
+	 * @return The root Restlet.
+	 */
+	public Restlet getRoot() {
+		if (this.root == null) {
+			this.root = createRoot();
+		}
 
-        return this.root;
-    }
+		return this.root;
+	}
 
-    /**
-     * Returns the status service. This service is enabled by default.
-     * 
-     * @return The status service.
-     */
-    public StatusService getStatusService() {
-        if (this.statusService == null)
-            this.statusService = new StatusService(true);
-        return this.statusService;
-    }
+	/**
+	 * Returns the status service. This service is enabled by default.
+	 * 
+	 * @return The status service.
+	 */
+	public StatusService getStatusService() {
+		if (this.statusService == null)
+			this.statusService = new StatusService(true);
+		return this.statusService;
+	}
 
-    /**
-     * Returns the tunnel service. This service is enabled by default.
-     * 
-     * @return The tunnel service.
-     */
-    public TunnelService getTunnelService() {
-        if (this.tunnelService == null)
-            this.tunnelService = new TunnelService(true, true, true);
-        return this.tunnelService;
-    }
+	/**
+	 * Returns the tunnel service. This service is enabled by default.
+	 * 
+	 * @return The tunnel service.
+	 */
+	public TunnelService getTunnelService() {
+		if (this.tunnelService == null)
+			this.tunnelService = new TunnelService(true, true, true);
+		return this.tunnelService;
+	}
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    public void handle(Request request, Response response) {
-        init(request, response);
-        if (getHelper() != null)
-            getHelper().handle(request, response);
-    }
+	/**
+	 * Handles a call.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
+	 */
+	public void handle(Request request, Response response) {
+		init(request, response);
+		if (getHelper() != null)
+			getHelper().handle(request, response);
+	}
 
-    /**
-     * Sets the author(s).
-     * 
-     * @param author
-     *            The author(s).
-     */
-    public void setAuthor(String author) {
-        this.author = author;
-    }
+	/**
+	 * Sets the author(s).
+	 * 
+	 * @param author
+	 *            The author(s).
+	 */
+	public void setAuthor(String author) {
+		this.author = author;
+	}
 
-    /**
-     * Sets the description.
-     * 
-     * @param description
-     *            The description.
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	/**
+	 * Sets the description.
+	 * 
+	 * @param description
+	 *            The description.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    /**
-     * Sets the display name.
-     * 
-     * @param name
-     *            The display name.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * Sets the display name.
+	 * 
+	 * @param name
+	 *            The display name.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * Sets the owner(s).
-     * 
-     * @param owner
-     *            The owner(s).
-     */
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
+	/**
+	 * Sets the owner(s).
+	 * 
+	 * @param owner
+	 *            The owner(s).
+	 */
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
 
-    @Override
-    public void start() throws Exception {
-        super.start();
-        if (getHelper() != null)
-            getHelper().start();
-    }
+	@Override
+	public void start() throws Exception {
+		if (isStopped()) {
+			super.start();
+			if (getHelper() != null)
+				getHelper().start();
+		}
+	}
 
-    @Override
-    public void stop() throws Exception {
-        if (getHelper() != null)
-            getHelper().stop();
-        super.stop();
-    }
+	@Override
+	public void stop() throws Exception {
+		if (isStarted()) {
+			if (getHelper() != null)
+				getHelper().stop();
+			super.stop();
+		}
+	}
 
-    /**
-     * Sets the connector service.
-     * 
-     * @param connectorService
-     *            The connector service.
-     */
-    public void setConnectorService(ConnectorService connectorService) {
-        this.connectorService = connectorService;
-    }
+	/**
+	 * Sets the connector service.
+	 * 
+	 * @param connectorService
+	 *            The connector service.
+	 */
+	public void setConnectorService(ConnectorService connectorService) {
+		this.connectorService = connectorService;
+	}
 
-    /**
-     * Sets the converter service.
-     * 
-     * @param converterService
-     *            The converter service.
-     */
-    public void setConverterService(ConverterService converterService) {
-        this.converterService = converterService;
-    }
+	/**
+	 * Sets the converter service.
+	 * 
+	 * @param converterService
+	 *            The converter service.
+	 */
+	public void setConverterService(ConverterService converterService) {
+		this.converterService = converterService;
+	}
 
-    /**
-     * Sets the decoder service.
-     * 
-     * @param decoderService
-     *            The decoder service.
-     */
-    public void setDecoderService(DecoderService decoderService) {
-        this.decoderService = decoderService;
-    }
+	/**
+	 * Sets the decoder service.
+	 * 
+	 * @param decoderService
+	 *            The decoder service.
+	 */
+	public void setDecoderService(DecoderService decoderService) {
+		this.decoderService = decoderService;
+	}
 
-    /**
-     * Sets the metadata service.
-     * 
-     * @param metadataService
-     *            The metadata service.
-     */
-    public void setMetadataService(MetadataService metadataService) {
-        this.metadataService = metadataService;
-    }
+	/**
+	 * Sets the metadata service.
+	 * 
+	 * @param metadataService
+	 *            The metadata service.
+	 */
+	public void setMetadataService(MetadataService metadataService) {
+		this.metadataService = metadataService;
+	}
 
-    /**
-     * Sets the status service.
-     * 
-     * @param statusService
-     *            The status service.
-     */
-    public void setStatusService(StatusService statusService) {
-        this.statusService = statusService;
-    }
+	/**
+	 * Sets the status service.
+	 * 
+	 * @param statusService
+	 *            The status service.
+	 */
+	public void setStatusService(StatusService statusService) {
+		this.statusService = statusService;
+	}
 
-    /**
-     * Sets the tunnel service.
-     * 
-     * @param tunnelService
-     *            The tunnel service.
-     */
-    public void setTunnelService(TunnelService tunnelService) {
-        this.tunnelService = tunnelService;
-    }
+	/**
+	 * Sets the tunnel service.
+	 * 
+	 * @param tunnelService
+	 *            The tunnel service.
+	 */
+	public void setTunnelService(TunnelService tunnelService) {
+		this.tunnelService = tunnelService;
+	}
 
 }
