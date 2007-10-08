@@ -322,16 +322,20 @@ public class Server extends Connector {
 
     @Override
     public void start() throws Exception {
-        super.start();
-        if (getHelper() != null)
-            getHelper().start();
+        if (isStopped()) {
+            super.start();
+            if (getHelper() != null)
+                getHelper().start();
+        }
     }
 
     @Override
     public void stop() throws Exception {
-        getHelper().stop();
-        if (getHelper() != null)
-            super.stop();
+        if (isStarted()) {
+            getHelper().stop();
+            if (getHelper() != null)
+                super.stop();
+        }
     }
 
 }

@@ -244,22 +244,24 @@ public class Component extends Restlet {
      */
     @Override
     public void start() throws Exception {
-        if (this.clients != null) {
-            for (Client client : this.clients) {
-                client.start();
+        if (isStopped()) {
+            if (this.clients != null) {
+                for (Client client : this.clients) {
+                    client.start();
+                }
             }
-        }
 
-        if (this.servers != null) {
-            for (Server server : this.servers) {
-                server.start();
+            if (this.servers != null) {
+                for (Server server : this.servers) {
+                    server.start();
+                }
             }
+
+            if (getHelper() != null)
+                getHelper().start();
+
+            super.start();
         }
-
-        if (getHelper() != null)
-            getHelper().start();
-
-        super.start();
     }
 
     /**
@@ -267,22 +269,24 @@ public class Component extends Restlet {
      */
     @Override
     public void stop() throws Exception {
-        if (getHelper() != null)
-            getHelper().stop();
+        if (isStarted()) {
+            if (getHelper() != null)
+                getHelper().stop();
 
-        if (this.clients != null) {
-            for (Client client : this.clients) {
-                client.stop();
+            if (this.clients != null) {
+                for (Client client : this.clients) {
+                    client.stop();
+                }
             }
-        }
 
-        if (this.servers != null) {
-            for (Server server : this.servers) {
-                server.stop();
+            if (this.servers != null) {
+                for (Server server : this.servers) {
+                    server.stop();
+                }
             }
-        }
 
-        super.stop();
+            super.stop();
+        }
     }
 
 }

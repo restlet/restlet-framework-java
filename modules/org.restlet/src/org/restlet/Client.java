@@ -105,16 +105,20 @@ public class Client extends Connector {
 
     @Override
     public void start() throws Exception {
-        super.start();
-        if (getHelper() != null)
-            getHelper().start();
+        if (isStopped()) {
+            super.start();
+            if (getHelper() != null)
+                getHelper().start();
+        }
     }
 
     @Override
     public void stop() throws Exception {
-        if (getHelper() != null)
-            getHelper().stop();
-        super.stop();
+        if (isStarted()) {
+            if (getHelper() != null)
+                getHelper().stop();
+            super.stop();
+        }
     }
 
 }

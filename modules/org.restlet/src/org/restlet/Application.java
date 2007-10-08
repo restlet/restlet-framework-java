@@ -39,8 +39,6 @@ import org.restlet.util.Helper;
  * properties that can be eventually overriden:
  * <ul>
  * <li>"connectorService" to manage client and server connectors.</li>
- * <li>"converterService" to convert message entities into higher-level
- * objects.</li>
  * <li>"decoderService" to automatically decode or decompress request entities.</li>
  * <li>"metadataService" to provide access to metadata and their associated
  * extension names.</li>
@@ -344,16 +342,20 @@ public class Application extends Restlet {
 
     @Override
     public void start() throws Exception {
-        super.start();
-        if (getHelper() != null)
-            getHelper().start();
+        if (isStopped()) {
+            super.start();
+            if (getHelper() != null)
+                getHelper().start();
+        }
     }
 
     @Override
     public void stop() throws Exception {
-        if (getHelper() != null)
-            getHelper().stop();
-        super.stop();
+        if (isStarted()) {
+            if (getHelper() != null)
+                getHelper().stop();
+            super.stop();
+        }
     }
 
     /**
