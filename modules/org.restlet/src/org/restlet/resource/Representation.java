@@ -54,6 +54,11 @@ import org.restlet.data.Tag;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Representation extends Variant {
+    /**
+     * Indicates that the size of the representation can't be known in advance.
+     */
+    public static final long UNKNOWN_SIZE = -1L;
+
     /** Indicates if the representation's content is available. */
     private boolean available;
 

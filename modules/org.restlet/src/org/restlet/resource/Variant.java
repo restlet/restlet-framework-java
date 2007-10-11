@@ -43,6 +43,8 @@ import org.restlet.util.WrapperList;
 public class Variant {
     /**
      * Indicates that the size of the representation can't be known in advance.
+     * 
+     * @deprecated Use the {@link Representation#UNKNOWN_SIZE} constant instead.
      */
     public static final long UNKNOWN_SIZE = -1L;
 
