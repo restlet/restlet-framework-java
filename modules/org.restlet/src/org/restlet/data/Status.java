@@ -1425,15 +1425,15 @@ public final class Status extends Metadata {
 
             case 1000:
                 result = BASE_RESTLET
-                        + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_CONNECTION";
+                        + "org/restlet/data/Status.html#CONNECTOR_ERROR_CONNECTION";
                 break;
             case 1001:
                 result = BASE_RESTLET
-                        + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_COMMUNICATION";
+                        + "org/restlet/data/Status.html#CONNECTOR_ERROR_COMMUNICATION";
                 break;
             case 1002:
                 result = BASE_RESTLET
-                        + "org/restlet/data/Statuses.html#CONNECTOR_ERROR_INTERNAL";
+                        + "org/restlet/data/Status.html#CONNECTOR_ERROR_INTERNAL";
                 break;
             }
         }
