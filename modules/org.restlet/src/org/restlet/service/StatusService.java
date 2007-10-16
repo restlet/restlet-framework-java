@@ -32,7 +32,7 @@ import org.restlet.resource.Representation;
  * When an exception or an error is caught, the
  * {@link #getStatus(Throwable, Request, Response)} method is first invoked to
  * obtain the status that you want to set on the response. If this method isn't
- * overriden or returns null, the {@link Status.SERVER_ERROR_INTERNAL} constant
+ * overridden or returns null, the {@link Status.SERVER_ERROR_INTERNAL} constant
  * will be set by default.
  * 
  * Also, when the status of a response returned is an error status (see
@@ -41,7 +41,7 @@ import org.restlet.resource.Representation;
  * to give your service a chance to override the default error page.
  * 
  * If you want to customize the default behavior, you need to create a subclass
- * of StatusService that overrides some or all of the methods mentionned above.
+ * of StatusService that overrides some or all of the methods mentioned above.
  * Then, just create a instance of your class and set it on your Component or
  * Application via the setStatusService() methods.
  * 
