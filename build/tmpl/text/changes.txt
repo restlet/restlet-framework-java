@@ -26,6 +26,7 @@ Changes log
    Nicolas Capdevila.
  - Added some extra checks to prevent multiple starts/stops of Applications, Components,
    Clients, Servers. Reported by Amol Daterao, Joan Picanyol i Puig and Christopher Sun. 
+ - Clarified StatusService Javadocs. Suggested by Davide Angelocola.
 
 1.0.5 (2007-09-06)
 [Bugs fixed]
