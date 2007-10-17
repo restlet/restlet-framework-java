@@ -409,6 +409,7 @@ public final class ByteUtils {
                 }
             }
         };
+        writer.setDaemon(false);
 
         // Starts the writer thread
         writer.start();
@@ -478,6 +479,7 @@ public final class ByteUtils {
                     }
                 }
             };
+            writer.setDaemon(false);
 
             // Starts the writer thread
             writer.start();
