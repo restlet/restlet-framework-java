@@ -34,6 +34,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.resource.Representation;
@@ -289,6 +290,8 @@ public final class ByteUtils {
      * @author Jerome Louvel (contact@noelios.com)
      */
     private final static class PipeStream {
+        private static final long QUEUE_TIMEOUT = 5;
+
         /** The supporting synchronized queue. */
         private final BlockingQueue<Integer> queue;
 
@@ -330,7 +333,10 @@ public final class ByteUtils {
             return new OutputStream() {
                 public void write(int b) throws IOException {
                     try {
-                        queue.put(b);
+                        if (!queue.offer(b, QUEUE_TIMEOUT, TimeUnit.SECONDS)) {
+                            throw new IOException(
+                                    "Timeout while writing to the queue-based output stream");
+                        }
                     } catch (InterruptedException ie) {
                         throw new IOException(
                                 "Interruption occurred while writing in the queue");
