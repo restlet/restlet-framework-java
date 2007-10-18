@@ -313,8 +313,15 @@ public final class ByteUtils {
                     try {
                         if (endReached)
                             return -1;
-                        int value = queue.take();
-                        endReached = (value == -1);
+                            
+                        Integer value = queue.poll(QUEUE_TIMEOUT,
+                                TimeUnit.SECONDS);
+                        if (value == null) {
+                            throw new IOException(
+                                    "Timeout while reading from the queue-based input stream");
+                        }
+
+                        endReached = (value.intValue() == -1);
                         return value;
                     } catch (InterruptedException ie) {
                         throw new IOException(
