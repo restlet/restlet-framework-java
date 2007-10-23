@@ -26,8 +26,8 @@ Changes log
  - Clarified the dependencies in the "lib/readme.txt" file. Reported by Mike Leary.
  - Updated javadocs in order to precise crucial apache HTTPClient behaviour. Reported by 
    Nicolas Capdevila.
- - Added some extra checks to prevent multiple starts/stops of Applications, Components,
-   Clients, Servers. Reported by Amol Daterao, Joan Picanyol i Puig and Christopher Sun. 
+ - Added some extra checks to prevent multiple starts of Applications, Components,
+   Clients, Servers. Reported by Amol Daterao, Joan Picanyol i Puig and Christopher Sun.
  - Clarified StatusService Javadocs. Suggested by Davide Angelocola.
 
 1.0.5 (2007-09-06)

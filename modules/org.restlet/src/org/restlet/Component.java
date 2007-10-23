@@ -138,24 +138,22 @@ public class Component extends Restlet {
 	 */
 	@Override
 	public void stop() throws Exception {
-		if (isStarted()) {
-			if (getHelper() != null)
-				getHelper().stop();
+		if (getHelper() != null)
+			getHelper().stop();
 
-			if (this.clients != null) {
-				for (Client client : this.clients) {
-					client.stop();
-				}
+		if (this.clients != null) {
+			for (Client client : this.clients) {
+				client.stop();
 			}
-
-			if (this.servers != null) {
-				for (Server server : this.servers) {
-					server.stop();
-				}
-			}
-
-			super.stop();
 		}
+
+		if (this.servers != null) {
+			for (Server server : this.servers) {
+				server.stop();
+			}
+		}
+
+		super.stop();
 	}
 
 	/**
