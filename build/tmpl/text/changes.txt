@@ -20,7 +20,9 @@ Changes log
  - The Redirector wasn't properly rewriting the redirection URIs in the dispatcher mode.
  - The IO threads created by ByteUtils are now explicitely set as non daemon threads. The 
    internal pipe stream now times out if nobody uses it. Suggested by Tim Peierls.
- 
+ - Indexed directories were not properly handled with the CLAP protocol. Reported by Rob 
+   Heittman.
+   
 [Enhancements] 
  - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
  - Clarified the dependencies in the "lib/readme.txt" file. Reported by Mike Leary.

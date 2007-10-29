@@ -148,6 +148,9 @@ public class DirectoryResource extends Resource {
 		// Try to detect the presence of a directory
 		Response contextResponse = getDispatcher().get(this.targetUri);
 		if (contextResponse.getEntity() != null) {
+			// As a convention, underlying client connectors return the
+			// directory listing with the media-type "MediaType.TEXT_URI_LIST"
+			// when handling directories
 			if (MediaType.TEXT_URI_LIST.equals(contextResponse.getEntity()
 					.getMediaType())) {
 				this.targetDirectory = true;
@@ -183,6 +186,25 @@ public class DirectoryResource extends Resource {
 		} else {
 			this.targetDirectory = false;
 			this.targetFile = false;
+
+			// Let's try with the facultative index, in case the underlying
+			// client connector does not handle directory listing.
+			if (this.targetUri.endsWith("/")) {
+				// Append the index name
+				if (getDirectory().getIndexName() != null
+						&& getDirectory().getIndexName().length() > 0) {
+					this.directoryUri = this.targetUri;
+					this.baseName = getDirectory().getIndexName();
+					this.targetUri = this.directoryUri + this.baseName;
+					contextResponse = getDispatcher().get(this.targetUri);
+					if (contextResponse.getEntity() != null) {
+						this.targetDirectory = true;
+						this.directoryContent = new ReferenceList();
+                                                this.directoryContent.add(new Reference(this.targetUri));
+                                                this.targetIndex = true;
+					}
+				}
+			}
 		}
 
 		if (!this.targetDirectory) {

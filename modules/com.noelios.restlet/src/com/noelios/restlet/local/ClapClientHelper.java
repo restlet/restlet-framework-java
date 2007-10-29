@@ -126,6 +126,7 @@ public class ClapClientHelper extends LocalClientHelper {
                     Representation output = new InputRepresentation(url
                             .openStream(), metadataService
                             .getDefaultMediaType());
+                    output.setIdentifier(request.getResourceRef());
 
                     // Update the metadata based on file extensions
                     String name = path.substring(path.lastIndexOf('/') + 1);
