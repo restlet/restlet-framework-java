@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -45,7 +45,7 @@ import org.restlet.resource.Variant;
  * class loaders and webapp context). A content negotiation mechanism (similar
  * to Apache HTTP server) is available. It is based on path extensions to detect
  * variants (languages, media types or character sets).
- * 
+ *
  * @see <a
  *      href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache
  *      mod_negotiation module</a>
@@ -55,7 +55,7 @@ import org.restlet.resource.Variant;
 public class DirectoryResource extends Resource {
     /**
      * Returns the set of extensions contained in a given directory entry name.
-     * 
+     *
      * @param entryName
      *            The directory entry name.
      * @return The set of extensions.
@@ -116,7 +116,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Constructor.
-     * 
+     *
      * @param directory
      *            The parent directory handler.
      * @param request
@@ -148,6 +148,9 @@ public class DirectoryResource extends Resource {
         // Try to detect the presence of a directory
         Response contextResponse = getDispatcher().get(this.targetUri);
         if (contextResponse.getEntity() != null) {
+			// As a convention, underlying client connectors return the
+			// directory listing with the media-type "MediaType.TEXT_URI_LIST"
+			// when handling directories
             if (MediaType.TEXT_URI_LIST.equals(contextResponse.getEntity()
                     .getMediaType())) {
                 this.targetDirectory = true;
@@ -183,6 +186,25 @@ public class DirectoryResource extends Resource {
         } else {
             this.targetDirectory = false;
             this.targetFile = false;
+
+			// Let's try with the facultative index, in case the underlying
+			// client connector does not handle directory listing.
+			if (this.targetUri.endsWith("/")) {
+				// Append the index name
+				if (getDirectory().getIndexName() != null
+						&& getDirectory().getIndexName().length() > 0) {
+					this.directoryUri = this.targetUri;
+					this.baseName = getDirectory().getIndexName();
+					this.targetUri = this.directoryUri + this.baseName;
+					contextResponse = getDispatcher().get(this.targetUri);
+					if (contextResponse.getEntity() != null) {
+						this.targetDirectory = true;
+						this.directoryContent = new ReferenceList();
+                                                this.directoryContent.add(new Reference(this.targetUri));
+                                                this.targetIndex = true;
+					}
+				}
+			}
         }
 
         if (!this.targetDirectory) {
@@ -225,7 +247,7 @@ public class DirectoryResource extends Resource {
     /**
      * Indicates if it is allowed to delete the resource. The default value is
      * false.
-     * 
+     *
      * @return True if the method is allowed.
      */
     public boolean allowDelete() {
@@ -235,7 +257,7 @@ public class DirectoryResource extends Resource {
     /**
      * Indicates if it is allowed to put to the resource. The default value is
      * false.
-     * 
+     *
      * @return True if the method is allowed.
      */
     public boolean allowPut() {
@@ -311,7 +333,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Puts a variant representation in the resource.
-     * 
+     *
      * @param variant
      *            A new or updated variant representation.
      */
@@ -343,7 +365,7 @@ public class DirectoryResource extends Resource {
     /**
      * Returns the local base name of the file. For example, "foo.en" and
      * "foo.en-GB.html" return "foo".
-     * 
+     *
      * @return The local name of the file.
      */
     public String getBaseName() {
@@ -352,7 +374,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Returns the parent directory handler.
-     * 
+     *
      * @return The parent directory handler.
      */
     public Directory getDirectory() {
@@ -361,7 +383,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Returns the context's directory URI (file, clap URI).
-     * 
+     *
      * @return The context's directory URI (file, clap URI).
      */
     public String getDirectoryUri() {
@@ -370,7 +392,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Returns a call dispatcher.
-     * 
+     *
      * @return A call dispatcher.
      */
     private Uniform getDispatcher() {
@@ -379,7 +401,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Returns the context's target URI (file, clap URI).
-     * 
+     *
      * @return The context's target URI (file, clap URI).
      */
     public String getTargetUri() {
@@ -388,7 +410,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Returns the representation variants.
-     * 
+     *
      * @return The representation variants.
      */
     public List<Variant> getVariants() {
@@ -479,7 +501,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Allows to sort the list of representations set by the resource.
-     * 
+     *
      * @return A Comparator instance imposing a sort order of representations or
      *         null if no special order is wanted.
      */
@@ -513,7 +535,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Allows to sort the list of references set by the resource.
-     * 
+     *
      * @return A Comparator instance imposing a sort order of references or null
      *         if no special order is wanted.
      */
@@ -546,7 +568,7 @@ public class DirectoryResource extends Resource {
     /**
      * Returns the references of the representations of the target resource
      * according to the directory handler property
-     * 
+     *
      * @return The list of variants references
      */
     private ReferenceList getVariantsReferences() {
@@ -622,7 +644,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Sets the context's target URI (file, clap URI).
-     * 
+     *
      * @param targetUri
      *            The context's target URI.
      */
