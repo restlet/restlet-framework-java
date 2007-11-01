@@ -27,6 +27,7 @@ import org.restlet.Client;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -107,7 +108,8 @@ public class ClapClientHelper extends LocalClientHelper {
             // Prepare a classloader URI, removing the leading slash
             if ((path != null) && path.startsWith("/"))
                 path = path.substring(1);
-            URL url = classLoader.getResource(path);
+            // As the path may be percent-encoded, it has to be percent-decoded.
+            URL url = classLoader.getResource(Reference.decode(path));
 
             // The ClassLoader returns a directory listing in some cases.
             // As this listing is partial, is it of little value in the context

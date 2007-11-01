@@ -31,6 +31,7 @@ import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -52,6 +53,11 @@ public class DirectoryTestCase extends TestCase {
     String baseFileUrlFr = webSiteURL.concat("fichier.txt.fr");
 
     String baseFileUrlFrBis = webSiteURL.concat("fichier.fr.txt");
+
+    String percentEncodedFileUrl = webSiteURL.concat(Reference
+            .encode("a new file.txt"));
+
+    String percentEncodedFileUrlBis = webSiteURL.concat("a+new%20file.txt");
 
     File testDir;
 
@@ -299,6 +305,31 @@ public class DirectoryTestCase extends TestCase {
                 Method.DELETE, null, "8b");
         assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
 
+        // Test 9a : put a new representation, the resource's URI contains
+        // percent-encoded characters
+        directory.setModifiable(true);
+        response = handle(application, webSiteURL, percentEncodedFileUrl,
+                Method.PUT, new StringRepresentation("this is test 9a"), "9a");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_CREATED));
+
+        // Test 9b : Try to get the representation of the new file
+        response = handle(application, webSiteURL, percentEncodedFileUrl,
+                Method.GET, null, "9b");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        if (response.getStatus().equals(Status.SUCCESS_OK)) {
+            response.getEntity().write(System.out);
+            System.out.println("");
+        }
+        // Test 9c : Try to get the representation of the new file with an
+        // equivalent URI
+        response = handle(application, webSiteURL, percentEncodedFileUrlBis,
+                Method.GET, null, "9c");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        if (response.getStatus().equals(Status.SUCCESS_OK)) {
+            response.getEntity().write(System.out);
+            System.out.println("");
+        }
+
         testDirectory.delete();
         System.out.println("End of tests*********************");
     }
@@ -368,7 +399,7 @@ public class DirectoryTestCase extends TestCase {
          * Constructor.
          * 
          * @param context
-         *            The parent context.
+         *                The parent context.
          */
         public MyApplication(Context context, File testDirectory)
                 throws IOException {
@@ -398,7 +429,7 @@ public class DirectoryTestCase extends TestCase {
      * Recursively delete a directory.
      * 
      * @param dir
-     *            The directory to delete.
+     *                The directory to delete.
      */
     private void deleteDir(File dir) {
         if (dir.exists()) {

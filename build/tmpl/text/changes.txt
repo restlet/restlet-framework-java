@@ -22,6 +22,7 @@ Changes log
    internal pipe stream now times out if nobody uses it. Suggested by Tim Peierls.
  - Indexed directories were not properly handled with the CLAP protocol. Reported by Rob 
    Heittman.
+ - Directory restlet not showing files with whitespaces. Reported by Davide Angelocola.
    
 [Enhancements] 
  - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
