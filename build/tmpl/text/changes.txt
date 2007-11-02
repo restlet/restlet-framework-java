@@ -24,6 +24,8 @@ Changes log
    Heittman.
  - Directory restlet not showing files with whitespaces. Reported by Davide Angelocola.
  - Fixed potential NPE with invalid dates in headers. Reported by Henry Story.
+ - Fixed several bugs related to the URI resolver in TransformRepresentation. Reported
+   by Joe Nellis.
    
 [Enhancements] 
  - Clarified ConverterService Javadocs. Suggested by Justin Makeig.

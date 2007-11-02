@@ -19,7 +19,10 @@ import org.restlet.data.Reference;
 import org.restlet.data.Response;
 
 /**
- * Representation able to apply an XSLT transformation.
+ * Representation able to apply an XSLT transformation. Note that the JAXP
+ * Transformer is created when the getTransformer() method is first called, then
+ * reused. So, if you need to specify a custom URI resolver, you need to do it
+ * before actually using the representation for a transformation.
  * 
  * @author Jerome Louvel (contact@noelios.com) <a
  *         href="http://www.noelios.com/">Noelios Consulting</a>
@@ -41,11 +44,11 @@ public class TransformRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param context
-     *            The parent context.
+     *                The parent context.
      * @param source
-     *            The source representation to transform.
+     *                The source representation to transform.
      * @param transformSheet
-     *            The XSLT transform sheet.
+     *                The XSLT transform sheet.
      */
     public TransformRepresentation(Context context, Representation source,
             Representation transformSheet) {
@@ -77,12 +80,18 @@ public class TransformRepresentation extends OutputRepresentation {
                 StreamSource transformSheet = new StreamSource(
                         getTransformSheet().getStream());
 
-                // Create a new transformer as they are not thread safe
-                this.transformer = TransformerFactory.newInstance()
-                        .newTransformer(transformSheet);
+                // Create the transformer factory
+                TransformerFactory transformerFactory = TransformerFactory
+                        .newInstance();
 
                 // Set the URI resolver
-                transformer.setURIResolver(getURIResolver());
+                if (getURIResolver() != null) {
+                    transformerFactory.setURIResolver(getURIResolver());
+                }
+
+                // Create a new transformer
+                this.transformer = transformerFactory
+                        .newTransformer(transformSheet);
             } catch (TransformerConfigurationException tce) {
                 throw new IOException("Transformer configuration exception. "
                         + tce.getMessage());
@@ -118,7 +127,7 @@ public class TransformRepresentation extends OutputRepresentation {
      * Sets the XSLT transform sheet to apply to message entities.
      * 
      * @param transformSheet
-     *            The XSLT transform sheet to apply to message entities.
+     *                The XSLT transform sheet to apply to message entities.
      */
     public void setTransformSheet(Representation transformSheet) {
         this.transformSheet = transformSheet;
@@ -152,7 +161,7 @@ public class TransformRepresentation extends OutputRepresentation {
          * Constructor.
          * 
          * @param context
-         *            The Restlet context.
+         *                The Restlet context.
          */
         public ContextResolver(Context context) {
             this.context = context;
@@ -171,7 +180,7 @@ public class TransformRepresentation extends OutputRepresentation {
             if (this.context != null) {
                 Reference targetRef = null;
 
-                if (base != null) {
+                if ((base != null) && !base.equals("")) {
                     // Potentially a relative reference
                     Reference baseRef = new Reference(base);
                     targetRef = new Reference(baseRef, href);
@@ -181,7 +190,7 @@ public class TransformRepresentation extends OutputRepresentation {
                 }
 
                 Response response = this.context.getDispatcher().get(
-                        targetRef.toString());
+                        targetRef.getTargetRef().toString());
                 if (response.getStatus().isSuccess()
                         && response.isEntityAvailable()) {
                     try {
