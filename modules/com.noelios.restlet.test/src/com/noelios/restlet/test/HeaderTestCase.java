@@ -19,10 +19,12 @@
 package com.noelios.restlet.test;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
+import org.restlet.util.DateUtils;
 
 import junit.framework.TestCase;
 
@@ -114,9 +116,9 @@ public class HeaderTestCase extends TestCase {
      * Test that the parsing of a header returns the given array of values.
      * 
      * @param header
-     *            The header value to parse.
+     *                The header value to parse.
      * @param values
-     *            The parsed values.
+     *                The parsed values.
      */
     public void testValues(String header, String[] values) {
         HeaderReader hr = new HeaderReader(header);
@@ -127,6 +129,15 @@ public class HeaderTestCase extends TestCase {
             index++;
             value = hr.readValue();
         }
+    }
+
+    public void testInvalidDate() {
+        String headerValue = "-1";
+        Date date = DateUtils.parse(headerValue, DateUtils.FORMAT_RFC_1123);
+        assertNull(date);
+
+        Date unmodifiableDate = DateUtils.unmodifiable(date);
+        assertNull(unmodifiableDate);
     }
 
 }

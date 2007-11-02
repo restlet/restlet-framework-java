@@ -23,6 +23,7 @@ Changes log
  - Indexed directories were not properly handled with the CLAP protocol. Reported by Rob 
    Heittman.
  - Directory restlet not showing files with whitespaces. Reported by Davide Angelocola.
+ - Fixed potential NPE with invalid dates in headers. Reported by Henry Story.
    
 [Enhancements] 
  - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
