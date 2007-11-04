@@ -35,6 +35,7 @@ Changes log
  - Added some extra checks to prevent multiple starts of Applications, Components,
    Clients, Servers. Reported by Amol Daterao, Joan Picanyol i Puig and Christopher Sun.
  - Clarified StatusService Javadocs. Suggested by Davide Angelocola.
+ - Made the RouteList class really thread safe using an underlying CopyOnWriteArrayList list.
 
 1.0.5 (2007-09-06)
 [Bugs fixed]
