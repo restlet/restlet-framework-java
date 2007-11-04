@@ -18,9 +18,9 @@
 
 package org.restlet.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Restlet;
 import org.restlet.Route;
@@ -33,14 +33,14 @@ import org.restlet.data.Response;
  * type. This allows you to use an instance of this class as any other
  * java.util.List, in particular all the helper methods in
  * java.util.Collections.<br/> <br/> Note that structural changes to this list
- * are synchronized.
+ * are thread-safe, using an underlying
+ * {@link java.util.concurrent.CopyOnWriteArrayList}.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  * @see java.util.Collections
  * @see java.util.List
  */
 public final class RouteList extends WrapperList<Route> {
-
     /** The index of the last route used in the round robin mode. */
     private int lastIndex;
 
@@ -48,17 +48,8 @@ public final class RouteList extends WrapperList<Route> {
      * Constructor.
      */
     public RouteList() {
-        this(null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param initialCapacity
-     *                The initial list capacity.
-     */
-    public RouteList(int initialCapacity) {
-        this(new ArrayList<Route>(initialCapacity));
+        super(new CopyOnWriteArrayList<Route>());
+        this.lastIndex = -1;
     }
 
     /**
@@ -68,7 +59,7 @@ public final class RouteList extends WrapperList<Route> {
      *                The delegate list.
      */
     public RouteList(List<Route> delegate) {
-        super(delegate);
+        super(new CopyOnWriteArrayList<Route>(delegate));
         this.lastIndex = -1;
     }
 
@@ -83,8 +74,7 @@ public final class RouteList extends WrapperList<Route> {
      *                The minimum score required to have a match.
      * @return The best route match or null.
      */
-    public synchronized Route getBest(Request request, Response response,
-            float requiredScore) {
+    public Route getBest(Request request, Response response, float requiredScore) {
         Route result = null;
         float bestScore = 0F;
         float score;
@@ -111,7 +101,7 @@ public final class RouteList extends WrapperList<Route> {
      *                The minimum score required to have a match.
      * @return The first route match or null.
      */
-    public synchronized Route getFirst(Request request, Response response,
+    public Route getFirst(Request request, Response response,
             float requiredScore) {
         for (Route current : this) {
             if (current.score(request, response) >= requiredScore)
@@ -133,11 +123,12 @@ public final class RouteList extends WrapperList<Route> {
      *                The minimum score required to have a match.
      * @return The last route match or null.
      */
-    public synchronized Route getLast(Request request, Response response,
-            float requiredScore) {
-        for (int j = (size() - 1); (j >= 0); j--) {
-            if (get(j).score(request, response) >= requiredScore)
-                return get(j);
+    public Route getLast(Request request, Response response, float requiredScore) {
+        Route[] routes = toArray();
+
+        for (int j = (routes.length - 1); (j >= 0); j--) {
+            if (routes[j].score(request, response) >= requiredScore)
+                return routes[j];
         }
 
         // No match found
@@ -155,15 +146,16 @@ public final class RouteList extends WrapperList<Route> {
      *                The minimum score required to have a match.
      * @return A next route or null.
      */
-    public synchronized Route getNext(Request request, Response response,
-            float requiredScore) {
+    public Route getNext(Request request, Response response, float requiredScore) {
+        Route[] routes = toArray();
+
         for (int initialIndex = lastIndex++; initialIndex != lastIndex; lastIndex++) {
-            if (lastIndex == size()) {
+            if (lastIndex >= routes.length) {
                 lastIndex = 0;
             }
 
-            if (get(lastIndex).score(request, response) >= requiredScore)
-                return get(lastIndex);
+            if (routes[lastIndex].score(request, response) >= requiredScore)
+                return routes[lastIndex];
         }
 
         // No match found
@@ -181,19 +173,20 @@ public final class RouteList extends WrapperList<Route> {
      *                The minimum score required to have a match.
      * @return A random route or null.
      */
-    public synchronized Route getRandom(Request request, Response response,
+    public Route getRandom(Request request, Response response,
             float requiredScore) {
-        int j = new Random().nextInt(size());
-        if (get(j).score(request, response) >= requiredScore)
-            return get(j);
+        Route[] routes = toArray();
+        int j = new Random().nextInt(routes.length);
+        if (routes[j].score(request, response) >= requiredScore)
+            return routes[j];
 
         for (int initialIndex = j++; initialIndex != j; j++) {
-            if (j == size()) {
+            if (j == routes.length) {
                 j = 0;
             }
 
-            if (get(j).score(request, response) >= requiredScore)
-                return get(j);
+            if (routes[j].score(request, response) >= requiredScore)
+                return routes[j];
         }
 
         // No match found
@@ -223,7 +216,7 @@ public final class RouteList extends WrapperList<Route> {
      *                The end position (exclusive).
      * @return The sub-list.
      */
-    public synchronized RouteList subList(int fromIndex, int toIndex) {
+    public RouteList subList(int fromIndex, int toIndex) {
         return new RouteList(getDelegate().subList(fromIndex, toIndex));
     }
 }
