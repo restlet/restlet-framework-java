@@ -57,7 +57,7 @@ public class Guard extends Filter {
      */
     public Guard(Context context, ChallengeScheme scheme, String realm) {
         super(context);
-        this.secrets = null;
+        this.secrets = new ConcurrentHashMap<String, char[]>();
 
         if ((scheme == null)) {
             throw new IllegalArgumentException(
@@ -261,14 +261,6 @@ public class Guard extends Filter {
      * @return The map of identifiers and secrets.
      */
     public ConcurrentMap<String, char[]> getSecrets() {
-        if (this.secrets == null) {
-            synchronized (this) {
-                if (this.secrets == null) {
-                    this.secrets = new ConcurrentHashMap<String, char[]>();
-                }
-            }
-        }
-
         return this.secrets;
     }
 
@@ -290,16 +282,6 @@ public class Guard extends Filter {
      */
     public void setScheme(ChallengeScheme scheme) {
         this.scheme = scheme;
-    }
-
-    /**
-     * Sets the map of identifiers and secrets.
-     * 
-     * @param secrets
-     *                The map of identifiers and secrets.
-     */
-    public void setSecrets(ConcurrentMap<String, char[]> secrets) {
-        this.secrets = secrets;
     }
 
 }
