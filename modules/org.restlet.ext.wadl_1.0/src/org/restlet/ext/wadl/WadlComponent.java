@@ -68,7 +68,7 @@ public class WadlComponent extends Component {
 
         // For each WADL document URI attach a matching Application
         for (String arg : args) {
-            Response response = component.getContext().getDispatcher().get(arg);
+            Response response = component.getContext().getClientDispatcher().get(arg);
 
             if (response.getStatus().isSuccess()
                     && response.isEntityAvailable()) {

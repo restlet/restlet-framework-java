@@ -221,7 +221,7 @@ public class Redirector extends Restlet {
         // Update the request to cleanly go to the target URI
         request.setResourceRef(targetRef);
         request.getAttributes().remove("org.restlet.http.headers");
-        getContext().getDispatcher().handle(request, response);
+        getContext().getClientDispatcher().handle(request, response);
 
         // Allow for response rewriting and clean the headers
         response.setEntity(rewrite(response.getEntity()));

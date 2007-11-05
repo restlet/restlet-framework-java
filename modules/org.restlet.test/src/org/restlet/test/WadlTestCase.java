@@ -34,7 +34,7 @@ public class WadlTestCase extends TestCase {
 
     public void testWadl() throws Exception {
         WadlComponent comp = new WadlComponent();
-        Representation wadl = comp.getContext().getDispatcher().get(
+        Representation wadl = comp.getContext().getClientDispatcher().get(
                 "clap://class/org/restlet/test/YahooSearch.wadl").getEntity();
         comp.attach(wadl);
 

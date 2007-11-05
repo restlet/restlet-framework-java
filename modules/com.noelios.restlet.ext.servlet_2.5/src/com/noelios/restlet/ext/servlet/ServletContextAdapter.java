@@ -81,7 +81,7 @@ public class ServletContextAdapter extends Context {
     @Override
     public Uniform getDispatcher() {
         if (parentContext != null) {
-            return parentContext.getDispatcher();
+            return parentContext.getClientDispatcher();
         }
 
         return null;

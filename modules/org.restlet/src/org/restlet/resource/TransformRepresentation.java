@@ -69,7 +69,7 @@ public class TransformRepresentation extends OutputRepresentation {
                     targetRef = new Reference(href);
                 }
 
-                Response response = this.context.getDispatcher().get(
+                Response response = this.context.getClientDispatcher().get(
                         targetRef.getTargetRef().toString());
                 if (response.getStatus().isSuccess()
                         && response.isEntityAvailable()) {

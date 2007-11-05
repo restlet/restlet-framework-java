@@ -81,7 +81,7 @@ public class ApplicationDispatcher extends Uniform {
                 }
 
                 if (this.applicationContext != null) {
-                    this.applicationContext.getParentContext().getDispatcher()
+                    this.applicationContext.getParentContext().getClientDispatcher()
                             .handle(request, response);
                 } else {
                     Logger

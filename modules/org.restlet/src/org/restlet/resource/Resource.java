@@ -20,23 +20,18 @@ package org.restlet.resource;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Context;
+import org.restlet.Handler;
 import org.restlet.data.Dimension;
 import org.restlet.data.Language;
-import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.util.Series;
-import org.restlet.util.Template;
 
 /**
  * Intended conceptual target of a hypertext reference. "Any information that
@@ -58,36 +53,23 @@ import org.restlet.util.Template;
  * URI.<br>
  * <br>
  * Typically created by Finders, Resource instances are the final handlers of
- * calls received by server connectors. Unlike the other handlers in the
- * processing chain, a Resource is generally not shared between calls and
- * doesn't have to be thread-safe. This is the point where the RESTful view of
- * your Web application can be integrated with your domain objects. Those domain
- * objects can be implemented using any technology, relational databases, object
- * databases, transactional components like EJB, etc. You just have to extend
- * this class to override the REST methods you want to support like post(),
- * put() or delete(). The common GET method is supported by the modifiable
- * "variants" list property and the {@link #getRepresentation(Variant)} method.
- * This allows an easy and cheap declaration of the available variants in the
- * constructor for example, then the on-demand creation of costly
- * representations via the {@link #getRepresentation(Variant)} method.<br>
+ * calls received by server connectors or by the internal router. Unlike the
+ * other processors in the chain, a Resource is not shared between calls and
+ * doesn't have to be thread-safe.<br>
  * <br>
- * At a lower level, you have a handle*(Request,Response) method for each REST
- * method that is supported by the Resource, where the '*' is replaced by the
- * method name. The Finder handler for example, will be able to dynamically
- * dispatch a call to the appropriate handle*() method. Most common REST methods
- * like GET, POST, PUT and DELETE have default implementations that pre-handle
- * calls to do content negotiation for example, based on the higher-level
- * methods that we discussed previously. For example if you want to support a
- * MOVE method, just add an handleMove(Request,Response) method and it will be
- * detected automatically by a Finder handler.<br>
+ * This is the point where the RESTful view of your Web application can be
+ * integrated with your domain objects. Those domain objects can be implemented
+ * using any technology, relational databases, object databases, transactional
+ * components like EJB, etc.
+ * 
+ * You just have to extend this class to override the REST methods you want to
+ * support like post(), put() or delete(). The common GET method is supported by
+ * the modifiable "variants" list property and the
+ * {@link #getRepresentation(Variant)} method. This allows an easy and cheap
+ * declaration of the available variants in the constructor for example, then
+ * the on-demand creation of costly representations via the
+ * {@link #getRepresentation(Variant)} method.<br>
  * <br>
- * Finally, you need to declare which REST methods are allowed by your Resource
- * by overiding the matching allow*() method. By default, allowGet() returns
- * true, but all other allow*() methods will return false. Therefore, if you
- * want to support the DELETE method, just override allowDelete() and return
- * true. Again, a previous Finder handler will be able to detect this method and
- * know whether or not your Resource should be invoked. It is also used by the
- * handleOptions() method to return the list of allowed methods.
  * 
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source
@@ -99,31 +81,25 @@ import org.restlet.util.Template;
  * @author Jerome Louvel (contact@noelios.com)
  * @author Thierry Boileau (thboileau@gmail.com)
  */
-public class Resource {
-    /** The parent context. */
-    private Context context;
+public class Resource extends Handler {
 
     /** Indicates if the best content is automatically negotiated. */
     private boolean negotiateContent;
-
-    /** The handled request. */
-    private Request request;
-
-    /** The returned response. */
-    private Response response;
 
     /** The modifiable list of variants. */
     private List<Variant> variants;
 
     /**
-     * Default constructor. Note that the init() method must be invoked right
-     * after the creation of the resource.
+     * Special constructor used by IoC frameworks. Note that the init() method
+     * MUST be invoked right after the creation of the handler in order to keep
+     * a behavior consistent with the normal three arguments constructor.
      */
     public Resource() {
     }
 
     /**
-     * Constructor. This constructor will invoke the init() method by default.
+     * Normal constructor. This constructor will invoke the parent constructor
+     * by default.
      * 
      * @param context
      *                The parent context.
@@ -133,47 +109,9 @@ public class Resource {
      *                The response to return.
      */
     public Resource(Context context, Request request, Response response) {
-        init(context, request, response);
-    }
-
-    /**
-     * Indicates if it is allowed to delete the resource. The default value is
-     * false.
-     * 
-     * @return True if the method is allowed.
-     */
-    public boolean allowDelete() {
-        return false;
-    }
-
-    /**
-     * Indicates if it is allowed to get the variants. The default value is
-     * true.
-     * 
-     * @return True if the method is allowed.
-     */
-    public boolean allowGet() {
-        return true;
-    }
-
-    /**
-     * Indicates if it is allowed to post to the resource. The default value is
-     * false.
-     * 
-     * @return True if the method is allowed.
-     */
-    public boolean allowPost() {
-        return false;
-    }
-
-    /**
-     * Indicates if it is allowed to put to the resource. The default value is
-     * false.
-     * 
-     * @return True if the method is allowed.
-     */
-    public boolean allowPut() {
-        return false;
+        super(context, request, response);
+        this.negotiateContent = true;
+        this.variants = null;
     }
 
     /**
@@ -181,49 +119,6 @@ public class Resource {
      */
     public void delete() {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-    }
-
-    /**
-     * Generates a reference based on a template URI. Note that you can leverage
-     * all the variables defined in the Template class as they will be resolved
-     * using the resource's request and response properties.
-     * 
-     * @param uriTemplate
-     *                The URI template to use for generation.
-     * @return The generated reference.
-     */
-    public Reference generateRef(String uriTemplate) {
-        Template tplt = new Template(getLogger(), uriTemplate);
-        return new Reference(tplt.format(getRequest(), getResponse()));
-    }
-
-    /**
-     * Returns the parent application if it exists, or null.
-     * 
-     * @return The parent application if it exists, or null.
-     */
-    public Application getApplication() {
-        return getContext().getApplication();
-    }
-
-    /**
-     * Returns the context.
-     * 
-     * @return The context.
-     */
-    public Context getContext() {
-        if (this.context == null)
-            this.context = new Context(getClass().getCanonicalName());
-        return this.context;
-    }
-
-    /**
-     * Returns the logger to use.
-     * 
-     * @return The logger to use.
-     */
-    public Logger getLogger() {
-        return getContext().getLogger();
     }
 
     /**
@@ -292,24 +187,6 @@ public class Resource {
     }
 
     /**
-     * Returns the request.
-     * 
-     * @return the request.
-     */
-    public Request getRequest() {
-        return this.request;
-    }
-
-    /**
-     * Returns the response.
-     * 
-     * @return the response.
-     */
-    public Response getResponse() {
-        return this.response;
-    }
-
-    /**
      * Returns the modifiable list of variants. Creates a new instance if no one
      * has been set. A variant can be a purely descriptive representation, with
      * no actual content that can be served. It can also be a full
@@ -339,6 +216,7 @@ public class Resource {
      * Handles a DELETE call invoking the 'delete' method of the target resource
      * (as provided by the 'findTarget' method).
      */
+    @Override
     public void handleDelete() {
         boolean canDelete = true;
         if (getRequest().getConditions().hasSome()) {
@@ -386,6 +264,7 @@ public class Resource {
      * resource, then a 300 (Multiple Choices) status will be returned with the
      * list of variants URI if available.
      */
+    @Override
     public void handleGet() {
         // The variant that may need to meet the request conditions
         Representation selectedRepresentation = null;
@@ -476,26 +355,10 @@ public class Resource {
     }
 
     /**
-     * Handles a HEAD call, using a logic similar to the handleGet method.
-     */
-    public void handleHead() {
-        handleGet();
-    }
-
-    /**
-     * Handles an OPTIONS call introspecting the target resource (as provided by
-     * the 'findTarget' method).
-     */
-    public void handleOptions() {
-        // HTTP spec says that OPTIONS should return the list of allowed methods
-        updateAllowedMethods();
-        getResponse().setStatus(Status.SUCCESS_OK);
-    }
-
-    /**
      * Handles a POST call invoking the 'post' method of the target resource (as
      * provided by the 'findTarget' method).
      */
+    @Override
     public void handlePost() {
         if (!getRequest().isEntityAvailable()) {
             getLogger()
@@ -511,6 +374,7 @@ public class Resource {
      * provided by the 'findTarget' method).
      */
     @SuppressWarnings("unchecked")
+    @Override
     public void handlePut() {
         boolean canPut = true;
 
@@ -590,37 +454,9 @@ public class Resource {
      *                The response to return.
      */
     public void init(Context context, Request request, Response response) {
-        this.context = context;
+        super.init(context, request, response);
         this.negotiateContent = true;
-        this.request = request;
-        this.response = response;
         this.variants = null;
-    }
-
-    /**
-     * Invokes a method with the given arguments.
-     * 
-     * @param method
-     *                The method to invoke.
-     * @param args
-     *                The arguments to pass.
-     * @return Invocation result.
-     */
-    private Object invoke(java.lang.reflect.Method method, Object... args) {
-        Object result = null;
-
-        if (method != null) {
-            try {
-                result = method.invoke(this, args);
-            } catch (Exception e) {
-                getLogger().log(
-                        Level.WARNING,
-                        "Couldn't invoke the handle method for \"" + method
-                                + "\"", e);
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -654,16 +490,6 @@ public class Resource {
     }
 
     /**
-     * Sets the parent context.
-     * 
-     * @param context
-     *                The parent context.
-     */
-    public void setContext(Context context) {
-        this.context = context;
-    }
-
-    /**
      * Indicates if the best content is automatically negotiated. Default value
      * is true.
      * 
@@ -675,26 +501,6 @@ public class Resource {
     }
 
     /**
-     * Sets the request to handle.
-     * 
-     * @param request
-     *                The request to handle.
-     */
-    public void setRequest(Request request) {
-        this.request = request;
-    }
-
-    /**
-     * Sets the response to update.
-     * 
-     * @param response
-     *                The response to update.
-     */
-    public void setResponse(Response response) {
-        this.response = response;
-    }
-
-    /**
      * Sets the modifiable list of variants.
      * 
      * @param variants
@@ -702,23 +508,6 @@ public class Resource {
      */
     public void setVariants(List<Variant> variants) {
         this.variants = variants;
-    }
-
-    /**
-     * Updates the set of allowed methods on the response.
-     */
-    private void updateAllowedMethods() {
-        Set<Method> allowedMethods = getResponse().getAllowedMethods();
-        for (java.lang.reflect.Method classMethod : getClass().getMethods()) {
-            if (classMethod.getName().startsWith("allow")
-                    && (classMethod.getParameterTypes().length == 0)) {
-                if ((Boolean) invoke(classMethod)) {
-                    Method allowedMethod = Method.valueOf(classMethod.getName()
-                            .substring(5));
-                    allowedMethods.add(allowedMethod);
-                }
-            }
-        }
     }
 
 }

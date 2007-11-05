@@ -118,7 +118,7 @@ public class SpringContext extends GenericApplicationContext {
             // First, read the bean definitions from properties representations
             PropertiesBeanDefinitionReader propReader = null;
             for (String ref : getPropertyConfigRefs()) {
-                config = getRestletContext().getDispatcher().get(ref)
+                config = getRestletContext().getClientDispatcher().get(ref)
                         .getEntity();
 
                 if (config != null) {
@@ -130,7 +130,7 @@ public class SpringContext extends GenericApplicationContext {
             // Then, read the bean definitions from XML representations
             XmlBeanDefinitionReader xmlReader = null;
             for (String ref : getXmlConfigRefs()) {
-                config = getRestletContext().getDispatcher().get(ref)
+                config = getRestletContext().getClientDispatcher().get(ref)
                         .getEntity();
 
                 if (config != null) {

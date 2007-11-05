@@ -96,7 +96,7 @@ public class GrizzlyTestCase extends TestCase {
         Request request = new Request(method, uri);
         request.setEntity(inputForm.getWebRepresentation());
 
-        Response response = context.getDispatcher().handle(request);
+        Response response = context.getClientDispatcher().handle(request);
         assertNotNull(response.getEntity());
 
         Form outputForm = response.getEntityAsForm();

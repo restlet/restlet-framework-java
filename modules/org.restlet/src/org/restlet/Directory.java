@@ -29,7 +29,6 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 import org.restlet.util.Engine;
 
@@ -128,15 +127,15 @@ public class Directory extends Finder {
     }
 
     /**
-     * Finds the target Resource if available.
+     * Finds the target handler if available.
      * 
      * @param request
      *                The request to filter.
      * @param response
      *                The response to filter.
-     * @return The target resource if available or null.
+     * @return The target handler if available or null.
      */
-    public Resource findTarget(Request request, Response response) {
+    public Handler findTarget(Request request, Response response) {
         try {
             return Engine.getInstance().createDirectoryResource(this, request,
                     response);

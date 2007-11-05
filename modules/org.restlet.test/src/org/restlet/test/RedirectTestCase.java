@@ -104,7 +104,7 @@ public class RedirectTestCase extends TestCase {
 
     private void testCall(Context context, Method method, String uri)
             throws Exception {
-        Response response = context.getDispatcher().handle(
+        Response response = context.getClientDispatcher().handle(
                 new Request(method, uri));
         assertNotNull(response.getEntity());
         response.getEntity().write(System.out);

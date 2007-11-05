@@ -27,22 +27,21 @@ import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Resource;
 
 /**
- * Restlet that can find the target resource that will concretely handle a call.
- * Based on a given resource class, it is also capable of instantiating the
- * resource with the call's context, request and response without requiring the
- * usage of a subclass. It will use either the constructor with three arguments:
- * context, request, response; or it will invoke the default constructor then
- * invoke the init() method with the same arguments.<br>
+ * Restlet that can find the target handler that will effectively handle the
+ * call. Based on a given Handler subclass, it is also capable of instantiating
+ * the handler with the call's context, request and response without requiring
+ * the usage of a Finder subclass. It will use either the constructor with three
+ * arguments: context, request, response; or it will invoke the default
+ * constructor then invoke the init() method with the same arguments.<br>
  * <br>
- * Once the target resource has been found, the call is automatically dispatched
+ * Once the target handler has been found, the call is automatically dispatched
  * to the appropriate handle*() method (where the '*' character corresponds to
  * the method name) if the corresponding allow*() method returns true.<br>
  * <br>
  * For example, if you want to support a MOVE method for a WebDAV server, you
- * just have to add a handleMove() method in your subclass of Resource and it
+ * just have to add a handleMove() method in your subclass of Handler and it
  * will be automatically be used by the Finder instance at runtime.<br>
  * <br>
  * If no matching handle*() method is found, then a
@@ -53,8 +52,8 @@ import org.restlet.resource.Resource;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Finder extends Restlet {
-    /** Target resource class. */
-    private Class<? extends Resource> targetClass;
+    /** Target handler class. */
+    private Class<? extends Handler> targetClass;
 
     /**
      * Constructor.
@@ -79,27 +78,27 @@ public class Finder extends Restlet {
      * @param context
      *                The context.
      * @param targetClass
-     *                The target resource class.
+     *                The target handler class.
      */
-    public Finder(Context context, Class<? extends Resource> targetClass) {
+    public Finder(Context context, Class<? extends Handler> targetClass) {
         super(context);
         this.targetClass = targetClass;
     }
 
     /**
-     * Indicates if a method is allowed on a target resource.
+     * Indicates if a method is allowed on a target handler.
      * 
      * @param method
      *                The method to test.
      * @param target
-     *                The target resource.
-     * @return True if a method is allowed on a target resource.
+     *                The target handler.
+     * @return True if a method is allowed on a target handler.
      */
-    private boolean allowMethod(Method method, Resource target) {
+    private boolean allowMethod(Method method, Handler target) {
         boolean result = false;
 
         if (target != null) {
-            if (method.equals(Method.GET) || method.equals(Method.HEAD)) {
+            if (method.equals(Method.GET)) {
                 result = target.allowGet();
             } else if (method.equals(Method.POST)) {
                 result = target.allowPost();
@@ -107,10 +106,12 @@ public class Finder extends Restlet {
                 result = target.allowPut();
             } else if (method.equals(Method.DELETE)) {
                 result = target.allowDelete();
+            } else if (method.equals(Method.HEAD)) {
+                result = target.allowHead();
             } else if (method.equals(Method.OPTIONS)) {
-                result = true;
+                result = target.allowOptions();
             } else {
-                // Dynamically introspect the target resource to detect a
+                // Dynamically introspect the target handler to detect a
                 // matching "allow" method.
                 java.lang.reflect.Method allowMethod = getAllowMethod(method,
                         target);
@@ -124,19 +125,20 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Creates a new instance of the resource class designated by the
+     * Creates a new instance of the handler class designated by the
      * "targetClass" property. Note that Error and RuntimeException thrown by
-     * Resource constructors are rethrown by this method. Other exception are
+     * Handler constructors are rethrown by this method. Other exception are
      * caught and logged.
      * 
      * @param request
      *                The request to handle.
      * @param response
      *                The response to update.
-     * @return The created resource or null.
+     * @return The created handler or null.
+     * @deprecated Use the createHandler() instead.
      */
-    public Resource createResource(Request request, Response response) {
-        Resource result = null;
+    public Handler createResource(Request request, Response response) {
+        Handler result = null;
 
         if (getTargetClass() != null) {
             try {
@@ -146,14 +148,14 @@ public class Finder extends Restlet {
                     // parameters
                     constructor = getTargetClass().getConstructor(
                             Context.class, Request.class, Response.class);
-                    result = (Resource) constructor.newInstance(getContext(),
+                    result = (Handler) constructor.newInstance(getContext(),
                             request, response);
                 } catch (NoSuchMethodException nsme) {
                     // Invoke the default constructor then the init(Context,
                     // Request, Response) method.
                     constructor = getTargetClass().getConstructor();
                     if (constructor != null) {
-                        result = (Resource) constructor.newInstance();
+                        result = (Handler) constructor.newInstance();
                         result.init(getContext(), request, response);
                     }
                 }
@@ -166,15 +168,12 @@ public class Finder extends Restlet {
                     getLogger()
                             .log(
                                     Level.WARNING,
-                                    "Exception while instantiating the target resource.",
+                                    "Exception while instantiating the target handler.",
                                     e);
                 }
             } catch (Exception e) {
-                getLogger()
-                        .log(
-                                Level.WARNING,
-                                "Exception while instantiating the target resource.",
-                                e);
+                getLogger().log(Level.WARNING,
+                        "Exception while instantiating the target handler.", e);
             }
         }
 
@@ -182,17 +181,33 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Finds the target Resource if available. The default behavior is to invoke
-     * the {@link #createResource(Request, Response)} method.
+     * Creates a new instance of the handler class designated by the
+     * "targetClass" property. Note that Error and RuntimeException thrown by
+     * Handler constructors are rethrown by this method. Other exception are
+     * caught and logged.
      * 
      * @param request
      *                The request to handle.
      * @param response
      *                The response to update.
-     * @return The target resource if available or null.
+     * @return The created handler or null.
      */
-    public Resource findTarget(Request request, Response response) {
+    public Handler createTarget(Request request, Response response) {
         return createResource(request, response);
+    }
+
+    /**
+     * Finds the target Handler if available. The default behavior is to invoke
+     * the {@link #createTarget(Request, Response)} method.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     * @return The target handler if available or null.
+     */
+    public Handler findTarget(Request request, Response response) {
+        return createTarget(request, response);
     }
 
     /**
@@ -201,11 +216,11 @@ public class Finder extends Restlet {
      * @param method
      *                The method to match.
      * @param target
-     *                The target resource.
+     *                The target handler.
      * @return The allow method matching the given method name.
      */
     private java.lang.reflect.Method getAllowMethod(Method method,
-            Resource target) {
+            Handler target) {
         return getMethod("allow", method, target);
     }
 
@@ -216,7 +231,7 @@ public class Finder extends Restlet {
      *                The method to match.
      * @return The handle method matching the given method name.
      */
-    private java.lang.reflect.Method getHandleMethod(Resource target,
+    private java.lang.reflect.Method getHandleMethod(Handler target,
             Method method) {
         return getMethod("handle", method, target);
     }
@@ -260,11 +275,11 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Returns the target Resource class.
+     * Returns the target Handler class.
      * 
-     * @return the target Resource class.
+     * @return the target Handler class.
      */
-    public Class<? extends Resource> getTargetClass() {
+    public Class<? extends Handler> getTargetClass() {
         return this.targetClass;
     }
 
@@ -280,15 +295,15 @@ public class Finder extends Restlet {
         init(request, response);
 
         if (isStarted()) {
-            Resource target = findTarget(request, response);
+            Handler target = findTarget(request, response);
 
             if (!response.getStatus().equals(Status.SUCCESS_OK)) {
-                // Probably during the instantiation of the target resource, or
+                // Probably during the instantiation of the target handler, or
                 // earlier the status was changed from the default one. Don't go
                 // further.
             } else if (target == null) {
                 // If the currrent status is a success but we couldn't find the
-                // target resource for the request's resource URI, then we set
+                // target handler for the request's resource URI, then we set
                 // the response status to 404 (Not Found).
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
@@ -361,25 +376,25 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Sets the target Resource class.
+     * Sets the target Handler class.
      * 
      * @param targetClass
-     *                The target Resource class.
+     *                The target Handler class.
      */
-    public void setTargetClass(Class<? extends Resource> targetClass) {
+    public void setTargetClass(Class<? extends Handler> targetClass) {
         this.targetClass = targetClass;
     }
 
     /**
      * Updates the set of allowed methods on the response based on a target
-     * resource.
+     * handler.
      * 
      * @param response
      *                The response to update.
      * @param target
-     *                The target resource.
+     *                The target handler.
      */
-    private void updateAllowedMethods(Response response, Resource target) {
+    private void updateAllowedMethods(Response response, Handler target) {
         Set<Method> allowedMethods = response.getAllowedMethods();
         for (java.lang.reflect.Method classMethod : target.getClass()
                 .getMethods()) {

@@ -119,9 +119,34 @@ public class Context {
      * or on the resource URI's scheme. This call is blocking and will return an
      * updated response object.
      * 
-     * @return A request dispatcher to available client connectors.
+     * @return A request dispatcher to virtual hosts of the local component.
+     * @deprecated Use getClientDispatcher() instead.
      */
     public Uniform getDispatcher() {
+        return getClientDispatcher();
+    }
+
+    /**
+     * Returns a request dispatcher to local virtual hosts. When you ask the
+     * dispatcher to handle a request, it will directly route your request to
+     * the component's client-side router.
+     * 
+     * @return A request dispatcher to available client connectors.
+     */
+    public Uniform getClientDispatcher() {
+        return null;
+    }
+
+    /**
+     * Returns a request dispatcher to available client connectors. When you ask
+     * the dispatcher to handle a request, it will automatically select the best
+     * client connector for your request, based on the request.protocol property
+     * or on the resource URI's scheme. This call is blocking and will return an
+     * updated response object.
+     * 
+     * @return A request dispatcher to virtual hosts of the local component.
+     */
+    public Uniform getServerDispatcher() {
         return null;
     }
 
