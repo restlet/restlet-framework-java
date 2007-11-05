@@ -37,7 +37,7 @@ import org.restlet.data.Status;
  */
 public class Guard extends Filter {
     /** Map of secrets (login/password combinations). */
-    private Map<String, char[]> secrets;
+    private final Map<String, char[]> secrets;
 
     /** The authentication scheme. */
     private ChallengeScheme scheme;
