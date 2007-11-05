@@ -120,11 +120,17 @@ public class WarClientHelper extends FileClientHelper {
      *            The response to update.
      */
     protected void handleWar(Request request, Response response) {
+        getWarPath();
+        
         if (this.webAppArchive) {
             try {
                 String path = request.getResourceRef().getPath();
                 JarFile war = new JarFile(getWarPath());
-                JarEntry entry = war.getJarEntry(path);
+                // As the path may be percent-encoded, it has to be percent-decoded.
+                // Prepare a jar URI, removing the leading slash
+                if ((path != null) && path.startsWith("/"))
+                    path = path.substring(1);
+                JarEntry entry = war.getJarEntry(Reference.decode(path));
 
                 if (entry.isDirectory()) {
                     if (warEntries == null) {

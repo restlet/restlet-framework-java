@@ -53,21 +53,6 @@ import org.restlet.resource.Variant;
  * @author Thierry Boileau
  */
 public class DirectoryResource extends Resource {
-    /**
-     * Returns the set of extensions contained in a given directory entry name.
-     *
-     * @param entryName
-     *            The directory entry name.
-     * @return The set of extensions.
-     */
-    public static Set<String> getExtensions(String entryName) {
-        Set<String> result = new TreeSet<String>();
-        String[] tokens = entryName.split("\\.");
-        for (int i = 1; i < tokens.length; i++) {
-            result.add(tokens[i].toLowerCase());
-        }
-        return result;
-    }
 
     /** The parent directory handler. */
     private Directory directory;
@@ -639,6 +624,22 @@ public class DirectoryResource extends Resource {
                     ioe);
         }
 
+        return result;
+    }
+
+    /**
+     * Returns the set of extensions contained in a given directory entry name.
+     *
+     * @param entryName
+     *            The directory entry name.
+     * @return The set of extensions.
+     */
+    public static Set<String> getExtensions(String entryName) {
+        Set<String> result = new TreeSet<String>();
+        String[] tokens = entryName.split("\\.");
+        for (int i = 1; i < tokens.length; i++) {
+            result.add(tokens[i].toLowerCase());
+        }
         return result;
     }
 

@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.restlet.test
 Bundle-Version: 1.0.0
 Bundle-Vendor: Noelios Consulting
 Require-Bundle: com.noelios.restlet,
- com.noelios.restlet.ext.jetty,
  com.noelios.restlet.ext.net,
  org.junit4,
  org.restlet.ext.atom,
@@ -13,4 +12,5 @@ Require-Bundle: com.noelios.restlet,
  org.restlet.ext.velocity,
  org.restlet.ext.spring,
  org.restlet.example,
- org.restlet.ext.wadl
+ org.restlet.ext.wadl,
+ com.noelios.restlet.ext.grizzly

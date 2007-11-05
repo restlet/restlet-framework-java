@@ -41,6 +41,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -105,7 +106,11 @@ public class FileClientHelper extends LocalClientHelper {
      *                The file or directory path.
      */
     protected void handleFile(Request request, Response response, String path) {
-        File file = new File(LocalReference.localizePath(path));
+        // As the path may be percent-encoded, it has to be percent-decoded.
+        // Then, all generated uris must be encoded.
+        String decodedPath = LocalReference
+                .localizePath(Reference.decode(path));
+        File file = new File(decodedPath);
         MetadataService metadataService = getMetadataService(request);
 
         if (request.getMethod().equals(Method.GET)
@@ -128,9 +133,19 @@ public class FileClientHelper extends LocalClientHelper {
                 File[] files = file.getParentFile().listFiles();
                 ReferenceList rl = new ReferenceList(files.length);
 
+                String encodedParentDirectoryURI = path.substring(0, path
+                        .lastIndexOf("/"));
+                String encodedFileName = path
+                        .substring(path.lastIndexOf("/") + 1);
+                
                 for (File entry : files) {
                     if (entry.getName().startsWith(baseName)) {
-                        rl.add(LocalReference.createFileReference(entry));
+                        rl.add(LocalReference
+                                .createFileReference(encodedParentDirectoryURI
+                                        + "/"
+                                        + getReencodedVariantFileName(
+                                                encodedFileName, entry
+                                                        .getName())));
                     }
                 }
                 output = rl.getTextRepresentation();
@@ -601,5 +616,55 @@ public class FileClientHelper extends LocalClientHelper {
         }
 
         return knownExtension;
+    }
+    
+
+    /**
+     * Percent-encodes the given percent-decoded variant name of a resource
+     * whose percent-encoded name is given. Tries to match the longest common
+     * part of both encoded file name and decoded variant name.
+     * 
+     * @param encodedFileName
+     *                the percent-encoded name of the initial resource
+     * @param decodedVariantFileName
+     *                the percent-decoded file name of a variant of the initial
+     *                resource.
+     * @return the variant percent-encoded file name.
+     */
+    private String getReencodedVariantFileName(String encodedFileName,
+            String decodedVariantFileName) {
+        int i = 0;
+        int j = 0;
+        boolean stop = false;
+        for (i = 0; i < decodedVariantFileName.length()
+                && (j < encodedFileName.length()) && !stop; i++) {
+            String decodedChar = decodedVariantFileName.substring(i, i + 1);
+            if (decodedChar.equals(encodedFileName.substring(j, j + 1))) {
+                j++;
+            } else {
+                if (encodedFileName.substring(j, j + 1).equals("%")) {
+                    if (decodedChar.equals(Reference.decode(encodedFileName
+                            .substring(j, j + 3)))) {
+                        j += 3;
+                    } else {
+                        stop = true;
+                    }
+                } else {
+                    if (decodedChar.equals(Reference.decode(encodedFileName
+                            .substring(j, j + 1)))) {
+                        j++;
+                    } else {
+                        stop = true;
+                    }
+                }
+            }
+        }
+
+        if (stop) {
+            return encodedFileName.substring(0, j)
+                    + decodedVariantFileName.substring(i - 1);
+        } else {
+            return encodedFileName.substring(0, j);
+        }
     }
 }
