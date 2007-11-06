@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -39,7 +39,7 @@ import org.restlet.resource.StringRepresentation;
 
 /**
  * Unit tests for the DirectoryHandler class.
- * 
+ *
  * @author Thierry Boileau
  */
 public class DirectoryTestCase extends TestCase {
@@ -90,7 +90,7 @@ public class DirectoryTestCase extends TestCase {
 
     /**
      * Helper
-     * 
+     *
      * @param application
      * @param directory
      * @param indexName
@@ -299,13 +299,42 @@ public class DirectoryTestCase extends TestCase {
                 Method.DELETE, null, "8b");
         assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
 
+        // Test 9a : put a new representation, the resource's URI contains
+        // percent-encoded characters
+        directory.setModifiable(true);
+        response = handle(application, webSiteURL, percentEncodedFileUrl,
+                Method.PUT, new StringRepresentation("this is test 9a"), "9a");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_CREATED));
+
+        // Test 9b : Try to get the representation of the new file
+        response = handle(application, webSiteURL, percentEncodedFileUrl,
+                Method.GET, null, "9b");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        if (response.getStatus().equals(Status.SUCCESS_OK)) {
+            response.getEntity().write(System.out);
+            System.out.println("");
+        }
+        // Test 9c : Try to get the representation of the new file with an
+        // equivalent URI
+        response = handle(application, webSiteURL, percentEncodedFileUrlBis,
+                Method.GET, null, "9c");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_OK));
+        if (response.getStatus().equals(Status.SUCCESS_OK)) {
+            response.getEntity().write(System.out);
+            System.out.println("");
+        }
+        // Test 9d : Try to delete the file
+        response = handle(application, webSiteURL, percentEncodedFileUrl, Method.DELETE,
+                null, "9d");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+
         testDirectory.delete();
         System.out.println("End of tests*********************");
     }
 
     /**
      * Helper for the test
-     * 
+     *
      * @param directory
      * @param baseRef
      * @param resourceRef
@@ -341,7 +370,7 @@ public class DirectoryTestCase extends TestCase {
 
     /**
      * Internal class used for test purpose
-     * 
+     *
      * @author Thierry Boileau
      */
     private static class MyApplication extends Application {
@@ -366,7 +395,7 @@ public class DirectoryTestCase extends TestCase {
 
         /**
          * Constructor.
-         * 
+         *
          * @param context
          *            The parent context.
          */
@@ -396,7 +425,7 @@ public class DirectoryTestCase extends TestCase {
 
     /**
      * Recursively delete a directory.
-     * 
+     *
      * @param dir
      *            The directory to delete.
      */
