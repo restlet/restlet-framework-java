@@ -82,12 +82,8 @@ public class ApplicationContext extends Context {
         return result;
     }
 
-    /**
-     * Returns a call dispatcher.
-     * 
-     * @return A call dispatcher.
-     */
-    public Uniform getDispatcher() {
+    @Override
+    public Uniform getClientDispatcher() {
         return new TemplateDispatcher(this, new ApplicationDispatcher(this));
     }
 

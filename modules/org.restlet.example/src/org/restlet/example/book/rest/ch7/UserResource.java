@@ -73,16 +73,8 @@ public class UserResource extends Resource {
         if (user != null) {
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
         }
-    }
 
-    @Override
-    public boolean allowDelete() {
-        return true;
-    }
-
-    @Override
-    public boolean allowPut() {
-        return true;
+        setModifiable(true);
     }
 
     /**
@@ -118,7 +110,7 @@ public class UserResource extends Resource {
     }
 
     @Override
-    public void delete() {
+    public void removeRepresentations() {
         switch (checkAuthorization()) {
         case 1:
             // Delete all associated bookmarks
@@ -220,7 +212,7 @@ public class UserResource extends Resource {
     }
 
     @Override
-    public void put(Representation entity) {
+    public void storeRepresentation(Representation entity) {
         if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM, true)) {
             boolean canSet = true;
 

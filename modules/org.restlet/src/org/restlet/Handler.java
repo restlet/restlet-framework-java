@@ -30,28 +30,28 @@ import org.restlet.data.Status;
 import org.restlet.util.Template;
 
 /**
- * Final handler of a call. Typically created by Finders, Handler instances
+ * Final handler of a calls typically created by Finders. Handler instances
  * allow the processing of a call in a thread-safe context. This is different
  * from the Uniform subclasses like Restlet, Filter and Router which can be
- * invoked by multiple threads at the same time. They still offer a rather
+ * invoked by multiple threads at the same time. However, as they offer a rather
  * low-level API and its subclass {@link org.restlet.resource.Resource} is often
- * preferred for concrete handlers.
- * 
+ * preferred for concrete handlers.<br>
+ * <br>
  * This class exposes a different set of handle*() and allow*() Java methods for
- * each type of Uniform method supported by your handler. It has a predefinet
+ * each type of Uniform method supported by your handler. It has a predefined
  * set for common methods like GET, POST, PUT, DELETE, HEAD and OPTIONS.
  * Extension methods like MOVE or PATCH are automatically supported using Java
- * introspection. The actual dispatching of the call to the Handler methods is
- * dynamically done by the {@link org.restlet.Finder} class.
- * 
+ * introspection. The actual dispatching of the call to those methods is
+ * dynamically done by the {@link org.restlet.Finder} class.<br>
+ * <br>
  * The HEAD method has a default implementation based on the GET method and the
- * OPTIONS method automatically updated the list of allowed methods in the
- * response, as required by the HTTP specifications.
- * 
- * Also, you need to declare which REST methods are allowed by your Handler by
+ * OPTIONS method automatically updates the list of allowed methods in the
+ * response, as required by the HTTP specification.<br>
+ * <br>
+ * Also, you can declare which REST methods are allowed by your Handler by
  * overiding the matching allow*() method. By default, allowOptions() returns
  * true, but all other allow*() methods will return false. Therefore, if you
- * want to accept DELETE method calls, just override allowDelete() and return
+ * want to accept MOVE method calls, just override allowMove() and return
  * true. Again, the invoking Finder will be able to detect this method and know
  * whether or not your Handler should be invoked. It is also used by the
  * handleOptions() method to return the list of allowed methods.
@@ -211,7 +211,7 @@ public abstract class Handler {
 
     /**
      * Handles a DELETE call. The default behavior, to be overriden by
-     * subclasses, is to set the status to {@link Status.SERVER_ERROR_INTERNAL}.
+     * subclasses, is to set the status to {@link Status#SERVER_ERROR_INTERNAL}.
      */
     public void handleDelete() {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -219,7 +219,7 @@ public abstract class Handler {
 
     /**
      * Handles a GET call. The default behavior, to be overriden by subclasses,
-     * is to set the status to {@link Status.SERVER_ERROR_INTERNAL}.
+     * is to set the status to {@link Status#SERVER_ERROR_INTERNAL}.
      */
     public void handleGet() {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -248,7 +248,7 @@ public abstract class Handler {
 
     /**
      * Handles a POST call. The default behavior, to be overriden by subclasses,
-     * is to set the status to {@link Status.SERVER_ERROR_INTERNAL}.
+     * is to set the status to {@link Status#SERVER_ERROR_INTERNAL}.
      */
     public void handlePost() {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -256,7 +256,7 @@ public abstract class Handler {
 
     /**
      * Handles a PUT call. The default behavior, to be overriden by subclasses,
-     * is to set the status to {@link Status.SERVER_ERROR_INTERNAL}.
+     * is to set the status to {@link Status#SERVER_ERROR_INTERNAL}.
      */
     public void handlePut() {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);

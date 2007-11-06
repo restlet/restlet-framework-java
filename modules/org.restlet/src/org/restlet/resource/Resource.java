@@ -60,15 +60,18 @@ import org.restlet.util.Series;
  * This is the point where the RESTful view of your Web application can be
  * integrated with your domain objects. Those domain objects can be implemented
  * using any technology, relational databases, object databases, transactional
- * components like EJB, etc.
- * 
+ * components like EJB, etc.<br>
+ * <br>
  * You just have to extend this class to override the REST methods you want to
- * support like post(), put() or delete(). The common GET method is supported by
- * the modifiable "variants" list property and the
- * {@link #getRepresentation(Variant)} method. This allows an easy and cheap
- * declaration of the available variants in the constructor for example, then
- * the on-demand creation of costly representations via the
- * {@link #getRepresentation(Variant)} method.<br>
+ * support like {@link #acceptRepresentation(Representation)} for POST
+ * processing, {@link #storeRepresentation(Representation)} for PUT processing
+ * or {@link #removeRepresentations()} for DELETE processing.<br>
+ * <br>
+ * The common GET method is supported by the modifiable "variants" list property
+ * and the {@link #getRepresentation(Variant)} method. This allows an easy and
+ * cheap declaration of the available variants, in the constructor for example.
+ * Then the creation of costly representations is delegated to the
+ * {@link #getRepresentation(Variant)} method when actually needed.<br>
  * <br>
  * 
  * @see <a
@@ -86,8 +89,21 @@ public class Resource extends Handler {
     /** Indicates if the best content is automatically negotiated. */
     private boolean negotiateContent;
 
+    /**
+     * Indicates if the representations can be read via the {@link #handleGet()}
+     * method.
+     */
+    private boolean readable;
+
     /** The modifiable list of variants. */
     private List<Variant> variants;
+
+    /**
+     * Indicates if the representations can be modified via the
+     * {@link #handlePost()}, the {@link #handlePut()} or the
+     * {@link #handleDelete()} methods.
+     */
+    private boolean modifiable;
 
     /**
      * Special constructor used by IoC frameworks. Note that the init() method
@@ -110,20 +126,39 @@ public class Resource extends Handler {
      */
     public Resource(Context context, Request request, Response response) {
         super(context, request, response);
+        this.modifiable = false;
         this.negotiateContent = true;
+        this.readable = true;
         this.variants = null;
     }
 
     /**
-     * Asks the resource to delete itself and all its representations.
+     * Accepts and processes a representation posted to the resource. The
+     * default behavior is to set the response status to
+     * {@link Status#SERVER_ERROR_INTERNAL}.
+     * 
+     * @param entity
+     *                The posted entity.
      */
-    public void delete() {
+    public void acceptRepresentation(Representation entity) {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
     }
 
     /**
+     * Asks the resource to delete itself and all its representations.The
+     * default behavior is to invoke the {@link #removeRepresentations()}
+     * method.
+     * 
+     * @deprecated Use the removeRepresentations() method instead.
+     */
+    @Deprecated
+    public void delete() {
+        removeRepresentations();
+    }
+
+    /**
      * Returns the preferred representation according to the client preferences
-     * specified in the associated request.
+     * specified in the request.
      * 
      * @return The preferred representation.
      */
@@ -133,7 +168,7 @@ public class Resource extends Handler {
 
     /**
      * Returns the preferred variant according to the client preferences
-     * specified in the associated request.
+     * specified in the request.
      * 
      * @return The preferred variant.
      */
@@ -213,8 +248,8 @@ public class Resource extends Handler {
     }
 
     /**
-     * Handles a DELETE call invoking the 'delete' method of the target resource
-     * (as provided by the 'findTarget' method).
+     * Handles a DELETE call by invoking the {@link #removeRepresentations()}
+     * method. It also automatically support conditional DELETEs.
      */
     @Override
     public void handleDelete() {
@@ -256,13 +291,35 @@ public class Resource extends Handler {
     }
 
     /**
-     * Handles a GET call by automatically returning the best entity available
-     * from the target resource (as provided by the 'findTarget' method). The
-     * content negotiation is based on the client's preferences available in the
-     * handled call and can be turned off using the "negotiateContent" property.
+     * Handles a GET call by automatically returning the best representation
+     * available. The content negotiation is automatically supported based on
+     * the client's preferences available in the request. This feature can be
+     * turned off using the "negotiateContent" property.<br>
+     * <br>
+     * The negotiated representation is obtained by calling the
+     * {@link #getPreferredVariant()}. If a variant is sucessfully selected,
+     * then the {@link #getRepresentation(Variant)} method is called to get the
+     * actual representation corresponding to the metadata in the variant.<br>
+     * <br>
+     * If no variant matching the client preferences is available, the response
+     * status is set to {@link Status#CLIENT_ERROR_NOT_ACCEPTABLE} and the list
+     * of available representations is returned in the response entity as a
+     * textual list of URIs (only if the variants have an identifier properly
+     * set).<br>
+     * <br>
+     * If the content negotiation is turned off and only one variant is defined
+     * in the "variants" property, then its representation is returned by
+     * calling the {@link #getRepresentation(Variant)} method. If several
+     * variants are available, then the list of available representations is
+     * returned in the response entity as a textual list of URIs (only if the
+     * variants have an identifier properly set).<br>
+     * <br>
+     * If no variant is defined in the "variants" property, the response status
+     * is set to {@link Status#CLIENT_ERROR_NOT_FOUND}. <br>
      * If it is disabled and multiple variants are available for the target
      * resource, then a 300 (Multiple Choices) status will be returned with the
-     * list of variants URI if available.
+     * list of variants URI if available. Conditional GETs are also
+     * automatically supported.
      */
     @Override
     public void handleGet() {
@@ -355,8 +412,9 @@ public class Resource extends Handler {
     }
 
     /**
-     * Handles a POST call invoking the 'post' method of the target resource (as
-     * provided by the 'findTarget' method).
+     * Handles a POST call by invoking the
+     * {@link #acceptRepresentation(Representation)} method. It also logs a
+     * trace if there is no entity posted.
      */
     @Override
     public void handlePost() {
@@ -370,8 +428,12 @@ public class Resource extends Handler {
     }
 
     /**
-     * Handles a PUT call invoking the 'put' method of the target resource (as
-     * provided by the 'findTarget' method).
+     * Handles a PUT call by invoking the
+     * {@link #storeRepresentation(Representation)} method. It also handles
+     * conditional PUTs and forbids partial PUTs as they are not supported yet.
+     * Finally, it prevents PUT with no entity by setting the response status to
+     * {@link Status#CLIENT_ERROR_BAD_REQUEST} following the HTTP
+     * specifications.
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -420,7 +482,7 @@ public class Resource extends Handler {
                             .setStatus(
                                     new Status(
                                             Status.SERVER_ERROR_NOT_IMPLEMENTED,
-                                            "the Content-Range header is not understood"));
+                                            "The Content-Range header is not understood"));
                     canPut = false;
                 }
             }
@@ -455,7 +517,9 @@ public class Resource extends Handler {
      */
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
+        this.modifiable = false;
         this.negotiateContent = true;
+        this.readable = true;
         this.variants = null;
     }
 
@@ -470,34 +534,124 @@ public class Resource extends Handler {
     }
 
     /**
-     * Posts a representation to the resource.
+     * Indicates if the representations can be read via the {@link #handleGet()}
+     * method.
+     * 
+     * @return True if the representations can be read.
+     */
+    public boolean isReadable() {
+        return this.readable;
+    }
+
+    /**
+     * Indicates if DELETE calls are allowed by checking the "modifiable"
+     * property.
+     * 
+     * @return True if the method is allowed.
+     */
+    @Override
+    public boolean allowDelete() {
+        return isModifiable();
+    }
+
+    /**
+     * Indicates if GET calls are allowed by checking the "readable" property.
+     * 
+     * @return True if the method is allowed.
+     */
+    @Override
+    public boolean allowGet() {
+        return isReadable();
+    }
+
+    /**
+     * Indicates if POST calls are allowed by checking the "modifiable"
+     * property.
+     * 
+     * @return True if the method is allowed.
+     */
+    @Override
+    public boolean allowPost() {
+        return isModifiable();
+    }
+
+    /**
+     * Indicates if DELETE calls are allowed by checking the "modifiable"
+     * property.
+     * 
+     * @return True if the method is allowed.
+     */
+    @Override
+    public boolean allowPut() {
+        return isModifiable();
+    }
+
+    /**
+     * Indicates if the representations can be modified via the
+     * {@link #handlePost()}, the {@link #handlePut()} or the
+     * {@link #handleDelete()} methods.
+     * 
+     * @return True if representations can be modified.
+     */
+    public boolean isModifiable() {
+        return this.modifiable;
+    }
+
+    /**
+     * Posts a representation to the resource. The default behavior is to invoke
+     * the {@link #acceptRepresentation(Representation)} method.
      * 
      * @param entity
-     *                The posted entity.
+     *                The representation posted.
+     * @deprecated Use the acceptRepresentation() method instead.
      */
+    @Deprecated
     public void post(Representation entity) {
-        getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+        acceptRepresentation(entity);
     }
 
     /**
-     * Puts a representation in the resource.
+     * Puts a representation in the resource. The default behavior is to invoke
+     * the {@link #storeRepresentation(Representation)} method.
      * 
      * @param entity
-     *                A new or updated representation.
+     *                The representation put.
+     * @deprecated Use the storeRepresentation() method instead.
      */
+    @Deprecated
     public void put(Representation entity) {
+        storeRepresentation(entity);
+    }
+
+    /**
+     * Removes all the representations of the resource and effectively the
+     * resource itself. The default behavior is to set the response status to
+     * {@link Status#SERVER_ERROR_INTERNAL}.
+     */
+    public void removeRepresentations() {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
     }
 
     /**
-     * Indicates if the best content is automatically negotiated. Default value
-     * is true.
+     * Indicates if the returned representation is automatically negotiated.
+     * Default value is true.
      * 
      * @param negotiateContent
-     *                True if the best content is automatically negotiated.
+     *                True if content negotiation is enabled.
      */
     public void setNegotiateContent(boolean negotiateContent) {
         this.negotiateContent = negotiateContent;
+    }
+
+    /**
+     * Indicates if the representations can be read via the {@link #handleGet()}
+     * method.
+     * 
+     * @param readable
+     *                Indicates if the representations can be read.
+     */
+    public void setReadable(boolean readable) {
+        this.readable = readable;
     }
 
     /**
@@ -508,6 +662,31 @@ public class Resource extends Handler {
      */
     public void setVariants(List<Variant> variants) {
         this.variants = variants;
+    }
+
+    /**
+     * Indicates if the representations can be modified via the
+     * {@link #handlePost()}, the {@link #handlePut()} or the
+     * {@link #handleDelete()} methods.
+     * 
+     * @param modifiable
+     *                Indicates if the representations can be modified.
+     */
+    public void setModifiable(boolean modifiable) {
+        this.modifiable = modifiable;
+    }
+
+    /**
+     * Stores a representation put to the resource and replaces all existing
+     * representations of the resource. If the resource doesn't exist yet, it
+     * should create it and use the entity as its initial representation. The
+     * default behavior is to set the response status to
+     * {@link Status#SERVER_ERROR_INTERNAL}.
+     * 
+     * @param entity
+     */
+    public void storeRepresentation(Representation entity) {
+        getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
     }
 
 }

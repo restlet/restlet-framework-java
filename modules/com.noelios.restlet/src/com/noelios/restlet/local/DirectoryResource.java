@@ -131,7 +131,7 @@ public class DirectoryResource extends Resource {
         }
 
         // Try to detect the presence of a directory
-        Response contextResponse = getDispatcher().get(this.targetUri);
+        Response contextResponse = getClientDispatcher().get(this.targetUri);
         if (contextResponse.getEntity() != null) {
             // As a convention, underlying client connectors return the
             // directory listing with the media-type "MediaType.TEXT_URI_LIST"
@@ -181,7 +181,7 @@ public class DirectoryResource extends Resource {
                     this.directoryUri = this.targetUri;
                     this.baseName = getDirectory().getIndexName();
                     this.targetUri = this.directoryUri + this.baseName;
-                    contextResponse = getDispatcher().get(this.targetUri);
+                    contextResponse = getClientDispatcher().get(this.targetUri);
                     if (contextResponse.getEntity() != null) {
                         this.targetDirectory = true;
                         this.directoryContent = new ReferenceList();
@@ -203,7 +203,7 @@ public class DirectoryResource extends Resource {
                 this.baseName = targetUri.substring(lastSlashIndex + 1);
             }
 
-            contextResponse = getDispatcher().get(this.directoryUri);
+            contextResponse = getClientDispatcher().get(this.directoryUri);
             if ((contextResponse.getEntity() != null)
                     && MediaType.TEXT_URI_LIST.equals(contextResponse
                             .getEntity().getMediaType())) {
@@ -286,7 +286,8 @@ public class DirectoryResource extends Resource {
 
                 if (targetDirectory && !targetIndex) {
                     contextRequest.setResourceRef(this.targetUri);
-                    getDispatcher().handle(contextRequest, contextResponse);
+                    getClientDispatcher().handle(contextRequest,
+                            contextResponse);
                 } else {
                     // Check if there is only one representation
 
@@ -295,7 +296,7 @@ public class DirectoryResource extends Resource {
                     if (!references.isEmpty()) {
                         if (uniqueReference != null) {
                             contextRequest.setResourceRef(uniqueReference);
-                            getDispatcher().handle(contextRequest,
+                            getClientDispatcher().handle(contextRequest,
                                     contextResponse);
                         } else {
                             // We found variants, but not the right one
@@ -341,7 +342,7 @@ public class DirectoryResource extends Resource {
             contextRequest.setEntity(variant);
             Response contextResponse = new Response(contextRequest);
             contextRequest.setResourceRef(this.targetUri);
-            getDispatcher().handle(contextRequest, contextResponse);
+            getClientDispatcher().handle(contextRequest, contextResponse);
             status = contextResponse.getStatus();
         }
 
@@ -377,11 +378,11 @@ public class DirectoryResource extends Resource {
     }
 
     /**
-     * Returns a call dispatcher.
+     * Returns a client dispatcher.
      * 
-     * @return A call dispatcher.
+     * @return A client dispatcher.
      */
-    private Uniform getDispatcher() {
+    private Uniform getClientDispatcher() {
         return getDirectory().getContext().getClientDispatcher();
     }
 
@@ -432,7 +433,7 @@ public class DirectoryResource extends Resource {
                 String filePath;
                 for (Reference ref : getVariantsReferences()) {
                     // Add the new variant to the result list
-                    Response contextResponse = getDispatcher().get(
+                    Response contextResponse = getClientDispatcher().get(
                             ref.toString());
                     if (contextResponse.getStatus().isSuccess()
                             && (contextResponse.getEntity() != null)) {
@@ -565,7 +566,8 @@ public class DirectoryResource extends Resource {
             // Ask for the list of all variants of this resource
             contextCall.getClientInfo().getAcceptedMediaTypes().add(
                     new Preference<MediaType>(MediaType.TEXT_URI_LIST));
-            Response contextResponse = getDispatcher().handle(contextCall);
+            Response contextResponse = getClientDispatcher()
+                    .handle(contextCall);
             if (contextResponse.getEntity() != null) {
                 // Test if the given response is the list of all variants for
                 // this resource
