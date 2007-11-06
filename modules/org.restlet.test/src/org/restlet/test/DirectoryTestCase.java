@@ -329,6 +329,10 @@ public class DirectoryTestCase extends TestCase {
             response.getEntity().write(System.out);
             System.out.println("");
         }
+        // Test 9d : Try to delete the file
+        response = handle(application, webSiteURL, percentEncodedFileUrl, Method.DELETE,
+                null, "9d");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
 
         testDirectory.delete();
         System.out.println("End of tests*********************");
