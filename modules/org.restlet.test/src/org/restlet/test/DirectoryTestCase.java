@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- *
+ * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- *
+ * 
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -31,6 +31,7 @@ import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -39,7 +40,7 @@ import org.restlet.resource.StringRepresentation;
 
 /**
  * Unit tests for the DirectoryHandler class.
- *
+ * 
  * @author Thierry Boileau
  */
 public class DirectoryTestCase extends TestCase {
@@ -52,6 +53,11 @@ public class DirectoryTestCase extends TestCase {
     String baseFileUrlFr = webSiteURL.concat("fichier.txt.fr");
 
     String baseFileUrlFrBis = webSiteURL.concat("fichier.fr.txt");
+
+    String percentEncodedFileUrl = webSiteURL.concat(Reference
+            .encode("a new file.txt"));
+
+    String percentEncodedFileUrlBis = webSiteURL.concat("a+new%20file.txt");
 
     File testDir;
 
@@ -90,7 +96,7 @@ public class DirectoryTestCase extends TestCase {
 
     /**
      * Helper
-     *
+     * 
      * @param application
      * @param directory
      * @param indexName
@@ -192,9 +198,9 @@ public class DirectoryTestCase extends TestCase {
                     Method.DELETE, null, "6c-1");
             assertTrue(response.getStatus()
                     .equals(Status.REDIRECTION_SEE_OTHER));
-            System.out.println(response.getLocationRef());
-            response = handle(application, response.getLocationRef().getPath(),
-                    response.getLocationRef().getPath(), Method.DELETE, null,
+            System.out.println(response.getRedirectRef());
+            response = handle(application, response.getRedirectRef().getPath(),
+                    response.getRedirectRef().getPath(), Method.DELETE, null,
                     "6c-2");
             assertTrue(response.getStatus().equals(
                     Status.CLIENT_ERROR_FORBIDDEN));
@@ -334,7 +340,7 @@ public class DirectoryTestCase extends TestCase {
 
     /**
      * Helper for the test
-     *
+     * 
      * @param directory
      * @param baseRef
      * @param resourceRef
@@ -370,7 +376,7 @@ public class DirectoryTestCase extends TestCase {
 
     /**
      * Internal class used for test purpose
-     *
+     * 
      * @author Thierry Boileau
      */
     private static class MyApplication extends Application {
@@ -395,9 +401,9 @@ public class DirectoryTestCase extends TestCase {
 
         /**
          * Constructor.
-         *
+         * 
          * @param context
-         *            The parent context.
+         *                The parent context.
          */
         public MyApplication(Context context, File testDirectory)
                 throws IOException {
@@ -425,9 +431,9 @@ public class DirectoryTestCase extends TestCase {
 
     /**
      * Recursively delete a directory.
-     *
+     * 
      * @param dir
-     *            The directory to delete.
+     *                The directory to delete.
      */
     private void deleteDir(File dir) {
         if (dir.exists()) {
