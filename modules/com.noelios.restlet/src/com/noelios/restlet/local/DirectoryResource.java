@@ -175,7 +175,8 @@ public class DirectoryResource extends Resource {
             // Let's try with the facultative index, in case the underlying
             // client connector does not handle directory listing.
             if (this.targetUri.endsWith("/")) {
-                // Append the index name
+                // In this case, the trailing "/" shows that the URIs must
+                // points to a directory
                 if (getDirectory().getIndexName() != null
                         && getDirectory().getIndexName().length() > 0) {
                     this.directoryUri = this.targetUri;
@@ -184,6 +185,25 @@ public class DirectoryResource extends Resource {
                     contextResponse = getClientDispatcher().get(this.targetUri);
                     if (contextResponse.getEntity() != null) {
                         this.targetDirectory = true;
+                        this.directoryContent = new ReferenceList();
+                        this.directoryContent
+                                .add(new Reference(this.targetUri));
+                        this.targetIndex = true;
+                    }
+                }
+            } else {
+                // Try to determine if this target URI with no trailing "/" is a
+                // directory, in order to force the redirection.
+                // Append the index name
+                if (getDirectory().getIndexName() != null
+                        && getDirectory().getIndexName().length() > 0) {
+                    this.directoryUri = this.targetUri + "/";
+                    this.baseName = getDirectory().getIndexName();
+                    this.targetUri = this.directoryUri + this.baseName;
+                    contextResponse = getClientDispatcher().get(this.targetUri);
+                    if (contextResponse.getEntity() != null) {
+                        this.targetDirectory = true;
+                        this.directoryRedirection = true;
                         this.directoryContent = new ReferenceList();
                         this.directoryContent
                                 .add(new Reference(this.targetUri));

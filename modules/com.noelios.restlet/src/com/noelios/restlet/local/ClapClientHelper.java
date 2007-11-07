@@ -125,7 +125,7 @@ public class ClapClientHelper extends LocalClientHelper {
             URL url = classLoader.getResource(Reference.decode(path));
 
             // The ClassLoader returns a directory listing in some cases.
-            // As this listing is partial, is it of little value in the context
+            // As this listing is partial, it is of little value in the context
             // of the CLAP client, so we have to ignore them.
             if (url != null) {
                 if (url.getProtocol().equals("file")) {
