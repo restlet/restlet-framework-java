@@ -197,7 +197,7 @@ public class DirectoryResource extends Resource {
                 if (getDirectory().getIndexName() != null
                         && getDirectory().getIndexName().length() > 0) {
                     // Append the index name
-                    contextResponse = getDispatcher().get(
+                    contextResponse = getClientDispatcher().get(
                             this.targetUri + "/"
                                     + getDirectory().getIndexName());
                     if (contextResponse.getEntity() != null) {
