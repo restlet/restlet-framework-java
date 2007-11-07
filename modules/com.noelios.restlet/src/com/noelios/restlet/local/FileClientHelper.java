@@ -665,7 +665,12 @@ public class FileClientHelper extends LocalClientHelper {
             return encodedFileName.substring(0, j)
                     + decodedVariantFileName.substring(i - 1);
         } else {
-            return encodedFileName.substring(0, j);
+            if(j == encodedFileName.length()){
+                return encodedFileName.substring(0, j)
+                + decodedVariantFileName.substring(i);
+            } else {
+                return encodedFileName.substring(0, j);                
+            }
         }
     }
 }
