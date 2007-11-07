@@ -194,14 +194,16 @@ public class DirectoryResource extends Resource {
             } else {
                 // Try to determine if this target URI with no trailing "/" is a
                 // directory, in order to force the redirection.
-                // Append the index name
                 if (getDirectory().getIndexName() != null
                         && getDirectory().getIndexName().length() > 0) {
-                    this.directoryUri = this.targetUri + "/";
-                    this.baseName = getDirectory().getIndexName();
-                    this.targetUri = this.directoryUri + this.baseName;
-                    contextResponse = getDispatcher().get(this.targetUri);
+                    // Append the index name
+                    contextResponse = getDispatcher().get(
+                            this.targetUri + "/"
+                                    + getDirectory().getIndexName());
                     if (contextResponse.getEntity() != null) {
+                        this.directoryUri = this.targetUri + "/";
+                        this.baseName = getDirectory().getIndexName();
+                        this.targetUri = this.directoryUri + this.baseName;
                         this.targetDirectory = true;
                         this.directoryRedirection = true;
                         this.directoryContent = new ReferenceList();
