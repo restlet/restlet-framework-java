@@ -86,6 +86,16 @@ import org.restlet.util.Series;
  */
 public class Resource extends Handler {
 
+    /** Indicates if the resource is actually available. */
+    private boolean available;
+
+    /**
+     * Indicates if the representations can be modified via the
+     * {@link #handlePost()}, the {@link #handlePut()} or the
+     * {@link #handleDelete()} methods.
+     */
+    private boolean modifiable;
+
     /** Indicates if the best content is automatically negotiated. */
     private boolean negotiateContent;
 
@@ -97,13 +107,6 @@ public class Resource extends Handler {
 
     /** The modifiable list of variants. */
     private List<Variant> variants;
-
-    /**
-     * Indicates if the representations can be modified via the
-     * {@link #handlePost()}, the {@link #handlePut()} or the
-     * {@link #handleDelete()} methods.
-     */
-    private boolean modifiable;
 
     /**
      * Special constructor used by IoC frameworks. Note that the init() method
@@ -126,6 +129,7 @@ public class Resource extends Handler {
      */
     public Resource(Context context, Request request, Response response) {
         super(context, request, response);
+        this.available = true;
         this.modifiable = false;
         this.negotiateContent = true;
         this.readable = true;
@@ -142,6 +146,49 @@ public class Resource extends Handler {
      */
     public void acceptRepresentation(Representation entity) {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+    }
+
+    /**
+     * Indicates if DELETE calls are allowed by checking the "modifiable"
+     * property.
+     * 
+     * @return True if the method is allowed.
+     */
+    @Override
+    public boolean allowDelete() {
+        return isModifiable();
+    }
+
+    /**
+     * Indicates if GET calls are allowed by checking the "readable" property.
+     * 
+     * @return True if the method is allowed.
+     */
+    @Override
+    public boolean allowGet() {
+        return isReadable();
+    }
+
+    /**
+     * Indicates if POST calls are allowed by checking the "modifiable"
+     * property.
+     * 
+     * @return True if the method is allowed.
+     */
+    @Override
+    public boolean allowPost() {
+        return isModifiable();
+    }
+
+    /**
+     * Indicates if DELETE calls are allowed by checking the "modifiable"
+     * property.
+     * 
+     * @return True if the method is allowed.
+     */
+    @Override
+    public boolean allowPut() {
+        return isModifiable();
     }
 
     /**
@@ -296,6 +343,9 @@ public class Resource extends Handler {
      * the client's preferences available in the request. This feature can be
      * turned off using the "negotiateContent" property.<br>
      * <br>
+     * If the resource's "available" property is set to false, the method
+     * immediately returns with a {@link Status#CLIENT_ERROR_NOT_FOUND} status.<br>
+     * <br>
      * The negotiated representation is obtained by calling the
      * {@link #getPreferredVariant()}. If a variant is sucessfully selected,
      * then the {@link #getRepresentation(Variant)} method is called to get the
@@ -323,89 +373,95 @@ public class Resource extends Handler {
      */
     @Override
     public void handleGet() {
-        // The variant that may need to meet the request conditions
-        Representation selectedRepresentation = null;
-
-        List<Variant> variants = getVariants();
-        if ((variants == null) || (variants.isEmpty())) {
-            // Resource not found
+        if (!isAvailable()) {
+            // Resource not existing or not available to the current client
             getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-        } else if (isNegotiateContent()) {
-            Variant preferredVariant = getPreferredVariant();
+        } else {
+            // The variant that may need to meet the request conditions
+            Representation selectedRepresentation = null;
 
-            if (preferredVariant == null) {
-                // No variant was found matching the client preferences
-                getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+            List<Variant> variants = getVariants();
+            if ((variants == null) || (variants.isEmpty())) {
+                // Resource not found
+                getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            } else if (isNegotiateContent()) {
+                Variant preferredVariant = getPreferredVariant();
 
-                // The list of all variants is transmitted to the client
-                ReferenceList refs = new ReferenceList(variants.size());
-                for (Variant variant : variants) {
-                    if (variant.getIdentifier() != null) {
-                        refs.add(variant.getIdentifier());
+                if (preferredVariant == null) {
+                    // No variant was found matching the client preferences
+                    getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+
+                    // The list of all variants is transmitted to the client
+                    ReferenceList refs = new ReferenceList(variants.size());
+                    for (Variant variant : variants) {
+                        if (variant.getIdentifier() != null) {
+                            refs.add(variant.getIdentifier());
+                        }
                     }
+
+                    getResponse().setEntity(refs.getTextRepresentation());
+                } else {
+                    // Set the variant dimensions used for content negotiation
+                    getResponse().getDimensions().clear();
+                    getResponse().getDimensions().add(Dimension.CHARACTER_SET);
+                    getResponse().getDimensions().add(Dimension.ENCODING);
+                    getResponse().getDimensions().add(Dimension.LANGUAGE);
+                    getResponse().getDimensions().add(Dimension.MEDIA_TYPE);
+
+                    // Set the negotiated representation as response entity
+                    getResponse()
+                            .setEntity(getRepresentation(preferredVariant));
                 }
 
-                getResponse().setEntity(refs.getTextRepresentation());
-            } else {
-                // Set the variant dimensions used for content negotiation
-                getResponse().getDimensions().clear();
-                getResponse().getDimensions().add(Dimension.CHARACTER_SET);
-                getResponse().getDimensions().add(Dimension.ENCODING);
-                getResponse().getDimensions().add(Dimension.LANGUAGE);
-                getResponse().getDimensions().add(Dimension.MEDIA_TYPE);
-
-                // Set the negotiated representation as response entity
-                getResponse().setEntity(getRepresentation(preferredVariant));
-            }
-
-            selectedRepresentation = getResponse().getEntity();
-        } else {
-            if (variants.size() == 1) {
-                getResponse().setEntity(getRepresentation(variants.get(0)));
                 selectedRepresentation = getResponse().getEntity();
             } else {
-                ReferenceList variantRefs = new ReferenceList();
+                if (variants.size() == 1) {
+                    getResponse().setEntity(getRepresentation(variants.get(0)));
+                    selectedRepresentation = getResponse().getEntity();
+                } else {
+                    ReferenceList variantRefs = new ReferenceList();
 
-                for (Variant variant : variants) {
-                    if (variant.getIdentifier() != null) {
-                        variantRefs.add(variant.getIdentifier());
+                    for (Variant variant : variants) {
+                        if (variant.getIdentifier() != null) {
+                            variantRefs.add(variant.getIdentifier());
+                        } else {
+                            getLogger()
+                                    .warning(
+                                            "A resource with multiple variants should provide and identifier for each variants when content negotiation is turned off");
+                        }
+                    }
+
+                    if (variantRefs.size() > 0) {
+                        // Return the list of variants
+                        getResponse().setStatus(
+                                Status.REDIRECTION_MULTIPLE_CHOICES);
+                        getResponse().setEntity(
+                                variantRefs.getTextRepresentation());
                     } else {
-                        getLogger()
-                                .warning(
-                                        "A resource with multiple variants should provide and identifier for each variants when content negotiation is turned off");
+                        getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                     }
                 }
+            }
 
-                if (variantRefs.size() > 0) {
-                    // Return the list of variants
-                    getResponse()
-                            .setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
-                    getResponse()
-                            .setEntity(variantRefs.getTextRepresentation());
-                } else {
+            if (selectedRepresentation == null) {
+                if ((getResponse().getStatus() == null)
+                        || getResponse().getStatus().isSuccess()) {
                     getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                } else {
+                    // Keep the current status as the developer might prefer a
+                    // special status like 'method not authorized'.
                 }
-            }
-        }
-
-        if (selectedRepresentation == null) {
-            if ((getResponse().getStatus() == null)
-                    || getResponse().getStatus().isSuccess()) {
-                getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
-                // Keep the current status as the developer might prefer a
-                // special status like 'method not authorized'.
-            }
-        } else {
-            // The given representation (even if null) must meet the request
-            // conditions (if any).
-            if (getRequest().getConditions().hasSome()) {
-                Status status = getRequest().getConditions().getStatus(
-                        getRequest().getMethod(), selectedRepresentation);
+                // The given representation (even if null) must meet the request
+                // conditions (if any).
+                if (getRequest().getConditions().hasSome()) {
+                    Status status = getRequest().getConditions().getStatus(
+                            getRequest().getMethod(), selectedRepresentation);
 
-                if (status != null) {
-                    getResponse().setStatus(status);
-                    getResponse().setEntity(null);
+                    if (status != null) {
+                        getResponse().setStatus(status);
+                        getResponse().setEntity(null);
+                    }
                 }
             }
         }
@@ -524,6 +580,30 @@ public class Resource extends Handler {
     }
 
     /**
+     * Indicates if the resource is actually available. By default this property
+     * is true but it can be set to false if the resource doesn't exist at all
+     * or if it isn't visible to a specific client. The {@link #handleGet()}
+     * method will set the response's status to
+     * {@link Status#CLIENT_ERROR_NOT_FOUND} if this property is false.
+     * 
+     * @return True if the resource is available.
+     */
+    public boolean isAvailable() {
+        return this.available;
+    }
+
+    /**
+     * Indicates if the representations can be modified via the
+     * {@link #handlePost()}, the {@link #handlePut()} or the
+     * {@link #handleDelete()} methods.
+     * 
+     * @return True if representations can be modified.
+     */
+    public boolean isModifiable() {
+        return this.modifiable;
+    }
+
+    /**
      * Indicates if the best content is automatically negotiated. Default value
      * is true.
      * 
@@ -541,60 +621,6 @@ public class Resource extends Handler {
      */
     public boolean isReadable() {
         return this.readable;
-    }
-
-    /**
-     * Indicates if DELETE calls are allowed by checking the "modifiable"
-     * property.
-     * 
-     * @return True if the method is allowed.
-     */
-    @Override
-    public boolean allowDelete() {
-        return isModifiable();
-    }
-
-    /**
-     * Indicates if GET calls are allowed by checking the "readable" property.
-     * 
-     * @return True if the method is allowed.
-     */
-    @Override
-    public boolean allowGet() {
-        return isReadable();
-    }
-
-    /**
-     * Indicates if POST calls are allowed by checking the "modifiable"
-     * property.
-     * 
-     * @return True if the method is allowed.
-     */
-    @Override
-    public boolean allowPost() {
-        return isModifiable();
-    }
-
-    /**
-     * Indicates if DELETE calls are allowed by checking the "modifiable"
-     * property.
-     * 
-     * @return True if the method is allowed.
-     */
-    @Override
-    public boolean allowPut() {
-        return isModifiable();
-    }
-
-    /**
-     * Indicates if the representations can be modified via the
-     * {@link #handlePost()}, the {@link #handlePut()} or the
-     * {@link #handleDelete()} methods.
-     * 
-     * @return True if representations can be modified.
-     */
-    public boolean isModifiable() {
-        return this.modifiable;
     }
 
     /**
@@ -633,6 +659,32 @@ public class Resource extends Handler {
     }
 
     /**
+     * Indicates if the resource is actually available. By default this property
+     * is true but it can be set to false if the resource doesn't exist at all
+     * or if it isn't visible to a specific client. The {@link #handleGet()}
+     * method will set the response's status to
+     * {@link Status#CLIENT_ERROR_NOT_FOUND} if this property is false.
+     * 
+     * @param available
+     *                True if the resource is actually available.
+     */
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
+    /**
+     * Indicates if the representations can be modified via the
+     * {@link #handlePost()}, the {@link #handlePut()} or the
+     * {@link #handleDelete()} methods.
+     * 
+     * @param modifiable
+     *                Indicates if the representations can be modified.
+     */
+    public void setModifiable(boolean modifiable) {
+        this.modifiable = modifiable;
+    }
+
+    /**
      * Indicates if the returned representation is automatically negotiated.
      * Default value is true.
      * 
@@ -662,18 +714,6 @@ public class Resource extends Handler {
      */
     public void setVariants(List<Variant> variants) {
         this.variants = variants;
-    }
-
-    /**
-     * Indicates if the representations can be modified via the
-     * {@link #handlePost()}, the {@link #handlePut()} or the
-     * {@link #handleDelete()} methods.
-     * 
-     * @param modifiable
-     *                Indicates if the representations can be modified.
-     */
-    public void setModifiable(boolean modifiable) {
-        this.modifiable = modifiable;
     }
 
     /**
