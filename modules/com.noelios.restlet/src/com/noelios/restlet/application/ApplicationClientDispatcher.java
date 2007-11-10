@@ -27,11 +27,11 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Application dispatcher.
+ * Application client dispatcher.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ApplicationDispatcher extends Uniform {
+public class ApplicationClientDispatcher extends Uniform {
     /** The parent context. */
     private ApplicationContext applicationContext;
 
@@ -39,9 +39,9 @@ public class ApplicationDispatcher extends Uniform {
      * Constructor.
      * 
      * @param applicationContext
-     *            The parent application context.
+     *                The parent application context.
      */
-    public ApplicationDispatcher(ApplicationContext applicationContext) {
+    public ApplicationClientDispatcher(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
@@ -49,9 +49,9 @@ public class ApplicationDispatcher extends Uniform {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         Protocol protocol = request.getProtocol();
@@ -81,12 +81,12 @@ public class ApplicationDispatcher extends Uniform {
                 }
 
                 if (this.applicationContext != null) {
-                    this.applicationContext.getParentContext().getClientDispatcher()
-                            .handle(request, response);
+                    this.applicationContext.getParentContext()
+                            .getClientDispatcher().handle(request, response);
                 } else {
                     Logger
                             .getLogger(
-                                    ApplicationDispatcher.class
+                                    ApplicationClientDispatcher.class
                                             .getCanonicalName())
                             .warning(
                                     "Your Application doesn't have a context set. Ensure that you pass the parent Component's context to your Application constructor.");

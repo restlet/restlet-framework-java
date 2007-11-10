@@ -84,7 +84,7 @@ public class ApplicationContext extends Context {
 
     @Override
     public Uniform getClientDispatcher() {
-        return new TemplateDispatcher(this, new ApplicationDispatcher(this));
+        return new TemplateDispatcher(this, new ApplicationClientDispatcher(this));
     }
 
     /**
