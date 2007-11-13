@@ -127,9 +127,11 @@ public class Context {
     }
 
     /**
-     * Returns a request dispatcher to local virtual hosts. When you ask the
-     * dispatcher to handle a request, it will directly route your request to
-     * the component's client-side router.
+     * Returns a request dispatcher to available client connectors. When you ask
+     * the dispatcher to handle a request, it will automatically select the
+     * appropriate client connector for your request, based on the
+     * request.protocol property or on the resource URI's scheme. This call is
+     * blocking and will return an updated response object.
      * 
      * @return A request dispatcher to available client connectors.
      */
@@ -138,13 +140,16 @@ public class Context {
     }
 
     /**
-     * Returns a request dispatcher to available client connectors. When you ask
-     * the dispatcher to handle a request, it will automatically select the best
-     * client connector for your request, based on the request.protocol property
-     * or on the resource URI's scheme. This call is blocking and will return an
-     * updated response object.
+     * Returns a request dispatcher to component's virtual hosts. This is mostly
+     * useful for application that want to optimize calls to other applications
+     * hosted in the same component or to the application itself.<br>
+     * <br>
+     * The processing is the same as what would have been done if the request
+     * came from one of the component's server connectors. It first must match
+     * one of the registered virtual hosts. Then it can be routed to one of the
+     * attaced Restlets, typically an Application.
      * 
-     * @return A request dispatcher to virtual hosts of the local component.
+     * @return A request dispatcher to the server connectors' router.
      */
     public Uniform getServerDispatcher() {
         return null;

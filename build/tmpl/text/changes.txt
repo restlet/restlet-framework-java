@@ -94,7 +94,9 @@ Changes log
    be automatically be picked up by the CLAP connector. Reported by Alex Milowski.
  - Guard.secrets is now a final ConcurrentMap instead of just a Map instance. Suggested by Tim Peierls. 
  - Renamed Context's "dispatcher" property into "clientDispatcher" to distinguish with the new 
-   "serverDispatcher" property.
+   "serverDispatcher" property. The "serverDispatcher" property allows the developer to optimize the
+   sending of request to applications under the current component/JVM, as if they were dispatched by one
+   of the server connectors. Suggested by Rob Heittman with feed-back from Marc Portier.
  - Split the Resource class to separate a new org.restlet.Handler class exposing the lower-level API,
    from the higher-level API of Resource. 
  - Added "available", "modifiable" and "readable" properties to the Resource class.

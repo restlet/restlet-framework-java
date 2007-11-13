@@ -37,13 +37,19 @@ import com.noelios.restlet.TemplateDispatcher;
  */
 public class ApplicationContext extends Context {
     /** The WAR client. */
-    private Client warClient;
+    private volatile Client warClient;
 
     /** The application delegate. */
-    private Application application;
+    private volatile Application application;
 
     /** The parent context. */
-    private Context parentContext;
+    private volatile Context parentContext;
+
+    /** The client dispatcher. */
+    private volatile Uniform clientDispatcher;
+
+    /** The server dispatcher. */
+    private volatile Uniform serverDispatcher;
 
     /**
      * Constructor.
@@ -61,11 +67,14 @@ public class ApplicationContext extends Context {
         this.application = application;
         this.parentContext = parentContext;
         this.warClient = null;
+        this.clientDispatcher = new TemplateDispatcher(this,
+                new ApplicationClientDispatcher(this));
+        this.serverDispatcher = getParentContext().getServerDispatcher();
+        this.warClient = new Client(Protocol.WAR);
 
         // Set the application as an attribute for usage by other services
         // like the ConnectorService
         getAttributes().put(Application.KEY, application);
-
     }
 
     /**
@@ -84,7 +93,12 @@ public class ApplicationContext extends Context {
 
     @Override
     public Uniform getClientDispatcher() {
-        return new TemplateDispatcher(this, new ApplicationClientDispatcher(this));
+        return this.clientDispatcher;
+    }
+
+    @Override
+    public Uniform getServerDispatcher() {
+        return this.serverDispatcher;
     }
 
     /**
@@ -102,10 +116,6 @@ public class ApplicationContext extends Context {
      * @return the WAR client.
      */
     protected Client getWarClient() {
-        if (this.warClient == null) {
-            this.warClient = new Client(Protocol.WAR);
-        }
-
         return this.warClient;
     }
 

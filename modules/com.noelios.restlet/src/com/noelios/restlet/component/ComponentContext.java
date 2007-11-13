@@ -23,6 +23,8 @@ import java.util.logging.Logger;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Uniform;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 import com.noelios.restlet.TemplateDispatcher;
 
@@ -32,8 +34,15 @@ import com.noelios.restlet.TemplateDispatcher;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ComponentContext extends Context {
+
     /** The component helper. */
-    private ComponentHelper componentHelper;
+    private volatile ComponentHelper componentHelper;
+
+    /** The client dispatcher. */
+    private volatile Uniform clientDispatcher;
+
+    /** The server dispatcher. */
+    private volatile Uniform serverDispatcher;
 
     /**
      * Constructor.
@@ -57,12 +66,33 @@ public class ComponentContext extends Context {
     public ComponentContext(ComponentHelper componentHelper, Logger logger) {
         super(logger);
         this.componentHelper = componentHelper;
+        this.clientDispatcher = new TemplateDispatcher(this,
+                getComponentHelper().getClientRouter());
+        this.serverDispatcher = new TemplateDispatcher(this,
+                getComponentHelper().getServerRouter()) {
+
+            @Override
+            public void handle(Request request, Response response) {
+                // This causes the baseRef of the resource reference to be set
+                // as if it had actually arrived from a server connector.
+                request.getResourceRef().setBaseRef(
+                        request.getResourceRef().getHostIdentifier());
+
+                // Continue the normal dispatching
+                super.handle(request, response);
+            }
+
+        };
     }
 
     @Override
     public Uniform getClientDispatcher() {
-        return new TemplateDispatcher(this, getComponentHelper()
-                .getClientRouter());
+        return this.clientDispatcher;
+    }
+
+    @Override
+    public Uniform getServerDispatcher() {
+        return this.serverDispatcher;
     }
 
     /**

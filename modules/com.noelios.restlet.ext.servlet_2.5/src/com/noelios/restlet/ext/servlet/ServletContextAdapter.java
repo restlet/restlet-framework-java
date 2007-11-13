@@ -33,10 +33,13 @@ import org.restlet.Uniform;
  */
 public class ServletContextAdapter extends Context {
     /** The Servlet context. */
-    private ServletContext servletContext;
+    private volatile ServletContext servletContext;
 
-    /** The parent context. */
-    private Context parentContext;
+    /** The client dispatcher. */
+    private volatile Uniform clientDispatcher;
+
+    /** The server dispatcher. */
+    private volatile Uniform serverDispatcher;
 
     /**
      * Constructor.
@@ -63,7 +66,10 @@ public class ServletContextAdapter extends Context {
     public ServletContextAdapter(Servlet servlet, Context parentContext) {
         super(new ServletLogger(servlet.getServletConfig().getServletContext()));
         this.servletContext = servlet.getServletConfig().getServletContext();
-        this.parentContext = parentContext;
+        this.clientDispatcher = (parentContext != null) ? parentContext
+                .getClientDispatcher() : null;
+        this.serverDispatcher = (parentContext != null) ? parentContext
+                .getServerDispatcher() : null;
     }
 
     /**
@@ -77,11 +83,12 @@ public class ServletContextAdapter extends Context {
 
     @Override
     public Uniform getClientDispatcher() {
-        if (parentContext != null) {
-            return parentContext.getClientDispatcher();
-        }
+        return this.clientDispatcher;
+    }
 
-        return null;
+    @Override
+    public Uniform getServerDispatcher() {
+        return this.serverDispatcher;
     }
 
 }

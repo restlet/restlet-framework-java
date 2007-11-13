@@ -59,14 +59,7 @@ public class TemplateDispatcher extends Uniform {
         return this.context;
     }
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
+    @Override
     public void handle(Request request, Response response) {
         Protocol protocol = request.getProtocol();
 
