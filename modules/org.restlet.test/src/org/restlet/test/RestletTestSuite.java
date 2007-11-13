@@ -33,18 +33,20 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(CallTestCase.class);
         addTestSuite(CookieTestCase.class);
         addTestSuite(DirectoryTestCase.class);
+        addTestSuite(FileClientTestCase.class);
         addTestSuite(FileReferenceTestCase.class);
         addTestSuite(FilterTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
+        addTestSuite(HttpBasicTestCase.class);
         addTestSuite(MediaTypeTestCase.class);
         addTestSuite(RedirectTestCase.class);
         addTestSuite(ReferenceTestCase.class);
         addTestSuite(RestartTestCase.class);
         addTestSuite(SpringTestCase.class);
+        addTestSuite(TemplateTestCase.class);
         addTestSuite(TransformerTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
-        addTestSuite(HttpBasicTest.class);
     }
 
     /**

@@ -29,7 +29,7 @@ import org.restlet.data.Status;
  * 
  * @author Stian Soiland
  */
-public class HttpBasicTest extends TestCase {
+public class HttpBasicTestCase extends TestCase {
 
     private static final String RESTLET_TEST_PORT = "restlet.test.port";
 
@@ -54,7 +54,7 @@ public class HttpBasicTest extends TestCase {
     private TestGuard guard;
 
     public static void main(String[] args) {
-        new HttpBasicTest().testHTTPBasic();
+        new HttpBasicTestCase().testHTTPBasic();
     }
 
     public void testHTTPBasic() {
@@ -74,7 +74,7 @@ public class HttpBasicTest extends TestCase {
 
     public class TestGuard extends Guard {
         public TestGuard(Context context) {
-            super(context, ChallengeScheme.HTTP_BASIC, HttpBasicTest.class
+            super(context, ChallengeScheme.HTTP_BASIC, HttpBasicTestCase.class
                     .getSimpleName());
             this.getSecrets().put(SHORT_USERNAME, SHORT_PASSWORD.toCharArray());
             this.getSecrets().put(LONG_USERNAME, LONG_PASSWORD.toCharArray());
