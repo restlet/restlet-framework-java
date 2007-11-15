@@ -5,6 +5,10 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - Fixed bug in the matching of "*" E-Tags. Patch contributed by Alex Milowski. 
+
+1.0.6 (2007-11-08)
+[Bugs fixed]
  - Fixed error when parsing weak Etags. Reported by Larry Gately and John R. Fallows.
  - Fixed Redirector which didn't implement the SEE_OTHER type of redirections.
  - Fixed directory listing error in the File connector. Reported by Jochen Bedersdorfer.
