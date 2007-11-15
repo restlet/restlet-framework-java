@@ -111,28 +111,34 @@ public final class Conditions {
         if (this.match != null && !this.match.isEmpty()) {
             boolean matched = false;
             boolean failed = false;
+            boolean all = getMatch().get(0).equals(Tag.ALL);
 
             if (representation != null) {
                 // If a tag exists
-                if (representation.getTag() != null) {
+                if (!all && representation.getTag() != null) {
                     // Check if it matches one of the representations already
                     // cached by the client
                     Tag tag;
+
                     for (Iterator<Tag> iter = getMatch().iterator(); !matched
                             && iter.hasNext();) {
                         tag = iter.next();
                         matched = tag.equals(representation.getTag(), false);
                     }
+                } else {
+                    matched = all;
                 }
             } else {
-                // see
+                // See
                 // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24
                 // If none of the entity tags match, or if "*" is given and no
                 // current entity exists, the server MUST NOT perform the
                 // requested method
-                failed = getMatch().get(0).equals(Tag.ALL);
+                failed = all;
             }
+
             failed = failed || !matched;
+
             if (failed) {
                 result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
             }
@@ -142,12 +148,14 @@ public final class Conditions {
         if (result == null && this.noneMatch != null
                 && !this.noneMatch.isEmpty()) {
             boolean matched = false;
+
             if (representation != null) {
                 // If a tag exists
                 if (representation.getTag() != null) {
                     // Check if it matches one of the representations
                     // already cached by the client
                     Tag tag;
+
                     for (Iterator<Tag> iter = getNoneMatch().iterator(); !matched
                             && iter.hasNext();) {
                         tag = iter.next();
@@ -155,6 +163,7 @@ public final class Conditions {
                                 (Method.GET.equals(method) || Method.HEAD
                                         .equals(method)));
                     }
+
                     // The current representation matches one of those already
                     // cached by the client
                     if (matched) {
@@ -174,6 +183,7 @@ public final class Conditions {
             } else {
                 matched = getNoneMatch().get(0).equals(Tag.ALL);
             }
+
             if (matched) {
                 if (Method.GET.equals(method) || Method.HEAD.equals(method)) {
                     result = Status.REDIRECTION_NOT_MODIFIED;
@@ -192,6 +202,7 @@ public final class Conditions {
                         || (representation.getModificationDate() == null) || DateUtils
                         .after(modifiedSince, representation
                                 .getModificationDate()));
+
                 if (!isModifiedSince) {
                     result = Status.REDIRECTION_NOT_MODIFIED;
                 }
@@ -206,6 +217,7 @@ public final class Conditions {
                         || (representation.getModificationDate() == null) || DateUtils
                         .after(representation.getModificationDate(),
                                 unModifiedSince));
+
                 if (!isUnModifiedSince) {
                     result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
                 }
