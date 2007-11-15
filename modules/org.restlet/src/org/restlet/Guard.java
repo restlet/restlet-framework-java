@@ -36,14 +36,21 @@ import org.restlet.data.Status;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Guard extends Filter {
-    /** Map of secrets (login/password combinations). */
-    private final ConcurrentMap<String, char[]> secrets;
+
+    /** The authentication realm. */
+    private String realm;
+
+    /**
+     * Indicates if a new challenge should be sent when invalid credentials are
+     * received (true by default to conform to HTTP recommendations).
+     */
+    private boolean rechallengeEnabled;
 
     /** The authentication challenge scheme. */
     private ChallengeScheme scheme;
 
-    /** The authentication realm. */
-    private String realm;
+    /** Map of secrets (login/password combinations). */
+    private final ConcurrentMap<String, char[]> secrets;
 
     /**
      * Constructor.
@@ -57,6 +64,7 @@ public class Guard extends Filter {
      */
     public Guard(Context context, ChallengeScheme scheme, String realm) {
         super(context);
+        this.rechallengeEnabled = true;
         this.secrets = new ConcurrentHashMap<String, char[]>();
 
         if ((scheme == null)) {
@@ -204,8 +212,12 @@ public class Guard extends Filter {
             challenge(response);
             break;
         case -1:
-            // Wrong credentials provided
-            forbid(response);
+            // Invalid credentials provided
+            if (isRechallengeEnabled()) {
+                challenge(response);
+            } else {
+                forbid(response);
+            }
             break;
         }
     }
@@ -265,6 +277,18 @@ public class Guard extends Filter {
     }
 
     /**
+     * Indicates if a new challenge should be sent when invalid credentials are
+     * received (true by default to conform to HTTP recommendations). If set to
+     * false, upon reception of invalid credentials, the Guard will forbid the
+     * access ({@link Status#CLIENT_ERROR_FORBIDDEN}).
+     * 
+     * @return True if invalid credentials result in a new challenge.
+     */
+    public boolean isRechallengeEnabled() {
+        return rechallengeEnabled;
+    }
+
+    /**
      * Sets the authentication realm.
      * 
      * @param realm
@@ -272,6 +296,18 @@ public class Guard extends Filter {
      */
     public void setRealm(String realm) {
         this.realm = realm;
+    }
+
+    /**
+     * Indicates if a new challenge should be sent when invalid credentials are
+     * received.
+     * 
+     * @param rechallengeEnabled
+     *                True if invalid credentials result in a new challenge.
+     * @see #isRechallengeEnabled()
+     */
+    public void setRechallengeEnabled(boolean rechallengeEnabled) {
+        this.rechallengeEnabled = rechallengeEnabled;
     }
 
     /**
