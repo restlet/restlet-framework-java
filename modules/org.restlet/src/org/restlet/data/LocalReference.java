@@ -22,14 +22,21 @@ import java.io.File;
 
 /**
  * Reference to a local (i.e. non remote) resource. It has helper methods for
- * the three following schemes: CLAP, FILE and JAR.<br/> <br/> CLAP
- * (ClassLoader Access Protocol) is a custom scheme to access to representations
- * via classloaders. Example URI: "clap://thread/org/restlet/Restlet.class".<br/>
- * <br/> JAR is a common scheme to access to representations inside Java
- * ARchives. Example URI:
- * "jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class".<br/> <br/> FILE is
- * a standard scheme to access to representations stored in the file system
- * (locally most of the time). Example URI: "file:///D/root/index.html".
+ * the three following schemes: CLAP, FILE and JAR.<br>
+ * <br>
+ * CLAP (ClassLoader Access Protocol) is a custom scheme to access to
+ * representations via classloaders. Example URI:
+ * "clap://thread/org/restlet/Restlet.class".<br>
+ * <br>
+ * RIAP (Restlet Internal Access Protocol) is a custom scheme to access <br>
+ * representations via classloaders. Example URIs:
+ * "riap://component/myAppPath/myResource" and "riap://application/myResource".<br>
+ * <br>
+ * JAR is a common scheme to access to representations inside Java ARchives.
+ * Example URI: "jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class".<br>
+ * <br>
+ * FILE is a standard scheme to access to representations stored in the file
+ * system (locally most of the time). Example URI: "file:///D/root/index.html".
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -41,7 +48,7 @@ public final class LocalReference extends Reference {
      * 
      * @see java.lang.Class#getClassLoader()
      */
-    public static final int CLAP_CLASS = 2;
+    public static final int CLAP_CLASS = 1;
 
     /**
      * The resources will be resolved from the system's classloader. Examples:
@@ -50,7 +57,7 @@ public final class LocalReference extends Reference {
      * 
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
-    public static final int CLAP_SYSTEM = 3;
+    public static final int CLAP_SYSTEM = 2;
 
     /**
      * The resources will be resolved from the current thread's classloader.
@@ -59,7 +66,19 @@ public final class LocalReference extends Reference {
      * 
      * @see java.lang.Thread#getContextClassLoader()
      */
-    public static final int CLAP_THREAD = 4;
+    public static final int CLAP_THREAD = 3;
+
+    /**
+     * The resources will be resolved from the current component's internal
+     * router. Example riap://component/myAppPath/myResource
+     */
+    public static final int RIAP_COMPONENT = 4;
+
+    /**
+     * The resources will be resolved from the current application's root
+     * Restlet. Example riap://application/myPath/myResource
+     */
+    public static final int RIAP_APPLICATION = 5;
 
     /**
      * Constructor.
@@ -126,6 +145,20 @@ public final class LocalReference extends Reference {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param authorityType
+     *                The authority type for the resource path.
+     * @param path
+     *                The resource path.
+     */
+    public static LocalReference createRiapReference(int authorityType,
+            String path) {
+        return new LocalReference("riap://" + getAuthorityName(authorityType)
+                + path);
+    }
+
+    /**
      * Returns an authority name.
      * 
      * @param authority
@@ -144,6 +177,12 @@ public final class LocalReference extends Reference {
             break;
         case CLAP_THREAD:
             result = "thread";
+            break;
+        case RIAP_APPLICATION:
+            result = "application";
+            break;
+        case RIAP_COMPONENT:
+            result = "component";
             break;
         }
 
@@ -240,6 +279,31 @@ public final class LocalReference extends Reference {
                 } else if (authority
                         .equalsIgnoreCase(getAuthorityName(CLAP_THREAD))) {
                     result = CLAP_THREAD;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the type of authority.
+     * 
+     * @return The type of authority.
+     */
+    public int getRiapAuthorityType() {
+        int result = 0;
+
+        if (getSchemeProtocol().equals(Protocol.RIAP)) {
+            String authority = getAuthority();
+
+            if (authority != null) {
+                if (authority
+                        .equalsIgnoreCase(getAuthorityName(RIAP_APPLICATION))) {
+                    result = RIAP_APPLICATION;
+                } else if (authority
+                        .equalsIgnoreCase(getAuthorityName(RIAP_COMPONENT))) {
+                    result = RIAP_COMPONENT;
                 }
             }
         }

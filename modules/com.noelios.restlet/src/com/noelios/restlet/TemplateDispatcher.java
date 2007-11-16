@@ -26,14 +26,11 @@ import org.restlet.data.Response;
 import org.restlet.util.Template;
 
 /**
- * Default call dispatcher.
+ * Base call dispatcher capable of resolving target resource URI templates.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class TemplateDispatcher extends Uniform {
-    /** The helper dispatcher. */
-    private Uniform helper;
-
+public abstract class TemplateDispatcher extends Uniform {
     /** The parent context. */
     private Context context;
 
@@ -41,13 +38,10 @@ public class TemplateDispatcher extends Uniform {
      * Constructor.
      * 
      * @param context
-     *            The parent context.
-     * @param helper
-     *            The helper dispatcher.
+     *                The parent context.
      */
-    public TemplateDispatcher(Context context, Uniform helper) {
+    public TemplateDispatcher(Context context) {
         this.context = context;
-        this.helper = helper;
     }
 
     /**
@@ -78,8 +72,19 @@ public class TemplateDispatcher extends Uniform {
                 request.setResourceRef(template.format(request, response));
             }
 
-            // Actually dispatch the formatted URI
-            this.helper.handle(request, response);
+            // Actually handle the formatted URI
+            doHandle(request, response);
         }
     }
+
+    /**
+     * Actually handles the call after resolving any URI template on the
+     * request's target resource reference.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     */
+    protected abstract void doHandle(Request request, Response response);
 }

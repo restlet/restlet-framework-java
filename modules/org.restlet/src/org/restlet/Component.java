@@ -49,20 +49,26 @@ public class Component extends Restlet {
     /** The modifiable list of client connectors. */
     private ClientList clients;
 
-    /** The modifiable list of server connectors. */
-    private ServerList servers;
-
-    /** The modifiable list of virtual hosts. */
-    private List<VirtualHost> hosts;
-
     /** The default host. */
     private VirtualHost defaultHost;
 
     /** The helper provided by the implementation. */
     private Helper helper;
 
+    /** The modifiable list of virtual hosts. */
+    private List<VirtualHost> hosts;
+
+    /**
+     * The private internal router that can be addressed via the RIAP client
+     * connector.
+     */
+    private Router internalRouter;
+
     /** The log service. */
     private LogService logService;
+
+    /** The modifiable list of server connectors. */
+    private ServerList servers;
 
     /** The status service. */
     private StatusService statusService;
@@ -80,6 +86,7 @@ public class Component extends Restlet {
                         .getCanonicalName()));
                 this.hosts = null;
                 this.defaultHost = new VirtualHost(getContext());
+                this.internalRouter = new Router(getContext());
                 this.logService = null;
                 this.statusService = null;
             }
@@ -126,6 +133,30 @@ public class Component extends Restlet {
         if (this.hosts == null)
             this.hosts = new ArrayList<VirtualHost>();
         return this.hosts;
+    }
+
+    /**
+     * Returns the private internal router were Restlets like Applications can
+     * be attached. Those Restlets can be addressed via the
+     * {@link org.restlet.data.Protocol#RIAP} (Restlet Internal Access Protocol)
+     * client connector. This is used to manage private, internal and optimized
+     * access to local applications.<br>
+     * <br>
+     * The first use case is the modularisation of a large application into
+     * modules or layers. This can also be achieved using the
+     * {@link Context#getServerDispatcher()} method, but the internal router is
+     * easily addressable via an URI scheme and can be fully private to the
+     * current Component.<br>
+     * <br>
+     * The second use case is the composition/mash-up of several representations
+     * via the {@link org.restlet.Transformer} class for example. For this you
+     * can leverage the XPath's document() function or the XSLT's include and
+     * import elements with RIAP URIs.
+     * 
+     * @return The private internal router.
+     */
+    public Router getInternalRouter() {
+        return internalRouter;
     }
 
     /**
@@ -207,6 +238,18 @@ public class Component extends Restlet {
      */
     public void setHosts(List<VirtualHost> hosts) {
         this.hosts = hosts;
+    }
+
+    /**
+     * Sets the private internal router were Restlets like Applications can be
+     * attached.
+     * 
+     * @param internalRouter
+     *                The private internal router.
+     * @see #getInternalRouter()
+     */
+    public void setInternalRouter(Router internalRouter) {
+        this.internalRouter = internalRouter;
     }
 
     /**

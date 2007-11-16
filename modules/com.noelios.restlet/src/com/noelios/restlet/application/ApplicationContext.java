@@ -26,8 +26,6 @@ import org.restlet.Context;
 import org.restlet.Uniform;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.TemplateDispatcher;
-
 /**
  * Context based on a parent component's context but dedicated to an
  * application. This is important to allow contextual access to application's
@@ -67,9 +65,10 @@ public class ApplicationContext extends Context {
         this.application = application;
         this.parentContext = parentContext;
         this.warClient = null;
-        this.clientDispatcher = new TemplateDispatcher(this,
-                new ApplicationClientDispatcher(this));
-        this.serverDispatcher = getParentContext().getServerDispatcher();
+        this.clientDispatcher = new ApplicationClientDispatcher(this);
+        this.serverDispatcher = (getParentContext() != null) ? getParentContext()
+                .getServerDispatcher()
+                : null;
         this.warClient = new Client(Protocol.WAR);
 
         // Set the application as an attribute for usage by other services

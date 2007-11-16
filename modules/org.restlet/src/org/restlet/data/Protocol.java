@@ -71,6 +71,10 @@ public final class Protocol extends Metadata {
     public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
             "Java DataBase Connectivity", UNKNOWN_PORT);
 
+    /** Restlet internal access protocol. */
+    public static final Protocol RIAP = new Protocol("riap", "RIAP",
+            "Restlet Internal Access Protocol", UNKNOWN_PORT);
+
     /** SMTP protocol. */
     public static final Protocol SMTP = new Protocol("smtp", "SMTP",
             "Simple Mail Transfer Protocol", 25);
@@ -98,20 +102,30 @@ public final class Protocol extends Metadata {
         if (schemeName != null) {
             if (schemeName.equalsIgnoreCase(AJP.getSchemeName()))
                 result = AJP;
-            else if (schemeName.equalsIgnoreCase(WAR.getSchemeName()))
-                result = WAR;
+            else if (schemeName.equalsIgnoreCase(CLAP.getSchemeName()))
+                result = CLAP;
             else if (schemeName.equalsIgnoreCase(FILE.getSchemeName()))
                 result = FILE;
+            else if (schemeName.equalsIgnoreCase(FTP.getSchemeName()))
+                result = FTP;
             else if (schemeName.equalsIgnoreCase(HTTP.getSchemeName()))
                 result = HTTP;
             else if (schemeName.equalsIgnoreCase(HTTPS.getSchemeName()))
                 result = HTTPS;
+            else if (schemeName.equalsIgnoreCase(JAR.getSchemeName()))
+                result = JAR;
             else if (schemeName.equalsIgnoreCase(JDBC.getSchemeName()))
                 result = JDBC;
+            else if (schemeName.equalsIgnoreCase(RIAP.getSchemeName()))
+                result = RIAP;
             else if (schemeName.equalsIgnoreCase(SMTP.getSchemeName()))
                 result = SMTP;
+            else if (schemeName.equalsIgnoreCase(SMTP_STARTTLS.getSchemeName()))
+                result = SMTP_STARTTLS;
             else if (schemeName.equalsIgnoreCase(SMTPS.getSchemeName()))
                 result = SMTPS;
+            else if (schemeName.equalsIgnoreCase(WAR.getSchemeName()))
+                result = WAR;
             else
                 result = new Protocol(schemeName);
         }

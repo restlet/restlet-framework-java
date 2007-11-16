@@ -197,9 +197,7 @@ public class HttpBasicTestCase extends TestCase {
         Response response = client.handle(request);
 
         assertEquals("Short username did not throw 401",
-                Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
-        assertTrue(response.getEntity().getText().contains(
-                "is refusing to fulfill it"));
+                Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
     }
 
     public void HTTPBasicLong() throws IOException {
@@ -227,9 +225,7 @@ public class HttpBasicTestCase extends TestCase {
         Response response = client.handle(request);
 
         assertEquals("Long username w/wrong pw did not throw 403",
-                Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
-        assertTrue(response.getEntity().getText().contains(
-                "is refusing to fulfill it"));
+                Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
     }
 
     public void HTTPBasicWrongUser() throws IOException {
@@ -242,9 +238,7 @@ public class HttpBasicTestCase extends TestCase {
 
         Response response = client.handle(request);
 
-        assertEquals("Wrong username did not throw 403",
-                Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
-        assertTrue(response.getEntity().getText().contains(
-                "is refusing to fulfill it"));
+        assertEquals("Wrong username did not throw 401",
+                Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
     }
 }
