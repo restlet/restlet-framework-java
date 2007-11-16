@@ -126,34 +126,50 @@ public class Finder extends Restlet {
 
     /**
      * Creates a new instance of the handler class designated by the
-     * "targetClass" property. Note that Error and RuntimeException thrown by
-     * Handler constructors are rethrown by this method. Other exception are
-     * caught and logged.
+     * "targetClass" property. The default behavior is to invoke the
+     * {@link #createTarget(Class, Request, Response)} with the "targetClass"
+     * property as a parameter.
      * 
      * @param request
      *                The request to handle.
      * @param response
      *                The response to update.
      * @return The created handler or null.
-     * @deprecated Use the createHandler() instead.
+     * @deprecated Use the {@link #createTarget(Request, Response)} instead.
      */
     public Handler createResource(Request request, Response response) {
+        return createTarget(getTargetClass(), request, response);
+    }
+
+    /**
+     * Creates a new instance of a given handler class. Note that Error and
+     * RuntimeException thrown by Handler constructors are rethrown by this
+     * method. Other exception are caught and logged.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     * @return The created handler or null.
+     */
+    protected Handler createTarget(Class<? extends Handler> targetClass,
+            Request request, Response response) {
         Handler result = null;
 
-        if (getTargetClass() != null) {
+        if (targetClass != null) {
             try {
                 Constructor<?> constructor;
                 try {
                     // Invoke the constructor with Context, Request and Response
                     // parameters
-                    constructor = getTargetClass().getConstructor(
-                            Context.class, Request.class, Response.class);
+                    constructor = targetClass.getConstructor(Context.class,
+                            Request.class, Response.class);
                     result = (Handler) constructor.newInstance(getContext(),
                             request, response);
                 } catch (NoSuchMethodException nsme) {
                     // Invoke the default constructor then the init(Context,
                     // Request, Response) method.
-                    constructor = getTargetClass().getConstructor();
+                    constructor = targetClass.getConstructor();
                     if (constructor != null) {
                         result = (Handler) constructor.newInstance();
                         result.init(getContext(), request, response);
@@ -182,9 +198,9 @@ public class Finder extends Restlet {
 
     /**
      * Creates a new instance of the handler class designated by the
-     * "targetClass" property. Note that Error and RuntimeException thrown by
-     * Handler constructors are rethrown by this method. Other exception are
-     * caught and logged.
+     * "targetClass" property. The default behavior is to invoke the
+     * {@link #createTarget(Class, Request, Response)} with the "targetClass"
+     * property as a parameter.
      * 
      * @param request
      *                The request to handle.
@@ -192,8 +208,8 @@ public class Finder extends Restlet {
      *                The response to update.
      * @return The created handler or null.
      */
-    public Handler createTarget(Request request, Response response) {
-        return createResource(request, response);
+    protected Handler createTarget(Request request, Response response) {
+        return createTarget(getTargetClass(), request, response);
     }
 
     /**
@@ -206,7 +222,7 @@ public class Finder extends Restlet {
      *                The response to update.
      * @return The target handler if available or null.
      */
-    public Handler findTarget(Request request, Response response) {
+    protected Handler findTarget(Request request, Response response) {
         return createTarget(request, response);
     }
 
