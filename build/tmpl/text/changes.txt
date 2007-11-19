@@ -7,6 +7,9 @@ Changes log
 [Bugs fixed]
  - Fixed bug in the matching of "*" E-Tags. Patch contributed by Alex Milowski. 
 
+[Enhancements]
+ - Clarified Template#parse Javadocs. Suggested by Jonathan Hall.
+
 1.0.6 (2007-11-08)
 [Bugs fixed]
  - Fixed error when parsing weak Etags. Reported by Larry Gately and John R. Fallows.
