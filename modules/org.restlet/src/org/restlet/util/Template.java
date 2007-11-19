@@ -1218,11 +1218,10 @@ public class Template {
     /**
      * Attempts to parse a formatted reference. If the parsing succeeds, the
      * given request's attributes are updated.<br>
-     * Note that the values parsed are only extracted from the formatted
-     * reference and therefore are not percent-decoded.
+     * Note that the values parsed are directly extracted from the formatted
+     * reference and are therefore not percent-decoded.
      * 
      * @see Reference#decode(String)
-     * @see Reference#decode(String, org.restlet.data.CharacterSet)
      * 
      * @param formattedString
      *                The string to parse.
@@ -1264,7 +1263,11 @@ public class Template {
 
     /**
      * Attempts to parse a formatted reference. If the parsing succeeds, the
-     * given request's attributes are updated.
+     * given request's attributes are updated.<br>
+     * Note that the values parsed are directly extracted from the formatted
+     * reference and are therefore not percent-decoded.
+     * 
+     * @see Reference#decode(String)
      * 
      * @param formattedString
      *                The string to parse.
