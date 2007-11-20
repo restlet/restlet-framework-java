@@ -6,9 +6,12 @@ Changes log
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Fixed bug in the matching of "*" E-Tags. Patch contributed by Alex Milowski. 
+ - Set the JAXP Source's systemID property based on the Representation.identifier 
+   property if available (SaxRepresentation and TransformRepresentation).
 
 [Enhancements]
  - Clarified Template#parse Javadocs. Suggested by Jonathan Hall.
+ - Upgraded Jetty to 6.1.6
 
 1.0.6 (2007-11-08)
 [Bugs fixed]
