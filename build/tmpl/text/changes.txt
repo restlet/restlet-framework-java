@@ -103,8 +103,9 @@ Changes log
    closely to the HTTP 1.1 specifications while leaving the door open for the stricter behavior. 
    Reported by Stephan Koops.
  - Refactored the implementation of dispatchers to derive from a base TemplateDispatcher class.
- - Added the "internalRouter" property to Component to attach internal/private Restlets, accessible via 
-   the built-in RIAP client (Restlet Internal Access Protocol). Suggested by Marc Portier.
+ - Added the "internalRouter" property to Component to attach internal/private Restlets that are accessible
+   via the built-in RIAP client (Restlet Internal Access Protocol). 
+   Suggested by Marc Portier who contributed the test case.
  - Updated the Protocol and LocalReference classes with support for the new RIAP scheme.
  - In order to facilitate the implementation of your custom Finder, an new createTarget() method taking
    a Resource class in parameter. 
