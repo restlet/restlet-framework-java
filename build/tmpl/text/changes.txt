@@ -80,8 +80,6 @@ Changes log
    application and resource classes. Suggested by Avi Flax. 
  - Added a createComponent() method on ServerServlet to facilitate the customization of the 
    component for a Servlet.
- - Updated the JaxbRepresentation#getObject so that JaxbException are not swallowed. Reported and contributed 
-   by Sean Landis.
  - The Message's getEntityAsDom(), getEntityAsSax() and getEntityAsForm() are now caching the result
    representation for easier reuse in a Restlet filters chain. Suggested by Rob Heittman.
  - Finder.createResource() method now rethrows the Error exceptions thrown by Resource constructors.

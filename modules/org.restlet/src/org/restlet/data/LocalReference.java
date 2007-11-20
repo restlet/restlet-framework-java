@@ -29,7 +29,7 @@ import java.io.File;
  * "clap://thread/org/restlet/Restlet.class".<br>
  * <br>
  * RIAP (Restlet Internal Access Protocol) is a custom scheme to access <br>
- * representations via classloaders. Example URIs:
+ * representations via internal calls to virtual hosts/components. Example URIs:
  * "riap://component/myAppPath/myResource" and "riap://application/myResource".<br>
  * <br>
  * JAR is a common scheme to access to representations inside Java ARchives.
