@@ -108,6 +108,8 @@ Changes log
  - Updated the Protocol and LocalReference classes with support for the new RIAP scheme.
  - In order to facilitate the implementation of your custom Finder, an new createTarget() method taking
    a Resource class in parameter. 
+ - The context dispatchers automatically update the identifier property of response entities when they 
+   are empty, based on the request's target URI.
 
 [Misc]
  - Removed AsyncWeb connector, to be replaced by a custom MINA based one.
