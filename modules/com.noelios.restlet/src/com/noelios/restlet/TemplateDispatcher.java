@@ -74,6 +74,16 @@ public abstract class TemplateDispatcher extends Uniform {
 
             // Actually handle the formatted URI
             doHandle(request, response);
+
+            // If the response entity comes back with no identifier,
+            // automatically set the request's resource reference's identifier.
+            // This is very useful to resolve relative references in XSLT for
+            // example.
+            if ((response.getEntity() != null)
+                    && (response.getEntity().getIdentifier() == null)) {
+                response.getEntity().setIdentifier(
+                        request.getResourceRef().toString());
+            }
         }
     }
 

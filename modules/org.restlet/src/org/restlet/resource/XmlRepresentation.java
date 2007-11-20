@@ -237,7 +237,16 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * @throws IOException
      */
     public Source getSource() throws IOException {
-        return new StreamSource(getStream());
+        Source result = null;
+
+        if (getIdentifier() != null) {
+            result = new StreamSource(getStream(), getIdentifier()
+                    .getTargetRef().toString());
+        } else {
+            result = new StreamSource(getStream());
+        }
+
+        return result;
     }
 
     /**
@@ -349,8 +358,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      *                The Result object that receives (possibly augmented) XML.
      */
     public void validate(Schema schema, Result result) throws Exception {
-        StreamSource streamSource = new StreamSource(getStream());
-        schema.newValidator().validate(streamSource, result);
+        schema.newValidator().validate(getSource(), result);
     }
 
 }

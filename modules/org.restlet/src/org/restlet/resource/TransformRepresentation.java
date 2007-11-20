@@ -142,6 +142,11 @@ public class TransformRepresentation extends OutputRepresentation {
                 StreamSource transformSheet = new StreamSource(
                         getTransformSheet().getStream());
 
+                if (getTransformSheet().getIdentifier() != null) {
+                    transformSheet.setSystemId(getTransformSheet()
+                            .getIdentifier().getTargetRef().toString());
+                }
+
                 // Create the transformer factory
                 TransformerFactory transformerFactory = TransformerFactory
                         .newInstance();
@@ -269,6 +274,12 @@ public class TransformRepresentation extends OutputRepresentation {
             // Prepare the source and result documents
             StreamSource sourceDocument = new StreamSource(
                     getSourceRepresentation().getStream());
+
+            if (getSourceRepresentation().getIdentifier() != null) {
+                sourceDocument.setSystemId(getSourceRepresentation()
+                        .getIdentifier().getTargetRef().toString());
+            }
+
             StreamResult resultDocument = new StreamResult(outputStream);
 
             // Generates the result of the transformation

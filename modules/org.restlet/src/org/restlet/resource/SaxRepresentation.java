@@ -113,6 +113,11 @@ public class SaxRepresentation extends XmlRepresentation {
                     source = new StreamSource(xmlRepresentation.getStream());
                 }
 
+                if (xmlRepresentation.getIdentifier() != null) {
+                    source.setSystemId(xmlRepresentation.getIdentifier()
+                            .getTargetRef().toString());
+                }
+
                 Result result = new SAXResult(contentHandler);
                 TransformerFactory.newInstance().newTransformer().transform(
                         source, result);
