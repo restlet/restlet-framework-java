@@ -72,10 +72,17 @@ public class SimpleProtocolHandler implements ProtocolHandler {
             // entirely consumed. Not doing so blocks invariably the transaction
             // managed by the SimpleWeb connector.
             if (request.getInputStream() != null) {
-                while (request.getInputStream().read() != -1) {
-                    // just consume the stream
+                try {
+                    while (request.getInputStream().read() != -1) {
+                        // just consume the stream
+                    }
+                } catch (IOException ioe) {
+                    // This is probably ok, the stream was certainly already
+                    // closed by the Representation.release() method for
+                    // example.
                 }
             }
+
             response.getOutputStream().close();
         } catch (IOException ioe) {
             getHelper()
