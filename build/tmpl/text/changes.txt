@@ -10,6 +10,7 @@ Changes log
    property if available (SaxRepresentation and TransformRepresentation).
  - Simple could log an exception if the input entity was already closed when returning
    from the handling, as we are trying to consume unread bytes. Reported by Matt Allen.
+ - Allow to delete empty directories. Reported by Paul J. Lucas.
 
 [Enhancements]
  - Clarified Template#parse Javadocs. Suggested by Jonathan Hall.

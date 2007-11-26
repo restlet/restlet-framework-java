@@ -489,8 +489,13 @@ public class FileClientHelper extends LocalClientHelper {
         } else if (request.getMethod().equals(Method.DELETE)) {
             if (file.isDirectory()) {
                 if (file.listFiles().length == 0) {
-                    response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
-                            "Couldn't delete the empty directory"));
+                    if (file.delete()) {
+                        response.setStatus(Status.SUCCESS_NO_CONTENT);
+                    } else {
+                        response.setStatus(new Status(
+                                Status.SERVER_ERROR_INTERNAL,
+                                "Couldn't delete the directory"));
+                    }
                 } else {
                     response.setStatus(new Status(
                             Status.CLIENT_ERROR_FORBIDDEN,
@@ -665,11 +670,11 @@ public class FileClientHelper extends LocalClientHelper {
             return encodedFileName.substring(0, j)
                     + decodedVariantFileName.substring(i - 1);
         } else {
-            if(j == encodedFileName.length()){
+            if (j == encodedFileName.length()) {
                 return encodedFileName.substring(0, j)
-                + decodedVariantFileName.substring(i);
+                        + decodedVariantFileName.substring(i);
             } else {
-                return encodedFileName.substring(0, j);                
+                return encodedFileName.substring(0, j);
             }
         }
     }
