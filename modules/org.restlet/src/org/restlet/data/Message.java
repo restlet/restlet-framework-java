@@ -18,11 +18,8 @@
 
 package org.restlet.data;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.resource.DomRepresentation;
@@ -36,10 +33,6 @@ import org.restlet.resource.StringRepresentation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Message {
-    /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(Message.class
-            .getCanonicalName());
-
     /** The modifiable attributes map. */
     private Map<String, Object> attributes;
 
@@ -158,7 +151,7 @@ public abstract class Message {
      * Returns the entity as a DOM representation.<br/> This method can be
      * called several times and will always return the same representation
      * instance. Note that if the entity is large this method can result in
-     * large memory consumption. In this case, consider using a SAX
+     * important memory consumption. In this case, consider using a SAX
      * representation.
      * 
      * @return The entity as a DOM representation.
@@ -174,7 +167,7 @@ public abstract class Message {
     /**
      * Returns the entity as a form.<br/> This method can be called several
      * times and will always return the same form instance. Note that if the
-     * entity is large this method can result in large memory consumption.
+     * entity is large this method can result in important memory consumption.
      * 
      * @return The entity as a form.
      */
@@ -207,22 +200,17 @@ public abstract class Message {
 
     /**
      * Returns the entity as a SAX representation.<br/> This method can be
-     * called several times and will always return the same form instance. Note
-     * that generally this type of representation can only be parsed once. If
-     * you evaluate an XPath expression, it can also only be done once. If you
-     * need to reuse the entity multiple times, consider using the
-     * getEntityAsDom() method instead.
+     * called several times and will always return the same representation
+     * instance. Note that generally this type of representation can only be
+     * parsed once. If you evaluate an XPath expression, it can also only be
+     * done once. If you need to reuse the entity multiple times, consider using
+     * the getEntityAsDom() method instead.
      * 
      * @return The entity as a SAX representation.
      */
     public SaxRepresentation getEntityAsSax() {
         if (this.saxRepresentation == null) {
-            try {
-                this.saxRepresentation = new SaxRepresentation(getEntity());
-            } catch (IOException ioe) {
-                logger.log(Level.WARNING,
-                        "Unable to create the SAX representation", ioe);
-            }
+            this.saxRepresentation = new SaxRepresentation(getEntity());
         }
 
         return this.saxRepresentation;
