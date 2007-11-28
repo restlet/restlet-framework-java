@@ -11,6 +11,8 @@ Changes log
  - Simple could log an exception if the input entity was already closed when returning
    from the handling, as we are trying to consume unread bytes. Reported by Matt Allen.
  - Allow to delete empty directories. Reported by Paul J. Lucas.
+ - Fixed remaining issues in the processing of XSLT include/document/import via the 
+   TransformRepresentation. Contributed by Marc Portier.
  - Fixed improper handling of SimpleWeb input stream. Reported and contributed by Quintin May.
  
 [Enhancements]
