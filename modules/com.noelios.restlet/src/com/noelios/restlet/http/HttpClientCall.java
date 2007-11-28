@@ -49,6 +49,19 @@ import com.noelios.restlet.util.HeaderReader;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpClientCall extends HttpCall {
+    /**
+     * Returns the local IP address or 127.0.0.1 if the resolution fails.
+     * 
+     * @return The local IP address or 127.0.0.1 if the resolution fails.
+     */
+    public static String getLocalAddress() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            return "127.0.0.1";
+        }
+    }
+
     /** The parent HTTP client helper. */
     private HttpClientHelper helper;
 
@@ -56,15 +69,15 @@ public class HttpClientCall extends HttpCall {
      * Constructor setting the request address to the local host.
      * 
      * @param helper
-     *            The parent HTTP client helper.
+     *                The parent HTTP client helper.
      * @param method
-     *            The method name.
+     *                The method name.
      * @param requestUri
-     *            The request URI.
+     *                The request URI.
      */
     public HttpClientCall(HttpClientHelper helper, String method,
             String requestUri) {
-        setLogger(helper.getLogger());
+        setLogger((helper == null) ? null : helper.getLogger());
         this.helper = helper;
         setMethod(method);
         setRequestUri(requestUri);
@@ -78,19 +91,6 @@ public class HttpClientCall extends HttpCall {
      */
     public HttpClientHelper getHelper() {
         return this.helper;
-    }
-
-    /**
-     * Returns the local IP address or 127.0.0.1 if the resolution fails.
-     * 
-     * @return The local IP address or 127.0.0.1 if the resolution fails.
-     */
-    public static String getLocalAddress() {
-        try {
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            return "127.0.0.1";
-        }
     }
 
     /**
@@ -112,11 +112,160 @@ public class HttpClientCall extends HttpCall {
     }
 
     /**
+     * Returns the response channel if it exists.
+     * 
+     * @return The response channel if it exists.
+     */
+    public ReadableByteChannel getResponseChannel() {
+        return null;
+    }
+
+    /**
+     * Returns the response entity if available. Note that no metadata is
+     * associated by default, you have to manually set them from your headers.
+     * 
+     * @return The response entity if available.
+     */
+    public Representation getResponseEntity() {
+        Representation result = null;
+
+        if (getResponseStream() != null) {
+            result = new InputRepresentation(getResponseStream(), null);
+        } else if (getResponseChannel() != null) {
+            result = new ReadableRepresentation(getResponseChannel(), null);
+        } else if (getMethod().equals(Method.HEAD.getName())) {
+            result = new Representation() {
+                @Override
+                public ReadableByteChannel getChannel() throws IOException {
+                    return null;
+                }
+
+                @Override
+                public Reader getReader() throws IOException {
+                    return null;
+                }
+
+                @Override
+                public InputStream getStream() throws IOException {
+                    return null;
+                }
+
+                @Override
+                public void write(OutputStream outputStream) throws IOException {
+                    // Do nothing
+                }
+
+                @Override
+                public void write(WritableByteChannel writableChannel)
+                        throws IOException {
+                    // Do nothing
+                }
+
+                @Override
+                public void write(Writer writer) throws IOException {
+                    // Do nothing
+                }
+            };
+        }
+
+        if (result != null) {
+            for (Parameter header : getResponseHeaders()) {
+                if (header.getName().equalsIgnoreCase(
+                        HttpConstants.HEADER_CONTENT_TYPE)) {
+                    ContentType contentType = new ContentType(header.getValue());
+                    if (contentType != null) {
+                        result.setMediaType(contentType.getMediaType());
+                        result.setCharacterSet(contentType.getCharacterSet());
+                    }
+                } else if (header.getName().equalsIgnoreCase(
+                        HttpConstants.HEADER_CONTENT_LENGTH)) {
+                    result.setSize(Long.parseLong(header.getValue()));
+                } else if (header.getName().equalsIgnoreCase(
+                        HttpConstants.HEADER_EXPIRES)) {
+                    result
+                            .setExpirationDate(parseDate(header.getValue(),
+                                    false));
+                } else if (header.getName().equalsIgnoreCase(
+                        HttpConstants.HEADER_CONTENT_ENCODING)) {
+                    HeaderReader hr = new HeaderReader(header.getValue());
+                    String value = hr.readValue();
+                    while (value != null) {
+                        Encoding encoding = new Encoding(value);
+                        if (!encoding.equals(Encoding.IDENTITY)) {
+                            result.getEncodings().add(encoding);
+                        }
+                        value = hr.readValue();
+                    }
+                } else if (header.getName().equalsIgnoreCase(
+                        HttpConstants.HEADER_CONTENT_LANGUAGE)) {
+                    HeaderReader hr = new HeaderReader(header.getValue());
+                    String value = hr.readValue();
+                    while (value != null) {
+                        result.getLanguages().add(new Language(value));
+                        value = hr.readValue();
+                    }
+                } else if (header.getName().equalsIgnoreCase(
+                        HttpConstants.HEADER_LAST_MODIFIED)) {
+                    result.setModificationDate(parseDate(header.getValue(),
+                            false));
+                } else if (header.getName().equalsIgnoreCase(
+                        HttpConstants.HEADER_ETAG)) {
+                    result.setTag(Tag.parse(header.getValue()));
+                } else if (header.getName().equalsIgnoreCase(
+                        HttpConstants.HEADER_CONTENT_LOCATION)) {
+                    result.setIdentifier(header.getValue());
+                } else if (header.getName().equalsIgnoreCase(
+                        HttpConstants.HEADER_CONTENT_DISPOSITION)) {
+                    result.setFileName(parseContentDisposition(header
+                            .getValue()));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the response stream if it exists.
+     * 
+     * @return The response stream if it exists.
+     */
+    public InputStream getResponseStream() {
+        return null;
+    }
+
+    /**
+     * Parse the Content-Disposition header value
+     * 
+     * @param value
+     *                Content-disposition header
+     * @return Filename
+     */
+    public String parseContentDisposition(String value) {
+        if (value != null) {
+            String key = "FILENAME=\"";
+            int index = value.toUpperCase().indexOf(key);
+            if (index > 0) {
+                return value
+                        .substring(index + key.length(), value.length() - 1);
+            } else {
+                key = "FILENAME=";
+                index = value.toUpperCase().indexOf(key);
+                if (index > 0) {
+                    return value
+                            .substring(index + key.length(), value.length());
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Sends the request to the client. Commits the request line, headers and
      * optional entity and send them over the network.
      * 
      * @param request
-     *            The high-level request.
+     *                The high-level request.
      */
     public Status sendRequest(Request request) {
         Status result = null;
@@ -175,125 +324,6 @@ public class HttpClientCall extends HttpCall {
                     Status.CONNECTOR_ERROR_COMMUNICATION,
                     "Unable to complete the HTTP call due to a communication error with the remote server. "
                             + ioe.getMessage());
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
-    public ReadableByteChannel getResponseChannel() {
-        return null;
-    }
-
-    /**
-     * Returns the response stream if it exists.
-     * 
-     * @return The response stream if it exists.
-     */
-    public InputStream getResponseStream() {
-        return null;
-    }
-
-    /**
-     * Returns the response entity if available. Note that no metadata is
-     * associated by default, you have to manually set them from your headers.
-     * 
-     * @return The response entity if available.
-     */
-    public Representation getResponseEntity() {
-        Representation result = null;
-
-        if (getResponseStream() != null) {
-            result = new InputRepresentation(getResponseStream(), null);
-        } else if (getResponseChannel() != null) {
-            result = new ReadableRepresentation(getResponseChannel(), null);
-        } else if (getMethod().equals(Method.HEAD.getName())) {
-            result = new Representation() {
-                @Override
-                public ReadableByteChannel getChannel() throws IOException {
-                    return null;
-                }
-
-                @Override
-                public InputStream getStream() throws IOException {
-                    return null;
-                }
-
-                @Override
-                public void write(OutputStream outputStream) throws IOException {
-                    // Do nothing
-                }
-
-                @Override
-                public void write(WritableByteChannel writableChannel)
-                        throws IOException {
-                    // Do nothing
-                }
-
-                @Override
-                public Reader getReader() throws IOException {
-                    return null;
-                }
-
-                @Override
-                public void write(Writer writer) throws IOException {
-                    // Do nothing
-                }
-            };
-        }
-
-        if (result != null) {
-            for (Parameter header : getResponseHeaders()) {
-                if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_TYPE)) {
-                    ContentType contentType = new ContentType(header.getValue());
-                    if (contentType != null) {
-                        result.setMediaType(contentType.getMediaType());
-                        result.setCharacterSet(contentType.getCharacterSet());
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_LENGTH)) {
-                    result.setSize(Long.parseLong(header.getValue()));
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_EXPIRES)) {
-                    result
-                            .setExpirationDate(parseDate(header.getValue(),
-                                    false));
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_ENCODING)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-                    while (value != null) {
-                        Encoding encoding = new Encoding(value);
-                        if (!encoding.equals(Encoding.IDENTITY)) {
-                            result.getEncodings().add(encoding);
-                        }
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_LANGUAGE)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-                    while (value != null) {
-                        result.getLanguages().add(new Language(value));
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_LAST_MODIFIED)) {
-                    result.setModificationDate(parseDate(header.getValue(),
-                            false));
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_ETAG)) {
-                    result.setTag(Tag.parse(header.getValue()));
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_LOCATION)) {
-                    result.setIdentifier(header.getValue());
-                }
-            }
         }
 
         return result;

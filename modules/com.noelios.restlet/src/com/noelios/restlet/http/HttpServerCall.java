@@ -47,16 +47,6 @@ public abstract class HttpServerCall extends HttpCall {
     /**
      * Constructor.
      * 
-     * @param server
-     *                The parent server connector.
-     */
-    public HttpServerCall(Server server) {
-        this(server.getLogger(), server.getAddress(), server.getPort());
-    }
-
-    /**
-     * Constructor.
-     * 
      * @param logger
      *                The logger.
      * @param serverAddress
@@ -72,52 +62,52 @@ public abstract class HttpServerCall extends HttpCall {
     }
 
     /**
-     * Returns the request head channel if it exists.
+     * Constructor.
      * 
-     * @return The request head channel if it exists.
+     * @param server
+     *                The parent server connector.
      */
-    public abstract ReadableByteChannel getRequestHeadChannel();
+    public HttpServerCall(Server server) {
+        this(server.getLogger(), server.getAddress(), server.getPort());
+    }
 
     /**
-     * Returns the request head stream if it exists.
+     * Format {@code fileName} as a Content-Disposition header value
      * 
-     * @return The request head stream if it exists.
+     * @param fileName
+     *                Filename to format
+     * @return {@code fileName} formatted
      */
-    public abstract InputStream getRequestHeadStream();
+    public String formatContentDisposition(String fileName) {
+        StringBuilder b = new StringBuilder("attachment; filename=\"");
+        if (fileName != null) {
+            b.append(fileName);
+        }
+        b.append('"');
+        return b.toString();
+    }
 
     /**
-     * Returns the request entity channel if it exists.
+     * Returns the host domain name.
      * 
-     * @param size
-     *                The total size that will be read from the channel.
-     * 
-     * @return The request entity channel if it exists.
+     * @return The host domain name.
      */
-    public abstract ReadableByteChannel getRequestEntityChannel(long size);
+    public String getHostDomain() {
+        if (!hostParsed)
+            parseHost();
+        return super.getHostDomain();
+    }
 
     /**
-     * Returns the request entity stream if it exists.
+     * Returns the host port.
      * 
-     * @param size
-     *                The total size that will be read from the stream.
-     * 
-     * @return The request entity stream if it exists.
+     * @return The host port.
      */
-    public abstract InputStream getRequestEntityStream(long size);
-
-    /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
-    public abstract WritableByteChannel getResponseEntityChannel();
-
-    /**
-     * Returns the response entity stream if it exists.
-     * 
-     * @return The response entity stream if it exists.
-     */
-    public abstract OutputStream getResponseEntityStream();
+    public int getHostPort() {
+        if (!hostParsed)
+            parseHost();
+        return super.getHostPort();
+    }
 
     /**
      * Returns the request entity if available.
@@ -185,26 +175,52 @@ public abstract class HttpServerCall extends HttpCall {
     }
 
     /**
-     * Returns the host domain name.
+     * Returns the request entity channel if it exists.
      * 
-     * @return The host domain name.
+     * @param size
+     *                The total size that will be read from the channel.
+     * 
+     * @return The request entity channel if it exists.
      */
-    public String getHostDomain() {
-        if (!hostParsed)
-            parseHost();
-        return super.getHostDomain();
-    }
+    public abstract ReadableByteChannel getRequestEntityChannel(long size);
 
     /**
-     * Returns the host port.
+     * Returns the request entity stream if it exists.
      * 
-     * @return The host port.
+     * @param size
+     *                The total size that will be read from the stream.
+     * 
+     * @return The request entity stream if it exists.
      */
-    public int getHostPort() {
-        if (!hostParsed)
-            parseHost();
-        return super.getHostPort();
-    }
+    public abstract InputStream getRequestEntityStream(long size);
+
+    /**
+     * Returns the request head channel if it exists.
+     * 
+     * @return The request head channel if it exists.
+     */
+    public abstract ReadableByteChannel getRequestHeadChannel();
+
+    /**
+     * Returns the request head stream if it exists.
+     * 
+     * @return The request head stream if it exists.
+     */
+    public abstract InputStream getRequestHeadStream();
+
+    /**
+     * Returns the response channel if it exists.
+     * 
+     * @return The response channel if it exists.
+     */
+    public abstract WritableByteChannel getResponseEntityChannel();
+
+    /**
+     * Returns the response entity stream if it exists.
+     * 
+     * @return The response entity stream if it exists.
+     */
+    public abstract OutputStream getResponseEntityStream();
 
     /**
      * Returns the SSL session if it is available and accessible.
@@ -365,17 +381,6 @@ public abstract class HttpServerCall extends HttpCall {
     }
 
     /**
-     * Writes the response status line and headers. Does nothing by default.
-     * 
-     * @param response
-     *                The response.
-     * @throws IOException
-     */
-    public void writeResponseHead(Response response) throws IOException {
-        // Do nothing by default
-    }
-
-    /**
      * Writes the response head to the given output stream.
      * 
      * @param headStream
@@ -405,6 +410,17 @@ public abstract class HttpServerCall extends HttpCall {
         // Write the end of the headers section
         headStream.write(13); // CR
         headStream.write(10); // LF
+    }
+
+    /**
+     * Writes the response status line and headers. Does nothing by default.
+     * 
+     * @param response
+     *                The response.
+     * @throws IOException
+     */
+    public void writeResponseHead(Response response) throws IOException {
+        // Do nothing by default
     }
 
 }

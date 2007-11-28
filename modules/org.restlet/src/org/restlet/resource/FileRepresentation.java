@@ -60,7 +60,11 @@ public class FileRepresentation extends Representation {
     private File file;
 
     /**
-     * Constructor.
+     * Constructor. If a positive "timeToLive" parameter is given, then the
+     * expiration date is set accordingly. If "timeToLive" is equal to zero,
+     * then the expiration date is set to the current date, meaning that it will
+     * immediately expire on the client. If -1 is given, then no expiration date
+     * is set.
      * 
      * @param file
      *                The represented file.
@@ -73,9 +77,16 @@ public class FileRepresentation extends Representation {
         super(mediaType);
         this.file = file;
         setModificationDate(new Date(file.lastModified()));
-        setExpirationDate(new Date(System.currentTimeMillis()
-                + (1000L * timeToLive)));
+
+        if (timeToLive == 0) {
+            setExpirationDate(new Date());
+        } else if (timeToLive > 0) {
+            setExpirationDate(new Date(System.currentTimeMillis()
+                    + (1000L * timeToLive)));
+        }
+
         setMediaType(mediaType);
+        setFileName(file.getName());
     }
 
     /**
@@ -91,6 +102,28 @@ public class FileRepresentation extends Representation {
      */
     public FileRepresentation(String path, MediaType mediaType, int timeToLive) {
         this(createFile(path), mediaType, timeToLive);
+    }
+
+    /**
+     * Constructor that does not set an expiration date for {@code file}
+     * 
+     * @param file
+     * @param mediaType
+     * @see #FileRepresentation(File, MediaType, int)
+     */
+    public FileRepresentation(File file, MediaType mediaType) {
+        this(file, mediaType, -1);
+    }
+
+    /**
+     * Constructor that does not set an expiration date for {@code path}
+     * 
+     * @param path
+     * @param mediaType
+     * @see #FileRepresentation(String, MediaType, int)
+     */
+    public FileRepresentation(String path, MediaType mediaType) {
+        this(path, mediaType, -1);
     }
 
     /**

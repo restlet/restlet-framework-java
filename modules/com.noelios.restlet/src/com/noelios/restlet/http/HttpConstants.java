@@ -144,6 +144,8 @@ public final class HttpConstants {
 
     public static final String HEADER_CONNECTION = "Connection";
 
+    public static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
+
     public static final String HEADER_CONTENT_ENCODING = "Content-Encoding";
 
     public static final String HEADER_CONTENT_LANGUAGE = "Content-Language";

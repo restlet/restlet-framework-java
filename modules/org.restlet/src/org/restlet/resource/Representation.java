@@ -65,6 +65,9 @@ public abstract class Representation extends Variant {
     /** Indicates if the representation's content is transient. */
     private boolean isTransient;
 
+    /** Indicates the suggested file name for the representatinos content */
+    private String fileName;
+
     /**
      * Default constructor.
      */
@@ -94,6 +97,27 @@ public abstract class Representation extends Variant {
      * @throws IOException
      */
     public abstract ReadableByteChannel getChannel() throws IOException;
+
+    /**
+     * Returns the suggested file name for this representation. This is mainly
+     * used to suggest to the client a local name for a downloaded
+     * representation.
+     * 
+     * @return The suggested file name for this representation.
+     */
+    public String getFileName() {
+        return this.fileName;
+    }
+
+    /**
+     * Set the suggested file name for this representation.
+     * 
+     * @param fileName
+     *                The suggested file name.
+     */
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
     /**
      * Returns the future date when this representation expire. If this

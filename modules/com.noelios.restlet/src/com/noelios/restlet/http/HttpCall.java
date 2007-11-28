@@ -110,9 +110,9 @@ public class HttpCall {
      * Formats a date as a header string.
      * 
      * @param date
-     *            The date to format.
+     *                The date to format.
      * @param cookie
-     *            Indicates if the date should be in the cookie format.
+     *                Indicates if the date should be in the cookie format.
      * @return The formatted date.
      */
     public String formatDate(Date date, boolean cookie) {
@@ -147,7 +147,7 @@ public class HttpCall {
      * Returns the connector service associated to a request.
      * 
      * @param request
-     *            The request to lookup.
+     *                The request to lookup.
      * @return The connector service associated to a request.
      */
     public ConnectorService getConnectorService(Request request) {
@@ -275,7 +275,7 @@ public class HttpCall {
      * Returns the status code.
      * 
      * @return The status code.
-     * @throws IOException 
+     * @throws IOException
      */
     public int getStatusCode() throws IOException {
         return this.statusCode;
@@ -303,9 +303,9 @@ public class HttpCall {
      * Parses a date string.
      * 
      * @param date
-     *            The date string to parse.
+     *                The date string to parse.
      * @param cookie
-     *            Indicates if the date is in the cookie format.
+     *                Indicates if the date is in the cookie format.
      * @return The parsed date.
      */
     public Date parseDate(String date, boolean cookie) {
@@ -320,7 +320,7 @@ public class HttpCall {
      * Sets the client address.
      * 
      * @param clientAddress
-     *            The client address.
+     *                The client address.
      */
     protected void setClientAddress(String clientAddress) {
         this.clientAddress = clientAddress;
@@ -330,7 +330,7 @@ public class HttpCall {
      * Sets the client port.
      * 
      * @param clientPort
-     *            The client port.
+     *                The client port.
      */
     protected void setClientPort(int clientPort) {
         this.clientPort = clientPort;
@@ -340,8 +340,8 @@ public class HttpCall {
      * Indicates if the confidentiality of the call is ensured (ex: via SSL).
      * 
      * @param confidential
-     *            True if the confidentiality of the call is ensured (ex: via
-     *            SSL).
+     *                True if the confidentiality of the call is ensured (ex:
+     *                via SSL).
      */
     protected void setConfidential(boolean confidential) {
         this.confidential = confidential;
@@ -351,7 +351,7 @@ public class HttpCall {
      * Sets the host domain name.
      * 
      * @param hostDomain
-     *            The baseRef domain name.
+     *                The baseRef domain name.
      */
     public void setHostDomain(String hostDomain) {
         this.hostDomain = hostDomain;
@@ -361,7 +361,7 @@ public class HttpCall {
      * Sets the host port.
      * 
      * @param hostPort
-     *            The host port.
+     *                The host port.
      */
     public void setHostPort(int hostPort) {
         this.hostPort = hostPort;
@@ -371,7 +371,7 @@ public class HttpCall {
      * Sets the logger to use.
      * 
      * @param logger
-     *            The logger to use.
+     *                The logger to use.
      */
     public void setLogger(Logger logger) {
         this.logger = logger;
@@ -381,7 +381,7 @@ public class HttpCall {
      * Sets the request method.
      * 
      * @param method
-     *            The request method.
+     *                The request method.
      */
     protected void setMethod(String method) {
         this.method = method;
@@ -391,7 +391,7 @@ public class HttpCall {
      * Sets the exact protocol used (HTTP or HTTPS).
      * 
      * @param protocol
-     *            The protocol.
+     *                The protocol.
      */
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
@@ -401,7 +401,7 @@ public class HttpCall {
      * Sets the reason phrase.
      * 
      * @param reasonPhrase
-     *            The reason phrase.
+     *                The reason phrase.
      */
     public void setReasonPhrase(String reasonPhrase) {
         this.reasonPhrase = reasonPhrase;
@@ -411,7 +411,7 @@ public class HttpCall {
      * Sets the full request URI.
      * 
      * @param requestUri
-     *            The full request URI.
+     *                The full request URI.
      */
     protected void setRequestUri(String requestUri) {
         if ((requestUri == null) || (requestUri.equals(""))) {
@@ -426,7 +426,7 @@ public class HttpCall {
      * responding server.
      * 
      * @param responseAddress
-     *            The response address.
+     *                The response address.
      */
     public void setServerAddress(String responseAddress) {
         this.serverAddress = responseAddress;
@@ -436,7 +436,7 @@ public class HttpCall {
      * Sets the server port.
      * 
      * @param serverPort
-     *            The server port.
+     *                The server port.
      */
     public void setServerPort(int serverPort) {
         this.serverPort = serverPort;
@@ -446,7 +446,7 @@ public class HttpCall {
      * Sets the status code.
      * 
      * @param code
-     *            The status code.
+     *                The status code.
      */
     public void setStatusCode(int code) {
         this.statusCode = code;
@@ -456,7 +456,7 @@ public class HttpCall {
      * Sets the protocol version used.
      * 
      * @param version
-     *            The protocol version used.
+     *                The protocol version used.
      */
     public void setVersion(String version) {
         this.version = version;

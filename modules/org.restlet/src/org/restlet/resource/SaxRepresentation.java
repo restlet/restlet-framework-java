@@ -90,8 +90,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * @param xmlRepresentation
      *                A source XML representation to parse.
      */
-    public SaxRepresentation(Representation xmlRepresentation)
-            throws IOException {
+    public SaxRepresentation(Representation xmlRepresentation) {
         super(xmlRepresentation.getMediaType());
         this.xmlRepresentation = xmlRepresentation;
     }
