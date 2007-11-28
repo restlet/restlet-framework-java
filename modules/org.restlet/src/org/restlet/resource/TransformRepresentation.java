@@ -69,13 +69,16 @@ public class TransformRepresentation extends OutputRepresentation {
                     targetRef = new Reference(href);
                 }
 
+                final String targetUri = targetRef.getTargetRef().toString();
                 Response response = this.context.getClientDispatcher().get(
-                        targetRef.getTargetRef().toString());
+                        targetUri);
                 if (response.getStatus().isSuccess()
                         && response.isEntityAvailable()) {
                     try {
                         result = new StreamSource(response.getEntity()
                                 .getStream());
+                        result.setSystemId(targetUri);
+
                     } catch (IOException e) {
                         this.context.getLogger().log(Level.WARNING,
                                 "I/O error while getting the response stream",
@@ -139,11 +142,11 @@ public class TransformRepresentation extends OutputRepresentation {
         if (this.transformer == null) {
             try {
                 // Prepare the XSLT transformer documents
-                StreamSource transformSheet = new StreamSource(
+                StreamSource transformSource = new StreamSource(
                         getTransformSheet().getStream());
 
                 if (getTransformSheet().getIdentifier() != null) {
-                    transformSheet.setSystemId(getTransformSheet()
+                    transformSource.setSystemId(getTransformSheet()
                             .getIdentifier().getTargetRef().toString());
                 }
 
@@ -152,13 +155,13 @@ public class TransformRepresentation extends OutputRepresentation {
                         .newInstance();
 
                 // Set the URI resolver
-                if (getURIResolver() != null) {
-                    transformerFactory.setURIResolver(getURIResolver());
+                if (getUriResolver() != null) {
+                    transformerFactory.setURIResolver(getUriResolver());
                 }
 
                 // Create a new transformer
                 this.transformer = transformerFactory
-                        .newTransformer(transformSheet);
+                        .newTransformer(transformSource);
             } catch (TransformerConfigurationException tce) {
                 throw new IOException("Transformer configuration exception. "
                         + tce.getMessage());
