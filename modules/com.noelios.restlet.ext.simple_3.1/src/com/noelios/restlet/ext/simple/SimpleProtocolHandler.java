@@ -19,6 +19,7 @@
 package com.noelios.restlet.ext.simple;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
 
 import simple.http.ProtocolHandler;
@@ -71,27 +72,35 @@ public class SimpleProtocolHandler implements ProtocolHandler {
             // Once the request is handled, the request input stream must be
             // entirely consumed. Not doing so blocks invariably the transaction
             // managed by the SimpleWeb connector.
-            if (request.getInputStream() != null) {
-                try {
-                    while (request.getInputStream().read() != -1) {
-                        // just consume the stream
-                    }
-                } catch (IOException ioe) {
-                    // This is probably ok, the stream was certainly already
-                    // closed by the Representation.release() method for
-                    // example.
+            InputStream in = request.getInputStream();
+            if (in != null) {
+                while (in.read() != -1) {
+                    // just consume the stream
                 }
             }
-
-            response.getOutputStream().close();
-        } catch (IOException ioe) {
+        } catch (IOException e) {
+            // This is probably ok, the stream was certainly already
+            // closed by the Representation.release() method for
+            // example.
             getHelper()
                     .getLogger()
                     .log(
-                            Level.FINE,
+                            Level.INFO,
+                            "Exception while consuming the Simple request's input stream",
+                            e);
+        }
+
+        try {
+            response.getOutputStream().close();
+        } catch (IOException e) {
+            getHelper()
+                    .getLogger()
+                    .log(
+                            Level.INFO,
                             "Exception while closing the Simple response's output stream",
-                            ioe);
+                            e);
         }
     }
+
 
 }
