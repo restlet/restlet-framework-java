@@ -39,7 +39,7 @@ public class ApplicationDispatcher extends Uniform {
      * Constructor.
      * 
      * @param applicationContext
-     *            The parent application context.
+     *                The parent application context.
      */
     public ApplicationDispatcher(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -49,9 +49,9 @@ public class ApplicationDispatcher extends Uniform {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         Protocol protocol = request.getProtocol();
@@ -81,8 +81,17 @@ public class ApplicationDispatcher extends Uniform {
                 }
 
                 if (this.applicationContext != null) {
-                    this.applicationContext.getParentContext().getDispatcher()
-                            .handle(request, response);
+                    if (this.applicationContext.getParentContext() != null) {
+                        this.applicationContext.getParentContext()
+                                .getDispatcher().handle(request, response);
+                    } else {
+                        Logger
+                                .getLogger(
+                                        ApplicationDispatcher.class
+                                                .getCanonicalName())
+                                .warning(
+                                        "Your Application doesn't have a parent context available. Ensure that the parent Component has a context set.");
+                    }
                 } else {
                     Logger
                             .getLogger(

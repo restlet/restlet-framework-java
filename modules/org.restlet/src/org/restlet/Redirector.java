@@ -87,7 +87,7 @@ public class Redirector extends Restlet {
     protected int mode;
 
     /**
-     * Constructor for the connector mode.
+     * Constructor for the dispatcher mode.
      * 
      * @param context
      *            The context.
