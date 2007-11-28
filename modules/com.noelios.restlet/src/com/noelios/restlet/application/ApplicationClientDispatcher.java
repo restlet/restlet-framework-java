@@ -110,8 +110,17 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
      */
     private void parentHandle(Request request, Response response) {
         if (getApplicationContext() != null) {
-            getApplicationContext().getParentContext().getClientDispatcher()
-                    .handle(request, response);
+            if (getApplicationContext().getParentContext() != null) {
+                getApplicationContext().getParentContext()
+                        .getClientDispatcher().handle(request, response);
+            } else {
+                Logger
+                        .getLogger(
+                                ApplicationClientDispatcher.class
+                                        .getCanonicalName())
+                        .warning(
+                                "Your Application doesn't have a parent context available. Ensure that your parent Component has a context available.");
+            }
         } else {
             Logger
                     .getLogger(
