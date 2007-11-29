@@ -336,28 +336,38 @@ public abstract class HttpServerCall extends HttpCall {
      */
     public void sendResponse(Response response) throws IOException {
         if (response != null) {
-            writeResponseHead(response);
-            Representation entity = response.getEntity();
 
-            if ((entity != null)
-                    && !response.getRequest().getMethod().equals(Method.HEAD)
-                    && !response.getStatus().equals(Status.SUCCESS_NO_CONTENT)
-                    && !response.getStatus().equals(
-                            Status.SUCCESS_RESET_CONTENT)) {
-                // Get the connector service to callback
-                ConnectorService connectorService = getConnectorService(response
-                        .getRequest());
-                if (connectorService != null)
-                    connectorService.beforeSend(entity);
+            try {
+                writeResponseHead(response);
+                Representation entity = response.getEntity();
 
-                writeResponseBody(entity);
+                if ((entity != null)
+                        && !response.getRequest().getMethod().equals(
+                                Method.HEAD)
+                        && !response.getStatus().equals(
+                                Status.SUCCESS_NO_CONTENT)
+                        && !response.getStatus().equals(
+                                Status.SUCCESS_RESET_CONTENT)) {
+                    // Get the connector service to callback
+                    ConnectorService connectorService = getConnectorService(response
+                            .getRequest());
+                    if (connectorService != null)
+                        connectorService.beforeSend(entity);
 
-                if (connectorService != null)
-                    connectorService.afterSend(entity);
-            }
+                    writeResponseBody(entity);
 
-            if (getResponseEntityStream() != null) {
-                getResponseEntityStream().flush();
+                    if (connectorService != null)
+                        connectorService.afterSend(entity);
+                }
+
+                if (getResponseEntityStream() != null) {
+                    getResponseEntityStream().flush();
+                }
+            } finally {
+                Representation entity = response.getEntity();
+                if (entity != null) {
+                    entity.release();
+                }
             }
         }
     }

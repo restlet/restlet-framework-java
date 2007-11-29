@@ -324,6 +324,12 @@ public class HttpClientCall extends HttpCall {
                     Status.CONNECTOR_ERROR_COMMUNICATION,
                     "Unable to complete the HTTP call due to a communication error with the remote server. "
                             + ioe.getMessage());
+        } finally {
+            Representation entity = request.isEntityAvailable() ? request
+                    .getEntity() : null;
+            if (entity != null) {
+                entity.release();
+            }
         }
 
         return result;

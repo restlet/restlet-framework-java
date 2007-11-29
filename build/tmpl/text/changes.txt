@@ -62,6 +62,8 @@ Changes log
    a read for example or manually closing the socket, the channel, the file, etc.
  - Added a Message.release() method to have an easy way to release the message's entity. Suggested
    by Stian Soiland.
+ - Added automatic call on release() for outgoing representations via HTTP connectors. Contribution by 
+   Alex Milowski.
  - Application is now concrete and has a setRoot() method.
  - Added Component.setDefaultHost() method.
  - Moved the "expirationDate", "modificationDate", "tag", "size" properties from Variant to 
