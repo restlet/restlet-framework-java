@@ -14,7 +14,8 @@ Changes log
  - Fixed remaining issues in the processing of XSLT include/document/import via the 
    TransformRepresentation. Contributed by Marc Portier.
  - Fixed improper handling of SimpleWeb input stream. Reported and contributed by Quintin May.
- - Added check for potential NPE in ApplicationClientDispatcher. Reported by Joshua Shinavier. 
+ - Added check for potential NPE in ApplicationClientDispatcher. Reported by Joshua Shinavier.
+ - Fixed bug in Amazon S3 example from REST book in S3Authorized. Reported by Steve Loughran. 
 
 [Enhancements]
  - Clarified Template#parse Javadocs. Suggested by Jonathan Hall.
