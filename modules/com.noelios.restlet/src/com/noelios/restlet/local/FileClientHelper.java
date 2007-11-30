@@ -131,25 +131,30 @@ public class FileClientHelper extends LocalClientHelper {
                 // known extensions (beginning from the left)
                 String baseName = getBaseName(file, metadataService);
                 // 2- looking for resources with the same base name
-                File[] files = file.getParentFile().listFiles();
-                ReferenceList rl = new ReferenceList(files.length);
+                if (file.getParentFile() != null) {
+                    File[] files = file.getParentFile().listFiles();
+                    if (files != null) {
+                        ReferenceList rl = new ReferenceList(files.length);
 
-                String encodedParentDirectoryURI = path.substring(0, path
-                        .lastIndexOf("/"));
-                String encodedFileName = path
-                        .substring(path.lastIndexOf("/") + 1);
+                        String encodedParentDirectoryURI = path.substring(0,
+                                path.lastIndexOf("/"));
+                        String encodedFileName = path.substring(path
+                                .lastIndexOf("/") + 1);
 
-                for (File entry : files) {
-                    if (entry.getName().startsWith(baseName)) {
-                        rl.add(LocalReference
-                                .createFileReference(encodedParentDirectoryURI
-                                        + "/"
-                                        + getReencodedVariantFileName(
-                                                encodedFileName, entry
-                                                        .getName())));
+                        for (File entry : files) {
+                            if (entry.getName().startsWith(baseName)) {
+                                rl
+                                        .add(LocalReference
+                                                .createFileReference(encodedParentDirectoryURI
+                                                        + "/"
+                                                        + getReencodedVariantFileName(
+                                                                encodedFileName,
+                                                                entry.getName())));
+                            }
+                        }
+                        output = rl.getTextRepresentation();
                     }
                 }
-                output = rl.getTextRepresentation();
             } else {
                 if ((file != null) && file.exists()) {
                     if (file.isDirectory()) {

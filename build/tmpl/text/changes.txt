@@ -15,7 +15,8 @@ Changes log
    TransformRepresentation. Contributed by Marc Portier.
  - Fixed improper handling of SimpleWeb input stream. Reported and contributed by Quintin May.
  - Added check for potential NPE in ApplicationClientDispatcher. Reported by Joshua Shinavier.
- - Fixed bug in Amazon S3 example from REST book in S3Authorized. Reported by Steve Loughran. 
+ - Fixed bug in Amazon S3 example from REST book in S3Authorized. Reported by Steve Loughran.
+ - Fixed potential nullPointer exception in FileClientHelper.
 
 [Enhancements]
  - Clarified Template#parse Javadocs. Suggested by Jonathan Hall.
