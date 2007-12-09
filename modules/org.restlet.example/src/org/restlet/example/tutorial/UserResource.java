@@ -24,6 +24,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
@@ -47,7 +48,7 @@ public class UserResource extends Resource {
     }
 
     @Override
-    public Representation getRepresentation(Variant variant) {
+    public Representation represent(Variant variant) throws ResourceException {
         Representation result = null;
         if (variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
             result = new StringRepresentation("Account of user \""

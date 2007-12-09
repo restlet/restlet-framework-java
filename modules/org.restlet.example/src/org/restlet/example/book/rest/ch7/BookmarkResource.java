@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- *
+ * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- *
+ * 
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -27,12 +27,13 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 /**
  * Resource for a user's bookmark.
- *
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class BookmarkResource extends UserResource {
@@ -43,16 +44,17 @@ public class BookmarkResource extends UserResource {
 
     /**
      * Constructor.
-     *
+     * 
      * @param context
-     *            The parent context.
+     *                The parent context.
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to return.
+     *                The response to return.
      */
     public BookmarkResource(Context context, Request request, Response response) {
         super(context, request, response);
+        setModifiable(true);
 
         if (getUser() != null) {
             this.uri = (String) request.getAttributes().get("URI");
@@ -75,17 +77,7 @@ public class BookmarkResource extends UserResource {
     }
 
     @Override
-    public boolean allowDelete() {
-        return true;
-    }
-
-    @Override
-    public boolean allowPut() {
-        return true;
-    }
-
-    @Override
-    public void delete() {
+    public void removeRepresentations() throws ResourceException {
         if ((this.bookmark != null) && (checkAuthorization() == 1)) {
             // Delete the bookmark
             getUser().getBookmarks().remove(this.bookmark);
@@ -100,7 +92,7 @@ public class BookmarkResource extends UserResource {
     }
 
     @Override
-    public Representation getRepresentation(Variant variant) {
+    public Representation represent(Variant variant) throws ResourceException {
         Representation result = null;
 
         if (variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
@@ -127,9 +119,11 @@ public class BookmarkResource extends UserResource {
     }
 
     @Override
-    public void put(Representation entity) {
+    public void storeRepresentation(Representation entity)
+            throws ResourceException {
         if (checkAuthorization() == 1) {
-            if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM, true)) {
+            if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM,
+                    true)) {
                 // Parse the entity as a web form
                 Form form = new Form(entity);
 

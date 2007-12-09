@@ -31,6 +31,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
@@ -110,7 +111,7 @@ public class UserResource extends Resource {
     }
 
     @Override
-    public void removeRepresentations() {
+    public void removeRepresentations() throws ResourceException {
         switch (checkAuthorization()) {
         case 1:
             // Delete all associated bookmarks
@@ -171,7 +172,7 @@ public class UserResource extends Resource {
      * @return the parent application.
      */
     public Application getApplication() {
-        return (Application) getContext().getAttributes().get(Application.KEY);
+        return (Application) super.getApplication();
     }
 
     /**
@@ -184,7 +185,7 @@ public class UserResource extends Resource {
     }
 
     @Override
-    public Representation getRepresentation(Variant variant) {
+    public Representation represent(Variant variant) throws ResourceException {
         Representation result = null;
 
         if ((variant != null)
@@ -212,7 +213,8 @@ public class UserResource extends Resource {
     }
 
     @Override
-    public void storeRepresentation(Representation entity) {
+    public void storeRepresentation(Representation entity)
+            throws ResourceException {
         if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM, true)) {
             boolean canSet = true;
 

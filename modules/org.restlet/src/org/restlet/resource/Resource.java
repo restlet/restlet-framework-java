@@ -68,10 +68,10 @@ import org.restlet.util.Series;
  * or {@link #removeRepresentations()} for DELETE processing.<br>
  * <br>
  * The common GET method is supported by the modifiable "variants" list property
- * and the {@link #getRepresentation(Variant)} method. This allows an easy and
- * cheap declaration of the available variants, in the constructor for example.
- * Then the creation of costly representations is delegated to the
- * {@link #getRepresentation(Variant)} method when actually needed.<br>
+ * and the {@link #represent(Variant)} method. This allows an easy and cheap
+ * declaration of the available variants, in the constructor for example. Then
+ * the creation of costly representations is delegated to the
+ * {@link #represent(Variant)} method when actually needed.<br>
  * <br>
  * 
  * @see <a
@@ -139,12 +139,15 @@ public class Resource extends Handler {
     /**
      * Accepts and processes a representation posted to the resource. The
      * default behavior is to set the response status to
-     * {@link Status#SERVER_ERROR_INTERNAL}.
+     * {@link Status#SERVER_ERROR_INTERNAL}.<br>
+     * <br>
+     * This is the higher-level method that let you process POST requests.
      * 
      * @param entity
      *                The posted entity.
      */
-    public void acceptRepresentation(Representation entity) {
+    public void acceptRepresentation(Representation entity)
+            throws ResourceException {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
     }
 
@@ -196,11 +199,15 @@ public class Resource extends Handler {
      * default behavior is to invoke the {@link #removeRepresentations()}
      * method.
      * 
-     * @deprecated Use the removeRepresentations() method instead.
+     * @deprecated Use the {@link #removeRepresentations()} method instead.
      */
     @Deprecated
     public void delete() {
-        removeRepresentations();
+        try {
+            removeRepresentations();
+        } catch (ResourceException re) {
+            getResponse().setStatus(re.getStatus());
+        }
     }
 
     /**
@@ -208,9 +215,19 @@ public class Resource extends Handler {
      * specified in the request.
      * 
      * @return The preferred representation.
+     * @deprecated Use the {@link #represent()} method instead.
+     * @see #getPreferredVariant()
      */
     public Representation getPreferredRepresentation() {
-        return getRepresentation(getPreferredVariant());
+        Representation result = null;
+
+        try {
+            result = represent();
+        } catch (ResourceException re) {
+            getResponse().setStatus(re.getStatus());
+        }
+
+        return result;
     }
 
     /**
@@ -257,12 +274,15 @@ public class Resource extends Handler {
      *                The variant whose full representation must be returned.
      * @return The full representation for the variant.
      * @see #getVariants()
+     * @deprecated Use the {@link #represent(Variant)} method instead.
      */
     public Representation getRepresentation(Variant variant) {
         Representation result = null;
 
-        if (variant instanceof Representation) {
-            result = (Representation) variant;
+        try {
+            result = represent(variant);
+        } catch (ResourceException re) {
+            getResponse().setStatus(re.getStatus());
         }
 
         return result;
@@ -629,11 +649,16 @@ public class Resource extends Handler {
      * 
      * @param entity
      *                The representation posted.
-     * @deprecated Use the acceptRepresentation() method instead.
+     * @deprecated Use the {@link #acceptRepresentation(Representation)} method
+     *             instead.
      */
     @Deprecated
     public void post(Representation entity) {
-        acceptRepresentation(entity);
+        try {
+            acceptRepresentation(entity);
+        } catch (ResourceException re) {
+            getResponse().setStatus(re.getStatus());
+        }
     }
 
     /**
@@ -642,20 +667,66 @@ public class Resource extends Handler {
      * 
      * @param entity
      *                The representation put.
-     * @deprecated Use the storeRepresentation() method instead.
+     * @deprecated Use the {@link #storeRepresentation(Representation)} method
+     *             instead.
      */
     @Deprecated
     public void put(Representation entity) {
-        storeRepresentation(entity);
+        try {
+            storeRepresentation(entity);
+        } catch (ResourceException re) {
+            getResponse().setStatus(re.getStatus());
+        }
     }
 
     /**
      * Removes all the representations of the resource and effectively the
      * resource itself. The default behavior is to set the response status to
-     * {@link Status#SERVER_ERROR_INTERNAL}.
+     * {@link Status#SERVER_ERROR_INTERNAL}.<br>
+     * <br>
+     * This is the higher-level method that let you process DELETE requests.
      */
-    public void removeRepresentations() {
+    public void removeRepresentations() throws ResourceException {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+    }
+
+    /**
+     * Returns the preferred representation according to the client preferences
+     * specified in the request.
+     * 
+     * @return The preferred representation.
+     * @see #getPreferredVariant()
+     * @throws ResourceException
+     */
+    public Representation represent() throws ResourceException {
+        return represent(getPreferredVariant());
+    }
+
+    /**
+     * Returns a full representation for a given variant previously returned via
+     * the getVariants() method. The default implementation directly returns the
+     * variant in case the variants are already full representations. In all
+     * other cases, you will need to override this method in order to provide
+     * your own implementation. <br/><br/>
+     * 
+     * This method is very useful for content negotiation when it is too costly
+     * to initilize all the potential representations. It allows a resource to
+     * simply expose the available variants via the getVariants() method and to
+     * actually server the one selected via this method.
+     * 
+     * @param variant
+     *                The variant whose full representation must be returned.
+     * @return The full representation for the variant.
+     * @see #getVariants()
+     */
+    public Representation represent(Variant variant) throws ResourceException {
+        Representation result = null;
+
+        if (variant instanceof Representation) {
+            result = (Representation) variant;
+        }
+
+        return result;
     }
 
     /**
@@ -721,11 +792,14 @@ public class Resource extends Handler {
      * representations of the resource. If the resource doesn't exist yet, it
      * should create it and use the entity as its initial representation. The
      * default behavior is to set the response status to
-     * {@link Status#SERVER_ERROR_INTERNAL}.
+     * {@link Status#SERVER_ERROR_INTERNAL}.<br>
+     * <br>
+     * This is the higher-level method that let you process PUT requests.
      * 
      * @param entity
      */
-    public void storeRepresentation(Representation entity) {
+    public void storeRepresentation(Representation entity)
+            throws ResourceException {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
     }
 

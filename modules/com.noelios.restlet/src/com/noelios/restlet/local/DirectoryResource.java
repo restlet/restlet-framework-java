@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- *
+ * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- *
+ * 
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -38,6 +38,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 
 /**
@@ -45,7 +46,7 @@ import org.restlet.resource.Variant;
  * class loaders and webapp context). A content negotiation mechanism (similar
  * to Apache HTTP server) is available. It is based on path extensions to detect
  * variants (languages, media types or character sets).
- *
+ * 
  * @see <a
  *      href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache
  *      mod_negotiation module</a>
@@ -101,7 +102,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Constructor.
-     *
+     * 
      * @param directory
      *                The parent directory handler.
      * @param request
@@ -115,6 +116,7 @@ public class DirectoryResource extends Resource {
         // Update the member variables
         this.directory = directory;
         this.relativePart = request.getResourceRef().getRemainingPart();
+        setModifiable(getDirectory().isModifiable());
 
         if (this.relativePart.startsWith("/")) {
             // We enforce the leading slash on the root URI
@@ -248,28 +250,8 @@ public class DirectoryResource extends Resource {
         }
 
         // Log results
-        getLogger().info("Converted base path: " + this.targetUri);
-        getLogger().info("Converted base name: " + this.baseName);
-    }
-
-    /**
-     * Indicates if it is allowed to delete the resource. The default value is
-     * false.
-     *
-     * @return True if the method is allowed.
-     */
-    public boolean allowDelete() {
-        return getDirectory().isModifiable();
-    }
-
-    /**
-     * Indicates if it is allowed to put to the resource. The default value is
-     * false.
-     *
-     * @return True if the method is allowed.
-     */
-    public boolean allowPut() {
-        return getDirectory().isModifiable();
+        getLogger().info("Converted target URI: " + this.targetUri);
+        getLogger().info("Converted base name : " + this.baseName);
     }
 
     @Override
@@ -283,72 +265,49 @@ public class DirectoryResource extends Resource {
         } else {
             super.handleGet();
         }
-
     }
 
-    /**
-     * Asks the resource to delete itself and all its representations.
-     */
-    public void delete() {
-        Status status;
-
+    @Override
+    public void removeRepresentations() throws ResourceException {
         if (directoryRedirection && !targetIndex) {
             getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
             getResponse().setLocationRef(this.targetUri);
         } else {
-            // We allow the transfer of the PUT calls only if the readOnly flag
-            // is not set
-            if (!getDirectory().isModifiable()) {
-                status = new Status(Status.CLIENT_ERROR_FORBIDDEN,
-                        "No modification allowed.");
+            Request contextRequest = new Request(Method.DELETE, this.targetUri);
+            Response contextResponse = new Response(contextRequest);
+
+            if (targetDirectory && !targetIndex) {
+                contextRequest.setResourceRef(this.targetUri);
+                getClientDispatcher().handle(contextRequest, contextResponse);
             } else {
-                Request contextRequest = new Request(Method.DELETE,
-                        this.targetUri);
-                Response contextResponse = new Response(contextRequest);
+                // Check if there is only one representation
 
-                if (targetDirectory && !targetIndex) {
-                    contextRequest.setResourceRef(this.targetUri);
-                    getClientDispatcher().handle(contextRequest,
-                            contextResponse);
-                } else {
-                    // Check if there is only one representation
-
-                    // Try to get the unique representation of the resource
-                    ReferenceList references = getVariantsReferences();
-                    if (!references.isEmpty()) {
-                        if (uniqueReference != null) {
-                            contextRequest.setResourceRef(uniqueReference);
-                            getClientDispatcher().handle(contextRequest,
-                                    contextResponse);
-                        } else {
-                            // We found variants, but not the right one
-                            contextResponse
-                                    .setStatus(new Status(
-                                            Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-                                            "Unable to process properly the request. Several variants exist but none of them suits precisely. "));
-                        }
+                // Try to get the unique representation of the resource
+                ReferenceList references = getVariantsReferences();
+                if (!references.isEmpty()) {
+                    if (uniqueReference != null) {
+                        contextRequest.setResourceRef(uniqueReference);
+                        getClientDispatcher().handle(contextRequest,
+                                contextResponse);
                     } else {
+                        // We found variants, but not the right one
                         contextResponse
-                                .setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                                .setStatus(new Status(
+                                        Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+                                        "Unable to process properly the request. Several variants exist but none of them suits precisely. "));
                     }
+                } else {
+                    contextResponse.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 }
-
-                status = contextResponse.getStatus();
             }
 
-            getResponse().setStatus(status);
+            getResponse().setStatus(contextResponse.getStatus());
         }
     }
 
-    /**
-     * Puts a variant representation in the resource.
-     *
-     * @param variant
-     *                A new or updated variant representation.
-     */
-    public void put(Representation variant) {
-        Status status;
-
+    @Override
+    public void storeRepresentation(Representation entity)
+            throws ResourceException {
         if (directoryRedirection && !targetIndex) {
             getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
             getResponse().setLocationRef(this.targetUri);
@@ -356,25 +315,18 @@ public class DirectoryResource extends Resource {
 
         // We allow the transfer of the PUT calls only if the readOnly flag is
         // not set
-        if (!getDirectory().isModifiable()) {
-            status = new Status(Status.CLIENT_ERROR_FORBIDDEN,
-                    "No modification allowed.");
-        } else {
-            Request contextRequest = new Request(Method.PUT, this.targetUri);
-            contextRequest.setEntity(variant);
-            Response contextResponse = new Response(contextRequest);
-            contextRequest.setResourceRef(this.targetUri);
-            getClientDispatcher().handle(contextRequest, contextResponse);
-            status = contextResponse.getStatus();
-        }
-
-        getResponse().setStatus(status);
+        Request contextRequest = new Request(Method.PUT, this.targetUri);
+        contextRequest.setEntity(entity);
+        Response contextResponse = new Response(contextRequest);
+        contextRequest.setResourceRef(this.targetUri);
+        getClientDispatcher().handle(contextRequest, contextResponse);
+        getResponse().setStatus(contextResponse.getStatus());
     }
 
     /**
      * Returns the local base name of the file. For example, "foo.en" and
      * "foo.en-GB.html" return "foo".
-     *
+     * 
      * @return The local name of the file.
      */
     public String getBaseName() {
@@ -383,7 +335,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Returns the parent directory handler.
-     *
+     * 
      * @return The parent directory handler.
      */
     public Directory getDirectory() {
@@ -392,7 +344,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Returns the context's directory URI (file, clap URI).
-     *
+     * 
      * @return The context's directory URI (file, clap URI).
      */
     public String getDirectoryUri() {
@@ -401,7 +353,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Returns a client dispatcher.
-     *
+     * 
      * @return A client dispatcher.
      */
     private Uniform getClientDispatcher() {
@@ -410,7 +362,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Returns the context's target URI (file, clap URI).
-     *
+     * 
      * @return The context's target URI (file, clap URI).
      */
     public String getTargetUri() {
@@ -419,7 +371,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Returns the representation variants.
-     *
+     * 
      * @return The representation variants.
      */
     public List<Variant> getVariants() {
@@ -510,7 +462,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Allows to sort the list of representations set by the resource.
-     *
+     * 
      * @return A Comparator instance imposing a sort order of representations or
      *         null if no special order is wanted.
      */
@@ -544,7 +496,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Allows to sort the list of references set by the resource.
-     *
+     * 
      * @return A Comparator instance imposing a sort order of references or null
      *         if no special order is wanted.
      */
@@ -577,7 +529,7 @@ public class DirectoryResource extends Resource {
     /**
      * Returns the references of the representations of the target resource
      * according to the directory handler property
-     *
+     * 
      * @return The list of variants references
      */
     private ReferenceList getVariantsReferences() {
@@ -654,7 +606,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Returns the set of extensions contained in a given directory entry name.
-     *
+     * 
      * @param entryName
      *                The directory entry name.
      * @return The set of extensions.
@@ -670,7 +622,7 @@ public class DirectoryResource extends Resource {
 
     /**
      * Sets the context's target URI (file, clap URI).
-     *
+     * 
      * @param targetUri
      *                The context's target URI.
      */

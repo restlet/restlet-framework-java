@@ -84,7 +84,7 @@ public class SpringFinder extends Finder {
     }
 
     @Override
-    public Resource createResource(Request request, Response response) {
+    public Resource createTarget(Request request, Response response) {
         Resource result = createResource();
 
         if (result != null) {

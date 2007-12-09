@@ -25,6 +25,7 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 
 /**
@@ -38,11 +39,11 @@ public class BookmarksResource extends UserResource {
      * Constructor.
      * 
      * @param context
-     *            The parent context.
+     *                The parent context.
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to return.
+     *                The response to return.
      */
     public BookmarksResource(Context context, Request request, Response response) {
         super(context, request, response);
@@ -53,7 +54,7 @@ public class BookmarksResource extends UserResource {
     }
 
     @Override
-    public Representation getRepresentation(Variant variant) {
+    public Representation represent(Variant variant) throws ResourceException {
         Representation result = null;
 
         if (variant.getMediaType().equals(MediaType.TEXT_HTML)) {
