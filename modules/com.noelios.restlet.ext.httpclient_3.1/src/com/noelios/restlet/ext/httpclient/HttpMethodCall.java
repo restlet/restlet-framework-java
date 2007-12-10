@@ -270,13 +270,16 @@ public class HttpMethodCall extends HttpClientCall {
         try {
             // Return a wrapper filter that will release the connection when
             // needed
-            result = new FilterInputStream(getHttpMethod()
-                    .getResponseBodyAsStream()) {
-                public void close() throws IOException {
-                    super.close();
-                    getHttpMethod().releaseConnection();
-                }
-            };
+            InputStream responseBodyAsStream = getHttpMethod()
+                    .getResponseBodyAsStream();
+            if (responseBodyAsStream != null) {
+                result = new FilterInputStream(responseBodyAsStream) {
+                    public void close() throws IOException {
+                        super.close();
+                        getHttpMethod().releaseConnection();
+                    }
+                };
+            }
         } catch (IOException ioe) {
             result = null;
         }

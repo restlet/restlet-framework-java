@@ -17,6 +17,8 @@ Changes log
  - Added check for potential NPE in ApplicationClientDispatcher. Reported by Joshua Shinavier.
  - Fixed bug in Amazon S3 example from REST book in S3Authorized. Reported by Steve Loughran.
  - Fixed potential nullPointer exception in FileClientHelper.
+ - Fixed getResponseStream method in HTTPClient extension which should return null when the 
+   underlying response body stream is null. Reported and contributed by John R. Fallows.
 
 [Enhancements]
  - Clarified Template#parse Javadocs. Suggested by Jonathan Hall.
