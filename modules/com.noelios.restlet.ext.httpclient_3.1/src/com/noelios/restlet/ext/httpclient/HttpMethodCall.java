@@ -68,14 +68,14 @@ public class HttpMethodCall extends HttpClientCall {
      * Constructor.
      * 
      * @param helper
-     *            The parent HTTP client helper.
+     *                The parent HTTP client helper.
      * @param method
-     *            The method name.
+     *                The method name.
      * @param requestUri
-     *            The request URI.
+     *                The request URI.
      * @param hasEntity
-     *            Indicates if the call will have an entity to send to the
-     *            server.
+     *                Indicates if the call will have an entity to send to the
+     *                server.
      * @throws IOException
      */
     public HttpMethodCall(HttpClientHelper helper, final String method,
@@ -137,7 +137,7 @@ public class HttpMethodCall extends HttpClientCall {
      * optional entity and send them over the network.
      * 
      * @param request
-     *            The high-level request.
+     *                The high-level request.
      * @return The result status.
      */
     @Override
@@ -270,13 +270,16 @@ public class HttpMethodCall extends HttpClientCall {
         try {
             // Return a wrapper filter that will release the connection when
             // needed
-            result = new FilterInputStream(getHttpMethod()
-                    .getResponseBodyAsStream()) {
-                public void close() throws IOException {
-                    super.close();
-                    getHttpMethod().releaseConnection();
-                }
-            };
+            InputStream responseBodyAsStream = getHttpMethod()
+                    .getResponseBodyAsStream();
+            if (responseBodyAsStream != null) {
+                result = new FilterInputStream(responseBodyAsStream) {
+                    public void close() throws IOException {
+                        super.close();
+                        getHttpMethod().releaseConnection();
+                    }
+                };
+            }
         } catch (IOException ioe) {
             result = null;
         }
