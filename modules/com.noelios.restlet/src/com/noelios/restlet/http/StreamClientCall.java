@@ -181,7 +181,6 @@ public class StreamClientCall extends HttpClientCall {
     @Override
     public Status sendRequest(Request request) {
         Status result = null;
-
         try {
             // Extract the host info
             String hostDomain = request.getResourceRef().getHostDomain();
@@ -226,10 +225,13 @@ public class StreamClientCall extends HttpClientCall {
             getRequestStream().write(10); // LF
 
             // Write the request body
-            result = super.sendRequest(request);
+            super.sendRequest(request);
 
             // Parse the response
             parseResponse();
+
+            // Build the result
+            result = new Status(getStatusCode(), null, getReasonPhrase(), null);
         } catch (IOException ioe) {
             getHelper()
                     .getLogger()

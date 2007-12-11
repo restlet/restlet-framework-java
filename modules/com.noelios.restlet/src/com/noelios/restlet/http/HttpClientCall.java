@@ -302,12 +302,6 @@ public class HttpClientCall extends HttpCall {
                 // Call-back after writing
                 if (connectorService != null)
                     connectorService.afterSend(entity);
-
-                if (rs != null) {
-                    rs.close();
-                } else if (wbc != null) {
-                    wbc.close();
-                }
             }
 
             // Now we can access the status code, this MUST happen after closing
