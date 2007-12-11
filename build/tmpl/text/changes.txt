@@ -23,7 +23,8 @@ Changes log
 [Enhancements]
  - Clarified Template#parse Javadocs. Suggested by Jonathan Hall.
  - Upgraded Jetty to 6.1.6
-
+ - Added a "request.date" property to the Template class. Reported by Jim Edwards-Hewitt.
+ 
 1.0.6 (2007-11-08)
 [Bugs fixed]
  - Fixed error when parsing weak Etags. Reported by Larry Gately and John R. Fallows.
