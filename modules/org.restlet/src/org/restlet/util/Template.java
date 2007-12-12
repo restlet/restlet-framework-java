@@ -19,7 +19,6 @@
 package org.restlet.util;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -68,11 +67,6 @@ import org.restlet.data.Response;
  * <td>request.challengeResponse.scheme</td>
  * <td>crs</td>
  * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.date</td>
- * <td>d</td>
- * <td>Date (HTTP format)</td>
  * </tr>
  * <tr>
  * <td>request.entity.characterSet</td>
@@ -1036,9 +1030,6 @@ public class Template {
                             result = request.getChallengeResponse().getScheme()
                                     .getTechnicalName();
                         }
-                    } else if (variableName.equals("d")) {
-                        result = DateUtils.format(new Date(), DateUtils.FORMAT_RFC_1123
-                                .get(0));
                     } else if (variableName.equals("ecs")) {
                         if ((request.getEntity() != null)
                                 && (request.getEntity().getCharacterSet() != null)) {
