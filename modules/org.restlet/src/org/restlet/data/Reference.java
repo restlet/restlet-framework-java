@@ -131,6 +131,39 @@ public class Reference {
     }
 
     /**
+     * Decodes a given string using the standard URI encoding mechanism. If the
+     * provided character set is null, the string is returned but not decoded.
+     * <em><strong>Note:</strong> The <a
+     * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
+     * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
+     * used. Not doing so may introduce incompatibilites.</em>
+     * 
+     * @param toDecode
+     *                The string to decode.
+     * @param characterSet
+     *                The name of a supported character encoding.
+     * @return The decoded string or null if the named character encoding is not
+     *         supported.
+     */
+    public static String decode(String toDecode, CharacterSet characterSet) {
+        String result = null;
+
+        try {
+            result = (characterSet == null) ? toDecode : URLDecoder.decode(
+                    toDecode, characterSet.getName());
+        } catch (UnsupportedEncodingException uee) {
+            Logger
+                    .getLogger(Reference.class.getCanonicalName())
+                    .log(
+                            Level.WARNING,
+                            "Unable to decode the string with the UTF-8 character set.",
+                            uee);
+        }
+
+        return result;
+    }
+
+    /**
      * Encodes a given string using the standard URI encoding mechanism and the
      * UTF-8 character set.
      * 
@@ -185,39 +218,6 @@ public class Reference {
                     .log(
                             Level.WARNING,
                             "Unable to encode the string with the UTF-8 character set.",
-                            uee);
-        }
-
-        return result;
-    }
-
-    /**
-     * Decodes a given string using the standard URI encoding mechanism. If the
-     * provided character set is null, the string is returned but not decoded.
-     * <em><strong>Note:</strong> The <a
-     * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
-     * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
-     * used. Not doing so may introduce incompatibilites.</em>
-     * 
-     * @param toDecode
-     *                The string to decode.
-     * @param characterSet
-     *                The name of a supported character encoding.
-     * @return The decoded string or null if the named character encoding is not
-     *         supported.
-     */
-    public static String decode(String toDecode, CharacterSet characterSet) {
-        String result = null;
-
-        try {
-            result = (characterSet == null) ? toDecode : URLDecoder.decode(
-                    toDecode, characterSet.getName());
-        } catch (UnsupportedEncodingException uee) {
-            Logger
-                    .getLogger(Reference.class.getCanonicalName())
-                    .log(
-                            Level.WARNING,
-                            "Unable to decode the string with the UTF-8 character set.",
                             uee);
         }
 
@@ -333,11 +333,11 @@ public class Reference {
     /** The base reference for relative references. */
     private Reference baseRef;
 
-    /** The internal reference. */
-    private String internalRef;
-
     /** The fragment separator index. */
     private int fragmentIndex;
+
+    /** The internal reference. */
+    private String internalRef;
 
     /** The query separator index. */
     private int queryIndex;
@@ -446,7 +446,7 @@ public class Reference {
      * @param value
      *                The optional parameter value.
      */
-    public void addQueryParameter(String name, String value) {
+    public Reference addQueryParameter(String name, String value) {
         String query = getQuery();
 
         if (query == null) {
@@ -462,6 +462,8 @@ public class Reference {
                 setQuery(query + '&' + encode(name) + '=' + encode(value));
             }
         }
+
+        return this;
     }
 
     /**
@@ -472,7 +474,7 @@ public class Reference {
      * @param value
      *                The segment value to add.
      */
-    public void addSegment(String value) {
+    public Reference addSegment(String value) {
         String path = getPath();
 
         if (value != null) {
@@ -486,6 +488,8 @@ public class Reference {
                 }
             }
         }
+
+        return this;
     }
 
     /**
@@ -844,35 +848,6 @@ public class Reference {
     }
 
     /**
-     * Returns the part of the resource identifier remaining after the base
-     * reference. Note that the optional fragment is not returned by this
-     * method. Must be used with the following prerequisites:
-     * <ul>
-     * <li>the reference is absolute</li>
-     * <li>the reference identifier starts with the resource baseRef</li>
-     * </ul>
-     * 
-     * @return The remaining resource part or null if the prerequisites are not
-     *         satisfied.
-     */
-    public String getRemainingPart() {
-        String result = null;
-        String all = toString(true, false);
-
-        if (getBaseRef() != null) {
-            String base = getBaseRef().toString(true, false);
-
-            if ((base != null) && all.startsWith(base)) {
-                result = all.substring(base.length());
-            }
-        } else {
-            result = all;
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the current reference as a relative reference to the current base
      * reference. This method should only be invoked for absolute references,
      * otherwise an IllegalArgumentException will be raised.
@@ -1073,6 +1048,35 @@ public class Reference {
             if (!modified || !relativePath.equals(".")) {
                 result.setPath(relativePath);
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the part of the resource identifier remaining after the base
+     * reference. Note that the optional fragment is not returned by this
+     * method. Must be used with the following prerequisites:
+     * <ul>
+     * <li>the reference is absolute</li>
+     * <li>the reference identifier starts with the resource baseRef</li>
+     * </ul>
+     * 
+     * @return The remaining resource part or null if the prerequisites are not
+     *         satisfied.
+     */
+    public String getRemainingPart() {
+        String result = null;
+        String all = toString(true, false);
+
+        if (getBaseRef() != null) {
+            String base = getBaseRef().toString(true, false);
+
+            if ((base != null) && all.startsWith(base)) {
+                result = all.substring(base.length());
+            }
+        } else {
+            result = all;
         }
 
         return result;
@@ -1534,21 +1538,21 @@ public class Reference {
     /**
      * Sets the base reference for relative references.
      * 
-     * @param baseUri
-     *                The base URI for relative references.
-     */
-    public void setBaseRef(String baseUri) {
-        setBaseRef(new Reference(baseUri));
-    }
-
-    /**
-     * Sets the base reference for relative references.
-     * 
      * @param baseRef
      *                The base reference for relative references.
      */
     public void setBaseRef(Reference baseRef) {
         this.baseRef = baseRef;
+    }
+
+    /**
+     * Sets the base reference for relative references.
+     * 
+     * @param baseUri
+     *                The base URI for relative references.
+     */
+    public void setBaseRef(String baseUri) {
+        setBaseRef(new Reference(baseUri));
     }
 
     /**
