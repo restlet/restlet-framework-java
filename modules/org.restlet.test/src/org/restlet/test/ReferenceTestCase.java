@@ -449,4 +449,20 @@ public class ReferenceTestCase extends RestletTestCase {
         ref.setSchemeSpecificPart(part);
         assertEquals(part, ref.getSchemeSpecificPart());
     }
+
+    /**
+     * Test addition methods.
+     */
+    public void testAdditions() throws Exception {
+        Reference ref = new Reference("http://www.restlet.org");
+        ref.addQueryParameter("abc", "123");
+        assertEquals("http://www.restlet.org?abc=123", ref.toString());
+        ref.addQueryParameter("def", null);
+        assertEquals("http://www.restlet.org?abc=123&def", ref.toString());
+        ref.addSegment("root");
+        assertEquals("http://www.restlet.org/root?abc=123&def", ref.toString());
+        ref.addSegment("dir");
+        assertEquals("http://www.restlet.org/root/dir?abc=123&def", ref
+                .toString());
+    }
 }

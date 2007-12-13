@@ -141,15 +141,17 @@ public class Reference {
     public static String encode(String toEncode) {
         String result = null;
 
-        try {
-            result = URLEncoder.encode(toEncode, "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-            Logger
-                    .getLogger(Reference.class.getCanonicalName())
-                    .log(
-                            Level.WARNING,
-                            "Unable to encode the string with the UTF-8 character set.",
-                            uee);
+        if (toEncode != null) {
+            try {
+                result = URLEncoder.encode(toEncode, "UTF-8");
+            } catch (UnsupportedEncodingException uee) {
+                Logger
+                        .getLogger(Reference.class.getCanonicalName())
+                        .log(
+                                Level.WARNING,
+                                "Unable to encode the string with the UTF-8 character set.",
+                                uee);
+            }
         }
 
         return result;
@@ -433,6 +435,57 @@ public class Reference {
     public Reference(String scheme, String hostName, int hostPort, String path,
             String query, String fragment) {
         this(toString(scheme, hostName, hostPort, path, query, fragment));
+    }
+
+    /**
+     * Adds a parameter to the query component. The name and value are
+     * automatically encoded if necessary.
+     * 
+     * @param name
+     *                The parameter name.
+     * @param value
+     *                The optional parameter value.
+     */
+    public void addQueryParameter(String name, String value) {
+        String query = getQuery();
+
+        if (query == null) {
+            if (value == null) {
+                setQuery(encode(name));
+            } else {
+                setQuery(encode(name) + '=' + encode(value));
+            }
+        } else {
+            if (value == null) {
+                setQuery(query + '&' + encode(name));
+            } else {
+                setQuery(query + '&' + encode(name) + '=' + encode(value));
+            }
+        }
+    }
+
+    /**
+     * Adds a segment at the end of the path. If the current path doesn't end
+     * with a slash character, one is inserted before the new segment value. The
+     * value is automatically encoded if necessary.
+     * 
+     * @param value
+     *                The segment value to add.
+     */
+    public void addSegment(String value) {
+        String path = getPath();
+
+        if (value != null) {
+            if (path == null) {
+                setPath("/" + value);
+            } else {
+                if (path.endsWith("/")) {
+                    setPath(path + encode(value));
+                } else {
+                    setPath(path + "/" + encode(value));
+                }
+            }
+        }
     }
 
     /**
@@ -735,7 +788,7 @@ public class Reference {
     /**
      * Returns the optional query component for hierarchical identifiers.
      * 
-     * @return The optional query component for hierarchical identifiers.
+     * @return The query component or null.
      */
     public String getQuery() {
         if (queryIndex != -1) {
