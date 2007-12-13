@@ -20,6 +20,9 @@ package org.restlet.ext.spring;
 
 import org.restlet.data.Protocol;
 
+import java.util.Properties;
+import java.util.Enumeration;
+
 /**
  * Server that is easily configurable with Spring. Here is a usage example:
  * 
@@ -35,16 +38,55 @@ import org.restlet.data.Protocol;
  */
 public class SpringServer extends org.restlet.Server {
 
+    /**
+     * Constructor.
+     * 
+     * @param protocol
+     *                The server's protocol such as "HTTP" or "HTTPS".
+     */
     public SpringServer(String protocol) {
         super(Protocol.valueOf(protocol), null);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param protocol
+     *                The server's protocol such as "HTTP" or "HTTPS".
+     * @param port
+     *                The port number.
+     */
     public SpringServer(String protocol, int port) {
         super(Protocol.valueOf(protocol), port, null);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param protocol
+     *                The server's protocol such as "HTTP" or "HTTPS".
+     * @param address
+     *                The IP address.
+     * @param port
+     *                The port number.
+     */
     public SpringServer(String protocol, String address, int port) {
         super(Protocol.valueOf(protocol), address, port, null);
+    }
+
+    /**
+     * Sets parameters on the server.
+     * 
+     * @param parameters
+     *                Parameters to set on the server.
+     */
+    public void setParameters(Properties parameters) {
+        Enumeration<?> names = parameters.propertyNames();
+        while (names.hasMoreElements()) {
+            String name = (String) names.nextElement();
+            getContext().getParameters()
+                    .add(name, parameters.getProperty(name));
+        }
     }
 
 }

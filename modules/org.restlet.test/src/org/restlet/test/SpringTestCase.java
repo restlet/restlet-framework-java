@@ -21,6 +21,7 @@ package org.restlet.test;
 import junit.framework.TestCase;
 
 import org.restlet.Component;
+import org.restlet.Server;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -43,6 +44,18 @@ public class SpringTestCase extends TestCase {
         component.start();
         Thread.sleep(500);
         component.stop();
+    }
+
+    public void testSpringServerProperties() {
+        ClassPathResource resource = new ClassPathResource(
+                "org/restlet/test/SpringTestCase.xml");
+        BeanFactory factory = new XmlBeanFactory(resource);
+
+        Server server = (Server) factory.getBean("server");
+
+        assertEquals("value1", server.getContext().getParameters().getFirstValue("key1"));
+        assertEquals("value2", server.getContext().getParameters().getFirstValue("key2"));
+
     }
 
 }
