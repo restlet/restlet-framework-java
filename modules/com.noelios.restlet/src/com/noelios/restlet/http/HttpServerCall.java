@@ -140,6 +140,7 @@ public abstract class HttpServerCall extends HttpCall {
             result = new ReadableRepresentation(requestChannel, null,
                     contentLength);
         }
+
         result.setSize(contentLength);
 
         // Extract some interesting header values

@@ -450,4 +450,16 @@ public class HttpUtils {
         os.write(13); // CR
         os.write(10); // LF
     }
+
+    /**
+     * Writes a new line.
+     * 
+     * @param os
+     *                The output stream.
+     * @throws IOException
+     */
+    public static void writeCRLF(OutputStream os) throws IOException {
+        os.write(13); // CR
+        os.write(10); // LF
+    }
 }

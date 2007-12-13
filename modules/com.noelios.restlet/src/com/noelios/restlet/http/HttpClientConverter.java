@@ -302,6 +302,10 @@ public class HttpClientConverter extends HttpConverter {
                     requestHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE,
                             value.toString());
                 }
+
+                if (request.getEntity().getSize() > 0) {
+                    requestHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, String.valueOf(request.getEntity().getSize()));
+                }
             }
 
             // Add user-defined extension headers
