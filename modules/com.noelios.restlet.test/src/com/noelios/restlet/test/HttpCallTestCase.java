@@ -35,28 +35,6 @@ import com.noelios.restlet.http.HttpServerCall;
  */
 public class HttpCallTestCase extends TestCase {
 
-    public void testParseContentDisposition() {
-        HttpClientCall call = new HttpClientCall(null, null, null);
-
-        assertEquals("file.txt", call
-                .parseContentDisposition("attachment; fileName=\"file.txt\""));
-        assertEquals("file.txt", call
-                .parseContentDisposition("attachment; fileName=file.txt"));
-        assertEquals(
-                "file with space.txt",
-                call
-                        .parseContentDisposition("attachment; filename=\"file with space.txt\""));
-        assertEquals(
-                "file with space.txt",
-                call
-                        .parseContentDisposition("attachment; filename=file with space.txt"));
-        assertEquals("", call
-                .parseContentDisposition("attachment; fileName=\"\""));
-        assertEquals("", call.parseContentDisposition("attachment; fileName="));
-        assertNull(call.parseContentDisposition("attachment; fileNam"));
-        assertNull(null);
-    }
-
     public void testFormatContentDisposition() {
         HttpServerCall call = new HttpServerCall(null, null, 0) {
 
@@ -100,5 +78,54 @@ public class HttpCallTestCase extends TestCase {
                 .formatContentDisposition("test.txt"));
         assertEquals("attachment; filename=\"file with space.txt\"", call
                 .formatContentDisposition("file with space.txt"));
+    }
+
+    public void testParseContentDisposition() {
+        HttpClientCall call = new HttpClientCall(null, null, null) {
+
+            @Override
+            public WritableByteChannel getRequestEntityChannel() {
+                return null;
+            }
+
+            @Override
+            public OutputStream getRequestEntityStream() {
+                return null;
+            }
+
+            @Override
+            public OutputStream getRequestHeadStream() {
+                return null;
+            }
+
+            @Override
+            public ReadableByteChannel getResponseEntityChannel() {
+                return null;
+            }
+
+            @Override
+            public InputStream getResponseEntityStream() {
+                return null;
+            }
+
+        };
+
+        assertEquals("file.txt", call
+                .parseContentDisposition("attachment; fileName=\"file.txt\""));
+        assertEquals("file.txt", call
+                .parseContentDisposition("attachment; fileName=file.txt"));
+        assertEquals(
+                "file with space.txt",
+                call
+                        .parseContentDisposition("attachment; filename=\"file with space.txt\""));
+        assertEquals(
+                "file with space.txt",
+                call
+                        .parseContentDisposition("attachment; filename=file with space.txt"));
+        assertEquals("", call
+                .parseContentDisposition("attachment; fileName=\"\""));
+        assertEquals("", call.parseContentDisposition("attachment; fileName="));
+        assertNull(call.parseContentDisposition("attachment; fileNam"));
+        assertNull(null);
     }
 }

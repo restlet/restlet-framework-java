@@ -48,7 +48,7 @@ import com.noelios.restlet.util.HeaderReader;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HttpClientCall extends HttpCall {
+public abstract class HttpClientCall extends HttpCall {
     /**
      * Returns the local IP address or 127.0.0.1 if the resolution fails.
      * 
@@ -96,29 +96,29 @@ public class HttpClientCall extends HttpCall {
     /**
      * Returns the request entity channel if it exists.
      * 
+     * @param size
+     *                The total size that will be read from the channel.
+     * 
      * @return The request entity channel if it exists.
      */
-    public WritableByteChannel getRequestChannel() {
-        return null;
-    }
+    public abstract WritableByteChannel getRequestEntityChannel();
 
     /**
      * Returns the request entity stream if it exists.
      * 
+     * @param size
+     *                The total size that will be read from the stream.
+     * 
      * @return The request entity stream if it exists.
      */
-    public OutputStream getRequestStream() {
-        return null;
-    }
+    public abstract OutputStream getRequestEntityStream();
 
     /**
-     * Returns the response channel if it exists.
+     * Returns the request head stream if it exists.
      * 
-     * @return The response channel if it exists.
+     * @return The request head stream if it exists.
      */
-    public ReadableByteChannel getResponseChannel() {
-        return null;
-    }
+    public abstract OutputStream getRequestHeadStream();
 
     /**
      * Returns the response entity if available. Note that no metadata is
@@ -129,10 +129,11 @@ public class HttpClientCall extends HttpCall {
     public Representation getResponseEntity() {
         Representation result = null;
 
-        if (getResponseStream() != null) {
-            result = new InputRepresentation(getResponseStream(), null);
-        } else if (getResponseChannel() != null) {
-            result = new ReadableRepresentation(getResponseChannel(), null);
+        if (getResponseEntityStream() != null) {
+            result = new InputRepresentation(getResponseEntityStream(), null);
+        } else if (getResponseEntityChannel() != null) {
+            result = new ReadableRepresentation(getResponseEntityChannel(),
+                    null);
         } else if (getMethod().equals(Method.HEAD.getName())) {
             result = new Representation() {
                 @Override
@@ -226,13 +227,18 @@ public class HttpClientCall extends HttpCall {
     }
 
     /**
-     * Returns the response stream if it exists.
+     * Returns the response channel if it exists.
      * 
-     * @return The response stream if it exists.
+     * @return The response channel if it exists.
      */
-    public InputStream getResponseStream() {
-        return null;
-    }
+    public abstract ReadableByteChannel getResponseEntityChannel();
+
+    /**
+     * Returns the response entity stream if it exists.
+     * 
+     * @return The response entity stream if it exists.
+     */
+    public abstract InputStream getResponseEntityStream();
 
     /**
      * Parse the Content-Disposition header value
@@ -285,8 +291,9 @@ public class HttpClientCall extends HttpCall {
                 // it is very important to reuse that exact same "rs" reference
                 // when manipulating the request stream, otherwise "insufficient
                 // data sent" exceptions will occur in "fixedLengthMode"
-                OutputStream rs = getRequestStream();
-                WritableByteChannel wbc = getRequestChannel();
+                OutputStream rs = getRequestEntityStream();
+                WritableByteChannel wbc = getRequestEntityChannel();
+
                 if (wbc != null) {
                     if (entity != null) {
                         entity.write(wbc);
@@ -302,6 +309,12 @@ public class HttpClientCall extends HttpCall {
                 // Call-back after writing
                 if (connectorService != null)
                     connectorService.afterSend(entity);
+
+                if (rs != null) {
+                    rs.close();
+                } else if (wbc != null) {
+                    wbc.close();
+                }
             }
 
             // Now we can access the status code, this MUST happen after closing

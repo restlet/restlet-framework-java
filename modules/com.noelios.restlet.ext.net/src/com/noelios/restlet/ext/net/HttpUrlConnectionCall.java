@@ -26,6 +26,8 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -99,6 +101,15 @@ public class HttpUrlConnectionCall extends HttpClientCall {
     }
 
     /**
+     * Returns the connection.
+     * 
+     * @return The connection.
+     */
+    public HttpURLConnection getConnection() {
+        return this.connection;
+    }
+
+    /**
      * Returns the HTTP client helper.
      * 
      * @return The HTTP client helper.
@@ -108,12 +119,117 @@ public class HttpUrlConnectionCall extends HttpClientCall {
     }
 
     /**
-     * Returns the connection.
+     * Returns the response reason phrase.
      * 
-     * @return The connection.
+     * @return The response reason phrase.
      */
-    public HttpURLConnection getConnection() {
-        return this.connection;
+    public String getReasonPhrase() {
+        try {
+            return getConnection().getResponseMessage();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public WritableByteChannel getRequestEntityChannel() {
+        return null;
+    }
+
+    @Override
+    public OutputStream getRequestEntityStream() {
+        return null;
+    }
+
+    @Override
+    public OutputStream getRequestHeadStream() {
+        return null;
+    }
+
+    /**
+     * Returns the request entity stream if it exists.
+     * 
+     * @return The request entity stream if it exists.
+     */
+    public OutputStream getRequestStream() {
+        try {
+            return getConnection().getOutputStream();
+        } catch (IOException ioe) {
+            return null;
+        }
+    }
+
+    @Override
+    public ReadableByteChannel getResponseEntityChannel() {
+        return null;
+    }
+
+    /**
+     * Returns the response stream if it exists.
+     * 
+     * @return The response stream if it exists.
+     */
+    public InputStream getResponseEntityStream() {
+        InputStream result = null;
+
+        try {
+            result = getConnection().getInputStream();
+        } catch (IOException ioe) {
+            result = getConnection().getErrorStream();
+        }
+
+        if (result == null) {
+            // Maybe an error stream is available instead
+            result = getConnection().getErrorStream();
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the modifiable list of response headers.
+     * 
+     * @return The modifiable list of response headers.
+     */
+    public Series<Parameter> getResponseHeaders() {
+        Series<Parameter> result = super.getResponseHeaders();
+
+        if (!this.responseHeadersAdded) {
+            // Read the response headers
+            int i = 1;
+            String headerName = getConnection().getHeaderFieldKey(i);
+            String headerValue = getConnection().getHeaderField(i);
+            while (headerName != null) {
+                result.add(headerName, headerValue);
+                i++;
+                headerName = getConnection().getHeaderFieldKey(i);
+                headerValue = getConnection().getHeaderField(i);
+            }
+
+            this.responseHeadersAdded = true;
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the response address.<br/> Corresponds to the IP address of the
+     * responding server.
+     * 
+     * @return The response address.
+     */
+    public String getServerAddress() {
+        return getConnection().getURL().getHost();
+    }
+
+    /**
+     * Returns the response status code.
+     * 
+     * @return The response status code.
+     * @throws IOException 
+     */
+    public int getStatusCode() throws IOException {
+        return getConnection().getResponseCode();
     }
 
     /**
@@ -220,100 +336,6 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             e);
             result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
                     "Unable to send the HTTP request. " + e.getMessage());
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the request entity stream if it exists.
-     * 
-     * @return The request entity stream if it exists.
-     */
-    public OutputStream getRequestStream() {
-        try {
-            return getConnection().getOutputStream();
-        } catch (IOException ioe) {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the response address.<br/> Corresponds to the IP address of the
-     * responding server.
-     * 
-     * @return The response address.
-     */
-    public String getServerAddress() {
-        return getConnection().getURL().getHost();
-    }
-
-    /**
-     * Returns the modifiable list of response headers.
-     * 
-     * @return The modifiable list of response headers.
-     */
-    public Series<Parameter> getResponseHeaders() {
-        Series<Parameter> result = super.getResponseHeaders();
-
-        if (!this.responseHeadersAdded) {
-            // Read the response headers
-            int i = 1;
-            String headerName = getConnection().getHeaderFieldKey(i);
-            String headerValue = getConnection().getHeaderField(i);
-            while (headerName != null) {
-                result.add(headerName, headerValue);
-                i++;
-                headerName = getConnection().getHeaderFieldKey(i);
-                headerValue = getConnection().getHeaderField(i);
-            }
-
-            this.responseHeadersAdded = true;
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the response status code.
-     * 
-     * @return The response status code.
-     * @throws IOException 
-     */
-    public int getStatusCode() throws IOException {
-        return getConnection().getResponseCode();
-    }
-
-    /**
-     * Returns the response reason phrase.
-     * 
-     * @return The response reason phrase.
-     */
-    public String getReasonPhrase() {
-        try {
-            return getConnection().getResponseMessage();
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the response stream if it exists.
-     * 
-     * @return The response stream if it exists.
-     */
-    public InputStream getResponseStream() {
-        InputStream result = null;
-
-        try {
-            result = getConnection().getInputStream();
-        } catch (IOException ioe) {
-            result = getConnection().getErrorStream();
-        }
-
-        if (result == null) {
-            // Maybe an error stream is available instead
-            result = getConnection().getErrorStream();
         }
 
         return result;

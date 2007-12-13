@@ -30,6 +30,11 @@ import java.util.logging.Level;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
+
+import com.noelios.restlet.util.ChunkedInputStream;
+import com.noelios.restlet.util.ChunkedOutputStream;
+import com.noelios.restlet.util.KeepAliveOutputStream;
 
 /**
  * HTTP client call based on streams.
@@ -37,8 +42,9 @@ import org.restlet.data.Status;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StreamClientCall extends HttpClientCall {
-    /** The request to send. */
-    private Request request;
+
+    /** Indicates if the request entity will be chunked. */
+    private boolean requestChunked;
 
     /** The request output stream. */
     private OutputStream requestStream;
@@ -57,6 +63,7 @@ public class StreamClientCall extends HttpClientCall {
     public StreamClientCall(StreamClientHelper helper, Request request) {
         super(helper, request.getMethod().toString(), request.getResourceRef()
                 .getIdentifier());
+        this.requestChunked = false;
 
         // Set the HTTP version
         setVersion("HTTP/1.1");
@@ -79,33 +86,75 @@ public class StreamClientCall extends HttpClientCall {
         return new Socket(hostDomain, hostPort);
     }
 
-    /**
-     * Returns the request to send.
-     * 
-     * @return The request to send.
-     */
-    public Request getRequest() {
-        return this.request;
-    }
-
     @Override
-    public WritableByteChannel getRequestChannel() {
+    public WritableByteChannel getRequestEntityChannel() {
         return null;
     }
 
     @Override
-    public OutputStream getRequestStream() {
+    public OutputStream getRequestEntityStream() {
+        if (isRequestChunked()) {
+            return new ChunkedOutputStream(getRequestHeadStream());
+        } else {
+            return new KeepAliveOutputStream(getRequestHeadStream());
+        }
+    }
+
+    @Override
+    public OutputStream getRequestHeadStream() {
         return this.requestStream;
     }
 
     @Override
-    public ReadableByteChannel getResponseChannel() {
+    public ReadableByteChannel getResponseEntityChannel() {
         return null;
     }
 
     @Override
-    public InputStream getResponseStream() {
+    public InputStream getResponseEntityStream() {
+        if (isResponseChunked()) {
+            return new ChunkedInputStream(getResponseStream());
+        } else {
+            return getResponseStream();
+        }
+    }
+
+    /**
+     * Returns the underlying HTTP response stream.
+     * 
+     * @return The underlying HTTP response stream.
+     */
+    private InputStream getResponseStream() {
         return this.responseStream;
+    }
+
+    /**
+     * Indicates if the request entity will be chunked.
+     * 
+     * @return True if the request entity will be chunked.
+     */
+    private boolean isRequestChunked() {
+        return requestChunked;
+    }
+
+    /**
+     * Indicates if the response entity is chunked.
+     * 
+     * @return True if the response entity is chunked.
+     */
+    private boolean isResponseChunked() {
+        boolean result = false;
+
+        for (Parameter header : getResponseHeaders()) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
+                if (header.getValue().equalsIgnoreCase("chunked")) {
+                    result = true;
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -178,9 +227,20 @@ public class StreamClientCall extends HttpClientCall {
         }
     }
 
+    /**
+     * Indicates if the request entity should be chunked.
+     * 
+     * @return True if the request should be chunked
+     */
+    private boolean requestShouldBeChunked(Request request) {
+        return request.isEntityAvailable() && request.getEntity() != null
+                && request.getEntity().getSize() == Representation.UNKNOWN_SIZE;
+    }
+
     @Override
     public Status sendRequest(Request request) {
         Status result = null;
+
         try {
             // Extract the host info
             String hostDomain = request.getResourceRef().getHostDomain();
@@ -196,19 +256,24 @@ public class StreamClientCall extends HttpClientCall {
             this.responseStream = socket.getInputStream();
 
             // Write the request line
-            getRequestStream().write(getMethod().getBytes());
-            getRequestStream().write(' ');
-            getRequestStream().write(getRequestUri().getBytes());
-            getRequestStream().write(' ');
-            getRequestStream().write(getVersion().getBytes());
-            getRequestStream().write(13); // CR
-            getRequestStream().write(10); // LF
+            getRequestHeadStream().write(getMethod().getBytes());
+            getRequestHeadStream().write(' ');
+            getRequestHeadStream().write(getRequestUri().getBytes());
+            getRequestHeadStream().write(' ');
+            getRequestHeadStream().write(getVersion().getBytes());
+            HttpUtils.writeCRLF(getRequestHeadStream());
+
+            if (requestShouldBeChunked(request)) {
+                getRequestHeaders().set(HttpConstants.HEADER_TRANSFER_ENCODING,
+                        "chunked", true);
+                setRequestChunked(true);
+            }
 
             // We don't support persistent connections yet
             getRequestHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
                     true);
 
-            // We don't support persistent connections yet
+            // Prepare the host header
             String host = hostDomain;
             if (request.getResourceRef().getHostPort() != -1) {
                 host += ":" + request.getResourceRef().getHostPort();
@@ -217,12 +282,11 @@ public class StreamClientCall extends HttpClientCall {
 
             // Write the request headers
             for (Parameter header : getRequestHeaders()) {
-                HttpUtils.writeHeader(header, getRequestStream());
+                HttpUtils.writeHeader(header, getRequestHeadStream());
             }
 
             // Write the end of the headers section
-            getRequestStream().write(13); // CR
-            getRequestStream().write(10); // LF
+            HttpUtils.writeCRLF(getRequestHeadStream());
 
             // Write the request body
             super.sendRequest(request);
@@ -246,5 +310,15 @@ public class StreamClientCall extends HttpClientCall {
         }
 
         return result;
+    }
+
+    /**
+     * Indicates if the request entity will be chunked.
+     * 
+     * @param requestChunked
+     *                True if the request entity will be chunked.
+     */
+    private void setRequestChunked(boolean requestChunked) {
+        this.requestChunked = requestChunked;
     }
 }

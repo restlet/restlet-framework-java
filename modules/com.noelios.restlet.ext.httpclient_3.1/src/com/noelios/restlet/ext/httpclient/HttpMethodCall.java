@@ -22,6 +22,8 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.apache.commons.httpclient.ConnectMethod;
@@ -133,6 +135,105 @@ public class HttpMethodCall extends HttpClientCall {
     }
 
     /**
+     * Returns the response reason phrase.
+     * 
+     * @return The response reason phrase.
+     */
+    public String getReasonPhrase() {
+        return getHttpMethod().getStatusText();
+    }
+
+    @Override
+    public WritableByteChannel getRequestEntityChannel() {
+        return null;
+    }
+
+    @Override
+    public OutputStream getRequestEntityStream() {
+        return null;
+    }
+
+    @Override
+    public OutputStream getRequestHeadStream() {
+        return null;
+    }
+
+    @Override
+    public ReadableByteChannel getResponseEntityChannel() {
+        return null;
+    }
+
+    /**
+     * Returns the response stream if it exists.
+     * 
+     * @return The response stream if it exists.
+     */
+    public InputStream getResponseEntityStream() {
+        InputStream result = null;
+
+        try {
+            // Return a wrapper filter that will release the connection when
+            // needed
+            InputStream responseBodyAsStream = getHttpMethod()
+                    .getResponseBodyAsStream();
+            if (responseBodyAsStream != null) {
+                result = new FilterInputStream(responseBodyAsStream) {
+                    public void close() throws IOException {
+                        super.close();
+                        getHttpMethod().releaseConnection();
+                    }
+                };
+            }
+        } catch (IOException ioe) {
+            result = null;
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the modifiable list of response headers.
+     * 
+     * @return The modifiable list of response headers.
+     */
+    public Series<Parameter> getResponseHeaders() {
+        Series<Parameter> result = super.getResponseHeaders();
+
+        if (!this.responseHeadersAdded) {
+            for (Header header : getHttpMethod().getResponseHeaders()) {
+                result.add(header.getName(), header.getValue());
+            }
+
+            this.responseHeadersAdded = true;
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the response address.<br/> Corresponds to the IP address of the
+     * responding server.
+     * 
+     * @return The response address.
+     */
+    public String getServerAddress() {
+        try {
+            return getHttpMethod().getURI().getHost();
+        } catch (URIException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the response status code.
+     * 
+     * @return The response status code.
+     */
+    public int getStatusCode() {
+        return getHttpMethod().getStatusCode();
+    }
+
+    /**
      * Sends the request to the client. Commits the request line, headers and
      * optional entity and send them over the network.
      * 
@@ -203,85 +304,6 @@ public class HttpMethodCall extends HttpClientCall {
 
             // Release the connection
             getHttpMethod().releaseConnection();
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the response address.<br/> Corresponds to the IP address of the
-     * responding server.
-     * 
-     * @return The response address.
-     */
-    public String getServerAddress() {
-        try {
-            return getHttpMethod().getURI().getHost();
-        } catch (URIException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the modifiable list of response headers.
-     * 
-     * @return The modifiable list of response headers.
-     */
-    public Series<Parameter> getResponseHeaders() {
-        Series<Parameter> result = super.getResponseHeaders();
-
-        if (!this.responseHeadersAdded) {
-            for (Header header : getHttpMethod().getResponseHeaders()) {
-                result.add(header.getName(), header.getValue());
-            }
-
-            this.responseHeadersAdded = true;
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the response status code.
-     * 
-     * @return The response status code.
-     */
-    public int getStatusCode() {
-        return getHttpMethod().getStatusCode();
-    }
-
-    /**
-     * Returns the response reason phrase.
-     * 
-     * @return The response reason phrase.
-     */
-    public String getReasonPhrase() {
-        return getHttpMethod().getStatusText();
-    }
-
-    /**
-     * Returns the response stream if it exists.
-     * 
-     * @return The response stream if it exists.
-     */
-    public InputStream getResponseStream() {
-        InputStream result = null;
-
-        try {
-            // Return a wrapper filter that will release the connection when
-            // needed
-            InputStream responseBodyAsStream = getHttpMethod()
-                    .getResponseBodyAsStream();
-            if (responseBodyAsStream != null) {
-                result = new FilterInputStream(responseBodyAsStream) {
-                    public void close() throws IOException {
-                        super.close();
-                        getHttpMethod().releaseConnection();
-                    }
-                };
-            }
-        } catch (IOException ioe) {
-            result = null;
         }
 
         return result;

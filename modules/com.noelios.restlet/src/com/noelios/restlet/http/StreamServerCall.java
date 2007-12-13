@@ -26,7 +26,10 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Server;
+import org.restlet.data.Parameter;
 import org.restlet.data.Response;
+
+import com.noelios.restlet.util.ChunkedInputStream;
 
 /**
  * HTTP server call based on streams.
@@ -72,7 +75,11 @@ public class StreamServerCall extends HttpServerCall {
 
     @Override
     public InputStream getRequestEntityStream(long size) {
-        return new InputEntityStream(getRequestStream(), size);
+        if (isRequestChunked()) {
+            return new ChunkedInputStream(getRequestStream());
+        } else {
+            return new InputEntityStream(getRequestStream(), size);
+        }
     }
 
     @Override
@@ -101,6 +108,23 @@ public class StreamServerCall extends HttpServerCall {
 
     private OutputStream getResponseStream() {
         return responseStream;
+    }
+
+    /**
+     * Indicates if the request entity is chunked.
+     * 
+     * @return True if the request entity is chunked.
+     */
+    private boolean isRequestChunked() {
+        for (Parameter header : getRequestHeaders()) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
+                if (header.getValue().equalsIgnoreCase("chunked")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
