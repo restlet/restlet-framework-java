@@ -76,9 +76,24 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Registers a new Noelios Restlet Engine.
+     * 
+     * @return The registered engine.
      */
-    public static void register() {
-        Engine.setInstance(new Engine());
+    public static Engine register() {
+        return register(true);
+    }
+
+    /**
+     * Registers a new Noelios Restlet Engine.
+     * 
+     * @param discoverConnectors
+     *                True if connectors should be automatically discovered.
+     * @return The registered engine.
+     */
+    public static Engine register(boolean discoverConnectors) {
+        Engine result = new Engine(discoverConnectors);
+        Engine.setInstance(result);
+        return result;
     }
 
     /** List of available client connectors. */
