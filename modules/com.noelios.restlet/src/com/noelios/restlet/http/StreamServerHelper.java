@@ -158,9 +158,11 @@ public class StreamServerHelper extends HttpServerHelper {
     public void stop() throws Exception {
         super.stop();
         getLogger().info("Stopping the internal HTTP server");
-        if (this.serverSocket.isBound()) {
-            this.serverSocket.close();
-            this.serverSocket = null;
+        if (this.serverSocket != null) {
+            if (this.serverSocket.isBound()) {
+                this.serverSocket.close();
+                this.serverSocket = null;
+            }
         }
 
         if (this.executorService != null) {
