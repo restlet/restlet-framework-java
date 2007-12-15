@@ -28,8 +28,11 @@ import java.util.logging.Level;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
 
 import com.noelios.restlet.util.ChunkedInputStream;
+import com.noelios.restlet.util.ChunkedOutputStream;
+import com.noelios.restlet.util.KeepAliveOutputStream;
 
 /**
  * HTTP server call based on streams.
@@ -103,7 +106,11 @@ public class StreamServerCall extends HttpServerCall {
 
     @Override
     public OutputStream getResponseEntityStream() {
-        return getResponseStream();
+        if (isResponseChunked()) {
+            return new ChunkedOutputStream(getResponseStream());
+        } else {
+            return new KeepAliveOutputStream(getResponseStream());
+        }
     }
 
     private OutputStream getResponseStream() {
@@ -126,10 +133,34 @@ public class StreamServerCall extends HttpServerCall {
         }
         return false;
     }
+    
+    /**
+     * Indicates if the response entity is chunked.
+     * 
+     * @return True if the response entity is chunked.
+     */
+    private boolean isResponseChunked() {
+        for (Parameter header : getResponseHeaders()) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
+                if (header.getValue().equalsIgnoreCase("chunked")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean responseShouldBeChunked(Response response) {
+        return response.getEntity() != null && response.getEntity().getSize() == Representation.UNKNOWN_SIZE;
+    }
 
     @Override
     public void writeResponseHead(Response response) throws IOException {
-        writeResponseHead(getResponseEntityStream());
+        if (responseShouldBeChunked(response)) {
+            getResponseHeaders().add(HttpConstants.HEADER_TRANSFER_ENCODING, "chunked");
+        }
+        writeResponseHead(getResponseStream());
     }
 
 }

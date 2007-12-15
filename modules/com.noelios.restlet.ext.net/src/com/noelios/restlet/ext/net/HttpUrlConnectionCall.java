@@ -57,14 +57,14 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * Constructor.
      * 
      * @param helper
-     *            The parent HTTP client helper.
+     *                The parent HTTP client helper.
      * @param method
-     *            The method name.
+     *                The method name.
      * @param requestUri
-     *            The request URI.
+     *                The request URI.
      * @param hasEntity
-     *            Indicates if the call will have an entity to send to the
-     *            server.
+     *                Indicates if the call will have an entity to send to the
+     *                server.
      * @throws IOException
      */
     public HttpUrlConnectionCall(HttpClientHelper helper, String method,
@@ -138,12 +138,12 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
     @Override
     public OutputStream getRequestEntityStream() {
-        return null;
+        return getRequestStream();
     }
 
     @Override
     public OutputStream getRequestHeadStream() {
-        return null;
+        return getRequestStream();
     }
 
     /**
@@ -226,7 +226,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * Returns the response status code.
      * 
      * @return The response status code.
-     * @throws IOException 
+     * @throws IOException
      */
     public int getStatusCode() throws IOException {
         return getConnection().getResponseCode();
@@ -237,7 +237,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * optional entity and send them over the network.
      * 
      * @param request
-     *            The high-level request.
+     *                The high-level request.
      * @return The result status.
      */
     public Status sendRequest(Request request) {

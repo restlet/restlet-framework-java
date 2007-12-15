@@ -36,6 +36,7 @@ import simple.http.Request;
 import simple.http.Response;
 
 import com.noelios.restlet.http.HttpServerCall;
+import com.noelios.restlet.util.KeepAliveInputStream;
 
 /**
  * Call that is used by the Simple HTTP server.
@@ -109,7 +110,7 @@ public class SimpleCall extends HttpServerCall {
     @Override
     public InputStream getRequestEntityStream(long size) {
         try {
-            return request.getInputStream();
+            return new KeepAliveInputStream(request.getInputStream());
         } catch (IOException ex) {
             return null;
         }

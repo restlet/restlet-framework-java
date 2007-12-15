@@ -29,9 +29,16 @@ import junit.framework.TestSuite;
 public class NoeliosTestSuite extends TestSuite {
     /** Constructor. */
     public NoeliosTestSuite() {
+        addTestSuite(ChunkedEncodingTestCase.class);
+        addTestSuite(ChunkedInputStreamTestCase.class);
+        addTestSuite(ChunkedOutputStreamTestCase.class);
         addTestSuite(CookiesTestCase.class);
         addTestSuite(FormTestCase.class);
         addTestSuite(HeaderTestCase.class);
+        addTestSuite(HttpCallTestCase.class);
+        addTestSuite(InputEntityStreamTestCase.class);
+        addTestSuite(KeepAliveInputStreamTestCase.class);
+        addTestSuite(KeepAliveOutputStreamTestCase.class);
         addTestSuite(PreferencesTestCase.class);
         addTestSuite(SecurityTestCase.class);
     }

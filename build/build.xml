@@ -118,13 +118,29 @@
    <path id="mod-ri-test-path">
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
+
       <fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
+
       <path refid="mod-grizzly-path" />
       <pathelement path="${classes}/${mod-grizzly-id}" />
       <pathelement path="${mod}/${mod-grizzly-id}/src" />
+
       <path refid="mod-net-path" />
       <pathelement path="${classes}/${mod-net-id}" />
       <pathelement path="${mod}/${mod-net-id}/src" />
+
+      <path refid="mod-httpclient-path" />
+      <pathelement path="${classes}/${mod-httpclient-id}" />
+      <pathelement path="${mod}/${mod-httpclient-id}/src" />
+
+      <path refid="mod-jetty-path" />
+      <pathelement path="${classes}/${mod-jetty-id}" />
+      <pathelement path="${mod}/${mod-jetty-id}/src" />
+
+      <path refid="mod-simple-path" />
+      <pathelement path="${classes}/${mod-simple-id}" />
+      <pathelement path="${mod}/${mod-simple-id}/src" />
+
    </path>
 
    <path id="mod-atom-path">

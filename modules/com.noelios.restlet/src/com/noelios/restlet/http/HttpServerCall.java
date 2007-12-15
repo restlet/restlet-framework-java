@@ -363,6 +363,7 @@ public abstract class HttpServerCall extends HttpCall {
 
                 if (getResponseEntityStream() != null) {
                     getResponseEntityStream().flush();
+                    getResponseEntityStream().close();
                 }
             } finally {
                 Representation entity = response.getEntity();

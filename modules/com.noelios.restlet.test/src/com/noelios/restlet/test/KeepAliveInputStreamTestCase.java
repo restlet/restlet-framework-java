@@ -16,31 +16,41 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.util;
+package com.noelios.restlet.test;
 
-import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
+
+import junit.framework.TestCase;
+
+import com.noelios.restlet.util.KeepAliveInputStream;
 
 /**
- * OutputStream decorator to trap close() calls so that the decorated stream
- * does not get closed.
+ * Unit tests for the HTTP KeepAlive.
  * 
- * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
+ * @author Kevin Conaway
  */
-public class KeepAliveOutputStream extends FilterOutputStream {
+public class KeepAliveInputStreamTestCase extends TestCase {
 
-    /**
-     * Constructor.
-     * 
-     * @param source
-     *                The decorated source stream.
-     */
-    public KeepAliveOutputStream(OutputStream source) {
-        super(source);
+    static class MockInputStream extends InputStream {
+        boolean closed = false;
+
+        public int read() throws IOException {
+            return -1;
+        }
+
+        public void close() throws IOException {
+            closed = true;
+        }
     }
 
-    @Override
-    public void close() throws IOException {
+    public void testClose() throws IOException {
+        MockInputStream mock = new MockInputStream();
+        InputStream keepalive = new KeepAliveInputStream(mock);
+
+        keepalive.close();
+        assertFalse(mock.closed);
+        mock.close();
+        assertTrue(mock.closed);
     }
 }
