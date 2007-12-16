@@ -19,6 +19,7 @@ package org.restlet.test;
 
 import java.io.IOException;
 
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 
 /**
@@ -464,5 +465,16 @@ public class ReferenceTestCase extends RestletTestCase {
         ref.addSegment("dir");
         assertEquals("http://www.restlet.org/root/dir?abc=123&def", ref
                 .toString());
+    }
+
+    public void testProtocolConstructors() {
+        assertEquals("http://restlet.org", new Reference(Protocol.HTTP,
+                "restlet.org").toString());
+        assertEquals("https://restlet.org:8443", new Reference(Protocol.HTTPS,
+                "restlet.org", 8443).toString());
+
+        Reference ref = new Reference(Protocol.HTTP, "restlet.org");
+        ref.addQueryParameter("abc", "123");
+        assertEquals("http://restlet.org?abc=123", ref.toString());
     }
 }

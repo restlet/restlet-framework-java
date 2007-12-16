@@ -438,6 +438,33 @@ public class Reference {
     }
 
     /**
+     * Constructor for a protocol, host name and host port
+     * 
+     * @param protocol
+     *                Protocol/scheme to use
+     * @param hostName
+     *                The host name or IP address.
+     * @param hostPort
+     *                The host port (default ports are correctly ignored).
+     */
+    public Reference(Protocol protocol, String hostName, int hostPort) {
+        this(protocol.getSchemeName(), hostName, hostPort, null, null, null);
+    }
+
+    /**
+     * Constructor for a protocol and host name. Uses the default port for the
+     * given protocol.
+     * 
+     * @param protocol
+     *                Protocol/scheme to use
+     * @param hostName
+     *                The host name or IP address.
+     */
+    public Reference(Protocol protocol, String hostName) {
+        this(protocol, hostName, protocol.getDefaultPort());
+    }
+
+    /**
      * Adds a parameter to the query component. The name and value are
      * automatically encoded if necessary.
      * 
