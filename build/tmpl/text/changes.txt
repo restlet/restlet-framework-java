@@ -26,7 +26,8 @@ Changes log
    They should perform reasonably under normal workloads but won't be as scalable as the
    NIO based connectors such as Grizzly and MINA based ones. You don't have anything to do
    to configure them, just put the com.noelios.restlet.jar in your classpath along with the
-   Restlet API's JAR. Note that they don't support HTTPS and persistent connections.
+   Restlet API's JAR. Note that they don't support HTTPS and persistent connections. The support
+   for chunked encoding and decoding was contributed by Kevin Conaway.
  - All HTTPS server connectors (Grizzly, Jetty and Simple) now have two configuration
    parameters to indicates whether a client authentication is wanted or required.
    Suggested by Toby Thain and Chuck Hinson.
