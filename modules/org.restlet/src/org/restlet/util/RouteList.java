@@ -124,11 +124,10 @@ public final class RouteList extends WrapperList<Route> {
      * @return The last route match or null.
      */
     public Route getLast(Request request, Response response, float requiredScore) {
-        Route[] routes = toArray();
-
-        for (int j = (routes.length - 1); (j >= 0); j--) {
-            if (routes[j].score(request, response) >= requiredScore)
-                return routes[j];
+        for (int j = size() - 1; (j >= 0); j--) {
+            Route route = get(j);
+            if (route.score(request, response) >= requiredScore)
+                return route;
         }
 
         // No match found
@@ -147,15 +146,16 @@ public final class RouteList extends WrapperList<Route> {
      * @return A next route or null.
      */
     public Route getNext(Request request, Response response, float requiredScore) {
-        Route[] routes = toArray();
+        if (!isEmpty()) {
+            for (int initialIndex = lastIndex++; initialIndex != lastIndex; lastIndex++) {
+                if (lastIndex >= size()) {
+                    lastIndex = 0;
+                }
 
-        for (int initialIndex = lastIndex++; initialIndex != lastIndex; lastIndex++) {
-            if (lastIndex >= routes.length) {
-                lastIndex = 0;
+                Route route = get(lastIndex);
+                if (route.score(request, response) >= requiredScore)
+                    return route;
             }
-
-            if (routes[lastIndex].score(request, response) >= requiredScore)
-                return routes[lastIndex];
         }
 
         // No match found
@@ -175,18 +175,23 @@ public final class RouteList extends WrapperList<Route> {
      */
     public Route getRandom(Request request, Response response,
             float requiredScore) {
-        Route[] routes = toArray();
-        int j = new Random().nextInt(routes.length);
-        if (routes[j].score(request, response) >= requiredScore)
-            return routes[j];
+        int length = size();
+        if (length > 0) {
+            int j = new Random().nextInt(length);
+            Route route = get(j);
+            if (route.score(request, response) >= requiredScore)
+                return route;
 
-        for (int initialIndex = j++; initialIndex != j; j++) {
-            if (j == routes.length) {
-                j = 0;
-            }
-
-            if (routes[j].score(request, response) >= requiredScore)
-                return routes[j];
+            boolean loopedAround = false;
+            do {
+                if (j == length && loopedAround == false) {
+                    j = 0;
+                    loopedAround = true;
+                }
+                route = get(j++);
+                if (route.score(request, response) >= requiredScore)
+                    return route;
+            } while (j < length || !loopedAround);
         }
 
         // No match found
