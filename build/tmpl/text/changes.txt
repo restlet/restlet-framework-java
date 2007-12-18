@@ -21,6 +21,8 @@ Changes log
    underlying response body stream is null. Reported and contributed by John R. Fallows.
  - Fixed casting issue on RouteList. Regression in 1.0.6. Reported by Valdis Rigdon and fixed
    by Kevin Conaway.
+ - Fixed thread safety issue by removing lazy initialization of parameters in HttpCall. 
+   Contributed by Kevin Conaway.
 
 [Enhancements]
  - Clarified Template#parse Javadocs. Suggested by Jonathan Hall.

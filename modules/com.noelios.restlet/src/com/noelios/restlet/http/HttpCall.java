@@ -37,6 +37,13 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpCall {
+    
+    /** The request headers. */
+    private final Series<Parameter> requestHeaders;
+    
+    /** The response headers. */
+    private final Series<Parameter> responseHeaders;
+    
     /** The logger to use. */
     private Logger logger;
 
@@ -64,14 +71,8 @@ public class HttpCall {
     /** The reason phrase. */
     private String reasonPhrase;
 
-    /** The request headers. */
-    private Series<Parameter> requestHeaders;
-
     /** The request URI. */
     private String requestUri;
-
-    /** The response headers. */
-    private Series<Parameter> responseHeaders;
 
     /** The server IP address. */
     private String serverAddress;
@@ -97,9 +98,9 @@ public class HttpCall {
         this.method = null;
         this.protocol = null;
         this.reasonPhrase = "";
-        this.requestHeaders = null;
+        this.requestHeaders = new Form();
         this.requestUri = null;
-        this.responseHeaders = null;
+        this.responseHeaders = new Form();
         this.serverAddress = null;
         this.serverPort = -1;
         this.statusCode = 200;
@@ -226,8 +227,6 @@ public class HttpCall {
      * @return The modifiable list of request headers.
      */
     public Series<Parameter> getRequestHeaders() {
-        if (this.requestHeaders == null)
-            this.requestHeaders = new Form();
         return this.requestHeaders;
     }
 
@@ -247,8 +246,6 @@ public class HttpCall {
      * @return The modifiable list of server headers.
      */
     public Series<Parameter> getResponseHeaders() {
-        if (this.responseHeaders == null)
-            this.responseHeaders = new Form();
         return this.responseHeaders;
     }
 
