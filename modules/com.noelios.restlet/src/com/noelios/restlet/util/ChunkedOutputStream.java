@@ -37,12 +37,16 @@ public class ChunkedOutputStream extends OutputStream {
 
     private static final int DEFAULT_CHUNK_SIZE = 2048;
 
+    /** The destination output stream. */
     private final OutputStream destination;
 
+    /** The byte buffer. */
     private final byte[] buffer;
 
+    /** The number of bytes written. */
     private int bytesWritten;
 
+    /** Indicate if the stream is closed. */
     private boolean closed;
 
     /**
@@ -87,6 +91,7 @@ public class ChunkedOutputStream extends OutputStream {
             writeFinalChunk();
             super.close();
             closed = true;
+            destination.flush();
         }
     }
 

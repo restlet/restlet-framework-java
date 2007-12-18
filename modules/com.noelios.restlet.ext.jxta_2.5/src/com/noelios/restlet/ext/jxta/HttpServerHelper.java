@@ -20,7 +20,11 @@ package com.noelios.restlet.ext.jxta;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 
 import net.jxta.socket.JxtaServerSocket;
 
@@ -40,16 +44,110 @@ public class HttpServerHelper extends JxtaServerHelper {
     }
 
     @Override
-    public ServerSocket createSocket() throws IOException {
+    protected ServerSocketChannel createServerSocket() throws IOException {
         ServerSocket serverSocket = new JxtaServerSocket(getPeerGroup(),
                 getPipeAdvertisement());
         serverSocket.setSoTimeout(0);
-        return serverSocket;
+        return new ServerSocketChannelWrapper(serverSocket);
     }
 
     @Override
-    public SocketAddress createSocketAddress() throws IOException {
+    protected SocketAddress createSocketAddress() throws IOException {
         return null;
     }
 
+    private static class ServerSocketChannelWrapper extends ServerSocketChannel {
+
+        private final ServerSocket socket;
+
+        public ServerSocketChannelWrapper(ServerSocket socket) {
+            super(null);
+            this.socket = socket;
+        }
+
+        @Override
+        public SocketChannel accept() throws IOException {
+            return new SocketChannelWrapper(socket.accept());
+        }
+
+        @Override
+        public ServerSocket socket() {
+            return socket;
+        }
+
+        @Override
+        protected void implCloseSelectableChannel() throws IOException {
+            socket.close();
+        }
+
+        @Override
+        protected void implConfigureBlocking(boolean block) throws IOException {
+
+        }
+    }
+
+    private static class SocketChannelWrapper extends SocketChannel {
+        private final Socket socket;
+
+        public SocketChannelWrapper(Socket socket) {
+            super(null);
+            this.socket = socket;
+        }
+
+        @Override
+        public Socket socket() {
+            return this.socket;
+        }
+
+        @Override
+        protected void implCloseSelectableChannel() throws IOException {
+            socket.close();
+        }
+
+        @Override
+        public boolean connect(SocketAddress remote) throws IOException {
+            return false;
+        }
+
+        @Override
+        public boolean finishConnect() throws IOException {
+            return false;
+        }
+
+        @Override
+        public boolean isConnected() {
+            return false;
+        }
+
+        @Override
+        public boolean isConnectionPending() {
+            return false;
+        }
+
+        @Override
+        public int read(ByteBuffer dst) throws IOException {
+            return 0;
+        }
+
+        @Override
+        public long read(ByteBuffer[] dsts, int offset, int length)
+                throws IOException {
+            return 0;
+        }
+
+        @Override
+        public int write(ByteBuffer src) throws IOException {
+            return 0;
+        }
+
+        @Override
+        public long write(ByteBuffer[] srcs, int offset, int length)
+                throws IOException {
+            return 0;
+        }
+
+        @Override
+        protected void implConfigureBlocking(boolean block) throws IOException {
+        }
+    }
 }

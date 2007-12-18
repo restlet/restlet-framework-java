@@ -37,6 +37,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
@@ -60,10 +61,6 @@ import com.noelios.restlet.http.StreamServerHelper;
  */
 public class ChunkedEncodingTestCase extends TestCase {
 
-    Component component;
-
-    String uri;
-
     static int port;
 
     static {
@@ -71,6 +68,19 @@ public class ChunkedEncodingTestCase extends TestCase {
         if (System.getProperties().containsKey("restlet.test.port")) {
             port = Integer.parseInt(System.getProperty("restlet.test.port"));
         }
+    }
+
+    Component component;
+
+    String uri;
+
+    boolean incPorts;
+
+    boolean checkedForChunkedResponse;
+
+    public void setUp() {
+        incPorts = false;
+        checkedForChunkedResponse = true;
     }
 
     public void testDefaultAndDefault() throws Exception {
@@ -90,8 +100,9 @@ public class ChunkedEncodingTestCase extends TestCase {
     public void testJettyAndDefault() throws Exception {
         // Jetty will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
+        checkedForChunkedResponse = false;
         runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
-                new StreamClientHelper(null), false);
+                new StreamClientHelper(null));
     }
 
     public void testJettyAndHttpClient() throws Exception {
@@ -107,16 +118,22 @@ public class ChunkedEncodingTestCase extends TestCase {
     public void testSimpleAndDefault() throws Exception {
         // Simple will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
+        checkedForChunkedResponse = false;
+        // Simple also does not shutdown cleanly, we need to increment
+        // run on a different port each time.
+        incPorts = true;
         runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
-                new StreamClientHelper(null), false);
+                new StreamClientHelper(null));
     }
 
     public void testSimpleAndHttpClient() throws Exception {
+        incPorts = true;
         runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
                 new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
     }
 
     public void testSimpleAndJdkNet() throws Exception {
+        incPorts = true;
         runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
                 new com.noelios.restlet.ext.net.HttpClientHelper(null));
     }
@@ -125,25 +142,20 @@ public class ChunkedEncodingTestCase extends TestCase {
 
     private void runTest(ConnectorHelper server, ConnectorHelper client)
             throws Exception {
-        runTest(server, client, true);
-    }
-
-    private void runTest(ConnectorHelper server, ConnectorHelper client,
-            boolean checkedForChunkedResponse) throws Exception {
         Engine nre = new Engine(false);
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
         org.restlet.util.Engine.setInstance(nre);
 
         start();
-        sendPut(checkedForChunkedResponse);
+        sendPut();
         stop();
     }
 
     private void start() throws Exception {
         component = new Component();
         component.getServers().add(Protocol.HTTP, port);
-        uri = "http://localhost:" + (port++) + "/test/";
+        uri = "http://localhost:" + (incPorts ? port++ : port) + "/test/";
 
         Application application = new Application(component.getContext()) {
             @Override
@@ -165,7 +177,7 @@ public class ChunkedEncodingTestCase extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    private void sendPut(boolean checkedForChunkedResponse) throws Exception {
+    private void sendPut() throws Exception {
         Request request = new Request(Method.PUT, uri, createTestXml());
         Response r = new Client(Protocol.HTTP).handle(request);
 
@@ -175,6 +187,8 @@ public class ChunkedEncodingTestCase extends TestCase {
             checkForChunkedHeader(parameters);
         }
 
+        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
+                .getStatus());
         assertXML(r.getEntityAsDom());
     }
 

@@ -337,4 +337,13 @@ public class WrapperList<E> implements List<E> {
     public <T> T[] toArray(T[] a) {
         return getDelegate().toArray(a);
     }
+
+    /**
+     * Returns a string representation of the list.
+     * 
+     * @return A string representation of the list.
+     */
+    public String toString() {
+        return getDelegate().toString();
+    }
 }
