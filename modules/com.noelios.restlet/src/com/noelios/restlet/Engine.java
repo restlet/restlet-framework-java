@@ -75,6 +75,71 @@ public class Engine extends org.restlet.util.Engine {
             + VERSION;
 
     /**
+     * Parses the "java.version" system property and returns the first digit of
+     * the version number of the Java Runtime Environment (e.g. "1" for
+     * "1.3.0").
+     * 
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
+     *      Java versioning</a>
+     * @return The major version number of the Java Runtime Environment.
+     */
+    public static int getJavaMajorVersion() {
+        int result;
+        String javaVersion = System.getProperty("java.version");
+        try {
+            result = Integer.parseInt(javaVersion.substring(0, javaVersion
+                    .indexOf(".")));
+        } catch (Exception e) {
+            result = 0;
+        }
+
+        return result;
+    }
+
+    /**
+     * Parses the "java.version" system property and returns the second digit of
+     * the version number of the Java Runtime Environment (e.g. "3" for
+     * "1.3.0").
+     * 
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
+     *      Java versioning</a>
+     * @return The minor version number of the Java Runtime Environment.
+     */
+    public static int getJavaMinorVersion() {
+        int result;
+        String javaVersion = System.getProperty("java.version");
+        try {
+            result = Integer.parseInt(javaVersion.split("\\.")[1]);
+        } catch (Exception e) {
+            result = 0;
+        }
+
+        return result;
+    }
+
+    /**
+     * Parses the "java.version" system property and returns the update release
+     * number of the Java Runtime Environment (e.g. "10" for "1.3.0_10").
+     * 
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
+     *      Java versioning</a>
+     * @return The release number of the Java Runtime Environment or 0 if it
+     *         does not exist.
+     */
+    public static int getJavaUpdateVersion() {
+        int result;
+        String javaVersion = System.getProperty("java.version");
+        try {
+            result = Integer.parseInt(javaVersion.substring(javaVersion
+                    .indexOf('_') + 1));
+        } catch (Exception e) {
+            result = 0;
+        }
+
+        return result;
+    }
+
+    /**
      * Registers a new Noelios Restlet Engine.
      * 
      * @return The registered engine.
@@ -105,7 +170,6 @@ public class Engine extends org.restlet.util.Engine {
     /**
      * Constructor that will automatically attempt to discover connectors.
      */
-    @SuppressWarnings("unchecked")
     public Engine() {
         this(true);
     }
@@ -116,146 +180,10 @@ public class Engine extends org.restlet.util.Engine {
      * @param discoverConnectors
      *                True if connectors should be automatically discovered.
      */
-    @SuppressWarnings("unchecked")
     public Engine(boolean discoverConnectors) {
         if (discoverConnectors) {
-            // Find the factory class name
-            String line = null;
-            String provider = null;
-
-            // Find the factory class name
-            ClassLoader cl = org.restlet.util.Engine.getClassLoader();
-            URL configURL;
-
-            // Register the client connector providers
-            try {
-                for (Enumeration<URL> configUrls = cl
-                        .getResources("META-INF/services/com.noelios.restlet.ClientHelper"); configUrls
-                        .hasMoreElements();) {
-                    configURL = configUrls.nextElement();
-
-                    BufferedReader reader = null;
-                    try {
-                        reader = new BufferedReader(new InputStreamReader(
-                                configURL.openStream(), "utf-8"));
-                        line = reader.readLine();
-
-                        while (line != null) {
-                            provider = getProviderClassName(line);
-
-                            if ((provider != null) && (!provider.equals(""))) {
-                                // Instantiate the factory
-                                try {
-                                    Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
-                                            .forName(provider);
-                                    getRegisteredClients().add(
-                                            providerClass.getConstructor(
-                                                    Client.class).newInstance(
-                                                    (Client) null));
-                                } catch (Exception e) {
-                                    logger.log(Level.SEVERE,
-                                            "Unable to register the client connector "
-                                                    + provider, e);
-                                }
-                            }
-
-                            line = reader.readLine();
-                        }
-                    } catch (IOException e) {
-                        logger.log(Level.SEVERE,
-                                "Unable to read the provider descriptor: "
-                                        + configURL.toString());
-                    } finally {
-                        if (reader != null)
-                            reader.close();
-                    }
-                }
-            } catch (IOException ioe) {
-                logger
-                        .log(
-                                Level.SEVERE,
-                                "Exception while detecting the client connectors.",
-                                ioe);
-            }
-
-            // Register the server connector providers
-            try {
-                for (Enumeration<URL> configUrls = cl
-                        .getResources("META-INF/services/com.noelios.restlet.ServerHelper"); configUrls
-                        .hasMoreElements();) {
-                    configURL = configUrls.nextElement();
-
-                    BufferedReader reader = null;
-                    try {
-                        reader = new BufferedReader(new InputStreamReader(
-                                configURL.openStream(), "utf-8"));
-                        line = reader.readLine();
-
-                        while (line != null) {
-                            provider = getProviderClassName(line);
-
-                            if ((provider != null) && (!provider.equals(""))) {
-                                // Instantiate the factory
-                                try {
-                                    Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
-                                            .forName(provider);
-                                    getRegisteredServers().add(
-                                            providerClass.getConstructor(
-                                                    Server.class).newInstance(
-                                                    (Server) null));
-                                } catch (Exception e) {
-                                    logger.log(Level.SEVERE,
-                                            "Unable to register the server connector "
-                                                    + provider, e);
-                                }
-                            }
-
-                            line = reader.readLine();
-                        }
-                    } catch (IOException e) {
-                        logger.log(Level.SEVERE,
-                                "Unable to read the provider descriptor: "
-                                        + configURL.toString());
-                    } finally {
-                        if (reader != null)
-                            reader.close();
-                    }
-                }
-            } catch (IOException ioe) {
-                logger
-                        .log(
-                                Level.SEVERE,
-                                "Exception while detecting the client connectors.",
-                                ioe);
-            }
-
-            // Register the default connectors that will be used if no
-            // other connector has been found
-            getRegisteredClients().add(new StreamClientHelper(null));
-            getRegisteredServers().add(new StreamServerHelper(null));
+            discoverConnectors();
         }
-    }
-
-    /**
-     * Returns the list of available client connectors.
-     * 
-     * @return The list of available client connectors.
-     */
-    public List<ConnectorHelper> getRegisteredClients() {
-        if (this.registeredClients == null)
-            this.registeredClients = new ArrayList<ConnectorHelper>();
-        return this.registeredClients;
-    }
-
-    /**
-     * Returns the list of available server connectors.
-     * 
-     * @return The list of available server connectors.
-     */
-    public List<ConnectorHelper> getRegisteredServers() {
-        if (this.registeredServers == null)
-            this.registeredServers = new ArrayList<ConnectorHelper>();
-        return this.registeredServers;
     }
 
     /**
@@ -400,68 +328,108 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
-     * Parses the "java.version" system property and returns the first digit of
-     * the version number of the Java Runtime Environment (e.g. "1" for
-     * "1.3.0").
+     * Discovers client connectors in the classpath.
      * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
-     *      Java versioning</a>
-     * @return The major version number of the Java Runtime Environment.
+     * @param classLoader
+     *                Classloader to search.
      */
-    public static int getJavaMajorVersion() {
-        int result;
-        String javaVersion = System.getProperty("java.version");
-        try {
-            result = Integer.parseInt(javaVersion.substring(0, javaVersion
-                    .indexOf(".")));
-        } catch (Exception e) {
-            result = 0;
-        }
-
-        return result;
+    private void discoverClientConnectors(ClassLoader classLoader) {
+        discoverConnectors(classLoader,
+                "META-INF/services/com.noelios.restlet.ClientHelper",
+                getRegisteredClients(), Client.class);
     }
 
     /**
-     * Parses the "java.version" system property and returns the second digit of
-     * the version number of the Java Runtime Environment (e.g. "3" for
-     * "1.3.0").
-     * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
-     *      Java versioning</a>
-     * @return The minor version number of the Java Runtime Environment.
+     * Discovers the server and client connectors and register the default
+     * connectors.
      */
-    public static int getJavaMinorVersion() {
-        int result;
-        String javaVersion = System.getProperty("java.version");
-        try {
-            result = Integer.parseInt(javaVersion.split("\\.")[1]);
-        } catch (Exception e) {
-            result = 0;
-        }
+    private void discoverConnectors() {
+        // Find the factory class name
+        ClassLoader classLoader = org.restlet.util.Engine.getClassLoader();
 
-        return result;
+        // Register the client connector providers
+        discoverClientConnectors(classLoader);
+
+        // Register the server connector providers
+        discoverServerConnectors(classLoader);
+
+        // Register the default connectors that will be used if no
+        // other connector has been found
+        registerDefaultConnectors();
     }
 
     /**
-     * Parses the "java.version" system property and returns the update release
-     * number of the Java Runtime Environment (e.g. "10" for "1.3.0_10").
+     * Looks for connector helpers in the classpath and add them to
+     * {@code connectors}.
      * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
-     *      Java versioning</a>
-     * @return The release number of the Java Runtime Environment or 0 if it
-     *         does not exist.
+     * @param classLoader
+     *                Classloader to search.
+     * @param descriptor
+     *                The descriptor location to parse.
+     * @param connectors
+     *                The list of connectors to update.
+     * @param constructorClass
+     *                The constructor parameter class to look for.
      */
-    public static int getJavaUpdateVersion() {
-        int result;
-        String javaVersion = System.getProperty("java.version");
+    @SuppressWarnings("unchecked")
+    private void discoverConnectors(ClassLoader classLoader, String descriptor,
+            List<ConnectorHelper> connectors, Class<?> constructorClass) {
         try {
-            result = Integer.parseInt(javaVersion.substring(javaVersion
-                    .indexOf('_') + 1));
-        } catch (Exception e) {
-            result = 0;
-        }
+            for (Enumeration<URL> configUrls = classLoader
+                    .getResources(descriptor); configUrls.hasMoreElements();) {
+                URL configURL = configUrls.nextElement();
 
-        return result;
+                BufferedReader reader = null;
+                try {
+                    reader = new BufferedReader(new InputStreamReader(configURL
+                            .openStream(), "utf-8"));
+                    String line = reader.readLine();
+
+                    while (line != null) {
+                        String provider = getProviderClassName(line);
+
+                        if ((provider != null) && (!provider.equals(""))) {
+                            // Instantiate the factory
+                            try {
+                                Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
+                                        .forName(provider);
+                                connectors.add(providerClass.getConstructor(
+                                        constructorClass).newInstance(
+                                        constructorClass.cast(null)));
+                            } catch (Exception e) {
+                                logger.log(Level.SEVERE,
+                                        "Unable to register the connector "
+                                                + provider, e);
+                            }
+                        }
+
+                        line = reader.readLine();
+                    }
+                } catch (IOException e) {
+                    logger.log(Level.SEVERE,
+                            "Unable to read the provider descriptor: "
+                                    + configURL.toString());
+                } finally {
+                    if (reader != null)
+                        reader.close();
+                }
+            }
+        } catch (IOException ioe) {
+            logger.log(Level.SEVERE,
+                    "Exception while detecting the client connectors.", ioe);
+        }
+    }
+
+    /**
+     * Discovers server connectors in the classpath.
+     * 
+     * @param classLoader
+     *                Classloader to search.
+     */
+    private void discoverServerConnectors(ClassLoader classLoader) {
+        discoverConnectors(classLoader,
+                "META-INF/services/com.noelios.restlet.ServerHelper",
+                getRegisteredServers(), Server.class);
     }
 
     /**
@@ -674,6 +642,42 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
+     * Parses a line to extract the provider class name.
+     * 
+     * @param line
+     *                The line to parse.
+     * @return The provider's class name or an empty string.
+     */
+    private String getProviderClassName(String line) {
+        int index = line.indexOf('#');
+        if (index != -1)
+            line = line.substring(0, index);
+        return line.trim();
+    }
+
+    /**
+     * Returns the list of available client connectors.
+     * 
+     * @return The list of available client connectors.
+     */
+    public List<ConnectorHelper> getRegisteredClients() {
+        if (this.registeredClients == null)
+            this.registeredClients = new ArrayList<ConnectorHelper>();
+        return this.registeredClients;
+    }
+
+    /**
+     * Returns the list of available server connectors.
+     * 
+     * @return The list of available server connectors.
+     */
+    public List<ConnectorHelper> getRegisteredServers() {
+        if (this.registeredServers == null)
+            this.registeredServers = new ArrayList<ConnectorHelper>();
+        return this.registeredServers;
+    }
+
+    /**
      * Returns a matching score between 2 Languages
      * 
      * @param variantLanguage
@@ -786,20 +790,6 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
-     * Parses a line to extract the provider class name.
-     * 
-     * @param line
-     *                The line to parse.
-     * @return The provider's class name or an empty string.
-     */
-    private String getProviderClassName(String line) {
-        int index = line.indexOf('#');
-        if (index != -1)
-            line = line.substring(0, index);
-        return line.trim();
-    }
-
-    /**
      * Indicates if the searched parameter is specified in the given media
      * range.
      * 
@@ -854,6 +844,54 @@ public class Engine extends org.restlet.util.Engine {
             CharacterSet characterSet) {
         if ((queryString != null) && !queryString.equals("")) {
             FormUtils.parseQuery(logger, form, queryString, characterSet);
+        }
+    }
+
+    /**
+     * Register a client helper
+     * 
+     * @param helper
+     */
+    public void registerClientHelper(ConnectorHelper helper) {
+        getRegisteredClients().add(helper);
+    }
+
+    /**
+     * Register the default client and server connectors
+     */
+    private void registerDefaultConnectors() {
+        getRegisteredClients().add(new StreamClientHelper(null));
+        getRegisteredServers().add(new StreamServerHelper(null));
+    }
+
+    /**
+     * Register a server helper
+     * 
+     * @param helper
+     */
+    public void registerServerHelper(ConnectorHelper helper) {
+        getRegisteredServers().add(helper);
+    }
+
+    /**
+     * Register a list of client helpers
+     * 
+     * @param helpers
+     */
+    public void setClientHelpers(List<ConnectorHelper> helpers) {
+        for (ConnectorHelper helper : helpers) {
+            registerClientHelper(helper);
+        }
+    }
+
+    /**
+     * Register a list of server helpers
+     * 
+     * @param helpers
+     */
+    public void setServerHelpers(List<ConnectorHelper> helpers) {
+        for (ConnectorHelper helper : helpers) {
+            registerServerHelper(helper);
         }
     }
 
