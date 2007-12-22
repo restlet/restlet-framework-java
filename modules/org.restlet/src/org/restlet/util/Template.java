@@ -36,7 +36,10 @@ import org.restlet.data.Response;
  * and parsing. The template variables can be inserted using the "{name}" syntax
  * and described using the modifiable map of variable descriptors. When no
  * descriptor is found for a given variable, the template logic uses its default
- * variable property initialized using the default {@link Variable} constructor.
+ * variable property initialized using the default {@link Variable} constructor.<br>
+ * <br>
+ * Note that the variable descriptors can be changed before the first parsing or
+ * matching call. After that point, changes won't be taken into account.
  * 
  * <table>
  * <tr>
@@ -1183,8 +1186,10 @@ public class Template {
     }
 
     /**
-     * Returns the modifiable map of variables. Creates a new instance if no one
-     * has been set.
+     * Returns the modifiable map of variable descriptors. Creates a new
+     * instance if no one has been set. Note that those variables are only
+     * descriptors that can influence the way parsing and formatting is done,
+     * they don't contain the actual value parsed.
      * 
      * @return The modifiable map of variables.
      */
