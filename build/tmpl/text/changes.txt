@@ -41,6 +41,7 @@ Changes log
  - Added ByteUtils.toString(Reader) method and refactored ByteUtils.toString(InputStream)
    to reuse it.
  - Added ByteUtils.getReader(InputStream, CharacterSet) method.
+ - Added ByteUtils.getStream(Writer) method. Implementation by Kevin Conaway.
  - Added getReader() and a write(Writer) methods on Representation class.
  - Exposed the "file" property on the FileRepresentation class.
  - Added two new FreeMarker's TemplateRepresentation constructor to allow more ways to

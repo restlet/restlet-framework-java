@@ -53,13 +53,13 @@ public final class ByteUtils {
      * Input stream connected to a non-blocking readable channel.
      */
     private final static class NbChannelInputStream extends InputStream {
+        private ByteBuffer bb;
+
         /** The channel to read from. */
         private ReadableByteChannel channel;
 
         /** The selectable channel to read from. */
         private SelectableChannel selectableChannel;
-
-        private ByteBuffer bb;
 
         /**
          * Constructor.
@@ -148,14 +148,14 @@ public final class ByteUtils {
      * Output stream connected to a non-blocking writable channel.
      */
     private final static class NbChannelOutputStream extends OutputStream {
+        private ByteBuffer bb = ByteBuffer.allocate(8192);
+
         /** The channel to write to. */
         private WritableByteChannel channel;
 
-        private Selector selector;
-
         private SelectionKey selectionKey;
 
-        private ByteBuffer bb = ByteBuffer.allocate(8192);
+        private Selector selector;
 
         /**
          * Constructor.
@@ -299,11 +299,6 @@ public final class ByteUtils {
      */
     private final static class SelectorFactory {
         /**
-         * The timeout before we exit.
-         */
-        public static long timeout = 5000;
-
-        /**
          * The number of <code>Selector</code> to create.
          */
         public static int maxSelectors = 20;
@@ -312,6 +307,11 @@ public final class ByteUtils {
          * Cache of <code>Selector</code>
          */
         private final static Stack<Selector> selectors = new Stack<Selector>();
+
+        /**
+         * The timeout before we exit.
+         */
+        public static long timeout = 5000;
 
         /**
          * Creates the <code>Selector</code>
@@ -370,6 +370,36 @@ public final class ByteUtils {
                 if (selectors.size() == 1)
                     selectors.notify();
             }
+        }
+    }
+
+    /**
+     * Outputstream wrapping a character writer.
+     * 
+     * @author Kevin Conaway
+     */
+    private final static class WriterOutputStream extends OutputStream {
+        private final Writer writer;
+
+        public WriterOutputStream(Writer writer) {
+            this.writer = writer;
+        }
+
+        @Override
+        public void close() throws IOException {
+            super.close();
+            writer.close();
+        }
+
+        @Override
+        public void flush() throws IOException {
+            super.flush();
+            writer.flush();
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            writer.write(b);
         }
     }
 
@@ -536,7 +566,7 @@ public final class ByteUtils {
      *                The writer.
      */
     public static OutputStream getStream(Writer writer) throws IOException {
-        return null;
+        return new WriterOutputStream(writer);
     }
 
     /**

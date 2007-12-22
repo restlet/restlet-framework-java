@@ -30,6 +30,7 @@ public class RestletTestSuite extends TestSuite {
     /** Constructor. */
     @SuppressWarnings("deprecation")
     public RestletTestSuite() {
+        addTestSuite(ByteUtilsTestCase.class);
         addTestSuite(CallTestCase.class);
         addTestSuite(CookieTestCase.class);
         addTestSuite(DirectoryTestCase.class);
