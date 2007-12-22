@@ -38,7 +38,7 @@ public class FileRepresentationTestCase extends TestCase {
         FileRepresentation r = new FileRepresentation(file,
                 MediaType.TEXT_PLAIN);
 
-        assertEquals("test.txt", r.getFileName());
+        assertEquals("test.txt", r.getDownloadName());
         assertEquals(MediaType.TEXT_PLAIN, r.getMediaType());
         assertNull(r.getExpirationDate());
     }

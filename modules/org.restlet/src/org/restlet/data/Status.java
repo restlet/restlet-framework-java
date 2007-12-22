@@ -1518,7 +1518,7 @@ public final class Status extends Metadata {
     public String toString() {
         return getName() + " (" + this.code + ")";
     }
-    
+
     /**
      * Check if the provided description of the status contains forbidden
      * characters such as CR and LF. an IllegalArgumentException is thrown in

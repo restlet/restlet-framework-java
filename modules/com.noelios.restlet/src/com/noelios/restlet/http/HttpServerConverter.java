@@ -253,13 +253,13 @@ public class HttpServerConverter extends HttpConverter {
                     responseHeaders.add(HttpConstants.HEADER_CONTENT_LOCATION,
                             response.getEntity().getIdentifier().toString());
                 }
-                if (response.getEntity().getFileName() != null) {
-                    responseHeaders
-                            .add(HttpConstants.HEADER_CONTENT_DISPOSITION,
-                                    response.getHttpCall()
-                                            .formatContentDisposition(
-                                                    response.getEntity()
-                                                            .getFileName()));
+                if (response.getEntity().isDownloadable()
+                        && response.getEntity().getDownloadName() != null) {
+                    responseHeaders.add(
+                            HttpConstants.HEADER_CONTENT_DISPOSITION, response
+                                    .getHttpCall().formatContentDisposition(
+                                            response.getEntity()
+                                                    .getDownloadName()));
                 }
             }
 

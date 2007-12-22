@@ -65,8 +65,14 @@ public abstract class Representation extends Variant {
     /** Indicates if the representation's content is transient. */
     private boolean isTransient;
 
-    /** Indicates the suggested file name for the representatinos content */
-    private String fileName;
+    /**
+     * Indicates the suggested download file name for the representation's
+     * content.
+     */
+    private String downloadName;
+
+    /** Indicates if the representation is downloadable. */
+    private boolean downloadable;
 
     /**
      * Default constructor.
@@ -99,24 +105,24 @@ public abstract class Representation extends Variant {
     public abstract ReadableByteChannel getChannel() throws IOException;
 
     /**
-     * Returns the suggested file name for this representation. This is mainly
-     * used to suggest to the client a local name for a downloaded
+     * Returns the suggested download file name for this representation. This is
+     * mainly used to suggest to the client a local name for a downloaded
      * representation.
      * 
      * @return The suggested file name for this representation.
      */
-    public String getFileName() {
-        return this.fileName;
+    public String getDownloadName() {
+        return this.downloadName;
     }
 
     /**
-     * Set the suggested file name for this representation.
+     * Set the suggested download file name for this representation.
      * 
      * @param fileName
      *                The suggested file name.
      */
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setDownloadName(String fileName) {
+        this.downloadName = fileName;
     }
 
     /**
@@ -234,6 +240,16 @@ public abstract class Representation extends Variant {
     }
 
     /**
+     * Indicates if the representation is downloadable which means that it can
+     * be obtained via a download dialog box.
+     * 
+     * @return True if the representation's content is downloadable.
+     */
+    public boolean isDownloadable() {
+        return downloadable;
+    }
+
+    /**
      * Releases the representation's content and all associated objects like
      * sockets, channels or files. If the representation is transient and hasn't
      * been read yet, all the remaining content will be discarded, any open
@@ -251,6 +267,17 @@ public abstract class Representation extends Variant {
      */
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    /**
+     * Indicates if the representation is downloadable which means that it can
+     * be obtained via a download dialog box.
+     * 
+     * @param downloadable
+     *                True if the representation's content is downloadable.
+     */
+    public void setDownloadable(boolean downloadable) {
+        this.downloadable = downloadable;
     }
 
     /**

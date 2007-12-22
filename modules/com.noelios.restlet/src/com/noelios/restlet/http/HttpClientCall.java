@@ -233,7 +233,7 @@ public abstract class HttpClientCall extends HttpCall {
                     result.setIdentifier(header.getValue());
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_CONTENT_DISPOSITION)) {
-                    result.setFileName(parseContentDisposition(header
+                    result.setDownloadName(parseContentDisposition(header
                             .getValue()));
                 }
             }

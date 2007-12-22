@@ -86,7 +86,7 @@ public class FileRepresentation extends Representation {
         }
 
         setMediaType(mediaType);
-        setFileName(file.getName());
+        setDownloadName(file.getName());
     }
 
     /**
