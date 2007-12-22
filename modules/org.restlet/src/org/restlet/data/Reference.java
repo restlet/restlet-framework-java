@@ -99,6 +99,8 @@ import java.util.logging.Logger;
  * single reference as the base of several relative references. If you modify
  * the base reference, all relative references are still accurate.
  * </p>
+ * Note that the name and value properties are thread safe, stored in volatile
+ * members.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986</a>
@@ -331,19 +333,19 @@ public class Reference {
     }
 
     /** The base reference for relative references. */
-    private Reference baseRef;
+    private volatile Reference baseRef;
 
     /** The fragment separator index. */
-    private int fragmentIndex;
+    private volatile int fragmentIndex;
 
     /** The internal reference. */
-    private String internalRef;
+    private volatile String internalRef;
 
     /** The query separator index. */
-    private int queryIndex;
+    private volatile int queryIndex;
 
     /** The scheme separator index. */
-    private int schemeIndex;
+    private volatile int schemeIndex;
 
     /**
      * Empty constructor.

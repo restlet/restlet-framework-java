@@ -23,16 +23,17 @@ import java.io.IOException;
 import org.restlet.util.Engine;
 
 /**
- * Multi-usage parameter.
+ * Multi-usage parameter. Note that the name and value properties are thread
+ * safe, stored in volatile members.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Parameter implements Comparable<Parameter> {
     /** The name. */
-    private String name;
+    private volatile String name;
 
     /** The value. */
-    private String value;
+    private volatile String value;
 
     /**
      * Default constructor.
