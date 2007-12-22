@@ -18,8 +18,8 @@
 
 package org.restlet;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -47,31 +47,31 @@ import org.restlet.util.ServerList;
  */
 public class Component extends Restlet {
     /** The modifiable list of client connectors. */
-    private ClientList clients;
+    private volatile ClientList clients;
 
     /** The default host. */
-    private VirtualHost defaultHost;
+    private volatile VirtualHost defaultHost;
 
     /** The helper provided by the implementation. */
-    private Helper helper;
+    private volatile Helper helper;
 
     /** The modifiable list of virtual hosts. */
-    private List<VirtualHost> hosts;
+    private volatile List<VirtualHost> hosts;
 
     /**
      * The private internal router that can be addressed via the RIAP client
      * connector.
      */
-    private Router internalRouter;
+    private volatile Router internalRouter;
 
     /** The log service. */
-    private LogService logService;
+    private volatile LogService logService;
 
     /** The modifiable list of server connectors. */
-    private ServerList servers;
+    private volatile ServerList servers;
 
     /** The status service. */
-    private StatusService statusService;
+    private volatile StatusService statusService;
 
     /**
      * Constructor.
@@ -81,14 +81,19 @@ public class Component extends Restlet {
 
         if (Engine.getInstance() != null) {
             this.helper = Engine.getInstance().createHelper(this);
+
             if (this.helper != null) {
                 setContext(this.helper.createContext(getClass()
                         .getCanonicalName()));
-                this.hosts = null;
+                this.hosts = new CopyOnWriteArrayList<VirtualHost>();
                 this.defaultHost = new VirtualHost(getContext());
                 this.internalRouter = new Router(getContext());
-                this.logService = null;
-                this.statusService = null;
+                this.logService = new LogService(true);
+                this.logService.setLoggerName(getClass().getCanonicalName()
+                        + " (" + hashCode() + ")");
+                this.statusService = new StatusService(true);
+                this.clients = new ClientList(getContext());
+                this.servers = new ServerList(getContext(), this);
             }
         }
     }
@@ -100,8 +105,6 @@ public class Component extends Restlet {
      * @return A modifiable list of client connectors.
      */
     public ClientList getClients() {
-        if (this.clients == null)
-            this.clients = new ClientList(getContext());
         return this.clients;
     }
 
@@ -130,8 +133,6 @@ public class Component extends Restlet {
      * @return The modifiable list of virtual hosts.
      */
     public List<VirtualHost> getHosts() {
-        if (this.hosts == null)
-            this.hosts = new ArrayList<VirtualHost>();
         return this.hosts;
     }
 
@@ -170,12 +171,6 @@ public class Component extends Restlet {
      * @return The global log service.
      */
     public LogService getLogService() {
-        if (this.logService == null) {
-            this.logService = new LogService(true);
-            this.logService.setLoggerName(getClass().getCanonicalName() + " ("
-                    + hashCode() + ")");
-        }
-
         return this.logService;
     }
 
@@ -186,8 +181,6 @@ public class Component extends Restlet {
      * @return The modifiable list of server connectors.
      */
     public ServerList getServers() {
-        if (this.servers == null)
-            this.servers = new ServerList(getContext(), this);
         return this.servers;
     }
 
@@ -198,8 +191,6 @@ public class Component extends Restlet {
      * @return The status service.
      */
     public StatusService getStatusService() {
-        if (this.statusService == null)
-            this.statusService = new StatusService(true);
         return this.statusService;
     }
 
@@ -286,7 +277,7 @@ public class Component extends Restlet {
      * Starts all the connectors then the component.
      */
     @Override
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         if (isStopped()) {
             if (this.clients != null) {
                 for (Client client : this.clients) {
@@ -311,7 +302,7 @@ public class Component extends Restlet {
      * Stops the component and all its connectors.
      */
     @Override
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         if (getHelper() != null)
             getHelper().stop();
 

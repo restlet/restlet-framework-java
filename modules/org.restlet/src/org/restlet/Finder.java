@@ -53,7 +53,7 @@ import org.restlet.data.Status;
  */
 public class Finder extends Restlet {
     /** Target handler class. */
-    private Class<? extends Handler> targetClass;
+    private volatile Class<? extends Handler> targetClass;
 
     /**
      * Constructor.

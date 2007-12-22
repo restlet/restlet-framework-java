@@ -18,8 +18,8 @@
 
 package org.restlet;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
@@ -51,30 +51,30 @@ public class Transformer extends Filter {
     public static final int MODE_RESPONSE = 2;
 
     /** The transformation mode. */
-    private int mode;
+    private volatile int mode;
 
     /** The XSLT transform sheet to apply to message entities. */
-    private Representation transformSheet;
+    private volatile Representation transformSheet;
 
     /**
      * The character set of the result representation. The default value is
      * null.
      */
-    private CharacterSet resultCharacterSet;
+    private volatile CharacterSet resultCharacterSet;
 
     /**
      * The encodings of the result representation.
      */
-    private List<Encoding> resultEncodings;
+    private volatile List<Encoding> resultEncodings;
 
     /** The languages of the result representation. */
-    private List<Language> resultLanguages;
+    private volatile List<Language> resultLanguages;
 
     /**
      * The media type of the result representation. MediaType.APPLICATION_XML by
      * default.
      */
-    private MediaType resultMediaType;
+    private volatile MediaType resultMediaType;
 
     /**
      * Constructor.
@@ -88,8 +88,9 @@ public class Transformer extends Filter {
         this.mode = mode;
         this.transformSheet = transformSheet;
         this.resultMediaType = MediaType.APPLICATION_XML;
-        this.resultLanguages = null;
         this.resultCharacterSet = null;
+        this.resultEncodings = new CopyOnWriteArrayList<Encoding>();
+        this.resultLanguages = new CopyOnWriteArrayList<Language>();
     }
 
     @Override
@@ -132,8 +133,6 @@ public class Transformer extends Filter {
      * @return The encoding of the result representation.
      */
     public List<Encoding> getResultEncodings() {
-        if (this.resultEncodings == null)
-            this.resultEncodings = new ArrayList<Encoding>();
         return this.resultEncodings;
     }
 
@@ -144,8 +143,6 @@ public class Transformer extends Filter {
      * @return The language of the result representation.
      */
     public List<Language> getResultLanguages() {
-        if (this.resultLanguages == null)
-            this.resultLanguages = new ArrayList<Language>();
         return this.resultLanguages;
     }
 

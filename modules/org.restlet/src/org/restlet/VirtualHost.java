@@ -105,31 +105,31 @@ public class VirtualHost extends Router {
     }
 
     /** The display name. */
-    private String name;
+    private volatile String name;
 
     /** The hostRef host domain pattern to match. */
-    private String hostDomain;
+    private volatile String hostDomain;
 
     /** The hostRef host port pattern to match. */
-    private String hostPort;
+    private volatile String hostPort;
 
     /** The hostRef scheme pattern to match. */
-    private String hostScheme;
+    private volatile String hostScheme;
 
     /** The resourceRef host domain pattern to match. */
-    private String resourceDomain;
+    private volatile String resourceDomain;
 
     /** The resourceRef host port pattern to match. */
-    private String resourcePort;
+    private volatile String resourcePort;
 
     /** The resourceRef scheme pattern to match. */
-    private String resourceScheme;
+    private volatile String resourceScheme;
 
     /** The listening server address pattern to match. */
-    private String serverAddress;
+    private volatile String serverAddress;
 
     /** The listening server port pattern to match. */
-    private String serverPort;
+    private volatile String serverPort;
 
     /**
      * Constructor. Note that usage of this constructor is not recommended as

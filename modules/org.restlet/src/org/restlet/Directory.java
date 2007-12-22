@@ -50,28 +50,28 @@ import org.restlet.util.Engine;
  */
 public class Directory extends Finder {
     /** Indicates if the best content is automatically negotiated. */
-    private boolean negotiateContent;
+    private volatile boolean negotiateContent;
 
     /** Indicates if the subdirectories are deeply accessible (true by default). */
-    private boolean deeplyAccessible;
+    private volatile boolean deeplyAccessible;
 
     /** The index name, without extensions (ex: "index" or "home"). */
-    private String indexName;
+    private volatile String indexName;
 
     /** The absolute root reference (file, clap URI). */
-    private Reference rootRef;
+    private volatile Reference rootRef;
 
     /**
      * Indicates if modifications to local resources are allowed (false by
      * default).
      */
-    private boolean modifiable;
+    private volatile boolean modifiable;
 
     /**
      * Indicates if the display of directory listings is allowed when no index
      * file is found.
      */
-    private boolean listingAllowed;
+    private volatile boolean listingAllowed;
 
     /**
      * Constructor.

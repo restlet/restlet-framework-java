@@ -18,6 +18,8 @@
 
 package org.restlet.util;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Server;
@@ -31,10 +33,10 @@ import org.restlet.data.Protocol;
 public final class ServerList extends WrapperList<Server> {
 
     /** The context. */
-    private Context context;
+    private volatile Context context;
 
     /** The target Restlet of added servers. */
-    private Restlet target;
+    private volatile Restlet target;
 
     /**
      * Constructor.
@@ -45,6 +47,7 @@ public final class ServerList extends WrapperList<Server> {
      *                The target Restlet of added servers.
      */
     public ServerList(Context context, Restlet target) {
+        super(new CopyOnWriteArrayList<Server>());
         this.context = context;
         this.target = target;
     }

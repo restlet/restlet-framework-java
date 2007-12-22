@@ -61,22 +61,22 @@ public class Application extends Restlet {
     public static final String KEY = "org.restlet.application";
 
     /** The display name. */
-    private String name;
+    private volatile String name;
 
     /** The description. */
-    private String description;
+    private volatile String description;
 
     /** The author(s). */
-    private String author;
+    private volatile String author;
 
     /** The owner(s). */
-    private String owner;
+    private volatile String owner;
 
     /** The root Restlet. */
-    private Restlet root;
+    private volatile Restlet root;
 
     /** The connector service. */
-    private ConnectorService connectorService;
+    private volatile ConnectorService connectorService;
 
     /**
      * The converter service.
@@ -85,22 +85,22 @@ public class Application extends Restlet {
      *             content negotiation. Most users prefer to handle those
      *             conversion in Resource subclasses.
      */
-    private org.restlet.service.ConverterService converterService;
+    private volatile org.restlet.service.ConverterService converterService;
 
     /** The decoder service. */
-    private DecoderService decoderService;
+    private volatile DecoderService decoderService;
 
     /** The local service. */
-    private MetadataService metadataService;
+    private volatile MetadataService metadataService;
 
     /** The status service. */
-    private StatusService statusService;
+    private volatile StatusService statusService;
 
     /** The tunnel service. */
-    private TunnelService tunnelService;
+    private volatile TunnelService tunnelService;
 
     /** The helper provided by the implementation. */
-    private Helper helper;
+    private volatile Helper helper;
 
     /**
      * Constructor. Note that usage of this constructor is not recommended as
@@ -118,6 +118,7 @@ public class Application extends Restlet {
      * @param parentContext
      *                The parent context. Typically the component's context.
      */
+    @SuppressWarnings("deprecation")
     public Application(Context parentContext) {
         super(null);
 
@@ -140,11 +141,12 @@ public class Application extends Restlet {
         this.author = null;
         this.owner = null;
         this.root = null;
-        this.connectorService = null;
-        this.decoderService = null;
-        this.metadataService = null;
-        this.statusService = null;
-        this.tunnelService = null;
+        this.connectorService = new ConnectorService();
+        this.converterService = new org.restlet.service.ConverterService();
+        this.decoderService = new DecoderService(true);
+        this.metadataService = new MetadataService();
+        this.statusService = new StatusService(true);
+        this.tunnelService = new TunnelService(true, true, true);
     }
 
     /**
@@ -155,7 +157,7 @@ public class Application extends Restlet {
      * 
      * @return The root Restlet.
      */
-    public Restlet createRoot() {
+    public synchronized Restlet createRoot() {
         return null;
     }
 
@@ -175,8 +177,6 @@ public class Application extends Restlet {
      * @return The connector service.
      */
     public ConnectorService getConnectorService() {
-        if (this.connectorService == null)
-            this.connectorService = new ConnectorService();
         return this.connectorService;
     }
 
@@ -190,8 +190,6 @@ public class Application extends Restlet {
      *             conversion in Resource subclasses.
      */
     public org.restlet.service.ConverterService getConverterService() {
-        if (this.converterService == null)
-            this.converterService = new org.restlet.service.ConverterService();
         return this.converterService;
     }
 
@@ -202,8 +200,6 @@ public class Application extends Restlet {
      * @return The decoderservice.
      */
     public DecoderService getDecoderService() {
-        if (this.decoderService == null)
-            this.decoderService = new DecoderService(true);
         return this.decoderService;
     }
 
@@ -232,8 +228,6 @@ public class Application extends Restlet {
      * @return The metadata service.
      */
     public MetadataService getMetadataService() {
-        if (this.metadataService == null)
-            this.metadataService = new MetadataService();
         return this.metadataService;
     }
 
@@ -261,7 +255,7 @@ public class Application extends Restlet {
      * 
      * @return The root Restlet.
      */
-    public Restlet getRoot() {
+    public synchronized Restlet getRoot() {
         if (this.root == null) {
             this.root = createRoot();
         }
@@ -276,8 +270,6 @@ public class Application extends Restlet {
      * @return The status service.
      */
     public StatusService getStatusService() {
-        if (this.statusService == null)
-            this.statusService = new StatusService(true);
         return this.statusService;
     }
 
@@ -288,8 +280,6 @@ public class Application extends Restlet {
      * @return The tunnel service.
      */
     public TunnelService getTunnelService() {
-        if (this.tunnelService == null)
-            this.tunnelService = new TunnelService(true, true, true);
         return this.tunnelService;
     }
 
@@ -341,7 +331,7 @@ public class Application extends Restlet {
     }
 
     @Override
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         if (isStopped()) {
             super.start();
             if (getHelper() != null)
@@ -350,7 +340,7 @@ public class Application extends Restlet {
     }
 
     @Override
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         if (isStarted()) {
             if (getHelper() != null)
                 getHelper().stop();

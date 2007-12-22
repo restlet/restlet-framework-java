@@ -19,7 +19,9 @@
 package org.restlet;
 
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.restlet.data.Form;
@@ -30,19 +32,25 @@ import org.restlet.util.Series;
  * Contextual data and services provided to a Restlet. The context is the means
  * by which a Restlet may access the software environment within the framework.
  * It is typically provided by the immediate parent Restlet (Component and
- * Application are the most common cases).
+ * Application are the most common cases).<br>
+ * <br>
+ * Note that attributes and parameters of a context are stored in concurrent
+ * collections that guarantee thread safe access and modification. If several
+ * threads concurrently access objects from these collections, they should be
+ * either immutable, thread-safe themselves or guarded by a commonly agreed
+ * lock.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Context {
     /** The modifiable attributes map. */
-    private Map<String, Object> attributes;
+    private volatile ConcurrentMap<String, Object> attributes;
 
     /** The modifiable series of parameters. */
-    private Series<Parameter> parameters;
+    private volatile Series<Parameter> parameters;
 
     /** The logger instance to use. */
-    private Logger logger;
+    private volatile Logger logger;
 
     /**
      * Constructor. Writes log messages to "org.restlet".
@@ -58,7 +66,9 @@ public class Context {
      *                The logger instance of use.
      */
     public Context(Logger logger) {
+        this.attributes = new ConcurrentHashMap<String, Object>();
         this.logger = logger;
+        this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
     }
 
     /**
@@ -104,11 +114,7 @@ public class Context {
      * 
      * @return The modifiable attributes map.
      */
-    public Map<String, Object> getAttributes() {
-        if (this.attributes == null) {
-            this.attributes = new TreeMap<String, Object>();
-        }
-
+    public ConcurrentMap<String, Object> getAttributes() {
         return this.attributes;
     }
 
@@ -174,8 +180,6 @@ public class Context {
      * @return The modifiable series of parameters.
      */
     public Series<Parameter> getParameters() {
-        if (this.parameters == null)
-            this.parameters = new Form();
         return this.parameters;
     }
 
@@ -186,7 +190,11 @@ public class Context {
      *                The modifiable map of attributes.
      */
     public void setAttributes(Map<String, Object> attributes) {
-        this.attributes = attributes;
+        if (attributes instanceof ConcurrentMap) {
+            this.attributes = (ConcurrentMap<String, Object>) attributes;
+        } else {
+            this.attributes = new ConcurrentHashMap<String, Object>(attributes);
+        }
     }
 
     /**

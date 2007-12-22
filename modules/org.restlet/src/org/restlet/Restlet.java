@@ -38,10 +38,10 @@ public class Restlet extends Uniform {
     private static final String UNABLE_TO_START = "Unable to start the Restlet";
 
     /** The context. */
-    private Context context;
+    private volatile Context context;
 
     /** Indicates if the restlet was started. */
-    private boolean started;
+    private volatile boolean started;
 
     /**
      * Constructor. Note that usage of this constructor is not recommended as
@@ -61,6 +61,16 @@ public class Restlet extends Uniform {
      *                The context.
      */
     public Restlet(Context context) {
+        if (context == null) {
+            String logName = getClass().getCanonicalName();
+
+            if (logName == null) {
+                logName = Restlet.class.getCanonicalName();
+            }
+
+            context = new Context(logName);
+        }
+
         this.context = context;
         this.started = false;
     }
@@ -71,16 +81,6 @@ public class Restlet extends Uniform {
      * @return The context.
      */
     public Context getContext() {
-        if (this.context == null) {
-            String logName = getClass().getCanonicalName();
-
-            if (logName == null) {
-                logName = Restlet.class.getCanonicalName();
-            }
-
-            this.context = new Context(logName);
-        }
-
         return this.context;
     }
 
@@ -141,7 +141,7 @@ public class Restlet extends Uniform {
      * 
      * @return True if the Restlet is started.
      */
-    public synchronized boolean isStarted() {
+    public boolean isStarted() {
         return this.started;
     }
 
@@ -150,7 +150,7 @@ public class Restlet extends Uniform {
      * 
      * @return True if the Restlet is stopped.
      */
-    public synchronized boolean isStopped() {
+    public boolean isStopped() {
         return !this.started;
     }
 

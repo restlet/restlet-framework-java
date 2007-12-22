@@ -61,16 +61,16 @@ package org.restlet.service;
  */
 public class LogService {
     /** Indicates if the service has been enabled. */
-    private boolean enabled;
+    private volatile boolean enabled;
 
     /** The access logger name. */
-    private String loggerName;
+    private volatile String loggerName;
 
     /** The log entry format. */
-    private String logFormat;
+    private volatile String logFormat;
 
     /** Indicates if the identity check (as specified by RFC1413) is enabled. */
-    private boolean identityCheck;
+    private volatile boolean identityCheck;
 
     /**
      * Constructor.

@@ -42,7 +42,7 @@ import org.restlet.data.Response;
  */
 public final class RouteList extends WrapperList<Route> {
     /** The index of the last route used in the round robin mode. */
-    private int lastIndex;
+    private volatile int lastIndex;
 
     /**
      * Constructor.
@@ -123,7 +123,8 @@ public final class RouteList extends WrapperList<Route> {
      *                The minimum score required to have a match.
      * @return The last route match or null.
      */
-    public Route getLast(Request request, Response response, float requiredScore) {
+    public synchronized Route getLast(Request request, Response response,
+            float requiredScore) {
         for (int j = size() - 1; (j >= 0); j--) {
             Route route = get(j);
             if (route.score(request, response) >= requiredScore)
@@ -145,7 +146,8 @@ public final class RouteList extends WrapperList<Route> {
      *                The minimum score required to have a match.
      * @return A next route or null.
      */
-    public Route getNext(Request request, Response response, float requiredScore) {
+    public synchronized Route getNext(Request request, Response response,
+            float requiredScore) {
         if (!isEmpty()) {
             for (int initialIndex = lastIndex++; initialIndex != lastIndex; lastIndex++) {
                 if (lastIndex >= size()) {
@@ -173,7 +175,7 @@ public final class RouteList extends WrapperList<Route> {
      *                The minimum score required to have a match.
      * @return A random route or null.
      */
-    public Route getRandom(Request request, Response response,
+    public synchronized Route getRandom(Request request, Response response,
             float requiredScore) {
         int length = size();
         if (length > 0) {
@@ -204,7 +206,7 @@ public final class RouteList extends WrapperList<Route> {
      * @param target
      *                The target Restlet to detach.
      */
-    public void removeAll(Restlet target) {
+    public synchronized void removeAll(Restlet target) {
         for (int i = size() - 1; i >= 0; i--) {
             if (get(i).getNext() == target)
                 remove(i);

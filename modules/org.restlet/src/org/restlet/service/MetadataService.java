@@ -19,7 +19,7 @@
 package org.restlet.service;
 
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -33,16 +33,16 @@ import org.restlet.data.Metadata;
  */
 public class MetadataService {
     /** The default encoding for local representations. */
-    private Encoding defaultEncoding;
+    private volatile Encoding defaultEncoding;
 
     /** The default language for local representations. */
-    private Language defaultLanguage;
+    private volatile Language defaultLanguage;
 
     /** The default media type for local representations. */
-    private MediaType defaultMediaType;
+    private volatile MediaType defaultMediaType;
 
     /** The mappings from extension names to metadata. */
-    private Map<String, Metadata> mappings;
+    private volatile Map<String, Metadata> mappings;
 
     /**
      * Constructor.
@@ -51,7 +51,7 @@ public class MetadataService {
         this.defaultEncoding = Encoding.IDENTITY;
         this.defaultLanguage = Language.ENGLISH_US;
         this.defaultMediaType = MediaType.APPLICATION_OCTET_STREAM;
-        this.mappings = null;
+        this.mappings = new ConcurrentHashMap<String, Metadata>();
         addCommonExtensions();
     }
 
@@ -181,8 +181,6 @@ public class MetadataService {
      * @return The mappings from extension names to metadata.
      */
     public Map<String, Metadata> getMappings() {
-        if (this.mappings == null)
-            this.mappings = new TreeMap<String, Metadata>();
         return this.mappings;
     }
 

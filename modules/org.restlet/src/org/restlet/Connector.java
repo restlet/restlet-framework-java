@@ -18,8 +18,8 @@
 
 package org.restlet;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.Protocol;
 
@@ -44,7 +44,7 @@ import org.restlet.data.Protocol;
  */
 public abstract class Connector extends Restlet {
     /** The list of protocols simultaneously supported. */
-    private List<Protocol> protocols;
+    private volatile List<Protocol> protocols;
 
     /**
      * Constructor.
@@ -66,7 +66,7 @@ public abstract class Connector extends Restlet {
      */
     public Connector(Context context, List<Protocol> protocols) {
         super(context);
-        this.protocols = protocols;
+        this.protocols = new CopyOnWriteArrayList<Protocol>(protocols);
     }
 
     /**
@@ -75,8 +75,6 @@ public abstract class Connector extends Restlet {
      * @return The protocols simultaneously supported.
      */
     public List<Protocol> getProtocols() {
-        if (this.protocols == null)
-            this.protocols = new ArrayList<Protocol>();
         return this.protocols;
     }
 

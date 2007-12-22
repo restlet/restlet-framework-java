@@ -99,28 +99,28 @@ public class Router extends Restlet {
     public static final int CUSTOM = 6;
 
     /** Finder class to instantiate. */
-    private Class<? extends Finder> finderClass;
+    private volatile Class<? extends Finder> finderClass;
 
     /** The modifiable list of routes. */
-    private RouteList routes;
+    private volatile RouteList routes;
 
     /** The default route tested if no other one was available. */
-    private Route defaultRoute;
+    private volatile Route defaultRoute;
 
     /** The routing mode. */
-    private int routingMode;
+    private volatile int routingMode;
 
     /** The minimum score required to have a match. */
-    private float requiredScore;
+    private volatile float requiredScore;
 
     /**
      * The maximum number of attempts if no attachment could be matched on the
      * first attempt.
      */
-    private int maxAttempts;
+    private volatile int maxAttempts;
 
     /** The delay (in milliseconds) before a new attempt. */
-    private long retryDelay;
+    private volatile long retryDelay;
 
     /**
      * Constructor. Note that usage of this constructor is not recommended as
@@ -140,7 +140,7 @@ public class Router extends Restlet {
      */
     public Router(Context context) {
         super(context);
-        this.routes = null;
+        this.routes = new RouteList();
         this.defaultRoute = null;
         this.finderClass = Finder.class;
         this.routingMode = BEST;
@@ -424,8 +424,6 @@ public class Router extends Restlet {
      * @return The modifiable list of routes.
      */
     public RouteList getRoutes() {
-        if (this.routes == null)
-            this.routes = new RouteList();
         return this.routes;
     }
 

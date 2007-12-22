@@ -49,16 +49,16 @@ import org.restlet.resource.Representation;
  */
 public class StatusService {
     /** Indicates if the service has been enabled. */
-    private boolean enabled;
+    private volatile boolean enabled;
 
     /** The email address to contact in case of error. */
-    private String contactEmail;
+    private volatile String contactEmail;
 
     /** The home URI to propose in case of error. */
-    private Reference homeRef;
+    private volatile Reference homeRef;
 
     /** True if an existing entity should be overwritten. */
-    private boolean overwrite;
+    private volatile boolean overwrite;
 
     /**
      * Constructor.

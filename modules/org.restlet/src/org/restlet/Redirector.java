@@ -81,10 +81,10 @@ public class Redirector extends Restlet {
     public static final int MODE_DISPATCHER = 5;
 
     /** The target URI pattern. */
-    protected String targetTemplate;
+    protected volatile String targetTemplate;
 
     /** The redirection mode. */
-    protected int mode;
+    protected volatile int mode;
 
     /**
      * Constructor for the dispatcher mode.
@@ -148,7 +148,7 @@ public class Redirector extends Restlet {
      * @return The target URI pattern.
      */
     public String getTargetTemplate() {
-        return targetTemplate;
+        return this.targetTemplate;
     }
 
     /**

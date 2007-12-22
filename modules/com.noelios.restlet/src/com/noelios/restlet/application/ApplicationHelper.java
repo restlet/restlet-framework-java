@@ -55,9 +55,9 @@ public class ApplicationHelper extends Helper {
      * Constructor.
      * 
      * @param application
-     *            The application to help.
+     *                The application to help.
      * @param parentContext
-     *            The parent context, typically the component's context.
+     *                The parent context, typically the component's context.
      */
     public ApplicationHelper(Application application, Context parentContext) {
         this.application = application;
@@ -69,7 +69,7 @@ public class ApplicationHelper extends Helper {
      * Creates a new context.
      * 
      * @param loggerName
-     *            The JDK's logger name to use for contextual logging.
+     *                The JDK's logger name to use for contextual logging.
      * @return The new context.
      */
     public Context createContext(String loggerName) {
@@ -82,9 +82,9 @@ public class ApplicationHelper extends Helper {
      * default.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         // Add the application in request and response attributes
@@ -122,7 +122,7 @@ public class ApplicationHelper extends Helper {
     }
 
     /** Start hook. */
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         // Addition of tunnel filter
         if (getApplication().getTunnelService().isEnabled()) {
             addFilter(createTunnelFilter(getApplication()));
@@ -150,7 +150,7 @@ public class ApplicationHelper extends Helper {
      * Adds a new filter to the chain.
      * 
      * @param filter
-     *            The filter to add.
+     *                The filter to add.
      */
     private void addFilter(Filter filter) {
         if (getLast() != null) {
@@ -166,9 +166,9 @@ public class ApplicationHelper extends Helper {
      * Creates a new log filter. Allows overriding.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param logService
-     *            The log service descriptor.
+     *                The log service descriptor.
      * @return The new log filter.
      */
     protected Filter createLogFilter(Context context, LogService logService) {
@@ -179,7 +179,7 @@ public class ApplicationHelper extends Helper {
      * Creates a new decoder filter. Allows overriding.
      * 
      * @param application
-     *            The parent application.
+     *                The parent application.
      * @return The new decoder filter.
      */
     protected Filter createDecoderFilter(Application application) {
@@ -190,7 +190,7 @@ public class ApplicationHelper extends Helper {
      * Creates a new status filter. Allows overriding.
      * 
      * @param application
-     *            The parent application.
+     *                The parent application.
      * @return The new status filter.
      */
     protected Filter createStatusFilter(Application application) {
@@ -201,7 +201,7 @@ public class ApplicationHelper extends Helper {
      * Creates a new tunnel filter. Allows overriding.
      * 
      * @param application
-     *            The parent application.
+     *                The parent application.
      * @return The new tunnel filter.
      */
     protected Filter createTunnelFilter(Application application) {
@@ -209,7 +209,7 @@ public class ApplicationHelper extends Helper {
     }
 
     /** Stop callback. */
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
 
     }
 
@@ -226,7 +226,7 @@ public class ApplicationHelper extends Helper {
      * Sets the first Restlet.
      * 
      * @param first
-     *            The first Restlet.
+     *                The first Restlet.
      */
     private void setFirst(Restlet first) {
         this.first = first;
@@ -245,7 +245,7 @@ public class ApplicationHelper extends Helper {
      * Sets the last Filter.
      * 
      * @param last
-     *            The last Filter.
+     *                The last Filter.
      */
     private void setLast(Filter last) {
         this.last = last;

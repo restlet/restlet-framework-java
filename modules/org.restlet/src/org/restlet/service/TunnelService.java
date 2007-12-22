@@ -69,28 +69,28 @@ import org.restlet.data.ClientInfo;
  */
 public class TunnelService {
     /** Indicates if the service has been enabled. */
-    private boolean enabled;
+    private volatile boolean enabled;
 
     /** Indicates if the method name can be tunneled. */
-    private boolean methodTunnel;
+    private volatile boolean methodTunnel;
 
     /** The name of the parameter containing the method name. */
-    private String methodParameter;
+    private volatile String methodParameter;
 
     /** Indicates if the client preferences can be tunneled. */
-    private boolean preferencesTunnel;
+    private volatile boolean preferencesTunnel;
 
     /** The name of the parameter containing the accepted character set. */
-    private String characterSetParameter;
+    private volatile String characterSetParameter;
 
     /** The name of the parameter containing the accepted encoding. */
-    private String encodingParameter;
+    private volatile String encodingParameter;
 
     /** The name of the parameter containing the accepted language. */
-    private String languageParameter;
+    private volatile String languageParameter;
 
     /** The name of the parameter containing the accepted media type. */
-    private String mediaTypeParameter;
+    private volatile String mediaTypeParameter;
 
     /**
      * Constructor.

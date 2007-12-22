@@ -35,16 +35,16 @@ import org.restlet.util.Helper;
  */
 public class Server extends Connector {
     /** The listening address if specified. */
-    private String address;
+    private volatile String address;
 
     /** The listening port if specified. */
-    private int port;
+    private volatile int port;
 
     /** The target Restlet. */
-    private Restlet target;
+    private volatile Restlet target;
 
     /** The helper provided by the implementation. */
-    private Helper helper;
+    private volatile Helper helper;
 
     /**
      * Constructor.
@@ -321,7 +321,7 @@ public class Server extends Connector {
     }
 
     @Override
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         if (isStopped()) {
             super.start();
             if (getHelper() != null)
@@ -330,7 +330,7 @@ public class Server extends Connector {
     }
 
     @Override
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         if (isStarted()) {
             getHelper().stop();
             if (getHelper() != null)

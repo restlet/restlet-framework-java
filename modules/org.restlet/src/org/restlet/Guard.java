@@ -38,16 +38,16 @@ import org.restlet.data.Status;
 public class Guard extends Filter {
 
     /** The authentication realm. */
-    private String realm;
+    private volatile String realm;
 
     /**
      * Indicates if a new challenge should be sent when invalid credentials are
      * received (true by default to conform to HTTP recommendations).
      */
-    private boolean rechallengeEnabled;
+    private volatile boolean rechallengeEnabled;
 
     /** The authentication challenge scheme. */
-    private ChallengeScheme scheme;
+    private volatile ChallengeScheme scheme;
 
     /** Map of secrets (login/password combinations). */
     private final ConcurrentMap<String, char[]> secrets;

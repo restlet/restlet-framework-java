@@ -34,7 +34,7 @@ import org.restlet.resource.Resource;
  */
 public abstract class Filter extends Restlet {
     /** The next Restlet. */
-    private Restlet next;
+    private volatile Restlet next;
 
     /**
      * Constructor.

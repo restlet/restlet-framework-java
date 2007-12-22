@@ -25,7 +25,7 @@ package org.restlet.service;
  */
 public class DecoderService {
     /** Indicates if the service has been enabled. */
-    private boolean enabled;
+    private volatile boolean enabled;
 
     /**
      * Constructor.

@@ -35,7 +35,7 @@ import org.restlet.util.Helper;
  */
 public class Client extends Connector {
     /** The helper provided by the implementation. */
-    private Helper helper;
+    private volatile Helper helper;
 
     /**
      * Constructor.
@@ -104,7 +104,7 @@ public class Client extends Connector {
     }
 
     @Override
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         if (isStopped()) {
             super.start();
             if (getHelper() != null)
@@ -113,7 +113,7 @@ public class Client extends Connector {
     }
 
     @Override
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         if (isStarted()) {
             if (getHelper() != null)
                 getHelper().stop();

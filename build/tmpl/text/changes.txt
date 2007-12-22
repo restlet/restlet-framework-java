@@ -15,6 +15,7 @@ Changes log
    Reported by Lee Saferite.
  - Fixed path error in test cases  module. Reported by Sean Landis, contributed by Alex Milowski.
  - SaxRepresentation constructors don't throw IOException anymore. Reported by Paul J. Lucas.
+ - Fixed multi-threading issues. Reported by Tim Peierls. Some contributions by Kevin Conaway.
 
 [Enhancements] 
  - Added a getApplication() method to Context and Resource classes.

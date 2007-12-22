@@ -18,8 +18,8 @@
 
 package org.restlet.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.Protocol;
 import org.restlet.resource.Representation;
@@ -35,15 +35,17 @@ import org.restlet.resource.Representation;
  */
 public class ConnectorService {
     /** The list of required client protocols. */
-    private List<Protocol> clientProtocols;
+    private volatile List<Protocol> clientProtocols;
 
     /** The list of required server protocols. */
-    private List<Protocol> serverProtocols;
+    private volatile List<Protocol> serverProtocols;
 
     /**
      * Constructor.
      */
     public ConnectorService() {
+        this.clientProtocols = new CopyOnWriteArrayList<Protocol>();
+        this.serverProtocols = new CopyOnWriteArrayList<Protocol>();
     }
 
     /**
@@ -78,8 +80,6 @@ public class ConnectorService {
      * @return The list of required client protocols.
      */
     public List<Protocol> getClientProtocols() {
-        if (this.clientProtocols == null)
-            this.clientProtocols = new ArrayList<Protocol>();
         return this.clientProtocols;
     }
 
@@ -92,8 +92,6 @@ public class ConnectorService {
      * @return The list of required server protocols.
      */
     public List<Protocol> getServerProtocols() {
-        if (this.serverProtocols == null)
-            this.serverProtocols = new ArrayList<Protocol>();
         return this.serverProtocols;
     }
 

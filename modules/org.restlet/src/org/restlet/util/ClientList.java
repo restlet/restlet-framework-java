@@ -18,6 +18,8 @@
 
 package org.restlet.util;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
@@ -30,7 +32,7 @@ import org.restlet.data.Protocol;
 public final class ClientList extends WrapperList<Client> {
 
     /** The context. */
-    private Context context;
+    private volatile Context context;
 
     /**
      * Constructor.
@@ -39,6 +41,7 @@ public final class ClientList extends WrapperList<Client> {
      *                The context.
      */
     public ClientList(Context context) {
+        super(new CopyOnWriteArrayList<Client>());
         this.context = context;
     }
 
