@@ -75,7 +75,7 @@ import com.noelios.restlet.http.HttpServerConverter;
  */
 public class ServletConverter extends HttpServerConverter {
     /** The target Restlet. */
-    private Restlet target;
+    private volatile Restlet target;
 
     /**
      * Constructor. Remember to manually set the "target" property before

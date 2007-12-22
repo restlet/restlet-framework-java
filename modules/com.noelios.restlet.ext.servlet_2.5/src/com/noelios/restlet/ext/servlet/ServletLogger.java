@@ -28,13 +28,13 @@ import java.util.logging.Logger;
  */
 public class ServletLogger extends Logger {
     /** The Servlet context to use for logging. */
-    private javax.servlet.ServletContext context;
+    private volatile javax.servlet.ServletContext context;
 
     /**
      * Constructor.
      * 
      * @param context
-     *            The Servlet context to use.
+     *                The Servlet context to use.
      */
     public ServletLogger(javax.servlet.ServletContext context) {
         super(null, null);
@@ -45,7 +45,7 @@ public class ServletLogger extends Logger {
      * Log a LogRecord.
      * 
      * @param record
-     *            The LogRecord to be published
+     *                The LogRecord to be published
      */
     public void log(LogRecord record) {
         getContext().log(record.getMessage(), record.getThrown());

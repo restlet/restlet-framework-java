@@ -39,7 +39,7 @@ public class JdbcResult implements Serializable {
      * Constructor.
      * 
      * @param statement
-     *            The JDBC statement.
+     *                The JDBC statement.
      */
     public JdbcResult(Statement statement) {
         this.statement = statement;

@@ -30,13 +30,13 @@ import org.restlet.Router;
  */
 public class ClientRouter extends Router {
     /** The parent component. */
-    private Component component;
+    private volatile Component component;
 
     /**
      * Constructor.
      * 
      * @param component
-     *            The parent component.
+     *                The parent component.
      */
     public ClientRouter(Component component) {
         super(component.getContext());
@@ -44,7 +44,7 @@ public class ClientRouter extends Router {
     }
 
     /** Starts the Restlet. */
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         for (Client client : getComponent().getClients()) {
             getRoutes().add(new ClientRoute(this, client));
         }

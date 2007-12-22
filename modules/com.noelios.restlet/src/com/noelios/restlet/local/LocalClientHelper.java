@@ -59,7 +59,7 @@ public class LocalClientHelper extends ClientHelper {
      * extensions is added, see the addCommonExtensions() method.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      */
     public LocalClientHelper(Client client) {
         super(client);
@@ -69,7 +69,7 @@ public class LocalClientHelper extends ClientHelper {
      * Returns the metadata service associated to a request.
      * 
      * @param request
-     *            The request to lookup.
+     *                The request to lookup.
      * @return The metadata service associated to a request.
      */
     public MetadataService getMetadataService(Request request) {
@@ -91,11 +91,11 @@ public class LocalClientHelper extends ClientHelper {
      * extensions.
      * 
      * @param metadataService
-     *            The parent metadata service.
+     *                The parent metadata service.
      * @param entryName
-     *            The entry name with extensions.
+     *                The entry name with extensions.
      * @param variant
-     *            The variant to update.
+     *                The variant to update.
      */
     public void updateMetadata(MetadataService metadataService,
             String entryName, Variant variant) {

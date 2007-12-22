@@ -56,9 +56,9 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * Constructor.
      * 
      * @param encoding
-     *            Encoder algorithm.
+     *                Encoder algorithm.
      * @param wrappedRepresentation
-     *            The wrapped representation.
+     *                The wrapped representation.
      */
     public EncodeRepresentation(Encoding encoding,
             Representation wrappedRepresentation) {
@@ -200,7 +200,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * Writes the representation to a byte channel.
      * 
      * @param writableChannel
-     *            A writable byte channel.
+     *                A writable byte channel.
      */
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (canEncode()) {
@@ -214,7 +214,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * Writes the representation to a byte stream.
      * 
      * @param outputStream
-     *            The output stream.
+     *                The output stream.
      */
     public void write(OutputStream outputStream) throws IOException {
         if (canEncode()) {

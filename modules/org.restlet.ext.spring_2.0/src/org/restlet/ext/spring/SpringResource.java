@@ -46,7 +46,7 @@ public class SpringResource extends AbstractResource {
      * Constructor.
      * 
      * @param representation
-     *            The description.
+     *                The description.
      */
     public SpringResource(Representation representation) {
         this(representation, "Resource loaded through a Representation");
@@ -56,9 +56,9 @@ public class SpringResource extends AbstractResource {
      * Constructor.
      * 
      * @param representation
-     *            The description.
+     *                The description.
      * @param description
-     *            The description.
+     *                The description.
      */
     public SpringResource(Representation representation, String description) {
         if (representation == null) {

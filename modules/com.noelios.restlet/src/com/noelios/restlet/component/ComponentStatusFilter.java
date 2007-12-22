@@ -33,13 +33,13 @@ import com.noelios.restlet.StatusFilter;
  */
 public class ComponentStatusFilter extends StatusFilter {
     /** The component. */
-    private Component component;
+    private volatile Component component;
 
     /**
      * Constructor.
      * 
      * @param component
-     *            The component.
+     *                The component.
      */
     public ComponentStatusFilter(Component component) {
         super(component.getContext(), component.getStatusService()

@@ -45,22 +45,22 @@ import org.springframework.context.support.GenericApplicationContext;
  */
 public class SpringContext extends GenericApplicationContext {
     /** The parent Restlet context. */
-    private Context restletContext;
+    private volatile Context restletContext;
 
     /**
      * The modifiable list of configuration URIs for beans definitions via
      * property representations.
      */
-    private List<String> propertyConfigRefs;
+    private volatile List<String> propertyConfigRefs;
 
     /**
      * The modifiable list of configuration URIs for beans definitions via XML
      * representations.
      */
-    private List<String> xmlConfigRefs;
+    private volatile List<String> xmlConfigRefs;
 
     /** Indicates if the context has been already loaded. */
-    private boolean loaded;
+    private volatile boolean loaded;
 
     /**
      * Constructor.

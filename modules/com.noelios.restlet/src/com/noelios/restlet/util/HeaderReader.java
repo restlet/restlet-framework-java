@@ -38,7 +38,7 @@ public class HeaderReader {
      * Constructor.
      * 
      * @param header
-     *            The header to read.
+     *                The header to read.
      */
     public HeaderReader(String header) {
         this.header = header;
@@ -102,7 +102,7 @@ public class HeaderReader {
      * Indicates if the given character is a value separator.
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is a value separator.
      */
     protected boolean isValueSeparator(int character) {
@@ -113,7 +113,7 @@ public class HeaderReader {
      * Indicates if the given character is a value separator.
      * 
      * @param character
-     *            The character to test.
+     *                The character to test.
      * @return True if the given character is a value separator.
      */
     protected boolean isLinearWhiteSpace(int character) {
@@ -139,7 +139,7 @@ public class HeaderReader {
      * Appends the next quoted string.
      * 
      * @param buffer
-     *            The buffer to append.
+     *                The buffer to append.
      * @throws IOException
      */
     protected void appendQuotedString(Appendable buffer) throws IOException {

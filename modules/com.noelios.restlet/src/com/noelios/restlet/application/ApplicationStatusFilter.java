@@ -33,13 +33,13 @@ import com.noelios.restlet.StatusFilter;
  */
 public class ApplicationStatusFilter extends StatusFilter {
     /** The application. */
-    private Application application;
+    private volatile Application application;
 
     /**
      * Constructor.
      * 
      * @param application
-     *            The application.
+     *                The application.
      */
     public ApplicationStatusFilter(Application application) {
         super(application.getContext(), application.getStatusService()

@@ -53,7 +53,7 @@ public class HttpServerHelper extends JettyServerHelper {
      * Constructor.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      */
     public HttpServerHelper(Server server) {
         super(server);

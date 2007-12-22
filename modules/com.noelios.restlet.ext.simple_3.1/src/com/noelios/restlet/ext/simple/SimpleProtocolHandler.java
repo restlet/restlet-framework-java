@@ -34,7 +34,7 @@ import simple.http.Response;
  */
 public class SimpleProtocolHandler implements ProtocolHandler {
     /** The delegate Restlet server helper. */
-    private SimpleServerHelper helper;
+    private volatile SimpleServerHelper helper;
 
     /**
      * Constructor.
@@ -101,6 +101,5 @@ public class SimpleProtocolHandler implements ProtocolHandler {
                             e);
         }
     }
-
 
 }

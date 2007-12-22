@@ -32,7 +32,7 @@ import org.restlet.util.Template;
  */
 public abstract class TemplateDispatcher extends Uniform {
     /** The parent context. */
-    private Context context;
+    private volatile Context context;
 
     /**
      * Constructor.

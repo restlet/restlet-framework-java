@@ -54,9 +54,9 @@ public class FormReader {
      * set, the UTF-8 character set is used.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param representation
-     *            The web form content.
+     *                The web form content.
      */
     public FormReader(Logger logger, Representation representation)
             throws IOException {
@@ -73,11 +73,11 @@ public class FormReader {
      * Constructor.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param query
-     *            The query string.
+     *                The query string.
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      */
     public FormReader(Logger logger, String query, CharacterSet characterSet)
             throws IOException {
@@ -91,7 +91,7 @@ public class FormReader {
      * list is returned created.
      * 
      * @param name
-     *            The parameter name to match.
+     *                The parameter name to match.
      * @return The parameter value or list of values.
      */
     @SuppressWarnings("unchecked")
@@ -140,7 +140,7 @@ public class FormReader {
      * Reads the first parameter with the given name.
      * 
      * @param name
-     *            The parameter name to match.
+     *                The parameter name to match.
      * @return The parameter value.
      * @throws IOException
      */
@@ -166,7 +166,7 @@ public class FormReader {
      * found, a list is created and set in the map.
      * 
      * @param parameters
-     *            The parameters map controlling the reading.
+     *                The parameters map controlling the reading.
      */
     @SuppressWarnings("unchecked")
     public void readParameters(Map<String, Object> parameters)
@@ -296,7 +296,7 @@ public class FormReader {
      * Adds the parameters into a given form.
      * 
      * @param form
-     *            The target form.
+     *                The target form.
      */
     public void addParameters(Form form) {
         boolean readNext = true;

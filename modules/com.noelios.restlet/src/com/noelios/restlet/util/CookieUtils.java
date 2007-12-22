@@ -40,7 +40,7 @@ public class CookieUtils {
      * Formats a list of cookies as an HTTP header.
      * 
      * @param cookies
-     *            The list of cookies to format.
+     *                The list of cookies to format.
      * @return The HTTP header.
      */
     public static String format(List<Cookie> cookies) {
@@ -69,7 +69,7 @@ public class CookieUtils {
      * Formats a cookie setting.
      * 
      * @param cookieSetting
-     *            The cookie setting to format.
+     *                The cookie setting to format.
      * @return The formatted cookie setting.
      */
     public static String format(CookieSetting cookieSetting) {
@@ -88,9 +88,9 @@ public class CookieUtils {
      * Formats a cookie setting.
      * 
      * @param cookieSetting
-     *            The cookie setting to format.
+     *                The cookie setting to format.
      * @param destination
-     *            The appendable destination.
+     *                The appendable destination.
      */
     public static void format(CookieSetting cookieSetting,
             Appendable destination) throws IOException {
@@ -185,7 +185,7 @@ public class CookieUtils {
      * Formats a cookie.
      * 
      * @param cookie
-     *            The cookie to format.
+     *                The cookie to format.
      * @return The formatted cookie.
      */
     public static String format(Cookie cookie) {
@@ -198,9 +198,9 @@ public class CookieUtils {
      * Formats a cookie setting.
      * 
      * @param cookie
-     *            The cookie to format.
+     *                The cookie to format.
      * @param destination
-     *            The appendable destination.
+     *                The appendable destination.
      */
     public static void format(Cookie cookie, Appendable destination) {
         String name = cookie.getName();
@@ -244,11 +244,11 @@ public class CookieUtils {
      * Appends a source string as an HTTP comment.
      * 
      * @param value
-     *            The source string to format.
+     *                The source string to format.
      * @param version
-     *            The cookie version.
+     *                The cookie version.
      * @param destination
-     *            The appendable destination.
+     *                The appendable destination.
      * @throws IOException
      */
     private static Appendable appendValue(CharSequence value, int version,
@@ -267,9 +267,9 @@ public class CookieUtils {
      * cookie is found, its value is put in the map.
      * 
      * @param source
-     *            The source list of cookies.
+     *                The source list of cookies.
      * @param destination
-     *            The cookies map controlling the reading.
+     *                The cookies map controlling the reading.
      */
     public static void getCookies(List<Cookie> source,
             Map<String, Cookie> destination) {

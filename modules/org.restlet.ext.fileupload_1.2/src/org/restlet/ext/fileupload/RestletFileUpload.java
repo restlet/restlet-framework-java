@@ -64,12 +64,12 @@ public class RestletFileUpload extends FileUpload {
      * compliant <code>multipart/form-data</code> input representation.
      * 
      * @param request
-     *            The request containing the entity to be parsed.
+     *                The request containing the entity to be parsed.
      * @return A list of <code>FileItem</code> instances parsed, in the order
      *         that they were transmitted.
      * @throws FileUploadException
-     *             if there are problems reading/parsing the request or storing
-     *             files.
+     *                 if there are problems reading/parsing the request or
+     *                 storing files.
      */
     @SuppressWarnings("unchecked")
     public List<FileItem> parseRequest(Request request)
@@ -82,12 +82,12 @@ public class RestletFileUpload extends FileUpload {
      * compliant <code>multipart/form-data</code> input representation.
      * 
      * @param multipartForm
-     *            The multipart representation to be parsed.
+     *                The multipart representation to be parsed.
      * @return A list of <code>FileItem</code> instances parsed, in the order
      *         that they were transmitted.
      * @throws FileUploadException
-     *             if there are problems reading/parsing the request or storing
-     *             files.
+     *                 if there are problems reading/parsing the request or
+     *                 storing files.
      */
     @SuppressWarnings("unchecked")
     public List<FileItem> parseRepresentation(Representation multipartForm)

@@ -28,12 +28,11 @@ import org.restlet.data.Request;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StreamClientHelper extends HttpClientHelper {
-
     /**
      * Constructor.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      */
     public StreamClientHelper(Client client) {
         super(client);
@@ -46,13 +45,13 @@ public class StreamClientHelper extends HttpClientHelper {
     }
 
     @Override
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         super.start();
         getLogger().info("Starting the HTTP client");
     }
 
     @Override
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         super.stop();
         getLogger().info("Stopping the HTTP client");
     }

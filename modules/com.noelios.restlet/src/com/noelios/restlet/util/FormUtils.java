@@ -39,13 +39,13 @@ public class FormUtils {
      * Parses a query into a given form.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param form
-     *            The target form.
+     *                The target form.
      * @param query
-     *            Query string.
+     *                Query string.
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      */
     public static void parseQuery(Logger logger, Form form, String query,
             CharacterSet characterSet) {
@@ -70,11 +70,11 @@ public class FormUtils {
      * Parses a post into a given form.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param form
-     *            The target form.
+     *                The target form.
      * @param post
-     *            The posted form.
+     *                The posted form.
      */
     public static void parsePost(Logger logger, Form form, Representation post) {
         if (post.isAvailable()) {
@@ -103,13 +103,13 @@ public class FormUtils {
      * multiple values are found, a list is created and set in the map.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param query
-     *            The query string.
+     *                The query string.
      * @param parameters
-     *            The parameters map controlling the reading.
+     *                The parameters map controlling the reading.
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      */
     public static void getParameters(Logger logger, String query,
             Map<String, Object> parameters, CharacterSet characterSet)
@@ -123,11 +123,11 @@ public class FormUtils {
      * multiple values are found, a list is created and set in the map.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param post
-     *            The web form representation.
+     *                The web form representation.
      * @param parameters
-     *            The parameters map controlling the reading.
+     *                The parameters map controlling the reading.
      */
     public static void getParameters(Logger logger, Representation post,
             Map<String, Object> parameters) throws IOException {
@@ -143,13 +143,13 @@ public class FormUtils {
      * Reads the first parameter with the given name.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param query
-     *            The query string.
+     *                The query string.
      * @param name
-     *            The parameter name to match.
+     *                The parameter name to match.
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      * @return The parameter.
      * @throws IOException
      */
@@ -163,11 +163,11 @@ public class FormUtils {
      * Reads the first parameter with the given name.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param post
-     *            The web form representation.
+     *                The web form representation.
      * @param name
-     *            The parameter name to match.
+     *                The parameter name to match.
      * @return The parameter.
      * @throws IOException
      */
@@ -187,13 +187,13 @@ public class FormUtils {
      * found, a list is returned created.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param query
-     *            The query string.
+     *                The query string.
      * @param name
-     *            The parameter name to match.
+     *                The parameter name to match.
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      * @return The parameter value or list of values.
      */
     public static Object getParameter(Logger logger, String query, String name,
@@ -206,11 +206,11 @@ public class FormUtils {
      * found, a list is returned created.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param form
-     *            The web form representation.
+     *                The web form representation.
      * @param name
-     *            The parameter name to match.
+     *                The parameter name to match.
      * @return The parameter value or list of values.
      */
     public static Object getParameter(Logger logger, Representation form,
@@ -227,11 +227,11 @@ public class FormUtils {
      * Creates a parameter.
      * 
      * @param name
-     *            The parameter name buffer.
+     *                The parameter name buffer.
      * @param value
-     *            The parameter value buffer (can be null).
+     *                The parameter value buffer (can be null).
      * @param characterSet
-     *            The supported character encoding.
+     *                The supported character encoding.
      * @return The created parameter.
      * @throws IOException
      */

@@ -46,13 +46,13 @@ import com.noelios.restlet.StatusFilter;
  */
 public class ComponentHelper extends ChainHelper {
     /** The helped component. */
-    private Component component;
+    private volatile Component component;
 
     /** The internal client router. */
-    private ClientRouter clientRouter;
+    private volatile ClientRouter clientRouter;
 
     /** The internal server router. */
-    private ServerRouter serverRouter;
+    private volatile ServerRouter serverRouter;
 
     /**
      * Constructor.
@@ -126,7 +126,7 @@ public class ComponentHelper extends ChainHelper {
     }
 
     /** Start callback. */
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         // Initialization of services
         Filter lastFilter = null;
 
@@ -264,7 +264,7 @@ public class ComponentHelper extends ChainHelper {
     }
 
     /** Stop callback. */
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         // Stop the server's router
         getServerRouter().stop();
 

@@ -58,7 +58,7 @@ import com.noelios.restlet.ServerHelper;
  */
 public class HttpServerHelper extends ServerHelper {
     /** The converter from HTTP calls to uniform calls. */
-    private HttpServerConverter converter;
+    private volatile HttpServerConverter converter;
 
     /**
      * Default constructor. Note that many methods assume that a non-null server
@@ -73,7 +73,7 @@ public class HttpServerHelper extends ServerHelper {
      * Constructor.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      */
     public HttpServerHelper(Server server) {
         super(server);
@@ -85,7 +85,7 @@ public class HttpServerHelper extends ServerHelper {
      * REST call and delegate it to the attached Restlet.
      * 
      * @param httpCall
-     *            The HTTP server call.
+     *                The HTTP server call.
      */
     public void handle(HttpServerCall httpCall) {
         try {
@@ -147,7 +147,7 @@ public class HttpServerHelper extends ServerHelper {
      * Sets the converter from HTTP calls to uniform calls.
      * 
      * @param converter
-     *            The converter to set.
+     *                The converter to set.
      */
     public void setConverter(HttpServerConverter converter) {
         this.converter = converter;

@@ -48,7 +48,7 @@ public class RowSetRepresentation extends OutputRepresentation {
      * Creates a WebRowSet from a ResultSet.
      * 
      * @param resultSet
-     *            The result set to use to populate the Web row set.
+     *                The result set to use to populate the Web row set.
      * @return A WebRowSet from a ResultSet.
      * @throws SQLException
      */
@@ -72,7 +72,7 @@ public class RowSetRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param jdbcResult
-     *            The inner JdbcResult.
+     *                The inner JdbcResult.
      * @throws SQLException
      */
     public RowSetRepresentation(JdbcResult jdbcResult) throws SQLException {
@@ -84,7 +84,7 @@ public class RowSetRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param resultSet
-     *            The result set to use to populate the Web row set.
+     *                The result set to use to populate the Web row set.
      * @throws SQLException
      */
     public RowSetRepresentation(ResultSet resultSet) throws SQLException {
@@ -95,7 +95,7 @@ public class RowSetRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param webRowSet
-     *            The inner WebRowSet.
+     *                The inner WebRowSet.
      */
     public RowSetRepresentation(WebRowSet webRowSet) {
         super(MediaType.TEXT_XML);

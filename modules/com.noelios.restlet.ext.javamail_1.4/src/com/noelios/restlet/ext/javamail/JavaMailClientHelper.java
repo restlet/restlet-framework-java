@@ -73,7 +73,7 @@ public class JavaMailClientHelper extends ClientHelper {
      * Constructor.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      */
     public JavaMailClientHelper(Client client) {
         super(client);
@@ -86,13 +86,13 @@ public class JavaMailClientHelper extends ClientHelper {
      * Creates a high-level request.
      * 
      * @param smtpURI
-     *            The SMTP server's URI (ex: smtp://localhost).
+     *                The SMTP server's URI (ex: smtp://localhost).
      * @param email
-     *            The email to send (valid XML email).
+     *                The email to send (valid XML email).
      * @param login
-     *            Authenticate using this login name.
+     *                Authenticate using this login name.
      * @param password
-     *            Authenticate using this password.
+     *                Authenticate using this password.
      */
     public static Request create(String smtpURI, Representation email,
             String login, String password) {
@@ -106,9 +106,9 @@ public class JavaMailClientHelper extends ClientHelper {
      * Creates a high-level request.
      * 
      * @param smtpURI
-     *            The SMTP server's URI (ex: smtp://localhost).
+     *                The SMTP server's URI (ex: smtp://localhost).
      * @param email
-     *            The email to send (valid XML email).
+     *                The email to send (valid XML email).
      */
     public static Request create(String smtpURI, Representation email) {
         Request result = new Request();
@@ -123,9 +123,9 @@ public class JavaMailClientHelper extends ClientHelper {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         try {
@@ -294,7 +294,7 @@ public class JavaMailClientHelper extends ClientHelper {
      * Returns the login stored as an attribute.
      * 
      * @param request
-     *            The high-level request.
+     *                The high-level request.
      * @return The high-level request.
      */
     private String getLogin(Request request) {
@@ -305,7 +305,7 @@ public class JavaMailClientHelper extends ClientHelper {
      * Returns the password stored as an attribute.
      * 
      * @param request
-     *            The high-level request.
+     *                The high-level request.
      * @return The high-level request.
      */
     private String getPassword(Request request) {

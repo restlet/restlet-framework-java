@@ -24,7 +24,8 @@ public class JxtaClientCall extends StreamClientCall {
     @Override
     public Socket createSocket(String hostDomain, int hostPort)
             throws UnknownHostException, IOException {
-        return new JxtaSocket(getHelper().getPeerGroup(), getHelper().getPipeAdvertisement());
+        return new JxtaSocket(getHelper().getPeerGroup(), getHelper()
+                .getPipeAdvertisement());
     }
 
 }

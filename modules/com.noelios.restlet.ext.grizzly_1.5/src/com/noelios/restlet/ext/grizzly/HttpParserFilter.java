@@ -34,7 +34,7 @@ import com.sun.grizzly.util.WorkerThread;
 public class HttpParserFilter implements ProtocolFilter {
 
     /** The parent HTTP server helper. */
-    private GrizzlyServerHelper helper;
+    private volatile GrizzlyServerHelper helper;
 
     /**
      * Constructor.

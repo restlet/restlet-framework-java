@@ -41,7 +41,7 @@ public class HttpServerHelper extends GrizzlyServerHelper {
      * Constructor.
      * 
      * @param server
-     *            The helped server.
+     *                The helped server.
      */
     public HttpServerHelper(Server server) {
         super(server);

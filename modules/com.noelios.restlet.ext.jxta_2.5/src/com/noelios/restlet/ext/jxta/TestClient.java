@@ -27,6 +27,7 @@ import org.restlet.data.Protocol;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TestClient {
+
     public static void main(String[] args) throws Exception {
         // Create the HTTP client and listen on port 8182
         Client client = new Client(Protocol.HTTP);

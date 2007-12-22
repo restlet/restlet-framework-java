@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -162,10 +163,10 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /** List of available client connectors. */
-    private List<ConnectorHelper> registeredClients;
+    private volatile List<ConnectorHelper> registeredClients;
 
     /** List of available server connectors. */
-    private List<ConnectorHelper> registeredServers;
+    private volatile List<ConnectorHelper> registeredServers;
 
     /**
      * Constructor that will automatically attempt to discover connectors.
@@ -181,6 +182,9 @@ public class Engine extends org.restlet.util.Engine {
      *                True if connectors should be automatically discovered.
      */
     public Engine(boolean discoverConnectors) {
+        this.registeredClients = new CopyOnWriteArrayList<ConnectorHelper>();
+        this.registeredServers = new CopyOnWriteArrayList<ConnectorHelper>();
+
         if (discoverConnectors) {
             discoverConnectors();
         }
@@ -661,8 +665,6 @@ public class Engine extends org.restlet.util.Engine {
      * @return The list of available client connectors.
      */
     public List<ConnectorHelper> getRegisteredClients() {
-        if (this.registeredClients == null)
-            this.registeredClients = new ArrayList<ConnectorHelper>();
         return this.registeredClients;
     }
 
@@ -672,8 +674,6 @@ public class Engine extends org.restlet.util.Engine {
      * @return The list of available server connectors.
      */
     public List<ConnectorHelper> getRegisteredServers() {
-        if (this.registeredServers == null)
-            this.registeredServers = new ArrayList<ConnectorHelper>();
         return this.registeredServers;
     }
 

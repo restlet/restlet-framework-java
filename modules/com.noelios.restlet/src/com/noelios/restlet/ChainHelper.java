@@ -31,19 +31,19 @@ import org.restlet.util.Helper;
  */
 public abstract class ChainHelper extends Helper {
     /** The first Restlet. */
-    private Restlet first;
+    private volatile Restlet first;
 
     /** The last Filter. */
-    private Filter last;
+    private volatile Filter last;
 
     /** The parent context, typically the component's context. */
-    private Context parentContext;
+    private volatile Context parentContext;
 
     /**
      * Constructor.
      * 
      * @param parentContext
-     *            The parent context, typically the component's context.
+     *                The parent context, typically the component's context.
      */
     public ChainHelper(Context parentContext) {
         this.parentContext = parentContext;
@@ -63,9 +63,9 @@ public abstract class ChainHelper extends Helper {
      * Adds a new filter to the chain.
      * 
      * @param filter
-     *            The filter to add.
+     *                The filter to add.
      */
-    protected void addFilter(Filter filter) {
+    protected synchronized void addFilter(Filter filter) {
         if (getLast() != null) {
             getLast().setNext(filter);
             setLast(filter);
@@ -79,9 +79,9 @@ public abstract class ChainHelper extends Helper {
      * Creates a new log filter. Allows overriding.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param logService
-     *            The log service descriptor.
+     *                The log service descriptor.
      * @return The new log filter.
      */
     protected Filter createLogFilter(Context context, LogService logService) {
@@ -101,7 +101,7 @@ public abstract class ChainHelper extends Helper {
      * Sets the first Restlet.
      * 
      * @param first
-     *            The first Restlet.
+     *                The first Restlet.
      */
     protected void setFirst(Restlet first) {
         this.first = first;
@@ -120,7 +120,7 @@ public abstract class ChainHelper extends Helper {
      * Sets the last Filter.
      * 
      * @param last
-     *            The last Filter.
+     *                The last Filter.
      */
     private void setLast(Filter last) {
         this.last = last;

@@ -53,10 +53,10 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param templateName
-     *            The Velocity template's name. The full path is resolved by
-     *            the configuration.
+     *                The Velocity template's name. The full path is resolved by
+     *                the configuration.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public TemplateRepresentation(String templateName, MediaType mediaType) {
         this(templateName, new TreeMap<String, Object>(), mediaType);
@@ -66,12 +66,12 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param templateName
-     *            The Velocity template's name. The full path is resolved by
-     *            the configuration.
+     *                The Velocity template's name. The full path is resolved by
+     *                the configuration.
      * @param dataModel
-     *            The Velocity template's data model.
+     *                The Velocity template's data model.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public TemplateRepresentation(String templateName,
             Map<String, Object> dataModel, MediaType mediaType) {
@@ -103,7 +103,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Sets the template's data model.
      * 
      * @param dataModel
-     *            The template's data model.
+     *                The template's data model.
      * @return The template's data model.
      */
     public Map<String, Object> setDataModel(Map<String, Object> dataModel) {
@@ -115,7 +115,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Writes the datum as a stream of bytes.
      * 
      * @param outputStream
-     *            The stream to use when writing.
+     *                The stream to use when writing.
      */
     public void write(OutputStream outputStream) throws IOException {
         Writer tmplWriter = null;

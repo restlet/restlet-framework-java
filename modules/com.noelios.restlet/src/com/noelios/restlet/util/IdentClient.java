@@ -49,11 +49,11 @@ public class IdentClient {
      * Constructor.
      * 
      * @param clientAddress
-     *            The client IP address.
+     *                The client IP address.
      * @param clientPort
-     *            The client port (remote).
+     *                The client port (remote).
      * @param serverPort
-     *            The server port (local).
+     *                The server port (local).
      */
     public IdentClient(Logger logger, String clientAddress, int clientPort,
             int serverPort) {

@@ -34,7 +34,7 @@ public class AjpServerHelper extends JettyServerHelper {
      * Constructor.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      */
     public AjpServerHelper(Server server) {
         super(server);

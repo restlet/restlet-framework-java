@@ -46,15 +46,15 @@ import com.noelios.restlet.local.WarClientHelper;
  */
 public class ServletWarClientHelper extends WarClientHelper {
     /** The Servlet context to use. */
-    private ServletContext servletContext;
+    private volatile ServletContext servletContext;
 
     /**
      * Constructor.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      * @param servletContext
-     *            The Servlet context
+     *                The Servlet context
      */
     public ServletWarClientHelper(Client client, ServletContext servletContext) {
         super(client);

@@ -50,13 +50,13 @@ import com.noelios.restlet.ClientHelper;
  */
 public abstract class HttpClientHelper extends ClientHelper {
     /** The converter from uniform calls to HTTP calls. */
-    private HttpClientConverter converter;
+    private volatile HttpClientConverter converter;
 
     /**
      * Constructor.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      */
     public HttpClientHelper(Client client) {
         super(client);
@@ -67,7 +67,7 @@ public abstract class HttpClientHelper extends ClientHelper {
      * Creates a low-level HTTP client call from a high-level request.
      * 
      * @param request
-     *            The high-level request.
+     *                The high-level request.
      * @return A low-level HTTP client call.
      */
     public abstract HttpClientCall create(Request request);
@@ -105,7 +105,7 @@ public abstract class HttpClientHelper extends ClientHelper {
      * Sets the converter from uniform calls to HTTP calls.
      * 
      * @param converter
-     *            The converter to set.
+     *                The converter to set.
      */
     public void setConverter(HttpClientConverter converter) {
         this.converter = converter;

@@ -39,13 +39,13 @@ import org.restlet.util.Helper;
  */
 public class ServletWarClient extends Client {
     /** The helper provided by the implementation. */
-    private Helper helper;
+    private volatile Helper helper;
 
     /**
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      */
     public ServletWarClient(Context context,
             javax.servlet.ServletContext servletContext) {
@@ -67,9 +67,9 @@ public class ServletWarClient extends Client {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         init(request, response);

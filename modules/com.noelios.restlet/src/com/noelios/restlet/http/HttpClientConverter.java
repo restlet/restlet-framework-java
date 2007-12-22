@@ -304,7 +304,8 @@ public class HttpClientConverter extends HttpConverter {
                 }
 
                 if (request.getEntity().getSize() > 0) {
-                    requestHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, String.valueOf(request.getEntity().getSize()));
+                    requestHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH,
+                            String.valueOf(request.getEntity().getSize()));
                 }
             }
 

@@ -62,7 +62,7 @@ public class CookieReader extends HeaderReader {
     private static final String NAME_SET_SECURE = "secure";
 
     private static final String NAME_SET_ACCESS_RESTRICTED = "httpOnly";
-    
+
     private static final String NAME_SET_VERSION = "version";
 
     /** The logger to use. */
@@ -78,9 +78,9 @@ public class CookieReader extends HeaderReader {
      * Constructor.
      * 
      * @param logger
-     *            The logger to use.
+     *                The logger to use.
      * @param header
-     *            The header to read.
+     *                The header to read.
      */
     public CookieReader(Logger logger, String header) {
         super(header);
@@ -220,7 +220,8 @@ public class CookieReader extends HeaderReader {
                         || (pair.getValue().length() == 0)) {
                     result.setSecure(true);
                 }
-            } else if (pair.getName().equalsIgnoreCase(NAME_SET_ACCESS_RESTRICTED)) {
+            } else if (pair.getName().equalsIgnoreCase(
+                    NAME_SET_ACCESS_RESTRICTED)) {
                 if ((pair.getValue() == null)
                         || (pair.getValue().length() == 0)) {
                     result.setAccessRestricted(true);
@@ -270,8 +271,8 @@ public class CookieReader extends HeaderReader {
                                 || (nextChar == ',')) {
                             if (nameBuffer.length() > 0) {
                                 // End of pair with no value
-                                result = HttpUtils.createParameter(
-                                        nameBuffer, null);
+                                result = HttpUtils.createParameter(nameBuffer,
+                                        null);
                             } else if (nextChar == -1) {
                                 // Do nothing return null preference
                             } else {

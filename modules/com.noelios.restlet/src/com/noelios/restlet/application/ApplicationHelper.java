@@ -40,16 +40,16 @@ import com.noelios.restlet.LogFilter;
  */
 public class ApplicationHelper extends Helper {
     /** The application to help. */
-    private Application application;
+    private volatile Application application;
 
     /** The first Restlet. */
-    private Restlet first;
+    private volatile Restlet first;
 
     /** The last Filter. */
-    private Filter last;
+    private volatile Filter last;
 
     /** The parent context, typically the component's context. */
-    private Context parentContext;
+    private volatile Context parentContext;
 
     /**
      * Constructor.

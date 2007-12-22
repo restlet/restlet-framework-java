@@ -148,7 +148,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
                     .getServerSocketFactory().createServerSocket(
                             getServer().getPort());
         }
-        
+
         if (isNeedClientAuthentication()) {
             serverSocket.setNeedClientAuth(true);
         } else if (isWantClientAuthentication()) {

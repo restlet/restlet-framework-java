@@ -41,21 +41,21 @@ import com.noelios.restlet.util.IdentClient;
  */
 public class LogFilter extends Filter {
     /** Obtain a suitable logger. */
-    private Logger logger;
+    private volatile Logger logger;
 
     /** The log template to use. */
-    protected Template logTemplate;
+    protected volatile Template logTemplate;
 
     /** The log service. */
-    protected LogService logService;
+    protected volatile LogService logService;
 
     /**
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param logService
-     *            The log service descriptor.
+     *                The log service descriptor.
      */
     public LogFilter(Context context, LogService logService) {
         super(context);
@@ -73,9 +73,9 @@ public class LogFilter extends Filter {
      * time.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     protected void beforeHandle(Request request, Response response) {
         request.getAttributes().put("org.restlet.startTime",
@@ -86,9 +86,9 @@ public class LogFilter extends Filter {
      * Allows filtering after processing by the next Restlet. Log the call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     protected void afterHandle(Request request, Response response) {
         long startTime = (Long) request.getAttributes().get(
@@ -108,11 +108,11 @@ public class LogFilter extends Filter {
      * Format a log entry using the default format.
      * 
      * @param request
-     *            The request to log.
+     *                The request to log.
      * @param response
-     *            The response to log.
+     *                The response to log.
      * @param duration
-     *            The call duration (in milliseconds).
+     *                The call duration (in milliseconds).
      * @return The formatted log entry.
      */
     protected String formatDefault(Request request, Response response,
@@ -218,9 +218,9 @@ public class LogFilter extends Filter {
      * Format a log entry.
      * 
      * @param request
-     *            The request to log.
+     *                The request to log.
      * @param response
-     *            The response to log.
+     *                The response to log.
      * @return The formatted log entry.
      */
     protected String format(Request request, Response response) {

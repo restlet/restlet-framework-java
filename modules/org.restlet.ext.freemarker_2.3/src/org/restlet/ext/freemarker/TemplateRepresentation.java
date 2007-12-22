@@ -50,14 +50,14 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param templateName
-     *            The FreeMarker template's name. The full path is resolved by
-     *            the configuration.
+     *                The FreeMarker template's name. The full path is resolved
+     *                by the configuration.
      * @param config
-     *            The FreeMarker configuration.
+     *                The FreeMarker configuration.
      * @param dataModel
-     *            The template's data model.
+     *                The template's data model.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public TemplateRepresentation(String templateName, Configuration config,
             Object dataModel, MediaType mediaType) {
@@ -68,13 +68,13 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param templateRepresention
-     *            The FreeMarker template provided via a representation.
+     *                The FreeMarker template provided via a representation.
      * @param config
-     *            The FreeMarker configuration.
+     *                The FreeMarker configuration.
      * @param dataModel
-     *            The template's data model.
+     *                The template's data model.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public TemplateRepresentation(Representation templateRepresention,
             Configuration config, Object dataModel, MediaType mediaType) {
@@ -85,11 +85,11 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param template
-     *            The FreeMarker template.
+     *                The FreeMarker template.
      * @param dataModel
-     *            The template's data model.
+     *                The template's data model.
      * @param mediaType
-     *            The representation's media type.
+     *                The representation's media type.
      */
     public TemplateRepresentation(Template template, Object dataModel,
             MediaType mediaType) {
@@ -102,9 +102,9 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Returns a FreeMarker template from its name and a configuration.
      * 
      * @param templateName
-     *            The template name.
+     *                The template name.
      * @param config
-     *            The FreeMarker configuration.
+     *                The FreeMarker configuration.
      * @return The template or null if not found.
      */
     private static Template getTemplate(String templateName,
@@ -120,9 +120,9 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Returns a FreeMarker template from a representation and a configuration.
      * 
      * @param templateRepresentation
-     *            The template representation.
+     *                The template representation.
      * @param config
-     *            The FreeMarker configuration.
+     *                The FreeMarker configuration.
      * @return The template or null if not found.
      */
     private static Template getTemplate(Representation templateRepresentation,
@@ -148,7 +148,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Sets the template's data model.
      * 
      * @param dataModel
-     *            The template's data model.
+     *                The template's data model.
      * @return The template's data model.
      */
     public Object setDataModel(Object dataModel) {
@@ -160,7 +160,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Writes the datum as a stream of bytes.
      * 
      * @param outputStream
-     *            The stream to use when writing.
+     *                The stream to use when writing.
      */
     public void write(OutputStream outputStream) throws IOException {
         Writer tmplWriter = null;

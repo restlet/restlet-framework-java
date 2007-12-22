@@ -76,28 +76,28 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     /**
      * Indicates if this service is acting in HTTP or HTTPS mode.
      */
-    private boolean confidential;
+    private volatile boolean confidential;
 
     /**
      * Server socket this server is listening to.
      */
-    private ServerSocket socket;
+    private volatile ServerSocket socket;
 
     /**
      * Simple pipeline handler.
      */
-    private PipelineHandler handler;
+    private volatile PipelineHandler handler;
 
     /**
      * Simple connection.
      */
-    private Connection connection;
+    private volatile Connection connection;
 
     /**
      * Constructor.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      */
     public SimpleServerHelper(Server server) {
         super(server);
@@ -140,7 +140,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * Sets the server socket this server is listening to.
      * 
      * @param socket
-     *            The server socket this server is listening to.
+     *                The server socket this server is listening to.
      */
     protected void setSocket(ServerSocket socket) {
         this.socket = socket;
@@ -159,7 +159,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * Sets the Simple pipeline handler.
      * 
      * @param handler
-     *            The Simple pipeline handler.
+     *                The Simple pipeline handler.
      */
     protected void setHandler(PipelineHandler handler) {
         this.handler = handler;
@@ -178,7 +178,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * Sets the Simple connection.
      * 
      * @param connection
-     *            The Simple connection.
+     *                The Simple connection.
      */
     protected void setConnection(Connection connection) {
         this.connection = connection;
@@ -197,7 +197,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * Indicates if this service is acting in HTTP or HTTPS mode.
      * 
      * @param confidential
-     *            True if this service is acting in HTTP or HTTPS mode.
+     *                True if this service is acting in HTTP or HTTPS mode.
      */
     protected void setConfidential(boolean confidential) {
         this.confidential = confidential;

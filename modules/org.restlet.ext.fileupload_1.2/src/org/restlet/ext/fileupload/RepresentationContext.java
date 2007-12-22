@@ -38,7 +38,7 @@ public class RepresentationContext implements RequestContext {
      * Constructor.
      * 
      * @param multipartForm
-     *            The multipart form to parse.
+     *                The multipart form to parse.
      */
     public RepresentationContext(Representation multipartForm) {
         this.multipartForm = multipartForm;

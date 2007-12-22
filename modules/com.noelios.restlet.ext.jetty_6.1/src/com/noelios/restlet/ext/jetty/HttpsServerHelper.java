@@ -116,7 +116,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * Constructor.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      */
     public HttpsServerHelper(Server server) {
         super(server);

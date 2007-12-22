@@ -33,13 +33,13 @@ import com.sun.grizzly.Controller;
  */
 public abstract class GrizzlyServerHelper extends HttpServerHelper {
     /** The Grizzly controller. */
-    private Controller controller;
+    private volatile Controller controller;
 
     /**
      * Constructor.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      */
     public GrizzlyServerHelper(Server server) {
         super(server);
@@ -75,7 +75,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
      * Configures the Grizzly controller.
      * 
      * @param controller
-     *            The controller to configure.
+     *                The controller to configure.
      */
     protected abstract void configure(Controller controller) throws Exception;
 

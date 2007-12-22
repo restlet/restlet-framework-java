@@ -54,7 +54,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * Constructor.
      * 
      * @param wrappedRepresentation
-     *            The wrapped representation.
+     *                The wrapped representation.
      */
     public DecodeRepresentation(Representation wrappedRepresentation) {
         super(wrappedRepresentation);
@@ -124,9 +124,9 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * Returns a decoded stream for a given encoding and coded stream.
      * 
      * @param encoding
-     *            The encoding to use.
+     *                The encoding to use.
      * @param encodedStream
-     *            The encoded stream.
+     *                The encoded stream.
      * @return The decoded stream.
      * @throws IOException
      */
@@ -151,7 +151,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * Writes the representation to a byte channel.
      * 
      * @param writableChannel
-     *            A writable byte channel.
+     *                A writable byte channel.
      */
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (canDecode()) {
@@ -165,7 +165,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * Writes the representation to a byte stream.
      * 
      * @param outputStream
-     *            The output stream.
+     *                The output stream.
      */
     public void write(OutputStream outputStream) throws IOException {
         if (canDecode()) {

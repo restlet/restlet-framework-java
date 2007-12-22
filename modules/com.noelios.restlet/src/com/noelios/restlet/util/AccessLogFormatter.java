@@ -28,6 +28,7 @@ import java.util.logging.LogRecord;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class AccessLogFormatter extends Formatter {
+
     @Override
     public String format(LogRecord logRecord) {
         return logRecord.getMessage() + '\n';

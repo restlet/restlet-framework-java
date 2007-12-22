@@ -33,13 +33,13 @@ import org.restlet.util.Series;
  */
 public class ClientHelper extends ConnectorHelper {
     /** The client to help. */
-    private Client client;
+    private volatile Client client;
 
     /**
      * Constructor.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      */
     public ClientHelper(Client client) {
         this.client = client;
@@ -60,11 +60,8 @@ public class ClientHelper extends ConnectorHelper {
      * @return The server parameters.
      */
     public Series<Parameter> getParameters() {
-        Series<Parameter> result = (getClient() != null) ? getClient().getContext()
-                .getParameters() : null;
-        if (result == null)
-            result = new Form();
-        return result;
+        return (getClient() != null) ? getClient().getContext().getParameters()
+                : new Form();
     }
 
     /**

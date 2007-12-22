@@ -35,7 +35,7 @@ import org.restlet.data.Status;
  */
 public class ServerRouter extends Router {
     /** The parent component. */
-    private Component component;
+    private volatile Component component;
 
     /**
      * Constructor.
@@ -50,7 +50,7 @@ public class ServerRouter extends Router {
     }
 
     /** Starts the Restlet. */
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         // Attach all virtual hosts
         for (VirtualHost host : getComponent().getHosts()) {
             getRoutes().add(new HostRoute(this, host));
@@ -76,7 +76,7 @@ public class ServerRouter extends Router {
     }
 
     @Override
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         getRoutes().clear();
         super.stop();
     }

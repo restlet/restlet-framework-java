@@ -112,13 +112,13 @@ public class ServerServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /** The associated Restlet application. */
-    private transient Application application;
+    private volatile transient Application application;
 
     /** The associated Restlet component. */
-    private transient Component component;
+    private volatile transient Component component;
 
     /** The associated HTTP server helper. */
-    private transient HttpServerHelper helper;
+    private volatile transient HttpServerHelper helper;
 
     /**
      * Constructor.
@@ -180,8 +180,8 @@ public class ServerServlet extends HttpServlet {
                     ApplicationContext applicationContext = (ApplicationContext) application
                             .getContext();
                     application.setContext(new ApplicationContext(application,
-                            new ServletContextAdapter(this, context), applicationContext
-                                    .getLogger()));
+                            new ServletContextAdapter(this, context),
+                            applicationContext.getLogger()));
                 }
             } catch (ClassNotFoundException e) {
                 log(

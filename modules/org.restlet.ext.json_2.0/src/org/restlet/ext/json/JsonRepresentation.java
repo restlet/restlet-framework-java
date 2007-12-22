@@ -39,7 +39,7 @@ public class JsonRepresentation extends StringRepresentation {
      * Constructor.
      * 
      * @param jsonRepresentation
-     *            A source JSON representation to parse.
+     *                A source JSON representation to parse.
      */
     public JsonRepresentation(Representation jsonRepresentation)
             throws IOException {
@@ -50,7 +50,7 @@ public class JsonRepresentation extends StringRepresentation {
      * Constructor from a JSON object.
      * 
      * @param jsonObject
-     *            The JSON object.
+     *                The JSON object.
      */
     public JsonRepresentation(JSONObject jsonObject) {
         super(jsonObject.toString(), MediaType.APPLICATION_JSON);
@@ -60,7 +60,7 @@ public class JsonRepresentation extends StringRepresentation {
      * Constructor from a JSON array.
      * 
      * @param jsonArray
-     *            The JSON array.
+     *                The JSON array.
      */
     public JsonRepresentation(JSONArray jsonArray) {
         super(jsonArray.toString(), MediaType.APPLICATION_JSON);
@@ -70,7 +70,7 @@ public class JsonRepresentation extends StringRepresentation {
      * Constructor from a JSON string.
      * 
      * @param jsonString
-     *            The JSON string.
+     *                The JSON string.
      */
     public JsonRepresentation(String jsonString) {
         super(jsonString, MediaType.APPLICATION_JSON);

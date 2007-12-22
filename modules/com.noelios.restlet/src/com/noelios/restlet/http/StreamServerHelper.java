@@ -42,16 +42,16 @@ import org.restlet.data.Protocol;
 public class StreamServerHelper extends HttpServerHelper {
 
     /** The connection handler service. */
-    private ExecutorService handlerService;
+    private volatile ExecutorService handlerService;
 
     /** The socket listener service. */
-    private ExecutorService listenerService;
+    private volatile ExecutorService listenerService;
 
     /** The server socket channel. */
-    private ServerSocketChannel serverSocketChannel;
+    private volatile ServerSocketChannel serverSocketChannel;
 
     /** The synchronization aid between listener and handler service. */
-    private CountDownLatch latch;
+    private volatile CountDownLatch latch;
 
     /**
      * Constructor.
@@ -65,7 +65,7 @@ public class StreamServerHelper extends HttpServerHelper {
     }
 
     @Override
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         super.start();
         getLogger().info("Starting the internal HTTP server");
 
@@ -96,7 +96,7 @@ public class StreamServerHelper extends HttpServerHelper {
     }
 
     @Override
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         super.stop();
         getLogger().info("Stopping the internal HTTP server");
 

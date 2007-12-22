@@ -35,13 +35,13 @@ import org.restlet.util.Series;
  */
 public class ServerHelper extends ConnectorHelper {
     /** The server to help. */
-    private Server server;
+    private volatile Server server;
 
     /**
      * Constructor.
      * 
      * @param server
-     *            The client to help.
+     *                The client to help.
      */
     public ServerHelper(Server server) {
         this.server = server;
@@ -62,11 +62,8 @@ public class ServerHelper extends ConnectorHelper {
      * @return The server parameters.
      */
     public Series<Parameter> getParameters() {
-        Series<Parameter> result = (getServer() != null) ? getServer()
-                .getContext().getParameters() : null;
-        if (result == null)
-            result = new Form();
-        return result;
+        return (getServer() != null) ? getServer().getContext().getParameters()
+                : new Form();
     }
 
     /**
@@ -91,9 +88,9 @@ public class ServerHelper extends ConnectorHelper {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         getServer().handle(request, response);
@@ -103,7 +100,7 @@ public class ServerHelper extends ConnectorHelper {
      * Sets the server to help.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      */
     public void setServer(Server server) {
         this.server = server;

@@ -87,13 +87,13 @@ import com.noelios.restlet.Engine;
  */
 public class JdbcClientHelper extends ClientHelper {
     /** Map of connection factories. */
-    private List<ConnectionSource> connectionSources;
+    private volatile List<ConnectionSource> connectionSources;
 
     /**
      * Constructor.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      */
     public JdbcClientHelper(Client client) {
         super(client);
@@ -108,10 +108,10 @@ public class JdbcClientHelper extends ClientHelper {
      * Creates an uniform call.
      * 
      * @param jdbcURI
-     *            The database's JDBC URI (ex:
-     *            jdbc:mysql://[hostname]/[database]).
+     *                The database's JDBC URI (ex:
+     *                jdbc:mysql://[hostname]/[database]).
      * @param request
-     *            The request to send (valid XML request).
+     *                The request to send (valid XML request).
      */
     public static Request create(String jdbcURI, Representation request) {
         Request result = new Request();
@@ -126,9 +126,9 @@ public class JdbcClientHelper extends ClientHelper {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         Connection connection = null;
@@ -269,11 +269,11 @@ public class JdbcClientHelper extends ClientHelper {
      * Returns a JDBC connection.
      * 
      * @param uri
-     *            The connection URI.
+     *                The connection URI.
      * @param properties
-     *            The connection properties.
+     *                The connection properties.
      * @param usePooling
-     *            Indicates if the connection pooling should be used.
+     *                Indicates if the connection pooling should be used.
      * @return The JDBC connection.
      * @throws SQLException
      */
@@ -322,7 +322,7 @@ public class JdbcClientHelper extends ClientHelper {
      * Escapes quotes in a SQL query.
      * 
      * @param query
-     *            The SQL query to escape.
+     *                The SQL query to escape.
      * @return The escaped SQL query.
      */
     public static String sqlEncode(String query) {
@@ -345,9 +345,9 @@ public class JdbcClientHelper extends ClientHelper {
      * Creates a connection pool for a given connection configuration.
      * 
      * @param uri
-     *            The connection URI.
+     *                The connection URI.
      * @param properties
-     *            The connection properties.
+     *                The connection properties.
      * @return The new connection pool.
      */
     protected static ObjectPool createConnectionPool(String uri,
@@ -387,9 +387,9 @@ public class JdbcClientHelper extends ClientHelper {
          * Constructor.
          * 
          * @param uri
-         *            The connection URI.
+         *                The connection URI.
          * @param properties
-         *            The connection properties.
+         *                The connection properties.
          */
         public ConnectionSource(String uri, Properties properties) {
             super(createConnectionPool(uri, properties));

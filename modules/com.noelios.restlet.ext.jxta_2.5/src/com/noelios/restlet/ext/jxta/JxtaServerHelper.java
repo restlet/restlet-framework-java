@@ -34,13 +34,13 @@ import com.noelios.restlet.http.StreamServerHelper;
 public abstract class JxtaServerHelper extends StreamServerHelper {
 
     /** The JXTA network handler. */
-    private NetworkHandler networkHandler;
+    private volatile NetworkHandler networkHandler;
 
     /** The JXTA peer group. */
-    private PeerGroup peerGroup;
+    private volatile PeerGroup peerGroup;
 
     /** The JXTA pipe advertisement. */
-    private PipeAdvertisement pipeAdvertisement;
+    private volatile PipeAdvertisement pipeAdvertisement;
 
     /**
      * Constructor.

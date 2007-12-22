@@ -29,7 +29,6 @@ import com.noelios.restlet.TemplateDispatcher;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ComponentServerDispatcher extends TemplateDispatcher {
-
     /**
      * Constructor.
      * 

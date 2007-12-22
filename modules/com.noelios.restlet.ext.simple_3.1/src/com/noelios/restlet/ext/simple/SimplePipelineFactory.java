@@ -44,7 +44,7 @@ public class SimplePipelineFactory extends BufferedPipelineFactory {
      * Constructor.
      * 
      * @param size
-     *            The size of the output buffer used
+     *                The size of the output buffer used
      */
     public SimplePipelineFactory(int size) {
         super(size);

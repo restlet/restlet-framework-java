@@ -80,10 +80,13 @@ public abstract class HttpServerCall extends HttpCall {
      */
     public String formatContentDisposition(String fileName) {
         StringBuilder b = new StringBuilder("attachment; filename=\"");
+
         if (fileName != null) {
             b.append(fileName);
         }
+
         b.append('"');
+
         return b.toString();
     }
 

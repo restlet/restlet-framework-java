@@ -31,13 +31,13 @@ import org.restlet.util.Series;
  */
 public class HttpConverter {
     /** The context. */
-    private Context context;
+    private volatile Context context;
 
     /**
      * Constructor.
      * 
      * @param context
-     *            The context to use.
+     *                The context to use.
      */
     public HttpConverter(Context context) {
         this.context = context;
@@ -65,9 +65,9 @@ public class HttpConverter {
      * Adds additional headers if they are non-standard headers.
      * 
      * @param existingHeaders
-     *            The headers to update.
+     *                The headers to update.
      * @param additionalHeaders
-     *            The headers to add.
+     *                The headers to add.
      */
     public void addAdditionalHeaders(Series<Parameter> existingHeaders,
             Series<Parameter> additionalHeaders) {

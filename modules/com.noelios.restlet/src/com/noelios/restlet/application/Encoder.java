@@ -38,10 +38,10 @@ import org.restlet.resource.Representation;
 /**
  * Filter compressing entities. The best encoding is automatically selected
  * based on the preferences of the client and on the encoding supported by NRE:
- * GZip, Zip and Deflate.<br/> If the {@link org.restlet.resource.Representation}
- * has an unknown size, it will always be a candidate for encoding. Candidate
- * representations need to respect media type criteria by the lists of accepted
- * and ignored media types.
+ * GZip, Zip and Deflate.<br/> If the
+ * {@link org.restlet.resource.Representation} has an unknown size, it will
+ * always be a candidate for encoding. Candidate representations need to respect
+ * media type criteria by the lists of accepted and ignored media types.
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://semagia.com/">Semagia</a>
@@ -57,27 +57,27 @@ public class Encoder extends Filter {
     /**
      * Indicates if the request entity should be encoded.
      */
-    private boolean encodeRequest;
+    private volatile boolean encodeRequest;
 
     /**
      * Indicates if the response entity should be encoded.
      */
-    private boolean encodeResponse;
+    private volatile boolean encodeResponse;
 
     /**
      * The minimal size necessary for encoding.
      */
-    private long mininumSize;
+    private volatile long mininumSize;
 
     /**
      * The media types that should be encoded.
      */
-    private List<MediaType> acceptedMediaTypes;
+    private volatile List<MediaType> acceptedMediaTypes;
 
     /**
      * The media types that should be ignored.
      */
-    private List<MediaType> ignoredMediaTypes;
+    private volatile List<MediaType> ignoredMediaTypes;
 
     /**
      * Constructor using the default media types and with
@@ -85,7 +85,7 @@ public class Encoder extends Filter {
      * response entities after call handling.
      * 
      * @param context
-     *            The context.
+     *                The context.
      */
     public Encoder(Context context) {
         this(context, false, true, ENCODE_ALL_SIZES,
@@ -96,22 +96,21 @@ public class Encoder extends Filter {
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param encodeInput
-     *            Indicates if the request entities should be encoded.
+     *                Indicates if the request entities should be encoded.
      * @param encodeOutput
-     *            Indicates if the response entities should be encoded.
+     *                Indicates if the response entities should be encoded.
      * @param minimumSize
-     *            The minimal size of the representation where compression
-     *            should be used.
+     *                The minimal size of the representation where compression
+     *                should be used.
      * @param acceptedMediaTypes
-     *            The media types that should be encoded.
+     *                The media types that should be encoded.
      * @param ignoredMediaTypes
-     *            The media types that should be ignored.
+     *                The media types that should be ignored.
      */
-    public Encoder(Context context, boolean encodeInput,
-            boolean encodeOutput, long minimumSize,
-            List<MediaType> acceptedMediaTypes,
+    public Encoder(Context context, boolean encodeInput, boolean encodeOutput,
+            long minimumSize, List<MediaType> acceptedMediaTypes,
             List<MediaType> ignoredMediaTypes) {
         super(context);
         this.encodeRequest = encodeInput;
@@ -156,9 +155,9 @@ public class Encoder extends Filter {
      * by default.
      * 
      * @param request
-     *            The request to filter.
+     *                The request to filter.
      * @param response
-     *            The response to filter.
+     *                The response to filter.
      */
     public void beforeHandle(Request request, Response response) {
         // Check if encoding of the request entity is needed
@@ -173,9 +172,9 @@ public class Encoder extends Filter {
      * by default.
      * 
      * @param request
-     *            The request to filter.
+     *                The request to filter.
      * @param response
-     *            The response to filter.
+     *                The response to filter.
      */
     public void afterHandle(Request request, Response response) {
         // Check if encoding of the response entity is needed
@@ -189,16 +188,17 @@ public class Encoder extends Filter {
      * Indicates if a representation can be encoded.
      * 
      * @param representation
-     *            The representation to test.
+     *                The representation to test.
      * @return True if the call can be encoded.
      */
     public boolean canEncode(Representation representation) {
         // Test the existence of the representation and that no existing
         // encoding applies
         boolean result = false;
-        if(representation != null){
+        if (representation != null) {
             boolean identity = true;
-            for (Iterator<Encoding> iter = representation.getEncodings().iterator(); identity && iter.hasNext();) {
+            for (Iterator<Encoding> iter = representation.getEncodings()
+                    .iterator(); identity && iter.hasNext();) {
                 identity = (iter.next().equals(Encoding.IDENTITY));
             }
             result = identity;
@@ -242,9 +242,9 @@ public class Encoder extends Filter {
      * Encodes a given representation if an encoding is supported by the client.
      * 
      * @param client
-     *            The client preferences to use.
+     *                The client preferences to use.
      * @param representation
-     *            The representation to encode.
+     *                The representation to encode.
      * @return The encoded representation or the original one if no encoding
      *         supported by the client.
      */
@@ -264,7 +264,7 @@ public class Encoder extends Filter {
      * Returns the best supported encoding for a given client.
      * 
      * @param client
-     *            The client preferences to use.
+     *                The client preferences to use.
      * @return The best supported encoding for the given call.
      */
     public Encoding getBestEncoding(ClientInfo client) {
@@ -308,7 +308,7 @@ public class Encoder extends Filter {
      * Indicates if the request entity should be encoded.
      * 
      * @param encodeRequest
-     *            True if the request entity should be encoded.
+     *                True if the request entity should be encoded.
      */
     public void setEncodeRequest(boolean encodeRequest) {
         this.encodeRequest = encodeRequest;
@@ -327,7 +327,7 @@ public class Encoder extends Filter {
      * Indicates if the response entity should be encoded.
      * 
      * @param encodeResponse
-     *            True if the response entity should be encoded.
+     *                True if the response entity should be encoded.
      */
     public void setEncodeResponse(boolean encodeResponse) {
         this.encodeResponse = encodeResponse;
@@ -349,8 +349,8 @@ public class Encoder extends Filter {
      * done.
      * 
      * @param mininumSize
-     *            The minimum size a representation must have before compression
-     *            is done.
+     *                The minimum size a representation must have before
+     *                compression is done.
      */
     public void setMinimumSize(long mininumSize) {
         this.mininumSize = mininumSize;

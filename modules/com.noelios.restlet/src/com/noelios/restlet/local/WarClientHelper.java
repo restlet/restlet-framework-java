@@ -55,26 +55,26 @@ public class WarClientHelper extends FileClientHelper {
      * Restrict the access to the META-INF and WEB-INF directories. False by
      * default.
      */
-    private boolean restrict;
+    private volatile boolean restrict;
 
     /** The location of the Web Application archive file or directory path. */
-    private String warPath;
+    private volatile String warPath;
 
     /**
      * Indicates if the Web Application path corresponds to an archive file or a
      * directory path.
      */
-    private boolean webAppArchive;
+    private volatile boolean webAppArchive;
 
     /** Cache of all the WAR file entries to improve directory listing time. */
-    private List<String> warEntries;
+    private volatile List<String> warEntries;
 
     /**
      * Constructor. Note that the common list of metadata associations based on
      * extensions is added, see the addCommonExtensions() method.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      */
     public WarClientHelper(Client client) {
         super(client);
@@ -90,9 +90,9 @@ public class WarClientHelper extends FileClientHelper {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
         String scheme = request.getResourceRef().getScheme();
@@ -115,18 +115,19 @@ public class WarClientHelper extends FileClientHelper {
      * Handles a call using the current Web Application.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     protected void handleWar(Request request, Response response) {
         getWarPath();
-        
+
         if (this.webAppArchive) {
             try {
                 String path = request.getResourceRef().getPath();
                 JarFile war = new JarFile(getWarPath());
-                // As the path may be percent-encoded, it has to be percent-decoded.
+                // As the path may be percent-encoded, it has to be
+                // percent-decoded.
                 // Prepare a jar URI, removing the leading slash
                 if ((path != null) && path.startsWith("/"))
                     path = path.substring(1);
@@ -240,7 +241,7 @@ public class WarClientHelper extends FileClientHelper {
      * restricted.
      * 
      * @param restrict
-     *            True if the access is restricted.
+     *                True if the access is restricted.
      */
     public void setRestrict(boolean restrict) {
         this.restrict = restrict;

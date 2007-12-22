@@ -43,27 +43,27 @@ import org.restlet.resource.StringRepresentation;
  */
 public class StatusFilter extends Filter {
     /** Indicates whether an existing representation should be overwritten. */
-    private boolean overwrite;
+    private volatile boolean overwrite;
 
     /** Email address of the administrator to contact in case of error. */
-    private String email;
+    private volatile String email;
 
     /** The home URI to propose in case of error. */
-    private String homeURI;
+    private volatile String homeURI;
 
     /**
      * Constructor.
      * 
      * @param context
-     *            The context.
+     *                The context.
      * @param overwrite
-     *            Indicates whether an existing representation should be
-     *            overwritten.
+     *                Indicates whether an existing representation should be
+     *                overwritten.
      * @param email
-     *            Email address of the administrator to contact in case of
-     *            error.
+     *                Email address of the administrator to contact in case of
+     *                error.
      * @param homeUri
-     *            The home URI to propose in case of error.
+     *                The home URI to propose in case of error.
      */
     public StatusFilter(Context context, boolean overwrite, String email,
             String homeUri) {
@@ -77,9 +77,9 @@ public class StatusFilter extends Filter {
      * Handles the call by distributing it to the next Restlet.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void doHandle(Request request, Response response) {
         // Normally handle the call
@@ -95,9 +95,9 @@ public class StatusFilter extends Filter {
      * by default.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void afterHandle(Request request, Response response) {
         // If no status is set, then the "success ok" status is assumed.
@@ -118,11 +118,11 @@ public class StatusFilter extends Filter {
      * customize the default representation, this method can be overriden.
      * 
      * @param status
-     *            The status to represent.
+     *                The status to represent.
      * @param request
-     *            The request handled.
+     *                The request handled.
      * @param response
-     *            The response updated.
+     *                The response updated.
      * @return The representation of the given status.
      */
     public Representation getRepresentation(Status status, Request request,
@@ -171,11 +171,11 @@ public class StatusFilter extends Filter {
      * In order to customize the default behavior, this method can be overriden.
      * 
      * @param throwable
-     *            The exception or error caught.
+     *                The exception or error caught.
      * @param request
-     *            The request handled.
+     *                The request handled.
      * @param response
-     *            The response updated.
+     *                The response updated.
      * @return The representation of the given status.
      */
     public Status getStatus(Throwable throwable, Request request,

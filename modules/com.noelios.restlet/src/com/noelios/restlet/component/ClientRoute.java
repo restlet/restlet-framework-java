@@ -37,9 +37,9 @@ public class ClientRoute extends Route {
      * Constructor.
      * 
      * @param router
-     *            The parent router.
+     *                The parent router.
      * @param target
-     *            The target client.
+     *                The target client.
      */
     public ClientRoute(Router router, Client target) {
         super(router, "", target);
@@ -58,7 +58,7 @@ public class ClientRoute extends Route {
      * Sets the next client.
      * 
      * @param next
-     *            The next client.
+     *                The next client.
      */
     public void setNext(Client next) {
         super.setNext(next);
@@ -68,9 +68,9 @@ public class ClientRoute extends Route {
      * Returns the score for a given call (between 0 and 1.0).
      * 
      * @param request
-     *            The request to score.
+     *                The request to score.
      * @param response
-     *            The response to score.
+     *                The response to score.
      * @return The score for a given call (between 0 and 1.0).
      */
     public float score(Request request, Response response) {

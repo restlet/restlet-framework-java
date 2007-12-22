@@ -90,7 +90,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * Constructor.
      * 
      * @param client
-     *            The client to help.
+     *                The client to help.
      */
     public HttpClientHelper(Client client) {
         super(client);
@@ -102,7 +102,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * Creates a low-level HTTP client call from a high-level uniform call.
      * 
      * @param request
-     *            The high-level request.
+     *                The high-level request.
      * @return A low-level HTTP client call.
      */
     @Override

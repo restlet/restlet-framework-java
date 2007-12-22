@@ -61,11 +61,11 @@ public class SecurityUtils {
     public static String format(ChallengeRequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append(request.getScheme().getTechnicalName());
-        
-        if(request.getRealm() != null) {
-        	sb.append(" realm=\"").append(request.getRealm()).append('"');
+
+        if (request.getRealm() != null) {
+            sb.append(" realm=\"").append(request.getRealm()).append('"');
         }
-        
+
         return sb.toString();
     }
 

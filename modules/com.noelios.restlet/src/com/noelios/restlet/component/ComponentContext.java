@@ -30,7 +30,6 @@ import org.restlet.Uniform;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ComponentContext extends Context {
-
     /** The component helper. */
     private volatile ComponentHelper componentHelper;
 

@@ -40,7 +40,7 @@ import org.restlet.data.Response;
  */
 public class TunnelFilter extends Filter {
     /** The application. */
-    private Application application;
+    private volatile Application application;
 
     /**
      * Constructor.

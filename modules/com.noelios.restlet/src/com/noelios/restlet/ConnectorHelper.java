@@ -18,8 +18,8 @@
 
 package com.noelios.restlet;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
 import org.restlet.data.Protocol;
@@ -34,13 +34,13 @@ import org.restlet.util.Helper;
  */
 public class ConnectorHelper extends Helper {
     /** The protocols simultaneously supported. */
-    private List<Protocol> protocols;
+    private volatile List<Protocol> protocols;
 
     /**
      * Constructor.
      */
     public ConnectorHelper() {
-        this.protocols = null;
+        this.protocols = new CopyOnWriteArrayList<Protocol>();
     }
 
     /**
@@ -49,8 +49,6 @@ public class ConnectorHelper extends Helper {
      * @return The protocols simultaneously supported.
      */
     public List<Protocol> getProtocols() {
-        if (this.protocols == null)
-            this.protocols = new ArrayList<Protocol>();
         return this.protocols;
     }
 
@@ -58,7 +56,7 @@ public class ConnectorHelper extends Helper {
      * Creates a new context.
      * 
      * @param loggerName
-     *            The JDK's logger name to use for contextual logging.
+     *                The JDK's logger name to use for contextual logging.
      * @return The new context.
      */
     public Context createContext(String loggerName) {
@@ -69,19 +67,19 @@ public class ConnectorHelper extends Helper {
      * Handles a call.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     public void handle(Request request, Response response) {
     }
 
     /** Start hook. */
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
     }
 
     /** Stop callback. */
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
     }
 
 }

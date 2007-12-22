@@ -37,9 +37,9 @@ public class HostRoute extends Route {
      * Constructor.
      * 
      * @param router
-     *            The parent router.
+     *                The parent router.
      * @param target
-     *            The target virtual host.
+     *                The target virtual host.
      */
     public HostRoute(Router router, VirtualHost target) {
         super(router, "", target);
@@ -58,7 +58,7 @@ public class HostRoute extends Route {
      * Sets the next virtual host.
      * 
      * @param next
-     *            The next virtual host.
+     *                The next virtual host.
      */
     public void setNext(VirtualHost next) {
         super.setNext(next);
@@ -68,9 +68,9 @@ public class HostRoute extends Route {
      * Returns the score for a given call (between 0 and 1.0).
      * 
      * @param request
-     *            The request to score.
+     *                The request to score.
      * @param response
-     *            The response to score.
+     *                The response to score.
      * @return The score for a given call (between 0 and 1.0).
      */
     public float score(Request request, Response response) {
@@ -146,9 +146,9 @@ public class HostRoute extends Route {
      * manner.
      * 
      * @param regex
-     *            The pattern to use.
+     *                The pattern to use.
      * @param formattedString
-     *            The formatted string to match.
+     *                The formatted string to match.
      * @return True if the formatted string matched the pattern.
      */
     private boolean matches(String regex, String formattedString) {
@@ -161,9 +161,9 @@ public class HostRoute extends Route {
      * reference.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     protected void beforeHandle(Request request, Response response) {
         if (getLogger().isLoggable(Level.FINE)) {

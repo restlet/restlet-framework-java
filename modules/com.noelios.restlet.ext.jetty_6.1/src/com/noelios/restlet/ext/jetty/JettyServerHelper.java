@@ -135,16 +135,16 @@ import org.mortbay.thread.BoundedThreadPool;
 public abstract class JettyServerHelper extends
         com.noelios.restlet.http.HttpServerHelper {
     /** The wrapped Jetty server. */
-    private Server wrappedServer;
+    private volatile Server wrappedServer;
 
     /** The internal Jetty connector. */
-    private AbstractConnector connector;
+    private volatile AbstractConnector connector;
 
     /**
      * Constructor.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      */
     public JettyServerHelper(org.restlet.Server server) {
         super(server);
@@ -187,7 +187,7 @@ public abstract class JettyServerHelper extends
      * Configures the internal Jetty connector.
      * 
      * @param connector
-     *            The internal Jetty connector.
+     *                The internal Jetty connector.
      */
     protected void configure(AbstractConnector connector) {
         if (getServer().getAddress() != null)
@@ -215,7 +215,7 @@ public abstract class JettyServerHelper extends
          * Constructor.
          * 
          * @param server
-         *            The Jetty HTTP server.
+         *                The Jetty HTTP server.
          */
         public WrappedServer(JettyServerHelper server) {
             this.helper = server;
@@ -225,7 +225,7 @@ public abstract class JettyServerHelper extends
          * Handler method converting a Jetty Connection into a Restlet Call.
          * 
          * @param connection
-         *            The connection to handle.
+         *                The connection to handle.
          */
         public void handle(HttpConnection connection) throws IOException,
                 ServletException {
@@ -363,7 +363,7 @@ public abstract class JettyServerHelper extends
      * Sets the wrapped Jetty server.
      * 
      * @param wrappedServer
-     *            The wrapped Jetty server.
+     *                The wrapped Jetty server.
      */
     protected void setWrappedServer(Server wrappedServer) {
         this.wrappedServer = wrappedServer;
