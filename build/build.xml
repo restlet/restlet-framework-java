@@ -803,7 +803,7 @@
       <pomModule name="jetty" />
 <!-- disabled for now  <pomModule name="jmx" /> -->
       <pomModule name="json" />
-      <pomModule name="jxta" />
+<!-- disabled for now  <pomModule name="jxta" /> -->
       <pomModule name="net" />
       <pomModule name="servlet" />
       <pomModule name="simple" />
@@ -997,7 +997,7 @@
             <pathelement path="${mod}/${mod-jetty-id}/src/" />
 <!-- disabled for now  <pathelement path="${mod}/${mod-jmx-id}/src/" /> -->
             <pathelement path="${mod}/${mod-json-id}/src/" />
-            <pathelement path="${mod}/${mod-jxta-id}/src/" />
+<!-- disabled for now  <pathelement path="${mod}/${mod-jxta-id}/src/" /> -->
             <pathelement path="${mod}/${mod-net-id}/src/" />
             <pathelement path="${mod}/${mod-servlet-id}/src/" />
             <pathelement path="${mod}/${mod-simple-id}/src/" />
@@ -1157,7 +1157,7 @@
       <copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
 
       <!-- Packages libraries -->
-      <stageLibrary name="bouncycastle" />
+<!-- disabled for now  <stageLibrary name="bouncycastle" /> -->
       <stageLibrary name="codec" />
       <stageLibrary name="collections" />
       <stageLibrary name="db4o" />
@@ -1173,7 +1173,7 @@
       <stageLibrary name="activation" />
       <stageLibrary name="jetty" />
       <stageLibrary name="json" />
-      <stageLibrary name="jxta" />
+<!-- disabled for now  <stageLibrary name="jxta" /> -->
       <stageLibrary name="lang" />
       <stageLibrary name="logging" />
       <stageLibrary name="mina" />
@@ -1201,7 +1201,7 @@
       <stageModule name="jetty" />
 <!-- disabled for now  <stageModule name="jmx" /> -->
       <stageModule name="json" />
-      <stageModule name="jxta" />
+<!-- disabled for now  <stageModule name="jxta" /> -->
       <stageModule name="net" />
       <stageModule name="servlet" />
       <stageModule name="simple" />
