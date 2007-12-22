@@ -895,7 +895,7 @@ public final class Status extends Metadata {
      */
     public Status(int code, final String name, final String description,
             final String uri) {
-        super(name, description);
+        super(name, checkDescription(description));
         this.code = code;
         this.uri = uri;
     }
@@ -1518,4 +1518,28 @@ public final class Status extends Metadata {
     public String toString() {
         return getName() + " (" + this.code + ")";
     }
+    
+    /**
+     * Check if the provided description of the status contains forbidden
+     * characters such as CR and LF. an IllegalArgumentException is thrown in
+     * this case.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1">Status
+     *      Code and Reason Phrase</a>
+     * @param description
+     *                the description to check
+     * @return the description if it is correct.
+     */
+    private static String checkDescription(String description) {
+        if (description != null) {
+            if (description.contains("\n") && description.contains("\r")) {
+                throw new IllegalArgumentException(
+                        "Description of the status must not contain CR and LF characters.");
+            }
+        }
+
+        return description;
+    }
+
 }
