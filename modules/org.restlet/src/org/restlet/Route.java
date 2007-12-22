@@ -18,8 +18,8 @@
 
 package org.restlet;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -50,11 +50,11 @@ public class Route extends Filter {
         /** Target attribute name. */
         protected String attribute;
 
-        /** Name of the parameter to look for. */
-        protected String parameter;
-
         /** Indicates how to handle repeating values. */
         protected boolean first;
+
+        /** Name of the parameter to look for. */
+        protected String parameter;
 
         /**
          * Constructor.
@@ -78,11 +78,11 @@ public class Route extends Filter {
         /** Name of the attribute to look for. */
         protected String attribute;
 
-        /** Indicates if the attribute presence is required. */
-        protected boolean required;
-
         /** Format of the attribute value, using Regex pattern syntax. */
         protected String format;
+
+        /** Indicates if the attribute presence is required. */
+        protected boolean required;
 
         /**
          * Constructor.
@@ -102,23 +102,23 @@ public class Route extends Filter {
         }
     }
 
-    /** The parent router. */
-    private Router router;
-
-    /** The list of attribute validations. */
-    private List<ValidateInfo> validations;
-
     /** The list of cookies to extract. */
-    private List<ExtractInfo> cookieExtracts;
-
-    /** The list of query parameters to extract. */
-    private List<ExtractInfo> queryExtracts;
+    private volatile List<ExtractInfo> cookieExtracts;
 
     /** The list of request entity parameters to extract. */
-    private List<ExtractInfo> entityExtracts;
+    private volatile List<ExtractInfo> entityExtracts;
+
+    /** The list of query parameters to extract. */
+    private volatile List<ExtractInfo> queryExtracts;
+
+    /** The parent router. */
+    private volatile Router router;
 
     /** The reference template to match. */
-    private Template template;
+    private volatile Template template;
+
+    /** The list of attribute validations. */
+    private volatile List<ValidateInfo> validations;
 
     /**
      * Constructor behaving as a simple extractor filter.
@@ -159,11 +159,11 @@ public class Route extends Filter {
     public Route(Router router, Template template, Restlet next) {
         super(router == null ? null : router.getContext(), next);
         this.router = router;
-        this.cookieExtracts = null;
-        this.queryExtracts = null;
-        this.entityExtracts = null;
+        this.cookieExtracts = new CopyOnWriteArrayList<ExtractInfo>();
+        this.queryExtracts = new CopyOnWriteArrayList<ExtractInfo>();
+        this.entityExtracts = new CopyOnWriteArrayList<ExtractInfo>();
         this.template = template;
-        this.validations = null;
+        this.validations = new CopyOnWriteArrayList<ValidateInfo>();
     }
 
     /**
@@ -242,7 +242,7 @@ public class Route extends Filter {
      */
     private void extractAttributes(Request request, Response response) {
         // Extract the query parameters
-        if (this.queryExtracts != null) {
+        if (!getQueryExtracts().isEmpty()) {
             Form form = request.getResourceRef().getQueryAsForm();
 
             if (form != null) {
@@ -259,7 +259,7 @@ public class Route extends Filter {
         }
 
         // Extract the request entity parameters
-        if (this.entityExtracts != null) {
+        if (!getEntityExtracts().isEmpty()) {
             Form form = request.getEntityAsForm();
 
             if (form != null) {
@@ -276,7 +276,7 @@ public class Route extends Filter {
         }
 
         // Extract the cookie parameters
-        if (this.cookieExtracts != null) {
+        if (!getCookieExtracts().isEmpty()) {
             Series<Cookie> cookies = request.getCookies();
 
             if (cookies != null) {
@@ -354,8 +354,6 @@ public class Route extends Filter {
      * @return The list of query extracts.
      */
     private List<ExtractInfo> getCookieExtracts() {
-        if (this.cookieExtracts == null)
-            this.cookieExtracts = new ArrayList<ExtractInfo>();
         return this.cookieExtracts;
     }
 
@@ -365,8 +363,6 @@ public class Route extends Filter {
      * @return The list of query extracts.
      */
     private List<ExtractInfo> getEntityExtracts() {
-        if (this.entityExtracts == null)
-            this.entityExtracts = new ArrayList<ExtractInfo>();
         return this.entityExtracts;
     }
 
@@ -376,8 +372,6 @@ public class Route extends Filter {
      * @return The list of query extracts.
      */
     private List<ExtractInfo> getQueryExtracts() {
-        if (this.queryExtracts == null)
-            this.queryExtracts = new ArrayList<ExtractInfo>();
         return this.queryExtracts;
     }
 
@@ -405,8 +399,6 @@ public class Route extends Filter {
      * @return The list of attribute validations.
      */
     private List<ValidateInfo> getValidations() {
-        if (this.validations == null)
-            this.validations = new ArrayList<ValidateInfo>();
         return this.validations;
     }
 
