@@ -355,6 +355,33 @@ public class Reference {
     }
 
     /**
+     * Constructor for a protocol and host name. Uses the default port for the
+     * given protocol.
+     * 
+     * @param protocol
+     *                Protocol/scheme to use
+     * @param hostName
+     *                The host name or IP address.
+     */
+    public Reference(Protocol protocol, String hostName) {
+        this(protocol, hostName, protocol.getDefaultPort());
+    }
+
+    /**
+     * Constructor for a protocol, host name and host port
+     * 
+     * @param protocol
+     *                Protocol/scheme to use
+     * @param hostName
+     *                The host name or IP address.
+     * @param hostPort
+     *                The host port (default ports are correctly ignored).
+     */
+    public Reference(Protocol protocol, String hostName, int hostPort) {
+        this(protocol.getSchemeName(), hostName, hostPort, null, null, null);
+    }
+
+    /**
      * Clone constructor.
      * 
      * @param ref
@@ -362,6 +389,18 @@ public class Reference {
      */
     public Reference(Reference ref) {
         this(ref.baseRef, ref.internalRef);
+    }
+
+    /**
+     * Constructor from an URI reference (most likely relative).
+     * 
+     * @param baseRef
+     *                The base reference.
+     * @param uriReference
+     *                The URI reference, either absolute or relative.
+     */
+    public Reference(Reference baseRef, Reference uriReference) {
+        this(baseRef, uriReference.toString());
     }
 
     /**
@@ -437,33 +476,6 @@ public class Reference {
     public Reference(String scheme, String hostName, int hostPort, String path,
             String query, String fragment) {
         this(toString(scheme, hostName, hostPort, path, query, fragment));
-    }
-
-    /**
-     * Constructor for a protocol, host name and host port
-     * 
-     * @param protocol
-     *                Protocol/scheme to use
-     * @param hostName
-     *                The host name or IP address.
-     * @param hostPort
-     *                The host port (default ports are correctly ignored).
-     */
-    public Reference(Protocol protocol, String hostName, int hostPort) {
-        this(protocol.getSchemeName(), hostName, hostPort, null, null, null);
-    }
-
-    /**
-     * Constructor for a protocol and host name. Uses the default port for the
-     * given protocol.
-     * 
-     * @param protocol
-     *                Protocol/scheme to use
-     * @param hostName
-     *                The host name or IP address.
-     */
-    public Reference(Protocol protocol, String hostName) {
-        this(protocol, hostName, protocol.getDefaultPort());
     }
 
     /**
