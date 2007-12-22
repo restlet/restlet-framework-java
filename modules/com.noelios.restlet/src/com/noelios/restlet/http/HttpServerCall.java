@@ -179,7 +179,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Returns the request entity channel if it exists.
      * 
      * @param size
-     *                The total size that will be read from the channel.
+     *                The expected entity size or -1 if unknown.
      * 
      * @return The request entity channel if it exists.
      */
@@ -189,7 +189,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Returns the request entity stream if it exists.
      * 
      * @param size
-     *                The total size that will be read from the stream.
+     *                The expected entity size or -1 if unknown.
      * 
      * @return The request entity stream if it exists.
      */

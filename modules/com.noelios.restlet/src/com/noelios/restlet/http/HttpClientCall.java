@@ -129,11 +129,27 @@ public abstract class HttpClientCall extends HttpCall {
     public Representation getResponseEntity() {
         Representation result = null;
 
-        if (getResponseEntityStream() != null) {
-            result = new InputRepresentation(getResponseEntityStream(), null);
-        } else if (getResponseEntityChannel() != null) {
-            result = new ReadableRepresentation(getResponseEntityChannel(),
-                    null);
+        long contentLength = Representation.UNKNOWN_SIZE;
+
+        // Extract the content length header
+        for (Parameter header : getResponseHeaders()) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_LENGTH)) {
+                try {
+                    contentLength = Long.parseLong(header.getValue());
+                } catch (NumberFormatException e) {
+                    contentLength = Representation.UNKNOWN_SIZE;
+                }
+            }
+        }
+
+        InputStream stream = getResponseEntityStream(contentLength);
+        ReadableByteChannel channel = getResponseEntityChannel(contentLength);
+
+        if (stream != null) {
+            result = new InputRepresentation(stream, null);
+        } else if (channel != null) {
+            result = new ReadableRepresentation(channel, null);
         } else if (getMethod().equals(Method.HEAD.getName())) {
             result = new Representation() {
                 @Override
@@ -229,16 +245,20 @@ public abstract class HttpClientCall extends HttpCall {
     /**
      * Returns the response channel if it exists.
      * 
+     * @param size
+     *                The expected entity size or -1 if unknown.
      * @return The response channel if it exists.
      */
-    public abstract ReadableByteChannel getResponseEntityChannel();
+    public abstract ReadableByteChannel getResponseEntityChannel(long size);
 
     /**
      * Returns the response entity stream if it exists.
      * 
+     * @param size
+     *                The expected entity size or -1 if unknown.
      * @return The response entity stream if it exists.
      */
-    public abstract InputStream getResponseEntityStream();
+    public abstract InputStream getResponseEntityStream(long size);
 
     /**
      * Parse the Content-Disposition header value

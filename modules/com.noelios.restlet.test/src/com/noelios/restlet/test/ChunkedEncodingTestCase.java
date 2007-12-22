@@ -23,15 +23,15 @@ import java.io.IOException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Message;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -41,17 +41,13 @@ import org.restlet.data.Status;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.util.Series;
+import org.restlet.resource.Variant;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.noelios.restlet.ConnectorHelper;
-import com.noelios.restlet.Engine;
 import com.noelios.restlet.http.HttpConstants;
-import com.noelios.restlet.http.StreamClientHelper;
-import com.noelios.restlet.http.StreamServerHelper;
 
 /**
  * This tests the ability of the connectors to handle chunked encoding.
@@ -59,121 +55,44 @@ import com.noelios.restlet.http.StreamServerHelper;
  * The test uses each connector to PUT an entity that will be sent chunked and
  * also to receive a chunked response.
  */
-public class ChunkedEncodingTestCase extends TestCase {
-
-    static int port;
-
-    static {
-        port = 1137;
-        if (System.getProperties().containsKey("restlet.test.port")) {
-            port = Integer.parseInt(System.getProperty("restlet.test.port"));
-        }
-    }
-
-    Component component;
-
-    String uri;
-
-    boolean incPorts;
+public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     boolean checkedForChunkedResponse;
 
     public void setUp() {
-        incPorts = false;
+        super.setUp();
         checkedForChunkedResponse = true;
-    }
-
-    public void testDefaultAndDefault() throws Exception {
-        runTest(new StreamServerHelper(null), new StreamClientHelper(null));
-    }
-
-    public void testDefaultAndHttpClient() throws Exception {
-        runTest(new StreamServerHelper(null),
-                new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
-    }
-
-    public void testDefaultAndJdkNet() throws Exception {
-        runTest(new StreamServerHelper(null),
-                new com.noelios.restlet.ext.net.HttpClientHelper(null));
     }
 
     public void testJettyAndDefault() throws Exception {
         // Jetty will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
         checkedForChunkedResponse = false;
-        runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
-                new StreamClientHelper(null));
-    }
-
-    public void testJettyAndHttpClient() throws Exception {
-        runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
-                new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
-    }
-
-    public void testJettyAndJdkNet() throws Exception {
-        runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
-                new com.noelios.restlet.ext.net.HttpClientHelper(null));
+        super.testJettyAndDefault();
     }
 
     public void testSimpleAndDefault() throws Exception {
         // Simple will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
         checkedForChunkedResponse = false;
-        // Simple also does not shutdown cleanly, we need to increment
-        // run on a different port each time.
-        incPorts = true;
-        runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
-                new StreamClientHelper(null));
+        super.testSimpleAndDefault();
     }
 
-    public void testSimpleAndHttpClient() throws Exception {
-        incPorts = true;
-        runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
-                new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
-    }
-
-    public void testSimpleAndJdkNet() throws Exception {
-        incPorts = true;
-        runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
-                new com.noelios.restlet.ext.net.HttpClientHelper(null));
-    }
-
-    // Helper methods
-
-    private void runTest(ConnectorHelper server, ConnectorHelper client)
-            throws Exception {
-        Engine nre = new Engine(false);
-        nre.getRegisteredServers().add(server);
-        nre.getRegisteredClients().add(client);
-        org.restlet.util.Engine.setInstance(nre);
-
-        start();
+    protected void call() throws Exception {
         sendPut();
-        stop();
+        sendGet();
     }
 
-    private void start() throws Exception {
-        component = new Component();
-        component.getServers().add(Protocol.HTTP, port);
-        uri = "http://localhost:" + (incPorts ? port++ : port) + "/test/";
-
+    protected Application createApplication(Component component) {
         Application application = new Application(component.getContext()) {
             @Override
             public Restlet createRoot() {
                 Router router = new Router(getContext());
-                router.attach("/test/", PutTestResource.class);
+                router.attach("/test", PutTestResource.class);
                 return router;
             }
         };
-
-        component.getDefaultHost().attach(application);
-        component.start();
-    }
-
-    private void stop() throws Exception {
-        if (component != null && component.isStarted()) {
-            component.stop();
-        }
+        return application;
     }
 
     @SuppressWarnings("unchecked")
@@ -182,9 +101,7 @@ public class ChunkedEncodingTestCase extends TestCase {
         Response r = new Client(Protocol.HTTP).handle(request);
 
         if (checkedForChunkedResponse) {
-            Series<Parameter> parameters = (Series<Parameter>) r
-                    .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
-            checkForChunkedHeader(parameters);
+            checkForChunkedHeader(r);
         }
 
         assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
@@ -192,7 +109,15 @@ public class ChunkedEncodingTestCase extends TestCase {
         assertXML(r.getEntityAsDom());
     }
 
-    private Representation createTestXml() {
+    private void sendGet() throws Exception {
+        Request request = new Request(Method.GET, uri);
+        Response r = new Client(Protocol.HTTP).handle(request);
+        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
+                .getStatus());
+        assertXML(r.getEntityAsDom());
+    }
+
+    private static Representation createTestXml() {
         Document doc = createDocument();
         Element root = doc.createElement("root");
 
@@ -207,7 +132,7 @@ public class ChunkedEncodingTestCase extends TestCase {
         return new DomRepresentation(MediaType.TEXT_XML, doc);
     }
 
-    private Document createDocument() {
+    private static Document createDocument() {
         try {
             return DocumentBuilderFactory.newInstance().newDocumentBuilder()
                     .newDocument();
@@ -236,7 +161,9 @@ public class ChunkedEncodingTestCase extends TestCase {
         }
     }
 
-    static void checkForChunkedHeader(Series<Parameter> parameters) {
+    static void checkForChunkedHeader(Message message) {
+        Form parameters = (Form) message.getAttributes().get(
+                "org.restlet.http.headers");
         Parameter p = parameters
                 .getFirst(HttpConstants.HEADER_TRANSFER_ENCODING);
         assertFalse(p == null);
@@ -247,17 +174,21 @@ public class ChunkedEncodingTestCase extends TestCase {
 
         public PutTestResource(Context ctx, Request request, Response response) {
             super(ctx, request, response);
+            getVariants().add(new Variant(MediaType.TEXT_XML));
         }
 
         public boolean allowPut() {
             return true;
         }
 
+        @Override
+        public Representation getRepresentation(Variant variant) {
+            return createTestXml();
+        }
+
         @SuppressWarnings("unchecked")
         public void storeRepresentation(Representation entity) {
-            Series<Parameter> parameters = (Series<Parameter>) getRequest()
-                    .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
-            checkForChunkedHeader(parameters);
+            checkForChunkedHeader(getRequest());
 
             DomRepresentation dom = new DomRepresentation(entity);
             try {

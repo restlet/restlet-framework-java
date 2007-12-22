@@ -57,6 +57,7 @@ import com.noelios.restlet.http.HttpClientCall;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpMethodCall extends HttpClientCall {
+
     /** The associated HTTP client. */
     private HttpClientHelper clientHelper;
 
@@ -159,16 +160,12 @@ public class HttpMethodCall extends HttpClientCall {
     }
 
     @Override
-    public ReadableByteChannel getResponseEntityChannel() {
+    public ReadableByteChannel getResponseEntityChannel(long size) {
         return null;
     }
 
-    /**
-     * Returns the response stream if it exists.
-     * 
-     * @return The response stream if it exists.
-     */
-    public InputStream getResponseEntityStream() {
+    @Override
+    public InputStream getResponseEntityStream(long size) {
         InputStream result = null;
 
         try {

@@ -34,7 +34,6 @@ import org.restlet.resource.Representation;
 
 import com.noelios.restlet.util.ChunkedInputStream;
 import com.noelios.restlet.util.ChunkedOutputStream;
-import com.noelios.restlet.util.KeepAliveInputStream;
 import com.noelios.restlet.util.KeepAliveOutputStream;
 
 /**
@@ -107,16 +106,18 @@ public class StreamClientCall extends HttpClientCall {
     }
 
     @Override
-    public ReadableByteChannel getResponseEntityChannel() {
+    public ReadableByteChannel getResponseEntityChannel(long size) {
         return null;
     }
 
     @Override
-    public InputStream getResponseEntityStream() {
+    public InputStream getResponseEntityStream(long size) {
         if (isResponseChunked()) {
             return new ChunkedInputStream(getResponseStream());
+        } else if (size >= 0) {
+            return new InputEntityStream(getResponseStream(), size);
         } else {
-            return new KeepAliveInputStream(getResponseStream());
+            return getResponseStream();
         }
     }
 

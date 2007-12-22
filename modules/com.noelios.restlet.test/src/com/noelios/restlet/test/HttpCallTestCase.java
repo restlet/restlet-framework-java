@@ -99,12 +99,12 @@ public class HttpCallTestCase extends TestCase {
             }
 
             @Override
-            public ReadableByteChannel getResponseEntityChannel() {
+            public ReadableByteChannel getResponseEntityChannel(long size) {
                 return null;
             }
 
             @Override
-            public InputStream getResponseEntityStream() {
+            public InputStream getResponseEntityStream(long size) {
                 return null;
             }
 

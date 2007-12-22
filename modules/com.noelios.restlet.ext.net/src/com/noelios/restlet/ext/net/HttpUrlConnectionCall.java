@@ -47,6 +47,7 @@ import com.noelios.restlet.http.HttpClientCall;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpUrlConnectionCall extends HttpClientCall {
+
     /** The wrapped HTTP URL connection. */
     private HttpURLConnection connection;
 
@@ -160,16 +161,12 @@ public class HttpUrlConnectionCall extends HttpClientCall {
     }
 
     @Override
-    public ReadableByteChannel getResponseEntityChannel() {
+    public ReadableByteChannel getResponseEntityChannel(long size) {
         return null;
     }
 
-    /**
-     * Returns the response stream if it exists.
-     * 
-     * @return The response stream if it exists.
-     */
-    public InputStream getResponseEntityStream() {
+    @Override
+    public InputStream getResponseEntityStream(long size) {
         InputStream result = null;
 
         try {

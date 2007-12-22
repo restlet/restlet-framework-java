@@ -27,6 +27,7 @@ import junit.framework.TestSuite;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class NoeliosTestSuite extends TestSuite {
+
     /** Constructor. */
     public NoeliosTestSuite() {
         addTestSuite(ChunkedEncodingTestCase.class);
@@ -34,6 +35,7 @@ public class NoeliosTestSuite extends TestSuite {
         addTestSuite(ChunkedOutputStreamTestCase.class);
         addTestSuite(CookiesTestCase.class);
         addTestSuite(FormTestCase.class);
+        addTestSuite(GetTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpCallTestCase.class);
         addTestSuite(InputEntityStreamTestCase.class);
