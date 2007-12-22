@@ -221,19 +221,24 @@ public class Response extends Message {
      *                The target URI reference.
      */
     public void redirectPermanent(Reference targetRef) {
-        setRedirectRef(targetRef);
+        setLocationRef(targetRef);
         setStatus(Status.REDIRECTION_PERMANENT);
     }
 
     /**
      * Permanently redirects the client to a target URI. The client is expected
-     * to reuse the same method for the new request.
+     * to reuse the same method for the new request.<br>
+     * <br>
+     * If you pass a relative target URI, it will be resolved with the current
+     * base reference of the request's resource reference (see
+     * {@link Request#getResourceRef() and {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *                The target URI.
      */
     public void redirectPermanent(String targetUri) {
-        redirectPermanent(new Reference(targetUri));
+        setLocationRef(targetUri);
+        setStatus(Status.REDIRECTION_PERMANENT);
     }
 
     /**
@@ -247,7 +252,7 @@ public class Response extends Message {
      *                The target reference.
      */
     public void redirectSeeOther(Reference targetRef) {
-        setRedirectRef(targetRef);
+        setLocationRef(targetRef);
         setStatus(Status.REDIRECTION_SEE_OTHER);
     }
 
@@ -256,13 +261,18 @@ public class Response extends Message {
      * GET method on that resource. This method exists primarily to allow the
      * output of a POST-activated script to redirect the user agent to a
      * selected resource. The new URI is not a substitute reference for the
-     * originally requested resource.
+     * originally requested resource.<br>
+     * <br>
+     * If you pass a relative target URI, it will be resolved with the current
+     * base reference of the request's resource reference (see
+     * {@link Request#getResourceRef() and {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *                The target URI.
      */
     public void redirectSeeOther(String targetUri) {
-        redirectSeeOther(new Reference(targetUri));
+        setLocationRef(targetUri);
+        setStatus(Status.REDIRECTION_SEE_OTHER);
     }
 
     /**
@@ -273,19 +283,24 @@ public class Response extends Message {
      *                The target reference.
      */
     public void redirectTemporary(Reference targetRef) {
-        setRedirectRef(targetRef);
+        setLocationRef(targetRef);
         setStatus(Status.REDIRECTION_TEMPORARY);
     }
 
     /**
      * Temporarily redirects the client to a target URI. The client is expected
-     * to reuse the same method for the new request.
+     * to reuse the same method for the new request.<br>
+     * <br>
+     * If you pass a relative target URI, it will be resolved with the current
+     * base reference of the request's resource reference (see
+     * {@link Request#getResourceRef() and {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *                The target URI.
      */
     public void redirectTemporary(String targetUri) {
-        redirectTemporary(new Reference(targetUri));
+        setLocationRef(targetUri);
+        setStatus(Status.REDIRECTION_TEMPORARY);
     }
 
     /**
@@ -343,7 +358,10 @@ public class Response extends Message {
 
     /**
      * Sets the reference that the client should follow for redirections or
-     * resource creations.
+     * resource creations. If you pass a relative location URI, it will be
+     * resolved with the current base reference of the request's resource
+     * reference (see
+     * {@link Request#getResourceRef() and {@link Reference#getBaseRef()}.
      * 
      * @param locationUri
      *                The URI to set.
