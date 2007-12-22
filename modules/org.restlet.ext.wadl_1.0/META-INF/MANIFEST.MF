@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - WADL
 Bundle-SymbolicName: org.restlet.ext.wadl
-Bundle-Version: 1.0.0
+Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
 Require-Bundle: org.restlet;visibility:=reexport,
  com.noelios.restlet
