@@ -597,6 +597,7 @@ public class Resource extends Handler {
         this.negotiateContent = true;
         this.readable = true;
         this.variants = null;
+        this.available = true;
     }
 
     /**

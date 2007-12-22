@@ -15,6 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+
 package org.restlet.test;
 
 import java.util.Arrays;
@@ -34,7 +35,6 @@ import com.noelios.restlet.http.HttpCall;
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://www.semagia.com/">Semagia</a>
- * @version $Rev:$ - $Date:$
  */
 public class CallTestCase extends RestletTestCase {
     /**
@@ -50,7 +50,7 @@ public class CallTestCase extends RestletTestCase {
      * Returns a response.
      * 
      * @param request
-     *            The associated request.
+     *                The associated request.
      * @return Response instance.
      */
     protected Response getResponse(Request request) {
@@ -70,7 +70,7 @@ public class CallTestCase extends RestletTestCase {
      * Returns a reference with the specified URI.
      * 
      * @param uri
-     *            The URI.
+     *                The URI.
      * @return Reference instance.
      */
     protected Reference getReference(String uri) {

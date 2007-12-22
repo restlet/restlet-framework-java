@@ -18,31 +18,25 @@
 
 package org.restlet.test;
 
-import org.restlet.Context;
-import org.restlet.Filter;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import junit.framework.TestCase;
+
+import org.restlet.resource.Resource;
 
 /**
- * Thin layer around an AbstractFilter. Takes care about being started and
- * having a target when it should handle a call.
+ * Resource test case.
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://www.semagia.com/">Semagia</a>
+ * @author Kevin Conaway
  */
-public class MockFilter extends Filter {
-    public MockFilter(Context context) {
-        super(context);
-    }
+public class ResourceTestCase extends TestCase {
 
-    @Override
-    protected void beforeHandle(Request request, Response response) {
-        if (!super.isStarted()) {
-            throw new IllegalStateException("Filter is not started");
-        }
-        if (!super.hasNext()) {
-            throw new IllegalStateException("Target is not set");
-        }
+    public void testIsAvailable() {
+        Resource r = new Resource();
+        assertFalse(r.isAvailable());
+        r.init(null, null, null);
+        assertTrue(r.isAvailable());
+
+        r = new Resource(null, null, null);
+        assertTrue(r.isAvailable());
     }
 
 }

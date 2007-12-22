@@ -15,6 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+
 package org.restlet.test;
 
 import org.restlet.Context;
@@ -28,7 +29,6 @@ import org.restlet.data.Response;
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://www.semagia.com/">Semagia</a>
- * @version $Rev:$ - $Date:$
  */
 public class MockRestlet extends Restlet {
     public MockRestlet(Context context) {
