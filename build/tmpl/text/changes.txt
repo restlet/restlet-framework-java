@@ -23,7 +23,10 @@ Changes log
    by Kevin Conaway.
  - Fixed thread safety issue by removing lazy initialization of parameters in HttpCall. 
    Contributed by Kevin Conaway.
-
+ - Prevent malformed responses headers by throwing an illegalArgumentException in case the 
+   description of the returned status contains illegal CR and LF characters. Reported by 
+   Davide Angelocola.
+ 
 [Enhancements]
  - Clarified Template#parse Javadocs. Suggested by Jonathan Hall.
  - Upgraded Jetty to 6.1.6
