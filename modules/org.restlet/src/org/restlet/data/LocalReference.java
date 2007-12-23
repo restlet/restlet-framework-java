@@ -22,21 +22,8 @@ import java.io.File;
 
 /**
  * Reference to a local (i.e. non remote) resource. It has helper methods for
- * the three following schemes: CLAP, FILE and JAR.<br>
- * <br>
- * CLAP (ClassLoader Access Protocol) is a custom scheme to access to
- * representations via classloaders. Example URI:
- * "clap://thread/org/restlet/Restlet.class".<br>
- * <br>
- * RIAP (Restlet Internal Access Protocol) is a custom scheme to access <br>
- * representations via internal calls to virtual hosts/components. Example URIs:
- * "riap://component/myAppPath/myResource" and "riap://application/myResource".<br>
- * <br>
- * JAR is a common scheme to access to representations inside Java ARchives.
- * Example URI: "jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class".<br>
- * <br>
- * FILE is a standard scheme to access to representations stored in the file
- * system (locally most of the time). Example URI: "file:///D/root/index.html".
+ * the three following schemes: {@link Protocol#CLAP}, {@link Protocol#FILE},
+ * {@link Protocol#JAR} and {@link Protocol#RIAP}.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

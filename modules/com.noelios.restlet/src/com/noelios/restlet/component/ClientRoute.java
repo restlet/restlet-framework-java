@@ -28,7 +28,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Router scorer based on a target VirtualHost.
+ * Router scorer based on a target client connector.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

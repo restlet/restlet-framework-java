@@ -39,7 +39,16 @@ public final class Protocol extends Metadata {
     public static final Protocol AJP = new Protocol("ajp", "AJP",
             "Apache Jakarta Protocol", 8009);
 
-    /** Class loader access protocol. */
+    /**
+     * CLAP (ClassLoader Access Protocol) is a custom scheme to access to
+     * representations via classloaders. Example URI:
+     * "clap://thread/org/restlet/Restlet.class".<br>
+     * <br>
+     * In order to work, CLAP requires a client connector provided by the core
+     * Restlet engine.
+     * 
+     * @see org.restlet.data.LocalReference
+     */
     public static final Protocol CLAP = new Protocol("clap", "CLAP",
             "Class Loader Access Protocol", UNKNOWN_PORT);
 
@@ -47,7 +56,16 @@ public final class Protocol extends Metadata {
     public static final Protocol WAR = new Protocol("war", "WAR",
             "Web Archive Access Protocol", UNKNOWN_PORT);
 
-    /** Local file system access protocol. */
+    /**
+     * FILE is a standard scheme to access to representations stored in the file
+     * system (locally most of the time). Example URI:
+     * "file:///D/root/index.html".<br>
+     * <br>
+     * In order to work, FILE requires a client connector provided by the core
+     * Restlet engine.
+     * 
+     * @see org.restlet.data.LocalReference
+     */
     public static final Protocol FILE = new Protocol("file", "FILE",
             "Local File System Protocol", UNKNOWN_PORT);
 
@@ -63,7 +81,13 @@ public final class Protocol extends Metadata {
     public static final Protocol HTTPS = new Protocol("https", "HTTPS",
             "HyperText Transport Protocol (Secure)", 443);
 
-    /** JAR protocol. */
+    /**
+     * JAR (Java ARchive) is a common scheme to access to representations inside
+     * archive files. Example URI:
+     * "jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class".
+     * 
+     * @see org.restlet.data.LocalReference
+     */
     public static final Protocol JAR = new Protocol("jar", "JAR",
             "Java ARchive", UNKNOWN_PORT);
 
@@ -71,7 +95,17 @@ public final class Protocol extends Metadata {
     public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
             "Java DataBase Connectivity", UNKNOWN_PORT);
 
-    /** Restlet internal access protocol. */
+    /**
+     * RIAP (Restlet Internal Access Protocol) is a custom scheme to access
+     * representations via internal calls to virtual hosts/components. Example
+     * URIs: "riap://component/myAppPath/myResource" and
+     * "riap://application/myResource".<br>
+     * <br>
+     * In order to work, RIAP doesn't requires any client connector and is
+     * automatically supported by the Restlet engine.
+     * 
+     * @see org.restlet.data.LocalReference
+     */
     public static final Protocol RIAP = new Protocol("riap", "RIAP",
             "Restlet Internal Access Protocol", UNKNOWN_PORT);
 
