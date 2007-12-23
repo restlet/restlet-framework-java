@@ -32,7 +32,8 @@ import org.restlet.resource.TransformRepresentation;
 
 /**
  * Filter that can transform XML representations by applying an XSLT transform
- * sheet.
+ * sheet. It uses the {@link org.restlet.resource.TransformRepresentation} to
+ * actually transform the XML entities.
  * 
  * @author Jerome Louvel (contact@noelios.com) <a
  *         href="http://www.noelios.com/">Noelios Consulting</a>
