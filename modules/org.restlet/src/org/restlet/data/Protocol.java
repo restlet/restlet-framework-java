@@ -39,7 +39,16 @@ public final class Protocol extends Metadata {
     public static final Protocol AJP = new Protocol("ajp", "AJP",
             "Apache Jakarta Protocol", 8009);
 
-    /** Class loader access protocol. */
+    /**
+     * CLAP (ClassLoader Access Protocol) is a custom scheme to access to
+     * representations via classloaders. Example URI:
+     * "clap://thread/org/restlet/Restlet.class".<br>
+     * <br>
+     * In order to work, CLAP requires a client connector provided by the core
+     * Restlet engine.
+     * 
+     * @see org.restlet.data.LocalReference
+     */
     public static final Protocol CLAP = new Protocol("clap", "CLAP",
             "Class Loader Access Protocol", UNKNOWN_PORT);
 
@@ -51,7 +60,16 @@ public final class Protocol extends Metadata {
     public static final Protocol FILE = new Protocol("file", "FILE",
             "Local File System Protocol", UNKNOWN_PORT);
 
-    /** FTP protocol. */
+    /**
+     * FILE is a standard scheme to access to representations stored in the file
+     * system (locally most of the time). Example URI:
+     * "file:///D/root/index.html".<br>
+     * <br>
+     * In order to work, FILE requires a client connector provided by the core
+     * Restlet engine.
+     * 
+     * @see org.restlet.data.LocalReference
+     */
     public static final Protocol FTP = new Protocol("ftp", "FTP",
             "File Transfer Protocol", 21);
 
@@ -63,7 +81,13 @@ public final class Protocol extends Metadata {
     public static final Protocol HTTPS = new Protocol("https", "HTTPS",
             "HyperText Transport Protocol (Secure)", 443);
 
-    /** JAR protocol. */
+    /**
+     * JAR (Java ARchive) is a common scheme to access to representations inside
+     * archive files. Example URI:
+     * "jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class".
+     * 
+     * @see org.restlet.data.LocalReference
+     */
     public static final Protocol JAR = new Protocol("jar", "JAR",
             "Java ARchive", UNKNOWN_PORT);
 
@@ -89,7 +113,7 @@ public final class Protocol extends Metadata {
      * constant exists then it is returned, otherwise a new instance is created.
      * 
      * @param schemeName
-     *            The scheme name.
+     *                The scheme name.
      * @return The associated protocol.
      */
     public static Protocol valueOf(final String schemeName) {
@@ -129,7 +153,7 @@ public final class Protocol extends Metadata {
      * Constructor.
      * 
      * @param schemeName
-     *            The scheme name.
+     *                The scheme name.
      */
     public Protocol(final String schemeName) {
         this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase()
@@ -140,16 +164,16 @@ public final class Protocol extends Metadata {
      * Constructor.
      * 
      * @param schemeName
-     *            The scheme name.
+     *                The scheme name.
      * @param name
-     *            The unique name.
+     *                The unique name.
      * @param description
-     *            The description.
+     *                The description.
      * @param defaultPort
-     *            The default port.
+     *                The default port.
      */
-    public Protocol(final String schemeName, final String name, final String description,
-            int defaultPort) {
+    public Protocol(final String schemeName, final String name,
+            final String description, int defaultPort) {
         super(name, description);
         this.schemeName = schemeName;
         this.defaultPort = defaultPort;
