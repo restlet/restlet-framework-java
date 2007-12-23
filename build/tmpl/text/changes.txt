@@ -1,4 +1,4 @@
-
+	
 ===========
 Changes log  
 ===========
@@ -119,8 +119,8 @@ Changes log
    a Resource class in parameter. 
  - The context dispatchers automatically update the identifier property of response entities when they 
    are empty, based on the request's target URI.
- - Added support for the "Content-Disposition" field as a "fileName" property on Representation. 
-   Contributed by Kevin Conaway.
+ - Added support for the "Content-Disposition" field as a "downloadName" property on Representation. 
+   Contributed by Kevin Conaway. Added a "downloadable" property to activate the feature.
  - Added a ResourceException to facilitate the mapping between domain exceptions and response status.
    Suggested by Paul J. Lucas and others.  
  - Replaced getPreferredRepresentation() and getRepresentation(Variant) methods by represent() and
