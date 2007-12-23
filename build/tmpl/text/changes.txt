@@ -29,7 +29,7 @@ Changes log
  
 [Enhancements]
  - Clarified Template#parse Javadocs. Suggested by Jonathan Hall.
- - Upgraded Jetty to 6.1.6
+ - Upgraded Jetty to 6.1.7
  - Upgraded FreeMarker to 2.3.11
 
 1.0.6 (2007-11-08)

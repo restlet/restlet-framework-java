@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jetty HTTP server 6.1
 Bundle-SymbolicName: org.mortbay.jetty
-Bundle-Version: 6.1.6
+Bundle-Version: 6.1.7
 Bundle-ClassPath: org.mortbay.jetty.util.jar,
  org.mortbay.jetty.jar, org.mortbay.jetty.ajp.jar, org.mortbay.jetty.https.jar
 Bundle-Vendor: Mortbay Consulting
