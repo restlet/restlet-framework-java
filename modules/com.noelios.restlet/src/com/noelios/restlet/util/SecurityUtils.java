@@ -80,6 +80,7 @@ public class SecurityUtils {
      *                The current request HTTP headers.
      * @return The authorization header value.
      */
+    @SuppressWarnings("deprecation")
     public static String format(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         StringBuilder sb = new StringBuilder();
@@ -90,7 +91,8 @@ public class SecurityUtils {
 
         if (challenge.getCredentials() != null) {
             sb.append(challenge.getCredentials());
-        } else if (challenge.getScheme().equals(ChallengeScheme.HTTP_AWS)) {
+        } else if (challenge.getScheme().equals(ChallengeScheme.HTTP_AWS)
+                || challenge.getScheme().equals(ChallengeScheme.HTTP_AWS_S3)) {
             // Setup the method name
             String methodName = request.getMethod().getName();
 

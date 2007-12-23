@@ -28,9 +28,18 @@ public final class ChallengeScheme extends Metadata {
     public static final ChallengeScheme CUSTOM = new ChallengeScheme("CUSTOM",
             "Custom", "Custom authentication");
 
-    /** Amazon Web Services HTTP scheme. */
+    /**
+     * Amazon S3 HTTP scheme.
+     * 
+     * @deprecated Use the {@link #HTTP_AWS_S3} scheme instead.
+     */
+    @Deprecated
     public static final ChallengeScheme HTTP_AWS = new ChallengeScheme(
             "HTTP_AWS", "AWS", "Amazon Web Services HTTP authentication");
+
+    /** Amazon S3 HTTP scheme. */
+    public static final ChallengeScheme HTTP_AWS_S3 = new ChallengeScheme(
+            "HTTP_AWS_S3", "AWS", "Amazon S3 HTTP authentication");
 
     /** Basic HTTP scheme. */
     public static final ChallengeScheme HTTP_BASIC = new ChallengeScheme(

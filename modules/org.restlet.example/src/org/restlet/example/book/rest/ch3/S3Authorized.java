@@ -44,7 +44,7 @@ public class S3Authorized {
         // Send an authenticated request
         Request request = new Request(method, uri, entity);
         request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.HTTP_AWS, PUBLIC_KEY, PRIVATE_KEY));
+                ChallengeScheme.HTTP_AWS_S3, PUBLIC_KEY, PRIVATE_KEY));
         return new Client(Protocol.HTTPS).handle(request);
     }
 

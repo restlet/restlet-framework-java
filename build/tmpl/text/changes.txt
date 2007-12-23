@@ -16,6 +16,8 @@ Changes log
  - Fixed path error in test cases  module. Reported by Sean Landis, contributed by Alex Milowski.
  - SaxRepresentation constructors don't throw IOException anymore. Reported by Paul J. Lucas.
  - Fixed multi-threading issues. Reported by Tim Peierls. Some contributions by Kevin Conaway.
+ - Renamed the HTTP_AWS challenge scheme into HTTP_AWS_S3 as there are changes for each existing
+   Amazon Web Service. Reported by Guy Ernest.
 
 [Enhancements] 
  - Added a getApplication() method to Context and Resource classes.

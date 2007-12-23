@@ -41,7 +41,7 @@ public class AwsTest {
         Request request = new Request(Method.GET,
                 "http://s3.amazonaws.com/quotes/nelson");
         request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.HTTP_AWS, "44CF9590006BF252F707",
+                ChallengeScheme.HTTP_AWS_S3, "44CF9590006BF252F707",
                 "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"));
 
         // Add some extra headers
