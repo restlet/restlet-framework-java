@@ -71,6 +71,7 @@ public final class ByteUtils {
             this.channel = channel;
             this.selectableChannel = (SelectableChannel) channel;
             this.bb = ByteBuffer.allocate(8192);
+            this.bb.flip();
         }
 
         @Override
@@ -102,7 +103,7 @@ public final class ByteUtils {
                         bytesRead = readChannel();
                     }
 
-                    if (bytesRead == 0) {
+                    if (bytesRead <= 0) {
                         result = -1;
                     } else {
                         result = bb.get();
@@ -120,11 +121,6 @@ public final class ByteUtils {
                 }
             }
 
-            if (result == -1) {
-                System.out.println();
-            } else {
-                System.out.print((char) result);
-            }
             return result;
         }
 
@@ -684,8 +680,8 @@ public final class ByteUtils {
     public static void write(ReadableByteChannel readableChannel,
             WritableByteChannel writableChannel) throws IOException {
         if ((readableChannel != null) && (writableChannel != null)) {
-            write(Channels.newInputStream(readableChannel), Channels
-                    .newOutputStream(writableChannel));
+            write(new NbChannelInputStream(readableChannel),
+                    new NbChannelOutputStream(writableChannel));
         }
     }
 
