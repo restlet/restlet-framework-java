@@ -19,10 +19,15 @@ import org.restlet.data.Reference;
 import org.restlet.data.Response;
 
 /**
- * Representation able to apply an XSLT transformation. Note that the JAXP
- * Transformer is created when the getTransformer() method is first called, then
- * reused. So, if you need to specify a custom URI resolver, you need to do it
- * before actually using the representation for a transformation.
+ * Representation able to apply an XSLT transformation. The internal JAXP
+ * transformer is created when the getTransformer() method is first called. So,
+ * if you need to specify a custom URI resolver, you need to do it before
+ * actually using the representation for a transformation.<br>
+ * <br>
+ * This representation should be viewed as a wrapper representation that applies
+ * a transform sheet on a source representation when it is read or written out.
+ * Therefore, it isn't intended to be reused on different sources. For this use
+ * case, you should instead use the {@link org.restlet.Transformer} filter.
  * 
  * @author Jerome Louvel (contact@noelios.com) <a
  *         href="http://www.noelios.com/">Noelios Consulting</a>
@@ -111,9 +116,9 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Returns the XSLT transform sheet to apply to message entities.
+     * Returns the XSLT transform sheet to apply to the source representation.
      * 
-     * @return The XSLT transform sheet to apply to message entities.
+     * @return The XSLT transform sheet to apply.
      */
     public Representation getTransformSheet() {
         return this.transformSheet;

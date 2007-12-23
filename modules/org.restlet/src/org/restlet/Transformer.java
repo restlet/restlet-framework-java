@@ -32,7 +32,8 @@ import org.restlet.resource.TransformRepresentation;
 
 /**
  * Filter that can transform XML representations by applying an XSLT transform
- * sheet.
+ * sheet. It uses the {@link org.restlet.resource.TransformRepresentation} to
+ * actually transform the XML entities.
  * 
  * @author Jerome Louvel (contact@noelios.com) <a
  *         href="http://www.noelios.com/">Noelios Consulting</a>
@@ -80,9 +81,9 @@ public class Transformer extends Filter {
      * Constructor.
      * 
      * @param mode
-     *            The transformation mode.
+     *                The transformation mode.
      * @param transformSheet
-     *            The XSLT transform sheet to apply to message entities.
+     *                The XSLT transform sheet to apply to message entities.
      */
     public Transformer(int mode, Representation transformSheet) {
         this.mode = mode;
@@ -171,7 +172,7 @@ public class Transformer extends Filter {
      * Sets the transformation mode. See MODE_* constants.
      * 
      * @param mode
-     *            The transformation mode.
+     *                The transformation mode.
      */
     public void setMode(int mode) {
         this.mode = mode;
@@ -181,7 +182,7 @@ public class Transformer extends Filter {
      * Sets the character set of the result representation.
      * 
      * @param resultCharacterSet
-     *            The character set of the result representation.
+     *                The character set of the result representation.
      */
     public void setResultCharacterSet(CharacterSet resultCharacterSet) {
         this.resultCharacterSet = resultCharacterSet;
@@ -191,7 +192,7 @@ public class Transformer extends Filter {
      * Sets the media type of the result representation.
      * 
      * @param resultMediaType
-     *            The media type of the result representation.
+     *                The media type of the result representation.
      */
     public void setResultMediaType(MediaType resultMediaType) {
         this.resultMediaType = resultMediaType;
@@ -201,7 +202,7 @@ public class Transformer extends Filter {
      * Sets the XSLT transform sheet to apply to message entities.
      * 
      * @param transformSheet
-     *            The XSLT transform sheet to apply to message entities.
+     *                The XSLT transform sheet to apply to message entities.
      */
     public void setTransformSheet(Representation transformSheet) {
         this.transformSheet = transformSheet;
@@ -212,7 +213,7 @@ public class Transformer extends Filter {
      * sheet to it.
      * 
      * @param source
-     *            The source XML representation.
+     *                The source XML representation.
      * @return The generated result representation.
      */
     public Representation transform(Representation source) {
