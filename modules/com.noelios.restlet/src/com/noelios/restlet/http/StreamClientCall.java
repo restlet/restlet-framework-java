@@ -30,7 +30,6 @@ import java.util.logging.Level;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
 
 import com.noelios.restlet.util.ChunkedInputStream;
 import com.noelios.restlet.util.ChunkedOutputStream;
@@ -42,9 +41,6 @@ import com.noelios.restlet.util.KeepAliveOutputStream;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StreamClientCall extends HttpClientCall {
-
-    /** Indicates if the request entity will be chunked. */
-    private boolean requestChunked;
 
     /** The request output stream. */
     private OutputStream requestStream;
@@ -63,8 +59,6 @@ public class StreamClientCall extends HttpClientCall {
     public StreamClientCall(StreamClientHelper helper, Request request) {
         super(helper, request.getMethod().toString(), request.getResourceRef()
                 .getIdentifier());
-        this.requestChunked = false;
-
         // Set the HTTP version
         setVersion("HTTP/1.1");
     }
@@ -128,35 +122,6 @@ public class StreamClientCall extends HttpClientCall {
      */
     private InputStream getResponseStream() {
         return this.responseStream;
-    }
-
-    /**
-     * Indicates if the request entity will be chunked.
-     * 
-     * @return True if the request entity will be chunked.
-     */
-    private boolean isRequestChunked() {
-        return requestChunked;
-    }
-
-    /**
-     * Indicates if the response entity is chunked.
-     * 
-     * @return True if the response entity is chunked.
-     */
-    private boolean isResponseChunked() {
-        boolean result = false;
-
-        for (Parameter header : getResponseHeaders()) {
-            if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
-                if (header.getValue().equalsIgnoreCase("chunked")) {
-                    result = true;
-                }
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -229,16 +194,6 @@ public class StreamClientCall extends HttpClientCall {
         }
     }
 
-    /**
-     * Indicates if the request entity should be chunked.
-     * 
-     * @return True if the request should be chunked
-     */
-    private boolean requestShouldBeChunked(Request request) {
-        return request.isEntityAvailable() && request.getEntity() != null
-                && request.getEntity().getSize() == Representation.UNKNOWN_SIZE;
-    }
-
     @Override
     public Status sendRequest(Request request) {
         Status result = null;
@@ -265,10 +220,9 @@ public class StreamClientCall extends HttpClientCall {
             getRequestHeadStream().write(getVersion().getBytes());
             HttpUtils.writeCRLF(getRequestHeadStream());
 
-            if (requestShouldBeChunked(request)) {
+            if (shouldRequestBeChunked(request)) {
                 getRequestHeaders().set(HttpConstants.HEADER_TRANSFER_ENCODING,
                         "chunked", true);
-                setRequestChunked(true);
             }
 
             // We don't support persistent connections yet
@@ -314,13 +268,4 @@ public class StreamClientCall extends HttpClientCall {
         return result;
     }
 
-    /**
-     * Indicates if the request entity will be chunked.
-     * 
-     * @param requestChunked
-     *                True if the request entity will be chunked.
-     */
-    private void setRequestChunked(boolean requestChunked) {
-        this.requestChunked = requestChunked;
-    }
 }

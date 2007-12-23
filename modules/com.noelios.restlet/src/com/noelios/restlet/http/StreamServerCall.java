@@ -26,9 +26,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Server;
-import org.restlet.data.Parameter;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
 
 import com.noelios.restlet.util.ChunkedInputStream;
 import com.noelios.restlet.util.ChunkedOutputStream;
@@ -117,49 +115,13 @@ public class StreamServerCall extends HttpServerCall {
         return responseStream;
     }
 
-    /**
-     * Indicates if the request entity is chunked.
-     * 
-     * @return True if the request entity is chunked.
-     */
-    private boolean isRequestChunked() {
-        for (Parameter header : getRequestHeaders()) {
-            if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
-                if (header.getValue().equalsIgnoreCase("chunked")) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * Indicates if the response entity is chunked.
-     * 
-     * @return True if the response entity is chunked.
-     */
-    private boolean isResponseChunked() {
-        for (Parameter header : getResponseHeaders()) {
-            if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
-                if (header.getValue().equalsIgnoreCase("chunked")) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    private boolean responseShouldBeChunked(Response response) {
-        return response.getEntity() != null && response.getEntity().getSize() == Representation.UNKNOWN_SIZE;
-    }
-
     @Override
     public void writeResponseHead(Response response) throws IOException {
-        if (responseShouldBeChunked(response)) {
-            getResponseHeaders().add(HttpConstants.HEADER_TRANSFER_ENCODING, "chunked");
+        if (shouldResponseBeChunked(response)) {
+            getResponseHeaders().add(HttpConstants.HEADER_TRANSFER_ENCODING,
+                    "chunked");
         }
+
         writeResponseHead(getResponseStream());
     }
 

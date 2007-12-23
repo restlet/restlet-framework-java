@@ -19,6 +19,7 @@
 package com.noelios.restlet.ext.grizzly;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
 import org.restlet.Server;
@@ -47,7 +48,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
     }
 
     @Override
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         super.start();
 
         if (this.controller == null) {
@@ -57,10 +58,12 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
         }
 
         getLogger().info("Starting the Grizzly " + getProtocols() + " server");
+        final CountDownLatch latch = new CountDownLatch(1);
         final Controller controller = this.controller;
         new Thread() {
             public void run() {
                 try {
+                    latch.countDown();
                     controller.start();
                 } catch (IOException e) {
                     getLogger().log(Level.WARNING,
@@ -69,6 +72,18 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
             }
         }.start();
 
+        // Wait for the listener to start up and count down the latch
+        // This blocks until the server is ready to receive connections
+        try {
+            latch.await();
+        } catch (InterruptedException ex) {
+            getLogger()
+                    .log(
+                            Level.WARNING,
+                            "Interrupted while waiting for starting latch. Stopping...",
+                            ex);
+            stop();
+        }
     }
 
     /**
@@ -80,7 +95,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
     protected abstract void configure(Controller controller) throws Exception;
 
     @Override
-    public void stop() throws Exception {
+    public synchronized void stop() throws Exception {
         super.stop();
 
         if (this.controller != null) {

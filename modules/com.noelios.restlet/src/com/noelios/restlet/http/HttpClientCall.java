@@ -362,4 +362,14 @@ public abstract class HttpClientCall extends HttpCall {
         return result;
     }
 
+    /**
+     * Indicates if the request entity should be chunked.
+     * 
+     * @return True if the request should be chunked
+     */
+    protected boolean shouldRequestBeChunked(Request request) {
+        return request.isEntityAvailable() && request.getEntity() != null
+                && request.getEntity().getSize() == Representation.UNKNOWN_SIZE;
+    }
+
 }

@@ -59,6 +59,7 @@ public class HttpServerHelper extends SimpleServerHelper {
         } else {
             setSocket(new ServerSocket(getServer().getPort()));
         }
+
         setConfidential(false);
         setHandler(PipelineHandlerFactory.getInstance(
                 new SimpleProtocolHandler(this), getDefaultThreads(),

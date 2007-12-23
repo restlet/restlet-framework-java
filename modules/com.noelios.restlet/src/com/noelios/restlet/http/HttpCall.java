@@ -37,15 +37,15 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpCall {
-    
-    /** The request headers. */
-    private final Series<Parameter> requestHeaders;
-    
-    /** The response headers. */
-    private final Series<Parameter> responseHeaders;
-    
-    /** The logger to use. */
-    private Logger logger;
+
+    /** The client IP address. */
+    private String clientAddress;
+
+    /** The client port. */
+    private int clientPort;
+
+    /** Indicates if the call is confidential. */
+    private boolean confidential;
 
     /** The hostRef domain. */
     private String hostDomain;
@@ -53,14 +53,8 @@ public class HttpCall {
     /** The hostRef port. */
     private int hostPort;
 
-    /** Indicates if the call is confidential. */
-    private boolean confidential;
-
-    /** The client IP address. */
-    private String clientAddress;
-
-    /** The client port. */
-    private int clientPort;
+    /** The logger to use. */
+    private Logger logger;
 
     /** The method. */
     private String method;
@@ -71,8 +65,14 @@ public class HttpCall {
     /** The reason phrase. */
     private String reasonPhrase;
 
+    /** The request headers. */
+    private final Series<Parameter> requestHeaders;
+
     /** The request URI. */
     private String requestUri;
+
+    /** The response headers. */
+    private final Series<Parameter> responseHeaders;
 
     /** The server IP address. */
     private String serverAddress;
@@ -294,6 +294,46 @@ public class HttpCall {
      */
     public boolean isConfidential() {
         return this.confidential;
+    }
+
+    /**
+     * Indicates if the request entity is chunked.
+     * 
+     * @return True if the request entity is chunked.
+     */
+    protected boolean isRequestChunked() {
+        boolean result = false;
+
+        for (Parameter header : getRequestHeaders()) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
+                if (header.getValue().equalsIgnoreCase("chunked")) {
+                    result = true;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Indicates if the response entity is chunked.
+     * 
+     * @return True if the response entity is chunked.
+     */
+    protected boolean isResponseChunked() {
+        boolean result = false;
+
+        for (Parameter header : getResponseHeaders()) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
+                if (header.getValue().equalsIgnoreCase("chunked")) {
+                    result = true;
+                }
+            }
+        }
+
+        return result;
     }
 
     /**

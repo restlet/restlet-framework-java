@@ -378,6 +378,19 @@ public abstract class HttpServerCall extends HttpCall {
     }
 
     /**
+     * Indicates if the response should be chunked because its length is
+     * unknown.
+     * 
+     * @param response
+     *                The response to analyze.
+     * @return True if the response should be chunked.
+     */
+    protected boolean shouldResponseBeChunked(Response response) {
+        return response.getEntity() != null
+                && response.getEntity().getSize() == Representation.UNKNOWN_SIZE;
+    }
+
+    /**
      * Effectively writes the response body. The entity to write is guaranteed
      * to be non null. Attempts to write the entity on the response channel or
      * response stream by default.
