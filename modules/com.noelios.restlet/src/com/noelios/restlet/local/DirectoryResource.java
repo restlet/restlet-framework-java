@@ -430,7 +430,7 @@ public class DirectoryResource extends Resource {
                     userList.setIdentifier(baseRef);
 
                     SortedSet<Reference> sortedSet = new TreeSet<Reference>(
-                            getReferencesComparator());
+                            getDirectory().getComparator());
                     sortedSet.addAll(this.directoryContent);
 
                     for (Reference ref : sortedSet) {
@@ -486,38 +486,6 @@ public class DirectoryResource extends Resource {
                                     .compareTo(
                                             rep1.getIdentifier()
                                                     .getLastSegment());
-                        }
-                    }
-                }
-            }
-        };
-        return identifiersComparator;
-    }
-
-    /**
-     * Allows to sort the list of references set by the resource.
-     * 
-     * @return A Comparator instance imposing a sort order of references or null
-     *         if no special order is wanted.
-     */
-    private Comparator<Reference> getReferencesComparator() {
-        // Sort the list of references by their identifier.
-        Comparator<Reference> identifiersComparator = new Comparator<Reference>() {
-            public int compare(Reference rep0, Reference rep1) {
-                boolean bRep0Null = (rep0.getIdentifier() == null);
-                boolean bRep1Null = (rep1.getIdentifier() == null);
-
-                if (bRep0Null && bRep1Null) {
-                    return 0;
-                } else {
-                    if (bRep0Null) {
-                        return -1;
-                    } else {
-                        if (bRep1Null) {
-                            return 1;
-                        } else {
-                            return rep0.toString(false, false).compareTo(
-                                    rep1.toString(false, false));
                         }
                     }
                 }

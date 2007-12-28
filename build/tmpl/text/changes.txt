@@ -6,6 +6,19 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - 
+ 
+[Enhancements] 
+ - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 
+   Angelocola based on David Koelle's original idea. Optimized implementation contributed by Rob 
+   Heittman from Solertium Corporation. New setComparator, setAlphaComparator and 
+   setAlphaNumComparator methods added. The default sorting is now "AlphaNum".  
+ 
+[Misc]
+ - 
+
+1.1-SNAPSHOT (2007-12-24)
+[Bugs fixed]
  - Overridden the StringRepresentation#setCharacterSet method, in order to refresh the 
    size of the representation. Reported by Calvin Cheng.
  - Fixed issue in the selection of connectors. The last connector in the classpath for
