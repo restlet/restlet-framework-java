@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Jakarta Commons Logging
+Bundle-Name: Apache Commons Logging
 Bundle-SymbolicName: org.apache.commons.logging
 Bundle-Version: 1.1
 Bundle-ClassPath: org.apache.commons.logging.jar

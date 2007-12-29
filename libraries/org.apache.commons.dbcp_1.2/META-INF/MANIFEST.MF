@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Jakarta Commons DBCP
+Bundle-Name: Apache Commons DBCP
 Bundle-SymbolicName: org.apache.commons.dbcp
 Bundle-Version: 1.2.2
 Bundle-ClassPath: org.apache.commons.dbcp.jar

@@ -1,6 +1,6 @@
---------------------
-Jakarta Commons DBCP
---------------------
+-------------------
+Apache Commons DBCP
+-------------------
 
 "Many Jakarta projects support interaction with a relational database. Creating
 a new connection for each user can be time consuming (often requiring multiple 
@@ -20,4 +20,4 @@ coordinate the efforts required to create and maintain an efficient,
 feature-rich package under the ASF license."
 
 For more information:
-http://jakarta.apache.org/commons/dbcp/
+http://commons.apache.org/dbcp/

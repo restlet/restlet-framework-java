@@ -1,6 +1,6 @@
-------------------
-Jakarta Commons IO
-------------------
+-----------------
+Apache Commons IO
+-----------------
 
 "Commons IO is a library of utilities to assist with developing IO 
 functionality. There are three main areas included:
@@ -10,4 +10,4 @@ functionality. There are three main areas included:
     * Streams - useful stream, reader and writer implementations"
 
 For more information:
-http://jakarta.apache.org/commons/io/
+http://commons.apache.org/io/

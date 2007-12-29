@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Jakarta Commons Collections
+Bundle-Name: Apache Commons Collections
 Bundle-SymbolicName: org.apache.commons.collections
 Bundle-Version: 3.2
 Bundle-ClassPath: org.apache.commons.collections.jar

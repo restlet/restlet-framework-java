@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Jakarta Commons HTTP Client Plug-in
+Bundle-Name: Apache Commons HTTP Client
 Bundle-SymbolicName: org.apache.commons.httpclient
 Bundle-Version: 3.1
 Bundle-ClassPath: org.apache.commons.httpclient.jar

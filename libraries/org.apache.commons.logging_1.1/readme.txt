@@ -1,6 +1,6 @@
------------------------
-Jakarta Commons Logging
------------------------
+----------------------
+Apache Commons Logging
+----------------------
 
 "The Logging package is an ultra-thin bridge between different logging 
 implementations. A library that uses the commons-logging API can be used with 
@@ -9,4 +9,4 @@ a number of popular logging implementations, and writing adapters for others
 is a reasonably simple task."
 
 For more information:
-http://jakarta.apache.org/commons/logging/
+http://commons.apache.org/logging/

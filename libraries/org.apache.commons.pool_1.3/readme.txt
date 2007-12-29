@@ -1,6 +1,6 @@
---------------------
-Jakarta Commons Pool
---------------------
+-------------------
+Apache Commons Pool
+-------------------
 
 "Pool provides an Object-pooling API, with three major aspects:
    1. A generic object pool interface that clients and implementors can use to 
@@ -9,4 +9,4 @@ Jakarta Commons Pool
    3. Several general purpose pool implementations."
 
 For more information:
-http://jakarta.apache.org/commons/pool/
+http://commons.apache.org/pool/

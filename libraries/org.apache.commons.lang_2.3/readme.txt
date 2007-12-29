@@ -1,6 +1,6 @@
---------------------
-Jakarta Commons Lang
---------------------
+-------------------
+Apache Commons Lang
+-------------------
 
 "The standard Java libraries fail to provide enough methods for manipulation of
 its core classes. The Lang Component provides these extra methods. The Lang 
@@ -13,4 +13,4 @@ utlities dedicated to help with building methods, such as hashCode, toString
 and equals."
 
 For more information:
-http://jakarta.apache.org/commons/lang/
+http://commons.apache.org/lang/
