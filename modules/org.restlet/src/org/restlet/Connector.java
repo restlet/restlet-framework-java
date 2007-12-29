@@ -44,7 +44,7 @@ import org.restlet.data.Protocol;
  */
 public abstract class Connector extends Restlet {
     /** The list of protocols simultaneously supported. */
-    private volatile List<Protocol> protocols;
+    private final List<Protocol> protocols;
 
     /**
      * Constructor.
@@ -66,7 +66,11 @@ public abstract class Connector extends Restlet {
      */
     public Connector(Context context, List<Protocol> protocols) {
         super(context);
-        this.protocols = new CopyOnWriteArrayList<Protocol>(protocols);
+        if (protocols == null) {
+            this.protocols = new CopyOnWriteArrayList<Protocol>();
+        } else {
+            this.protocols = new CopyOnWriteArrayList<Protocol>(protocols);
+        }
     }
 
     /**
@@ -85,7 +89,10 @@ public abstract class Connector extends Restlet {
      *                The protocols simultaneously supported.
      */
     public void setProtocols(List<Protocol> protocols) {
-        this.protocols = protocols;
+        this.protocols.clear();
+        if (protocols != null) {
+            this.protocols.addAll(protocols);
+        }
     }
 
 }

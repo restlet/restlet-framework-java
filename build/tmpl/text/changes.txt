@@ -6,7 +6,7 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - 
+ - Fixed NPE in Connector class. Reported by Rob Heittman and fixed by Tim Peierls.
  
 [Enhancements] 
  - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 
