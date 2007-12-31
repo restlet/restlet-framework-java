@@ -38,7 +38,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
             .getLogger(ReadableRepresentation.class.getCanonicalName());
 
     /** The representation's input stream. */
-    private ReadableByteChannel channel;
+    private volatile ReadableByteChannel channel;
 
     /**
      * Constructor.
@@ -73,7 +73,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
     }
 
     @Override
-    public synchronized ReadableByteChannel getChannel() throws IOException {
+    public ReadableByteChannel getChannel() throws IOException {
         ReadableByteChannel result = this.channel;
         this.channel = null;
         setAvailable(false);

@@ -38,7 +38,7 @@ public class InputRepresentation extends StreamRepresentation {
             .getCanonicalName());
 
     /** The representation's stream. */
-    private InputStream stream;
+    private volatile InputStream stream;
 
     /**
      * Constructor.
@@ -71,7 +71,7 @@ public class InputRepresentation extends StreamRepresentation {
     }
 
     @Override
-    public synchronized InputStream getStream() throws IOException {
+    public InputStream getStream() throws IOException {
         InputStream result = this.stream;
         setStream(null);
         return result;

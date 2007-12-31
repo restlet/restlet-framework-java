@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PipedReader;
+import java.io.PipedWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.ByteBuffer;
@@ -38,6 +40,8 @@ import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.resource.Representation;
@@ -493,7 +497,9 @@ public final class ByteUtils {
                     representation.write(wbc);
                     wbc.close();
                 } catch (IOException ioe) {
-                    ioe.printStackTrace();
+                    Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
+                            Level.WARNING,
+                            "Error while writing to the piped channel.", ioe);
                 }
             }
         };
@@ -532,9 +538,29 @@ public final class ByteUtils {
      *                The representation to read from.
      * @return The character reader.
      */
-    public static Reader getReader(WriterRepresentation representation) {
-        // TODO
-        return null;
+    public static Reader getReader(final WriterRepresentation representation)
+            throws IOException {
+        final PipedWriter pipedWriter = new PipedWriter();
+        final PipedReader pipedReader = new PipedReader(pipedWriter);
+
+        // Creates a thread that will handle the task of continuously
+        // writing the representation into the input side of the pipe
+        Thread writer = new Thread() {
+            public void run() {
+                try {
+                    representation.write(pipedWriter);
+                } catch (IOException ioe) {
+                    Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
+                            Level.WARNING,
+                            "Error while writing to the piped reader.", ioe);
+                }
+            }
+        };
+        writer.setDaemon(false);
+
+        // Starts the writer thread
+        writer.start();
+        return pipedReader;
     }
 
     /**
@@ -590,7 +616,12 @@ public final class ByteUtils {
                         os.write(-1);
                         os.close();
                     } catch (IOException ioe) {
-                        ioe.printStackTrace();
+                        Logger
+                                .getLogger(ByteUtils.class.getCanonicalName())
+                                .log(
+                                        Level.WARNING,
+                                        "Error while writing to the piped input stream.",
+                                        ioe);
                     }
                 }
             };

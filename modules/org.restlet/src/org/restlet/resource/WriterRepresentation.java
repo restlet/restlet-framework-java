@@ -61,7 +61,7 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
     }
 
     @Override
-    public Reader getReader() {
+    public Reader getReader() throws IOException {
         return ByteUtils.getReader(this);
     }
 

@@ -38,7 +38,7 @@ public class ReaderRepresentation extends CharacterRepresentation {
             .getCanonicalName());
 
     /** The representation's reader. */
-    private Reader reader;
+    private volatile Reader reader;
 
     /**
      * Constructor.
@@ -70,19 +70,8 @@ public class ReaderRepresentation extends CharacterRepresentation {
         setReader(reader);
     }
 
-    /**
-     * Sets the reader to use.
-     * 
-     * @param reader
-     *                The reader to use.
-     */
-    public void setReader(Reader reader) {
-        this.reader = reader;
-        setAvailable(reader != null);
-    }
-
     @Override
-    public synchronized Reader getReader() throws IOException {
+    public Reader getReader() throws IOException {
         Reader result = this.reader;
         setReader(null);
         return result;
@@ -108,6 +97,17 @@ public class ReaderRepresentation extends CharacterRepresentation {
 
             this.reader = null;
         }
+    }
+
+    /**
+     * Sets the reader to use.
+     * 
+     * @param reader
+     *                The reader to use.
+     */
+    public void setReader(Reader reader) {
+        this.reader = reader;
+        setAvailable(reader != null);
     }
 
     @Override
