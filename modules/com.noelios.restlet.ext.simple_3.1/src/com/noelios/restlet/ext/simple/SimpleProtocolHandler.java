@@ -85,7 +85,7 @@ public class SimpleProtocolHandler implements ProtocolHandler {
             getHelper()
                     .getLogger()
                     .log(
-                            Level.INFO,
+                            Level.FINE,
                             "Exception while consuming the Simple request's input stream",
                             e);
         }
@@ -96,7 +96,7 @@ public class SimpleProtocolHandler implements ProtocolHandler {
             getHelper()
                     .getLogger()
                     .log(
-                            Level.INFO,
+                            Level.FINE,
                             "Exception while closing the Simple response's output stream",
                             e);
         }

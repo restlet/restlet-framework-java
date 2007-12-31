@@ -498,7 +498,7 @@ public final class ByteUtils {
                     wbc.close();
                 } catch (IOException ioe) {
                     Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
-                            Level.WARNING,
+                            Level.FINE,
                             "Error while writing to the piped channel.", ioe);
                 }
             }
@@ -551,7 +551,7 @@ public final class ByteUtils {
                     representation.write(pipedWriter);
                 } catch (IOException ioe) {
                     Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
-                            Level.WARNING,
+                            Level.FINE,
                             "Error while writing to the piped reader.", ioe);
                 }
             }
@@ -619,7 +619,7 @@ public final class ByteUtils {
                         Logger
                                 .getLogger(ByteUtils.class.getCanonicalName())
                                 .log(
-                                        Level.WARNING,
+                                        Level.FINE,
                                         "Error while writing to the piped input stream.",
                                         ioe);
                     }
