@@ -9,6 +9,7 @@ Changes log
 
 [Enhancements]
  - Lowered the logging level for some Simple IO exceptions.
+ - Updated JSON JAR to latest version.
 
 1.0.7 (2007-12-22)
 [Bugs fixed]
