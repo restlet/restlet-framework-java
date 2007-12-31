@@ -106,7 +106,6 @@ public class SpringResource extends AbstractResource {
      * 
      * @return The description.
      */
-    @Override
     public String getDescription() {
         return this.description;
     }

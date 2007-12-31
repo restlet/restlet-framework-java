@@ -16,7 +16,9 @@ Changes log
    setAlphaNumComparator methods added. The default sorting is now "AlphaNum".  
  - Added new JsonRepresentation constructors taking a Bean or a Map. Suggested by Evgeny K. 
    Shepelyuk and Sean Landis
- 
+ - Updated Spring to version 2.5
+ - Updated db4o to version 7.0
+
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
 

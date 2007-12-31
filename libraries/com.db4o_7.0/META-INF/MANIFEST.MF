@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: db4o object database engine
+Bundle-SymbolicName: com.db4o
+Bundle-Version: 7.0.21
+Bundle-ClassPath: com.db4o.jar,
+ com.db4o.nativequery.jar,
+ com.db4o.instrumentation.jar,
+ com.db4o.ta.jar,
+ com.db4o.tools.jar
+Bundle-Vendor: db4objects Inc.
+Require-Bundle: edu.purdue.cs.bloat;visibility:=reexport
+Export-Package: com.db4o,
+ com.db4o.activation,
+ com.db4o.collections,
+ com.db4o.config,
+ com.db4o.config.annotations,
+ com.db4o.constraints,
+ com.db4o.defragment,
+ com.db4o.diagnostic,
+ com.db4o.events,
+ com.db4o.ext,
+ com.db4o.io,
+ com.db4o.marshall,
+ com.db4o.messaging,
+ com.db4o.query,
+ com.db4o.reflect,
+ com.db4o.reflect.generic,
+ com.db4o.reflect.jdk,
+ com.db4o.reflect.self,
+ com.db4o.replication,
+ com.db4o.ta,
+ com.db4o.types
