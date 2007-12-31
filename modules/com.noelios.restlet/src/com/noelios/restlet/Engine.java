@@ -53,6 +53,7 @@ import org.restlet.util.Helper;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.component.ComponentHelper;
+import com.noelios.restlet.http.HttpClientConverter;
 import com.noelios.restlet.http.StreamClientHelper;
 import com.noelios.restlet.http.StreamServerHelper;
 import com.noelios.restlet.local.DirectoryResource;
@@ -190,43 +191,25 @@ public class Engine extends org.restlet.util.Engine {
         }
     }
 
-    /**
-     * Creates a directory resource.
-     * 
-     * @param handler
-     *                The parent directory handler.
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to return.
-     * @return A new directory resource.
-     * @throws IOException
-     */
+    @Override
+    public void copyResponseHeaders(Iterable<Parameter> responseHeaders,
+            Response response, Logger logger) {
+        HttpClientConverter.copyResponseHeaders(responseHeaders, response,
+                logger);
+    }
+
+    @Override
     public Resource createDirectoryResource(Directory handler, Request request,
             Response response) throws IOException {
         return new DirectoryResource(handler, request, response);
     }
 
-    /**
-     * Creates a new helper for a given component.
-     * 
-     * @param application
-     *                The application to help.
-     * @param parentContext
-     *                The parent context, typically the component's context.
-     * @return The new helper.
-     */
+    @Override
     public Helper createHelper(Application application, Context parentContext) {
         return new ApplicationHelper(application, parentContext);
     }
 
-    /**
-     * Creates a new helper for a given client connector.
-     * 
-     * @param client
-     *                The client to help.
-     * @return The new helper.
-     */
+    @Override
     public Helper createHelper(Client client) {
         Helper result = null;
 
@@ -270,24 +253,12 @@ public class Engine extends org.restlet.util.Engine {
         return result;
     }
 
-    /**
-     * Creates a new helper for a given component.
-     * 
-     * @param component
-     *                The component to help.
-     * @return The new helper.
-     */
+    @Override
     public Helper createHelper(Component component) {
         return new ComponentHelper(component);
     }
 
-    /**
-     * Creates a new helper for a given server connector.
-     * 
-     * @param server
-     *                The server to help.
-     * @return The new helper.
-     */
+    @Override
     public Helper createHelper(Server server) {
         Helper result = null;
 
@@ -436,19 +407,7 @@ public class Engine extends org.restlet.util.Engine {
                 getRegisteredServers(), Server.class);
     }
 
-    /**
-     * Returns the preferred variant representation for a given resource
-     * according the the client preferences.
-     * 
-     * @param client
-     *                The client preferences.
-     * @param variants
-     *                The list of variants to compare.
-     * @return The preferred variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     */
+    @Override
     public Variant getPreferredVariant(ClientInfo client,
             List<Variant> variants, Language defaultLanguage) {
         if (variants == null) {
@@ -812,34 +771,14 @@ public class Engine extends org.restlet.util.Engine {
         return result;
     }
 
-    /**
-     * Parses an URL encoded Web form.
-     * 
-     * @param logger
-     *                The logger to use.
-     * @param form
-     *                The target form.
-     * @param webForm
-     *                The posted form.
-     */
+    @Override
     public void parse(Logger logger, Form form, Representation webForm) {
         if (webForm != null) {
             FormUtils.parsePost(logger, form, webForm);
         }
     }
 
-    /**
-     * Parses an URL encoded query string into a given form.
-     * 
-     * @param logger
-     *                The logger to use.
-     * @param form
-     *                The target form.
-     * @param queryString
-     *                Query string.
-     * @param characterSet
-     *                The supported character encoding.
-     */
+    @Override
     public void parse(Logger logger, Form form, String queryString,
             CharacterSet characterSet) {
         if ((queryString != null) && !queryString.equals("")) {
@@ -894,5 +833,4 @@ public class Engine extends org.restlet.util.Engine {
             registerServerHelper(helper);
         }
     }
-
 }

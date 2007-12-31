@@ -9,3 +9,5 @@ Export-Package: org.apache.commons.beanutils,
  org.apache.commons.beanutils.converters,
  org.apache.commons.beanutils.locale,
  org.apache.commons.beanutils.locale.converters
+Require-Bundle: org.apache.commons.collections;visibility:=reexport,
+ org.apache.commons.logging;visibility:=reexport

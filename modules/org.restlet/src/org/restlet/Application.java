@@ -39,7 +39,6 @@ import org.restlet.util.Helper;
  * properties that can be eventually overriden:
  * <ul>
  * <li>"connectorService" to manage client and server connectors.</li>
- * <li>"decoderService" to automatically decode or decompress request entities.</li>
  * <li>"metadataService" to provide access to metadata and their associated
  * extension names.</li>
  * <li>"statusService" to provide common representations for exception status.</li>

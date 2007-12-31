@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.resource.Representation;
+import org.restlet.resource.WriterRepresentation;
 
 /**
  * Byte manipulation utilities.
@@ -289,6 +290,54 @@ public final class ByteUtils {
     }
 
     /**
+     * Input stream based on a reader.
+     */
+    private static class ReaderInputStream extends InputStream {
+        private byte[] buffer;
+
+        private CharacterSet characterSet;
+
+        private int index;
+
+        private BufferedReader localReader;
+
+        public ReaderInputStream(Reader reader, CharacterSet characterSet) {
+            this.localReader = (reader instanceof BufferedReader) ? (BufferedReader) reader
+                    : new BufferedReader(reader);
+            this.buffer = null;
+            this.index = -1;
+            this.characterSet = characterSet;
+        }
+
+        @Override
+        public int read() throws IOException {
+            int result = -1;
+
+            // If the buffer is empty, read a new line
+            if (this.buffer == null) {
+                String line = this.localReader.readLine();
+
+                if (line != null) {
+                    this.buffer = line.getBytes(this.characterSet.getName());
+                    this.index = 0;
+                }
+            }
+
+            if (this.buffer != null) {
+                // Read the next byte and increment the index
+                result = this.buffer[index++];
+
+                // Check if the buffer has been fully read
+                if (this.index == this.buffer.length) {
+                    this.buffer = null;
+                }
+            }
+
+            return result;
+        }
+    }
+
+    /**
      * Factory used to dispatch/share <code>Selector</code>.
      * 
      * @author Jean-Francois Arcand
@@ -427,7 +476,7 @@ public final class ByteUtils {
     /**
      * Returns a readable byte channel based on the given representation's
      * content and its write(WritableByteChannel) method. Internally, it uses a
-     * writer thread and a pipe stream.
+     * writer thread and a pipe channel.
      * 
      * @return A readable byte channel.
      */
@@ -475,6 +524,20 @@ public final class ByteUtils {
     }
 
     /**
+     * Returns a reader from a writer representation.Internally, it uses a
+     * writer thread and a pipe stream.
+     * 
+     * 
+     * @param representation
+     *                The representation to read from.
+     * @return The character reader.
+     */
+    public static Reader getReader(WriterRepresentation representation) {
+        // TODO
+        return null;
+    }
+
+    /**
      * Returns an input stream based on a given readable byte channel.
      * 
      * @param readableChannel
@@ -490,6 +553,19 @@ public final class ByteUtils {
         }
 
         return result;
+    }
+
+    /**
+     * Returns an input stream based on a given character reader.
+     * 
+     * @param reader
+     *                The character reader.
+     * @param characterSet
+     *                The stream character set.
+     * @return An input stream based on a given character reader.
+     */
+    public static InputStream getStream(Reader reader, CharacterSet characterSet) {
+        return new ReaderInputStream(reader, characterSet);
     }
 
     /**

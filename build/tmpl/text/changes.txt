@@ -7,6 +7,7 @@ Changes log
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Fixed NPE in Connector class. Reported by Rob Heittman and fixed by Tim Peierls.
+ - WriterRepresentation was missing a default implementation for getReader() abstract method.
  
 [Enhancements] 
  - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 
@@ -15,7 +16,7 @@ Changes log
    setAlphaNumComparator methods added. The default sorting is now "AlphaNum".  
  
 [Misc]
- - 
+ - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
 
 1.1-SNAPSHOT (2007-12-24)
 [Bugs fixed]

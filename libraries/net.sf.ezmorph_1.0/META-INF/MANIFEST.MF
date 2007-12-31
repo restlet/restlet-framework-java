@@ -11,3 +11,6 @@ Export-Package: net.sf.ezmorph,
  net.sf.ezmorph.object,
  net.sf.ezmorph.primitive,
  net.sf.ezmorph.test
+Require-Bundle: org.apache.commons.beanutils;visibility:=reexport,
+ org.apache.commons.lang;visibility:=reexport,
+ org.apache.commons.logging;visibility:=reexport

@@ -18,11 +18,9 @@
 
 package org.restlet.resource;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
@@ -52,7 +50,7 @@ public abstract class CharacterRepresentation extends Representation {
 
     @Override
     public InputStream getStream() throws IOException {
-        return new ReaderInputStream(getReader());
+        return ByteUtils.getStream(getReader(), getCharacterSet());
     }
 
     @Override
@@ -63,57 +61,6 @@ public abstract class CharacterRepresentation extends Representation {
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         write(ByteUtils.getStream(writableChannel));
-    }
-
-    /**
-     * Input stream based on a reader.
-     * 
-     * @param reader
-     *                The characters reader.
-     * @param source
-     *                The source representation with the target character set.
-     * @return The encoding input stream.
-     */
-    class ReaderInputStream extends InputStream {
-        private BufferedReader localReader;
-
-        private byte[] buffer;
-
-        private int index;
-
-        public ReaderInputStream(Reader reader) {
-            this.localReader = (reader instanceof BufferedReader) ? (BufferedReader) reader
-                    : new BufferedReader(reader);
-            this.buffer = null;
-            this.index = -1;
-        }
-
-        @Override
-        public int read() throws IOException {
-            int result = -1;
-
-            // If the buffer is empty, read a new line
-            if (this.buffer == null) {
-                String line = localReader.readLine();
-
-                if (line != null) {
-                    this.buffer = line.getBytes(getCharacterSet().getName());
-                    this.index = 0;
-                }
-            }
-
-            if (this.buffer != null) {
-                // Read the next byte and increment the index
-                result = this.buffer[index++];
-
-                // Check if the buffer has been fully read
-                if (this.index == this.buffer.length) {
-                    this.buffer = null;
-                }
-            }
-
-            return result;
-        }
     }
 
 }

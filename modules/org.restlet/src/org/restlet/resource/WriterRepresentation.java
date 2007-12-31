@@ -21,8 +21,10 @@ package org.restlet.resource;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 
 import org.restlet.data.MediaType;
+import org.restlet.util.ByteUtils;
 
 /**
  * Representation based on a BIO characters writer. This class is a good basis
@@ -59,8 +61,8 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
     }
 
     @Override
-    public void write(OutputStream outputStream) throws IOException {
-        write(new OutputStreamWriter(outputStream, getCharacterSet().getName()));
+    public Reader getReader() {
+        return ByteUtils.getReader(this);
     }
 
     /**
@@ -68,6 +70,11 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
      */
     @Override
     public void release() {
+    }
+
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
+        write(new OutputStreamWriter(outputStream, getCharacterSet().getName()));
     }
 
 }

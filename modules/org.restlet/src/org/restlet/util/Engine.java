@@ -36,6 +36,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
+import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
@@ -50,6 +51,12 @@ import org.restlet.resource.Variant;
  */
 public abstract class Engine {
 
+    /** Classloader to use for dynamic class loading. */
+    private static ClassLoader classloader = Engine.class.getClassLoader();
+
+    /** The registered engine. */
+    private static Engine instance = null;
+
     /** Obtain a suitable logger. */
     private static Logger logger = Logger.getLogger(Engine.class
             .getCanonicalName());
@@ -60,21 +67,15 @@ public abstract class Engine {
     /** Minor version number. */
     public static final String MINOR_NUMBER = "@minor-number@";
 
+    /** Provider resource. */
+    private static final String providerResource = "META-INF/services/org.restlet.util.Engine";
+
     /** Release number. */
     public static final String RELEASE_NUMBER = "@release-number@";
 
     /** Complete version. */
     public static final String VERSION = MAJOR_NUMBER + '.' + MINOR_NUMBER
             + '.' + RELEASE_NUMBER;
-
-    /** The registered engine. */
-    private static Engine instance = null;
-
-    /** Provider resource. */
-    private static final String providerResource = "META-INF/services/org.restlet.util.Engine";
-
-    /** Classloader to use for dynamic class loading. */
-    private static ClassLoader classloader = Engine.class.getClassLoader();
 
     /**
      * Returns a class loader to use when creating instantiating implementation
@@ -208,6 +209,19 @@ public abstract class Engine {
     }
 
     /**
+     * Copies headers into a response.
+     * 
+     * @param headers
+     *                The headers to copy.
+     * @param response
+     *                The response to update.
+     * @param logger
+     *                The logger to use.
+     */
+    public abstract void copyResponseHeaders(Iterable<Parameter> headers,
+            Response response, Logger logger);
+
+    /**
      * Creates a directory resource.
      * 
      * @param handler
@@ -307,5 +321,4 @@ public abstract class Engine {
      */
     public abstract void parse(Logger logger, Form form, String queryString,
             CharacterSet characterSet);
-
 }

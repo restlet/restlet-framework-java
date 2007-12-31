@@ -13,3 +13,5 @@ Export-Package: net.sf.json,
  net.sf.json.test,
  net.sf.json.util,
  net.sf.json.xml
+Require-Bundle: org.apache.commons.beanutils;visibility:=reexport,
+ net.sf.ezmorph;visibility:=reexport

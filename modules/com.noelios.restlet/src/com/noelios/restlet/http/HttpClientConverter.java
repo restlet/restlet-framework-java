@@ -21,6 +21,7 @@ package com.noelios.restlet.http;
 import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
@@ -338,78 +339,11 @@ public class HttpClientConverter extends HttpConverter {
     protected void readResponseHeaders(HttpClientCall httpCall,
             Response response) {
         try {
+            Series<Parameter> responseHeaders = httpCall.getResponseHeaders();
             // Put the response headers in the call's attributes map
             response.getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
-                    httpCall.getResponseHeaders());
-
-            // Read info from headers
-            for (Parameter header : httpCall.getResponseHeaders()) {
-                if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_LOCATION)) {
-                    response.setLocationRef(header.getValue());
-                } else if ((header.getName()
-                        .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE))
-                        || (header.getName()
-                                .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE2))) {
-                    try {
-                        CookieReader cr = new CookieReader(getLogger(), header
-                                .getValue());
-                        response.getCookieSettings()
-                                .add(cr.readCookieSetting());
-                    } catch (Exception e) {
-                        getLogger().log(
-                                Level.WARNING,
-                                "Error during cookie setting parsing. Header: "
-                                        + header.getValue(), e);
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_WWW_AUTHENTICATE)) {
-                    ChallengeRequest request = SecurityUtils
-                            .parseRequest(header.getValue());
-                    response.setChallengeRequest(request);
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_SERVER)) {
-                    response.getServerInfo().setAgent(header.getValue());
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_ALLOW)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-                    Set<Method> allowedMethods = response.getAllowedMethods();
-                    while (value != null) {
-                        allowedMethods.add(Method.valueOf(value));
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_VARY)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-                    Set<Dimension> dimensions = response.getDimensions();
-                    while (value != null) {
-                        if (value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT)) {
-                            dimensions.add(Dimension.MEDIA_TYPE);
-                        } else if (value
-                                .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_CHARSET)) {
-                            dimensions.add(Dimension.CHARACTER_SET);
-                        } else if (value
-                                .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_ENCODING)) {
-                            dimensions.add(Dimension.ENCODING);
-                        } else if (value
-                                .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_LANGUAGE)) {
-                            dimensions.add(Dimension.LANGUAGE);
-                        } else if (value
-                                .equalsIgnoreCase(HttpConstants.HEADER_AUTHORIZATION)) {
-                            dimensions.add(Dimension.AUTHORIZATION);
-                        } else if (value
-                                .equalsIgnoreCase(HttpConstants.HEADER_USER_AGENT)) {
-                            dimensions.add(Dimension.CLIENT_AGENT);
-                        } else if (value.equals("*")) {
-                            dimensions.add(Dimension.UNSPECIFIED);
-                        }
-
-                        value = hr.readValue();
-                    }
-                }
-            }
+                    responseHeaders);
+            copyResponseHeaders(responseHeaders, response, getLogger());
         } catch (Exception e) {
             getLogger()
                     .log(
@@ -421,4 +355,83 @@ public class HttpClientConverter extends HttpConverter {
         }
     }
 
+    /**
+     * Copies headers into a response.
+     * 
+     * @param headers
+     *                The headers to copy.
+     * @param response
+     *                The response to update.
+     * @param logger
+     *                The logger to use.
+     */
+    public static void copyResponseHeaders(Iterable<Parameter> headers,
+            Response response, Logger logger) {
+        // Read info from headers
+        for (Parameter header : headers) {
+            if (header.getName()
+                    .equalsIgnoreCase(HttpConstants.HEADER_LOCATION)) {
+                response.setLocationRef(header.getValue());
+            } else if ((header.getName()
+                    .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE))
+                    || (header.getName()
+                            .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE2))) {
+                try {
+                    CookieReader cr = new CookieReader(logger, header
+                            .getValue());
+                    response.getCookieSettings().add(cr.readCookieSetting());
+                } catch (Exception e) {
+                    logger.log(Level.WARNING,
+                            "Error during cookie setting parsing. Header: "
+                                    + header.getValue(), e);
+                }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_WWW_AUTHENTICATE)) {
+                ChallengeRequest request = SecurityUtils.parseRequest(header
+                        .getValue());
+                response.setChallengeRequest(request);
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_SERVER)) {
+                response.getServerInfo().setAgent(header.getValue());
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_ALLOW)) {
+                HeaderReader hr = new HeaderReader(header.getValue());
+                String value = hr.readValue();
+                Set<Method> allowedMethods = response.getAllowedMethods();
+                while (value != null) {
+                    allowedMethods.add(Method.valueOf(value));
+                    value = hr.readValue();
+                }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_VARY)) {
+                HeaderReader hr = new HeaderReader(header.getValue());
+                String value = hr.readValue();
+                Set<Dimension> dimensions = response.getDimensions();
+                while (value != null) {
+                    if (value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT)) {
+                        dimensions.add(Dimension.MEDIA_TYPE);
+                    } else if (value
+                            .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_CHARSET)) {
+                        dimensions.add(Dimension.CHARACTER_SET);
+                    } else if (value
+                            .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_ENCODING)) {
+                        dimensions.add(Dimension.ENCODING);
+                    } else if (value
+                            .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_LANGUAGE)) {
+                        dimensions.add(Dimension.LANGUAGE);
+                    } else if (value
+                            .equalsIgnoreCase(HttpConstants.HEADER_AUTHORIZATION)) {
+                        dimensions.add(Dimension.AUTHORIZATION);
+                    } else if (value
+                            .equalsIgnoreCase(HttpConstants.HEADER_USER_AGENT)) {
+                        dimensions.add(Dimension.CLIENT_AGENT);
+                    } else if (value.equals("*")) {
+                        dimensions.add(Dimension.UNSPECIFIED);
+                    }
+
+                    value = hr.readValue();
+                }
+            }
+        }
+    }
 }
