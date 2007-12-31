@@ -14,6 +14,8 @@ Changes log
    Angelocola based on David Koelle's original idea. Optimized implementation contributed by Rob 
    Heittman from Solertium Corporation. New setComparator, setAlphaComparator and 
    setAlphaNumComparator methods added. The default sorting is now "AlphaNum".  
+ - Added new JsonRepresentation constructors taking a Bean or a Map. Suggested by Evgeny K. 
+   Shepelyuk and Sean Landis
  
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.

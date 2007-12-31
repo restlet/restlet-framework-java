@@ -19,6 +19,7 @@
 package org.restlet.ext.json;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,17 +37,6 @@ import org.restlet.resource.StringRepresentation;
  */
 public class JsonRepresentation extends StringRepresentation {
     /**
-     * Constructor.
-     * 
-     * @param jsonRepresentation
-     *                A source JSON representation to parse.
-     */
-    public JsonRepresentation(Representation jsonRepresentation)
-            throws IOException {
-        super(jsonRepresentation.getText(), MediaType.APPLICATION_JSON);
-    }
-
-    /**
      * Constructor from a JSON object.
      * 
      * @param jsonObject
@@ -57,13 +47,36 @@ public class JsonRepresentation extends StringRepresentation {
     }
 
     /**
-     * Constructor from a JSON array.
+     * Constructor from a map object.
      * 
-     * @param jsonArray
-     *                The JSON array.
+     * @param map
+     *                The map to convert to JSON.
+     * @see org.json.JSONObject#JSONObject(Map)
      */
-    public JsonRepresentation(JSONArray jsonArray) {
-        super(jsonArray.toString(), MediaType.APPLICATION_JSON);
+    public JsonRepresentation(Map<Object, Object> map) {
+        this(new JSONObject(map));
+    }
+
+    /**
+     * Constructor from a bean using reflection to generate JSON names.
+     * 
+     * @param bean
+     *                The bean to convert to JSON.
+     * @see org.json.JSONObject#JSONObject(Object)
+     */
+    public JsonRepresentation(Object bean) {
+        this(new JSONObject(bean));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param jsonRepresentation
+     *                A source JSON representation to parse.
+     */
+    public JsonRepresentation(Representation jsonRepresentation)
+            throws IOException {
+        super(jsonRepresentation.getText(), MediaType.APPLICATION_JSON);
     }
 
     /**
@@ -77,16 +90,6 @@ public class JsonRepresentation extends StringRepresentation {
     }
 
     /**
-     * Converts the representation to a JSON object.
-     * 
-     * @return The converted JSON object.
-     * @throws JSONException
-     */
-    public JSONObject toJsonObject() throws JSONException {
-        return new JSONObject(getText());
-    }
-
-    /**
      * Converts the representation to a JSON array.
      * 
      * @return The converted JSON array.
@@ -94,6 +97,16 @@ public class JsonRepresentation extends StringRepresentation {
      */
     public JSONArray toJsonArray() throws JSONException {
         return new JSONArray(getText());
+    }
+
+    /**
+     * Converts the representation to a JSON object.
+     * 
+     * @return The converted JSON object.
+     * @throws JSONException
+     */
+    public JSONObject toJsonObject() throws JSONException {
+        return new JSONObject(getText());
     }
 
 }
