@@ -5,6 +5,13 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - 
+
+[Enhancements]
+ - Lowered the logging level for some Simple IO exceptions.
+
+1.0.7 (2007-12-22)
+[Bugs fixed]
  - Fixed bug in the matching of "*" E-Tags. Patch contributed by Alex Milowski. 
  - Set the JAXP Source's systemID property based on the Representation.identifier 
    property if available (SaxRepresentation and TransformRepresentation).
