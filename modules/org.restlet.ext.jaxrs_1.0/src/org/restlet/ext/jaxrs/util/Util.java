@@ -87,7 +87,7 @@ public class Util {
      * @param <A>
      * @return Returns the last Element of the list
      * @throws IndexOutOfBoundsException
-     *             If the list is empty
+     *                 If the list is empty
      */
     public static <A> A getLastElement(List<A> list)
             throws IndexOutOfBoundsException {
@@ -101,7 +101,7 @@ public class Util {
      * @param <A>
      * @return Returns the first Element of the collection
      * @throws IndexOutOfBoundsException
-     *             If the list is empty
+     *                 If the list is empty
      */
     public static <A> A getFirstElement(Collection<A> coll)
             throws IndexOutOfBoundsException {
@@ -121,7 +121,7 @@ public class Util {
      *         map.entrySet()
      * 
      * @throws NoSuchElementException
-     *             If the map is empty.
+     *                 If the map is empty.
      */
     public static <K, V> Map.Entry<K, V> getFirstEntry(Map<K, V> map)
             throws NoSuchElementException {
@@ -136,7 +136,7 @@ public class Util {
      * @param <K>
      * @param <V>
      * @throws NoSuchElementException
-     *             If the map is empty.
+     *                 If the map is empty.
      */
     public static <K, V> K getFirstKey(Map<K, V> map)
             throws NoSuchElementException {
@@ -144,12 +144,13 @@ public class Util {
     }
 
     /**
-     * @return Returns the first element, returned by the iterator over the map.values()
+     * @return Returns the first element, returned by the iterator over the
+     *         map.values()
      * @param map
      * @param <K>
      * @param <V>
      * @throws NoSuchElementException
-     *             If the map is empty.
+     *                 If the map is empty.
      */
     public static <K, V> V getFirstValue(Map<K, V> map)
             throws NoSuchElementException {
@@ -159,8 +160,9 @@ public class Util {
     /**
      * 
      * @param jaxRsHeaders
-     *            Headers of an JAX-RS-Response. The keys are the HTTP header
-     *            names, the value is a list of values for this HTTP header.
+     *                Headers of an JAX-RS-Response. The keys are the HTTP
+     *                header names, the value is a list of values for this HTTP
+     *                header.
      * @param restletResponse
      * @param logger
      */
@@ -189,7 +191,7 @@ public class Util {
 
     /**
      * @param response
-     *            a Restlet response
+     *                a Restlet response
      * @return Returns the HTTP-Headers-Form from the Response.
      */
     public static Form getHttpHeaders(Response response) {
@@ -218,7 +220,7 @@ public class Util {
      * @return Returns the created list with the given object in it
      */
     public static <A> List<A> createList(A object) {
-        List<A> list = new ArrayList();
+        List<A> list = new ArrayList<A>();
         list.add(object);
         return list;
     }
@@ -233,7 +235,7 @@ public class Util {
      * @return Returns the created list with the given objects in it
      */
     public static <A> Collection<A> createColl(A object1, A object2) {
-        Collection coll = new ArrayList();
+        Collection<A> coll = new ArrayList<A>();
         coll.add(object1);
         coll.add(object2);
         return coll;
@@ -260,7 +262,7 @@ public class Util {
      * @return
      */
     public static <E> List<E> toList(E[] elements) {
-        List<E> list = new ArrayList(elements.length);
+        List<E> list = new ArrayList<E>(elements.length);
         for (E element : elements)
             list.add(element);
         return list;

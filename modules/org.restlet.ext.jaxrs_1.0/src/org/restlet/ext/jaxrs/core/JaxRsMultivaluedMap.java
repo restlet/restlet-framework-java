@@ -29,8 +29,9 @@ import javax.ws.rs.core.MultivaluedMap;
 
 /**
  * Implementation of the JAX-RS interface {@link MultivaluedMap}
+ * 
  * @author Stephan
- *
+ * 
  * @param <K>
  * @param <V>
  */
@@ -88,7 +89,7 @@ public class JaxRsMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     public void add(K key, V value) {
         List<V> list = entries.get(key);
         if (list == null) {
-            list = new ArrayList(1);
+            list = new ArrayList<V>(1);
             entries.put(key, list);
         }
         list.add(value);
@@ -109,7 +110,7 @@ public class JaxRsMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     public List<V> remove(Object key) {
         List<V> old = entries.remove(key);
         if (old == null)
-            return new ArrayList();
+            return new ArrayList<V>();
         return old;
     }
 

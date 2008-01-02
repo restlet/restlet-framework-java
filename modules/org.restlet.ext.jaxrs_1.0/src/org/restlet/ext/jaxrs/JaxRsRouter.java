@@ -202,7 +202,7 @@ public class JaxRsRouter extends Restlet {
      * Detaches the JAX-RS root resource class from this router.
      * 
      * @param jaxRsClass
-     *            The JAX-RS root resource class to detach.
+     *                The JAX-RS root resource class to detach.
      * @see #attach(Class)
      */
     public void detach(Class<?> jaxRsClass) {
@@ -213,9 +213,9 @@ public class JaxRsRouter extends Restlet {
      * Handles a call by invoking the next Restlet if it is available.
      * 
      * @param request
-     *            The request to handle.
+     *                The request to handle.
      * @param response
-     *            The response to update.
+     *                The response to update.
      */
     @Override
     public void handle(Request request, Response response) {
@@ -322,7 +322,7 @@ public class JaxRsRouter extends Restlet {
      * 
      * @param resClAndTemplate
      * @param restletRequest
-     *            TODO
+     *                TODO
      * @return Resource Object
      * @throws MethodInvokeException
      */
@@ -396,7 +396,7 @@ public class JaxRsRouter extends Restlet {
      * 2007-12-07, Section 2.5 Matching Requests to Resource Methods, Part 3.
      * 
      * @param accMediaTypes
-     *            sorted by its qualities.
+     *                sorted by its qualities.
      * @return Resource Object and Method, that handle the request.
      * @throws ResourceMethodNotFoundException
      */
@@ -408,7 +408,7 @@ public class JaxRsRouter extends Restlet {
         // (a)
         ResourceObject resourceObject = resObjAndPath.resourceObject;
         String remainingPath = resObjAndPath.remainingPath;
-        List<ResourceMethod> resourceMethods = new ArrayList();
+        List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
         // (a) 1
         for (SubResourceMethod method : resourceObject.getResourceClass()
                 .getSubResourceMethods()) {
@@ -479,7 +479,7 @@ public class JaxRsRouter extends Restlet {
      * are also used such that x/y;q=1.0 < x/y;q=0.7.
      * 
      * @param resourceMethods
-     *            the resourceMethods that provide the requiredmediaType
+     *                the resourceMethods that provide the requiredmediaType
      * @return Returns the method who best matches the given and accepted media
      *         type in the request, or null
      * @throws CouldNotFindMethodException
@@ -566,7 +566,7 @@ public class JaxRsRouter extends Restlet {
     private Map<ResourceMethod, List<MediaType>> findMethodsSupportTypeAndSubType(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
             List<Collection<MediaType>> mediaTypess) {
-        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap();
+        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
         for (ResourceMethod resourceMethod : resourceMethods) {
             List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (MediaType resMethMediaType : mimes) {
@@ -597,7 +597,7 @@ public class JaxRsRouter extends Restlet {
     private Map<ResourceMethod, List<MediaType>> findMethodsSupportType(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
             List<Collection<MediaType>> mediaTypess) {
-        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap();
+        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
         for (ResourceMethod resourceMethod : resourceMethods) {
             List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (MediaType resMethMediaType : mimes) {
@@ -615,7 +615,7 @@ public class JaxRsRouter extends Restlet {
 
     private Map<ResourceMethod, List<MediaType>> findMethodsSupportAllTypes(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut) {
-        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap();
+        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
         for (ResourceMethod resourceMethod : resourceMethods) {
             List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (MediaType resMethMediaType : mimes) {
@@ -643,7 +643,7 @@ public class JaxRsRouter extends Restlet {
      * 2007-12-07, Section 2.5, Part 2f+2g
      * 
      * @param eWithMethod
-     *            Collection of SubResourceMethods and SubResourceLocators
+     *                Collection of SubResourceMethods and SubResourceLocators
      * @return null, if the Map is null or empty
      * @throws CouldNotFindMethodException
      */
@@ -691,7 +691,7 @@ public class JaxRsRouter extends Restlet {
      * 1.e
      * 
      * @param rrcs
-     *            Collection of root resource classes
+     *                Collection of root resource classes
      * @return null, if the Map is null or empty
      * @throws CouldNotFindMethodException
      */
@@ -777,9 +777,9 @@ public class JaxRsRouter extends Restlet {
      * @param resourceMethod
      * @param resourceObject
      * @param matchingResult
-     *            TODO
+     *                TODO
      * @param restletRequest
-     *            TODO
+     *                TODO
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
@@ -843,10 +843,10 @@ public class JaxRsRouter extends Restlet {
      * found.
      * 
      * @param rootResourceNotFoundRestlet
-     *            The Restlet to use when no root resource class could be found.
-     *            This Restlet must return status 404.
+     *                The Restlet to use when no root resource class could be
+     *                found. This Restlet must return status 404.
      * @throws IllegalArgumentException
-     *             If the Restlet is null.
+     *                 If the Restlet is null.
      */
     public void setErrorRestletRootResourceNotFound(
             Restlet rootResourceNotFoundRestlet)
@@ -870,10 +870,10 @@ public class JaxRsRouter extends Restlet {
      * found.
      * 
      * @param resourceNotFoundRestlet
-     *            The Restlet to use when no resource class could be found. This
-     *            Restlet must return status 404.
+     *                The Restlet to use when no resource class could be found.
+     *                This Restlet must return status 404.
      * @throws IllegalArgumentException
-     *             If the Restlet is null.
+     *                 If the Restlet is null.
      */
     public void setErrorRestletResourceNotFound(Restlet resourceNotFoundRestlet)
             throws IllegalArgumentException {
@@ -896,10 +896,10 @@ public class JaxRsRouter extends Restlet {
      * found.
      * 
      * @param resourceMethodNotFoundRestlet
-     *            The Restlet to use when no resource class could be found. This
-     *            Restlet must return status 404.
+     *                The Restlet to use when no resource class could be found.
+     *                This Restlet must return status 404.
      * @throws IllegalArgumentException
-     *             If the given Restlet is null.
+     *                 If the given Restlet is null.
      * @see #DEFAULT_RESOURCE_METHOD_NOT_FOUND_RESTLET
      */
     public void setErrorRestletResourceMethodNotFound(
@@ -932,9 +932,9 @@ public class JaxRsRouter extends Restlet {
      * It must return status 405.
      * 
      * @param errorRestletMethodNotAllowed
-     *            The Restlet to use.
+     *                The Restlet to use.
      * @throws IllegalArgumentException
-     *             If the given restlet is null.
+     *                 If the given restlet is null.
      */
     public void setErrorRestletMethodNotAllowed(
             Restlet errorRestletMethodNotAllowed)
@@ -958,9 +958,9 @@ public class JaxRsRouter extends Restlet {
      * supported.
      * 
      * @param errorRestletUnsupportedMediaType
-     *            The Restlet to use.
+     *                The Restlet to use.
      * @throws IllegalArgumentException
-     *             If the given restlet is null.
+     *                 If the given restlet is null.
      */
     public void setErrorRestletUnsupportedMediaType(
             Restlet errorRestletUnsupportedMediaType)
@@ -984,9 +984,9 @@ public class JaxRsRouter extends Restlet {
      * type is not supported. Must return status 406.
      * 
      * @param errorRestletNotAcceptable
-     *            The Restlet to use
+     *                The Restlet to use
      * @throws IllegalArgumentException
-     *             If the given restlet is null.
+     *                 If the given restlet is null.
      */
     public void setErrorRestletNotAcceptable(Restlet errorRestletNotAcceptable)
             throws IllegalArgumentException {
@@ -1008,7 +1008,7 @@ public class JaxRsRouter extends Restlet {
      * 
      * @param errorRestletMultipleResourceMethods
      * @throws IllegalArgumentException
-     *             If the given restlet is null.
+     *                 If the given restlet is null.
      */
     public void setErrorRestletMultipleResourceMethods(
             Restlet errorRestletMultipleResourceMethods)
@@ -1030,7 +1030,7 @@ public class JaxRsRouter extends Restlet {
      * 
      * @param errorRestletMultipleRootResourceClasses
      * @throws IllegalArgumentException
-     *             If the given restlet is null.
+     *                 If the given restlet is null.
      */
     public void setErrorRestletMultipleRootResourceClasses(
             Restlet errorRestletMultipleRootResourceClasses)
@@ -1047,7 +1047,7 @@ public class JaxRsRouter extends Restlet {
      * @return
      */
     public Set<Class<?>> getRootResourceClasses() {
-        Set<Class<?>> jaxRsClasses = new HashSet();
+        Set<Class<?>> jaxRsClasses = new HashSet<Class<?>>();
         for (RootResourceClass rootResourceClass : this.rootResourceClasses)
             jaxRsClasses.add(rootResourceClass.getJaxRsClass());
         return Collections.unmodifiableSet(jaxRsClasses);
