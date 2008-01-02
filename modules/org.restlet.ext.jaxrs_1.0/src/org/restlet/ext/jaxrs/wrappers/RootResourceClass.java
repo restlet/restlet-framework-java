@@ -18,76 +18,143 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.Collection;
+
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.HttpContext;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.MatchingResult;
+import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
 
 /**
  * Instances represents a root resource class.
  * 
- * A resource class annotated with @Path. Root resource classes provide the roots of the
- * resource class tree and provide access to sub-resources, see chapter 2 of JSR-311-Spec.
+ * A resource class annotated with
+ * 
+ * {@link Path}: Root resource classes provide the roots of the resource class
+ * tree and provide access to sub-resources, see chapter 2 of JSR-311-Spec.
+ * 
  * @author Stephan Koops
- *
+ * 
  */
 public class RootResourceClass extends ResourceClass {
-	
+
+    private Constructor constructor;
+
     /**
      * Creates a wrapper for the given JAX-RS root resource class.
-     * @param jaxRsClass the root resource class to wrap
+     * 
+     * @param jaxRsClass
+     *                the root resource class to wrap
      */
-	public RootResourceClass(Class jaxRsClass) {
-		super(jaxRsClass);
-	}
-
-	@Override
-	public ResourceObject createInstance(MatchingResult matchingResult, Request restletRequ) throws Exception {
-		Object[] args;
-		Constructor constr = findConstructor(getJaxRsClass());
-		if (constr.getParameterTypes().length == 0)
-			args = new Object[0];
-		else
-			args = getParameterValues(constr.getParameterAnnotations(), constr.getParameterTypes(), matchingResult, restletRequ);
-		return new ResourceObject(constr.newInstance(args), this);
-	}
-
-	/**
-	 * @param jaxRsClass
-	 *            a JAX-RS root resource class
-	 * @return Returns the constructor to use for the given root resource class (See JSR-311-Spec, section 2.3)
-	 */
-	private Constructor findConstructor(Class resourceClass) {
-		/*
-		 * (aus JSR-311-Spec, section 2.3) Root resource classes are instantiated by the JAX-RS runtime and MUST have a constructor with one of the following
-		 * annotations on every parameter: @HttpContext, @HeaderParam, @MatrixParam, @Query-Param or @UriParam. Note that a zero argument constructor is
-		 * permissible(=erlaubt) under this rule. Section 2.4.1 defines the parameter types permitted for each annotation. If more than one constructor that
-		 * matches the above pattern is available then an implementation MUST use the one with the most parameters. Choosing amongst constructors with the same
-		 * number of parameters is implementation specific.
-		 */
-
-		Collection<Constructor> constructors = Arrays.asList(resourceClass.getConstructors()); // nur die public Constructors
-		for (Constructor constr : constructors) { // TODO findConstructor gibt z.Zt. immer den Construktor ohne Argumenten zurück.
-			if (constr.getParameterTypes().length == 0)
-				return constr;
-		}
-		/*
-		 * Iterator<Constructor> constructorIter = constructors.iterator(); while (constructorIter.hasNext()) { Constructor constructor =
-		 * constructorIter.next(); Annotation[][] paramAnnotations = constructor.getParameterAnnotations(); } //
-		 */
-		return constructors.iterator().next(); // Dummy-Implementation
-	}
+    public RootResourceClass(Class jaxRsClass) {
+        super(jaxRsClass);
+        constructor = findJaxRsConstructor();
+    }
 
     @Override
-    public boolean equals(Object anotherObject)
-    {
-        if(this == anotherObject)
-            return true;
-        if(!(anotherObject instanceof RootResourceClass))
+    public ResourceObject createInstance(MatchingResult matchingResult,
+            Request restletRequ) throws Exception {
+        Object[] args;
+        if (constructor.getParameterTypes().length == 0)
+            args = new Object[0];
+        else
+            args = getParameterValues(constructor.getParameterAnnotations(), constructor
+                    .getParameterTypes(), matchingResult, restletRequ);
+        return new ResourceObject(constructor.newInstance(args), this);
+    }
+
+    /**
+     * @return Returns the constructor to use for the given root resource class
+     *         (See JSR-311-Spec, section 2.3)
+     */
+    private Constructor findJaxRsConstructor() {
+        Constructor constructor = null;
+        int constructorParamNo = Integer.MIN_VALUE;
+        for (Constructor constr : getJaxRsClass().getConstructors()) {
+            int constrParamNo = constr.getParameterTypes().length;
+            if (constrParamNo <= constructorParamNo)
+                continue; // ignore this constructor
+            if (!checkParamAnnotations(constr))
+                continue; // ignore this constructor
+            constructor = constr;
+            constructorParamNo = constrParamNo;
+        }
+        return constructor;
+    }
+
+    /**
+     * Checks if the parameters for the constructor are valid for a JAX-RS root
+     * resource class.
+     * 
+     * @param paramAnnotationss
+     * @param parameterTypes
+     * @returns true, if the
+     * @throws IllegalTypeException
+     *                 If a parameter is annotated with {@link HttpContext},
+     *                 but the type is invalid (must be UriInfo, Request or
+     *                 HttpHeaders).
+     */
+    private boolean checkParamAnnotations(Constructor constr) {
+        Annotation[][] paramAnnotationss = constr.getParameterAnnotations();
+        Class[] parameterTypes = constr.getParameterTypes();
+        for (int i = 0; i < paramAnnotationss.length; i++) {
+            Annotation[] parameterAnnotations = paramAnnotationss[i];
+            Class parameterType = parameterTypes[i];
+            boolean ok = checkParameterAnnotation(parameterAnnotations,
+                    parameterType);
+            if (!ok)
+                return false;
+        }
+        return true;
+    }
+
+    private boolean checkParameterAnnotation(Annotation[] parameterAnnotations,
+            Class parameterType) {
+        // This method has the same structure as in the method
+        // AbstractJaxRsWrapper#getParameterValue(...)
+        if(parameterAnnotations.length == 0)
             return false;
-        RootResourceClass otherRootResourceClass = (RootResourceClass)anotherObject;
+        for (Annotation annotation : parameterAnnotations) {
+            Class<? extends Annotation> annotationType = annotation
+                    .annotationType();
+            if (annotationType.equals(HeaderParam.class)) {
+                continue;
+            } else if (annotationType.equals(PathParam.class)) {
+                continue;
+            } else if (annotationType.equals(HttpContext.class)) {
+                if (parameterType.equals(UriInfo.class))
+                    continue;
+                if (parameterType.equals(Request.class))
+                    continue;
+                if (parameterType.equals(HttpHeaders.class))
+                    continue;
+                throw new IllegalTypeException(
+                        "The Type of a parameter annotated with @HttpContext must be UriInfo, Request or HttpHeaders.");
+            } else if (annotationType.equals(MatrixParam.class)) {
+                continue;
+            } else if (annotationType.equals(QueryParam.class)) {
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object anotherObject) {
+        if (this == anotherObject)
+            return true;
+        if (!(anotherObject instanceof RootResourceClass))
+            return false;
+        RootResourceClass otherRootResourceClass = (RootResourceClass) anotherObject;
         return this.jaxRsClass.equals(otherRootResourceClass.jaxRsClass);
     }
 }

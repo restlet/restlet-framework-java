@@ -115,7 +115,7 @@ public class JaxRsMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
 
     public int size() {
         int size = 0;
-        for (List list : entries.values())
+        for (List<V> list : entries.values())
             size += list.size();
         return size;
     }
