@@ -30,70 +30,82 @@ import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.SimpleTrain;
 
+public class SimpleTrainTest extends JaxRsTestCase {
+    private static final Preference<MediaType> PREF_TEXTPLAIN_QUAL05 = new Preference<MediaType>(
+            MediaType.TEXT_PLAIN, 0.5f);
 
-public class SimpleTrainTest extends JaxRsTestCase
-{
-	private static final Preference<MediaType> PREF_TEXTPLAIN_QUAL05 = new Preference<MediaType>(MediaType.TEXT_PLAIN, 0.5f);
+    private static final boolean ONLY_M2 = false;
 
-	private static final boolean ONLY_M2 = false;
-	private static final boolean ONLY_TEXT_ALL = true;
-	
-	@Override
-	protected Collection<Class<?>> createRootResourceColl()
-	{
-		return (Collection)Collections.singleton(SimpleTrain.class);
-	}
+    private static final boolean ONLY_TEXT_ALL = true;
 
-	public static void testGetHtmlText() throws Exception
-	{
-		if(ONLY_M2 || ONLY_TEXT_ALL) return;
-		Response response = JaxRsTestCase.accessServer(SimpleTrain.class, Method.GET, MediaType.TEXT_HTML);
-		assertTrue(response.getStatus().isSuccess());
-		Representation representation = response.getEntity();
-		assertEquals(SimpleTrain.RERP_HTML_TEXT, representation.getText());
-		assertEqualMediaType(MediaType.TEXT_HTML, representation.getMediaType());
-	}
+    @Override
+    protected Collection<Class<?>> createRootResourceColl() {
+        return (Collection) Collections.singleton(SimpleTrain.class);
+    }
 
-	public static void testGetPlainText() throws Exception
-	{
-		if(ONLY_M2 || ONLY_TEXT_ALL) return;
-		Response response = JaxRsTestCase.accessServer(SimpleTrain.class, Method.GET, MediaType.TEXT_PLAIN);
-		assertTrue(response.getStatus().isSuccess());
-		Representation representation = response.getEntity();
-		assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
-		assertEqualMediaType(MediaType.TEXT_PLAIN, representation.getMediaType());
-	}
+    public static void testGetHtmlText() throws Exception {
+        if (ONLY_M2 || ONLY_TEXT_ALL)
+            return;
+        Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
+                Method.GET, MediaType.TEXT_HTML);
+        assertTrue(response.getStatus().isSuccess());
+        Representation representation = response.getEntity();
+        assertEquals(SimpleTrain.RERP_HTML_TEXT, representation.getText());
+        assertEqualMediaType(MediaType.TEXT_HTML, representation.getMediaType());
+    }
 
-	public static void testGetTextAll() throws Exception
-	{
-		if(ONLY_M2) return;
-		Response response = JaxRsTestCase.accessServer(SimpleTrain.class, Method.GET, MediaType.TEXT_ALL);
-		assertTrue(response.getStatus().isClientError());
-		// This request fails because methods for text/plain and for text/html are available, but it is not specified, which to use.
+    public static void testGetPlainText() throws Exception {
+        if (ONLY_M2 || ONLY_TEXT_ALL)
+            return;
+        Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
+                Method.GET, MediaType.TEXT_PLAIN);
+        assertTrue(response.getStatus().isSuccess());
+        Representation representation = response.getEntity();
+        assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, representation
+                .getMediaType());
+    }
 
-		// response = JaxRsTester.accessServer(SimpleTrain.class, Method.GET, MediaType.TEXT_CALENDAR);
-		// assertTrue(response.getStatus().isSuccess()); representation = response.getEntity();
-		// assertEquals(SimpleTrain.RERP_ANY_TEXT, representation.getText()); 
-		// TODO assertEquals(MediaType.TEXT_PLAIN, representation.getMediaType());
-	}
+    public static void testGetTextAll() throws Exception {
+        if (ONLY_M2)
+            return;
+        Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
+                Method.GET, MediaType.TEXT_ALL);
+        assertTrue(response.getStatus().isClientError());
+        // This request fails because methods for text/plain and for text/html
+        // are available, but it is not specified, which to use.
 
-	public static void testGetTextMultiple1() throws Exception
-	{
-		if(ONLY_M2 || ONLY_TEXT_ALL) return;
-		Response response = JaxRsTestCase.accessServer(SimpleTrain.class, Method.GET, Util.toList(new Object[] {PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_CALENDAR}));
-		assertEquals(Status.SUCCESS_OK, response.getStatus());
-		Representation representation = response.getEntity();
-		assertEqualMediaType(MediaType.TEXT_PLAIN, representation.getMediaType());
-		assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
-	}
+        // response = JaxRsTester.accessServer(SimpleTrain.class, Method.GET,
+        // MediaType.TEXT_CALENDAR);
+        // assertTrue(response.getStatus().isSuccess()); representation =
+        // response.getEntity();
+        // assertEquals(SimpleTrain.RERP_ANY_TEXT, representation.getText());
+        // TODO assertEquals(MediaType.TEXT_PLAIN,
+        // representation.getMediaType());
+    }
 
-	public static void testGetTextMultiple2() throws Exception
-	{
-		if(ONLY_TEXT_ALL) return;
-		Response response = JaxRsTestCase.accessServer(SimpleTrain.class, Method.GET, Util.toList(new Object[] {PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML}));
-		assertEquals(Status.SUCCESS_OK, response.getStatus());
-		Representation representation = response.getEntity();
-		assertEqualMediaType(MediaType.TEXT_HTML, representation.getMediaType());
-		assertEquals(SimpleTrain.RERP_HTML_TEXT, representation.getText());
-	}
+    public static void testGetTextMultiple1() throws Exception {
+        if (ONLY_M2 || ONLY_TEXT_ALL)
+            return;
+        Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
+                Method.GET, Util.toList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+                        MediaType.TEXT_CALENDAR }));
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation representation = response.getEntity();
+        assertEqualMediaType(MediaType.TEXT_PLAIN, representation
+                .getMediaType());
+        assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
+    }
+
+    public static void testGetTextMultiple2() throws Exception {
+        if (ONLY_TEXT_ALL)
+            return;
+        Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
+                Method.GET, Util.toList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+                        MediaType.TEXT_HTML }));
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation representation = response.getEntity();
+        assertEqualMediaType(MediaType.TEXT_HTML, representation.getMediaType());
+        assertEquals(SimpleTrain.RERP_HTML_TEXT, representation.getText());
+    }
 }

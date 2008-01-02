@@ -16,13 +16,15 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.test.jaxrs.services.tests;
+package org.restlet.test.jaxrs;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.restlet.test.jaxrs.UriTemplateRegExpTests;
+import org.restlet.test.jaxrs.services.tests.CarTest;
+import org.restlet.test.jaxrs.services.tests.MultipleResourcesTest;
+import org.restlet.test.jaxrs.services.tests.SimpleTrainTest;
 import org.restlet.test.jaxrs.util.UtilTests;
 
 public class AllJaxRsTests extends TestCase

@@ -24,36 +24,30 @@ import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.test.jaxrs.services.SimpleTrain;
 import org.restlet.test.jaxrs.services.car.CarListResource;
 
+public class MultipleResourcesTest extends JaxRsTestCase {
+    @Override
+    protected Collection<Class<?>> createRootResourceColl() {
+        return Util.createColl(SimpleTrain.class, CarListResource.class);
+    }
 
-public class MultipleResourcesTest extends JaxRsTestCase
-{
-	@Override
-	protected Collection<Class<?>> createRootResourceColl()
-	{
-		return (Collection) Util.createColl(SimpleTrain.class, CarListResource.class);
-	}
-	
-	@Override
-	public void setUp() throws Exception
-	{
-	    super.setUp();
-	}
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+    }
 
-	public void testCar() throws Exception
-	{
-		CarTest.testGetPlainText();
-		CarTest.testGetHtmlText();
-		CarTest.testDelete();
-		CarTest.testGetCar();
-		CarTest.testGetOffers();
-	}
+    public void testCar() throws Exception {
+        CarTest.testGetPlainText();
+        CarTest.testGetHtmlText();
+        CarTest.testDelete();
+        CarTest.testGetCar();
+        CarTest.testGetOffers();
+    }
 
-	public void testSimpleTrain() throws Exception
-	{
-		SimpleTrainTest.testGetPlainText();
-		SimpleTrainTest.testGetHtmlText();
-		SimpleTrainTest.testGetTextAll();
-		SimpleTrainTest.testGetTextMultiple1();
-		SimpleTrainTest.testGetTextMultiple2();
-	}
+    public void testSimpleTrain() throws Exception {
+        SimpleTrainTest.testGetPlainText();
+        SimpleTrainTest.testGetHtmlText();
+        SimpleTrainTest.testGetTextAll();
+        SimpleTrainTest.testGetTextMultiple1();
+        SimpleTrainTest.testGetTextMultiple2();
+    }
 }
