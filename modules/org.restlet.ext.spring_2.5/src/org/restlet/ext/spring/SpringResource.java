@@ -49,7 +49,7 @@ public class SpringResource extends AbstractResource {
      *                The description.
      */
     public SpringResource(Representation representation) {
-        this(representation, "Resource loaded through a Representation");
+        this(representation, "Restlet Representation");
     }
 
     /**

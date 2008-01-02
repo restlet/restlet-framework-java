@@ -135,6 +135,8 @@ public class SpringContext extends GenericApplicationContext {
 
                 if (config != null) {
                     xmlReader = new XmlBeanDefinitionReader(this);
+                    xmlReader
+                            .setValidationMode(XmlBeanDefinitionReader.VALIDATION_XSD);
                     xmlReader.loadBeanDefinitions(new SpringResource(config));
                 }
             }

@@ -18,7 +18,7 @@
 
 package org.restlet.test;
 
-import org.restlet.test.jaxrs.services.tests.AllJaxRsTests;
+import org.restlet.test.jaxrs.AllJaxRsTests;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
