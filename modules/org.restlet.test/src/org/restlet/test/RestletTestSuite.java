@@ -18,6 +18,8 @@
 
 package org.restlet.test;
 
+import org.restlet.test.jaxrs.services.tests.AllJaxRsTests;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -52,6 +54,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(TransformerTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
+        addTest(AllJaxRsTests.suite());
     }
 
     /**
