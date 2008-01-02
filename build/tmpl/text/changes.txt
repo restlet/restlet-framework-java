@@ -5,7 +5,7 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
- - 
+ - Fixed Spring XML loading issue related to validation in SpringContext class.
 
 [Enhancements]
  - Lowered the logging level for some Simple IO exceptions.
