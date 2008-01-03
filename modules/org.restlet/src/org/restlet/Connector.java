@@ -83,12 +83,13 @@ public abstract class Connector extends Restlet {
     }
 
     /**
-     * Sets the protocols simultaneously supported.
+     * Sets the protocols simultaneously supported. Method synchronized to make
+     * compound action (clear, addAll) atomic, not for visibility.
      * 
      * @param protocols
      *                The protocols simultaneously supported.
      */
-    public void setProtocols(List<Protocol> protocols) {
+    public synchronized void setProtocols(List<Protocol> protocols) {
         this.protocols.clear();
         if (protocols != null) {
             this.protocols.addAll(protocols);

@@ -202,13 +202,17 @@ public class Component extends Restlet {
     }
 
     /**
-     * Sets a modifiable list of client connectors.
+     * Sets a modifiable list of client connectors. Method synchronized to make
+     * compound action (clear, addAll) atomic, not for visibility.
      * 
      * @param clients
      *                A modifiable list of client connectors.
      */
-    public void setClients(ClientList clients) {
-        this.clients = clients;
+    public synchronized void setClients(ClientList clients) {
+        this.clients.clear();
+        if (clients != null) {
+            this.clients.addAll(clients);
+        }
     }
 
     /**
@@ -222,13 +226,17 @@ public class Component extends Restlet {
     }
 
     /**
-     * Sets the modifiable list of virtual hosts.
+     * Sets the modifiable list of virtual hosts. Method synchronized to make
+     * compound action (clear, addAll) atomic, not for visibility.
      * 
      * @param hosts
      *                The modifiable list of virtual hosts.
      */
-    public void setHosts(List<VirtualHost> hosts) {
-        this.hosts = hosts;
+    public synchronized void setHosts(List<VirtualHost> hosts) {
+        this.hosts.clear();
+        if (hosts != null) {
+            this.hosts.addAll(hosts);
+        }
     }
 
     /**
@@ -254,13 +262,17 @@ public class Component extends Restlet {
     }
 
     /**
-     * Sets a modifiable list of server connectors.
+     * Sets a modifiable list of server connectors. Method synchronized to make
+     * compound action (clear, addAll) atomic, not for visibility.
      * 
      * @param servers
      *                A modifiable list of server connectors.
      */
-    public void setServers(ServerList servers) {
-        this.servers = servers;
+    public synchronized void setServers(ServerList servers) {
+        this.servers.clear();
+        if (servers != null) {
+            this.servers.addAll(servers);
+        }
     }
 
     /**
