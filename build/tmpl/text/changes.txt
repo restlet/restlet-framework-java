@@ -18,6 +18,7 @@ Changes log
    Shepelyuk and Sean Landis
  - Updated Spring to version 2.5
  - Updated db4o to version 7.0
+ - Added a new parameter to ServerServlet allowing specification of a custom component to instantiate.
 
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.

@@ -35,11 +35,12 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 import com.noelios.restlet.application.ApplicationContext;
+import com.noelios.restlet.component.ComponentContext;
 import com.noelios.restlet.http.HttpServerHelper;
 
 /**
  * Servlet acting like an HTTP server connector. See <a
- * href="/documentation/1.0/faq#02">Developper FAQ #2</a> for details on how to
+ * href="/documentation/1.1/faq#02">Developper FAQ #2</a> for details on how to
  * integrate a Restlet application into a servlet container.<br/> Here is a
  * sample configuration for your Restlet webapp:
  * 
@@ -72,7 +73,16 @@ import com.noelios.restlet.http.HttpServerHelper;
  * The enumeration of initParameters of your Servlet will be copied to the
  * "context.parameters" property of your application. This way, you can pass
  * additional initialization parameters to your Restlet application, and share
- * them with existing Servlets.
+ * them with existing Servlets.<br>
+ * <br>
+ * It is also possible to specify a component class to be instantiated instead
+ * of a default component. You just need to add a "org.restlet.component"
+ * context parameter to your ServerServlet, with the qualified class name to
+ * instantiate as value. Once instantiated, a server connector will be added to
+ * this component and the application specified via the other context parameter
+ * will be normally attached to its default virtual host. This allows you to
+ * manually attach private applications to its internal router or to declare
+ * client connectors, for example for the CLAP, FILE or HTTP protocols.
  * 
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel (contact@noelios.com)
@@ -108,6 +118,12 @@ public class ServerServlet extends HttpServlet {
     /** The default value for the NAME_SERVER_ATTRIBUTE parameter. */
     private static final String NAME_SERVER_ATTRIBUTE_DEFAULT = "com.noelios.restlet.ext.servlet.ServerServlet.server";
 
+    /**
+     * Name of the attribute key containing a reference to the current
+     * application.
+     */
+    private static final String COMPONENT_KEY = "org.restlet.component";
+
     /** Serial version identifier. */
     private static final long serialVersionUID = 1L;
 
@@ -140,6 +156,7 @@ public class ServerServlet extends HttpServlet {
     @SuppressWarnings("unchecked")
     public Application createApplication(Context context) {
         Application application = null;
+
         // Try to instantiate a new target application
         // First, find the application class name
         String applicationClassName = getInitParameter(Application.KEY, null);
@@ -219,7 +236,7 @@ public class ServerServlet extends HttpServlet {
             // Copy all the servlet parameters into the context
             String initParam;
 
-            // Copy all the Web component initialization parameters
+            // Copy all the Servlet component initialization parameters
             javax.servlet.ServletConfig servletConfig = getServletConfig();
             for (Enumeration<String> enum1 = servletConfig
                     .getInitParameterNames(); enum1.hasMoreElements();) {
@@ -228,7 +245,7 @@ public class ServerServlet extends HttpServlet {
                         servletConfig.getInitParameter(initParam));
             }
 
-            // Copy all the Web Application initialization parameters
+            // Copy all the Servlet application initialization parameters
             for (Enumeration<String> enum1 = getServletContext()
                     .getInitParameterNames(); enum1.hasMoreElements();) {
                 initParam = (String) enum1.nextElement();
@@ -245,8 +262,82 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The newly created Component or null if unable to create
      */
+    @SuppressWarnings("unchecked")
     public Component createComponent() {
-        return new Component();
+        Component component = null;
+
+        // Try to instantiate a new target component
+        // First, find the component class name
+        String componentClassName = getInitParameter(COMPONENT_KEY, null);
+
+        // Load the component class using the given class name
+        if (componentClassName != null) {
+            try {
+                // According to
+                // http://www.caucho.com/resin-3.0/webapp/faq.xtp#Class.forName()-doesn't-seem-to-work-right
+                // this approach may need to used when loading classes.
+                Class<?> targetClass;
+                ClassLoader loader = Thread.currentThread()
+                        .getContextClassLoader();
+
+                if (loader != null)
+                    targetClass = Class.forName(componentClassName, false,
+                            loader);
+                else
+                    targetClass = Class.forName(componentClassName);
+
+                // Create a new instance of the component class by
+                // invoking the constructor with the Context parameter.
+                component = (Component) targetClass.newInstance();
+            } catch (ClassNotFoundException e) {
+                log(
+                        "[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
+                                + componentClassName, e);
+
+            } catch (InstantiationException e) {
+                log(
+                        "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
+                                + componentClassName, e);
+            } catch (IllegalAccessException e) {
+                log(
+                        "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
+                                + componentClassName, e);
+            }
+        }
+
+        if (component != null) {
+            ComponentContext componentContext = (ComponentContext) component
+                    .getContext();
+
+            // Set the special WAR client
+            // componentContext.setWarClient(new ServletWarClient(
+            // componentContext, this.getServletConfig()
+            // .getServletContext()));
+
+            // Copy all the servlet parameters into the context
+            String initParam;
+
+            // Copy all the Servlet container initialization parameters
+            javax.servlet.ServletConfig servletConfig = getServletConfig();
+            for (Enumeration<String> enum1 = servletConfig
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = (String) enum1.nextElement();
+                componentContext.getParameters().add(initParam,
+                        servletConfig.getInitParameter(initParam));
+            }
+
+            // Copy all the Servlet application initialization parameters
+            for (Enumeration<String> enum1 = getServletContext()
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = (String) enum1.nextElement();
+                componentContext.getParameters().add(initParam,
+                        getServletContext().getInitParameter(initParam));
+            }
+        } else {
+            component = new Component();
+        }
+
+        return component;
     }
 
     /**
@@ -262,7 +353,7 @@ public class ServerServlet extends HttpServlet {
         Application application = getApplication();
 
         if ((component != null) && (application != null)) {
-            // First, let's locate the closest component
+            // First, let's create a pseudo server
             Server server = new Server(component.getContext(),
                     (List<Protocol>) null, request.getLocalAddr(), request
                             .getLocalPort(), component);
