@@ -54,9 +54,9 @@ public class UriTemplateRegExp {
      * 
      * @param pathPattern
      * @param limitedToOneSegment
-     *            Controls whether a trailing template variable is limited to a
-     *            single path segment (<code>true</code>) or not (<code>false</code>).
-     *            E.g. <code>@Path("widgets/{id}")</code> would match widgets/foo but not
+     *                Controls whether a trailing template variable is limited
+     *                to a single path segment (<code>true</code>) or not (<code>false</code>).
+     *                E.g. <code>@Path("widgets/{id}")</code> would match widgets/foo but not
      *                       widgets/foo/bar whereas
      *                       <code>@Path(value="widgets/{id}", limit=false)</code> would match both.
      * @see Path#limited()
@@ -90,7 +90,7 @@ public class UriTemplateRegExp {
      *         template, or null, if not.
      */
     public MatchingResult match(String givenPath) {
-        Map<String, String> variables = new HashMap();
+        Map<String, String> variables = new HashMap<String, String>();
         boolean pathSuppl = !givenPath.endsWith("/");
         if (pathSuppl)
             givenPath += '/';
@@ -107,11 +107,11 @@ public class UriTemplateRegExp {
         }
         String finalCapturingGroup = variables.get(Util.getLastElement(template
                 .getVariableNames())); // TODO JSR311: finalCapturingGroup habe
-                                        // ich
+        // ich
         // noch nicht richtig verstanden.
         if (finalCapturingGroup == null)
             finalCapturingGroup = ""; // TODO ob das stimmt, weiﬂ ich auch
-                                        // nicht
+        // nicht
         finalCapturingGroup = finalMatchingGroup;
         return new MatchingResult(variables, finalMatchingGroup,
                 finalCapturingGroup, variables.size());
@@ -119,6 +119,7 @@ public class UriTemplateRegExp {
 
     /**
      * Checks if the URI template is empty or only a slash.
+     * 
      * @return
      */
     public boolean isEmptyOrSlash() {
@@ -152,13 +153,14 @@ public class UriTemplateRegExp {
 
     /**
      * See Footnode to JSR-311-Spec, Section 2.5, Algorithm, Part 1e
+     * 
      * @return Returns the number of literal chars in the path patern
      */
     public int getNumberOfLiteralChars() {
         if (numberOfLiteralChars == null) {
             numberOfLiteralChars = this.template.format(EverNullStringMap)
                     .length(); // TODO a corresponding Formatter is better,
-                                // because the Map does not
+            // because the Map does not
             // keep all Map constraints and it is a little bit faster and less
             // code.
         }

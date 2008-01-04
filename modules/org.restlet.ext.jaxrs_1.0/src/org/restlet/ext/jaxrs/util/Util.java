@@ -311,6 +311,6 @@ public class Util {
             }
             set.add(metadata);
         }
-        return new ArrayList(map.values());
+        return new ArrayList<Collection<? extends Metadata>>(map.values());
     }
 }

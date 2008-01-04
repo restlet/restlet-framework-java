@@ -91,7 +91,7 @@ public abstract class JaxRsTestCase extends TestCase {
     /**
      * @param mediaType
      * @param mediaTypeQual
-     *            default is 1.
+     *                default is 1.
      * @return
      */
     public static Collection<Preference<MediaType>> createPrefColl(
@@ -114,7 +114,7 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     public static Component startServer(Protocol protocol, int port,
             Class<?> rootResourceClass) throws Exception {
-        final Collection<Class<?>> rootResourceClasses = new ArrayList();
+        final Collection<Class<?>> rootResourceClasses = new ArrayList<Class<?>>();
         rootResourceClasses.add(rootResourceClass);
         return startServer(protocol, port, rootResourceClasses);
     }
@@ -128,12 +128,15 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     /**
-     * Starts the server with the given protocol on the given port with the given Collection of root resource classes.
-     * The method {@link #setUp()} will do this on every test start up.
+     * Starts the server with the given protocol on the given port with the
+     * given Collection of root resource classes. The method {@link #setUp()}
+     * will do this on every test start up.
+     * 
      * @param protocol
      * @param port
      * @param rootResourceClasses
-     * @return Returns the started component. Should be stopped with {@link #stopServer(Component)}
+     * @return Returns the started component. Should be stopped with
+     *         {@link #stopServer(Component)}
      * @throws Exception
      */
     public static Component startServer(Protocol protocol, int port,
@@ -147,7 +150,7 @@ public abstract class JaxRsTestCase extends TestCase {
             public Restlet createRoot() {
                 JaxRsRouter router = new JaxRsRouter(getContext());
                 Collection<Class<?>> rrcs = rootResourceClasses;
-                for (Class cl : rrcs) {
+                for (Class<?> cl : rrcs) {
                     router.attach(cl);
                 }
                 return router;
@@ -161,7 +164,9 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     /**
-     * Stops the component. The method {@link #tearDown()} do this after every test.
+     * Stops the component. The method {@link #tearDown()} do this after every
+     * test.
+     * 
      * @param component
      * @throws Exception
      */
@@ -169,11 +174,11 @@ public abstract class JaxRsTestCase extends TestCase {
     Component component) throws Exception {
         component.stop();
     }
-    
+
     /**
      * @see #accessServer(Class, String, Method, Collection)
      */
-    public static Response accessServer(Class klasse, Method httpMethod) {
+    public static Response accessServer(Class<?> klasse, Method httpMethod) {
         return accessServer(klasse, httpMethod, (Collection) null);
     }
 
@@ -183,7 +188,7 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param mediaTypePrefs
      * @return
      */
-    public static Response accessServer(Class klasse, Method httpMethod,
+    public static Response accessServer(Class<?> klasse, Method httpMethod,
             MediaType mediaType) {
         return accessServer(klasse, httpMethod, createPrefColl(mediaType, 1f));
     }
@@ -192,13 +197,14 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param klasse
      * @param httpMethod
      * @param mediaTypePrefs
-     *            Collection with Preference&lt;MediaType&gt; and/or MediaType.
+     *                Collection with Preference&lt;MediaType&gt; and/or
+     *                MediaType.
      * @return
      * @throws IllegalArgumentException
-     *             If an element in the mediaTypes is neither a
-     *             Preference&lt;MediaType&gt; or a MediaType-Objekten.
+     *                 If an element in the mediaTypes is neither a
+     *                 Preference&lt;MediaType&gt; or a MediaType-Objekten.
      */
-    public static Response accessServer(Class klasse, Method httpMethod,
+    public static Response accessServer(Class<?> klasse, Method httpMethod,
             Collection mediaTypes) throws IllegalArgumentException {
         return accessServer(klasse, null, httpMethod, mediaTypes);
     }
@@ -210,7 +216,7 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param mediaTypes
      * @return
      */
-    public static Response accessServer(Class klasse, String subPath,
+    public static Response accessServer(Class<?> klasse, String subPath,
             Method httpMethod, Collection mediaTypes) {
         Reference reference = createReference(klasse, subPath);
         Client client = new Client(PROTOCOL);
@@ -228,14 +234,14 @@ public abstract class JaxRsTestCase extends TestCase {
     private static void addAcceptedMediaTypes(Request request,
             Collection mediaTypes) {
         if (mediaTypes != null && !mediaTypes.isEmpty()) {
-            Collection<Preference<MediaType>> mediaTypePrefs = new ArrayList(
+            Collection<Preference<MediaType>> mediaTypePrefs = new ArrayList<Preference<MediaType>>(
                     mediaTypes.size());
             for (Object mediaType : mediaTypes) {
                 if (mediaType instanceof MediaType) {
                     mediaTypePrefs.add(new Preference<MediaType>(
                             (MediaType) mediaType));
                 } else if (mediaType instanceof Preference) {
-                    Preference preference = (Preference) mediaType;
+                    Preference<MediaType> preference = (Preference) mediaType;
                     if (preference.getMetadata() instanceof MediaType)
                         mediaTypePrefs.add(preference);
                 } else {
@@ -255,10 +261,10 @@ public abstract class JaxRsTestCase extends TestCase {
      * 
      * @param jaxRsClass
      * @param subPath
-     *            darf null sein
+     *                darf null sein
      * @return
      */
-    public static Reference createReference(Class jaxRsClass, String subPath) {
+    public static Reference createReference(Class<?> jaxRsClass, String subPath) {
         Reference reference = new Reference();
         reference.setProtocol(PROTOCOL);
         reference.setAuthority("localhost");

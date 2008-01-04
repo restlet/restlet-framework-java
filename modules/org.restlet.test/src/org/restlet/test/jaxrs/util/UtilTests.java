@@ -31,7 +31,7 @@ import org.restlet.ext.jaxrs.util.Util;
 public class UtilTests extends TestCase {
 
     public void testConvertMetadataList1() {
-        Collection<Preference<MediaType>> preferences = new ArrayList();
+        Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
         List<Collection<MediaType>> sorted = (List) Util
                 .sortMetadataList((Collection) preferences);
         assertEquals(0, sorted.size());
@@ -51,7 +51,7 @@ public class UtilTests extends TestCase {
     }
 
     public void testConvertMetadataList2() {
-        Collection<Preference<MediaType>> preferences = new ArrayList();
+        Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
         preferences.add(new Preference<MediaType>(MediaType.TEXT_HTML, 0.7f));
         List<Collection<MediaType>> sorted = (List) Util
                 .sortMetadataList((Collection) preferences);
@@ -69,7 +69,7 @@ public class UtilTests extends TestCase {
     }
 
     public void testConvertMetadataList3() {
-        Collection<Preference<MediaType>> preferences = new ArrayList();
+        Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
         preferences.add(new Preference<MediaType>(MediaType.TEXT_HTML, 0.5f));
         List<Collection<MediaType>> sorted = (List) Util
                 .sortMetadataList((Collection) preferences);
@@ -87,7 +87,7 @@ public class UtilTests extends TestCase {
     }
 
     public void testConvertMetadataList4() {
-        Collection<Preference<MediaType>> preferences = new ArrayList();
+        Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
         preferences.add(new Preference<MediaType>(MediaType.TEXT_HTML, 0.5f));
         List<Collection<MediaType>> sorted = (List) Util
                 .sortMetadataList((Collection) preferences);

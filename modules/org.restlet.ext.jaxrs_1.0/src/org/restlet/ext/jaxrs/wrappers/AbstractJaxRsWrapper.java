@@ -84,7 +84,7 @@ abstract class AbstractJaxRsWrapper {
      * @return the parameter array
      */
     protected static Object[] getParameterValues(
-            Annotation[][] parameterAnnotationss, Class[] parameterTypes,
+            Annotation[][] parameterAnnotationss, Class<?>[] parameterTypes,
             MatchingResult matchingResult, Request restletRequest) {
         int paramNo = parameterTypes.length;
         if (paramNo == 0)
@@ -124,7 +124,7 @@ abstract class AbstractJaxRsWrapper {
      *                 given request entity should taken as parameter.
      */
     private static Object getParameterValue(Annotation[] paramAnnotations,
-            Class paramClass, MatchingResult matchingResult,
+            Class<?> paramClass, MatchingResult matchingResult,
             Request restletRequest, int indexForExcMessages)
             throws IllegalAnnotationException {
         for (Annotation annotation : paramAnnotations) {
@@ -175,7 +175,7 @@ abstract class AbstractJaxRsWrapper {
      * @see QueryParam
      * @see HeaderParam
      */
-    public static Object getParameterValueFromParam(Class paramClass,
+    public static Object getParameterValueFromParam(Class<?> paramClass,
             String paramValue) {
         if (paramClass.equals(String.class))
             return paramValue;
@@ -217,7 +217,7 @@ abstract class AbstractJaxRsWrapper {
      * @param representation
      * @return
      */
-    public static Object getParameterValueFromRepr(Class paramClass,
+    public static Object getParameterValueFromRepr(Class<?> paramClass,
             Representation representation) {
         try {
             return getParameterValueFromParam(paramClass, representation

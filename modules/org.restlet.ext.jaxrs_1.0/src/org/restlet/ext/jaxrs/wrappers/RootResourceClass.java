@@ -46,7 +46,7 @@ import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
  */
 public class RootResourceClass extends ResourceClass {
 
-    private Constructor constructor;
+    private Constructor<?> constructor;
 
     /**
      * Creates a wrapper for the given JAX-RS root resource class.
@@ -54,7 +54,7 @@ public class RootResourceClass extends ResourceClass {
      * @param jaxRsClass
      *                the root resource class to wrap
      */
-    public RootResourceClass(Class jaxRsClass) {
+    public RootResourceClass(Class<?> jaxRsClass) {
         super(jaxRsClass);
         constructor = findJaxRsConstructor();
     }
@@ -66,8 +66,9 @@ public class RootResourceClass extends ResourceClass {
         if (constructor.getParameterTypes().length == 0)
             args = new Object[0];
         else
-            args = getParameterValues(constructor.getParameterAnnotations(), constructor
-                    .getParameterTypes(), matchingResult, restletRequ);
+            args = getParameterValues(constructor.getParameterAnnotations(),
+                    constructor.getParameterTypes(), matchingResult,
+                    restletRequ);
         return new ResourceObject(constructor.newInstance(args), this);
     }
 
@@ -75,10 +76,10 @@ public class RootResourceClass extends ResourceClass {
      * @return Returns the constructor to use for the given root resource class
      *         (See JSR-311-Spec, section 2.3)
      */
-    private Constructor findJaxRsConstructor() {
-        Constructor constructor = null;
+    private Constructor<?> findJaxRsConstructor() {
+        Constructor<?> constructor = null;
         int constructorParamNo = Integer.MIN_VALUE;
-        for (Constructor constr : getJaxRsClass().getConstructors()) {
+        for (Constructor<?> constr : getJaxRsClass().getConstructors()) {
             int constrParamNo = constr.getParameterTypes().length;
             if (constrParamNo <= constructorParamNo)
                 continue; // ignore this constructor
@@ -102,12 +103,12 @@ public class RootResourceClass extends ResourceClass {
      *                 but the type is invalid (must be UriInfo, Request or
      *                 HttpHeaders).
      */
-    private boolean checkParamAnnotations(Constructor constr) {
+    private boolean checkParamAnnotations(Constructor<?> constr) {
         Annotation[][] paramAnnotationss = constr.getParameterAnnotations();
-        Class[] parameterTypes = constr.getParameterTypes();
+        Class<?>[] parameterTypes = constr.getParameterTypes();
         for (int i = 0; i < paramAnnotationss.length; i++) {
             Annotation[] parameterAnnotations = paramAnnotationss[i];
-            Class parameterType = parameterTypes[i];
+            Class<?> parameterType = parameterTypes[i];
             boolean ok = checkParameterAnnotation(parameterAnnotations,
                     parameterType);
             if (!ok)
@@ -117,10 +118,10 @@ public class RootResourceClass extends ResourceClass {
     }
 
     private boolean checkParameterAnnotation(Annotation[] parameterAnnotations,
-            Class parameterType) {
+            Class<?> parameterType) {
         // This method has the same structure as in the method
         // AbstractJaxRsWrapper#getParameterValue(...)
-        if(parameterAnnotations.length == 0)
+        if (parameterAnnotations.length == 0)
             return false;
         for (Annotation annotation : parameterAnnotations) {
             Class<? extends Annotation> annotationType = annotation
