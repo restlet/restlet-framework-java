@@ -47,7 +47,7 @@ import org.restlet.util.ServerList;
  */
 public class Component extends Restlet {
     /** The modifiable list of client connectors. */
-    private volatile ClientList clients;
+    private final ClientList clients;
 
     /** The default host. */
     private volatile VirtualHost defaultHost;
@@ -56,7 +56,7 @@ public class Component extends Restlet {
     private volatile Helper helper;
 
     /** The modifiable list of virtual hosts. */
-    private volatile List<VirtualHost> hosts;
+    private final List<VirtualHost> hosts;
 
     /**
      * The private internal router that can be addressed via the RIAP client
@@ -68,7 +68,7 @@ public class Component extends Restlet {
     private volatile LogService logService;
 
     /** The modifiable list of server connectors. */
-    private volatile ServerList servers;
+    private final ServerList servers;
 
     /** The status service. */
     private volatile StatusService statusService;
@@ -78,6 +78,9 @@ public class Component extends Restlet {
      */
     public Component() {
         super(null);
+        this.hosts = new CopyOnWriteArrayList<VirtualHost>();
+        this.clients = new ClientList(null);
+        this.servers = new ServerList(null, this);
 
         if (Engine.getInstance() != null) {
             this.helper = Engine.getInstance().createHelper(this);
@@ -85,15 +88,14 @@ public class Component extends Restlet {
             if (this.helper != null) {
                 setContext(this.helper.createContext(getClass()
                         .getCanonicalName()));
-                this.hosts = new CopyOnWriteArrayList<VirtualHost>();
                 this.defaultHost = new VirtualHost(getContext());
                 this.internalRouter = new Router(getContext());
                 this.logService = new LogService(true);
                 this.logService.setLoggerName(getClass().getCanonicalName()
                         + " (" + hashCode() + ")");
                 this.statusService = new StatusService(true);
-                this.clients = new ClientList(getContext());
-                this.servers = new ServerList(getContext(), this);
+                this.clients.setContext(getContext());
+                this.servers.setContext(getContext());
             }
         }
     }
