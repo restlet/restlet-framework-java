@@ -94,6 +94,7 @@ public abstract class JaxRsTestCase extends TestCase {
      *                default is 1.
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static Collection<Preference<MediaType>> createPrefColl(
             MediaType mediaType, float mediaTypeQual) {
         if (mediaType == null)
@@ -178,6 +179,7 @@ public abstract class JaxRsTestCase extends TestCase {
     /**
      * @see #accessServer(Class, String, Method, Collection)
      */
+    @SuppressWarnings("unchecked")
     public static Response accessServer(Class<?> klasse, Method httpMethod) {
         return accessServer(klasse, httpMethod, (Collection) null);
     }
@@ -204,6 +206,7 @@ public abstract class JaxRsTestCase extends TestCase {
      *                 If an element in the mediaTypes is neither a
      *                 Preference&lt;MediaType&gt; or a MediaType-Objekten.
      */
+    @SuppressWarnings("unchecked")
     public static Response accessServer(Class<?> klasse, Method httpMethod,
             Collection mediaTypes) throws IllegalArgumentException {
         return accessServer(klasse, null, httpMethod, mediaTypes);
@@ -216,6 +219,7 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param mediaTypes
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static Response accessServer(Class<?> klasse, String subPath,
             Method httpMethod, Collection mediaTypes) {
         Reference reference = createReference(klasse, subPath);
@@ -231,6 +235,7 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param request
      * @param mediaTypes
      */
+    @SuppressWarnings("unchecked")
     private static void addAcceptedMediaTypes(Request request,
             Collection mediaTypes) {
         if (mediaTypes != null && !mediaTypes.isEmpty()) {

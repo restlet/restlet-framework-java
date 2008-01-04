@@ -31,7 +31,8 @@ import org.restlet.test.jaxrs.services.SimpleTrain;
 
 public class SimpleHouseTest extends JaxRsTestCase
 {
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	protected Collection<Class<?>> createRootResourceColl()
 	{
 		return (Collection)Collections.singleton(SimpleTrain.class);

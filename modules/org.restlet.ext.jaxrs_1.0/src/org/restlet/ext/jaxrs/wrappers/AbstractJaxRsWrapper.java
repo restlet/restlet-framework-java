@@ -64,9 +64,13 @@ abstract class AbstractJaxRsWrapper {
         return this.uriTemplateRegExp;
     }
 
-    private static final Collection<Class<? extends Annotation>> VALID_ANNOTATIONS = Arrays
-            .asList(HttpContext.class, HeaderParam.class, MatrixParam.class,
-                    QueryParam.class, PathParam.class);
+    private static final Collection<Class<? extends Annotation>> VALID_ANNOTATIONS = createValidAnnotations();
+
+    @SuppressWarnings("unchecked")
+    private static Collection<Class<? extends Annotation>> createValidAnnotations() {
+        return Arrays.asList(HttpContext.class, HeaderParam.class,
+                MatrixParam.class, QueryParam.class, PathParam.class);
+    }
 
     /**
      * Returns the parameter value array for a JAX-RS method or constructor.
@@ -180,7 +184,8 @@ abstract class AbstractJaxRsWrapper {
         if (paramClass.equals(String.class))
             return paramValue;
         try {
-            Constructor constructor = paramClass.getConstructor(String.class);
+            Constructor<?> constructor = paramClass
+                    .getConstructor(String.class);
             return constructor.newInstance(paramValue);
         } catch (Exception e) {
             // try valueOf(String)

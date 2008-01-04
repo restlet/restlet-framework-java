@@ -38,6 +38,7 @@ public class SimpleTrainTest extends JaxRsTestCase {
 
     private static final boolean ONLY_TEXT_ALL = true;
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Collection<Class<?>> createRootResourceColl() {
         return (Collection) Collections.singleton(SimpleTrain.class);

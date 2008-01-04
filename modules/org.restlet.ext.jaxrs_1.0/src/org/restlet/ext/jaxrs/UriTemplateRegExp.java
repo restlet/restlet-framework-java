@@ -89,6 +89,7 @@ public class UriTemplateRegExp {
      * @return Returns an MatchingResult, if the givenPath matches to this
      *         template, or null, if not.
      */
+    @SuppressWarnings("unchecked")
     public MatchingResult match(String givenPath) {
         Map<String, String> variables = new HashMap<String, String>();
         boolean pathSuppl = !givenPath.endsWith("/");

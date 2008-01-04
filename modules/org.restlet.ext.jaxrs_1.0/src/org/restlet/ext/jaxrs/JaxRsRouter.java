@@ -251,6 +251,7 @@ public class JaxRsRouter extends Restlet {
      * @throws CouldNotFindMethodException
      * @throws MethodInvokeException
      */
+    @SuppressWarnings("unchecked")
     private ResObjAndMeth matchingRequestToResourceMethod(
             Request restletRequest, Response restletResponse)
             throws CouldNotFindMethodException, MethodInvokeException {
@@ -326,6 +327,7 @@ public class JaxRsRouter extends Restlet {
      * @return Resource Object
      * @throws MethodInvokeException
      */
+    @SuppressWarnings("unchecked")
     private ResObjAndPath obtainObjectThatHandleRequest(
             ResClAndTemplate resClAndTemplate, Request restletRequest,
             Response restletResponse) throws CouldNotFindMethodException,

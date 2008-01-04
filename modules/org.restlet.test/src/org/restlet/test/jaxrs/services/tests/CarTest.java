@@ -29,66 +29,75 @@ import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.car.CarListResource;
 import org.restlet.test.jaxrs.services.car.CarResource;
 
+public class CarTest extends JaxRsTestCase {
 
-public class CarTest extends JaxRsTestCase
-{
-	@Override
-	protected Collection<Class<?>> createRootResourceColl()
-	{
-		return (Collection)Collections.singleton(CarListResource.class);
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Collection<Class<?>> createRootResourceColl() {
+        return (Collection) Collections.singleton(CarListResource.class);
+    }
 
-	private static final boolean ONLY_ONE_CAR = true;
-	private static final boolean ONLY_OFFERS = false;
-	
-	public static void testGetPlainText() throws Exception
-	{
-		if(ONLY_ONE_CAR || ONLY_OFFERS) return;
-		Response response = accessServer(CarListResource.class, Method.GET, MediaType.TEXT_PLAIN);
-		assertTrue(response.getStatus().isSuccess());
-		Representation representation = response.getEntity();
-		assertEquals(CarListResource.DUMMY_CAR_LIST, representation.getText());
-		assertEqualMediaType(MediaType.TEXT_PLAIN, representation.getMediaType());
-	}
+    private static final boolean ONLY_ONE_CAR = true;
 
-	public static void testGetHtmlText() throws Exception
-	{
-		if(ONLY_ONE_CAR || ONLY_OFFERS) return;
-		Response response = accessServer(CarListResource.class, Method.GET, MediaType.TEXT_HTML);
-		assertTrue(response.getStatus().isClientError());
-		assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
-	}
+    private static final boolean ONLY_OFFERS = false;
 
-	public static void testGetOffers() throws Exception
-	{
-		if(ONLY_ONE_CAR) return;
-		Response response = accessServer(CarListResource.class, "offers", Method.GET, null);
-		Representation representation = response.getEntity();
-		if(response.getStatus().isError())
-			System.out.println(representation.getText());
-		assertEquals(Status.SUCCESS_OK, response.getStatus());
-		assertEquals(CarListResource.OFFERS, representation.getText());
-		assertEqualMediaType(MediaType.APPLICATION_OCTET_STREAM, representation.getMediaType()); // vorläufig
-	}
+    public static void testGetPlainText() throws Exception {
+        if (ONLY_ONE_CAR || ONLY_OFFERS)
+            return;
+        Response response = accessServer(CarListResource.class, Method.GET,
+                MediaType.TEXT_PLAIN);
+        assertTrue(response.getStatus().isSuccess());
+        Representation representation = response.getEntity();
+        assertEquals(CarListResource.DUMMY_CAR_LIST, representation.getText());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, representation
+                .getMediaType());
+    }
 
-	public static void testGetCar() throws Exception
-	{
-		if(ONLY_OFFERS) return;
-		String carNumber = "5";
-		Response response = accessServer(CarListResource.class, carNumber, Method.GET, null);
-		Representation representation = response.getEntity();
-		if(response.getStatus().isError())
-			System.out.println(representation.getText());
-		assertEquals(Status.SUCCESS_OK, response.getStatus());
-		assertEquals(CarResource.createTextRepr(carNumber), representation.getText());
-		assertEqualMediaType(MediaType.TEXT_PLAIN, representation.getMediaType()); // vorläufig
-	}
-	
-	public static void testDelete() throws Exception
-	{
-		if(ONLY_ONE_CAR || ONLY_OFFERS) return;
-		Response response = accessServer(CarListResource.class, Method.DELETE);
-		assertTrue(response.getStatus().isClientError());
-		assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, response.getStatus());
-	}
+    public static void testGetHtmlText() throws Exception {
+        if (ONLY_ONE_CAR || ONLY_OFFERS)
+            return;
+        Response response = accessServer(CarListResource.class, Method.GET,
+                MediaType.TEXT_HTML);
+        assertTrue(response.getStatus().isClientError());
+        assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
+    }
+
+    public static void testGetOffers() throws Exception {
+        if (ONLY_ONE_CAR)
+            return;
+        Response response = accessServer(CarListResource.class, "offers",
+                Method.GET, null);
+        Representation representation = response.getEntity();
+        if (response.getStatus().isError())
+            System.out.println(representation.getText());
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(CarListResource.OFFERS, representation.getText());
+        assertEqualMediaType(MediaType.APPLICATION_OCTET_STREAM, representation
+                .getMediaType()); // vorläufig
+    }
+
+    public static void testGetCar() throws Exception {
+        if (ONLY_OFFERS)
+            return;
+        String carNumber = "5";
+        Response response = accessServer(CarListResource.class, carNumber,
+                Method.GET, null);
+        Representation representation = response.getEntity();
+        if (response.getStatus().isError())
+            System.out.println(representation.getText());
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(CarResource.createTextRepr(carNumber), representation
+                .getText());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, representation
+                .getMediaType()); // vorläufig
+    }
+
+    public static void testDelete() throws Exception {
+        if (ONLY_ONE_CAR || ONLY_OFFERS)
+            return;
+        Response response = accessServer(CarListResource.class, Method.DELETE);
+        assertTrue(response.getStatus().isClientError());
+        assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, response
+                .getStatus());
+    }
 }

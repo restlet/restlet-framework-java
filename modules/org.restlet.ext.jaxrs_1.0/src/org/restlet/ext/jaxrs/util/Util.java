@@ -292,6 +292,7 @@ public class Util {
      * 
      * @return Returns a List of collections of Metadata
      */
+    @SuppressWarnings("unchecked")
     public static List<Collection<? extends Metadata>> sortMetadataList(
             Collection<Preference<? extends Metadata>> preferences) {
         SortedMap<Float, Collection<? extends Metadata>> map = new TreeMap<Float, Collection<? extends Metadata>>(
