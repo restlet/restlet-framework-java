@@ -118,7 +118,8 @@ public class Guard extends Filter {
 
                     // Check the credentials
                     if ((identifier != null) && (secret != null)) {
-                        result = checkSecret(identifier, secret) ? 1 : -1;
+                        result = checkSecret(request, identifier, secret) ? 1
+                                : -1;
                     }
                 } else {
                     // The challenge schemes are incompatible, we need to
@@ -170,6 +171,24 @@ public class Guard extends Filter {
      *                the identifier's secret
      * @return true if the secret is valid for the given identifier
      */
+    public boolean checkSecret(Request request, String identifier, char[] secret) {
+        return checkSecret(identifier, secret);
+    }
+
+    /**
+     * Indicates if the secret is valid for the given identifier. By default,
+     * this returns true given the correct login/password couple as verified via
+     * the findSecret() method.
+     * 
+     * @param identifier
+     *                the identifier
+     * @param secret
+     *                the identifier's secret
+     * @return true if the secret is valid for the given identifier
+     * @deprecated Use the {@link #checkSecret(Request, String, char[])} method
+     *             instead.
+     */
+    @Deprecated
     protected boolean checkSecret(String identifier, char[] secret) {
         boolean result = false;
         char[] secret2 = findSecret(identifier);

@@ -21,6 +21,7 @@ Changes log
  - Added a new parameter to ServerServlet allowing specification of a custom component to instantiate.
  - Synchronized some list setters on Component and Connector with explanation in Javadocs as suggested
    by Tim Peirls.
+ - Guard.checkSecret() method now has a Request parameter. Suggested by Alex Milowski.
 
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
