@@ -180,7 +180,7 @@ public class ResourceMethod extends AbstractMethodWrapper {
     static org.restlet.data.Method getHttpMethod(Method javaMethod) {
         for (Annotation annotation : javaMethod.getAnnotations()) {
             Class<? extends Annotation> annoType = annotation.annotationType();
-            HttpMethod httpMethodAnnot = (HttpMethod) annoType
+            HttpMethod httpMethodAnnot = annoType
                     .getAnnotation(HttpMethod.class);
             if (httpMethodAnnot != null) { // Annotation der Annotation der
                 // Methode ist HTTP-Methode

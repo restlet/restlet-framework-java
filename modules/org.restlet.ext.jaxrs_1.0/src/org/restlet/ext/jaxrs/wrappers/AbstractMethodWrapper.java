@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.MatchingResult;
@@ -42,14 +43,15 @@ abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
 	 * 
 	 * @param resourceObject
 	 * @param matchingResult the matching result containing the variabel alues of the path
+	 * @param allTemplParamsEnc Contains all Parameters, that are read from the called URI.
 	 * @param restletRequest
 	 * @return
 	 * @throws Exception of the native invoke of the Java method
 	 */
-	public Object invoke(ResourceObject resourceObject, MatchingResult matchingResult, Request restletRequest) throws Exception {
+	public Object invoke(ResourceObject resourceObject, MatchingResult matchingResult, MultivaluedMap<String, String> allTemplParamsEnc, Request restletRequest) throws Exception {
 		Annotation[][] parameterAnnotationss = javaMethod.getParameterAnnotations();
 		Class<?>[] parameterTypes = javaMethod.getParameterTypes();
-		Object[] args = getParameterValues(parameterAnnotationss, parameterTypes, matchingResult, restletRequest);
+		Object[] args = getParameterValues(parameterAnnotationss, parameterTypes, matchingResult, restletRequest, allTemplParamsEnc);
 		return this.javaMethod.invoke(resourceObject.getResourceObject(), args);
 	}
 

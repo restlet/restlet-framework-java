@@ -27,6 +27,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.HttpContext;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Request;
@@ -59,16 +60,22 @@ public class RootResourceClass extends ResourceClass {
         constructor = findJaxRsConstructor();
     }
 
-    @Override
+    /**
+     * 
+     * @param matchingResult
+     * @param allTemplParamsEnc
+     * @param restletRequ
+     * @return
+     * @throws Exception
+     */
     public ResourceObject createInstance(MatchingResult matchingResult,
-            Request restletRequ) throws Exception {
+            MultivaluedMap<String, String> allTemplParamsEnc, Request restletRequ) throws Exception {
         Object[] args;
         if (constructor.getParameterTypes().length == 0)
             args = new Object[0];
         else
-            args = getParameterValues(constructor.getParameterAnnotations(),
-                    constructor.getParameterTypes(), matchingResult,
-                    restletRequ);
+            args = getParameterValues(constructor.getParameterAnnotations(), constructor
+                    .getParameterTypes(), matchingResult, restletRequ, allTemplParamsEnc);
         return new ResourceObject(constructor.newInstance(args), this);
     }
 

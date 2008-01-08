@@ -48,7 +48,7 @@ public class UriTemplateRegExp {
     private boolean isEmptyOrSlash;
 
     /** Contains the number of literal chars in this Regular Expression */
-    private Integer numberOfLiteralChars;
+    private Integer noLitChars;
 
     /**
      * 
@@ -107,9 +107,9 @@ public class UriTemplateRegExp {
                 finalMatchingGroup = "/" + finalMatchingGroup;
         }
         String finalCapturingGroup = variables.get(Util.getLastElement(template
-                .getVariableNames())); // TODO JSR311: finalCapturingGroup habe
-        // ich
-        // noch nicht richtig verstanden.
+                .getVariableNames()));
+        // TODO JSR311: finalCapturingGroup habe ich noch nicht richtig
+        // verstanden.
         if (finalCapturingGroup == null)
             finalCapturingGroup = ""; // TODO ob das stimmt, weiﬂ ich auch
         // nicht
@@ -158,14 +158,13 @@ public class UriTemplateRegExp {
      * @return Returns the number of literal chars in the path patern
      */
     public int getNumberOfLiteralChars() {
-        if (numberOfLiteralChars == null) {
-            numberOfLiteralChars = this.template.format(EverNullStringMap)
-                    .length(); // TODO a corresponding Formatter is better,
-            // because the Map does not
-            // keep all Map constraints and it is a little bit faster and less
-            // code.
+        if (noLitChars == null) {
+            noLitChars = this.template.format(EverNullStringMap).length();
+            // TODO Jerome: a corresponding Formatter is better, because the Map
+            // does not keep all Map constraints and it is a little bit faster
+            // and less code.
         }
-        return numberOfLiteralChars;
+        return noLitChars;
     }
 
     /**
@@ -175,6 +174,23 @@ public class UriTemplateRegExp {
         return this.template.getVariableNames().size();
     }
 
+    @Override
+    public boolean equals(Object anotherObject)
+    {
+        // TODO talk with Jerome about Template.equals(Object)
+        if(this == anotherObject)
+            return true;
+        if(!(anotherObject instanceof UriTemplateRegExp))
+            return false;
+        UriTemplateRegExp otherRegExp = (UriTemplateRegExp)anotherObject;
+        return this.template.equals(otherRegExp.template);
+    }
+    
+    public int hashCode()
+    {
+        return this.template.hashCode();
+    }
+    
     private static EverNullStringMap EverNullStringMap = new EverNullStringMap();
 
     static class EverNullStringMap implements Map<String, Object> {

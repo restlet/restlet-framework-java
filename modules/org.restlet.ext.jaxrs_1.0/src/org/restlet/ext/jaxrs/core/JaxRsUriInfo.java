@@ -20,125 +20,186 @@ package org.restlet.ext.jaxrs.core;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.restlet.data.Form;
+import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Util;
 
 /**
- * Implementation of the JAX-RS interface {@link UriInfo}
+ * Implementation of the JAX-RS interface {@link UriInfo}.<br>
+ * LATER This class may be refactored to a parent class which can be used
+ * without the JAX-RS context
+ * 
  * @author Stephan Koops
- *
+ * 
  */
 public class JaxRsUriInfo implements UriInfo {
-    private Reference reference;
+
+    protected Reference reference;
+
+    private FormMulvaltivaluedMap queryParametersDecoded;
+
+    private FormMulvaltivaluedMap queryParametersEncoded;
+
+    protected MultivaluedMap<String, String> templateParametersDecoded;
+
+    /** is null, if no templateParameters given on creation */
+    protected MultivaluedMap<String, String> templateParametersEncoded;
 
     /**
+     * Creates a new UriInfo.
      * 
-     * @param reference The Restlet reference that will be wraped. 
+     * @param reference
+     *                The Restlet reference that will be wrapped. Must not be
+     *                null.
+     * @param templateParametersEncoded
+     *                The encoded parameters of the path. If null, than the
+     *                templateParameters are not available.
+     */
+    public JaxRsUriInfo(Reference reference,
+            MultivaluedMap<String, String> templateParametersEncoded) {
+        this(reference);
+        this.templateParametersEncoded = templateParametersEncoded;
+    }
+
+    /**
+     * Creates a new UriInfo. When using this constructor, the
+     * templateParameters are not available.
+     * 
+     * @param reference
+     *                The Restlet reference that will be wrapped. Must not be
+     *                null.
+     * @see #JaxRsUriInfo(Reference, MultivaluedMap)
      */
     public JaxRsUriInfo(Reference reference) {
+        if (reference == null)
+            throw new IllegalArgumentException("The reference must not be null");
+        if (reference.getBaseRef() == null)
+            throw new IllegalArgumentException("The reference must contains a baseRef");
         this.reference = reference;
     }
 
     /**
-     * @see UriInfo#getAbsolutePath()
-     */
-    public URI getAbsolutePath() {
-        try {
-            return new URI(reference.getBaseRef().toString(false, false));
-        } catch (URISyntaxException e) {
-            throw Util.handleException(e);
-        }
-    }
-
-    // TODO testen: siehe Javadoc UriInfo#getAbsolutePath()
-
-    /**
-     * @see UriInfo#getAbsolutePathBuilder()
-     */
-    public UriBuilder getAbsolutePathBuilder() {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
-    }
-
-    /**
-     * @see UriInfo#getBaseUri()
-     */
-    public URI getBaseUri() {
-        try {
-            return new URI(reference.getBaseRef().toString(false, false));
-        } catch (URISyntaxException e) {
-            throw Util.handleException(e);
-        }
-    }
-
-    /**
-     * @see UriInfo#getAbsolutePathBuilder()
-     */
-    public UriBuilder getBaseUriBuilder() {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
-    }
-
-    /**
+     * Get the path of the current request relative to the base URI as a string.
+     * All sequences of escaped octets are decoded, equivalent to
+     * <code>getPath(true)</code>.
+     * 
+     * @return the relative URI path.
      * @see UriInfo#getPath()
      */
     public String getPath() {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+        return getPath(true);
     }
 
     /**
+     * Get the path of the current request relative to the base URI as a string.
+     * 
+     * @param decode
+     *                controls whether sequences of escaped octets are decoded
+     *                (true) or not (false).
+     * @return the relative URI path.
      * @see UriInfo#getPath(boolean)
      */
     public String getPath(boolean decode) {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+        String path = this.reference.getRelativeRef().toString(true, true);
+        if (!decode)
+            return path;
+        return Reference.decode(path);
     }
 
     /**
+     * Get the path of the current request relative to the base URI as a list of
+     * {@link PathSegment}. This method is useful when the path needs to be
+     * parsed, particularly when matrix parameters may be present in the path.
+     * All sequences of escaped octets are decoded, equivalent to
+     * <code>getPathSegments(true)</code>.
+     * 
+     * @return the list of {@link PathSegment}.
+     * @see PathSegment
      * @see UriInfo#getPathSegments()
      */
     public List<PathSegment> getPathSegments() {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+        return getPathSegments(true);
     }
 
+    private List<PathSegment> pathSegmentsEncoded = null;
+
+    private List<PathSegment> pathSegmentsDecoded = null;
+
     /**
+     * Get the path of the current request relative to the base URI as a list of
+     * {@link PathSegment}. This method is useful when the path needs to be
+     * parsed, particularly when matrix parameters may be present in the path.
+     * 
+     * @param decode
+     *                controls whether sequences of escaped octets are decoded
+     *                (true) or not (false).
+     * @return the list of {@link PathSegment}s.
+     * @see PathSegment
      * @see UriInfo#getPathSegments(boolean)
      */
     public List<PathSegment> getPathSegments(boolean decode) {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+        if (decode) {
+            if (this.pathSegmentsDecoded == null)
+                this.pathSegmentsDecoded = createPathSegments(decode);
+            return pathSegmentsDecoded;
+        } else {
+            if (this.pathSegmentsEncoded == null)
+                this.pathSegmentsEncoded = createPathSegments(decode);
+            return pathSegmentsEncoded;
+        }
     }
 
-    /**
-     * @see UriInfo#getQueryParameters()
-     */
-    public MultivaluedMap<String, String> getQueryParameters() {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
-    }
-
-    /**
-     * @see UriInfo#getQueryParameters(boolean)
-     */
-    public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+    private List<PathSegment> createPathSegments(boolean decode) {
+        List<String> segments = this.reference.getRelativeRef().getSegments();
+        List<PathSegment> pathSegments = new ArrayList<PathSegment>(segments
+                .size());
+        for (String segment : segments) {
+            pathSegments.add(new JaxRsPathSegment(segment, decode));
+        }
+        return pathSegments;
     }
 
     /**
      * @see UriInfo#getRequestUri()
      */
     public URI getRequestUri() {
+        try {
+            return new URI(reference.toString(true, true));
+        } catch (URISyntaxException e) {
+            throw Util.handleException(e);
+        }
+    }
+
+    /**
+     * Get the absolute request URI in the form of a UriBuilder.
+     * 
+     * @return a UriBuilder initialized with the absolute request URI.
+     * @see UriInfo#getRequestUriBuilder()
+     */
+    public UriBuilder getRequestUriBuilder() {
+        return UriBuilder.fromUri(getRequestUri());
+    }
+
+    /**
+     * Get the absolute path of the request. This includes everything preceding
+     * the path (host, port etc) but excludes query parameters and fragment.
+     * This is a shortcut for
+     * <code>uriInfo.getBase().resolve(uriInfo.getPath()).</code>
+     * 
+     * @return the absolute path of the request
+     * @see UriInfo#getAbsolutePath()
+     */
+    public URI getAbsolutePath() {
         try {
             return new URI(reference.toString(false, false));
         } catch (URISyntaxException e) {
@@ -147,26 +208,143 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
-     * @see UriInfo#getRequestUriBuilder()
+     * Get the absolute path of the request in the form of a UriBuilder. This
+     * includes everything preceding the path (host, port etc) but excludes
+     * query parameters and fragment.
+     * 
+     * @return a UriBuilder initialized with the absolute path of the request.
+     * @see UriInfo#getAbsolutePathBuilder()
      */
-    public UriBuilder getRequestUriBuilder() {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+    public UriBuilder getAbsolutePathBuilder() {
+        return UriBuilder.fromPath(reference.toString(false, false));
     }
 
     /**
+     * Get the base URI of the application. URIs of resource beans are all
+     * relative to this base URI.
+     * 
+     * @return the base URI of the application
+     * @see UriInfo#getBaseUri()
+     */
+    public URI getBaseUri() {
+        try {
+            return new URI(getBaseUriStr());
+        } catch (URISyntaxException e) {
+            throw Util.handleException(e);
+        }
+    }
+
+    private String baseUri;
+
+    private String getBaseUriStr() {
+        if (this.baseUri == null)
+        {
+            Reference baseRef = reference.getBaseRef();
+            if(baseRef != null)
+                this.baseUri = baseRef.toString(false, false);
+        }
+        return baseUri;
+    }
+
+    /**
+     * Get the absolute path of the request in the form of a UriBuilder. This
+     * includes everything preceding the path (host, port etc) but excludes
+     * query parameters and fragment.
+     * 
+     * @return a UriBuilder initialized with the absolute path of the request.
+     * @see UriInfo#getAbsolutePathBuilder()
+     */
+    public UriBuilder getBaseUriBuilder() {
+        return UriBuilder.fromPath(getBaseUriStr());
+    }
+
+    /**
+     * Get the URI query parameters of the current request. All sequences of
+     * escaped octets are decoded, equivalent to
+     * <code>getQueryParameters(true)</code>.
+     * 
+     * @return a map of query parameter names and values.
+     * @see UriInfo#getQueryParameters()
+     */
+    public MultivaluedMap<String, String> getQueryParameters() {
+        if (queryParametersDecoded == null)
+            queryParametersDecoded = new FormMulvaltivaluedMap(reference
+                    .getQueryAsForm());
+        return queryParametersDecoded;
+    }
+
+    /**
+     * @see UriInfo#getQueryParameters(boolean)
+     */
+    public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
+        if (decode)
+            return getQueryParameters();
+        if (queryParametersEncoded == null) {
+            Form queryForm = reference.getQueryAsForm();
+            for (Parameter param : queryForm) {
+                param.setName(Reference.encode(param.getName()));
+                param.setValue(Reference.encode(param.getValue()));
+            }
+            queryParametersEncoded = new FormMulvaltivaluedMap(queryForm);
+        }
+        return queryParametersEncoded;
+    }
+
+    /**
+     * Get the values of any embedded URI template parameters. All sequences of
+     * escaped octets are decoded, equivalent to
+     * <code>getTemplateParameters(true)</code>.
+     * 
+     * @return a map of parameter names and values.
+     * @see javax.ws.rs.Path
      * @see UriInfo#getTemplateParameters()
      */
     public MultivaluedMap<String, String> getTemplateParameters() {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+        if (this.templateParametersDecoded == null) {
+            if(this.templateParametersEncoded == null)
+                return null;
+            MultivaluedMap<String, String> templParamsDec = new MultivaluedMapImpl<String, String>();
+            for (Map.Entry<String, List<String>> entryEnc : this.templateParametersEncoded
+                    .entrySet()) {
+                String keyDec = Reference.decode(entryEnc.getKey());
+                List<String> valuesEnc = entryEnc.getValue();
+                List<String> valuesDec = new ArrayList<String>(valuesEnc.size());
+                for (String valueEnc : valuesEnc)
+                    valuesDec.add(Reference.decode(valueEnc));
+                templParamsDec.put(keyDec, valuesDec);
+            }
+            this.templateParametersDecoded = templParamsDec;
+        }
+        return this.templateParametersDecoded;
     }
 
     /**
      * @see UriInfo#getTemplateParameters(boolean)
      */
     public MultivaluedMap<String, String> getTemplateParameters(boolean decode) {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+        if (decode)
+            return getTemplateParameters();
+        else
+            return this.templateParametersEncoded;
+    }
+
+    @Override
+    public boolean equals(Object anotherObject) {
+        if (this == anotherObject)
+            return true;
+        if (!(anotherObject instanceof UriInfo))
+            return false;
+        UriInfo other = (UriInfo) anotherObject;
+        return this.getBaseUri().equals(other.getBaseUri())
+                && this.getPathSegments().equals(other.getPathSegments())
+                && Util.equals(this.getTemplateParameters(),
+                        other.getTemplateParameters());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getBaseUriStr().hashCode()
+                ^ this.getPathSegments().hashCode()
+                ^ this.getTemplateParameters().hashCode();
     }
 }

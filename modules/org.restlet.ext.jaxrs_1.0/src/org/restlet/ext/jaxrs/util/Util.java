@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Form;
@@ -41,6 +43,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.util.Engine;
+import org.restlet.util.Series;
 
 /**
  * This class contains utility methods.
@@ -75,11 +78,35 @@ public class Util {
      * @param array
      * @return Returns true, if the given array ist null or has zero elements,
      *         otherwise false.
+     * @see #isEmpty(List)
      */
     public static boolean isEmpty(Object[] array) {
         if (array == null || array.length == 0)
             return true;
         return false;
+    }
+
+    /**
+     * Checks, if the list is empty.
+     * 
+     * @param list
+     * @return true, if the list is empty or null, or false, if the list
+     *         contains elements.
+     * @see #isEmpty(Object[])
+     */
+    public static boolean isEmpty(List<?> list) {
+        return (list == null || list.isEmpty());
+    }
+
+    /**
+     * Checks, if the list contains elements.
+     * 
+     * @param list
+     * @return true, if the list contains elements, or false, if the list is
+     *         empty or null.
+     */
+    public static boolean isNotEmpty(List<?> list) {
+        return (list != null && !list.isEmpty());
     }
 
     /**
@@ -249,7 +276,7 @@ public class Util {
      * @param object2
      * @return
      */
-    public static boolean equals(String object1, Object object2) {
+    public static boolean equals(Object object1, Object object2) {
         if (object1 == null)
             return object2 == null;
         return object1.equals(object2);
@@ -292,26 +319,69 @@ public class Util {
      * 
      * @return Returns a List of collections of Metadata
      */
-    @SuppressWarnings("unchecked")
     public static List<Collection<? extends Metadata>> sortMetadataList(
-            Collection<Preference<? extends Metadata>> preferences) {
-        SortedMap<Float, Collection<? extends Metadata>> map = new TreeMap<Float, Collection<? extends Metadata>>(
+            Collection<Preference<Metadata>> preferences) {
+        SortedMap<Float, Collection<Metadata>> map = new TreeMap<Float, Collection<Metadata>>(
                 Collections.reverseOrder());
-        for (Preference<? extends Metadata> preference : preferences) {
+        for (Preference<Metadata> preference : preferences) {
             Float quality = preference.getQuality();
-            Collection set = map.get(quality); // LATER why Collection<?
-            // extends Metadata> doesn't
-            // work?
-            if (set == null) {
-                set = new ArrayList<Metadata>(2);
-                map.put(quality, set);
+            Collection<Metadata> metadatas = map.get(quality);
+            if (metadatas == null) {
+                metadatas = new ArrayList<Metadata>(2);
+                map.put(quality, metadatas);
             }
-            Metadata metadata = preference.getMetadata();
-            if (metadata == null) {
-                "".toString();
-            }
-            set.add(metadata);
+            metadatas.add(preference.getMetadata());
         }
         return new ArrayList<Collection<? extends Metadata>>(map.values());
+    }
+
+    /**
+     * Convert a Restlet MediaType to a JAX-RS MediaType.
+     * @param restletMediaType
+     * @return the converted MediaType
+     */
+    public static MediaType convertMediaType(
+            org.restlet.data.MediaType restletMediaType) {
+        Map<String, String> parameters = convertSeries(restletMediaType
+                .getParameters());
+        return new MediaType(restletMediaType.getMainType(), restletMediaType
+                .getSubType(), parameters);
+    }
+
+    /**
+     * @param parameters
+     * @return
+     */
+    public static Map<String, String> convertSeries(Series<Parameter> parameters) {
+        Map<String, String> map = new HashMap<String, String>();
+        for (Parameter parameter : parameters) {
+            map.put(parameter.getName(), parameter.getValue());
+        }
+        return map;
+    }
+
+    /**
+     * Convert a JAX-RS MediaType to a Restlet MediaType.
+     * @param jaxRsMediaType
+     * @return the converted MediaType
+     */
+    public static org.restlet.data.MediaType convertMediaType(
+            MediaType jaxRsMediaType) {
+        Series<Parameter> parameters = convertToSeries(jaxRsMediaType
+                .getParameters());
+        String name = jaxRsMediaType.getType() + "/"
+                + jaxRsMediaType.getSubtype();
+        return new org.restlet.data.MediaType(name, parameters);
+    }
+
+    /**
+     * @param parameters
+     * @return
+     */
+    public static Form convertToSeries(Map<String, String> parameters) {
+        Form form = new Form();
+        for (Map.Entry<String, String> parameter : parameters.entrySet())
+            form.add(parameter.getKey(), parameter.getValue());
+        return form;
     }
 }

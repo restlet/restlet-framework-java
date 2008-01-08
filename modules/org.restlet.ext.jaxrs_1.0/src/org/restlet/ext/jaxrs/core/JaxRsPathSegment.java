@@ -21,21 +21,112 @@ package org.restlet.ext.jaxrs.core;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
+import org.restlet.data.Reference;
 
 /**
- * The mplementation of the JAX-RS interface {@link PathSegment}
+ * The implementation of the JAX-RS interface {@link PathSegment}
+ * 
  * @author Stephan Koops
- *
+ * 
  */
 public class JaxRsPathSegment implements PathSegment {
-    public MultivaluedMap<String, String> getMatrixParameters() {
-        throw new NotYetImplementedException(
-                "Die Matrix-Auswertung soll später in die Referenz");
+    // TODO JSR311: in javax.ws.rs.core.PathSegment steht, alles ist dekodiert,
+    // es gibt in UriInfo jedoch getPathSegments(boolean decode)
+    /** encoded or decoded, depends on {@link #decode} */
+    private String path;
+
+    /** encoded */
+    private String matrParamEncoded;
+
+    private boolean decode;
+
+    /** encoded or decoded, depends on {@link #decode} */
+    private MultivaluedMap<String, String> matrixParameters;
+
+    /**
+     * @param segmentEncoded
+     *                Segment with matrix parameter.
+     * @param decode
+     *                true, if the path and the marix parameters should be
+     *                decoded.
+     */
+    public JaxRsPathSegment(String segmentEncoded, boolean decode) {
+        this.decode = decode;
+        int indexOfSemic = segmentEncoded.indexOf(';');
+        String path;
+        if(indexOfSemic > 0)
+        {
+            path = segmentEncoded.substring(0, indexOfSemic);
+            this.matrParamEncoded = segmentEncoded.substring(indexOfSemic + 1);
+        }
+        else
+        {
+            path = segmentEncoded;
+            this.matrParamEncoded = null;
+        }
+        if (decode)
+            this.path = Reference.decode(path);
+        else
+            this.path = path;
     }
 
+    /**
+     * Get a map of the decoded (or encoded?) matrix parameters associated with
+     * the path segment
+     * 
+     * @return the map of matrix parameters. Never returns null.
+     */
+    public MultivaluedMap<String, String> getMatrixParameters() {
+        if (this.matrixParameters == null) {
+            MultivaluedMap<String, String> matrixParameters = new MultivaluedMapImpl<String, String>();
+            if(matrParamEncoded != null)
+            {
+                String[] paramsEncSpl = matrParamEncoded.split(";");
+                for (int i=0; i<paramsEncSpl.length; i++) {
+                    String matrParamEnc = paramsEncSpl[i];
+                    int posEquSign = matrParamEnc.indexOf('=');
+                    String keyEnc;
+                    String valueEnc;
+                    if (posEquSign <= 0) {
+                        keyEnc = matrParamEnc;
+                        valueEnc = null;
+                    } else {
+                        keyEnc = matrParamEnc.substring(0, posEquSign);
+                        valueEnc = matrParamEnc.substring(posEquSign + 1);
+                    }
+                    String key = decode ? Reference.decode(keyEnc) : keyEnc;
+                    String value = decode ? Reference.decode(valueEnc) : valueEnc;
+                    matrixParameters.add(key, value);
+                }
+            }
+            this.matrixParameters = matrixParameters;
+        }
+        return matrixParameters;
+    }
+
+    /**
+     * @return the (decoded?) path segment
+     * @see PathSegment#getPath()
+     */
     public String getPath() {
-        throw new NotYetImplementedException(
-                "Die Matrix-Auswertung soll später in die Referenz");
+        return path;
+    }
+    
+    @Override
+    public boolean equals(Object object)
+    {
+        if(this == object)
+            return true;
+        if(!(object instanceof JaxRsPathSegment))
+            return false;
+        PathSegment other = (PathSegment)object;
+        return this.getPath().equals(other.getPath()) && this.getMatrixParameters().equals(other.getMatrixParameters());
+    }
+
+    
+    @Override
+    public int hashCode()
+    {
+        return this.path.hashCode() ^ this.getMatrixParameters().hashCode();
     }
 }

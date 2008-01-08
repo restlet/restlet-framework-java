@@ -21,43 +21,63 @@ package org.restlet.ext.jaxrs.wrappers;
 import java.lang.reflect.Method;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.MatchingResult;
 
 /**
- * A method of a resource class that is used to locate sub-resources of the corresponding resource, see section 2.3.1.
+ * A method of a resource class that is used to locate sub-resources of the
+ * corresponding resource, see section 2.3.1.
  * 
  * @author Stephan Koops
- *
+ * 
  */
-public class SubResourceLocator extends AbstractMethodWrapper implements SubResourceMethodOrLocator{
+public class SubResourceLocator extends AbstractMethodWrapper implements
+        SubResourceMethodOrLocator {
     /**
      * Creates a new wrapper for the given sub resource locator.
-     * @param javaMethod The Java method wich creats the sub resource
-     * @param path the path on the method
-     * @param resourceClass the wrapped resource class.
+     * 
+     * @param javaMethod
+     *                The Java method wich creats the sub resource
+     * @param path
+     *                the path on the method
+     * @param resourceClass
+     *                the wrapped resource class.
      */
-	public SubResourceLocator(Method javaMethod, Path path, ResourceClass resourceClass) {
-		super(javaMethod, path, resourceClass);
-	}
+    public SubResourceLocator(Method javaMethod, Path path,
+            ResourceClass resourceClass) {
+        super(javaMethod, path, resourceClass);
+    }
 
-	/**
-	 * Creates a sub resource
-	 * @param resourceObject the wrapped resource object.
-	 * @param matchingResult the matching result, containing the path variables
-	 * @param restletRequest
-	 * @return Returns the wrapped sub resource object.
-	 * @throws Exception
-	 */
-	public ResourceObject createSubResource(ResourceObject resourceObject, MatchingResult matchingResult, Request restletRequest) throws Exception {
-		Object[] args;
-		Class<?>[] parameterTypes = this.javaMethod.getParameterTypes();
-		if (parameterTypes.length == 0)
-			args = new Object[0];
-		else
-			args = getParameterValues(javaMethod.getParameterAnnotations(), parameterTypes, matchingResult, restletRequest);
-		Object subResourceObject = javaMethod.invoke(resourceObject.getResourceObject(), args);
-		return new ResourceObject(subResourceObject);
-	}
+    /**
+     * Creates a sub resource
+     * 
+     * @param resourceObject
+     *                the wrapped resource object.
+     * @param matchingResult
+     *                the matching result, containing the path variables
+     * @param allTemplParamsEnc
+     *                Contains all Parameters, that are read from the called
+     *                URI.
+     * @param restletRequest
+     * @return Returns the wrapped sub resource object.
+     * @throws Exception
+     */
+    public ResourceObject createSubResource(ResourceObject resourceObject,
+            MatchingResult matchingResult,
+            MultivaluedMap<String, String> allTemplParamsEnc,
+            Request restletRequest) throws Exception {
+        Object[] args;
+        Class<?>[] parameterTypes = this.javaMethod.getParameterTypes();
+        if (parameterTypes.length == 0)
+            args = new Object[0];
+        else
+            args = getParameterValues(javaMethod.getParameterAnnotations(),
+                    parameterTypes, matchingResult, restletRequest,
+                    allTemplParamsEnc);
+        Object subResourceObject = javaMethod.invoke(resourceObject
+                .getResourceObject(), args);
+        return new ResourceObject(subResourceObject);
+    }
 }

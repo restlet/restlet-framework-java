@@ -24,9 +24,6 @@ import java.util.Collection;
 
 import javax.ws.rs.Path;
 
-import org.restlet.data.Request;
-import org.restlet.ext.jaxrs.MatchingResult;
-
 /**
  * Instances represents a root resource class.
  * 
@@ -38,7 +35,7 @@ import org.restlet.ext.jaxrs.MatchingResult;
  */
 public class ResourceClass extends AbstractJaxRsWrapper {
 
-    Class<?> jaxRsClass;
+    protected Class<?> jaxRsClass;
 
     private Collection<SubResourceMethodOrLocator> subResourceMethodsAndLocators;
 
@@ -75,23 +72,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         return !this.getSubResourceMethodsAndLocators().isEmpty();
     }
 
-    /**
-     * 
-     * @param matchingResult
-     * @param restletRequ
-     *                Will be used in subclass RootResourceClass
-     * @return
-     * @throws Exception
-     */
-    public ResourceObject createInstance(@SuppressWarnings("unused")
-    MatchingResult matchingResult, @SuppressWarnings("unused")
-    Request restletRequ) throws Exception {
-        // LATER Exception-Handling vielleicht ändern; vielleicht lassen sich
-        // welche schon hier behandeln
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
     private void internalSetSubResourceMethodsAndLocators() {
         Collection<SubResourceMethodOrLocator> srmls = new ArrayList<SubResourceMethodOrLocator>();
         Collection<SubResourceMethod> srms = new ArrayList<SubResourceMethod>();
@@ -100,8 +80,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         // TODO muss der auch mit nicht-public-Methoden umgehen können? Wenn ja,
         // dann muss ich wohl ein Proxy bauen, der im gleichen Package sitzt.
         // Tests entsprechend anpassen
-        // classMethods = jaxRsClass.getDeclaredMethods(); // TODO z.Zt. werden
-        // alle Methoden geladen, auch die nicht-public
+        // classMethods = jaxRsClass.getDeclaredMethods();
+        // TODO z.Zt. werden alle Methoden geladen, auch die nicht-public
         for (Method javaMethod : classMethods) {
             Path path = javaMethod.getAnnotation(Path.class);
             if (path == null)
@@ -160,6 +140,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     public final Class<?> getJaxRsClass() {
         return jaxRsClass;
     }
+
 
     @Override
     public String toString() {

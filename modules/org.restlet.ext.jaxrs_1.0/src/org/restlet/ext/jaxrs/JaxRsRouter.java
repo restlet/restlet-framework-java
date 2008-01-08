@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
@@ -41,9 +42,9 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Util;
-import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.ext.jaxrs.wrappers.ResourceMethod;
 import org.restlet.ext.jaxrs.wrappers.ResourceObject;
 import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
@@ -195,7 +196,16 @@ public class JaxRsRouter extends Restlet {
      * @see #getRootResourceClasses()
      */
     public void attach(Class<?> jaxRsClass) {
-        rootResourceClasses.add(new RootResourceClass(jaxRsClass));
+        RootResourceClass newRrc = new RootResourceClass(jaxRsClass);
+        UriTemplateRegExp uriTempl = newRrc.getUriTemplateRegExp();
+        for(RootResourceClass rootResourceClass : this.rootResourceClasses)
+        {
+            if(rootResourceClass.getJaxRsClass().equals(jaxRsClass))
+                return;
+            if(rootResourceClass.getUriTemplateRegExp().equals(uriTempl))
+                throw new IllegalArgumentException("There is already a root resource class with path "+uriTempl.getPathPattern());
+        }
+        rootResourceClasses.add(newRrc);
     }
 
     /**
@@ -233,9 +243,10 @@ public class JaxRsRouter extends Restlet {
         ResourceMethod resourceMethod = resObjAndMeth.resourceMethod;
         ResourceObject resourceObject = resObjAndMeth.resourceObject;
         MatchingResult matchingResult = resObjAndMeth.matchingResult;
+        MultivaluedMap<String, String> allTemplParamsEnc = resObjAndMeth.allTemplParamsEnc;
         try {
             invokeMethodAndHandleResult(resourceMethod, resourceObject,
-                    matchingResult, request, response);
+                    matchingResult, allTemplParamsEnc, request, response);
         } catch (MethodInvokeException e) {
             // Exception was handled and data were set into the Response.
             return; // not explicit necessary, but to document that here is
@@ -251,7 +262,6 @@ public class JaxRsRouter extends Restlet {
      * @throws CouldNotFindMethodException
      * @throws MethodInvokeException
      */
-    @SuppressWarnings("unchecked")
     private ResObjAndMeth matchingRequestToResourceMethod(
             Request restletRequest, Response restletResponse)
             throws CouldNotFindMethodException, MethodInvokeException {
@@ -262,6 +272,7 @@ public class JaxRsRouter extends Restlet {
         ResObjAndPath resourceObjectAndPath = obtainObjectThatHandleRequest(
                 rcat, restletRequest, restletResponse);
         MatchingResult matchingResult = resourceObjectAndPath.matchingResult;
+        @SuppressWarnings("unchecked")
         List<Collection<MediaType>> accMediaTypes = (List) Util
                 .sortMetadataList((Collection) restletRequest.getClientInfo()
                         .getAcceptedMediaTypes());
@@ -314,7 +325,11 @@ public class JaxRsRouter extends Restlet {
         UriTemplateRegExp rMatch = tClass.getUriTemplateRegExp();
         MatchingResult matchResult = rMatch.match(u);
         u = matchResult.getFinalCapturingGroup();
-        return new ResClAndTemplate(u, tClass);
+        MultivaluedMap<String, String> allTemplParamsEnc = new MultivaluedMapImpl<String, String>();
+        for (Map.Entry<String, String> varEntry : matchResult.getVariables()
+                .entrySet())
+            allTemplParamsEnc.add(varEntry.getKey(), varEntry.getValue());
+        return new ResClAndTemplate(u, tClass, matchResult, allTemplParamsEnc);
     }
 
     /**
@@ -323,45 +338,48 @@ public class JaxRsRouter extends Restlet {
      * 
      * @param resClAndTemplate
      * @param restletRequest
-     *                TODO
+     *                The Restlet request
      * @return Resource Object
      * @throws MethodInvokeException
      */
-    @SuppressWarnings("unchecked")
     private ResObjAndPath obtainObjectThatHandleRequest(
             ResClAndTemplate resClAndTemplate, Request restletRequest,
             Response restletResponse) throws CouldNotFindMethodException,
             MethodInvokeException {
         String u = resClAndTemplate.u;
-        ResourceClass resClass = resClAndTemplate.rrc;
+        RootResourceClass resClass = resClAndTemplate.rrc;
+        MultivaluedMap<String, String> allTemplParamsEnc = resClAndTemplate.allTemplParamsEnc;
         UriTemplateRegExp rMatch = resClass.getUriTemplateRegExp();
         ResourceObject o;
         // LATER benötige ich dynamische Proxies, um Instanzvariablen füllen zu
         // können?
         try {
-            o = resClass.createInstance(null, restletRequest);
+            o = resClass.createInstance(resClAndTemplate.matchingResult,
+                    allTemplParamsEnc, restletRequest);
         } catch (Exception e) {
-            throw handleInvokeException(e, restletResponse, "newInstance",
+            throw handleInvokeException(e, restletResponse, "createInstance",
                     "Could not create new instance of root resource class");
         }
         // Part 2
         for (;;) // (j)
         {
             // (a)
-            if (Util.isEmptyOrSlash(u))
-                return new ResObjAndPath(o, u, new MatchingResult(
-                        Collections.EMPTY_MAP, "", "", 0));
+            if (Util.isEmptyOrSlash(u)) {
+                @SuppressWarnings("unchecked")
+                Map<String, String> variables = Collections.EMPTY_MAP;
+                return new ResObjAndPath(o, u, new MatchingResult(variables,
+                        "", "", 0), allTemplParamsEnc);
+            }
             // (b)
             Collection<SubResourceMethodOrLocator> eWithMethod = new ArrayList<SubResourceMethodOrLocator>();
             // (c) and (d) Filter E
             for (SubResourceMethodOrLocator methodOrLocator : resClass
                     .getSubResourceMethodsAndLocators()) {
-                MatchingResult matchingResult = methodOrLocator
+                MatchingResult matchResult = methodOrLocator
                         .getUriTemplateRegExp().match(u);
-                if (matchingResult == null)
+                if (matchResult == null)
                     continue;
-                if (!Util
-                        .isEmptyOrSlash(matchingResult.getFinalMatchingGroup()))
+                if (!Util.isEmptyOrSlash(matchResult.getFinalMatchingGroup()))
                     continue;
                 eWithMethod.add(methodOrLocator);
             }
@@ -376,7 +394,8 @@ public class JaxRsRouter extends Restlet {
             MatchingResult matchingResult = rMatch.match(u);
             // (h) When Method is resource method
             if (firstMeth instanceof SubResourceMethod)
-                return new ResObjAndPath(o, u, matchingResult);
+                return new ResObjAndPath(o, u, matchingResult,
+                        allTemplParamsEnc);
             // TODO warum wird hier nicht die ausgewählte Methode mit
             // zurückgegeben?
             // (g) and (i)
@@ -384,9 +403,10 @@ public class JaxRsRouter extends Restlet {
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
                 o = subResourceLocator.createSubResource(o, matchingResult,
-                        restletRequest);
+                        allTemplParamsEnc, restletRequest);
             } catch (Exception e) {
-                throw handleInvokeException(e, restletResponse, "newInstance",
+                throw handleInvokeException(e, restletResponse,
+                        "createSubResource",
                         "Could not create new instance of root resource class");
             }
             // (j) Go to step 2a (repeat for)
@@ -410,6 +430,7 @@ public class JaxRsRouter extends Restlet {
         // (a)
         ResourceObject resourceObject = resObjAndPath.resourceObject;
         String remainingPath = resObjAndPath.remainingPath;
+        MultivaluedMap<String, String> allTemplParamsEnc = resObjAndPath.allTemplParamsEnc;
         List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
         // (a) 1
         for (SubResourceMethod method : resourceObject.getResourceClass()
@@ -469,7 +490,8 @@ public class JaxRsRouter extends Restlet {
             // LATER keine Methode gefunden.
             throw new RuntimeException();
         }
-        return new ResObjAndMeth(resourceObject, bestResourceMethod);
+        return new ResObjAndMeth(resourceObject, bestResourceMethod,
+                allTemplParamsEnc);
     }
 
     /**
@@ -519,11 +541,8 @@ public class JaxRsRouter extends Restlet {
                         .entrySet()) {
                     for (MediaType methodMediaType : mm.getValue()) {
                         if (accMediaType.includes(methodMediaType)) {
-                            if (bestMethod != null) // TODO JSR311: Was ist,
-                                // wenn es mehrere mögliche
-                                // Methoden gibt, auch nach
-                                // der Auswahl in Section
-                                // 2.5, Part 3b
+                            if (bestMethod != null)
+                                // TODO JSR311: What happens, if multiple are =?
                                 throw new CouldNotFindMethodException(
                                         this.errorRestletMultipleResourceMethods);
                             bestMethod = mm.getKey();
@@ -663,18 +682,20 @@ public class JaxRsRouter extends Restlet {
         for (SubResourceMethodOrLocator srml : eWithMethod) {
             int srmlNoLitChars = srml.getUriTemplateRegExp()
                     .getNumberOfLiteralChars();
-            // TODO ist es nicht sinnvoller, die mit den meisten festen Zeichen
-            // zurückzugeben? auch beim Initialisierungswert anpassen
+            int srmlNoCaptGroups = srml.getUriTemplateRegExp()
+                    .getNumberOfCapturingGroups();
+            // TODO JSR311: ist es nicht sinnvoller, die mit den meisten festen
+            // Zeichen zurückzugeben? auch beim Initialisierungswert anpassen
             if (srmlNoLitChars > bestSrmlChars) {
                 bestSrml = srml;
                 bestSrmlChars = srmlNoLitChars;
+                bestSrmlNoCaptGroups = srmlNoCaptGroups;
                 continue;
             }
             if (srmlNoLitChars == bestSrmlChars) {
-                int srmlNoCaptGroups = srml.getUriTemplateRegExp()
-                        .getNumberOfCapturingGroups();
                 if (srmlNoCaptGroups > bestSrmlNoCaptGroups) {
                     bestSrml = srml;
+                    bestSrmlChars = srmlNoLitChars;
                     bestSrmlNoCaptGroups = srmlNoCaptGroups;
                     continue;
                 }
@@ -711,18 +732,20 @@ public class JaxRsRouter extends Restlet {
         for (RootResourceClass rrc : rrcs) {
             int rrcNoLitChars = rrc.getUriTemplateRegExp()
                     .getNumberOfLiteralChars();
+            int rrcNoCaptGroups = rrc.getUriTemplateRegExp()
+            .getNumberOfCapturingGroups();
             // TODO ist es nicht sinnvoller, die mit den meisten festen Zeichen
             // zurückzugeben? auch beim Initialisierungswert anpassen
             if (rrcNoLitChars > bestRrcChars) {
                 bestRrc = rrc;
                 bestRrcChars = rrcNoLitChars;
+                bestRrcNoCaptGroups =  rrcNoCaptGroups;
                 continue;
             }
             if (rrcNoLitChars == bestRrcChars) {
-                int rrcNoCaptGroups = rrc.getUriTemplateRegExp()
-                        .getNumberOfCapturingGroups();
                 if (rrcNoCaptGroups > bestRrcNoCaptGroups) {
                     bestRrc = rrc;
+                    bestRrcChars = rrcNoLitChars;
                     bestRrcNoCaptGroups = rrcNoCaptGroups;
                     continue;
                 }
@@ -736,7 +759,7 @@ public class JaxRsRouter extends Restlet {
         return bestRrc;
     }
 
-    // TODO JSR311: What about an injectabe Interface "AuthenticatedUser" or
+    // TODO JSR311: What about an injectable Interface "AuthenticatedUser" or
     // something like this?
 
     /**
@@ -779,22 +802,26 @@ public class JaxRsRouter extends Restlet {
      * @param resourceMethod
      * @param resourceObject
      * @param matchingResult
-     *                TODO
+     *                The matching result
+     * @param allTemplParamsEnc
+     *                Contains all Parameters, that are read from the called
+     *                URI.
      * @param restletRequest
-     *                TODO
+     *                The Restlet request
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
     private void invokeMethodAndHandleResult(ResourceMethod resourceMethod,
             ResourceObject resourceObject, MatchingResult matchingResult,
+            MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequest, Response restletResponse)
             throws MethodInvokeException {
         Object result;
         try {
             result = resourceMethod.invoke(resourceObject, matchingResult,
-                    restletRequest);
+                    allTemplParamsEnc, restletRequest);
         } catch (Exception e) {
-            throw handleInvokeException(e, restletResponse, "invokeMethod",
+            throw handleInvokeException(e, restletResponse, "invoke",
                     "Can not invoke the resource method");
         }
         if (result == null) { // no representation
@@ -822,12 +849,11 @@ public class JaxRsRouter extends Restlet {
             javax.ws.rs.core.Response jaxRsResponse, Response restletResponse,
             MediaType mediaType) {
         restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
-        // TODO Hier müssen noch anderes übertragen werden.
         restletResponse.setEntity(convertToRepresentation(jaxRsResponse
                 .getEntity(), mediaType, null, null));
         Util.copyResponseHeaders(jaxRsResponse.getMetadata(), restletResponse,
                 getLogger());
-
+        // TODO Hier müssen noch anderes übertragen werden.
     }
 
     private Representation convertToRepresentation(Object entity,
@@ -1056,42 +1082,61 @@ public class JaxRsRouter extends Restlet {
     }
 
     class ResObjAndPath {
+
         private ResourceObject resourceObject;
 
         private String remainingPath;
 
         private MatchingResult matchingResult;
 
+        private MultivaluedMap<String, String> allTemplParamsEnc;
+
         ResObjAndPath(ResourceObject resourceObject, String remainingPath,
-                MatchingResult matchingResult) {
+                MatchingResult matchingResult,
+                MultivaluedMap<String, String> allTemplParamsEnc) {
             this.resourceObject = resourceObject;
             this.remainingPath = remainingPath;
             this.matchingResult = matchingResult;
+            this.allTemplParamsEnc = allTemplParamsEnc;
         }
     }
 
     class ResObjAndMeth {
+
         private ResourceObject resourceObject;
 
         private ResourceMethod resourceMethod;
 
         private MatchingResult matchingResult; // is added not on creation
 
+        private MultivaluedMap<String, String> allTemplParamsEnc;
+
         ResObjAndMeth(ResourceObject resourceObject,
-                ResourceMethod resourceMethod) {
+                ResourceMethod resourceMethod,
+                MultivaluedMap<String, String> allTemplParamsEnc) {
             this.resourceObject = resourceObject;
             this.resourceMethod = resourceMethod;
+            this.allTemplParamsEnc = allTemplParamsEnc;
         }
     }
 
     class ResClAndTemplate {
+
         private String u;
 
         private RootResourceClass rrc;
 
-        ResClAndTemplate(String u, RootResourceClass rrc) {
+        MultivaluedMap<String, String> allTemplParamsEnc;
+
+        private MatchingResult matchingResult;
+
+        ResClAndTemplate(String u, RootResourceClass rrc,
+                MatchingResult matchingResult,
+                MultivaluedMap<String, String> allTemplParamsEnc) {
             this.u = u;
             this.rrc = rrc;
+            this.matchingResult = matchingResult;
+            this.allTemplParamsEnc = allTemplParamsEnc;
         }
     }
 
