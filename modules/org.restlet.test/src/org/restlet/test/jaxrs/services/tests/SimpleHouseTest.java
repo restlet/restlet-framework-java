@@ -61,13 +61,5 @@ public class SimpleHouseTest extends JaxRsTestCase {
         assertEquals("", representation.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, representation
                 .getMediaType());
-
-        // response = JaxRsTester.accessServer(SimpleTrain.class, Method.GET,
-        // MediaType.TEXT_CALENDAR);
-        // assertTrue(response.getStatus().isSuccess()); representation =
-        // response.getEntity();
-        // assertEquals(SimpleTrain.RERP_ANY_TEXT, representation.getText());
-        // TODO assertEquals(MediaType.TEXT_PLAIN,
-        // representation.getMediaType());
     }
 }
