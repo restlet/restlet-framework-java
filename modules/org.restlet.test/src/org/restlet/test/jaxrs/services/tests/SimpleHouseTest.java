@@ -28,43 +28,46 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.SimpleTrain;
 
+public class SimpleHouseTest extends JaxRsTestCase {
 
-public class SimpleHouseTest extends JaxRsTestCase
-{
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     @Override
-	protected Collection<Class<?>> createRootResourceColl()
-	{
-		return (Collection)Collections.singleton(SimpleTrain.class);
-	}
+    protected Collection<Class<?>> createRootResourceColl() {
+        return (Collection) Collections.singleton(SimpleTrain.class);
+    }
 
-	public static void testGetHtmlText() throws Exception
-	{
-		Response response = JaxRsTestCase.accessServer(SimpleTrain.class, Method.GET, MediaType.TEXT_HTML);
-		assertTrue(response.getStatus().isClientError());
-		assertEquals(response.getStatus(), Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-	}
+    public static void testGetHtmlText() throws Exception {
+        Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
+                Method.GET, MediaType.TEXT_HTML);
+        assertTrue(response.getStatus().isClientError());
+        assertEquals(response.getStatus(), Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+    }
 
-	public static void testGetPlainText() throws Exception
-	{
-		Response response = JaxRsTestCase.accessServer(SimpleTrain.class, Method.GET, MediaType.TEXT_PLAIN);
-		assertTrue(response.getStatus().isSuccess());
-		Representation representation = response.getEntity();
-		assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
-		assertEqualMediaType(MediaType.TEXT_PLAIN, representation.getMediaType());
-	}
+    public static void testGetPlainText() throws Exception {
+        Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
+                Method.GET, MediaType.TEXT_PLAIN);
+        assertTrue(response.getStatus().isSuccess());
+        Representation representation = response.getEntity();
+        assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, representation
+                .getMediaType());
+    }
 
-	public static void testGetTextAll() throws Exception
-	{
-		Response response = JaxRsTestCase.accessServer(SimpleTrain.class, Method.GET, MediaType.TEXT_ALL);
-		assertTrue(response.getStatus().isSuccess());
-		Representation representation = response.getEntity();
-		assertEquals("", representation.getText());
-		assertEqualMediaType(MediaType.TEXT_PLAIN, representation.getMediaType());
+    public static void testGetTextAll() throws Exception {
+        Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
+                Method.GET, MediaType.TEXT_ALL);
+        assertTrue(response.getStatus().isSuccess());
+        Representation representation = response.getEntity();
+        assertEquals("", representation.getText());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, representation
+                .getMediaType());
 
-		// response = JaxRsTester.accessServer(SimpleTrain.class, Method.GET, MediaType.TEXT_CALENDAR);
-		// assertTrue(response.getStatus().isSuccess()); representation = response.getEntity();
-		// assertEquals(SimpleTrain.RERP_ANY_TEXT, representation.getText()); 
-		// TODO assertEquals(MediaType.TEXT_PLAIN, representation.getMediaType());
-	}
+        // response = JaxRsTester.accessServer(SimpleTrain.class, Method.GET,
+        // MediaType.TEXT_CALENDAR);
+        // assertTrue(response.getStatus().isSuccess()); representation =
+        // response.getEntity();
+        // assertEquals(SimpleTrain.RERP_ANY_TEXT, representation.getText());
+        // TODO assertEquals(MediaType.TEXT_PLAIN,
+        // representation.getMediaType());
+    }
 }

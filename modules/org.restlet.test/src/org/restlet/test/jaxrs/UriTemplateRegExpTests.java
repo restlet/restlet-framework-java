@@ -132,7 +132,7 @@ public class UriTemplateRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals("", matchingResult.getFinalCapturingGroup());
+        assertEquals("", matchingResult.getFinalMatchingGroup());
     }
 
     /**
@@ -162,6 +162,6 @@ public class UriTemplateRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals(rest, matchingResult.getFinalCapturingGroup());
+        assertEquals(rest, matchingResult.getFinalMatchingGroup());
     }
 }

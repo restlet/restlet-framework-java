@@ -52,6 +52,9 @@ import javax.ws.rs.core.UriInfo;
 // Path.limited: wird erstmal ignoriert
 @Path("cars")
 public class CarListResource {
+    
+    // TODO Test a Root Resource Class with PathParam in UriTemplate
+    
     /**
      * 
      */
@@ -76,8 +79,7 @@ public class CarListResource {
     /**
      * <p>
      * Diese Methode ist ein <b>sub-resource-method</b>, weil sie mit einer
-     * Http-Methoden annotiert ist. Sie behandelt die Anfrage selber. TODO gibt
-     * es noch die Magic-Methodennamen?<br>
+     * Http-Methoden annotiert ist. Sie behandelt die Anfrage selber.
      * </p>
      * <p>
      * Alle Parameter bis auf einen von Resource-Methods müssen &#64;{@link MatrixParam},

@@ -28,9 +28,9 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.ext.jaxrs.util.Util;
 
+@SuppressWarnings("unchecked")
 public class UtilTests extends TestCase {
 
-    @SuppressWarnings("unchecked")
     public void testConvertMetadataList1() {
         Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
         List<Collection<MediaType>> sorted = (List) Util
@@ -51,7 +51,6 @@ public class UtilTests extends TestCase {
         assertTrue(sorted.get(0).contains(MediaType.TEXT_PLAIN));
     }
 
-    @SuppressWarnings("unchecked")
     public void testConvertMetadataList2() {
         Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
         preferences.add(new Preference<MediaType>(MediaType.TEXT_HTML, 0.7f));
@@ -70,7 +69,6 @@ public class UtilTests extends TestCase {
         assertEquals(MediaType.TEXT_PLAIN, sorted.get(1).iterator().next());
     }
 
-    @SuppressWarnings("unchecked")
     public void testConvertMetadataList3() {
         Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
         preferences.add(new Preference<MediaType>(MediaType.TEXT_HTML, 0.5f));
@@ -89,7 +87,6 @@ public class UtilTests extends TestCase {
         assertEquals(MediaType.TEXT_HTML, sorted.get(1).iterator().next());
     }
 
-    @SuppressWarnings("unchecked")
     public void testConvertMetadataList4() {
         Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
         preferences.add(new Preference<MediaType>(MediaType.TEXT_HTML, 0.5f));

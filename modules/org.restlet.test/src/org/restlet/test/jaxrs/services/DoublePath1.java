@@ -20,26 +20,33 @@ package org.restlet.test.jaxrs.services;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
 
 /**
- * This class contains only data for one media type
+ * Test what happens when two methods should be use for the same request
  * 
  * @author Stephan Koops
  * 
  */
-@Path("/ho%20use")
-public class SimpleHouse {
-    /** Text der ausgegebenen Plain-Text-Repräsentation. */
-    public static final String RERP_PLAIN_TEXT = "  /\\ \n /  \\ \n |  | \n +--+ \n \n This is a simple text house";
+@Path("/doubleMethodsForResources")
+public class DoublePath1 {
 
-    /**
-     * 
-     * @return
-     */
+    private static final String WHAT_EVER = null;
+    private static final String ANOTHER_RESULT = null;
+
     @GET
-    @ProduceMime("text/plain")
-    public String getPlainText() {
-        return RERP_PLAIN_TEXT;
+    public String getResource() {
+        return WHAT_EVER;
+    }
+
+    @GET
+    @Path("abc/def")
+    public String getSubResource1() {
+        return WHAT_EVER;
+    }
+
+    @GET
+    @Path("abc/def")
+    public String getSubResource2() {
+        return ANOTHER_RESULT;
     }
 }

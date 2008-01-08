@@ -22,21 +22,23 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.restlet.test.jaxrs.core.JaxRsUriInfoTest;
 import org.restlet.test.jaxrs.services.tests.CarTest;
+import org.restlet.test.jaxrs.services.tests.DoublePathTest;
 import org.restlet.test.jaxrs.services.tests.MultipleResourcesTest;
 import org.restlet.test.jaxrs.services.tests.SimpleTrainTest;
 import org.restlet.test.jaxrs.util.UtilTests;
 
-public class AllJaxRsTests extends TestCase
-{
-	public static Test suite()
-	{
-		TestSuite mySuite = new TestSuite();
-		mySuite.addTestSuite(CarTest.class);
-		mySuite.addTestSuite(SimpleTrainTest.class);
-		mySuite.addTestSuite(MultipleResourcesTest.class);
-		mySuite.addTestSuite(UriTemplateRegExpTests.class);
-		mySuite.addTestSuite(UtilTests.class);
-		return mySuite;
-	}
+public class AllJaxRsTests extends TestCase {
+    public static Test suite() {
+        TestSuite mySuite = new TestSuite();
+        mySuite.addTestSuite(CarTest.class);
+        mySuite.addTestSuite(SimpleTrainTest.class);
+        mySuite.addTestSuite(MultipleResourcesTest.class);
+        mySuite.addTestSuite(UriTemplateRegExpTests.class);
+        mySuite.addTestSuite(UtilTests.class);
+        mySuite.addTestSuite(JaxRsUriInfoTest.class);
+        mySuite.addTestSuite(DoublePathTest.class);
+        return mySuite;
+    }
 }
