@@ -30,8 +30,6 @@ import org.restlet.data.Reference;
  * 
  */
 public class JaxRsPathSegment implements PathSegment {
-    // TODO JSR311: in javax.ws.rs.core.PathSegment steht, alles ist dekodiert,
-    // es gibt in UriInfo jedoch getPathSegments(boolean decode)
     /** encoded or decoded, depends on {@link #decode} */
     private String path;
 

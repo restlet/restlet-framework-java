@@ -684,8 +684,6 @@ public class JaxRsRouter extends Restlet {
                     .getNumberOfLiteralChars();
             int srmlNoCaptGroups = srml.getUriTemplateRegExp()
                     .getNumberOfCapturingGroups();
-            // TODO JSR311: ist es nicht sinnvoller, die mit den meisten festen
-            // Zeichen zurückzugeben? auch beim Initialisierungswert anpassen
             if (srmlNoLitChars > bestSrmlChars) {
                 bestSrml = srml;
                 bestSrmlChars = srmlNoLitChars;
@@ -734,8 +732,6 @@ public class JaxRsRouter extends Restlet {
                     .getNumberOfLiteralChars();
             int rrcNoCaptGroups = rrc.getUriTemplateRegExp()
             .getNumberOfCapturingGroups();
-            // TODO ist es nicht sinnvoller, die mit den meisten festen Zeichen
-            // zurückzugeben? auch beim Initialisierungswert anpassen
             if (rrcNoLitChars > bestRrcChars) {
                 bestRrc = rrc;
                 bestRrcChars = rrcNoLitChars;

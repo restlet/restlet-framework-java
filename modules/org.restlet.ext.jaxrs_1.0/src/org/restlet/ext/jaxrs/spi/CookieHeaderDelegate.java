@@ -19,26 +19,27 @@
  * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.ext;
+package org.restlet.ext.jaxrs.spi;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
-import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * @author Stephan Koops
  *
  */
-public class MediaTypeHeaderDelegate implements HeaderDelegate<MediaType> {
+public class CookieHeaderDelegate implements HeaderDelegate<MediaType> {
 
     /**
      * Obtain an instance of a HeaderDelegate for the supplied class. An 
      * implementation is required to support the following classes:
      * Cookie, CacheControl, EntityTag, NewCookie, MediaType.
      */
-    public MediaTypeHeaderDelegate() {
+    public CookieHeaderDelegate() {
+        // TODO Auto-generated constructor stub
+        throw new NotYetImplementedException();
     }
 
     /**
@@ -49,8 +50,8 @@ public class MediaTypeHeaderDelegate implements HeaderDelegate<MediaType> {
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#fromString(java.lang.String)
      */
     public MediaType fromString(String value) throws IllegalArgumentException {
-        org.restlet.data.MediaType restletMediaType = org.restlet.data.MediaType.valueOf(value);
-        return Util.convertMediaType(restletMediaType);
+        // TODO Auto-generated method stub
+        throw new NotYetImplementedException();
     }
 
 

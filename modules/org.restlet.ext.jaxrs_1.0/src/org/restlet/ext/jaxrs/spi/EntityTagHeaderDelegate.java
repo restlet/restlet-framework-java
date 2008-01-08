@@ -19,7 +19,7 @@
  * replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.ext;
+package org.restlet.ext.jaxrs.spi;
 
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
