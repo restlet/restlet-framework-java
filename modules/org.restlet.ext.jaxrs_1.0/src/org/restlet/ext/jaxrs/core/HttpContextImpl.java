@@ -32,7 +32,9 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
@@ -174,8 +176,27 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date)
      */
     public Response evaluatePreconditions(Date lastModified) {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+        Date modSinceCond = this.restletRequest.getConditions().getModifiedSince();
+        if(modSinceCond == null)
+            return null;
+        if(modSinceCond.after(lastModified))   // if(2007.after(2008))
+        {
+            Method requestMethod = restletRequest.getMethod();
+            if(requestMethod.equals(Method.GET) || requestMethod.equals(Method.HEAD))
+            {
+                ResponseBuilder rb = Response.notModified();
+                return rb.build();
+            }
+            else
+            {
+                // wenn GET, dann 304, bei anderen Methoden andere ergebnisse (Precondition failed)
+                throw new NotYetImplementedException("Only implemented for GET and HEAD");
+            }
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**

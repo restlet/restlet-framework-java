@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +43,7 @@ import org.restlet.data.Preference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.util.DateUtils;
 import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
@@ -187,11 +189,10 @@ public class Util {
     /**
      * 
      * @param jaxRsHeaders
-     *                Headers of an JAX-RS-Response. The keys are the HTTP
-     *                header names, the value is a list of values for this HTTP
-     *                header.
-     * @param restletResponse
-     * @param logger
+     *                Headers of an JAX-RS-Response.
+     * @param restletResponse Restlet Response to copy the headers in.
+     * @param logger The logger to use
+     * @see javax.ws.rs.core.Response#getMetadata()
      */
     public static void copyResponseHeaders(
             final MultivaluedMap<String, Object> jaxRsHeaders,
@@ -200,12 +201,37 @@ public class Util {
         for (Map.Entry<String, List<Object>> m : jaxRsHeaders.entrySet()) {
             String headerName = m.getKey();
             for (Object headerValue : m.getValue()) {
-                headers.add(new Parameter(headerName,
-                        headerValue != null ? headerValue.toString() : null));
+                String hValue;
+                if (headerValue == null)
+                    hValue = null;
+                else if (headerValue instanceof Date)
+                    hValue = formatDate((Date) headerValue, false);
+                // TODO temporarily constant not as cookie;
+                else
+                    hValue = headerValue.toString();
+                headers.add(new Parameter(headerName, hValue));
             }
         }
         Engine.getInstance().copyResponseHeaders(headers, restletResponse,
                 logger);
+    }
+
+    /**
+     * Converte the given Date into a String. Copied from
+     * {@link com.noelios.restlet.HttpCall}.
+     * 
+     * @param date
+     *                Date to format
+     * @param cookie
+     *                if true, using RFC 1036 format, otherwise RFC 1123 format.
+     * @return
+     */
+    public static String formatDate(Date date, boolean cookie) {
+        if (cookie) {
+            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
+        } else {
+            return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
+        }
     }
 
     /**
@@ -337,6 +363,7 @@ public class Util {
 
     /**
      * Convert a Restlet MediaType to a JAX-RS MediaType.
+     * 
      * @param restletMediaType
      * @return the converted MediaType
      */
@@ -362,6 +389,7 @@ public class Util {
 
     /**
      * Convert a JAX-RS MediaType to a Restlet MediaType.
+     * 
      * @param jaxRsMediaType
      * @return the converted MediaType
      */

@@ -61,7 +61,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         if (jaxRsClass == null)
             throw new IllegalArgumentException(
                     "The jaxRsClass must not be null");
-        return (Path) jaxRsClass.getAnnotation(Path.class);
+        return jaxRsClass.getAnnotation(Path.class);
     }
 
     /**

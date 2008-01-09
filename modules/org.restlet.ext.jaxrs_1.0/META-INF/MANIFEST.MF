@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.restlet.ext.jaxrs
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
 Require-Bundle: org.restlet,
- com.noelios.restlet,
  javax.ws.rs
 Export-Package: org.restlet.ext.jaxrs;uses:="org.restlet.data,org.restlet.ext.jaxrs.wrappers,org.restlet",
  org.restlet.ext.jaxrs.core;uses:="org.restlet.data,javax.ws.rs.core",

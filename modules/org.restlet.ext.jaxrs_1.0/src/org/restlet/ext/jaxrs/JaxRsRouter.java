@@ -779,7 +779,7 @@ public class JaxRsRouter extends Restlet {
         }
         restletResponse.setStatus(Status.SERVER_ERROR_INTERNAL);
         getLogger().logp(Level.WARNING, this.getClass().getName(), methodName,
-                logMessage, e);
+                logMessage, e.getCause());
         throw new MethodInvokeException();
     }
 
@@ -832,7 +832,7 @@ public class JaxRsRouter extends Restlet {
                         (CharSequence) result);
                 restletRepresentation.setMediaType(mediaType);
                 restletResponse.setEntity(restletRepresentation);
-            } else if (result instanceof Response) {
+            } else if (result instanceof javax.ws.rs.core.Response) {
                 jaxRsRespToRestletResp((javax.ws.rs.core.Response) result,
                         restletResponse, mediaType);
             } else {
@@ -849,14 +849,19 @@ public class JaxRsRouter extends Restlet {
                 .getEntity(), mediaType, null, null));
         Util.copyResponseHeaders(jaxRsResponse.getMetadata(), restletResponse,
                 getLogger());
-        // TODO Hier müssen noch anderes übertragen werden.
     }
 
     private Representation convertToRepresentation(Object entity,
             MediaType mediaType, Language language, CharacterSet characterSet) {
+        if(entity == null)
+        {
+            return null;// return new EmptyRepresentation();
+        }   // TODO Jerome: wie bekommt man Response ohne Entity, aber mit Metadata hin?
         if (entity instanceof CharSequence)
+        {
             return new StringRepresentation((CharSequence) entity, mediaType,
                     language, characterSet);
+        }
         // TODO hier muss noch die Konvertierung von Object zu Representation
         // erfolgen, z.B. mit JAXB
         throw new NotYetImplementedException();
