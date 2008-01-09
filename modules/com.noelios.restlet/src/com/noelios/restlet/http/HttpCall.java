@@ -345,7 +345,7 @@ public class HttpCall {
      *                Indicates if the date is in the cookie format.
      * @return The parsed date.
      */
-    public Date parseDate(String date, boolean cookie) {
+    public static Date parseDate(String date, boolean cookie) {
         if (cookie) {
             return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
         } else {

@@ -53,6 +53,7 @@ import org.restlet.util.Helper;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.component.ComponentHelper;
+import com.noelios.restlet.http.HttpClientCall;
 import com.noelios.restlet.http.HttpClientConverter;
 import com.noelios.restlet.http.StreamClientHelper;
 import com.noelios.restlet.http.StreamServerHelper;
@@ -191,11 +192,17 @@ public class Engine extends org.restlet.util.Engine {
         }
     }
 
+    /**
+     * @see org.restlet.util.Engine#copyResponseHeaders(java.lang.Iterable,
+     *      org.restlet.data.Response, java.util.logging.Logger)
+     */
     @Override
     public void copyResponseHeaders(Iterable<Parameter> responseHeaders,
             Response response, Logger logger) {
-        HttpClientConverter.copyResponseHeaders(responseHeaders, response,
-                logger);
+        HttpClientConverter.copyResponseTransportHeaders(responseHeaders,
+                response, logger);
+        HttpClientCall.copyResponseEntityHeaders(responseHeaders, response
+                .getEntity());
     }
 
     @Override

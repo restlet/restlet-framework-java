@@ -81,51 +81,23 @@ public class HttpCallTestCase extends TestCase {
     }
 
     public void testParseContentDisposition() {
-        HttpClientCall call = new HttpClientCall(null, null, null) {
-
-            @Override
-            public WritableByteChannel getRequestEntityChannel() {
-                return null;
-            }
-
-            @Override
-            public OutputStream getRequestEntityStream() {
-                return null;
-            }
-
-            @Override
-            public OutputStream getRequestHeadStream() {
-                return null;
-            }
-
-            @Override
-            public ReadableByteChannel getResponseEntityChannel(long size) {
-                return null;
-            }
-
-            @Override
-            public InputStream getResponseEntityStream(long size) {
-                return null;
-            }
-
-        };
-
-        assertEquals("file.txt", call
+        assertEquals("file.txt", HttpClientCall
                 .parseContentDisposition("attachment; fileName=\"file.txt\""));
-        assertEquals("file.txt", call
+        assertEquals("file.txt", HttpClientCall
                 .parseContentDisposition("attachment; fileName=file.txt"));
         assertEquals(
                 "file with space.txt",
-                call
+                HttpClientCall
                         .parseContentDisposition("attachment; filename=\"file with space.txt\""));
         assertEquals(
                 "file with space.txt",
-                call
+                HttpClientCall
                         .parseContentDisposition("attachment; filename=file with space.txt"));
-        assertEquals("", call
+        assertEquals("", HttpClientCall
                 .parseContentDisposition("attachment; fileName=\"\""));
-        assertEquals("", call.parseContentDisposition("attachment; fileName="));
-        assertNull(call.parseContentDisposition("attachment; fileNam"));
-        assertNull(null);
+        assertEquals("", HttpClientCall
+                .parseContentDisposition("attachment; fileName="));
+        assertNull(HttpClientCall
+                .parseContentDisposition("attachment; fileNam"));
     }
 }

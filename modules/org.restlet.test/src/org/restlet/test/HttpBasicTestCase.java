@@ -99,13 +99,14 @@ public class HttpBasicTestCase extends TestCase {
         }
 
         @Override
-        protected boolean checkSecret(String identifier, char[] secret) {
+        public boolean checkSecret(Request request, String identifier,
+                char[] secret) {
             // NOTE: Allocating Strings are not really secure treatment of
             // passwords
             String almostSecret = new String(secret);
             System.out.println("Checking " + identifier + " " + almostSecret);
             try {
-                return super.checkSecret(identifier, secret);
+                return super.checkSecret(request, identifier, secret);
             } finally {
                 // Clear secret from memory as soon as possible (This is better
                 // treatment, but of course useless due to our almostSecret
@@ -156,26 +157,26 @@ public class HttpBasicTestCase extends TestCase {
     // Test our guard.checkSecret() stand-alone
     public void guardShort() {
         assertTrue("Didn't authenticate short user/pwd", guard.checkSecret(
-                SHORT_USERNAME, SHORT_PASSWORD.toCharArray()));
+                null, SHORT_USERNAME, SHORT_PASSWORD.toCharArray()));
     }
 
     public void guardLong() {
         assertTrue("Didn't authenticate short user/pwd", guard.checkSecret(
-                LONG_USERNAME, LONG_PASSWORD.toCharArray()));
+                null, LONG_USERNAME, LONG_PASSWORD.toCharArray()));
     }
 
     public void guardShortWrong() {
         assertFalse("Authenticated short username with wrong password", guard
-                .checkSecret(SHORT_USERNAME, LONG_PASSWORD.toCharArray()));
+                .checkSecret(null, SHORT_USERNAME, LONG_PASSWORD.toCharArray()));
     }
 
     public void guardLongWrong() {
         assertFalse("Authenticated long username with wrong password", guard
-                .checkSecret(LONG_USERNAME, SHORT_PASSWORD.toCharArray()));
+                .checkSecret(null, LONG_USERNAME, SHORT_PASSWORD.toCharArray()));
     }
 
     public void guardWrongUser() {
-        assertFalse("Authenticated wrong username", guard.checkSecret(
+        assertFalse("Authenticated wrong username", guard.checkSecret(null,
                 WRONG_USERNAME, SHORT_PASSWORD.toCharArray()));
     }
 

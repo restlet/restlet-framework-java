@@ -75,9 +75,10 @@ public class HttpRequest extends Request {
      * Constructor.
      * 
      * @param context
-     *            The context of the HTTP server connector that issued the call.
+     *                The context of the HTTP server connector that issued the
+     *                call.
      * @param httpCall
-     *            The low-level HTTP server call.
+     *                The low-level HTTP server call.
      */
     public HttpRequest(Context context, HttpServerCall httpCall) {
         this.context = context;
@@ -226,12 +227,12 @@ public class HttpRequest extends Request {
             for (Parameter header : getHttpCall().getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_IF_MODIFIED_SINCE)) {
-                    ifModifiedSince = getHttpCall().parseDate(
-                            header.getValue(), false);
+                    ifModifiedSince = HttpClientCall.parseDate(header
+                            .getValue(), false);
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_IF_UNMODIFIED_SINCE)) {
-                    ifUnmodifiedSince = getHttpCall().parseDate(
-                            header.getValue(), false);
+                    ifUnmodifiedSince = HttpClientCall.parseDate(header
+                            .getValue(), false);
                 }
             }
 

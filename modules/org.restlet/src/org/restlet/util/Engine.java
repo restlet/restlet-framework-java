@@ -214,7 +214,8 @@ public abstract class Engine {
      * @param headers
      *                The headers to copy.
      * @param response
-     *                The response to update.
+     *                The response to update. Must contain a Representation to
+     *                copy the representation headers in it.
      * @param logger
      *                The logger to use.
      */
