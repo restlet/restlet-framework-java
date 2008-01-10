@@ -18,14 +18,6 @@
 
 package com.noelios.restlet.http;
 
-import com.noelios.restlet.util.HeaderReader;
-import org.restlet.Server;
-import org.restlet.data.*;
-import org.restlet.resource.InputRepresentation;
-import org.restlet.resource.ReadableRepresentation;
-import org.restlet.resource.Representation;
-import org.restlet.service.ConnectorService;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,6 +26,20 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Logger;
 
 import javax.net.ssl.SSLSession;
+
+import org.restlet.Server;
+import org.restlet.data.Encoding;
+import org.restlet.data.Language;
+import org.restlet.data.Method;
+import org.restlet.data.Parameter;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.InputRepresentation;
+import org.restlet.resource.ReadableRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.service.ConnectorService;
+
+import com.noelios.restlet.util.HeaderReader;
 
 /**
  * Abstract HTTP server connector call.
@@ -362,6 +368,12 @@ public abstract class HttpServerCall extends HttpCall {
 
                     if (connectorService != null)
                         connectorService.afterSend(entity);
+                } else {
+                    // TODO doesn't seem to match the HTTP 1.1 specification
+                    // however it seems to fix a bug with Firefox. Let's do more
+                    // test
+                    getResponseEntityStream().write(13); // CR
+                    getResponseEntityStream().write(10); // LF
                 }
 
                 if (getResponseEntityStream() != null) {
