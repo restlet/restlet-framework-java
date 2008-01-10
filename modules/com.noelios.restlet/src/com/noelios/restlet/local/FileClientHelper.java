@@ -142,7 +142,7 @@ public class FileClientHelper extends LocalClientHelper {
                                 .lastIndexOf("/") + 1);
 
                         for (File entry : files) {
-                            if (entry.getName().startsWith(baseName)) {
+                            if (baseName.equals(getBaseName(entry, metadataService))) {
                                 rl
                                         .add(LocalReference
                                                 .createFileReference(encodedParentDirectoryURI
