@@ -36,7 +36,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.MatchingResult;
-import org.restlet.ext.jaxrs.UriTemplateRegExp;
+import org.restlet.ext.jaxrs.PathRegExp;
 import org.restlet.ext.jaxrs.core.HttpContextImpl;
 import org.restlet.ext.jaxrs.exceptions.CanNotIntatiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.IllegalAnnotationException;
@@ -46,7 +46,7 @@ import org.restlet.resource.Representation;
 
 abstract class AbstractJaxRsWrapper {
 
-    private UriTemplateRegExp uriTemplateRegExp;
+    private PathRegExp uriTemplateRegExp;
 
     AbstractJaxRsWrapper(Path path) {
         this.uriTemplateRegExp = convertUriTemplateToRegularExpression(path,
@@ -56,7 +56,7 @@ abstract class AbstractJaxRsWrapper {
     /**
      * @return Returns the regular expression for the URI template
      */
-    public final UriTemplateRegExp getUriTemplateRegExp() {
+    public final PathRegExp getPathRegExp() {
         return this.uriTemplateRegExp;
     }
 
@@ -238,14 +238,14 @@ abstract class AbstractJaxRsWrapper {
      * 
      * @return
      */
-    private static UriTemplateRegExp convertUriTemplateToRegularExpression(
+    private static PathRegExp convertUriTemplateToRegularExpression(
             Path template, boolean ensureStartSlash) {
         if (template == null)
-            return new UriTemplateRegExp("", true);
+            return new PathRegExp("", true);
         String pathTemplate = template.value();
         if (ensureStartSlash)
             pathTemplate = Util.ensureStartSlash(pathTemplate);
         // LATER Path.encode auch bearbeiten
-        return new UriTemplateRegExp(pathTemplate, template.limited());
+        return new PathRegExp(pathTemplate, template.limited());
     }
 }

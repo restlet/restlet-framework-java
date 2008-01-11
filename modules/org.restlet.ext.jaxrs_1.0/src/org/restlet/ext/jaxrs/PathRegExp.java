@@ -35,7 +35,7 @@ import org.restlet.util.Variable;
  * @author Stephan Koops
  * 
  */
-public class UriTemplateRegExp {
+public class PathRegExp {
 
     private static final String VARNAME_FUER_REST = "restlet.jaxrs.rest";
 
@@ -61,7 +61,7 @@ public class UriTemplateRegExp {
      *                       <code>@Path(value="widgets/{id}", limit=false)</code> would match both.
      * @see Path#limited()
      */
-    public UriTemplateRegExp(String pathPattern, boolean limitedToOneSegment) {
+    public PathRegExp(String pathPattern, boolean limitedToOneSegment) {
         this.pathPattern = pathPattern;
         this.isEmptyOrSlash = Util.isEmptyOrSlash(pathPattern);
         StringBuilder patternStb = new StringBuilder(pathPattern);
@@ -158,13 +158,20 @@ public class UriTemplateRegExp {
      */
     public int getNumberOfLiteralChars() {
         if (noLitChars == null) {
-            noLitChars = this.template.format(EverNullStringMap).length();
+            noLitChars = getWithEmptyVars().length();
             // TODO Jerome: a corresponding Formatter is better, because the Map
             // does not keep all Map constraints and it is a little bit faster
             // and less code.
         }
         return noLitChars;
     }
+
+	/**
+	 * @return
+	 */
+	private String getWithEmptyVars() {
+		return this.template.format(EverNullStringMap);
+	}
 
     /**
      * @return Returns the number of capturing groups.
@@ -179,10 +186,10 @@ public class UriTemplateRegExp {
         // TODO talk with Jerome about Template.equals(Object)
         if(this == anotherObject)
             return true;
-        if(!(anotherObject instanceof UriTemplateRegExp))
+        if(!(anotherObject instanceof PathRegExp))
             return false;
-        UriTemplateRegExp otherRegExp = (UriTemplateRegExp)anotherObject;
-        return this.template.equals(otherRegExp.template);
+        PathRegExp otherRegExp = (PathRegExp)anotherObject;
+        return this.getWithEmptyVars().equals(otherRegExp.getWithEmptyVars());
     }
     
     public int hashCode()

@@ -44,192 +44,219 @@ import org.restlet.ext.jaxrs.util.Util;
  */
 public class ResourceMethod extends AbstractMethodWrapper {
 
-    private List<MediaType> producedMimes;
+	private List<MediaType> producedMimes;
 
-    private List<MediaType> consumedMimes;
+	private List<MediaType> consumedMimes;
 
-    private org.restlet.data.Method httpMethod;
+	private org.restlet.data.Method httpMethod;
 
-    /**
-     * Creates a wrapper for a resource method.
-     * 
-     * @param javaMethod
-     *                the Java method to wrap.
-     * @param path
-     *                the path of the method.
-     * @param resourceClass
-     *                the wrapped class of the method.
-     * @param httpMethod
-     *                the HTTP method of the Java method. It will be checked be
-     *                the {@link JaxRsRouter}, so avoiding double work. It will
-     *                be requested from the javaMethod.
-     */
-    public ResourceMethod(Method javaMethod, Path path,
-            ResourceClass resourceClass, org.restlet.data.Method httpMethod) {
-        super(javaMethod, path, resourceClass);
-        this.httpMethod = httpMethod;
-    }
+	/**
+	 * Creates a wrapper for a resource method.
+	 * 
+	 * @param javaMethod
+	 *            the Java method to wrap.
+	 * @param path
+	 *            the path of the method.
+	 * @param resourceClass
+	 *            the wrapped class of the method.
+	 * @param httpMethod
+	 *            the HTTP method of the Java method. It will be checked be the
+	 *            {@link JaxRsRouter}, so avoiding double work. It will be
+	 *            requested from the javaMethod.
+	 */
+	public ResourceMethod(Method javaMethod, Path path,
+			ResourceClass resourceClass, org.restlet.data.Method httpMethod) {
+		super(javaMethod, path, resourceClass);
+		this.httpMethod = httpMethod;
+	}
 
-    /**
-     * Determine the media type if a produced entity. see JSR-311-Spec, Section
-     * 2.6 "Determining the MediaType of Responses" <br />
-     * Is not ready implemented, yet.
-     * 
-     * @param result
-     * @return Returns the media type of the produced Entity.
-     */
-    @SuppressWarnings("all")
-    public MediaType getProducedMediaType(Object entity) {
-        // LATER getProducedMediaType(.): see JSR-311-Spec, Section 2.6
-        // "Determining the MediaType of Responses"
-        List<MediaType> producedMimes = this.getProducedMimes();
-        Iterator<MediaType> prodMimeIter = producedMimes.iterator();
-        while (prodMimeIter.hasNext()) {
-            MediaType producedMime = prodMimeIter.next();
-            if (producedMime.getSubType().equals("*"))
-                prodMimeIter.remove();
-        }
-        if (producedMimes.isEmpty())
-            return MediaType.APPLICATION_OCTET_STREAM;
-        if (producedMimes.size() == 1)
-            return producedMimes.get(0);
-        return MediaType.APPLICATION_OCTET_STREAM;
-    }
+	/**
+	 * Determine the media type if a produced entity. see JSR-311-Spec, Section
+	 * 2.6 "Determining the MediaType of Responses" <br />
+	 * Is not ready implemented, yet.
+	 * 
+	 * @param result
+	 * @return Returns the media type of the produced Entity.
+	 */
+	@SuppressWarnings("all")
+	public MediaType getProducedMediaType(Object entity) {
+		// LATER getProducedMediaType(.): see JSR-311-Spec, Section 2.6
+		// "Determining the MediaType of Responses"
+		List<MediaType> producedMimes = this.getProducedMimes();
+		Iterator<MediaType> prodMimeIter = producedMimes.iterator();
+		while (prodMimeIter.hasNext()) {
+			MediaType producedMime = prodMimeIter.next();
+			if (producedMime.getSubType().equals("*"))
+				prodMimeIter.remove();
+		}
+		if (producedMimes.isEmpty())
+			return MediaType.APPLICATION_OCTET_STREAM;
+		if (producedMimes.size() == 1)
+			return producedMimes.get(0);
+		return MediaType.APPLICATION_OCTET_STREAM;
+	}
 
-    /**
-     * @return Returns an unmodifiable List of MediaTypes the given Resource
-     *         Method or Resource Class produces. If no MediaType was given, a
-     *         empty List will returned. Will never return null.
-     */
-    public List<MediaType> getProducedMimes() {
-        if (producedMimes == null) {
-            ProduceMime produceMime = this.javaMethod
-                    .getAnnotation(ProduceMime.class);
-            if (produceMime == null)
-                produceMime = this.javaMethod.getAnnotation(ProduceMime.class);
-            if (produceMime == null)
-                this.producedMimes = Collections.emptyList();
-            else
-                this.producedMimes = convertToMediaTypes(produceMime.value());
-        }
-        return producedMimes;
-    }
+	/**
+	 * @return Returns an unmodifiable List of MediaTypes the given Resource
+	 *         Method or Resource Class produces. If no MediaType was given, a
+	 *         empty List will returned. Will never return null.
+	 */
+	public List<MediaType> getProducedMimes() {
+		if (producedMimes == null) {
+			ProduceMime produceMime = this.javaMethod
+					.getAnnotation(ProduceMime.class);
+			if (produceMime == null)
+				produceMime = this.javaMethod.getAnnotation(ProduceMime.class);
+			if (produceMime == null)
+				this.producedMimes = Collections.emptyList();
+			else
+				this.producedMimes = convertToMediaTypes(produceMime.value());
+		}
+		return producedMimes;
+	}
 
-    /**
-     * @return Returns an unmodifiable List with the MediaTypes the given
-     *         resourceMethod consumes. If no consumeMime is given, this method
-     *         returns a List with MediaType.ALL. Will never return null.
-     */
-    public List<MediaType> getConsumedMimes() {
-        if (this.consumedMimes == null) {
-            ConsumeMime consumeMime = this.javaMethod
-                    .getAnnotation(ConsumeMime.class);
-            if (consumeMime == null)
-                consumeMime = this.javaMethod.getAnnotation(ConsumeMime.class);
-            if (consumeMime == null)
-                return Collections.singletonList(MediaType.ALL);
-            this.consumedMimes = convertToMediaTypes(consumeMime.value());
-        }
-        return consumedMimes;
-    }
+	/**
+	 * @return Returns an unmodifiable List with the MediaTypes the given
+	 *         resourceMethod consumes. If no consumeMime is given, this method
+	 *         returns a List with MediaType.ALL. Will never return null.
+	 */
+	public List<MediaType> getConsumedMimes() {
+		if (this.consumedMimes == null) {
+			ConsumeMime consumeMime = this.javaMethod
+					.getAnnotation(ConsumeMime.class);
+			if (consumeMime == null)
+				consumeMime = this.javaMethod.getAnnotation(ConsumeMime.class);
+			if (consumeMime == null)
+				return Collections.singletonList(MediaType.ALL);
+			this.consumedMimes = convertToMediaTypes(consumeMime.value());
+		}
+		return consumedMimes;
+	}
 
-    /**
-     * Check if this method supports the media type to produce for a request.
-     * 
-     * @param accMediaTypess
-     *                The Media Types the client would accept, ordered by
-     *                quality. See {@link Util#sortMetadataList(Collection)}
-     * @return Returns true, if the give MediaType is supported by the method,
-     *         or no MediaType is given for the method, otherweise false.
-     */
-    public boolean isAcceptedMediaTypeSupported(
-            List<Collection<MediaType>> accMediaTypess) {
-        if (accMediaTypess == null || accMediaTypess.isEmpty())
-            return true;
-        List<MediaType> prodMimes = getProducedMimes();
-        if (prodMimes.isEmpty())
-            return true;
-        for (MediaType producedMediaType : prodMimes) {
-            for (Collection<MediaType> accMediaTypes : accMediaTypess)
-                for (MediaType accMediaType : accMediaTypes)
-                    if (accMediaType.includes(producedMediaType))
-                        return true;
-        }
-        return false;
-    }
+	/**
+	 * Check if this method supports the media type to produce for a request.
+	 * 
+	 * @param accMediaTypess
+	 *            The Media Types the client would accept, ordered by quality.
+	 *            See {@link Util#sortMetadataList(Collection)}
+	 * @return Returns true, if the give MediaType is supported by the method,
+	 *         or no MediaType is given for the method, otherweise false.
+	 */
+	public boolean isAcceptedMediaTypeSupported(
+			List<Collection<MediaType>> accMediaTypess) {
+		if (accMediaTypess == null || accMediaTypess.isEmpty())
+			return true;
+		List<MediaType> prodMimes = getProducedMimes();
+		if (prodMimes.isEmpty())
+			return true;
+		for (MediaType producedMediaType : prodMimes) {
+			for (Collection<MediaType> accMediaTypes : accMediaTypess)
+				for (MediaType accMediaType : accMediaTypes)
+					if (accMediaType.includes(producedMediaType))
+						return true;
+		}
+		return false;
+	}
 
-    /**
-     * 
-     * @param resourceMethod
-     * @param requestedMethod
-     * @return true, if the gien java method is annotated with a runtime
-     *         designator for the given requested Method. If the requested
-     *         method is null, than the method returns true, when the method is
-     *         annotated with any runtime desginator.
-     * @see #annotatedWithMethodDesignator(Method)
-     */
-    public boolean isHttpMethodSupported(org.restlet.data.Method requestedMethod) {
-        if (requestedMethod == null)
-            throw new IllegalArgumentException(
-                    "null is not a valid HTTP method");
-        if (this.httpMethod == null)
-            this.httpMethod = getHttpMethod(this.javaMethod);
-        return this.httpMethod.equals(requestedMethod);
-    }
+	/**
+	 * 
+	 * @param resourceMethod
+	 * @param requestedMethod
+	 * @return true, if the gien java method is annotated with a runtime
+	 *         designator for the given requested Method. If the requested
+	 *         method is null, than the method returns true, when the method is
+	 *         annotated with any runtime desginator.
+	 * @see #annotatedWithMethodDesignator(Method)
+	 */
+	public boolean isHttpMethodSupported(org.restlet.data.Method requestedMethod) {
+		return isHttpMethodSupported(requestedMethod, false);
+	}
 
-    static org.restlet.data.Method getHttpMethod(Method javaMethod) {
-        for (Annotation annotation : javaMethod.getAnnotations()) {
-            Class<? extends Annotation> annoType = annotation.annotationType();
-            HttpMethod httpMethodAnnot = annoType
-                    .getAnnotation(HttpMethod.class);
-            if (httpMethodAnnot != null) { // Annotation der Annotation der
-                // Methode ist HTTP-Methode
-                String httpMethodName = httpMethodAnnot.value();
-                return org.restlet.data.Method.valueOf(httpMethodName);
-            }
-        }
-        return null;
-    }
+	/**
+	 * Checks, if this method suppors the given HTTP method.
+	 * 
+	 * @param requestedMethod
+	 *            the requested Method
+	 * @param alsoGet
+	 *            if true, than this method returns also true, if this method is
+	 *            GET. This functionality is needed for HEAD.
+	 * @return true, if this method supports the given HTTP method. Returns also
+	 *         true, if alsoGet is true and this method is true.
+	 * @throws IllegalArgumentException
+	 */
+	public boolean isHttpMethodSupported(
+			org.restlet.data.Method requestedMethod, boolean alsoGet)
+			throws IllegalArgumentException {
+		if (requestedMethod == null)
+			throw new IllegalArgumentException(
+					"null is not a valid HTTP method");
+		if (this.httpMethod == null)
+			this.httpMethod = getHttpMethod(this.javaMethod);
+		if (alsoGet && this.httpMethod.equals(org.restlet.data.Method.GET))
+			return true;
+		return this.httpMethod.equals(requestedMethod);
+	}
 
-    /**
-     * @param resourceMethod
-     *                the resource method to check
-     * @param givenMediaType
-     *                the MediaType of the request entity
-     * @return Returns true, if the given MediaType is supported by the method,
-     *         or no MediaType is given for the method, otherweise false;
-     */
-    public boolean isGivenMediaTypeSupported(MediaType givenMediaType) {
-        if (givenMediaType == null)
-            return true;
-        for (MediaType consumedMime : this.getConsumedMimes()) {
-            if (consumedMime.includes(givenMediaType))
-                return true;
-        }
-        return false;
-    }
+	static org.restlet.data.Method getHttpMethod(Method javaMethod) {
+		for (Annotation annotation : javaMethod.getAnnotations()) {
+			Class<? extends Annotation> annoType = annotation.annotationType();
+			HttpMethod httpMethodAnnot = annoType
+					.getAnnotation(HttpMethod.class);
+			if (httpMethodAnnot != null) { // Annotation der Annotation der
+				// Methode ist HTTP-Methode
+				String httpMethodName = httpMethodAnnot.value();
+				return org.restlet.data.Method.valueOf(httpMethodName);
+			}
+		}
+		return null;
+	}
 
-    /**
-     * Converts the given mimes to a List of MediaTypes. Will never returns
-     * null.
-     * 
-     * @param mimes
-     * @return Returns an unmodifiable List of MediaTypes
-     */
-    private static List<MediaType> convertToMediaTypes(String[] mimes) {
-        List<MediaType> mediaTypes = new ArrayList<MediaType>(mimes.length);
-        for (String mime : mimes) {
-            if (mime == null)
-                mediaTypes.add(MediaType.ALL);
-            else
-                mediaTypes.add(MediaType.valueOf(mime));
-        }
-        return Collections.unmodifiableList(mediaTypes);
-    }
+	/**
+	 * @param resourceMethod
+	 *            the resource method to check
+	 * @param givenMediaType
+	 *            the MediaType of the request entity
+	 * @return Returns true, if the given MediaType is supported by the method,
+	 *         or no MediaType is given for the method, otherweise false;
+	 */
+	public boolean isGivenMediaTypeSupported(MediaType givenMediaType) {
+		if (givenMediaType == null)
+			return true;
+		for (MediaType consumedMime : this.getConsumedMimes()) {
+			if (consumedMime.includes(givenMediaType))
+				return true;
+		}
+		return false;
+	}
 
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "[" + javaMethod.toString()
-                + ", " + this.httpMethod + "]";
-    }
+	/**
+	 * Converts the given mimes to a List of MediaTypes. Will never returns
+	 * null.
+	 * 
+	 * @param mimes
+	 * @return Returns an unmodifiable List of MediaTypes
+	 */
+	private static List<MediaType> convertToMediaTypes(String[] mimes) {
+		List<MediaType> mediaTypes = new ArrayList<MediaType>(mimes.length);
+		for (String mime : mimes) {
+			if (mime == null)
+				mediaTypes.add(MediaType.ALL);
+			else
+				mediaTypes.add(MediaType.valueOf(mime));
+		}
+		return Collections.unmodifiableList(mediaTypes);
+	}
+
+	@Override
+	public String toString() {
+		return this.getClass().getSimpleName() + "[" + javaMethod.toString()
+				+ ", " + this.httpMethod + "]";
+	}
+
+	/**
+	 * @return Returns the HTTP method supported by the wrapped java method.
+	 */
+	public org.restlet.data.Method getHttpMethod() {
+		return this.httpMethod;
+	}
 }

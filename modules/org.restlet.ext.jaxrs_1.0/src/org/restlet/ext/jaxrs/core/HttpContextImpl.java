@@ -55,7 +55,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
 
     private List<MediaType> acceptedMediaTypes;
 
-    private List<Cookie> cookies;
+    private Map<String, Cookie> cookies;
 
     private String language;
 
@@ -113,13 +113,18 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     }
 
     /**
+     * Get any cookies that accompanied the request.
+     * @return a map of cookie name (String) to Cookie.
      * @see HttpHeaders#getCookies()
      */
-    public List<Cookie> getCookies() {
+    public Map<String, Cookie> getCookies() {
         if (this.cookies == null) {
-            List<Cookie> c = new ArrayList<Cookie>();
-            if (!restletRequest.getCookies().isEmpty())
-                throw new NotYetImplementedException();
+        	Map<String, Cookie> c = new HashMap<String, Cookie>();
+        	for(org.restlet.data.Cookie rc : restletRequest.getCookies())
+        	{
+            	Cookie cookie = Util.convertCookie(rc);
+            	c.put(cookie.getName(), cookie);
+        	}
             this.cookies = c;
         }
         return this.cookies;

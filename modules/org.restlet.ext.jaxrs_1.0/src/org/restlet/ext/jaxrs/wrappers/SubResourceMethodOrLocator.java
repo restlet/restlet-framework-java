@@ -18,7 +18,7 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
-import org.restlet.ext.jaxrs.UriTemplateRegExp;
+import org.restlet.ext.jaxrs.PathRegExp;
 
 /**
  * This interface describes a sub resource locator or a sub resource method.
@@ -31,5 +31,5 @@ public interface SubResourceMethodOrLocator {
     /**
      * @return Returns the Regular Expression of the path.
      */
-    public UriTemplateRegExp getUriTemplateRegExp();
+    public PathRegExp getPathRegExp();
 }
