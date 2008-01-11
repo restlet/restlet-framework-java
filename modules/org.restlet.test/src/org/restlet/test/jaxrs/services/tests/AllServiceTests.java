@@ -16,20 +16,22 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.test.jaxrs;
+package org.restlet.test.jaxrs.services.tests;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.restlet.test.jaxrs.services.tests.AllServiceTests;
-
-public class AllJaxRsTests extends TestCase {
+public class AllServiceTests extends TestCase {
     public static Test suite() {
         TestSuite mySuite = new TestSuite();
-        mySuite.setName("all JaxRs tests");
-        mySuite.addTest(AllClassTests.suite());
-        mySuite.addTest(AllServiceTests.suite());
+        mySuite.setName("All service tests");
+        mySuite.addTestSuite(CarTest.class);
+        mySuite.addTestSuite(SimpleTrainTest.class);
+        mySuite.addTestSuite(SimpleHouseTest.class);
+        mySuite.addTestSuite(MultipleResourcesTest.class);
+        mySuite.addTestSuite(DoublePathTest.class);
+        mySuite.addTestSuite(EvaluatePreconditionTest.class);
         return mySuite;
     }
 }

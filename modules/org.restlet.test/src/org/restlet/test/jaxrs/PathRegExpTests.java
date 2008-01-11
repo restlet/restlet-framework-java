@@ -21,13 +21,13 @@ package org.restlet.test.jaxrs;
 import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.MatchingResult;
-import org.restlet.ext.jaxrs.UriTemplateRegExp;
+import org.restlet.ext.jaxrs.PathRegExp;
 
 /**
  * @author Stephan
  * 
  */
-public class UriTemplateRegExpTests extends TestCase {
+public class PathRegExpTests extends TestCase {
 
     /**
      * @throws java.lang.Exception
@@ -51,21 +51,21 @@ public class UriTemplateRegExpTests extends TestCase {
     /** as {@link #VALID_PATH_1} but with "/" at end */
     public static final String VALID_PATH_2 = VALID_PATH_1 + "/";
 
-    private UriTemplateRegExp regExpOneSegment1 = new UriTemplateRegExp(
+    private PathRegExp regExpOneSegment1 = new PathRegExp(
             PATH_PATTERN_1, true);
 
-    private UriTemplateRegExp regExpMultipleSegments1 = new UriTemplateRegExp(
+    private PathRegExp regExpMultipleSegments1 = new PathRegExp(
             PATH_PATTERN_1, false);
 
-    private UriTemplateRegExp regExpOneSegment2 = new UriTemplateRegExp(
+    private PathRegExp regExpOneSegment2 = new PathRegExp(
             PATH_PATTERN_2, true);
 
-    private UriTemplateRegExp regExpMultipleSegments2 = new UriTemplateRegExp(
+    private PathRegExp regExpMultipleSegments2 = new PathRegExp(
             PATH_PATTERN_2, false);
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.UriTemplateRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchO1() {
         MatchingResult matchingResult = regExpOneSegment1.match(VALID_PATH_1);
@@ -83,7 +83,7 @@ public class UriTemplateRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.UriTemplateRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchM1() {
         MatchingResult matchingResult = regExpMultipleSegments1
@@ -102,7 +102,7 @@ public class UriTemplateRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.UriTemplateRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchO21() {
         MatchingResult matchingResult = regExpOneSegment2.match(VALID_PATH_1);
@@ -119,7 +119,7 @@ public class UriTemplateRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.UriTemplateRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchM2() {
         MatchingResult matchingResult = regExpMultipleSegments2
@@ -137,7 +137,7 @@ public class UriTemplateRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.UriTemplateRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchM3() {
         final String rest = "/jkgjg";
@@ -146,7 +146,7 @@ public class UriTemplateRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.UriTemplateRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchM4() {
         final String rest = "/qarear/iuguz/izu/";

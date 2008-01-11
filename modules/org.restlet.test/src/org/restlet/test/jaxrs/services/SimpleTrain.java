@@ -26,58 +26,59 @@ import javax.ws.rs.ProduceMime;
 /**
  * 
  * @author Stephan Koops
- *
+ * 
  */
 @Path("/train")
 public class SimpleTrain {
-    
-    public SimpleTrain()
-    {
-        throw new RuntimeException("This Constructor is not allowed, because another constructors has more elements");
-    }
-    
-    public SimpleTrain(Integer x)
-    {
-        "".equals(x);
-        throw new RuntimeException("This Constructor is not allowed, because the paramters are not correct annotated");
-    }
-    
-    public SimpleTrain(String x, @HeaderParam("p") String p)
-    {
-        "".equals(p);
-        "".equals(x);
-        throw new RuntimeException("This Constructor is not allowed, because one of the paramters are not correct annotated");
-    }
-    
-    public SimpleTrain(@HeaderParam("p") String p)
-    {
-        "".equals(p);
-        // this is a valid constructor
-    }
-    
-    /** Text der ausgegebenen Plain-Text-Repräsentation. */
-    public static final String RERP_PLAIN_TEXT = "This is a simple text train";
 
-    /** Text der ausgegebenen HTML-Text-Repräsentation. */
-    public static final String RERP_HTML_TEXT = "<html><body>This is a simple html train</body></html>";
+	public SimpleTrain() {
+		throw new RuntimeException(
+				"This Constructor is not allowed, because another constructors has more elements");
+	}
 
-    /**
-     * 
-     * @return
-     */
-    @GET
-    @ProduceMime("text/plain")
-    public String getPlainText() {
-        return RERP_PLAIN_TEXT;
-    }
+	public SimpleTrain(Integer x) {
+		"".equals(x);
+		throw new RuntimeException(
+				"This Constructor is not allowed, because the paramters are not correct annotated");
+	}
 
-    /**
-     * 
-     * @return
-     */
-    @GET
-    @ProduceMime("text/html")
-    public String getHtmlText() {
-        return RERP_HTML_TEXT;
-    }
+	public SimpleTrain(String x, @HeaderParam("p")
+	String p) {
+		"".equals(p);
+		"".equals(x);
+		throw new RuntimeException(
+				"This Constructor is not allowed, because one of the paramters are not correct annotated");
+	}
+
+	public SimpleTrain(@HeaderParam("p")
+	String p) {
+		"".equals(p);
+		// this is a valid constructor
+	}
+
+	/** Text der ausgegebenen Plain-Text-Repräsentation. */
+	public static final String RERP_PLAIN_TEXT = "This is a simple text train";
+
+	/** Text der ausgegebenen HTML-Text-Repräsentation. */
+	public static final String RERP_HTML_TEXT = "<html><body>This is a simple html train</body></html>";
+
+	/**
+	 * 
+	 * @return
+	 */
+	@GET
+	@ProduceMime("text/plain")
+	public String getPlainText() {
+		return RERP_PLAIN_TEXT;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	@GET
+	@ProduceMime("text/html")
+	public String getHtmlText() {
+		return RERP_HTML_TEXT;
+	}
 }

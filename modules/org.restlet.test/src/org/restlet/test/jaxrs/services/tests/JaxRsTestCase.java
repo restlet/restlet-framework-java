@@ -31,6 +31,7 @@ import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
+import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
@@ -57,7 +58,7 @@ public abstract class JaxRsTestCase extends TestCase {
         super.setUp();
         component = startServer(createRootResourceColl());
         try {
-            Thread.sleep(1000);
+            Thread.sleep(300);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -212,6 +213,14 @@ public abstract class JaxRsTestCase extends TestCase {
         return accessServer(klasse, null, httpMethod, mediaTypes);
     }
 
+    @SuppressWarnings("unchecked")
+    public static Response accessServer(Class<?> klasse, String subPath,
+            Method httpMethod, MediaType mediaType) {
+    	Collection<MediaType> mediaTypes = null;
+    	if(mediaType != null)
+    		mediaTypes = Collections.singleton(mediaType);
+		return accessServer(klasse, subPath, httpMethod, mediaTypes);
+    }
     /**
      * @param klasse
      * @param subPath
@@ -246,9 +255,9 @@ public abstract class JaxRsTestCase extends TestCase {
                     mediaTypePrefs.add(new Preference<MediaType>(
                             (MediaType) mediaType));
                 } else if (mediaType instanceof Preference) {
-                    Preference<MediaType> preference = (Preference) mediaType;
+                    Preference<Metadata> preference = (Preference) mediaType;
                     if (preference.getMetadata() instanceof MediaType)
-                        mediaTypePrefs.add(preference);
+                        mediaTypePrefs.add((Preference)preference);
                 } else {
                     throw new IllegalArgumentException(
                             "Valid mediaTypes are only Preference<MediaType> or MediaType");
@@ -274,7 +283,7 @@ public abstract class JaxRsTestCase extends TestCase {
         reference.setProtocol(PROTOCOL);
         reference.setAuthority("localhost");
         reference.setHostPort(PORT);
-        String path = ((Path) jaxRsClass.getAnnotation(Path.class)).value();
+        String path = jaxRsClass.getAnnotation(Path.class).value();
         if (!path.startsWith("/"))
             path = "/" + path;
         if (subPath != null && subPath.length() > 0)

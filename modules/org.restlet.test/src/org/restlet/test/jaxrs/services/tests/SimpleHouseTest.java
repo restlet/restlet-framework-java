@@ -21,45 +21,88 @@ package org.restlet.test.jaxrs.services.tests;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.restlet.Component;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
-import org.restlet.test.jaxrs.services.SimpleTrain;
+import org.restlet.test.jaxrs.services.SimpleHouse;
 
-public class SimpleHouseTest extends JaxRsTestCase {
+public class SimpleHouseTest extends JaxRsTestCase
+{
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected Collection<Class<?>> createRootResourceColl() {
-        return (Collection) Collections.singleton(SimpleTrain.class);
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Collection<Class<?>> createRootResourceColl()
+	{
+		return (Collection) Collections.singleton(SimpleHouse.class);
+	}
 
-    public static void testGetHtmlText() throws Exception {
-        Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
-                Method.GET, MediaType.TEXT_HTML);
-        assertTrue(response.getStatus().isClientError());
-        assertEquals(response.getStatus(), Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-    }
+	public static void testGetHtmlText() throws Exception
+	{
+		Response response = JaxRsTestCase.accessServer(SimpleHouse.class, Method.GET, MediaType.TEXT_HTML);
+		assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
+	}
 
-    public static void testGetPlainText() throws Exception {
-        Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
-                Method.GET, MediaType.TEXT_PLAIN);
-        assertTrue(response.getStatus().isSuccess());
-        Representation representation = response.getEntity();
-        assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
-        assertEqualMediaType(MediaType.TEXT_PLAIN, representation
-                .getMediaType());
-    }
+	public static void testGetPlainText() throws Exception
+	{
+		Response response = JaxRsTestCase.accessServer(SimpleHouse.class, Method.GET, MediaType.TEXT_PLAIN);
+		assertEquals(Status.SUCCESS_OK, response.getStatus());
+		Representation representation = response.getEntity();
+		assertEquals(SimpleHouse.RERP_PLAIN_TEXT, representation.getText());
+		assertEqualMediaType(MediaType.TEXT_PLAIN, representation.getMediaType());
+	}
 
-    public static void testGetTextAll() throws Exception {
-        Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
-                Method.GET, MediaType.TEXT_ALL);
-        assertTrue(response.getStatus().isSuccess());
-        Representation representation = response.getEntity();
-        assertEquals("", representation.getText());
-        assertEqualMediaType(MediaType.TEXT_PLAIN, representation
-                .getMediaType());
-    }
+	public static void testGetTextAll() throws Exception
+	{
+		Response response = JaxRsTestCase.accessServer(SimpleHouse.class, Method.GET, MediaType.TEXT_ALL);
+		assertEquals(Status.SUCCESS_OK, response.getStatus());
+		Representation representation = response.getEntity();
+		assertEquals(SimpleHouse.RERP_PLAIN_TEXT, representation.getText());
+		assertEqualMediaType(MediaType.TEXT_PLAIN, representation.getMediaType());
+	}
+
+	public void testHead1() throws Exception
+	{
+		Response responseGett = JaxRsTestCase.accessServer(SimpleHouse.class, "headTest1", Method.GET, MediaType.TEXT_HTML);
+		Response responseHead = JaxRsTestCase.accessServer(SimpleHouse.class, "headTest1", Method.HEAD, MediaType.TEXT_HTML);
+		if(responseGett.getStatus().isError())
+			System.out.println(responseGett.getEntity().getText());
+		assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
+		if(responseHead.getStatus().isError())
+			System.out.println(responseHead.getEntity().getText());
+		assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
+		Representation representationGett = responseGett.getEntity();
+		Representation representationHead = responseHead.getEntity();
+		assertEquals("4711", representationGett.getText());
+		assertEquals("", representationHead.getText());
+		assertEqualMediaType(MediaType.TEXT_HTML, representationGett.getMediaType());
+		assertEqualMediaType(MediaType.TEXT_HTML, representationHead.getMediaType());
+	}
+
+	public void testHead2() throws Exception
+	{
+		Response responseGett = JaxRsTestCase.accessServer(SimpleHouse.class, "headTest2", Method.GET, MediaType.TEXT_HTML);
+		Response responseHead = JaxRsTestCase.accessServer(SimpleHouse.class, "headTest2", Method.HEAD, MediaType.TEXT_HTML);
+		if(responseGett.getStatus().isError())
+			System.out.println(responseGett.getEntity().getText());
+		assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
+		if(responseHead.getStatus().isError())
+			System.out.println(responseHead.getEntity().getText());
+		assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
+		Representation representationGett = responseGett.getEntity();
+		Representation representationHead = responseHead.getEntity();
+		assertEquals("4711", representationGett.getText());
+		assertEquals("", representationHead.getText());
+		assertEqualMediaType(MediaType.TEXT_HTML, representationGett.getMediaType());
+		assertEqualMediaType(MediaType.TEXT_HTML, representationHead.getMediaType());
+	}
+
+	public static void main(String[] args) throws Exception
+	{
+		Component component = startServer(SimpleHouse.class);
+		System.in.read();
+		stopServer(component);
+	}
 }

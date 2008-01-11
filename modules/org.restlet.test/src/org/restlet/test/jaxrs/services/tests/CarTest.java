@@ -30,14 +30,13 @@ import org.restlet.test.jaxrs.services.car.CarListResource;
 import org.restlet.test.jaxrs.services.car.CarResource;
 
 public class CarTest extends JaxRsTestCase {
-
     @SuppressWarnings("unchecked")
     @Override
     protected Collection<Class<?>> createRootResourceColl() {
         return (Collection) Collections.singleton(CarListResource.class);
     }
 
-    private static final boolean ONLY_ONE_CAR = true;
+    private static final boolean ONLY_ONE_CAR = false;
 
     private static final boolean ONLY_OFFERS = false;
 
@@ -66,7 +65,7 @@ public class CarTest extends JaxRsTestCase {
         if (ONLY_ONE_CAR)
             return;
         Response response = accessServer(CarListResource.class, "offers",
-                Method.GET, null);
+                Method.GET, (MediaType)null);
         Representation representation = response.getEntity();
         if (response.getStatus().isError())
             System.out.println(representation.getText());
@@ -74,14 +73,15 @@ public class CarTest extends JaxRsTestCase {
         assertEquals(CarListResource.OFFERS, representation.getText());
         assertEqualMediaType(MediaType.APPLICATION_OCTET_STREAM, representation
                 .getMediaType()); // vorläufig
+        // TODO hier wird die falsche Methode ausgewählt, weil der ConsumeMime besser passt
     }
 
     public static void testGetCar() throws Exception {
         if (ONLY_OFFERS)
             return;
-        String carNumber = "5";
+        String carNumber = "5%20%2B7";
         Response response = accessServer(CarListResource.class, carNumber,
-                Method.GET, null);
+                Method.GET, (MediaType)null);
         Representation representation = response.getEntity();
         if (response.getStatus().isError())
             System.out.println(representation.getText());
@@ -90,6 +90,7 @@ public class CarTest extends JaxRsTestCase {
                 .getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, representation
                 .getMediaType()); // vorläufig
+        // TODO hier wird die falsche Methode ausgewählt, weil der ConsumeMime besser passt
     }
 
     public static void testDelete() throws Exception {

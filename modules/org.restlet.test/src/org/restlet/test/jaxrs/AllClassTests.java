@@ -22,14 +22,16 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.restlet.test.jaxrs.services.tests.AllServiceTests;
+import org.restlet.test.jaxrs.core.JaxRsUriInfoTest;
+import org.restlet.test.jaxrs.util.UtilTests;
 
-public class AllJaxRsTests extends TestCase {
+public class AllClassTests extends TestCase {
     public static Test suite() {
         TestSuite mySuite = new TestSuite();
-        mySuite.setName("all JaxRs tests");
-        mySuite.addTest(AllClassTests.suite());
-        mySuite.addTest(AllServiceTests.suite());
+        mySuite.setName("All class tests");
+        mySuite.addTestSuite(PathRegExpTests.class);
+        mySuite.addTestSuite(UtilTests.class);
+        mySuite.addTestSuite(JaxRsUriInfoTest.class);
         return mySuite;
     }
 }

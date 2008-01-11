@@ -18,9 +18,13 @@
 
 package org.restlet.test.jaxrs.services.car;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.QueryParam;
@@ -111,6 +115,17 @@ public class CarListResource {
         return OFFERS;
     }
 
+    @POST
+    @Path("offers")
+    public Response newCar()
+    {
+    	try {
+			return Response.created(new URI("../5")).build();
+		} catch (URISyntaxException e) {
+			throw new WebApplicationException(e);
+		}
+    }
+    
     /**
      * 
      * @return

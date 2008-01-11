@@ -19,6 +19,7 @@
 package org.restlet.test.jaxrs.services;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
@@ -41,5 +42,37 @@ public class SimpleHouse {
     @ProduceMime("text/plain")
     public String getPlainText() {
         return RERP_PLAIN_TEXT;
+    }
+    
+    @HEAD
+    @Path("headTest1")
+    @ProduceMime("text/html")
+    public String headTest1()
+    {
+        return null;
+    }
+
+    @GET
+    @Path("headTest1")
+    @ProduceMime("text/html")
+    public String getTest1()
+    {
+        return "4711";
+    }
+
+    @HEAD
+    @Path("headTest2")
+    @ProduceMime("text/html")
+    public String headTest2()
+    {
+        return "4711";
+    }
+
+    @GET
+    @Path("headTest2")
+    @ProduceMime("text/html")
+    public String getTest2()
+    {
+        return "4711";
     }
 }
