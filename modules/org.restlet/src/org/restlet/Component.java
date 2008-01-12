@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2007 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Consulting.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -212,6 +212,7 @@ public class Component extends Restlet {
      */
     public synchronized void setClients(ClientList clients) {
         this.clients.clear();
+
         if (clients != null) {
             this.clients.addAll(clients);
         }
@@ -236,6 +237,7 @@ public class Component extends Restlet {
      */
     public synchronized void setHosts(List<VirtualHost> hosts) {
         this.hosts.clear();
+
         if (hosts != null) {
             this.hosts.addAll(hosts);
         }
@@ -272,6 +274,7 @@ public class Component extends Restlet {
      */
     public synchronized void setServers(ServerList servers) {
         this.servers.clear();
+
         if (servers != null) {
             this.servers.addAll(servers);
         }
