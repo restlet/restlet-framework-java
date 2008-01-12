@@ -57,4 +57,4 @@ Deployment
     * Integration with Spring lets you apply the Inversion of Control design pattern to configure your applications using a central XML file.
 
 
-Copyright © 2005-2007 Jérôme Louvel. Restlet is a registered trademark of Noelios Consulting.
+Copyright © 2005-2008 Jérôme Louvel. Restlet is a registered trademark of Noelios Consulting.

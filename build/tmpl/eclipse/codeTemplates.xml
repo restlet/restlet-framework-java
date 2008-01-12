@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><templates><template autoinsert="false" context="filecomment_context" deleted="false" description="Comment for created Java files" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.filecomment" name="filecomment">/*
- * Copyright 2005-2007 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Consulting.
  *
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

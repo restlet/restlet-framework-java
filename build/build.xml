@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- ========================================================
-     Restlet build file  -  Copyright 2005-2007 Jerome LOUVEL
+     Restlet build file  -  Copyright 2005-2008 Jerome LOUVEL
      ======================================================== -->
 
 <project name="Restlet" default="rebuild">
@@ -930,7 +930,7 @@
          </sourcepath>
 
          <bottom>
-            <![CDATA[<i>Copyright &#169; 2005-2007 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+            <![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
          </bottom>
 
          <group title="${restlet-api}">
@@ -957,7 +957,7 @@
          </sourcepath>
    
          <bottom>
-            <![CDATA[<i>Copyright &#169; 2005-2007 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+            <![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
          </bottom>
    
          <group title="${restlet-nre-impl}">
@@ -1007,7 +1007,7 @@
          </sourcepath>
 
          <bottom>
-            <![CDATA[<i>Copyright &#169; 2005-2007 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+            <![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
          </bottom>
 
          <group title="${restlet-ext}">
