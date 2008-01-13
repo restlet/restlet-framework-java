@@ -18,7 +18,6 @@
 
 package org.restlet.data;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -857,10 +856,9 @@ public class Reference {
     }
 
     /**
-     * Returns the optional query component as a form submission.
+     * Returns the optional query component as a form.
      * 
-     * @return The optional query component as a form submission.
-     * @throws IOException
+     * @return The optional query component as a form.
      */
     public Form getQueryAsForm() {
         return new Form(getQuery());
@@ -872,7 +870,6 @@ public class Reference {
      * @param characterSet
      *                The supported character encoding.
      * @return The optional query component as a form submission.
-     * @throws IOException
      */
     public Form getQueryAsForm(CharacterSet characterSet) {
         return new Form(getQuery(), characterSet);
