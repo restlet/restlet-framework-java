@@ -372,8 +372,10 @@ public abstract class HttpServerCall extends HttpCall {
                     // TODO doesn't seem to match the HTTP 1.1 specification
                     // however it seems to fix a bug with Firefox. Let's do more
                     // test
-                    getResponseEntityStream().write(13); // CR
-                    getResponseEntityStream().write(10); // LF
+                    if (getResponseEntityStream() != null) {
+                        getResponseEntityStream().write(13); // CR
+                        getResponseEntityStream().write(10); // LF
+                    }
                 }
 
                 if (getResponseEntityStream() != null) {
