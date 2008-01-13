@@ -22,6 +22,7 @@ Changes log
  - Synchronized some list setters on Component and Connector with explanation in Javadocs as suggested
    by Tim Peirls.
  - Guard.checkSecret() method now has a Request parameter. Suggested by Alex Milowski.
+ - Added new constructors to CookieSetting. Contributed by Stephan Koops.
 
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.

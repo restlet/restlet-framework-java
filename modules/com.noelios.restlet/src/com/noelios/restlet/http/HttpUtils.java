@@ -75,7 +75,7 @@ public class HttpUtils {
      * @throws IOException
      */
     public static Parameter createParameter(CharSequence name,
-            CharSequence value) throws IOException {
+            CharSequence value) {
         if (value != null) {
             return new Parameter(name.toString(), value.toString());
         } else {

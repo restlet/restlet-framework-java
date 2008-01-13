@@ -93,6 +93,7 @@ public class CookieReader extends HeaderReader {
      * Reads the next cookie available or null.
      * 
      * @return The next cookie available or null.
+     * @throws IOException
      */
     public Cookie readCookie() throws IOException {
         Cookie result = null;
@@ -154,6 +155,7 @@ public class CookieReader extends HeaderReader {
      * Reads the next cookie setting available or null.
      * 
      * @return The next cookie setting available or null.
+     * @throws IOException
      */
     public CookieSetting readCookieSetting() throws IOException {
         CookieSetting result = null;

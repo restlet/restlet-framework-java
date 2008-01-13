@@ -194,5 +194,4 @@ public class Cookie extends Parameter {
     public void setVersion(int version) {
         this.version = version;
     }
-
 }

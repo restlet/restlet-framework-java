@@ -26,6 +26,13 @@ import org.restlet.util.Engine;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class CookieSetting extends Cookie {
+    /**
+     * Indicates whether to restrict cookie access to untrusted parties.
+     * Currently this toggles the non-standard but widely supported HttpOnly
+     * cookie parameter.
+     */
+    private boolean accessRestricted;
+
     /** The user's comment. */
     private String comment;
 
@@ -37,20 +44,15 @@ public final class CookieSetting extends Cookie {
     /** Indicates if cookie should only be transmitted by secure means. */
     private boolean secure;
 
-    /** Indicates whether to restrict cookie access to untrusted parties.
-     *  Currently this toggles the non-standard but widely supported
-     *  HttpOnly cookie parameter. */
-    private boolean accessRestricted;
-
     /**
      * Default constructor.
      */
     public CookieSetting() {
-        this(0, null, null, null, null);
+        this(0, null, null);
     }
 
     /**
-     * Preferred constructor.
+     * Constructor.
      * 
      * @param version
      *                The cookie's version.
@@ -64,7 +66,7 @@ public final class CookieSetting extends Cookie {
     }
 
     /**
-     * Preferred constructor.
+     * Constructor.
      * 
      * @param version
      *                The cookie's version.
@@ -79,11 +81,72 @@ public final class CookieSetting extends Cookie {
      */
     public CookieSetting(int version, String name, String value, String path,
             String domain) {
+        this(version, name, value, path, domain, null, -1, false, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param version
+     *                The cookie's version.
+     * @param name
+     *                The cookie's name.
+     * @param value
+     *                The cookie's value.
+     * @param path
+     *                The cookie's path.
+     * @param domain
+     *                The cookie's domain name.
+     * @param comment
+     *                The cookie's comment.
+     * @param maxAge
+     *                Sets the maximum age in seconds.<br/> Use 0 to
+     *                immediately discard an existing cookie.<br/> Use -1 to
+     *                discard the cookie at the end of the session (default).
+     * @param secure
+     *                Indicates if cookie should only be transmitted by secure
+     *                means.
+     */
+    public CookieSetting(int version, String name, String value, String path,
+            String domain, String comment, int maxAge, boolean secure) {
+        this(version, name, value, path, domain, comment, maxAge, secure, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param version
+     *                The cookie's version.
+     * @param name
+     *                The cookie's name.
+     * @param value
+     *                The cookie's value.
+     * @param path
+     *                The cookie's path.
+     * @param domain
+     *                The cookie's domain name.
+     * @param comment
+     *                The cookie's comment.
+     * @param maxAge
+     *                Sets the maximum age in seconds.<br/> Use 0 to
+     *                immediately discard an existing cookie.<br/> Use -1 to
+     *                discard the cookie at the end of the session (default).
+     * @param secure
+     *                Indicates if cookie should only be transmitted by secure
+     *                means.
+     * @param accessRestricted
+     *                Indicates whether to restrict cookie access to untrusted
+     *                parties. Currently this toggles the non-standard but
+     *                widely supported HttpOnly cookie parameter.
+     */
+    public CookieSetting(int version, String name, String value, String path,
+            String domain, String comment, int maxAge, boolean secure,
+            boolean accessRestricted) {
         super(version, name, value, path, domain);
-        this.comment = null;
-        this.maxAge = -1;
-        this.secure = false;
-        this.accessRestricted = false;
+        this.comment = comment;
+        this.maxAge = maxAge;
+        this.secure = secure;
+        this.accessRestricted = accessRestricted;
     }
 
     /**
@@ -169,12 +232,35 @@ public final class CookieSetting extends Cookie {
     }
 
     /**
+     * Indicates if cookie access is restricted for untrusted parties. Currently
+     * this toggles the non-standard but widely supported HttpOnly cookie
+     * parameter.
+     * 
+     * @return accessRestricted True if cookie access should be restricted
+     */
+    public boolean isAccessRestricted() {
+        return accessRestricted;
+    }
+
+    /**
      * Indicates if cookie should only be transmitted by secure means.
      * 
      * @return True if cookie should only be transmitted by secure means.
      */
     public boolean isSecure() {
         return this.secure;
+    }
+
+    /**
+     * Indicates whether to restrict cookie access to untrusted parties.
+     * Currently this toggles the non-standard but widely supported HttpOnly
+     * cookie parameter.
+     * 
+     * @param accessRestricted
+     *                True if cookie access should be restricted
+     */
+    public void setAccessRestricted(boolean accessRestricted) {
+        this.accessRestricted = accessRestricted;
     }
 
     /**
@@ -208,29 +294,5 @@ public final class CookieSetting extends Cookie {
     public void setSecure(boolean secure) {
         this.secure = secure;
     }
-
-	/**
-	 * Indicates if cookie access is restricted for untrusted parties.
-     * Currently this toggles the non-standard but widely supported
-     * HttpOnly cookie parameter.
-     * 
-	 * @return accessRestricted
-	 * 				  True if cookie access should be restricted
-	 */
-	public boolean isAccessRestricted() {
-		return accessRestricted;
-	}
-
-	/**
-	 * Indicates whether to restrict cookie access to untrusted parties.
-     * Currently this toggles the non-standard but widely supported
-     * HttpOnly cookie parameter.
-     *  
-	 * @param accessRestricted
-	 * 				  True if cookie access should be restricted
-	 */
-	public void setAccessRestricted(boolean accessRestricted) {
-		this.accessRestricted = accessRestricted;
-	}
 
 }
