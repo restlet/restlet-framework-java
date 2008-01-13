@@ -93,7 +93,8 @@ public abstract class Filter extends Restlet {
     }
 
     /**
-     * Handles the call by distributing it to the next Restlet.
+     * Handles the call by distributing it to the next Restlet. If no Restlet is
+     * attached, then a {@link Status#SERVER_ERROR_INTERNAL} status is returned.
      * 
      * @param request
      *                The request to handle.
@@ -104,7 +105,10 @@ public abstract class Filter extends Restlet {
         if (getNext() != null) {
             getNext().handle(request, response);
         } else {
-            response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            response.setStatus(Status.SERVER_ERROR_INTERNAL);
+            getLogger()
+                    .warning(
+                            "A filter was executed without a next Restlet attached to it.");
         }
     }
 
