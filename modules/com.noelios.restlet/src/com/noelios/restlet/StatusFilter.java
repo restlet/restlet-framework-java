@@ -42,14 +42,14 @@ import org.restlet.resource.StringRepresentation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StatusFilter extends Filter {
-    /** Indicates whether an existing representation should be overwritten. */
-    private volatile boolean overwrite;
-
     /** Email address of the administrator to contact in case of error. */
     private volatile String email;
 
     /** The home URI to propose in case of error. */
     private volatile String homeURI;
+
+    /** Indicates whether an existing representation should be overwritten. */
+    private volatile boolean overwrite;
 
     /**
      * Constructor.
@@ -74,23 +74,6 @@ public class StatusFilter extends Filter {
     }
 
     /**
-     * Handles the call by distributing it to the next Restlet.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     */
-    public void doHandle(Request request, Response response) {
-        // Normally handle the call
-        try {
-            super.doHandle(request, response);
-        } catch (Throwable t) {
-            response.setStatus(getStatus(t, request, response));
-        }
-    }
-
-    /**
      * Allows filtering after its handling by the target Restlet. Does nothing
      * by default.
      * 
@@ -111,6 +94,28 @@ public class StatusFilter extends Filter {
             response.setEntity(getRepresentation(response.getStatus(), request,
                     response));
         }
+    }
+
+    /**
+     * Handles the call by distributing it to the next Restlet. If a throwable
+     * is caught, the {@link #getStatus(Throwable, Request, Response)} method is
+     * invoked.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     * @return The continuation status.
+     */
+    public int doHandle(Request request, Response response) {
+        // Normally handle the call
+        try {
+            super.doHandle(request, response);
+        } catch (Throwable t) {
+            response.setStatus(getStatus(t, request, response));
+        }
+
+        return CONTINUE;
     }
 
     /**

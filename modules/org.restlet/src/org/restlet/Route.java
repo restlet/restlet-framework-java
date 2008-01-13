@@ -177,8 +177,9 @@ public class Route extends Filter {
      *                The request to filter.
      * @param response
      *                The response to filter.
+     * @return The continuation status.
      */
-    protected void beforeHandle(Request request, Response response) {
+    protected int beforeHandle(Request request, Response response) {
         // 1 - Parse the template variables and adjust the base reference
         if (getTemplate() != null) {
             String remainingPart = request.getResourceRef().getRemainingPart();
@@ -230,6 +231,8 @@ public class Route extends Filter {
 
         // 3 - Validate the attributes extracted (or others)
         validateAttributes(request, response);
+
+        return CONTINUE;
     }
 
     /**

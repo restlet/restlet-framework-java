@@ -43,11 +43,11 @@ public class LogFilter extends Filter {
     /** Obtain a suitable logger. */
     private volatile Logger logger;
 
-    /** The log template to use. */
-    protected volatile Template logTemplate;
-
     /** The log service. */
     protected volatile LogService logService;
+
+    /** The log template to use. */
+    protected volatile Template logTemplate;
 
     /**
      * Constructor.
@@ -66,20 +66,6 @@ public class LogFilter extends Filter {
             this.logTemplate = (logService.getLogFormat() == null) ? null
                     : new Template(getLogger(), logService.getLogFormat());
         }
-    }
-
-    /**
-     * Allows filtering before processing by the next Restlet. Save the start
-     * time.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     */
-    protected void beforeHandle(Request request, Response response) {
-        request.getAttributes().put("org.restlet.startTime",
-                System.currentTimeMillis());
     }
 
     /**
@@ -102,6 +88,36 @@ public class LogFilter extends Filter {
             this.logger.log(Level.INFO, formatDefault(request, response,
                     duration));
         }
+    }
+
+    /**
+     * Allows filtering before processing by the next Restlet. Save the start
+     * time.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     * @return The continuation status.
+     */
+    protected int beforeHandle(Request request, Response response) {
+        request.getAttributes().put("org.restlet.startTime",
+                System.currentTimeMillis());
+
+        return CONTINUE;
+    }
+
+    /**
+     * Format a log entry.
+     * 
+     * @param request
+     *                The request to log.
+     * @param response
+     *                The response to log.
+     * @return The formatted log entry.
+     */
+    protected String format(Request request, Response response) {
+        return this.logTemplate.format(request, response);
     }
 
     /**
@@ -212,19 +228,6 @@ public class LogFilter extends Filter {
                 .getReferrerRef().getIdentifier());
 
         return sb.toString();
-    }
-
-    /**
-     * Format a log entry.
-     * 
-     * @param request
-     *                The request to log.
-     * @param response
-     *                The response to log.
-     * @return The formatted log entry.
-     */
-    protected String format(Request request, Response response) {
-        return this.logTemplate.format(request, response);
     }
 
 }

@@ -54,15 +54,6 @@ public class TunnelFilter extends Filter {
     }
 
     /**
-     * Returns the application.
-     * 
-     * @return The application.
-     */
-    public Application getApplication() {
-        return this.application;
-    }
-
-    /**
      * Allows filtering before its handling by the target Restlet. Does nothing
      * by default.
      * 
@@ -70,9 +61,9 @@ public class TunnelFilter extends Filter {
      *                The request to handle.
      * @param response
      *                The response to update.
+     * @return The continuation status.
      */
-    public void beforeHandle(Request request, Response response) {
-        super.beforeHandle(request, response);
+    public int beforeHandle(Request request, Response response) {
         Form query = request.getResourceRef().getQueryAsForm(null);
         boolean queryModified = false;
 
@@ -176,6 +167,17 @@ public class TunnelFilter extends Filter {
         if (queryModified) {
             request.getResourceRef().setQuery(query.getQueryString(null));
         }
+
+        return CONTINUE;
+    }
+
+    /**
+     * Returns the application.
+     * 
+     * @return The application.
+     */
+    public Application getApplication() {
+        return this.application;
     }
 
 }

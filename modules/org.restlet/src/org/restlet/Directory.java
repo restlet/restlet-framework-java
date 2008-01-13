@@ -329,7 +329,7 @@ public class Directory extends Finder {
      * @see #setAlphaNumComparator()
      */
     public Comparator<Reference> getComparator() {
-        return comparator;
+        return this.comparator;
     }
 
     /**

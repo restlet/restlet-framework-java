@@ -46,6 +46,28 @@ public class HostRoute extends Route {
     }
 
     /**
+     * Allows filtering before processing by the next Restlet. Set the base
+     * reference.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     * @return The continuation status.
+     */
+    protected int beforeHandle(Request request, Response response) {
+        if (getLogger().isLoggable(Level.FINE)) {
+            getLogger().fine(
+                    "New base URI: " + request.getResourceRef().getBaseRef());
+            getLogger().fine(
+                    "New remaining part: "
+                            + request.getResourceRef().getRemainingPart());
+        }
+
+        return CONTINUE;
+    }
+
+    /**
      * Returns the target virtual host.
      * 
      * @return The target virtual host.
@@ -55,13 +77,18 @@ public class HostRoute extends Route {
     }
 
     /**
-     * Sets the next virtual host.
+     * Matches a formatted string against a regex pattern, in a case insensitive
+     * manner.
      * 
-     * @param next
-     *                The next virtual host.
+     * @param regex
+     *                The pattern to use.
+     * @param formattedString
+     *                The formatted string to match.
+     * @return True if the formatted string matched the pattern.
      */
-    public void setNext(VirtualHost next) {
-        super.setNext(next);
+    private boolean matches(String regex, String formattedString) {
+        return Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(
+                formattedString).matches();
     }
 
     /**
@@ -142,36 +169,12 @@ public class HostRoute extends Route {
     }
 
     /**
-     * Matches a formatted string against a regex pattern, in a case insensitive
-     * manner.
+     * Sets the next virtual host.
      * 
-     * @param regex
-     *                The pattern to use.
-     * @param formattedString
-     *                The formatted string to match.
-     * @return True if the formatted string matched the pattern.
+     * @param next
+     *                The next virtual host.
      */
-    private boolean matches(String regex, String formattedString) {
-        return Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(
-                formattedString).matches();
-    }
-
-    /**
-     * Allows filtering before processing by the next Restlet. Set the base
-     * reference.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     */
-    protected void beforeHandle(Request request, Response response) {
-        if (getLogger().isLoggable(Level.FINE)) {
-            getLogger().fine(
-                    "New base URI: " + request.getResourceRef().getBaseRef());
-            getLogger().fine(
-                    "New remaining part: "
-                            + request.getResourceRef().getRemainingPart());
-        }
+    public void setNext(VirtualHost next) {
+        super.setNext(next);
     }
 }

@@ -215,8 +215,9 @@ public class Guard extends Filter {
      *                The request to handle.
      * @param response
      *                The response to update.
+     * @return The continuation status.
      */
-    public void doHandle(Request request, Response response) {
+    public int doHandle(Request request, Response response) {
         switch (authenticate(request)) {
         case 1:
             // Valid credentials provided
@@ -239,6 +240,8 @@ public class Guard extends Filter {
             }
             break;
         }
+
+        return CONTINUE;
     }
 
     /**

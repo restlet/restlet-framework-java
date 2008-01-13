@@ -54,9 +54,6 @@ public class Transformer extends Filter {
     /** The transformation mode. */
     private volatile int mode;
 
-    /** The XSLT transform sheet to apply to message entities. */
-    private volatile Representation transformSheet;
-
     /**
      * The character set of the result representation. The default value is
      * null.
@@ -76,6 +73,9 @@ public class Transformer extends Filter {
      * default.
      */
     private volatile MediaType resultMediaType;
+
+    /** The XSLT transform sheet to apply to message entities. */
+    private volatile Representation transformSheet;
 
     /**
      * Constructor.
@@ -102,10 +102,12 @@ public class Transformer extends Filter {
     }
 
     @Override
-    protected void beforeHandle(Request request, Response response) {
+    protected int beforeHandle(Request request, Response response) {
         if (getMode() == MODE_REQUEST) {
             request.setEntity(transform(request.getEntity()));
         }
+
+        return CONTINUE;
     }
 
     /**

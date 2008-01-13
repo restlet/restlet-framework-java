@@ -55,6 +55,41 @@ public class Encoder extends Filter {
     public static final int ENCODE_ALL_SIZES = -1;
 
     /**
+     * Returns the list of default encoded media types. This can be overriden by
+     * subclasses. By default, all media types are encoded (except those
+     * explicitely ignored).
+     * 
+     * @return The list of default encoded media types.
+     */
+    public static List<MediaType> getDefaultAcceptedMediaTypes() {
+        List<MediaType> result = new ArrayList<MediaType>();
+        result.add(MediaType.ALL);
+        return result;
+    }
+
+    /**
+     * Returns the list of default ignored media types. This can be overriden by
+     * subclasses. By default, all archive, audio, image and video media types
+     * are ignored.
+     * 
+     * @return The list of default ignored media types.
+     */
+    public static List<MediaType> getDefaultIgnoredMediaTypes() {
+        List<MediaType> result = Arrays.<MediaType> asList(
+                MediaType.APPLICATION_CAB, MediaType.APPLICATION_GNU_ZIP,
+                MediaType.APPLICATION_ZIP, MediaType.APPLICATION_GNU_TAR,
+                MediaType.APPLICATION_JAVA_ARCHIVE,
+                MediaType.APPLICATION_STUFFIT, MediaType.APPLICATION_TAR,
+                MediaType.AUDIO_ALL, MediaType.IMAGE_ALL, MediaType.VIDEO_ALL);
+        return result;
+    }
+
+    /**
+     * The media types that should be encoded.
+     */
+    private volatile List<MediaType> acceptedMediaTypes;
+
+    /**
      * Indicates if the request entity should be encoded.
      */
     private volatile boolean encodeRequest;
@@ -65,19 +100,14 @@ public class Encoder extends Filter {
     private volatile boolean encodeResponse;
 
     /**
-     * The minimal size necessary for encoding.
-     */
-    private volatile long mininumSize;
-
-    /**
-     * The media types that should be encoded.
-     */
-    private volatile List<MediaType> acceptedMediaTypes;
-
-    /**
      * The media types that should be ignored.
      */
     private volatile List<MediaType> ignoredMediaTypes;
+
+    /**
+     * The minimal size necessary for encoding.
+     */
+    private volatile long mininumSize;
 
     /**
      * Constructor using the default media types and with
@@ -121,53 +151,6 @@ public class Encoder extends Filter {
     }
 
     /**
-     * Returns the list of default encoded media types. This can be overriden by
-     * subclasses. By default, all media types are encoded (except those
-     * explicitely ignored).
-     * 
-     * @return The list of default encoded media types.
-     */
-    public static List<MediaType> getDefaultAcceptedMediaTypes() {
-        List<MediaType> result = new ArrayList<MediaType>();
-        result.add(MediaType.ALL);
-        return result;
-    }
-
-    /**
-     * Returns the list of default ignored media types. This can be overriden by
-     * subclasses. By default, all archive, audio, image and video media types
-     * are ignored.
-     * 
-     * @return The list of default ignored media types.
-     */
-    public static List<MediaType> getDefaultIgnoredMediaTypes() {
-        List<MediaType> result = Arrays.<MediaType> asList(
-                MediaType.APPLICATION_CAB, MediaType.APPLICATION_GNU_ZIP,
-                MediaType.APPLICATION_ZIP, MediaType.APPLICATION_GNU_TAR,
-                MediaType.APPLICATION_JAVA_ARCHIVE,
-                MediaType.APPLICATION_STUFFIT, MediaType.APPLICATION_TAR,
-                MediaType.AUDIO_ALL, MediaType.IMAGE_ALL, MediaType.VIDEO_ALL);
-        return result;
-    }
-
-    /**
-     * Allows filtering before its handling by the target Restlet. Does nothing
-     * by default.
-     * 
-     * @param request
-     *                The request to filter.
-     * @param response
-     *                The response to filter.
-     */
-    public void beforeHandle(Request request, Response response) {
-        // Check if encoding of the request entity is needed
-        if (isEncodeRequest() && canEncode(request.getEntity())) {
-            request.setEntity(encode(request.getClientInfo(), request
-                    .getEntity()));
-        }
-    }
-
-    /**
      * Allows filtering after its handling by the target Restlet. Does nothing
      * by default.
      * 
@@ -182,6 +165,26 @@ public class Encoder extends Filter {
             response.setEntity(encode(request.getClientInfo(), response
                     .getEntity()));
         }
+    }
+
+    /**
+     * Allows filtering before its handling by the target Restlet. Does nothing
+     * by default.
+     * 
+     * @param request
+     *                The request to filter.
+     * @param response
+     *                The response to filter.
+     * @return The continuation status.
+     */
+    public int beforeHandle(Request request, Response response) {
+        // Check if encoding of the request entity is needed
+        if (isEncodeRequest() && canEncode(request.getEntity())) {
+            request.setEntity(encode(request.getClientInfo(), request
+                    .getEntity()));
+        }
+
+        return CONTINUE;
     }
 
     /**
@@ -261,6 +264,15 @@ public class Encoder extends Filter {
     }
 
     /**
+     * Returns the media types that should be encoded.
+     * 
+     * @return The media types that should be encoded.
+     */
+    public List<MediaType> getAcceptedMediaTypes() {
+        return this.acceptedMediaTypes;
+    }
+
+    /**
      * Returns the best supported encoding for a given client.
      * 
      * @param client
@@ -296,12 +308,41 @@ public class Encoder extends Filter {
     }
 
     /**
+     * Returns the media types that should be ignored.
+     * 
+     * @return The media types that should be ignored.
+     */
+    public List<MediaType> getIgnoredMediaTypes() {
+        return this.ignoredMediaTypes;
+    }
+
+    /**
+     * Returns the minimum size a representation must have before compression is
+     * done.
+     * 
+     * @return The minimum size a representation must have before compression is
+     *         done.
+     */
+    public long getMinimumSize() {
+        return mininumSize;
+    }
+
+    /**
      * Indicates if the request entity should be encoded.
      * 
      * @return True if the request entity should be encoded.
      */
     public boolean isEncodeRequest() {
         return this.encodeRequest;
+    }
+
+    /**
+     * Indicates if the response entity should be encoded.
+     * 
+     * @return True if the response entity should be encoded.
+     */
+    public boolean isEncodeResponse() {
+        return this.encodeResponse;
     }
 
     /**
@@ -317,31 +358,11 @@ public class Encoder extends Filter {
     /**
      * Indicates if the response entity should be encoded.
      * 
-     * @return True if the response entity should be encoded.
-     */
-    public boolean isEncodeResponse() {
-        return this.encodeResponse;
-    }
-
-    /**
-     * Indicates if the response entity should be encoded.
-     * 
      * @param encodeResponse
      *                True if the response entity should be encoded.
      */
     public void setEncodeResponse(boolean encodeResponse) {
         this.encodeResponse = encodeResponse;
-    }
-
-    /**
-     * Returns the minimum size a representation must have before compression is
-     * done.
-     * 
-     * @return The minimum size a representation must have before compression is
-     *         done.
-     */
-    public long getMinimumSize() {
-        return mininumSize;
     }
 
     /**
@@ -354,24 +375,6 @@ public class Encoder extends Filter {
      */
     public void setMinimumSize(long mininumSize) {
         this.mininumSize = mininumSize;
-    }
-
-    /**
-     * Returns the media types that should be encoded.
-     * 
-     * @return The media types that should be encoded.
-     */
-    public List<MediaType> getAcceptedMediaTypes() {
-        return this.acceptedMediaTypes;
-    }
-
-    /**
-     * Returns the media types that should be ignored.
-     * 
-     * @return The media types that should be ignored.
-     */
-    public List<MediaType> getIgnoredMediaTypes() {
-        return this.ignoredMediaTypes;
     }
 
 }

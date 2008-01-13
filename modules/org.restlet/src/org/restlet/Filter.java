@@ -33,6 +33,30 @@ import org.restlet.resource.Resource;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Filter extends Restlet {
+
+    /**
+     * Indicates that the request processing should continue normally. If
+     * returned from the {@link #beforeHandle(Request, Response)} method, the
+     * filter then invokes the {@link #doHandle(Request, Response)} method. If
+     * returned from the {@link #doHandle(Request, Response)} method, the filter
+     * then invokes the {@link #afterHandle(Request, Response)} method.
+     */
+    public static final int CONTINUE = 0;
+
+    /**
+     * Indicates that after the {@link #beforeHandle(Request, Response)} method,
+     * the request processing should skip the
+     * {@link #doHandle(Request, Response)} method to continue with the
+     * {@link #afterHandle(Request, Response)} method.
+     */
+    public static final int SKIP = 1;
+
+    /**
+     * Indicates that the request processing should stop and return the current
+     * response from the filter.
+     */
+    public static final int STOP = 2;
+
     /** The next Restlet. */
     private volatile Restlet next;
 
@@ -80,28 +104,35 @@ public abstract class Filter extends Restlet {
     }
 
     /**
-     * Allows filtering before processing by the next Restlet. Does nothing by
-     * default.
+     * Allows filtering before processing by the next Restlet. Returns
+     * {@link #CONTINUE} by default.
      * 
      * @param request
      *                The request to handle.
      * @param response
      *                The response to update.
+     * @return The continuation status. Either {@link #CONTINUE} or
+     *         {@link #SKIP} or {@link #STOP}.
      */
-    protected void beforeHandle(Request request, Response response) {
-        // To be overriden
+    protected int beforeHandle(Request request, Response response) {
+        return CONTINUE;
     }
 
     /**
      * Handles the call by distributing it to the next Restlet. If no Restlet is
      * attached, then a {@link Status#SERVER_ERROR_INTERNAL} status is returned.
+     * Returns {@link #CONTINUE} by default.
      * 
      * @param request
      *                The request to handle.
      * @param response
      *                The response to update.
+     * @return The continuation status. Either {@link #CONTINUE} or
+     *         {@link #STOP}.
      */
-    protected void doHandle(Request request, Response response) {
+    protected int doHandle(Request request, Response response) {
+        int result = CONTINUE;
+
         if (getNext() != null) {
             getNext().handle(request, response);
         } else {
@@ -110,6 +141,8 @@ public abstract class Filter extends Restlet {
                     .warning(
                             "A filter was executed without a next Restlet attached to it.");
         }
+
+        return result;
     }
 
     /**
@@ -134,9 +167,29 @@ public abstract class Filter extends Restlet {
      */
     public final void handle(Request request, Response response) {
         init(request, response);
-        beforeHandle(request, response);
-        doHandle(request, response);
-        afterHandle(request, response);
+
+        switch (beforeHandle(request, response)) {
+        case CONTINUE:
+            switch (doHandle(request, response)) {
+            case CONTINUE:
+                afterHandle(request, response);
+                break;
+
+            default:
+                // Stop the processing
+                break;
+            }
+            break;
+
+        case SKIP:
+            afterHandle(request, response);
+            break;
+
+        default:
+            // Stop the processing
+            break;
+        }
+
     }
 
     /**

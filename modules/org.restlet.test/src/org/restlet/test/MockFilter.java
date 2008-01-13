@@ -36,13 +36,15 @@ public class MockFilter extends Filter {
     }
 
     @Override
-    protected void beforeHandle(Request request, Response response) {
+    protected int beforeHandle(Request request, Response response) {
         if (!super.isStarted()) {
             throw new IllegalStateException("Filter is not started");
         }
         if (!super.hasNext()) {
             throw new IllegalStateException("Target is not set");
         }
+
+        return CONTINUE;
     }
 
 }

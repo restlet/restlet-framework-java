@@ -193,11 +193,13 @@ public class VirtualHost extends Router {
     protected Route createRoute(String uriPattern, Restlet target) {
         return new Route(this, uriPattern, target) {
             @Override
-            protected void beforeHandle(Request request, Response response) {
-                super.beforeHandle(request, response);
+            protected int beforeHandle(Request request, Response response) {
+                int result = super.beforeHandle(request, response);
 
                 // Set the request's root reference
                 request.setRootRef(request.getResourceRef().getBaseRef());
+
+                return result;
             }
         };
     }
