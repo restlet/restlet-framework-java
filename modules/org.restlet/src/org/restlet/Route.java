@@ -179,6 +179,7 @@ public class Route extends Filter {
      *                The response to filter.
      * @return The continuation status.
      */
+    @Override
     protected int beforeHandle(Request request, Response response) {
         // 1 - Parse the template variables and adjust the base reference
         if (getTemplate() != null) {
@@ -429,7 +430,7 @@ public class Route extends Filter {
                     if (totalLength > 0.0F) {
                         result = getRouter().getRequiredScore()
                                 + (1.0F - getRouter().getRequiredScore())
-                                * (((float) matchedLength) / totalLength);
+                                * (matchedLength / totalLength);
                     } else {
                         result = 1.0F;
                     }

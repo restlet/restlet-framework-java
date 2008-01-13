@@ -248,6 +248,7 @@ public final class ByteUtils {
             return new InputStream() {
                 private boolean endReached = false;
 
+                @Override
                 public int read() throws IOException {
                     try {
                         if (endReached)
@@ -277,6 +278,7 @@ public final class ByteUtils {
          */
         public OutputStream getOutputStream() {
             return new OutputStream() {
+                @Override
                 public void write(int b) throws IOException {
                     try {
                         if (!queue.offer(b, QUEUE_TIMEOUT, TimeUnit.SECONDS)) {
@@ -460,6 +462,7 @@ public final class ByteUtils {
      *                The input stream to convert.
      * @return A readable byte channel.
      */
+    @SuppressWarnings("unused")
     public static ReadableByteChannel getChannel(InputStream inputStream)
             throws IOException {
         return (inputStream != null) ? Channels.newChannel(inputStream) : null;
@@ -471,6 +474,7 @@ public final class ByteUtils {
      * @param outputStream
      *                The output stream.
      */
+    @SuppressWarnings("unused")
     public static WritableByteChannel getChannel(OutputStream outputStream)
             throws IOException {
         return (outputStream != null) ? Channels.newChannel(outputStream)
@@ -491,6 +495,7 @@ public final class ByteUtils {
         // Creates a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
         Thread writer = new Thread() {
+            @Override
             public void run() {
                 try {
                     WritableByteChannel wbc = pipe.sink();
@@ -546,6 +551,7 @@ public final class ByteUtils {
         // Creates a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
         Thread writer = new Thread() {
+            @Override
             public void run() {
                 try {
                     representation.write(pipedWriter);
@@ -570,6 +576,7 @@ public final class ByteUtils {
      *                The readable byte channel.
      * @return An input stream based on a given readable byte channel.
      */
+    @SuppressWarnings("unused")
     public static InputStream getStream(ReadableByteChannel readableChannel)
             throws IOException {
         InputStream result = null;
@@ -601,6 +608,7 @@ public final class ByteUtils {
      * 
      * @return A stream with the representation's content.
      */
+    @SuppressWarnings("unused")
     public static InputStream getStream(final Representation representation)
             throws IOException {
         if (representation != null) {
@@ -609,6 +617,7 @@ public final class ByteUtils {
             // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
             Thread writer = new Thread() {
+                @Override
                 public void run() {
                     try {
                         OutputStream os = pipe.getOutputStream();
@@ -668,6 +677,7 @@ public final class ByteUtils {
      * @param writer
      *                The writer.
      */
+    @SuppressWarnings("unused")
     public static OutputStream getStream(Writer writer) throws IOException {
         return new WriterOutputStream(writer);
     }

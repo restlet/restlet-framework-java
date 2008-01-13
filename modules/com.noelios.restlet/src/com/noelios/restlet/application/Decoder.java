@@ -81,6 +81,7 @@ public class Decoder extends Filter {
      * @param response
      *                The response to filter.
      */
+    @Override
     public void afterHandle(Request request, Response response) {
         // Check if decoding of the response entity is needed
         if (isDecodeResponse() && canDecode(response.getEntity())) {
@@ -98,6 +99,7 @@ public class Decoder extends Filter {
      *                The response to filter.
      * @return The continuation status.
      */
+    @Override
     public int beforeHandle(Request request, Response response) {
         // Check if decoding of the request entity is needed
         if (isDecodeRequest() && canDecode(request.getEntity())) {

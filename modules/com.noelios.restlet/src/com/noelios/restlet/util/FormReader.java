@@ -79,8 +79,7 @@ public class FormReader {
      * @param characterSet
      *                The supported character encoding.
      */
-    public FormReader(Logger logger, String query, CharacterSet characterSet)
-            throws IOException {
+    public FormReader(Logger logger, String query, CharacterSet characterSet) {
         this.logger = logger;
         this.stream = new ByteArrayInputStream(query.getBytes());
         this.characterSet = characterSet;

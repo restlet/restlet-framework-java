@@ -142,9 +142,8 @@ public class CookiesTestCase extends TestCase {
      * 
      * @param headerValue
      *            The cookie date value.
-     * @throws IOException
      */
-    private void testCookieDate(String dateValue) throws IOException {
+    private void testCookieDate(String dateValue) {
         Date date = DateUtils.parse(dateValue, DateUtils.FORMAT_RFC_1036);
 
         // Rewrite the date

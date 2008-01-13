@@ -335,7 +335,7 @@ public final class MediaType extends Metadata {
             // test for equality at Metadata level i.e. name and value.
             if (super.equals(obj)) {
                 // if obj isn't a mediatype or is null don't evaluate further
-                if ((obj instanceof MediaType) && obj != null) {
+                if (obj instanceof MediaType) {
                     MediaType that = (MediaType) obj;
                     result = ignoreParameters
                             || this.getParameters()

@@ -84,6 +84,7 @@ public class Application extends Restlet {
      *             content negotiation. Most users prefer to handle those
      *             conversion in Resource subclasses.
      */
+    @Deprecated
     private volatile org.restlet.service.ConverterService converterService;
 
     /** The decoder service. */
@@ -188,6 +189,7 @@ public class Application extends Restlet {
      *             content negotiation. Most users prefer to handle those
      *             conversion in Resource subclasses.
      */
+    @Deprecated
     public org.restlet.service.ConverterService getConverterService() {
         return this.converterService;
     }
@@ -366,6 +368,7 @@ public class Application extends Restlet {
      *             content negotiation. Most users prefer to handle those
      *             conversion in Resource subclasses.
      */
+    @Deprecated
     public void setConverterService(
             org.restlet.service.ConverterService converterService) {
         this.converterService = converterService;

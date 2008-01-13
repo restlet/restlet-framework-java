@@ -151,6 +151,7 @@ public class Directory extends Finder {
      *                The response to filter.
      * @return The target handler if available or null.
      */
+    @Override
     public Handler findTarget(Request request, Response response) {
         try {
             return Engine.getInstance().createDirectoryResource(this, request,
@@ -436,6 +437,7 @@ public class Directory extends Finder {
             return (x > '9') || (x < '0');
         }
 
+        @Override
         public int compare(final String uri0, final String uri1) {
             int ptr = 0;
             int msd = 0;

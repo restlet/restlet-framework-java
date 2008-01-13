@@ -49,21 +49,8 @@ public class FormUtils {
      */
     public static void parseQuery(Logger logger, Form form, String query,
             CharacterSet characterSet) {
-        FormReader fr = null;
-        try {
-            fr = new FormReader(logger, query, characterSet);
-        } catch (IOException ioe) {
-            if (logger != null)
-                logger
-                        .log(
-                                Level.WARNING,
-                                "Unable to create a form reader. Parsing aborted.",
-                                ioe);
-        }
-
-        if (fr != null) {
-            fr.addParameters(form);
-        }
+        FormReader fr = new FormReader(logger, query, characterSet);
+        fr.addParameters(form);
     }
 
     /**
@@ -233,10 +220,9 @@ public class FormUtils {
      * @param characterSet
      *                The supported character encoding.
      * @return The created parameter.
-     * @throws IOException
      */
     public static Parameter create(CharSequence name, CharSequence value,
-            CharacterSet characterSet) throws IOException {
+            CharacterSet characterSet) {
         Parameter result = null;
 
         if (name != null) {

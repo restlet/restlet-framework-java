@@ -80,6 +80,7 @@ public class ObjectRepresentation extends OutputRepresentation {
      * @return The represented object.
      * @throws IOException
      */
+    @SuppressWarnings("unused")
     public Object getObject() throws IOException {
         return this.object;
     }

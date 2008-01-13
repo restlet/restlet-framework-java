@@ -104,6 +104,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     }
 
     /** Stops the Restlet. */
+    @Override
     public void stop() throws Exception {
         getSocket().close();
         setSocket(null);

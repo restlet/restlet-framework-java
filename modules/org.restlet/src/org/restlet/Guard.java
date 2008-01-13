@@ -217,6 +217,7 @@ public class Guard extends Filter {
      *                The response to update.
      * @return The continuation status.
      */
+    @Override
     public int doHandle(Request request, Response response) {
         switch (authenticate(request)) {
         case 1:

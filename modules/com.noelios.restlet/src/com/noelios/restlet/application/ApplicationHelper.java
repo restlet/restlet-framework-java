@@ -72,6 +72,7 @@ public class ApplicationHelper extends Helper {
      *                The JDK's logger name to use for contextual logging.
      * @return The new context.
      */
+    @Override
     public Context createContext(String loggerName) {
         return new ApplicationContext(getApplication(), getParentContext(),
                 Logger.getLogger(loggerName));
@@ -86,6 +87,7 @@ public class ApplicationHelper extends Helper {
      * @param response
      *                The response to update.
      */
+    @Override
     public void handle(Request request, Response response) {
         // Add the application in request and response attributes
         request.getAttributes().put(Application.KEY, this.application);
@@ -122,6 +124,7 @@ public class ApplicationHelper extends Helper {
     }
 
     /** Start hook. */
+    @Override
     public synchronized void start() throws Exception {
         // Addition of tunnel filter
         if (getApplication().getTunnelService().isEnabled()) {
@@ -209,6 +212,7 @@ public class ApplicationHelper extends Helper {
     }
 
     /** Stop callback. */
+    @Override
     public synchronized void stop() throws Exception {
 
     }

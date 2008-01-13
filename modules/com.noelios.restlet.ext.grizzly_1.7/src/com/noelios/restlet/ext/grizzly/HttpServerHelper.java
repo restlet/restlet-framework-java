@@ -66,6 +66,7 @@ public class HttpServerHelper extends GrizzlyServerHelper {
         controller.setSelectorHandler(selectorHandler);
         controller
                 .setProtocolChainInstanceHandler(new DefaultProtocolChainInstanceHandler() {
+                    @Override
                     public ProtocolChain poll() {
                         ProtocolChain protocolChain = protocolChains.poll();
                         if (protocolChain == null) {

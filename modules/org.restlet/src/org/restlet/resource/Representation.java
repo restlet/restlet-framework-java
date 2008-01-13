@@ -57,6 +57,7 @@ public abstract class Representation extends Variant {
     /**
      * Indicates that the size of the representation can't be known in advance.
      */
+    @SuppressWarnings("hiding")
     public static final long UNKNOWN_SIZE = -1L;
 
     /** Indicates if the representation's content is available. */
@@ -131,6 +132,7 @@ public abstract class Representation extends Variant {
      * 
      * @return The expiration date.
      */
+    @Override
     @SuppressWarnings("deprecation")
     public Date getExpirationDate() {
         return super.getExpirationDate();
@@ -142,6 +144,7 @@ public abstract class Representation extends Variant {
      * 
      * @return The modification date.
      */
+    @Override
     @SuppressWarnings("deprecation")
     public Date getModificationDate() {
         return super.getModificationDate();
@@ -164,6 +167,7 @@ public abstract class Representation extends Variant {
      * 
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      */
+    @Override
     @SuppressWarnings("deprecation")
     public long getSize() {
         return super.getSize();
@@ -184,6 +188,7 @@ public abstract class Representation extends Variant {
      * 
      * @return The tag.
      */
+    @Override
     @SuppressWarnings("deprecation")
     public Tag getTag() {
         return super.getTag();
@@ -287,6 +292,7 @@ public abstract class Representation extends Variant {
      * @param expirationDate
      *                The expiration date.
      */
+    @Override
     @SuppressWarnings("deprecation")
     public void setExpirationDate(Date expirationDate) {
         super.setExpirationDate(expirationDate);
@@ -299,6 +305,7 @@ public abstract class Representation extends Variant {
      * @param modificationDate
      *                The modification date.
      */
+    @Override
     @SuppressWarnings("deprecation")
     public void setModificationDate(Date modificationDate) {
         super.setModificationDate(modificationDate);
@@ -310,6 +317,7 @@ public abstract class Representation extends Variant {
      * @param expectedSize
      *                The expected size in bytes if known, -1 otherwise.
      */
+    @Override
     @SuppressWarnings("deprecation")
     public void setSize(long expectedSize) {
         super.setSize(expectedSize);
@@ -321,6 +329,7 @@ public abstract class Representation extends Variant {
      * @param tag
      *                The tag.
      */
+    @Override
     @SuppressWarnings("deprecation")
     public void setTag(Tag tag) {
         super.setTag(tag);

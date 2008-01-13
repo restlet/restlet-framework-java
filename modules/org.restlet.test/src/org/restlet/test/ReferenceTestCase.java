@@ -18,8 +18,6 @@
 
 package org.restlet.test;
 
-import java.io.IOException;
-
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 
@@ -38,7 +36,7 @@ public class ReferenceTestCase extends RestletTestCase {
     /**
      * Tests the URI parsing.
      */
-    public void testParsing() throws IOException {
+    public void testParsing() {
         String base = "http://a/b/c/d;p?q";
 
         String uri01 = "g:h";

@@ -108,6 +108,7 @@ public final class ServerList extends WrapperList<Server> {
      * 
      * @return True (as per the general contract of the Collection.add method).
      */
+    @Override
     public boolean add(Server server) {
         server.setTarget(getTarget());
         return super.add(server);

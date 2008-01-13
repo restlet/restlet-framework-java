@@ -172,7 +172,7 @@ public final class CookieSetting extends Cookie {
             if (super.equals(obj)) {
                 // if obj isn't a cookie setting or is null don't evaluate
                 // further
-                if ((obj instanceof CookieSetting) && obj != null) {
+                if (obj instanceof CookieSetting) {
                     CookieSetting that = (CookieSetting) obj;
                     result = (this.maxAge == that.maxAge)
                             && (this.secure == that.secure);

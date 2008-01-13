@@ -78,6 +78,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * 
      * @return The encodings applied to the entity.
      */
+    @Override
     public List<Encoding> getEncodings() {
         if (canDecode()) {
             return new ArrayList<Encoding>();
@@ -92,6 +93,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * 
      * @return A readable byte channel.
      */
+    @Override
     public ReadableByteChannel getChannel() throws IOException {
         if (canDecode()) {
             return ByteUtils.getChannel(getStream());
@@ -105,6 +107,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * 
      * @return A stream with the representation's content.
      */
+    @Override
     public InputStream getStream() throws IOException {
         InputStream result = null;
 
@@ -153,6 +156,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * @param writableChannel
      *                A writable byte channel.
      */
+    @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (canDecode()) {
             write(ByteUtils.getStream(writableChannel));
@@ -167,6 +171,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * @param outputStream
      *                The output stream.
      */
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         if (canDecode()) {
             ByteUtils.write(getStream(), outputStream);
@@ -182,6 +187,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * 
      * @return The representation as a string value.
      */
+    @Override
     public String getText() throws IOException {
         String result = null;
 
@@ -200,6 +206,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * 
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      */
+    @Override
     public long getSize() {
         long result = UNKNOWN_SIZE;
 

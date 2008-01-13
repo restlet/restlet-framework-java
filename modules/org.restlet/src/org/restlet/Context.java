@@ -128,6 +128,7 @@ public class Context {
      * @return A request dispatcher to virtual hosts of the local component.
      * @deprecated Use getClientDispatcher() instead.
      */
+    @Deprecated
     public Uniform getDispatcher() {
         return getClientDispatcher();
     }

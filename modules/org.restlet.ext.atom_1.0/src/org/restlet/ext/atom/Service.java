@@ -218,6 +218,7 @@ public class Service extends SaxRepresentation {
      *            The XML writer to write to.
      * @throws IOException
      */
+    @Override
     public void write(XmlWriter writer) throws IOException {
         try {
             writer.setDataFormat(true);
@@ -271,6 +272,7 @@ public class Service extends SaxRepresentation {
         /**
          * Receive notification of the beginning of a document.
          */
+        @Override
         public void startDocument() throws SAXException {
             this.state = IN_NONE;
             this.currentWorkspace = null;
@@ -297,6 +299,7 @@ public class Service extends SaxRepresentation {
          *            value of this object after startElement returns is
          *            undefined.
          */
+        @Override
         public void startElement(String uri, String localName, String qName,
                 Attributes attrs) throws SAXException {
             if (uri.equalsIgnoreCase(NAMESPACE)) {
@@ -333,6 +336,7 @@ public class Service extends SaxRepresentation {
          * @param length
          *            The number of characters to read from the array.
          */
+        @Override
         public void characters(char[] ch, int start, int length)
                 throws SAXException {
             if (state == IN_MEMBER_TYPE) {
@@ -354,6 +358,7 @@ public class Service extends SaxRepresentation {
          *            The qualified XML name (with prefix), or the empty string
          *            if qualified names are not available.
          */
+        @Override
         public void endElement(String uri, String localName, String qName)
                 throws SAXException {
             if (localName.equalsIgnoreCase("service")) {
@@ -388,6 +393,7 @@ public class Service extends SaxRepresentation {
         /**
          * Receive notification of the end of a document.
          */
+        @Override
         public void endDocument() throws SAXException {
             this.state = IN_NONE;
             this.currentWorkspace = null;

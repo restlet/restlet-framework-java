@@ -205,7 +205,7 @@ public class HttpBasicTestCase extends TestCase {
         assertEquals(AUTHENTICATED_MSG, response.getEntity().getText());
     }
 
-    public void HTTPBasicShortWrong() throws IOException {
+    public void HTTPBasicShortWrong() {
         Request request = new Request(Method.GET, uri);
         Client client = new Client(Protocol.HTTP);
 
@@ -233,7 +233,7 @@ public class HttpBasicTestCase extends TestCase {
         assertEquals(AUTHENTICATED_MSG, response.getEntity().getText());
     }
 
-    public void HTTPBasicLongWrong() throws IOException {
+    public void HTTPBasicLongWrong() {
         Request request = new Request(Method.GET, uri);
         Client client = new Client(Protocol.HTTP);
 
@@ -247,7 +247,7 @@ public class HttpBasicTestCase extends TestCase {
                 Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
     }
 
-    public void HTTPBasicWrongUser() throws IOException {
+    public void HTTPBasicWrongUser() {
         Request request = new Request(Method.GET, uri);
         Client client = new Client(Protocol.HTTP);
 

@@ -71,18 +71,21 @@ public class ServletWarClient extends Client {
      * @param response
      *                The response to update.
      */
+    @Override
     public void handle(Request request, Response response) {
         init(request, response);
         getHelper().handle(request, response);
     }
 
     /** Start callback. */
+    @Override
     public void start() throws Exception {
         super.start();
         getHelper().start();
     }
 
     /** Stop callback. */
+    @Override
     public void stop() throws Exception {
         getHelper().stop();
         super.stop();

@@ -46,6 +46,7 @@ public class Variant {
      * 
      * @deprecated Use the {@link Representation#UNKNOWN_SIZE} constant instead.
      */
+    @Deprecated
     public static final long UNKNOWN_SIZE = -1L;
 
     /** The natural language(s) of the intended audience for this variant. */

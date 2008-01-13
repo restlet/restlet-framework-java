@@ -1178,7 +1178,6 @@ public class Reference {
      */
     public List<String> getSegments() {
         List<String> result = new ArrayList<String>();
-        ;
         String path = getPath();
         int start = -2; // The index of the slash starting the segment
         char current;

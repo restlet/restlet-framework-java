@@ -129,6 +129,7 @@ public class Feed extends SaxRepresentation {
      *            The XML writer to write to.
      * @throws IOException
      */
+    @Override
     public void write(XmlWriter writer) throws IOException {
         // TODO
     }
@@ -353,7 +354,7 @@ public class Feed extends SaxRepresentation {
     private static class ContentReader extends DefaultHandler {
         public enum State {
             NONE, FEED, FEED_AUTHOR, FEED_AUTHOR_NAME, FEED_AUTHOR_URI, FEED_AUTHOR_EMAIL, FEED_CATEGORY, FEED_CONTRIBUTOR, FEED_CONTRIBUTOR_NAME, FEED_CONTRIBUTOR_URI, FEED_CONTRIBUTOR_EMAIL, FEED_GENERATOR, FEED_ICON, FEED_ID, FEED_LINK, FEED_LOGO, FEED_RIGHTS, FEED_SUBTITLE, FEED_TITLE, FEED_UPDATED, FEED_ENTRY, FEED_ENTRY_AUTHOR, FEED_ENTRY_AUTHOR_NAME, FEED_ENTRY_AUTHOR_URI, FEED_ENTRY_AUTHOR_EMAIL, FEED_ENTRY_CATEGORY, FEED_ENTRY_CONTENT, FEED_ENTRY_CONTRIBUTOR, FEED_ENTRY_ID, FEED_ENTRY_LINK, FEED_ENTRY_PUBLISHED, FEED_ENTRY_RIGHTS, FEED_ENTRY_SOURCE, FEED_ENTRY_SOURCE_AUTHOR, FEED_ENTRY_SOURCE_AUTHOR_NAME, FEED_ENTRY_SOURCE_AUTHOR_URI, FEED_ENTRY_SOURCE_AUTHOR_EMAIL, FEED_ENTRY_SOURCE_CATEGORY, FEED_ENTRY_SOURCE_CONTRIBUTOR, FEED_ENTRY_SOURCE_GENERATOR, FEED_ENTRY_SOURCE_ICON, FEED_ENTRY_SOURCE_ID, FEED_ENTRY_SOURCE_LINK, FEED_ENTRY_SOURCE_LOGO, FEED_ENTRY_SOURCE_RIGHTS, FEED_ENTRY_SOURCE_SUBTITLE, FEED_ENTRY_SOURCE_TITLE, FEED_ENTRY_SOURCE_UPDATED, FEED_ENTRY_SUMMARY, FEED_ENTRY_TITLE, FEED_ENTRY_UPDATED
-        };
+        }
 
         private State state;
 
@@ -388,6 +389,7 @@ public class Feed extends SaxRepresentation {
         /**
          * Receive notification of the beginning of a document.
          */
+        @Override
         public void startDocument() throws SAXException {
             this.contentBuffer = new StringBuilder();
         }
@@ -411,6 +413,7 @@ public class Feed extends SaxRepresentation {
          *            value of this object after startElement returns is
          *            undefined.
          */
+        @Override
         public void startElement(String uri, String localName, String qName,
                 Attributes attrs) throws SAXException {
             this.contentBuffer.delete(0, this.contentBuffer.length() + 1);
@@ -576,6 +579,7 @@ public class Feed extends SaxRepresentation {
          * @param length
          *            The number of characters to read from the array.
          */
+        @Override
         public void characters(char[] ch, int start, int length)
                 throws SAXException {
             contentBuffer.append(ch, start, length);
@@ -595,6 +599,7 @@ public class Feed extends SaxRepresentation {
          *            The qualified XML name (with prefix), or the empty string
          *            if qualified names are not available.
          */
+        @Override
         public void endElement(String uri, String localName, String qName)
                 throws SAXException {
             if (currentText != null) {
@@ -720,6 +725,7 @@ public class Feed extends SaxRepresentation {
         /**
          * Receive notification of the end of a document.
          */
+        @Override
         public void endDocument() throws SAXException {
             this.state = State.NONE;
             this.currentEntry = null;

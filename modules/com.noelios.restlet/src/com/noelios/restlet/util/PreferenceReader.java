@@ -243,7 +243,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
 
             for (Iterator<Parameter> iter = parameters.iterator(); !qualityFound
                     && iter.hasNext();) {
-                param = (Parameter) iter.next();
+                param = iter.next();
 
                 if (param.getName().equals("q")) {
                     qualityFound = true;
@@ -272,7 +272,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
             Parameter param = null;
             for (Iterator<Parameter> iter = parameters.iterator(); !found
                     && iter.hasNext();) {
-                param = (Parameter) iter.next();
+                param = iter.next();
                 if (param.getName().equals("q")) {
                     result = PreferenceUtils.parseQuality(param.getValue());
                     found = true;

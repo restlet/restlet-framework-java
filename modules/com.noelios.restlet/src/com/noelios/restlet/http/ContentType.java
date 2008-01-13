@@ -54,7 +54,7 @@ public class ContentType {
                     PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
             Preference<MediaType> pref;
             pref = pr.readPreference();
-            this.mediaType = (MediaType) pref.getMetadata();
+            this.mediaType = pref.getMetadata();
 
             String charSet = this.mediaType.getParameters().getFirstValue(
                     "charset");

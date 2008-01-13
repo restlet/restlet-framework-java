@@ -240,7 +240,7 @@ public class ServerServlet extends HttpServlet {
             javax.servlet.ServletConfig servletConfig = getServletConfig();
             for (Enumeration<String> enum1 = servletConfig
                     .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = (String) enum1.nextElement();
+                initParam = enum1.nextElement();
                 applicationContext.getParameters().add(initParam,
                         servletConfig.getInitParameter(initParam));
             }
@@ -248,7 +248,7 @@ public class ServerServlet extends HttpServlet {
             // Copy all the Servlet application initialization parameters
             for (Enumeration<String> enum1 = getServletContext()
                     .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = (String) enum1.nextElement();
+                initParam = enum1.nextElement();
                 applicationContext.getParameters().add(initParam,
                         getServletContext().getInitParameter(initParam));
             }
@@ -321,7 +321,7 @@ public class ServerServlet extends HttpServlet {
             javax.servlet.ServletConfig servletConfig = getServletConfig();
             for (Enumeration<String> enum1 = servletConfig
                     .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = (String) enum1.nextElement();
+                initParam = enum1.nextElement();
                 componentContext.getParameters().add(initParam,
                         servletConfig.getInitParameter(initParam));
             }
@@ -329,7 +329,7 @@ public class ServerServlet extends HttpServlet {
             // Copy all the Servlet application initialization parameters
             for (Enumeration<String> enum1 = getServletContext()
                     .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = (String) enum1.nextElement();
+                initParam = enum1.nextElement();
                 componentContext.getParameters().add(initParam,
                         getServletContext().getInitParameter(initParam));
             }
@@ -523,6 +523,7 @@ public class ServerServlet extends HttpServlet {
      * @param response
      *                The HTTP Servlet response.
      */
+    @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpServerHelper helper = getServer(request);

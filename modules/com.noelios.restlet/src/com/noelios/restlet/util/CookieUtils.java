@@ -132,7 +132,7 @@ public class CookieUtils {
             if (maxAge >= 0) {
                 if (version == 0) {
                     long currentTime = System.currentTimeMillis();
-                    long maxTime = ((long) maxAge * 1000L);
+                    long maxTime = (maxAge * 1000L);
                     long expiresTime = currentTime + maxTime;
                     Date expires = new Date(expiresTime);
                     destination.append("; Expires=");

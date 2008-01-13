@@ -170,6 +170,7 @@ public class SaxRepresentation extends XmlRepresentation {
      *                The XML writer to write to.
      * @throws IOException
      */
+    @SuppressWarnings("unused")
     public void write(XmlWriter writer) throws IOException {
         // Do nothing by default.
     }

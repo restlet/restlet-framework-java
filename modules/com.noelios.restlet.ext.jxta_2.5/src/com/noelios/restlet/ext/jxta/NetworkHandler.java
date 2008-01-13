@@ -79,6 +79,7 @@ public class NetworkHandler {
         try {
             network = new Network(new AbstractConfigurator(HOME, Profile
                     .get(getClass().getResource(PROFILE_RESOURCE).toURI())) {
+                @Override
                 public PlatformConfig createPlatformConfig(Configurator c)
                         throws ConfiguratorException {
                     c.setName(CONFIG_NAME);

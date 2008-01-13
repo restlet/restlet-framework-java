@@ -35,10 +35,12 @@ public class KeepAliveInputStreamTestCase extends TestCase {
     static class MockInputStream extends InputStream {
         boolean closed = false;
 
+        @Override
         public int read() throws IOException {
             return -1;
         }
 
+        @Override
         public void close() throws IOException {
             closed = true;
         }

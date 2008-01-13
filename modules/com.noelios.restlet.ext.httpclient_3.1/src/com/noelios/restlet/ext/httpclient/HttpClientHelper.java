@@ -147,6 +147,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      *                The high-level request.
      * @return A low-level HTTP client call.
      */
+    @Override
     public HttpClientCall create(Request request) {
         HttpClientCall result = null;
 

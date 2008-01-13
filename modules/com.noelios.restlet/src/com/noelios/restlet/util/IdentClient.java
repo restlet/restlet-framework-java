@@ -111,7 +111,6 @@ public class IdentClient {
                 } catch (IOException ioe) {
                     logger.log(Level.FINE, "Unable to close the socket", ioe);
                 }
-                ;
             }
         }
     }

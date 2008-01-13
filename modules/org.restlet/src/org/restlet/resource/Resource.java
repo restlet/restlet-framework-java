@@ -146,6 +146,7 @@ public class Resource extends Handler {
      * @param entity
      *                The posted entity.
      */
+    @SuppressWarnings("unused")
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -218,6 +219,7 @@ public class Resource extends Handler {
      * @deprecated Use the {@link #represent()} method instead.
      * @see #getPreferredVariant()
      */
+    @Deprecated
     public Representation getPreferredRepresentation() {
         Representation result = null;
 
@@ -276,6 +278,7 @@ public class Resource extends Handler {
      * @see #getVariants()
      * @deprecated Use the {@link #represent(Variant)} method instead.
      */
+    @Deprecated
     public Representation getRepresentation(Variant variant) {
         Representation result = null;
 
@@ -591,6 +594,7 @@ public class Resource extends Handler {
      * @param response
      *                The response to return.
      */
+    @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         this.modifiable = false;
@@ -687,6 +691,7 @@ public class Resource extends Handler {
      * <br>
      * This is the higher-level method that let you process DELETE requests.
      */
+    @SuppressWarnings("unused")
     public void removeRepresentations() throws ResourceException {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
     }
@@ -720,6 +725,7 @@ public class Resource extends Handler {
      * @return The full representation for the variant.
      * @see #getVariants()
      */
+    @SuppressWarnings("unused")
     public Representation represent(Variant variant) throws ResourceException {
         Representation result = null;
 
@@ -799,6 +805,7 @@ public class Resource extends Handler {
      * 
      * @param entity
      */
+    @SuppressWarnings("unused")
     public void storeRepresentation(Representation entity)
             throws ResourceException {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);

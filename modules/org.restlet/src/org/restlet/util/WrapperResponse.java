@@ -66,6 +66,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The list of allowed methods.
      */
+    @Override
     public Set<Method> getAllowedMethods() {
         return getWrappedResponse().getAllowedMethods();
     }
@@ -102,6 +103,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The modifiable attributes map.
      */
+    @Override
     public Map<String, Object> getAttributes() {
         return getWrappedResponse().getAttributes();
     }
@@ -111,6 +113,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The authentication request sent by an origin server to a client.
      */
+    @Override
     public ChallengeRequest getChallengeRequest() {
         return getWrappedResponse().getChallengeRequest();
     }
@@ -120,6 +123,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The cookie settings provided by the server.
      */
+    @Override
     public Series<CookieSetting> getCookieSettings() {
         return getWrappedResponse().getCookieSettings();
     }
@@ -131,6 +135,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The set of dimensions on which the response entity may vary.
      */
+    @Override
     public Set<Dimension> getDimensions() {
         return getWrappedResponse().getDimensions();
     }
@@ -140,6 +145,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The entity representation.
      */
+    @Override
     public Representation getEntity() {
         return getWrappedResponse().getEntity();
     }
@@ -152,6 +158,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The entity as a DOM representation.
      */
+    @Override
     public DomRepresentation getEntityAsDom() {
         return getWrappedResponse().getEntityAsDom();
     }
@@ -164,6 +171,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The entity as a DOM representation.
      */
+    @Override
     public Form getEntityAsForm() {
         return getWrappedResponse().getEntityAsForm();
     }
@@ -183,6 +191,8 @@ public class WrapperResponse extends Response {
      *             Most users prefer to handle those conversion in Resource
      *             subclasses.
      */
+    @Override
+    @Deprecated
     public Object getEntityAsObject() {
         return getWrappedResponse().getEntityAsObject();
     }
@@ -196,6 +206,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The entity as a SAX representation.
      */
+    @Override
     public SaxRepresentation getEntityAsSax() {
         return getWrappedResponse().getEntityAsSax();
     }
@@ -206,6 +217,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The redirection reference.
      */
+    @Override
     public Reference getLocationRef() {
         return getWrappedResponse().getLocationRef();
     }
@@ -217,6 +229,8 @@ public class WrapperResponse extends Response {
      * @return The redirection reference.
      * @deprecated Use the getLocationRef() method instead.
      */
+    @Override
+    @Deprecated
     public Reference getRedirectRef() {
         return getWrappedResponse().getRedirectRef();
     }
@@ -226,6 +240,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The associated request
      */
+    @Override
     public Request getRequest() {
         return getWrappedResponse().getRequest();
     }
@@ -235,6 +250,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The server-specific information.
      */
+    @Override
     public ServerInfo getServerInfo() {
         return getWrappedResponse().getServerInfo();
     }
@@ -244,6 +260,7 @@ public class WrapperResponse extends Response {
      * 
      * @return The status.
      */
+    @Override
     public Status getStatus() {
         return getWrappedResponse().getStatus();
     }
@@ -263,6 +280,7 @@ public class WrapperResponse extends Response {
      * 
      * @return True if a content is available and can be sent.
      */
+    @Override
     public boolean isEntityAvailable() {
         return getWrappedResponse().isEntityAvailable();
     }
@@ -274,6 +292,7 @@ public class WrapperResponse extends Response {
      * @param targetRef
      *                The target URI reference.
      */
+    @Override
     public void redirectPermanent(Reference targetRef) {
         getWrappedResponse().redirectPermanent(targetRef);
     }
@@ -285,6 +304,7 @@ public class WrapperResponse extends Response {
      * @param targetUri
      *                The target URI.
      */
+    @Override
     public void redirectPermanent(String targetUri) {
         getWrappedResponse().redirectPermanent(targetUri);
     }
@@ -299,6 +319,7 @@ public class WrapperResponse extends Response {
      * @param targetRef
      *                The target reference.
      */
+    @Override
     public void redirectSeeOther(Reference targetRef) {
         getWrappedResponse().redirectSeeOther(targetRef);
     }
@@ -313,6 +334,7 @@ public class WrapperResponse extends Response {
      * @param targetUri
      *                The target URI.
      */
+    @Override
     public void redirectSeeOther(String targetUri) {
         getWrappedResponse().redirectSeeOther(targetUri);
     }
@@ -324,6 +346,7 @@ public class WrapperResponse extends Response {
      * @param targetRef
      *                The target reference.
      */
+    @Override
     public void redirectTemporary(Reference targetRef) {
         getWrappedResponse().redirectTemporary(targetRef);
     }
@@ -335,6 +358,7 @@ public class WrapperResponse extends Response {
      * @param targetUri
      *                The target URI.
      */
+    @Override
     public void redirectTemporary(String targetUri) {
         getWrappedResponse().redirectTemporary(targetUri);
     }
@@ -346,6 +370,7 @@ public class WrapperResponse extends Response {
      *                The authentication request sent by an origin server to a
      *                client.
      */
+    @Override
     public void setChallengeRequest(ChallengeRequest request) {
         getWrappedResponse().setChallengeRequest(request);
     }
@@ -364,6 +389,8 @@ public class WrapperResponse extends Response {
      *             Most users prefer to handle those conversion in Resource
      *             subclasses.
      */
+    @Override
+    @Deprecated
     public void setEntity(Object object) {
         getWrappedResponse().setEntity(object);
     }
@@ -374,6 +401,7 @@ public class WrapperResponse extends Response {
      * @param entity
      *                The entity representation.
      */
+    @Override
     public void setEntity(Representation entity) {
         getWrappedResponse().setEntity(entity);
     }
@@ -386,6 +414,7 @@ public class WrapperResponse extends Response {
      * @param mediaType
      *                The representation's media type.
      */
+    @Override
     public void setEntity(String value, MediaType mediaType) {
         getWrappedResponse().setEntity(value, mediaType);
     }
@@ -397,6 +426,7 @@ public class WrapperResponse extends Response {
      * @param locationRef
      *                The reference to set.
      */
+    @Override
     public void setLocationRef(Reference locationRef) {
         getWrappedResponse().setLocationRef(locationRef);
     }
@@ -408,6 +438,7 @@ public class WrapperResponse extends Response {
      * @param locationUri
      *                The URI to set.
      */
+    @Override
     public void setLocationRef(String locationUri) {
         getWrappedResponse().setLocationRef(locationUri);
     }
@@ -420,6 +451,8 @@ public class WrapperResponse extends Response {
      *                The redirection reference.
      * @deprecated Use the setLocationRef() method instead.
      */
+    @Override
+    @Deprecated
     public void setRedirectRef(Reference redirectRef) {
         getWrappedResponse().setRedirectRef(redirectRef);
     }
@@ -432,6 +465,8 @@ public class WrapperResponse extends Response {
      *                The redirection URI.
      * @deprecated Use the setLocationRef() method instead.
      */
+    @Override
+    @Deprecated
     public void setRedirectRef(String redirectUri) {
         getWrappedResponse().setRedirectRef(redirectUri);
     }
@@ -442,6 +477,7 @@ public class WrapperResponse extends Response {
      * @param request
      *                The associated request
      */
+    @Override
     public void setRequest(Request request) {
         getWrappedResponse().setRequest(request);
     }
@@ -462,6 +498,7 @@ public class WrapperResponse extends Response {
      * @param status
      *                The status to set.
      */
+    @Override
     public void setStatus(Status status) {
         getWrappedResponse().setStatus(status);
     }
@@ -474,6 +511,7 @@ public class WrapperResponse extends Response {
      * @param message
      *                The status message.
      */
+    @Override
     public void setStatus(Status status, String message) {
         getWrappedResponse().setStatus(status, message);
     }

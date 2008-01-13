@@ -165,6 +165,7 @@ public abstract class Filter extends Restlet {
      * @param response
      *                The response to update.
      */
+    @Override
     public final void handle(Request request, Response response) {
         init(request, response);
 

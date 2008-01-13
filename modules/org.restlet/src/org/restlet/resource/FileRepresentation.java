@@ -132,6 +132,7 @@ public class FileRepresentation extends Representation {
      * 
      * @return A readable byte channel.
      */
+    @Override
     public FileChannel getChannel() throws IOException {
         try {
             return new FileInputStream(file).getChannel();
@@ -207,6 +208,7 @@ public class FileRepresentation extends Representation {
      * @param writableChannel
      *                A writable byte channel.
      */
+    @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         FileChannel fc = getChannel();
         long position = 0;

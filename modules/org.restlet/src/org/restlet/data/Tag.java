@@ -175,6 +175,7 @@ public final class Tag extends Metadata {
      *
      * @return The description.
      */
+    @Override
     public String getDescription() {
         return "Validation tag equivalent to an HTTP entity tag";
     }
@@ -184,6 +185,7 @@ public final class Tag extends Metadata {
      *
      * @return The name, corresponding to an HTTP opaque tag value.
      */
+    @Override
     public String getName() {
         return super.getName();
     }

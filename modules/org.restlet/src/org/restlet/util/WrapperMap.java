@@ -97,6 +97,7 @@ public class WrapperMap<K, V> implements Map<K, V> {
      *                Object to be compared for equality with this map.
      * @return True if the specified object is equal to this map.
      */
+    @Override
     public boolean equals(Object o) {
         return getDelegate().equals(o);
     }
@@ -131,6 +132,7 @@ public class WrapperMap<K, V> implements Map<K, V> {
      * 
      * @return The hash code value for this map.
      */
+    @Override
     public int hashCode() {
         return getDelegate().hashCode();
     }

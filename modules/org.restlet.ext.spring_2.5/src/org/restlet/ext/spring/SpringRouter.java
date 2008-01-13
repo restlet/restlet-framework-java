@@ -106,8 +106,7 @@ public class SpringRouter extends Router {
                     resourceClass = Class.forName((String) value);
 
                     if (Resource.class.isAssignableFrom(resourceClass)) {
-                        router.attach(key,
-                                (Class<? extends Resource>) resourceClass);
+                        router.attach(key, resourceClass);
                     } else {
                         router
                                 .getLogger()

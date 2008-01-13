@@ -71,6 +71,7 @@ public class Engine extends org.restlet.util.Engine {
             .getCanonicalName());
 
     /** Complete version. */
+    @SuppressWarnings("hiding")
     public static final String VERSION = org.restlet.util.Engine.VERSION;
 
     /** Complete version header. */
@@ -160,7 +161,7 @@ public class Engine extends org.restlet.util.Engine {
      */
     public static Engine register(boolean discoverConnectors) {
         Engine result = new Engine(discoverConnectors);
-        Engine.setInstance(result);
+        org.restlet.util.Engine.setInstance(result);
         return result;
     }
 
@@ -743,7 +744,7 @@ public class Engine extends org.restlet.util.Engine {
                 // be checked too
                 for (Iterator<Parameter> iter3 = variantMediaType
                         .getParameters().iterator(); iter3.hasNext();) {
-                    Parameter currentParam = (Parameter) iter3.next();
+                    Parameter currentParam = iter3.next();
 
                     if (isParameterFound(currentParam, preferenceMediaType)) {
                         score++;
@@ -772,7 +773,7 @@ public class Engine extends org.restlet.util.Engine {
 
         for (Iterator<Parameter> iter = mediaRange.getParameters().iterator(); !result
                 && iter.hasNext();) {
-            result = searchedParam.equals((Parameter) iter.next());
+            result = searchedParam.equals(iter.next());
         }
 
         return result;

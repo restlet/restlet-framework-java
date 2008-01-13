@@ -100,7 +100,7 @@ public class Cookie extends Parameter {
             // test for equality at Parameter level i.e. name and value.
             if (super.equals(obj)) {
                 // if obj isn't a cookie or is null don't evaluate further
-                if ((obj instanceof Cookie) && obj != null) {
+                if (obj instanceof Cookie) {
                     Cookie that = (Cookie) obj;
                     result = (this.version == that.version);
                     if (result) // if versions are equal test domains

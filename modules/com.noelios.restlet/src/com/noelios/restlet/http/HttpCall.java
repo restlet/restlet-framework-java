@@ -274,6 +274,7 @@ public class HttpCall {
      * @return The status code.
      * @throws IOException
      */
+    @SuppressWarnings("unused")
     public int getStatusCode() throws IOException {
         return this.statusCode;
     }

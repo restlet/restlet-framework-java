@@ -110,6 +110,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
     }
 
     /** Starts the Restlet. */
+    @Override
     public void start() throws Exception {
         // Initialize the SSL context
         KeyStore keyStore = KeyStore.getInstance(getKeystoreType());

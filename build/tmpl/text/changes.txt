@@ -23,7 +23,7 @@ Changes log
    by Tim Peirls.
  - Guard.checkSecret() method now has a Request parameter. Suggested by Alex Milowski.
  - Added new constructors to CookieSetting. Contributed by Stephan Koops.
- - Filter.beforeHandle() and doHandle() methods can now indicates if the processing sould continue normal,
+ - Filter.beforeHandle() and doHandle() methods can now indicates if the processing should continue normal,
    go to the afterHandle() method directly or stop immediately. IMPORTANT NOTE: as it isn't possible to
    add a return parameter to an existing method, the change can break existing filters. In this case, you
    just need to return the "CONTINUE" constant from your method and use "int" as return parameter.

@@ -159,6 +159,7 @@ public class Encoder extends Filter {
      * @param response
      *                The response to filter.
      */
+    @Override
     public void afterHandle(Request request, Response response) {
         // Check if encoding of the response entity is needed
         if (isEncodeResponse() && canEncode(response.getEntity())) {
@@ -177,6 +178,7 @@ public class Encoder extends Filter {
      *                The response to filter.
      * @return The continuation status.
      */
+    @Override
     public int beforeHandle(Request request, Response response) {
         // Check if encoding of the request entity is needed
         if (isEncodeRequest() && canEncode(request.getEntity())) {

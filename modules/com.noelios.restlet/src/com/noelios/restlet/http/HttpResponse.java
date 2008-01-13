@@ -68,6 +68,7 @@ public class HttpResponse extends Response {
      * 
      * @return The server-specific information.
      */
+    @Override
     public ServerInfo getServerInfo() {
         ServerInfo result = super.getServerInfo();
 

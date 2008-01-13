@@ -137,6 +137,7 @@ public class Finder extends Restlet {
      * @return The created handler or null.
      * @deprecated Use the {@link #createTarget(Request, Response)} instead.
      */
+    @Deprecated
     public Handler createResource(Request request, Response response) {
         return createTarget(getTargetClass(), request, response);
     }
@@ -307,6 +308,7 @@ public class Finder extends Restlet {
      * @param response
      *                The response to update.
      */
+    @Override
     public void handle(Request request, Response response) {
         init(request, response);
 

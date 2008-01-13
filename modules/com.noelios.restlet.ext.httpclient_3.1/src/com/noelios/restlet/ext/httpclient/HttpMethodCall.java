@@ -107,6 +107,7 @@ public class HttpMethodCall extends HttpClientCall {
                 this.httpMethod = new TraceMethod(requestUri);
             } else {
                 this.httpMethod = new EntityEnclosingMethod(requestUri) {
+                    @Override
                     public String getName() {
                         return method;
                     }
@@ -140,6 +141,7 @@ public class HttpMethodCall extends HttpClientCall {
      * 
      * @return The response reason phrase.
      */
+    @Override
     public String getReasonPhrase() {
         return getHttpMethod().getStatusText();
     }
@@ -175,6 +177,7 @@ public class HttpMethodCall extends HttpClientCall {
                     .getResponseBodyAsStream();
             if (responseBodyAsStream != null) {
                 result = new FilterInputStream(responseBodyAsStream) {
+                    @Override
                     public void close() throws IOException {
                         super.close();
                         getHttpMethod().releaseConnection();
@@ -182,7 +185,6 @@ public class HttpMethodCall extends HttpClientCall {
                 };
             }
         } catch (IOException ioe) {
-            result = null;
         }
 
         return result;
@@ -193,6 +195,7 @@ public class HttpMethodCall extends HttpClientCall {
      * 
      * @return The modifiable list of response headers.
      */
+    @Override
     public Series<Parameter> getResponseHeaders() {
         Series<Parameter> result = super.getResponseHeaders();
 
@@ -213,6 +216,7 @@ public class HttpMethodCall extends HttpClientCall {
      * 
      * @return The response address.
      */
+    @Override
     public String getServerAddress() {
         try {
             return getHttpMethod().getURI().getHost();
@@ -226,6 +230,7 @@ public class HttpMethodCall extends HttpClientCall {
      * 
      * @return The response status code.
      */
+    @Override
     public int getStatusCode() {
         return getHttpMethod().getStatusCode();
     }

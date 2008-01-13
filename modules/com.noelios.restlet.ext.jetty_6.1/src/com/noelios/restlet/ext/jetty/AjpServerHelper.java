@@ -46,6 +46,7 @@ public class AjpServerHelper extends JettyServerHelper {
      * 
      * @return A new internal Jetty connector.
      */
+    @Override
     protected AbstractConnector createConnector() {
         return new Ajp13SocketConnector();
     }

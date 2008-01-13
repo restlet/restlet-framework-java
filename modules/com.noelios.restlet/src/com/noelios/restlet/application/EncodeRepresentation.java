@@ -83,6 +83,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * 
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      */
+    @Override
     public long getSize() {
         long result = UNKNOWN_SIZE;
 
@@ -102,6 +103,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * 
      * @return The applied encodings.
      */
+    @Override
     public List<Encoding> getEncodings() {
         if (this.encodings == null) {
             encodings = new WrapperList<Encoding>() {
@@ -175,6 +177,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * 
      * @return A readable byte channel.
      */
+    @Override
     public ReadableByteChannel getChannel() throws IOException {
         if (canEncode()) {
             return ByteUtils.getChannel(getStream());
@@ -188,6 +191,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * 
      * @return A stream with the representation's content.
      */
+    @Override
     public InputStream getStream() throws IOException {
         if (canEncode()) {
             return ByteUtils.getStream(this);
@@ -202,6 +206,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * @param writableChannel
      *                A writable byte channel.
      */
+    @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (canEncode()) {
             write(ByteUtils.getStream(writableChannel));
@@ -216,6 +221,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * @param outputStream
      *                The output stream.
      */
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         if (canEncode()) {
             DeflaterOutputStream encoderOutputStream = null;
@@ -248,6 +254,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * 
      * @return The representation as a string value.
      */
+    @Override
     public String getText() throws IOException {
         String result = null;
 

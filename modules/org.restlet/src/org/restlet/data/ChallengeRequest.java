@@ -59,7 +59,7 @@ public final class ChallengeRequest {
         if (!result) {
             // if obj isn't a challenge request or is null don't evaluate
             // further
-            if ((obj instanceof ChallengeRequest) && obj != null) {
+            if (obj instanceof ChallengeRequest) {
                 ChallengeRequest that = (ChallengeRequest) obj;
                 result = (this.getParameters().equals(that.getParameters()));
 

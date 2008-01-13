@@ -149,6 +149,7 @@ public class StreamServerHelper extends HttpServerHelper {
      * @return The created socket address.
      * @throws IOException
      */
+    @SuppressWarnings("unused")
     protected SocketAddress createSocketAddress() throws IOException {
         if (getServer().getAddress() == null) {
             return new InetSocketAddress(getServer().getPort());
@@ -246,8 +247,7 @@ public class StreamServerHelper extends HttpServerHelper {
             latch.countDown();
             for (;;) {
                 try {
-                    SocketChannel client = (SocketChannel) serverSocket
-                            .accept();
+                    SocketChannel client = serverSocket.accept();
                     if (!handlerService.isShutdown()) {
                         handlerService.submit(new ConnectionHandler(helper,
                                 client.socket()));

@@ -61,7 +61,7 @@ public class DirectoryTestCase extends TestCase {
 
     File testDir;
 
-    public void testDirectory() throws IOException {
+    public void testDirectory() {
         try {
             // Create a temporary directory for the tests
             testDir = new File(System.getProperty("java.io.tmpdir"),
@@ -362,12 +362,7 @@ public class DirectoryTestCase extends TestCase {
     }
 
     public static void main(String[] args) {
-        try {
-            new DirectoryTestCase().testDirectory();
-        } catch (IOException e) {
-            System.out.println("Exception = " + e.getMessage());
-            e.printStackTrace();
-        }
+        new DirectoryTestCase().testDirectory();
     }
 
     /**
@@ -401,8 +396,7 @@ public class DirectoryTestCase extends TestCase {
          * @param context
          *                The parent context.
          */
-        public MyApplication(Context context, File testDirectory)
-                throws IOException {
+        public MyApplication(Context context, File testDirectory) {
             super(context);
             this.setTestDirectory(testDirectory);
             // Create a DirectoryHandler that manages a local Directory

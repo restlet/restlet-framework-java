@@ -192,6 +192,7 @@ public class PathRegExp {
         return this.getWithEmptyVars().equals(otherRegExp.getWithEmptyVars());
     }
     
+    @Override
     public int hashCode()
     {
         return this.template.hashCode();

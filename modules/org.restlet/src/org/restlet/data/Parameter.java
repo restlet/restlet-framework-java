@@ -75,7 +75,7 @@ public class Parameter implements Comparable<Parameter> {
         // if obj == this no need to go further
         if (!result) {
             // if obj isn't a parameter or is null don't evaluate further
-            if ((obj instanceof Parameter) && obj != null) {
+            if (obj instanceof Parameter) {
                 Parameter that = (Parameter) obj;
 
                 if (!(this.name == null)) // compare names taking care of

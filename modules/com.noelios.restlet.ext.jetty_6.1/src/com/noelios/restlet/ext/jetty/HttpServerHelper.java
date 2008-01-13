@@ -65,6 +65,7 @@ public class HttpServerHelper extends JettyServerHelper {
      * 
      * @return A new internal Jetty connector.
      */
+    @Override
     protected AbstractConnector createConnector() {
         AbstractConnector result = null;
 

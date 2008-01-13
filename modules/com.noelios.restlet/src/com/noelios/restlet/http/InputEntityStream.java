@@ -50,6 +50,7 @@ public class InputEntityStream extends InputStream {
      * 
      * @return The byte read, or -1 if the end of the stream has been reached.
      */
+    @Override
     public int read() throws IOException {
         int result = -1;
 

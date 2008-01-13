@@ -105,6 +105,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The server domain name.
      */
+    @Override
     public String getHostDomain() {
         return getRequest().getServerName();
     }
@@ -114,6 +115,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The request method.
      */
+    @Override
     public String getMethod() {
         return getRequest().getMethod();
     }
@@ -123,6 +125,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The server protocol.
      */
+    @Override
     public Protocol getProtocol() {
         return Protocol.valueOf(getRequest().getScheme());
     }
@@ -162,6 +165,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The list of request headers.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Series<Parameter> getRequestHeaders() {
         if (this.requestHeaders == null) {
@@ -172,10 +176,10 @@ public class ServletCall extends HttpServerCall {
             String headerValue;
             for (Enumeration<String> names = getRequest().getHeaderNames(); names
                     .hasMoreElements();) {
-                headerName = (String) names.nextElement();
+                headerName = names.nextElement();
                 for (Enumeration<String> values = getRequest().getHeaders(
                         headerName); values.hasMoreElements();) {
-                    headerValue = (String) values.nextElement();
+                    headerValue = values.nextElement();
                     this.requestHeaders.add(new Parameter(headerName,
                             headerValue));
                 }
@@ -196,6 +200,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The full request URI.
      */
+    @Override
     public String getRequestUri() {
         String queryString = getRequest().getQueryString();
 
@@ -220,6 +225,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The response channel if it exists.
      */
+    @Override
     public WritableByteChannel getResponseEntityChannel() {
         // Can't do anything
         return null;
@@ -230,6 +236,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The response stream if it exists.
      */
+    @Override
     public OutputStream getResponseEntityStream() {
         try {
             return getResponse().getOutputStream();
@@ -244,6 +251,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The response address.
      */
+    @Override
     public String getServerAddress() {
         return getRequest().getLocalAddr();
     }
@@ -253,6 +261,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return The server port.
      */
+    @Override
     public int getServerPort() {
         return getRequest().getServerPort();
     }
@@ -274,6 +283,7 @@ public class ServletCall extends HttpServerCall {
      * 
      * @return True if the request was made using a confidential mean.<br/>
      */
+    @Override
     public boolean isConfidential() {
         return getRequest().isSecure();
     }
@@ -285,6 +295,7 @@ public class ServletCall extends HttpServerCall {
      * @param response
      *                The high-level response.
      */
+    @Override
     public void sendResponse(Response response) throws IOException {
         // Add the response headers
         Parameter header;

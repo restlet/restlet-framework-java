@@ -374,6 +374,7 @@ public class DirectoryResource extends Resource {
      * 
      * @return The representation variants.
      */
+    @Override
     public List<Variant> getVariants() {
         List<Variant> results = super.getVariants();
 

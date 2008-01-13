@@ -61,6 +61,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
         final CountDownLatch latch = new CountDownLatch(1);
         final Controller controller = this.controller;
         new Thread() {
+            @Override
             public void run() {
                 try {
                     latch.countDown();

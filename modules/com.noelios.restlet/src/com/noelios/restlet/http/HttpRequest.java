@@ -133,6 +133,7 @@ public class HttpRequest extends Request {
      * 
      * @return The client-specific information.
      */
+    @Override
     public ClientInfo getClientInfo() {
         ClientInfo result = super.getClientInfo();
 
@@ -212,6 +213,7 @@ public class HttpRequest extends Request {
      * 
      * @return The condition data applying to this call.
      */
+    @Override
     public Conditions getConditions() {
         Conditions result = super.getConditions();
 
@@ -227,11 +229,11 @@ public class HttpRequest extends Request {
             for (Parameter header : getHttpCall().getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_IF_MODIFIED_SINCE)) {
-                    ifModifiedSince = HttpClientCall.parseDate(header
+                    ifModifiedSince = HttpCall.parseDate(header
                             .getValue(), false);
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_IF_UNMODIFIED_SINCE)) {
-                    ifUnmodifiedSince = HttpClientCall.parseDate(header
+                    ifUnmodifiedSince = HttpCall.parseDate(header
                             .getValue(), false);
                 }
             }
@@ -325,6 +327,7 @@ public class HttpRequest extends Request {
      * 
      * @return The cookies provided by the client.
      */
+    @Override
     public Series<Cookie> getCookies() {
         Series<Cookie> result = super.getCookies();
 
@@ -360,6 +363,7 @@ public class HttpRequest extends Request {
      * 
      * @return The representation provided by the client.
      */
+    @Override
     public Representation getEntity() {
         if (!this.entityAdded) {
             setEntity(((HttpServerCall) getHttpCall()).getRequestEntity());
@@ -374,6 +378,7 @@ public class HttpRequest extends Request {
      * 
      * @return The referrer reference.
      */
+    @Override
     public Reference getReferrerRef() {
         if (!this.referrerAdded) {
             String referrerValue = getHttpCall().getRequestHeaders().getValues(

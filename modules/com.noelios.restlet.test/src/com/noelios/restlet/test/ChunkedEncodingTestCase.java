@@ -59,11 +59,13 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     boolean checkedForChunkedResponse;
 
+    @Override
     public void setUp() {
         super.setUp();
         checkedForChunkedResponse = true;
     }
 
+    @Override
     public void testJettyAndDefault() throws Exception {
         // Jetty will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
@@ -71,6 +73,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         super.testJettyAndDefault();
     }
 
+    @Override
     public void testSimpleAndDefault() throws Exception {
         // Simple will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
@@ -78,11 +81,13 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         super.testSimpleAndDefault();
     }
 
+    @Override
     protected void call() throws Exception {
         sendPut();
         sendGet();
     }
 
+    @Override
     protected Application createApplication(Component component) {
         Application application = new Application(component.getContext()) {
             @Override
@@ -177,6 +182,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             getVariants().add(new Variant(MediaType.TEXT_XML));
         }
 
+        @Override
         public boolean allowPut() {
             return true;
         }
@@ -186,6 +192,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             return createTestXml();
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public void storeRepresentation(Representation entity) {
             checkForChunkedHeader(getRequest());

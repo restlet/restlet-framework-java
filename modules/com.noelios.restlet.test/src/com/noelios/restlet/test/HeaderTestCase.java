@@ -18,15 +18,14 @@
 
 package com.noelios.restlet.test;
 
-import java.io.IOException;
 import java.util.Date;
+
+import junit.framework.TestCase;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
 import org.restlet.util.DateUtils;
-
-import junit.framework.TestCase;
 
 import com.noelios.restlet.util.HeaderReader;
 import com.noelios.restlet.util.PreferenceUtils;
@@ -40,7 +39,7 @@ public class HeaderTestCase extends TestCase {
     /**
      * Tests the parsing.
      */
-    public void testParsing() throws IOException {
+    public void testParsing() {
         String header1 = "Accept-Encoding,User-Agent";
         String header2 = "Accept-Encoding , User-Agent";
         String header3 = "Accept-Encoding,\r\tUser-Agent";

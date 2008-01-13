@@ -101,7 +101,7 @@ public final class ChallengeResponse {
         if (!result) {
             // if obj isn't a challenge request or is null don't evaluate
             // further
-            if ((obj instanceof ChallengeResponse) && obj != null) {
+            if (obj instanceof ChallengeResponse) {
                 ChallengeResponse that = (ChallengeResponse) obj;
 
                 if (getCredentials() != null) {

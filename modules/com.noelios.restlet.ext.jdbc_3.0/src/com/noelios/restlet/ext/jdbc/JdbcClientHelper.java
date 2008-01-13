@@ -130,6 +130,7 @@ public class JdbcClientHelper extends ClientHelper {
      * @param response
      *                The response to update.
      */
+    @Override
     public void handle(Request request, Response response) {
         Connection connection = null;
 

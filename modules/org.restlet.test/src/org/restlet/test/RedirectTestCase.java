@@ -57,6 +57,7 @@ public class RedirectTestCase extends TestCase {
 
         // Create a new Restlet that will display some path information.
         Restlet trace = new Restlet(originComponent.getContext()) {
+            @Override
             public void handle(Request request, Response response) {
                 // Print the requested URI path
                 String message = "Resource URI:  " + request.getResourceRef()

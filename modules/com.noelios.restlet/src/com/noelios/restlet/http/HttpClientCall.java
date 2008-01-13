@@ -214,10 +214,8 @@ public abstract class HttpClientCall extends HttpCall {
             if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_TYPE)) {
                 ContentType contentType = new ContentType(header.getValue());
-                if (contentType != null) {
-                    result.setMediaType(contentType.getMediaType());
-                    result.setCharacterSet(contentType.getCharacterSet());
-                }
+                result.setMediaType(contentType.getMediaType());
+                result.setCharacterSet(contentType.getCharacterSet());
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LENGTH)) {
                 result.setSize(Long.parseLong(header.getValue()));
@@ -333,14 +331,9 @@ public abstract class HttpClientCall extends HttpCall {
                 WritableByteChannel wbc = getRequestEntityChannel();
 
                 if (wbc != null) {
-                    if (entity != null) {
-                        entity.write(wbc);
-                    }
+                    entity.write(wbc);
                 } else if (rs != null) {
-                    if (entity != null) {
-                        entity.write(rs);
-                    }
-
+                    entity.write(rs);
                     rs.flush();
                 }
 

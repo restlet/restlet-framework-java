@@ -40,6 +40,7 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
             @Override
             public Restlet createRoot() {
                 Restlet trace = new Restlet(component.getContext()) {
+                    @Override
                     public void handle(Request request, Response response) {
                         Form inputForm = request.getEntityAsForm();
                         response.setEntity(inputForm.getWebRepresentation());

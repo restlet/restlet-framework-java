@@ -146,6 +146,7 @@ public class WrapperList<E> implements List<E> {
      *                The object to be compared for equality with this list.
      * @return True if the specified object is equal to this list.
      */
+    @Override
     public boolean equals(Object o) {
         return getDelegate().equals(o);
     }
@@ -175,6 +176,7 @@ public class WrapperList<E> implements List<E> {
      * 
      * @return The hash code value for this list.
      */
+    @Override
     public int hashCode() {
         return getDelegate().hashCode();
     }
@@ -343,6 +345,7 @@ public class WrapperList<E> implements List<E> {
      * 
      * @return A string representation of the list.
      */
+    @Override
     public String toString() {
         return getDelegate().toString();
     }

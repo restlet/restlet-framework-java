@@ -113,7 +113,7 @@ public class S3Bucket extends S3Authorized {
     }
 
     public String getUri() {
-        return S3App.HOST + getName();
+        return HOST + getName();
     }
 
     public String getName() {

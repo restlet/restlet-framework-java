@@ -42,6 +42,7 @@ public class TraceRestlet extends Restlet {
      * @param response
      *            The response to update.
      */
+    @Override
     public void handle(Request request, Response response) {
         String message = "Hello World!" + "\nYour IP address is "
                 + request.getClientInfo().getAddress()

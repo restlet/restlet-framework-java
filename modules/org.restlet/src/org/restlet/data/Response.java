@@ -179,6 +179,7 @@ public class Response extends Message {
      * @return The redirection reference.
      * @deprecated Use getLocationRef() instead.
      */
+    @Deprecated
     public Reference getRedirectRef() {
         return getLocationRef();
     }
@@ -381,6 +382,7 @@ public class Response extends Message {
      *                The reference to set.
      * @deprecated Use the setLocationRef() method instead.
      */
+    @Deprecated
     public void setRedirectRef(Reference locationRef) {
         setLocationRef(locationRef);
     }
@@ -393,6 +395,7 @@ public class Response extends Message {
      *                The URI to set.
      * @deprecated Use the setLocationRef() method instead.
      */
+    @Deprecated
     public void setRedirectRef(String locationUri) {
         setLocationRef(locationUri);
     }

@@ -55,6 +55,7 @@ public class HostRoute extends Route {
      *                The response to update.
      * @return The continuation status.
      */
+    @Override
     protected int beforeHandle(Request request, Response response) {
         if (getLogger().isLoggable(Level.FINE)) {
             getLogger().fine(
@@ -100,6 +101,7 @@ public class HostRoute extends Route {
      *                The response to score.
      * @return The score for a given call (between 0 and 1.0).
      */
+    @Override
     public float score(Request request, Response response) {
         float result = 0F;
 

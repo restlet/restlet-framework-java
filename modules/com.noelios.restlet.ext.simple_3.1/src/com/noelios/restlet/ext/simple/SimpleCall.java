@@ -97,6 +97,7 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The request method.
      */
+    @Override
     public String getMethod() {
         return request.getMethod();
     }
@@ -127,6 +128,7 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The list of request headers.
      */
+    @Override
     public Series<Parameter> getRequestHeaders() {
         Series<Parameter> result = super.getRequestHeaders();
 
@@ -154,6 +156,7 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The full request URI.
      */
+    @Override
     public String getRequestUri() {
         return request.getURI();
     }
@@ -163,6 +166,7 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The response channel if it exists.
      */
+    @Override
     public WritableByteChannel getResponseEntityChannel() {
         // Unsupported.
         return null;
@@ -173,6 +177,7 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The response stream if it exists.
      */
+    @Override
     public OutputStream getResponseEntityStream() {
         try {
             return response.getOutputStream();

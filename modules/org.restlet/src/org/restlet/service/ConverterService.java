@@ -37,6 +37,7 @@ import org.restlet.resource.Representation;
  *             negotiation. Most users prefer to handle those conversion in
  *             Resource subclasses.
  */
+@Deprecated
 public class ConverterService {
     /**
      * Converts a representation into a higher-level object. Returns null by

@@ -63,6 +63,7 @@ public class TunnelFilter extends Filter {
      *                The response to update.
      * @return The continuation status.
      */
+    @Override
     public int beforeHandle(Request request, Response response) {
         Form query = request.getResourceRef().getQueryAsForm(null);
         boolean queryModified = false;

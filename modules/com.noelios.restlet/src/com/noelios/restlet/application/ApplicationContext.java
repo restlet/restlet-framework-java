@@ -105,6 +105,7 @@ public class ApplicationContext extends Context {
      * 
      * @return the application.
      */
+    @Override
     public Application getApplication() {
         return this.application;
     }

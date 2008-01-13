@@ -78,6 +78,7 @@ public class FileClientHelper extends LocalClientHelper {
      * @param response
      *                The response to update.
      */
+    @Override
     public void handle(Request request, Response response) {
         String scheme = request.getResourceRef().getScheme();
 
@@ -142,7 +143,8 @@ public class FileClientHelper extends LocalClientHelper {
                                 .lastIndexOf("/") + 1);
 
                         for (File entry : files) {
-                            if (baseName.equals(getBaseName(entry, metadataService))) {
+                            if (baseName.equals(getBaseName(entry,
+                                    metadataService))) {
                                 rl
                                         .add(LocalReference
                                                 .createFileReference(encodedParentDirectoryURI
@@ -156,7 +158,7 @@ public class FileClientHelper extends LocalClientHelper {
                     }
                 }
             } else {
-                if ((file != null) && file.exists()) {
+                if (file.exists()) {
                     if (file.isDirectory()) {
                         // Return the directory listing
                         File[] files = file.listFiles();

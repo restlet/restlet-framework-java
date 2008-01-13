@@ -171,6 +171,7 @@ public class UserResource extends Resource {
      * 
      * @return the parent application.
      */
+    @Override
     public Application getApplication() {
         return (Application) super.getApplication();
     }

@@ -19,7 +19,6 @@
 package com.noelios.restlet.util;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.List;
@@ -136,7 +135,7 @@ public class PreferenceUtils {
             throw new IllegalArgumentException(
                     "Invalid quality value detected. Value must be between 0 and 1.");
         } else {
-            NumberFormat formatter = DecimalFormat.getNumberInstance(Locale.US);
+            NumberFormat formatter = NumberFormat.getNumberInstance(Locale.US);
             formatter.setMaximumFractionDigits(2);
             destination.append(formatter.format(quality));
         }

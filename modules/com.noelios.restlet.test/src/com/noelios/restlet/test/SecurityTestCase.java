@@ -18,8 +18,6 @@
 
 package com.noelios.restlet.test;
 
-import java.io.IOException;
-
 import junit.framework.TestCase;
 
 import com.noelios.restlet.util.SecurityUtils;
@@ -33,7 +31,7 @@ public class SecurityTestCase extends TestCase {
     /**
      * Tests the cookies parsing.
      */
-    public void testParsing() throws IOException {
+    public void testParsing() {
         String authenticate1 = "Basic realm=\"Restlet tutorial\"";
         String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 

@@ -115,6 +115,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * 
      * @return The HTTP client helper.
      */
+    @Override
     public HttpClientHelper getHelper() {
         return (HttpClientHelper) super.getHelper();
     }
@@ -124,6 +125,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * 
      * @return The response reason phrase.
      */
+    @Override
     public String getReasonPhrase() {
         try {
             return getConnection().getResponseMessage();
@@ -188,6 +190,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * 
      * @return The modifiable list of response headers.
      */
+    @Override
     public Series<Parameter> getResponseHeaders() {
         Series<Parameter> result = super.getResponseHeaders();
 
@@ -215,6 +218,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * 
      * @return The response address.
      */
+    @Override
     public String getServerAddress() {
         return getConnection().getURL().getHost();
     }
@@ -224,7 +228,9 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * 
      * @return The response status code.
      * @throws IOException
+     * @throws IOException
      */
+    @Override
     public int getStatusCode() throws IOException {
         return getConnection().getResponseCode();
     }
@@ -237,6 +243,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      *                The high-level request.
      * @return The result status.
      */
+    @Override
     public Status sendRequest(Request request) {
         Status result = null;
 

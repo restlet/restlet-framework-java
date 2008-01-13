@@ -110,6 +110,7 @@ public class ServletConverter extends HttpServerConverter {
      * @param response
      *                The HTTP Servlet response.
      */
+    @SuppressWarnings("unused")
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (getTarget() != null) {
@@ -151,7 +152,7 @@ public class ServletConverter extends HttpServerConverter {
         String attributeName;
         for (Enumeration<String> namesEnum = servletCall.getRequest()
                 .getAttributeNames(); namesEnum.hasMoreElements();) {
-            attributeName = (String) namesEnum.nextElement();
+            attributeName = namesEnum.nextElement();
             result.getAttributes().put(attributeName,
                     servletCall.getRequest().getAttribute(attributeName));
         }

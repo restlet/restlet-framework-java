@@ -76,6 +76,7 @@ public class LogFilter extends Filter {
      * @param response
      *                The response to update.
      */
+    @Override
     protected void afterHandle(Request request, Response response) {
         long startTime = (Long) request.getAttributes().get(
                 "org.restlet.startTime");
@@ -100,6 +101,7 @@ public class LogFilter extends Filter {
      *                The response to update.
      * @return The continuation status.
      */
+    @Override
     protected int beforeHandle(Request request, Response response) {
         request.getAttributes().put("org.restlet.startTime",
                 System.currentTimeMillis());

@@ -68,10 +68,11 @@ public class Restlet extends Uniform {
                 logName = Restlet.class.getCanonicalName();
             }
 
-            context = new Context(logName);
+            this.context = new Context(logName);
+        } else {
+            this.context = context;
         }
 
-        this.context = context;
         this.started = false;
     }
 
@@ -102,6 +103,7 @@ public class Restlet extends Uniform {
      * @param response
      *                The response to update.
      */
+    @Override
     public void handle(Request request, Response response) {
         init(request, response);
     }

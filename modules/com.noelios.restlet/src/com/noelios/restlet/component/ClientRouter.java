@@ -44,6 +44,7 @@ public class ClientRouter extends Router {
     }
 
     /** Starts the Restlet. */
+    @Override
     public synchronized void start() throws Exception {
         for (Client client : getComponent().getClients()) {
             getRoutes().add(new ClientRoute(this, client));

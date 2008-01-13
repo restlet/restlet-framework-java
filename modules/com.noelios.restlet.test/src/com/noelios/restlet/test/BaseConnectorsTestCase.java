@@ -52,6 +52,7 @@ public abstract class BaseConnectorsTestCase extends TestCase {
 
     protected String uri;
 
+    @Override
     public void setUp() {
         incPorts = false;
     }

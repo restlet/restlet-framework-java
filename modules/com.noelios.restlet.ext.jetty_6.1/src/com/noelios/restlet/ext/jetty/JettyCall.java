@@ -86,6 +86,7 @@ public class JettyCall extends HttpServerCall {
      * 
      * @return The request method.
      */
+    @Override
     public String getMethod() {
         return getConnection().getRequest().getMethod();
     }
@@ -115,6 +116,7 @@ public class JettyCall extends HttpServerCall {
      * 
      * @return The list of request headers.
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Series<Parameter> getRequestHeaders() {
         Series<Parameter> result = super.getRequestHeaders();
@@ -125,10 +127,10 @@ public class JettyCall extends HttpServerCall {
             String headerValue;
             for (Enumeration<String> names = getConnection().getRequest()
                     .getHeaderNames(); names.hasMoreElements();) {
-                headerName = (String) names.nextElement();
+                headerName = names.nextElement();
                 for (Enumeration<String> values = getConnection().getRequest()
                         .getHeaders(headerName); values.hasMoreElements();) {
-                    headerValue = (String) values.nextElement();
+                    headerValue = values.nextElement();
                     result.add(new Parameter(headerName, headerValue));
                 }
             }
@@ -151,6 +153,7 @@ public class JettyCall extends HttpServerCall {
      * 
      * @return The URI on the request line.
      */
+    @Override
     public String getRequestUri() {
         return getConnection().getRequest().getUri().toString();
     }
@@ -160,6 +163,7 @@ public class JettyCall extends HttpServerCall {
      * 
      * @return The response channel if it exists.
      */
+    @Override
     public WritableByteChannel getResponseEntityChannel() {
         return null;
     }
@@ -169,6 +173,7 @@ public class JettyCall extends HttpServerCall {
      * 
      * @return The response stream if it exists.
      */
+    @Override
     public OutputStream getResponseEntityStream() {
         try {
             return getConnection().getResponse().getOutputStream();
@@ -183,6 +188,7 @@ public class JettyCall extends HttpServerCall {
      * 
      * @return The response address.
      */
+    @Override
     public String getServerAddress() {
         return getConnection().getRequest().getLocalAddr();
     }
@@ -192,6 +198,7 @@ public class JettyCall extends HttpServerCall {
      * 
      * @return True if the request was made using a confidential mean.<br/>
      */
+    @Override
     public boolean isConfidential() {
         return getConnection().getRequest().isSecure();
     }

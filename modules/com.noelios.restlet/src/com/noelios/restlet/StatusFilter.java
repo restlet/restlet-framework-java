@@ -82,6 +82,7 @@ public class StatusFilter extends Filter {
      * @param response
      *                The response to update.
      */
+    @Override
     public void afterHandle(Request request, Response response) {
         // If no status is set, then the "success ok" status is assumed.
         if (response.getStatus() == null) {
@@ -107,6 +108,7 @@ public class StatusFilter extends Filter {
      *                The response to update.
      * @return The continuation status.
      */
+    @Override
     public int doHandle(Request request, Response response) {
         // Normally handle the call
         try {

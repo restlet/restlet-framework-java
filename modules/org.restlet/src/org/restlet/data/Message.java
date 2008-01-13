@@ -124,6 +124,7 @@ public abstract class Message {
      *             Most users prefer to handle those conversion in Resource
      *             subclasses.
      */
+    @Deprecated
     private org.restlet.service.ConverterService getConverterService() {
         org.restlet.service.ConverterService result = null;
         Application application = (Application) getAttributes().get(
@@ -194,6 +195,7 @@ public abstract class Message {
      *             Most users prefer to handle those conversion in Resource
      *             subclasses.
      */
+    @Deprecated
     public Object getEntityAsObject() {
         return getConverterService().toObject(getEntity());
     }
@@ -263,6 +265,7 @@ public abstract class Message {
      *             Most users prefer to handle those conversion in Resource
      *             subclasses.
      */
+    @Deprecated
     public void setEntity(Object object) {
         if (object instanceof Representation) {
             setEntity((Representation) object);

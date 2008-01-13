@@ -63,6 +63,7 @@ public abstract class OutputRepresentation extends StreamRepresentation {
      * 
      * @return A stream with the representation's content.
      */
+    @Override
     public InputStream getStream() throws IOException {
         return ByteUtils.getStream(this);
     }

@@ -88,6 +88,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The modifiable attributes map.
      */
+    @Override
     public Map<String, Object> getAttributes() {
         return getWrappedRequest().getAttributes();
     }
@@ -97,6 +98,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The authentication response sent by a client to an origin server.
      */
+    @Override
     public ChallengeResponse getChallengeResponse() {
         return getWrappedRequest().getChallengeResponse();
     }
@@ -106,6 +108,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The client-specific information.
      */
+    @Override
     public ClientInfo getClientInfo() {
         return getWrappedRequest().getClientInfo();
     }
@@ -115,6 +118,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The conditions applying to this call.
      */
+    @Override
     public Conditions getConditions() {
         return getWrappedRequest().getConditions();
     }
@@ -124,6 +128,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The cookies provided by the client.
      */
+    @Override
     public Series<Cookie> getCookies() {
         return getWrappedRequest().getCookies();
     }
@@ -133,6 +138,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The entity representation.
      */
+    @Override
     public Representation getEntity() {
         return getWrappedRequest().getEntity();
     }
@@ -150,6 +156,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The entity as a DOM representation.
      */
+    @Override
     public Form getEntityAsForm() {
         return getWrappedRequest().getEntityAsForm();
     }
@@ -169,6 +176,8 @@ public class WrapperRequest extends Request {
      *             Most users prefer to handle those conversion in Resource
      *             subclasses.
      */
+    @Override
+    @Deprecated
     public Object getEntityAsObject() {
         return getWrappedRequest().getEntityAsObject();
     }
@@ -182,6 +191,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The entity as a SAX representation.
      */
+    @Override
     public SaxRepresentation getEntityAsSax() {
         return getWrappedRequest().getEntityAsSax();
     }
@@ -193,6 +203,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The host reference.
      */
+    @Override
     public Reference getHostRef() {
         return getWrappedRequest().getHostRef();
     }
@@ -202,6 +213,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The method.
      */
+    @Override
     public Method getMethod() {
         return getWrappedRequest().getMethod();
     }
@@ -213,6 +225,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The protocol or null if not available.
      */
+    @Override
     public Protocol getProtocol() {
         return getWrappedRequest().getProtocol();
     }
@@ -222,6 +235,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The referrer reference.
      */
+    @Override
     public Reference getReferrerRef() {
         return getWrappedRequest().getReferrerRef();
     }
@@ -231,6 +245,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The reference of the target resource.
      */
+    @Override
     public Reference getResourceRef() {
         return getWrappedRequest().getResourceRef();
     }
@@ -240,6 +255,7 @@ public class WrapperRequest extends Request {
      * 
      * @return The application root reference.
      */
+    @Override
     public Reference getRootRef() {
         return getWrappedRequest().getRootRef();
     }
@@ -259,6 +275,7 @@ public class WrapperRequest extends Request {
      * 
      * @return True if the call came over a confidential channel.
      */
+    @Override
     public boolean isConfidential() {
         return getWrappedRequest().isConfidential();
     }
@@ -270,6 +287,7 @@ public class WrapperRequest extends Request {
      * 
      * @return True if a content is available and can be sent.
      */
+    @Override
     public boolean isEntityAvailable() {
         return getWrappedRequest().isEntityAvailable();
     }
@@ -281,6 +299,7 @@ public class WrapperRequest extends Request {
      *                The authentication response sent by a client to an origin
      *                server.
      */
+    @Override
     public void setChallengeResponse(ChallengeResponse response) {
         getWrappedRequest().setChallengeResponse(response);
     }
@@ -292,6 +311,7 @@ public class WrapperRequest extends Request {
      * @param confidential
      *                True if the call came over a confidential channel.
      */
+    @Override
     public void setConfidential(boolean confidential) {
         getWrappedRequest().setConfidential(confidential);
     }
@@ -310,6 +330,8 @@ public class WrapperRequest extends Request {
      *             Most users prefer to handle those conversion in Resource
      *             subclasses.
      */
+    @Override
+    @Deprecated
     public void setEntity(Object object) {
         getWrappedRequest().setEntity(object);
     }
@@ -320,6 +342,7 @@ public class WrapperRequest extends Request {
      * @param entity
      *                The entity representation.
      */
+    @Override
     public void setEntity(Representation entity) {
         getWrappedRequest().setEntity(entity);
     }
@@ -332,6 +355,7 @@ public class WrapperRequest extends Request {
      * @param mediaType
      *                The representation's media type.
      */
+    @Override
     public void setEntity(String value, MediaType mediaType) {
         getWrappedRequest().setEntity(value, mediaType);
     }
@@ -342,6 +366,7 @@ public class WrapperRequest extends Request {
      * @param hostRef
      *                The host reference.
      */
+    @Override
     public void setHostRef(Reference hostRef) {
         getWrappedRequest().setHostRef(hostRef);
     }
@@ -352,6 +377,7 @@ public class WrapperRequest extends Request {
      * @param hostUri
      *                The host URI.
      */
+    @Override
     public void setHostRef(String hostUri) {
         getWrappedRequest().setHostRef(hostUri);
     }
@@ -362,6 +388,7 @@ public class WrapperRequest extends Request {
      * @param method
      *                The method called.
      */
+    @Override
     public void setMethod(Method method) {
         getWrappedRequest().setMethod(method);
     }
@@ -372,6 +399,7 @@ public class WrapperRequest extends Request {
      * @param referrerRef
      *                The referrer reference.
      */
+    @Override
     public void setReferrerRef(Reference referrerRef) {
         getWrappedRequest().setReferrerRef(referrerRef);
     }
@@ -382,6 +410,7 @@ public class WrapperRequest extends Request {
      * @param referrerUri
      *                The referrer URI.
      */
+    @Override
     public void setReferrerRef(String referrerUri) {
         getWrappedRequest().setReferrerRef(referrerUri);
     }
@@ -395,6 +424,7 @@ public class WrapperRequest extends Request {
      * @param resourceRef
      *                The resource reference.
      */
+    @Override
     public void setResourceRef(Reference resourceRef) {
         getWrappedRequest().setResourceRef(resourceRef);
     }
@@ -406,6 +436,7 @@ public class WrapperRequest extends Request {
      * @param resourceUri
      *                The resource URI.
      */
+    @Override
     public void setResourceRef(String resourceUri) {
         getWrappedRequest().setResourceRef(resourceUri);
     }
@@ -416,6 +447,7 @@ public class WrapperRequest extends Request {
      * @param rootRef
      *                The application root reference.
      */
+    @Override
     public void setRootRef(Reference rootRef) {
         getWrappedRequest().setRootRef(rootRef);
     }
