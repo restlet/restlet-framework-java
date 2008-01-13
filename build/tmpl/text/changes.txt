@@ -12,6 +12,8 @@ Changes log
 [Enhancements]
  - Lowered the logging level for some Simple IO exceptions.
  - Updated JSON JAR to latest version.
+ - Externalize mappings between file extensions and media types in the MetadataService. 
+   Reported by Alex Milowsky.
 
 1.0.7 (2007-12-22)
 [Bugs fixed]

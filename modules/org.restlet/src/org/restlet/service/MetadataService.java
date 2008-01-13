@@ -115,9 +115,9 @@ public class MetadataService {
      * set) to an extension.
      * 
      * @param extension
-     *            The extension name.
+     *                The extension name.
      * @param metadata
-     *            The metadata to map.
+     *                The metadata to map.
      */
     public void addExtension(String extension, Metadata metadata) {
         this.metadataMappings.put(extension, metadata);
@@ -154,7 +154,7 @@ public class MetadataService {
      * Returns the first extension mapping to this metadata.
      * 
      * @param metadata
-     *            The metadata to find.
+     *                The metadata to find.
      * @return The first extension mapping to this metadata.
      */
     public String getExtension(Metadata metadata) {
@@ -181,7 +181,7 @@ public class MetadataService {
      * extension was not declared.
      * 
      * @param extension
-     *            The extension name without any delimiter.
+     *                The extension name without any delimiter.
      * @return The metadata associated to this extension.
      */
     public Metadata getMetadata(String extension) {
@@ -192,7 +192,7 @@ public class MetadataService {
      * Sets the default encoding for local representations.
      * 
      * @param defaultEncoding
-     *            The default encoding for local representations.
+     *                The default encoding for local representations.
      */
     public void setDefaultEncoding(Encoding defaultEncoding) {
         this.defaultEncoding = defaultEncoding;
@@ -202,7 +202,7 @@ public class MetadataService {
      * Sets the default language for local representations.
      * 
      * @param defaultLanguage
-     *            The default language for local representations.
+     *                The default language for local representations.
      */
     public void setDefaultLanguage(Language defaultLanguage) {
         this.defaultLanguage = defaultLanguage;
@@ -212,7 +212,7 @@ public class MetadataService {
      * Sets the default media type for local representations.
      * 
      * @param defaultMediaType
-     *            The default media type for local representations.
+     *                The default media type for local representations.
      */
     public void setDefaultMediaType(MediaType defaultMediaType) {
         this.defaultMediaType = defaultMediaType;
