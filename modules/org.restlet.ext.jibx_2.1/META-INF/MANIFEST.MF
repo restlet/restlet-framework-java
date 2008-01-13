@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - JiBX
+Bundle-SymbolicName: org.restlet.ext.jibx
+Bundle-Version: 1.1
+Bundle-Vendor: Noelios Consulting
+Require-Bundle: org.jibx,
+ org.restlet;visibility:=reexport
+Export-Package: org.restlet.ext.jibx
