@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2007 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Consulting.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -18,8 +18,10 @@
 
 package org.restlet.service;
 
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
@@ -41,8 +43,8 @@ public class MetadataService {
     /** The default media type for local representations. */
     private volatile MediaType defaultMediaType;
 
-    /** The mappings from extension names to metadata. */
-    private volatile Map<String, Metadata> mappings;
+    /** The list of mappings between extension names and metadata. */
+    private final List<MetadataExtension> mappings;
 
     /**
      * Constructor.
@@ -51,7 +53,7 @@ public class MetadataService {
         this.defaultEncoding = Encoding.IDENTITY;
         this.defaultLanguage = Language.ENGLISH_US;
         this.defaultMediaType = MediaType.APPLICATION_OCTET_STREAM;
-        this.mappings = new ConcurrentHashMap<String, Metadata>();
+        this.mappings = new CopyOnWriteArrayList<MetadataExtension>();
         addCommonExtensions();
     }
 
@@ -127,7 +129,29 @@ public class MetadataService {
      *                The metadata to map.
      */
     public void addExtension(String extension, Metadata metadata) {
-        getMappings().put(extension, metadata);
+        addExtension(extension, metadata, false);
+    }
+
+    /**
+     * Maps an extension to some metadata (media type, language or character
+     * set) to an extension.
+     * 
+     * @param extension
+     *                The extension name.
+     * @param metadata
+     *                The metadata to map.
+     * @param preferred
+     *                indicates if this mapping is the preferred one.
+     */
+    public void addExtension(String extension, Metadata metadata,
+            boolean preferred) {
+        if (preferred) {
+            // Add the mapping at the beginning of the list
+            this.mappings.add(0, new MetadataExtension(extension, metadata));
+        } else {
+            // Add the mapping at the end of the list
+            this.mappings.add(new MetadataExtension(extension, metadata));
+        }
     }
 
     /**
@@ -165,23 +189,35 @@ public class MetadataService {
      * @return The first extension mapping to this metadata.
      */
     public String getExtension(Metadata metadata) {
-        for (String extension : getMappings().keySet()) {
-            if (getMetadata(extension).equals(metadata)) {
-                return extension;
+        if (metadata != null) {
+            // Look for the first registered convenient mapping.
+            for (MetadataExtension metadataExtension : mappings) {
+                if (metadata.equals(metadataExtension.getMetadata())) {
+                    return metadataExtension.getName();
+                }
             }
         }
-
         return null;
     }
 
     /**
      * Returns the mappings from extension names to metadata. Creates a new
-     * instance if no one has been set.
+     * instance if no one has been set. Note that this map is only a snapshot of
+     * the list of mappings.
      * 
      * @return The mappings from extension names to metadata.
+     * @deprecated .
      */
+    @Deprecated
     public Map<String, Metadata> getMappings() {
-        return this.mappings;
+        Map<String, Metadata> result = new TreeMap<String, Metadata>();
+
+        for (MetadataExtension metadataExtension : mappings) {
+            result.put(metadataExtension.getName(), metadataExtension
+                    .getMetadata());
+        }
+
+        return result;
     }
 
     /**
@@ -193,7 +229,16 @@ public class MetadataService {
      * @return The metadata associated to this extension.
      */
     public Metadata getMetadata(String extension) {
-        return getMappings().get(extension);
+        if (extension != null) {
+            // Look for the first registered convenient mapping.
+            for (MetadataExtension metadataExtension : mappings) {
+                if (extension.equals(metadataExtension.getName())) {
+                    return metadataExtension.getMetadata();
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -231,9 +276,61 @@ public class MetadataService {
      * 
      * @param mappings
      *                The mappings from extension names to metadata.
+     * @deprecated
      */
+    @Deprecated
     public void setMappings(Map<String, Metadata> mappings) {
-        this.mappings = mappings;
+        this.mappings.clear();
+
+        for (String extension : mappings.keySet()) {
+            addExtension(extension, mappings.get(extension), false);
+        }
+    }
+
+    /**
+     * Associates an extension name and a metadata.
+     * 
+     * @author Alex Milowski (alexml@milowski.org)
+     * @author Thierry Boileau (contact@noelios.com)
+     */
+    private class MetadataExtension {
+        /** The name of the extension. */
+        private final String name;
+
+        /** The mapped metadata. */
+        private final Metadata metadata;
+
+        /**
+         * Constructor.
+         * 
+         * @param name
+         *                The extension name.
+         * @param metadata
+         *                The metadata.
+         */
+        public MetadataExtension(String name, Metadata metadata) {
+            this.name = name;
+            this.metadata = metadata;
+        }
+
+        /**
+         * Returns the extension name.
+         * 
+         * @return The extension name.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Returns the metadata.
+         * 
+         * @return the metadata.
+         */
+        public Metadata getMetadata() {
+            return metadata;
+        }
+
     }
 
 }
