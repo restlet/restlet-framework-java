@@ -36,7 +36,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.NewCookie;
 
+import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
@@ -440,5 +442,25 @@ public class Util {
 		return new org.restlet.data.Cookie(jaxRsCookie.getVersion(),
 				jaxRsCookie.getName(), jaxRsCookie.getValue(), jaxRsCookie
 						.getPath(), jaxRsCookie.getDomain());
+	}
+
+	/**
+	 * Converts the Restlet CookieSettings to a JAX-RS NewCookie.
+	 * @param cookieSetting
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	public static NewCookie convertToNewCookie(CookieSetting cookieSetting) throws IllegalArgumentException {
+		return new NewCookie(cookieSetting.getName(), cookieSetting.getValue(), cookieSetting.getPath(), cookieSetting.getDomain(), cookieSetting.getVersion(), cookieSetting.getComment(), cookieSetting.getMaxAge(), cookieSetting.isSecure());
+	}
+
+	/**
+	 * Converts the Restlet JAX-RS NewCookie to a CookieSettings.
+	 * @param newCookie
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	public static CookieSetting convertToCookieSetting(NewCookie newCookie) throws IllegalArgumentException {
+		return new CookieSetting(newCookie.getVersion(), newCookie.getName(), newCookie.getValue(), newCookie.getPath(), newCookie.getDomain(), newCookie.getComment(), newCookie.getMaxAge(), newCookie.isSecure());
 	}
 }

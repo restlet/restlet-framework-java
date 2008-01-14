@@ -40,7 +40,6 @@ public class UriBuilderImpl extends UriBuilder {
      * 
      */
     public UriBuilderImpl() {
-        // TODO Auto-generated constructor stub
     }
 
     /**
