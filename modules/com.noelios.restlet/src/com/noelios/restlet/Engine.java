@@ -38,6 +38,8 @@ import org.restlet.Directory;
 import org.restlet.Server;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
+import org.restlet.data.Cookie;
+import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -58,6 +60,8 @@ import com.noelios.restlet.http.HttpClientConverter;
 import com.noelios.restlet.http.StreamClientHelper;
 import com.noelios.restlet.http.StreamServerHelper;
 import com.noelios.restlet.local.DirectoryResource;
+import com.noelios.restlet.util.CookieReader;
+import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.FormUtils;
 
 /**
@@ -413,6 +417,17 @@ public class Engine extends org.restlet.util.Engine {
         discoverConnectors(classLoader,
                 "META-INF/services/com.noelios.restlet.ServerHelper",
                 getRegisteredServers(), Server.class);
+    }
+
+    @Override
+    public String formatCookie(Cookie cookie) throws IllegalArgumentException {
+        return CookieUtils.format(cookie);
+    }
+
+    @Override
+    public String formatCookieSetting(CookieSetting cookieSetting)
+            throws IllegalArgumentException {
+        return CookieUtils.format(cookieSetting);
     }
 
     @Override
@@ -791,6 +806,28 @@ public class Engine extends org.restlet.util.Engine {
             CharacterSet characterSet) {
         if ((queryString != null) && !queryString.equals("")) {
             FormUtils.parseQuery(logger, form, queryString, characterSet);
+        }
+    }
+
+    @Override
+    public Cookie parseCookie(String cookie) throws IllegalArgumentException {
+        CookieReader cr = new CookieReader(logger, cookie);
+        try {
+            return cr.readCookie();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not read the cookie", e);
+        }
+    }
+
+    @Override
+    public CookieSetting parseCookieSetting(String cookieSetting)
+            throws IllegalArgumentException {
+        CookieReader cr = new CookieReader(logger, cookieSetting);
+        try {
+            return cr.readCookieSetting();
+        } catch (IOException e) {
+            throw new IllegalArgumentException(
+                    "Could not read the cookie setting", e);
         }
     }
 

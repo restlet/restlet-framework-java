@@ -34,6 +34,8 @@ import org.restlet.Directory;
 import org.restlet.Server;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
+import org.restlet.data.Cookie;
+import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
@@ -80,6 +82,8 @@ public abstract class Engine {
     /**
      * Returns a class loader to use when creating instantiating implementation
      * classes. By default, it reused the classloader of this Engine's class.
+     * 
+     * @return the ClassLoader
      */
     public static ClassLoader getClassLoader() {
         return classloader;
@@ -172,6 +176,9 @@ public abstract class Engine {
     /**
      * Computes the hash code of a set of objects. Follows the algorithm
      * specified in List.hasCode().
+     * 
+     * @param objects
+     *                the objects to compute the hashCode
      * 
      * @return The hash code of a set of objects.
      */
@@ -277,6 +284,28 @@ public abstract class Engine {
     public abstract Helper createHelper(Server server);
 
     /**
+     * Formats the given Cookie to a String
+     * 
+     * @param cookie
+     * @return the Cookie as String
+     * @throws IllegalArgumentException
+     *                 Thrown if the Cookie contains illegal values
+     */
+    public abstract String formatCookie(Cookie cookie)
+            throws IllegalArgumentException;
+
+    /**
+     * Formats the given CookieSetting to a String
+     * 
+     * @param cookieSetting
+     * @return the CookieSetting as String
+     * @throws IllegalArgumentException
+     *                 Thrown if the CookieSetting contains illegal values
+     */
+    public abstract String formatCookieSetting(CookieSetting cookieSetting)
+            throws IllegalArgumentException;
+
+    /**
      * Returns the best variant representation for a given resource according
      * the the client preferences.<br/>A default language is provided in case
      * the variants don't match the client preferences.
@@ -322,4 +351,26 @@ public abstract class Engine {
      */
     public abstract void parse(Logger logger, Form form, String queryString,
             CharacterSet characterSet);
+
+    /**
+     * Parses the given String to a Cookie
+     * 
+     * @param cookie
+     * @return the Cookie parsed from the String
+     * @throws IllegalArgumentException
+     *                 Thrown if the String can not be parsed as Cookie.
+     */
+    public abstract Cookie parseCookie(String cookie)
+            throws IllegalArgumentException;
+
+    /**
+     * Parses the given String to a CookieSetting
+     * 
+     * @param cookieSetting
+     * @return the CookieSetting parsed from the String
+     * @throws IllegalArgumentException
+     *                 Thrown if the String can not be parsed as CookieSetting.
+     */
+    public abstract CookieSetting parseCookieSetting(String cookieSetting)
+            throws IllegalArgumentException;
 }

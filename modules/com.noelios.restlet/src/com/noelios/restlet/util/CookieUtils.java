@@ -37,32 +37,88 @@ import com.noelios.restlet.http.HttpUtils;
  */
 public class CookieUtils {
     /**
-     * Formats a list of cookies as an HTTP header.
+     * Appends a source string as an HTTP comment.
      * 
-     * @param cookies
-     *                The list of cookies to format.
-     * @return The HTTP header.
+     * @param value
+     *                The source string to format.
+     * @param version
+     *                The cookie version.
+     * @param destination
+     *                The appendable destination.
+     * @throws IOException
      */
-    public static String format(List<Cookie> cookies) {
-        StringBuilder sb = new StringBuilder();
-
-        Cookie cookie;
-        for (int i = 0; i < cookies.size(); i++) {
-            cookie = cookies.get(i);
-
-            if (i == 0) {
-                if (cookie.getVersion() > 0) {
-                    sb.append("$Version=\"").append(cookie.getVersion())
-                            .append("\"; ");
-                }
-            } else {
-                sb.append("; ");
-            }
-
-            format(cookie, sb);
+    private static Appendable appendValue(CharSequence value, int version,
+            Appendable destination) throws IOException {
+        if (version == 0) {
+            destination.append(value.toString());
+        } else {
+            HttpUtils.appendQuote(value, destination);
         }
 
+        return destination;
+    }
+
+    /**
+     * Formats a cookie.
+     * 
+     * @param cookie
+     *                The cookie to format.
+     * @return The formatted cookie.
+     * @throws IllegalArgumentException
+     *                 If the Cookie contains illegal values.
+     */
+    public static String format(Cookie cookie) throws IllegalArgumentException {
+        StringBuilder sb = new StringBuilder();
+        try {
+            format(cookie, sb);
+        } catch (IOException e) {
+            // IOExceptions are not possible on StringBuilders
+        }
         return sb.toString();
+    }
+
+    /**
+     * Formats a cookie setting.
+     * 
+     * @param cookie
+     *                The cookie to format.
+     * @param destination
+     *                The appendable destination.
+     * @throws IOException
+     * @throws IllegalArgumentException
+     *                 If the Cookie contains illegal values.
+     */
+    public static void format(Cookie cookie, Appendable destination)
+            throws IllegalArgumentException, IOException {
+        String name = cookie.getName();
+        String value = cookie.getValue();
+        int version = cookie.getVersion();
+
+        if ((name == null) || (name.length() == 0)) {
+            throw new IllegalArgumentException(
+                    "Can't write cookie. Invalid name detected");
+        } else {
+            appendValue(name, 0, destination).append('=');
+
+            // Append the value
+            if ((value != null) && (value.length() > 0)) {
+                appendValue(value, version, destination);
+            }
+            if (version > 0) {
+                // Append the path
+                String path = cookie.getPath();
+                if ((path != null) && (path.length() > 0)) {
+                    destination.append("; $Path=");
+                    HttpUtils.appendQuote(path, destination);
+                }
+                // Append the domain
+                String domain = cookie.getDomain();
+                if ((domain != null) && (domain.length() > 0)) {
+                    destination.append("; $Domain=");
+                    HttpUtils.appendQuote(domain, destination);
+                }
+            }
+        }
     }
 
     /**
@@ -71,8 +127,11 @@ public class CookieUtils {
      * @param cookieSetting
      *                The cookie setting to format.
      * @return The formatted cookie setting.
+     * @throws IllegalArgumentException
+     *                 If the CookieSetting can not be formatted to a String
      */
-    public static String format(CookieSetting cookieSetting) {
+    public static String format(CookieSetting cookieSetting)
+            throws IllegalArgumentException {
         StringBuilder sb = new StringBuilder();
 
         try {
@@ -91,9 +150,13 @@ public class CookieUtils {
      *                The cookie setting to format.
      * @param destination
      *                The appendable destination.
+     * @throws IOException
+     * @throws IllegalArgumentException
+     *                 If the CookieSetting can not be formatted to a String
      */
     public static void format(CookieSetting cookieSetting,
-            Appendable destination) throws IOException {
+            Appendable destination) throws IOException,
+            IllegalArgumentException {
         String name = cookieSetting.getName();
         String value = cookieSetting.getValue();
         int version = cookieSetting.getVersion();
@@ -182,84 +245,39 @@ public class CookieUtils {
     }
 
     /**
-     * Formats a cookie.
+     * Formats a list of cookies as an HTTP header.
      * 
-     * @param cookie
-     *                The cookie to format.
-     * @return The formatted cookie.
+     * @param cookies
+     *                The list of cookies to format.
+     * @return The HTTP header.
+     * @throws IllegalArgumentException
+     *                 If one of the Cookies contains illegal values
      */
-    public static String format(Cookie cookie) {
+    public static String format(List<Cookie> cookies)
+            throws IllegalArgumentException {
         StringBuilder sb = new StringBuilder();
-        format(cookie, sb);
-        return sb.toString();
-    }
 
-    /**
-     * Formats a cookie setting.
-     * 
-     * @param cookie
-     *                The cookie to format.
-     * @param destination
-     *                The appendable destination.
-     */
-    public static void format(Cookie cookie, Appendable destination) {
-        String name = cookie.getName();
-        String value = cookie.getValue();
-        int version = cookie.getVersion();
+        Cookie cookie;
+        for (int i = 0; i < cookies.size(); i++) {
+            cookie = cookies.get(i);
 
-        if ((name == null) || (name.length() == 0)) {
-            throw new IllegalArgumentException(
-                    "Can't write cookie. Invalid name detected");
-        } else {
+            if (i == 0) {
+                if (cookie.getVersion() > 0) {
+                    sb.append("$Version=\"").append(cookie.getVersion())
+                            .append("\"; ");
+                }
+            } else {
+                sb.append("; ");
+            }
+
             try {
-                appendValue(name, 0, destination).append('=');
-
-                // Append the value
-                if ((value != null) && (value.length() > 0)) {
-                    appendValue(value, version, destination);
-                }
-
-                if (version > 0) {
-                    // Append the path
-                    String path = cookie.getPath();
-                    if ((path != null) && (path.length() > 0)) {
-                        destination.append("; $Path=");
-                        HttpUtils.appendQuote(path, destination);
-                    }
-
-                    // Append the domain
-                    String domain = cookie.getDomain();
-                    if ((domain != null) && (domain.length() > 0)) {
-                        destination.append("; $Domain=");
-                        HttpUtils.appendQuote(domain, destination);
-                    }
-                }
+                format(cookie, sb);
             } catch (IOException e) {
-                // log error
+                // IOExceptiosn are not possible on StringBuilder
             }
         }
-    }
 
-    /**
-     * Appends a source string as an HTTP comment.
-     * 
-     * @param value
-     *                The source string to format.
-     * @param version
-     *                The cookie version.
-     * @param destination
-     *                The appendable destination.
-     * @throws IOException
-     */
-    private static Appendable appendValue(CharSequence value, int version,
-            Appendable destination) throws IOException {
-        if (version == 0) {
-            destination.append(value.toString());
-        } else {
-            HttpUtils.appendQuote(value, destination);
-        }
-
-        return destination;
+        return sb.toString();
     }
 
     /**
@@ -283,5 +301,4 @@ public class CookieUtils {
             }
         }
     }
-
 }

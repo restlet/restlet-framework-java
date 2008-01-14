@@ -33,6 +33,8 @@ Changes log
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
  - Handlers now return a SERVER_INTERNAL_ERROR instead of CLIENT_NOT_FOUND when no next Restlet is
    attached to them. Suggested by Paul J. Lucas.
+ - Added Engine.formatCookie(), formatCookieSetting() and equivalent parse*() methods. Contributed by Stephan
+   Koops for the JAX-RS implementation.
 
 1.1-SNAPSHOT (2007-12-24)
 [Bugs fixed]
