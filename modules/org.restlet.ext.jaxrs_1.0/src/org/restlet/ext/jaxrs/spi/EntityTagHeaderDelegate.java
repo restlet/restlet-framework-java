@@ -22,6 +22,7 @@
 package org.restlet.ext.jaxrs.spi;
 
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 /**
@@ -32,8 +33,9 @@ public class EntityTagHeaderDelegate implements HeaderDelegate<EntityTag> {
 
     /**
      * Obtain an instance of a HeaderDelegate for the EnityTag class.
+	 * @see RuntimeDelegate#createHeaderDelegate(Class)
      */
-    public EntityTagHeaderDelegate() {
+    EntityTagHeaderDelegate() {
     }
 
     /**
@@ -49,7 +51,6 @@ public class EntityTagHeaderDelegate implements HeaderDelegate<EntityTag> {
             string = string.substring(2);
         return new EntityTag(string, weak);
     }
-
 
     /**
      * Convert the supplied value to a String.
