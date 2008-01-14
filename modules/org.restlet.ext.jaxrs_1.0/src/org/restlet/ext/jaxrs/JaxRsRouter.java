@@ -61,7 +61,8 @@ import org.restlet.resource.StringRepresentation;
  * the Restlet {@link Router}. The variable names in this class are often the
  * same as in the JAX-RS-Definition.<br />
  * 
- * TODO The class JaxRsRouter is not thread save while attach or detach classes.
+ * LATER The class JaxRsRouter is not thread save while attach or detach
+ * classes.
  * 
  * @see <a href="https://jsr311.dev.java.net/"> Java Service Request 311</a>
  *      Because the specification is just under development the link is not set
@@ -232,27 +233,23 @@ public class JaxRsRouter extends Restlet {
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
-        ResObjAndMeth resObjAndMeth;
         try {
-            resObjAndMeth = matchingRequestToResourceMethod(request, response);
-        } catch (CouldNotFindMethodException e) {
-            e.errorRestlet.handle(request, response); // e.printStackTrace()
-            return;
-        } catch (MethodInvokeException e) {
-            // Exception was handled and data were set into the Response.
-            return;
-        }
-        ResourceMethod resourceMethod = resObjAndMeth.resourceMethod;
-        ResourceObject resourceObject = resObjAndMeth.resourceObject;
-        MatchingResult matchingResult = resObjAndMeth.matchingResult;
-        MultivaluedMap<String, String> allTemplParamsEnc = resObjAndMeth.allTemplParamsEnc;
-        try {
+            ResObjAndMeth resObjAndMeth;
+            try {
+                resObjAndMeth = matchingRequestToResourceMethod(request,
+                        response);
+            } catch (CouldNotFindMethodException e) {
+                e.errorRestlet.handle(request, response); // e.printStackTrace()
+                return;
+            }
+            ResourceMethod resourceMethod = resObjAndMeth.resourceMethod;
+            ResourceObject resourceObject = resObjAndMeth.resourceObject;
+            MatchingResult matchingResult = resObjAndMeth.matchingResult;
+            MultivaluedMap<String, String> allTemplParamsEnc = resObjAndMeth.allTemplParamsEnc;
             invokeMethodAndHandleResult(resourceMethod, resourceObject,
                     matchingResult, allTemplParamsEnc, request, response);
-        } catch (MethodInvokeException e) {
+        } catch (RequestHandledException e) {
             // Exception was handled and data were set into the Response.
-            return; // not explicit necessary, but to document that here is
-            // finish, also when more code comes later.
         }
     }
 
@@ -262,14 +259,13 @@ public class JaxRsRouter extends Restlet {
      * 
      * @return (Sub)Resource Method
      * @throws CouldNotFindMethodException
-     * @throws MethodInvokeException
+     * @throws RequestHandledException
      */
     private ResObjAndMeth matchingRequestToResourceMethod(
             Request restletRequest, Response restletResponse)
-            throws CouldNotFindMethodException, MethodInvokeException {
+            throws CouldNotFindMethodException, RequestHandledException {
         String uriRemainingPart = restletRequest.getResourceRef()
                 .getRemainingPart();
-        org.restlet.data.Method requMethod = restletRequest.getMethod();
         ResClAndTemplate rcat = identifyRootResourceClass(uriRemainingPart);
         ResObjAndPath resourceObjectAndPath = obtainObjectThatHandleRequest(
                 rcat, restletRequest, restletResponse);
@@ -280,7 +276,7 @@ public class JaxRsRouter extends Restlet {
                         .getAcceptedMediaTypes());
         MediaType givenMediaType = restletRequest.getEntity().getMediaType();
         ResObjAndMeth method = idenifyMethodThatHandleRequest(
-                resourceObjectAndPath, requMethod, givenMediaType,
+                resourceObjectAndPath, restletResponse, givenMediaType,
                 accMediaTypes);
         method.matchingResult = matchingResult;
         return method;
@@ -291,7 +287,7 @@ public class JaxRsRouter extends Restlet {
      * 2007-12-07, Section 2.5 Matching Requests to Resource Methods, Part 1.
      * 
      * @return .. or null, wenn no root resource class could be found
-     * @throws MethodInvokeException
+     * @throws RequestHandledException
      */
     private ResClAndTemplate identifyRootResourceClass(String uriRemainingPart)
             throws CouldNotFindMethodException {
@@ -342,19 +338,18 @@ public class JaxRsRouter extends Restlet {
      * @param restletRequest
      *                The Restlet request
      * @return Resource Object
-     * @throws MethodInvokeException
+     * @throws RequestHandledException
      */
     private ResObjAndPath obtainObjectThatHandleRequest(
             ResClAndTemplate resClAndTemplate, Request restletRequest,
             Response restletResponse) throws CouldNotFindMethodException,
-            MethodInvokeException {
+            RequestHandledException {
         String u = resClAndTemplate.u;
         RootResourceClass resClass = resClAndTemplate.rrc;
         MultivaluedMap<String, String> allTemplParamsEnc = resClAndTemplate.allTemplParamsEnc;
         PathRegExp rMatch = resClass.getPathRegExp();
         ResourceObject o;
-        // LATER benötige ich dynamische Proxies, um Instanzvariablen füllen zu
-        // können?
+        // LATER Do I use dynamic proxies, to inject instance variables?
         try {
             o = resClass.createInstance(resClAndTemplate.matchingResult,
                     allTemplParamsEnc, restletRequest);
@@ -421,31 +416,25 @@ public class JaxRsRouter extends Restlet {
      * @param accMediaTypes
      *                sorted by its qualities.
      * @return Resource Object and Method, that handle the request.
+     * @throws RequestHandledException
+     *                 for example if the method was OPTIONS, but no special
+     *                 Resource Method for OPTIONS is available.
      * @throws ResourceMethodNotFoundException
      */
     private ResObjAndMeth idenifyMethodThatHandleRequest(
-            ResObjAndPath resObjAndPath, org.restlet.data.Method httpMethod,
+            ResObjAndPath resObjAndPath, org.restlet.data.Response restletResp,
             MediaType givenMediaType, List<Collection<MediaType>> accMediaTypes)
-            throws CouldNotFindMethodException {
+            throws CouldNotFindMethodException, RequestHandledException {
+        org.restlet.data.Method httpMethod = restletResp.getRequest()
+                .getMethod();
         // 3. Identify the method that will handle the request:
         // (a)
-        ResourceObject resourceObject = resObjAndPath.resourceObject;
+        ResourceObject resObj = resObjAndPath.resourceObject;
         String remainingPath = resObjAndPath.remainingPath;
         MultivaluedMap<String, String> allTemplParamsEnc = resObjAndPath.allTemplParamsEnc;
-        List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
         // (a) 1
-        Iterable<SubResourceMethod> subResourceMethods = resourceObject
-                .getResourceClass().getSubResourceMethods();
-        for (SubResourceMethod method : subResourceMethods) {
-            PathRegExp methodPath = method.getPathRegExp();
-            if (Util.isEmptyOrSlash(remainingPath)) {
-                if (methodPath.isEmptyOrSlash())
-                    resourceMethods.add(method);
-            } else {
-                if (methodPath.matchesWithEmpty(remainingPath))
-                    resourceMethods.add(method);
-            }
-        }
+        List<ResourceMethod> resourceMethods = getResMethodsForPath(resObj,
+                remainingPath);
         if (resourceMethods.isEmpty())
             throw new CouldNotFindMethodException(
                     errorRestletResourceMethodNotFound);
@@ -453,7 +442,20 @@ public class JaxRsRouter extends Restlet {
         boolean alsoGet = httpMethod.equals(Method.HEAD);
         removeNotSupportedHttpMethod(resourceMethods, httpMethod, alsoGet);
         if (resourceMethods.isEmpty()) {
-            // LATER Spezialitäten für HEAD und OPTIONS
+            if (httpMethod.equals(Method.OPTIONS)) {
+                // LATER this case may be moved to ResourceObject and be cached.
+                resourceMethods = getResMethodsForPath(resObj, remainingPath);
+                Set<Method> allowedMethods = restletResp.getAllowedMethods();
+                for (ResourceMethod rm : resourceMethods)
+                    allowedMethods.add(rm.getHttpMethod());
+                if (!allowedMethods.isEmpty()) {
+                    if (allowedMethods.contains(Method.GET))
+                        allowedMethods.add(Method.HEAD);
+                    // LATER not necessary, if Restlet issue 417 is resolved
+                    restletResp.setEntity(new StringRepresentation(""));
+                }
+                throw new RequestHandledException();
+            }
             throw new CouldNotFindMethodException(errorRestletMethodNotAllowed);
         }
         // (a) 3
@@ -487,8 +489,38 @@ public class JaxRsRouter extends Restlet {
             throw new RuntimeException(
                     "Found no method, but there must be one.");
         }
-        return new ResObjAndMeth(resourceObject, bestResourceMethod,
-                allTemplParamsEnc);
+        return new ResObjAndMeth(resObj, bestResourceMethod, allTemplParamsEnc);
+    }
+
+    /**
+     * Return all resource methods for the given path, ignoring HTTP method,
+     * consumed or produced mimes and so on.
+     * 
+     * @param resourceObject
+     *                The resource object
+     * @param remainingPath
+     *                the path
+     * @return The ist of ResourceMethods
+     */
+    private List<ResourceMethod> getResMethodsForPath(
+            ResourceObject resourceObject, String remainingPath) {
+        // LATER may be moved to class ResourceObject and may be chached there,
+        // if any method is returned.
+        // The 404 case will be called rarely and produce a lot of cached data.
+        List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
+        Iterable<SubResourceMethod> subResourceMethods = resourceObject
+                .getResourceClass().getSubResourceMethods();
+        for (SubResourceMethod method : subResourceMethods) {
+            PathRegExp methodPath = method.getPathRegExp();
+            if (Util.isEmptyOrSlash(remainingPath)) {
+                if (methodPath.isEmptyOrSlash())
+                    resourceMethods.add(method);
+            } else {
+                if (methodPath.matchesWithEmpty(remainingPath))
+                    resourceMethods.add(method);
+            }
+        }
+        return resourceMethods;
     }
 
     /**
@@ -815,11 +847,11 @@ public class JaxRsRouter extends Restlet {
      * @param restletResponse
      * @param methodName
      * @param logMessage
-     * @throws MethodInvokeException
+     * @throws RequestHandledException
      */
-    private MethodInvokeException handleInvokeException(Exception e,
+    private RequestHandledException handleInvokeException(Exception e,
             Response restletResponse, String methodName, String logMessage)
-            throws MethodInvokeException {
+            throws RequestHandledException {
         if (e.getCause() instanceof WebApplicationException) {
             WebApplicationException webAppExc = (WebApplicationException) e
                     .getCause();
@@ -828,22 +860,24 @@ public class JaxRsRouter extends Restlet {
             jaxRsRespToRestletResp(webAppExc.getResponse(), restletResponse,
                     null); // LATER handleInvokeException:
             // MediaType rausfinden
-            throw new MethodInvokeException();
+            throw new RequestHandledException();
         }
         restletResponse.setStatus(Status.SERVER_ERROR_INTERNAL);
         getLogger().logp(Level.WARNING, this.getClass().getName(), methodName,
                 logMessage, e.getCause());
-        throw new MethodInvokeException();
+        throw new RequestHandledException();
     }
 
     /**
-     * Is thrown when an method invokation has an error (exception or other) The
+     * Is thrown when an this reqeust is already handled, for example because of
+     * an handled exception resulting in an error while method invokation. The
      * Exception or whatever was handled and the necessary data in
-     * org.restlet.data.Response were set.
+     * org.restlet.data.Response were set, so that the JaxRsRouter must not do
+     * anything.
      * 
      * @author Stephan Koops
      */
-    class MethodInvokeException extends Exception {
+    class RequestHandledException extends Exception {
         private static final long serialVersionUID = 2765454873472711005L;
     }
 
@@ -864,7 +898,7 @@ public class JaxRsRouter extends Restlet {
             ResourceObject resourceObject, MatchingResult matchingResult,
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequest, Response restletResponse)
-            throws MethodInvokeException {
+            throws RequestHandledException {
         Object result;
         try {
             result = resourceMethod.invoke(resourceObject, matchingResult,
