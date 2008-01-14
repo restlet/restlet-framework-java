@@ -75,4 +75,12 @@ public class SimpleHouse {
     {
         return "4711";
     }
+
+    @GET
+    @Path("headTest2")
+    @ProduceMime("text/plain")
+    public String getTest2plain()
+    {
+        return "4711";
+    }
 }

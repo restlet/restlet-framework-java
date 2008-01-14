@@ -99,6 +99,24 @@ public class SimpleHouseTest extends JaxRsTestCase
 		assertEqualMediaType(MediaType.TEXT_HTML, representationHead.getMediaType());
 	}
 
+	public void testHead2plain() throws Exception
+	{
+		Response responseGett = JaxRsTestCase.accessServer(SimpleHouse.class, "headTest2", Method.GET, MediaType.TEXT_PLAIN);
+		Response responseHead = JaxRsTestCase.accessServer(SimpleHouse.class, "headTest2", Method.HEAD, MediaType.TEXT_PLAIN);
+		if(responseGett.getStatus().isError())
+			System.out.println(responseGett.getEntity().getText());
+		assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
+		if(responseHead.getStatus().isError())
+			System.out.println(responseHead.getEntity().getText());
+		assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
+		Representation representationGett = responseGett.getEntity();
+		Representation representationHead = responseHead.getEntity();
+		assertEquals("4711", representationGett.getText());
+		assertEquals("", representationHead.getText());
+		assertEqualMediaType(MediaType.TEXT_PLAIN, representationGett.getMediaType());
+		assertEqualMediaType(MediaType.TEXT_PLAIN, representationHead.getMediaType());
+	}
+
 	public static void main(String[] args) throws Exception
 	{
 		Component component = startServer(SimpleHouse.class);
