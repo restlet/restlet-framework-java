@@ -20,6 +20,7 @@ package org.restlet.test.jaxrs.services;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
@@ -58,6 +59,21 @@ public class SimpleHouse {
     public String getTest1()
     {
         return "4711";
+    }
+
+    @GET
+    @Path("headTest1")
+    @ProduceMime("text/plain")
+    public String getTest1a()
+    {
+        return "4711";
+    }
+
+    @POST
+    @Path("headTest1")
+    public void post()
+    {
+        // do nothing yet
     }
 
     @HEAD

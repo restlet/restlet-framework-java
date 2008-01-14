@@ -29,4 +29,10 @@ public class EvaluatePreconditionService {
     public static Date getLastModificationDateFromDatastore() {
         return new Date(1199790000000l); // 2008-01-08, 12h
     }
+    
+    @OPTIONS
+    public Response options()
+    {
+        return Response.ok().header("Allow", "ABC, DEF").build();
+    }
 }

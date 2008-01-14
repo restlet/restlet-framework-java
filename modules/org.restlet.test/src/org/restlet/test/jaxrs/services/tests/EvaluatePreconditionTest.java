@@ -21,6 +21,7 @@ package org.restlet.test.jaxrs.services.tests;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 
 import org.restlet.Client;
 import org.restlet.data.Conditions;
@@ -100,6 +101,16 @@ public class EvaluatePreconditionTest extends JaxRsTestCase {
     public void testEvalPrecDateAndEntityTag() throws Exception {
     }
 
+    public void testOptions()
+    {
+        Response response = accessServer(EvaluatePreconditionService.class,
+                Method.OPTIONS);
+        Set<Method> allowedMethods = response.getAllowedMethods();
+        assertTrue("allowedOptions must contain ABC", allowedMethods.contains(Method.valueOf("ABC")));
+        assertTrue("allowedOptions must contain DEF", allowedMethods.contains(Method.valueOf("DEF")));
+        assertEquals(2, allowedMethods.size());
+    }
+    
     private static Response accessServer(Class<?> klasse, String subPath,
             Method httpMethod, Date modifiedSince, Tag entityTag) {
         Reference reference = createReference(klasse, subPath);

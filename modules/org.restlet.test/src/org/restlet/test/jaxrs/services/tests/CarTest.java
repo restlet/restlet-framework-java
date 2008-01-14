@@ -93,6 +93,17 @@ public class CarTest extends JaxRsTestCase {
         // TODO hier wird die falsche Methode ausgewählt, weil der ConsumeMime besser passt
     }
 
+    public void testOptions() throws Exception {
+        Response response = accessServer(CarListResource.class, Method.OPTIONS);
+        assertAllowedMethod(response, Method.GET);
+
+        response = accessServer(CarListResource.class, "offers", Method.OPTIONS);
+        assertAllowedMethod(response, Method.GET, Method.POST);
+
+        response = accessServer(CarListResource.class, "53", Method.OPTIONS);
+        assertAllowedMethod(response, Method.GET);
+    }
+
     public static void testDelete() throws Exception {
         if (ONLY_ONE_CAR || ONLY_OFFERS)
             return;

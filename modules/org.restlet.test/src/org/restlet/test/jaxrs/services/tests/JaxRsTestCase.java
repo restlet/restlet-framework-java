@@ -19,8 +19,12 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 
@@ -38,6 +42,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 
 /**
@@ -87,6 +92,33 @@ public abstract class JaxRsTestCase extends TestCase {
     public static void assertEqualMediaType(MediaType expected, MediaType actual) {
         assertEquals(expected.getMainType(), actual.getMainType());
         assertEquals(expected.getSubType(), actual.getSubType());
+    }
+
+    /**
+     * Checks, if the allowed methods of an OPTIONS request are the given one.
+     * 
+     * @param optionsResponse
+     * @param methods
+     *                The methods that must be allowed. If GET is included, a
+     *                check for HEAD is automaticly done. But it is no problem
+     *                to add the HEAD method.
+     */
+    public static void assertAllowedMethod(Response optionsResponse,
+            Method... methods) {
+        if(optionsResponse.getStatus().isError())
+            assertEquals(Status.SUCCESS_OK, optionsResponse.getStatus());
+        Set<Method> expectedMethods = new HashSet<Method>(Arrays
+                .asList(methods));
+        if (expectedMethods.contains(Method.GET))
+            expectedMethods.add(Method.HEAD);
+        List<Method> allowedMethods = new ArrayList<Method>(optionsResponse
+                .getAllowedMethods());
+        for (Method method : methods) {
+            assertTrue("allowedMethod must contain " + method, allowedMethods
+                    .contains(method));
+        }
+        assertEquals("allowedMethods.size invalid", expectedMethods.size(),
+                allowedMethods.size());
     }
 
     /**
@@ -216,11 +248,18 @@ public abstract class JaxRsTestCase extends TestCase {
     @SuppressWarnings("unchecked")
     public static Response accessServer(Class<?> klasse, String subPath,
             Method httpMethod, MediaType mediaType) {
-    	Collection<MediaType> mediaTypes = null;
-    	if(mediaType != null)
-    		mediaTypes = Collections.singleton(mediaType);
-		return accessServer(klasse, subPath, httpMethod, mediaTypes);
+        Collection<MediaType> mediaTypes = null;
+        if (mediaType != null)
+            mediaTypes = Collections.singleton(mediaType);
+        return accessServer(klasse, subPath, httpMethod, mediaTypes);
     }
+
+    @SuppressWarnings("unchecked")
+    public static Response accessServer(Class<?> klasse, String subPath,
+            Method httpMethod) {
+        return accessServer(klasse, subPath, httpMethod, (Collection) null);
+    }
+
     /**
      * @param klasse
      * @param subPath
@@ -257,7 +296,7 @@ public abstract class JaxRsTestCase extends TestCase {
                 } else if (mediaType instanceof Preference) {
                     Preference<Metadata> preference = (Preference) mediaType;
                     if (preference.getMetadata() instanceof MediaType)
-                        mediaTypePrefs.add((Preference)preference);
+                        mediaTypePrefs.add((Preference) preference);
                 } else {
                     throw new IllegalArgumentException(
                             "Valid mediaTypes are only Preference<MediaType> or MediaType");
@@ -283,7 +322,10 @@ public abstract class JaxRsTestCase extends TestCase {
         reference.setProtocol(PROTOCOL);
         reference.setAuthority("localhost");
         reference.setHostPort(PORT);
-        String path = jaxRsClass.getAnnotation(Path.class).value();
+        Path pathAnnotation = jaxRsClass.getAnnotation(Path.class);
+        if(pathAnnotation == null)
+            throw new RuntimeException("no @Path available on "+jaxRsClass);
+        String path = pathAnnotation.value();
         if (!path.startsWith("/"))
             path = "/" + path;
         if (subPath != null && subPath.length() > 0)
