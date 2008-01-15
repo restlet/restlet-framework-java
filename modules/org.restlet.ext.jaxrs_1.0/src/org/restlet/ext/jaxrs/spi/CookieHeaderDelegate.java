@@ -21,49 +21,51 @@
  */
 package org.restlet.ext.jaxrs.spi;
 
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
+import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.util.Engine;
 
 /**
  * @author Stephan Koops
- *
+ * 
  */
-public class CookieHeaderDelegate implements HeaderDelegate<MediaType> {
+public class CookieHeaderDelegate implements HeaderDelegate<Cookie> {
 
     /**
-     * Obtain an instance of a HeaderDelegate for the supplied class. An 
-     * implementation is required to support the following classes:
-     * Cookie, CacheControl, EntityTag, NewCookie, MediaType.
+     * Obtain an instance of a HeaderDelegate for the Cookie class.
+     * @see RuntimeDelegate#createHeaderDelegate(Class)
      */
-    public CookieHeaderDelegate() {
-        // TODO Auto-generated constructor stub
-        throw new NotYetImplementedException();
+    CookieHeaderDelegate() {
     }
 
     /**
      * Parse the supplied value and create an instance of <code>T</code>.
-     * @param value the string value
+     *
+     * @param value
+     *            the string value
      * @return the newly created instance of <code>T</code>
-     * @throws IllegalArgumentException if the supplied string cannot be parsed
+     * @throws IllegalArgumentException
+     *             if the supplied string cannot be parsed
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#fromString(java.lang.String)
      */
-    public MediaType fromString(String value) throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+    public Cookie fromString(String string) throws IllegalArgumentException {
+        return Util.convertCookie(Engine.getInstance().parseCookie(string));
     }
-
 
     /**
      * Convert the supplied value to a String.
-     * @param value the value of type <code>T</code>
+     * 
+     * @param value
+     *            the value of type <code>T</code>
      * @return a String representation of the value
-     * @throws IllegalArgumentException if the supplied object cannot be serialized
+     * @throws IllegalArgumentException
+     *             if the supplied object cannot be serialized
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
-    public String toString(MediaType value) {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+    public String toString(Cookie jaxRsCookie) {
+        return Engine.getInstance().formatCookie(Util.convertCookie(jaxRsCookie));
     }
 }

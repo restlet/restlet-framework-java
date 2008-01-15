@@ -21,25 +21,24 @@
  */
 package org.restlet.ext.jaxrs.spi;
 
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
+import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.util.Engine;
 
 /**
  * @author Stephan Koops
  *
  */
-public class NewCookieHeaderDelegate implements HeaderDelegate<MediaType> {
+public class NewCookieHeaderDelegate implements HeaderDelegate<NewCookie> {
 
     /**
-     * Obtain an instance of a HeaderDelegate for the supplied class. An 
-     * implementation is required to support the following classes:
-     * Cookie, CacheControl, EntityTag, NewCookie, MediaType.
+     * Obtain an instance of a HeaderDelegate for the NewCookie class.
+	 * @see RuntimeDelegate#createHeaderDelegate(Class)
      */
-    public NewCookieHeaderDelegate() {
-        // TODO Auto-generated constructor stub
-        throw new NotYetImplementedException();
+    NewCookieHeaderDelegate() {
     }
 
     /**
@@ -49,11 +48,9 @@ public class NewCookieHeaderDelegate implements HeaderDelegate<MediaType> {
      * @throws IllegalArgumentException if the supplied string cannot be parsed
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#fromString(java.lang.String)
      */
-    public MediaType fromString(String value) throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+    public NewCookie fromString(String string) throws IllegalArgumentException {
+        return Util.convertToNewCookie(Engine.getInstance().parseCookieSetting(string));
     }
-
 
     /**
      * Convert the supplied value to a String.
@@ -62,8 +59,7 @@ public class NewCookieHeaderDelegate implements HeaderDelegate<MediaType> {
      * @throws IllegalArgumentException if the supplied object cannot be serialized
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
-    public String toString(MediaType value) {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+    public String toString(NewCookie newCookie) {
+        return Engine.getInstance().formatCookie(Util.convertToCookieSetting(newCookie));
     }
 }
