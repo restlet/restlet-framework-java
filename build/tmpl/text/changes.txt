@@ -8,6 +8,8 @@ Changes log
 [Bugs fixed]
  - Fixed NPE in Connector class. Reported by Rob Heittman and fixed by Tim Peierls.
  - WriterRepresentation was missing a default implementation for getReader() abstract method.
+ - If an error is found in HttpClientHelper.sendRequest(), StreamClientHelper ignores it and 
+   continues to parse the response when it should stop processing. Fixed by Kevin Conaway.
  
 [Enhancements] 
  - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 

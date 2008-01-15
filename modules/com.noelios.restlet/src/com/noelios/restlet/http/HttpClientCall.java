@@ -311,11 +311,8 @@ public abstract class HttpClientCall extends HttpCall {
      */
     public Status sendRequest(Request request) {
         Status result = null;
-
+        Representation entity = request.isEntityAvailable() ? request.getEntity() : null;
         try {
-            Representation entity = request.isEntityAvailable() ? request
-                    .getEntity() : null;
-
             if (entity != null) {
                 // Get the connector service to callback
                 ConnectorService connectorService = getConnectorService(request);
@@ -363,8 +360,6 @@ public abstract class HttpClientCall extends HttpCall {
                     "Unable to complete the HTTP call due to a communication error with the remote server. "
                             + ioe.getMessage());
         } finally {
-            Representation entity = request.isEntityAvailable() ? request
-                    .getEntity() : null;
             if (entity != null) {
                 entity.release();
             }

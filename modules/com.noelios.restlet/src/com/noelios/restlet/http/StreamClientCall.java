@@ -245,7 +245,11 @@ public class StreamClientCall extends HttpClientCall {
             HttpUtils.writeCRLF(getRequestHeadStream());
 
             // Write the request body
-            super.sendRequest(request);
+            result = super.sendRequest(request);
+            
+            if (result.equals(Status.CONNECTOR_ERROR_COMMUNICATION)) {
+                return result;
+            }
 
             // Parse the response
             parseResponse();
