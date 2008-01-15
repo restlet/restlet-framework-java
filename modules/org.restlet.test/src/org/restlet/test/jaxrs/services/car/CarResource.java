@@ -29,7 +29,7 @@ import javax.ws.rs.ProduceMime;
  * In der JSR-311-Spec wird diese Klasse wird als Sub-Resource bezeichnet.
  * 
  * @author Stephan Koops
- * 
+ * @see CarListResource
  */
 public class CarResource {
     private String id;

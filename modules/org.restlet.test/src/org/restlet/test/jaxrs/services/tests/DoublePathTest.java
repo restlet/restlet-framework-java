@@ -34,7 +34,7 @@ public class DoublePathTest extends TestCase {
 
     public static void testAttachSamePathDouble() throws Exception {
         if(false) // TODO this feature is not yet ready implemented.
-        {         // The UriTemplateRegExp class needs a compare.
+        {         // The PathRegExp class needs a compare.
                   // This must be discussed with Jerome.
             JaxRsRouter router = new JaxRsRouter();
             router.attach(DoublePath1.class);

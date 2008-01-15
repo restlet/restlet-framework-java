@@ -56,9 +56,9 @@ import javax.ws.rs.core.UriInfo;
 // Path.limited: wird erstmal ignoriert
 @Path("cars")
 public class CarListResource {
-    
+
     // TODO Test a Root Resource Class with PathParam in UriTemplate
-    
+
     /**
      * 
      */
@@ -77,7 +77,6 @@ public class CarListResource {
      * Parameter ist auch erlaubt.
      */
     public CarListResource() {
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -99,15 +98,16 @@ public class CarListResource {
      * Rückgabetypen:
      * <ul>
      * <li>void: leerer Entity-Body</li>
-     * <li>instanceof {@link Response}: TODO Entity-Body aus der Response wird
+     * <li>instanceof {@link Response}</li>
      * verwendet. Dafür kann bspw. der {@link Response.Builder} verwendet werden</li>
      * <li>sonst: gemappt von ? (früher EntityProvider, Abschnitt 3.1 der Spec)</li>
      * </ul>
      * </p>
+     * 
      * @return
      * 
      * @throws WebApplicationException
-     *             Muss gefangen werden. Sie kann einen Request enthalten.
+     *                 Muss gefangen werden. Sie kann einen Request enthalten.
      */
     @GET
     @Path("offers")
@@ -117,15 +117,14 @@ public class CarListResource {
 
     @POST
     @Path("offers")
-    public Response newCar()
-    {
-    	try {
-			return Response.created(new URI("../5")).build();
-		} catch (URISyntaxException e) {
-			throw new WebApplicationException(e);
-		}
+    public Response newCar() {
+        try {
+            return Response.created(new URI("../5")).build();
+        } catch (URISyntaxException e) {
+            throw new WebApplicationException(e);
+        }
     }
-    
+
     /**
      * 
      * @return

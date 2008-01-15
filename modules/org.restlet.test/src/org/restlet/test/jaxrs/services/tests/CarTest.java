@@ -73,7 +73,6 @@ public class CarTest extends JaxRsTestCase {
         assertEquals(CarListResource.OFFERS, representation.getText());
         assertEqualMediaType(MediaType.APPLICATION_OCTET_STREAM, representation
                 .getMediaType()); // vorläufig
-        // TODO hier wird die falsche Methode ausgewählt, weil der ConsumeMime besser passt
     }
 
     public static void testGetCar() throws Exception {
@@ -90,7 +89,6 @@ public class CarTest extends JaxRsTestCase {
                 .getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, representation
                 .getMediaType()); // vorläufig
-        // TODO hier wird die falsche Methode ausgewählt, weil der ConsumeMime besser passt
     }
 
     public void testOptions() throws Exception {
