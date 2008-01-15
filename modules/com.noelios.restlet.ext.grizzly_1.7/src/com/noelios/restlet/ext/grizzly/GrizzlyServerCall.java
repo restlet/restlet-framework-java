@@ -34,6 +34,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 
 import com.noelios.restlet.http.HttpServerCall;
+import com.noelios.restlet.util.ChunkedInputStream;
 import com.sun.grizzly.util.ByteBufferInputStream;
 import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.SSLOutputWriter;
@@ -49,7 +50,10 @@ public class GrizzlyServerCall extends HttpServerCall {
     private SocketChannel socketChannel;
 
     /** Recycled stream. */
-    private ByteBufferInputStream headStream = new ByteBufferInputStream();
+    private ByteBufferInputStream requestStream = new ByteBufferInputStream();
+
+    /** The NIO byte buffer. */
+    private ByteBuffer byteBuffer;
 
     /**
      * Constructor.
@@ -69,13 +73,14 @@ public class GrizzlyServerCall extends HttpServerCall {
         setConfidential(confidential);
 
         try {
-            this.headStream.setSelectionKey(key);
-            this.headStream.setByteBuffer(byteBuffer);
+            this.byteBuffer = byteBuffer;
+            this.requestStream.setSelectionKey(key);
+            this.requestStream.setByteBuffer(byteBuffer);
             this.socketChannel = (SocketChannel) key.channel();
             this.getRequestHeaders().clear();
 
             // Read the request header
-            readRequestHead(headStream);
+            readRequestHead(requestStream);
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING, "Unable to parse the HTTP request",
                     ioe);
@@ -84,12 +89,23 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public ReadableByteChannel getRequestEntityChannel(long size) {
-        return new ReadableEntityChannel(getSocketChannel(), size);
+        if (isRequestChunked()) {
+            // Leave chunked encoding to the stream mode
+            return null;
+        } else {
+            return new ReadableEntityChannel(this.byteBuffer,
+                    getSocketChannel(), size);
+        }
     }
 
     @Override
     public InputStream getRequestEntityStream(long size) {
-        return null;
+        if (isRequestChunked()) {
+            return new ChunkedInputStream(this.requestStream);
+        } else {
+            // Leave normal encoding to the channel mode
+            return null;
+        }
     }
 
     @Override

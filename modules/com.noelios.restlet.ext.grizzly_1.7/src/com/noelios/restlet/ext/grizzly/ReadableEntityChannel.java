@@ -16,6 +16,9 @@ import java.nio.channels.spi.SelectorProvider;
 public class ReadableEntityChannel extends SelectableChannel implements
         ReadableByteChannel {
 
+    /** The byte buffer remaining from previous read processing. */
+    private ByteBuffer remainingBuffer;
+
     /** The source channel. */
     private SelectableChannel source;
 
@@ -25,15 +28,19 @@ public class ReadableEntityChannel extends SelectableChannel implements
     /**
      * Constructor.
      * 
+     * @param remainingBuffer
+     *                The byte buffer remaining from previous read processing.
      * @param source
      *                The source channel.
-     * @param size
-     *                The total size that should be read from the source
+     * @param availableSize
+     *                The available size that can be read from the source
      *                channel.
      */
-    public ReadableEntityChannel(SelectableChannel source, long size) {
+    public ReadableEntityChannel(ByteBuffer remainingBuffer,
+            SelectableChannel source, long availableSize) {
+        this.remainingBuffer = remainingBuffer;
         this.source = source;
-        this.availableSize = size;
+        this.availableSize = availableSize;
     }
 
     @Override
@@ -87,11 +94,20 @@ public class ReadableEntityChannel extends SelectableChannel implements
     public int read(ByteBuffer dst) throws IOException {
         int result = -1;
 
-        if (this.availableSize > 0) {
-            result = ((ReadableByteChannel) getSource()).read(dst);
+        if ((this.remainingBuffer != null)
+                && (this.remainingBuffer.hasRemaining())) {
+            // First make sure that the remaining buffer is empty
+            byte[] src = new byte[this.remainingBuffer.remaining()];
+            this.remainingBuffer.get(src);
+            dst.put(src);
+        } else {
+            // Otherwise, read data from the source channel
+            if (this.availableSize > 0) {
+                result = ((ReadableByteChannel) getSource()).read(dst);
 
-            if (result > 0) {
-                this.availableSize = this.availableSize - result;
+                if (result > 0) {
+                    this.availableSize = this.availableSize - result;
+                }
             }
         }
 
