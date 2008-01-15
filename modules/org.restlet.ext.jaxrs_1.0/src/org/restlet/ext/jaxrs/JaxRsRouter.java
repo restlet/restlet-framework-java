@@ -551,9 +551,13 @@ public class JaxRsRouter extends Restlet {
      * section 2.5, Part 3b+c
      * 
      * @param resourceMethods
-     *                the resourceMethods that provide the requiredmediaType
-     * @param requestedMethod
-     *                TODO
+     *                the resourceMethods that provide the required mediaType
+     * @param givenMediaType
+     *                The MediaType of the given entity.
+     * @param accMediaTypess
+     *                The accepted MediaTypes
+     * @param httpMethod
+     *                The HTTP method of the request.
      * @return Returns the method who best matches the given and accepted media
      *         type in the request, or null
      * @throws CouldNotFindMethodException

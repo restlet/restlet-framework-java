@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -157,12 +158,21 @@ public class ResponseBuilderImpl extends ResponseBuilder {
             throw new IllegalArgumentException(
                     "You must give a name of the header");
         if (name.equals(HttpHeaders.SET_COOKIE))
-            this.cookie((NewCookie) value);
+        {
+            if(value instanceof NewCookie)
+                this.cookie((NewCookie) value);
+            else if(value instanceof Cookie)
+                this.cookie(new NewCookie((Cookie)value));
+            else if(value instanceof CharSequence)
+                this.cookie(NewCookie.parse(value.toString()));
+            else
+                throw new IllegalArgumentException("A Cookie must be of type NewCookie or String");
+        }
         else
+        {
             getMetadata().add(name, value);
+        }
         return this;
-        // TODO if cookie, than other date Format, @see Util.formatDate(Date,
-        // boolean)
     }
 
     /**
@@ -254,7 +264,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder tag(String tag) {
-        // TODO a strong entity tag
+        // TODO JSR311: should the runtime reject a weak entity tag?
         getMetadata().add(HttpHeaders.ETAG, tag);
         return this;
     }
