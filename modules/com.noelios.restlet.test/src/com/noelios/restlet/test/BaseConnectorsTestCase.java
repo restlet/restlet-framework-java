@@ -71,20 +71,20 @@ public abstract class BaseConnectorsTestCase extends TestCase {
                 new com.noelios.restlet.ext.net.HttpClientHelper(null));
     }
 
-//    public void testGrizzlyAndDefault() throws Exception {
-//        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-//                new StreamClientHelper(null));
-//    }
-//
-//    public void testGrizzlyAndHttpClient() throws Exception {
-//        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-//                new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
-//    }
-//
-//    public void testGrizzlyAndJdkNet() throws Exception {
-//        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-//                new com.noelios.restlet.ext.net.HttpClientHelper(null));
-//    }
+    public void testGrizzlyAndDefault() throws Exception {
+        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+                new StreamClientHelper(null));
+    }
+
+    public void testGrizzlyAndHttpClient() throws Exception {
+        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+                new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
+    }
+
+    public void testGrizzlyAndJdkNet() throws Exception {
+        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+                new com.noelios.restlet.ext.net.HttpClientHelper(null));
+    }
 
     public void testJettyAndDefault() throws Exception {
         runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
@@ -130,8 +130,11 @@ public abstract class BaseConnectorsTestCase extends TestCase {
         org.restlet.util.Engine.setInstance(nre);
 
         start();
-        call();
-        stop();
+        try {
+            call();
+        } finally {
+            stop();
+        }
     }
 
     private void start() throws Exception {
