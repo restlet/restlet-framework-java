@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -189,6 +190,16 @@ public abstract class Handler {
      */
     public Logger getLogger() {
         return getContext().getLogger();
+    }
+
+    /**
+     * Returns the parsed query of the request's target resource reference as a
+     * form (series of parameters).
+     * 
+     * @return The parsed query.
+     */
+    public Form getQuery() {
+        return getRequest().getResourceRef().getQueryAsForm();
     }
 
     /**

@@ -28,6 +28,8 @@ Changes log
    add a return parameter to an existing method, the change can break existing filters. In this case, you
    just need to return the "CONTINUE" constant from your method and use "int" as return parameter.
    Issue reported by Paul J. Lucas.
+ - Added Handler.getQuery() method to easily return the request's target resource reference query as a
+   parsed form (series of parameters). Suggested by Kevin Conaway.
 
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
