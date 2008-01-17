@@ -181,6 +181,13 @@
       <fileset dir="${lib}/${lib-grizzly-id}" includes="*.jar" />
    </path>
 
+   <path id="mod-gwt-path">
+      <path refid="mod-ri-path" />
+      <path refid="mod-servlet-path" />
+      <pathelement path="${classes}/${mod-ri-id}" />
+      <pathelement path="${classes}/${mod-servlet-id}" />
+   </path>
+
    <path id="mod-httpclient-path">
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
@@ -283,6 +290,7 @@
       <pathelement path="${classes}/${mod-fileupload-id}" />
       <pathelement path="${classes}/${mod-freemarker-id}" />
       <pathelement path="${classes}/${mod-grizzly-id}" />
+      <pathelement path="${classes}/${mod-gwt-id}" />
       <pathelement path="${classes}/${mod-httpclient-id}" />
       <pathelement path="${classes}/${mod-javamail-id}" />
       <pathelement path="${classes}/${mod-jaxb-id}" />
@@ -300,6 +308,7 @@
       <path refid="mod-fileupload-path" />
       <path refid="mod-freemarker-path" />
       <path refid="mod-grizzly-path" />
+ 	  <path refid="mod-gwt-path" />
       <path refid="mod-httpclient-path" />
       <path refid="mod-javamail-path" />
       <path refid="mod-jaxb-path" />
@@ -795,6 +804,7 @@
       <pomModule name="fileupload" />
       <pomModule name="freemarker" />
       <pomModule name="grizzly" />
+<!-- disabled for now  <pomModule name="gwt" /> -->
       <pomModule name="httpclient" />
       <pomModule name="javamail" />
       <pomModule name="jaxb" />
@@ -868,6 +878,7 @@
       <compileModule name="jxta" />
       <compileModule name="net" />
       <compileModule name="servlet" />
+      <compileModule name="gwt" /> <!-- depends on servlet -->
       <compileModule name="simple" />
       <compileModule name="spring" />
       <compileModule name="velocity" />
@@ -885,6 +896,7 @@
       <backportModule name="fileupload" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="freemarker" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="grizzly" failonwarning="@{backport-failonwarning}"/>
+      <backportModule name="gwt" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="httpclient" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="javamail" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jaxb" failonwarning="@{backport-failonwarning}"/>
@@ -989,6 +1001,7 @@
             <pathelement path="${mod}/${mod-fileupload-id}/src/" />
             <pathelement path="${mod}/${mod-freemarker-id}/src/" />
             <pathelement path="${mod}/${mod-grizzly-id}/src/" />
+            <pathelement path="${mod}/${mod-gwt-id}/src/" />
             <pathelement path="${mod}/${mod-httpclient-id}/src/" />
             <pathelement path="${mod}/${mod-javamail-id}/src/" />
             <pathelement path="${mod}/${mod-jaxb-id}/src/" />
@@ -1068,6 +1081,7 @@
       <findbugsModule name="fileupload" />
       <findbugsModule name="freemarker" />
       <findbugsModule name="grizzly" />
+      <findbugsModule name="gwt" />
       <findbugsModule name="httpclient" />
       <findbugsModule name="javamail" />
 <!-- disabled for now  <findbugsModule name="jaxb" /> -->
@@ -1094,6 +1108,7 @@
       <checkstyleModule name="fileupload" />
       <checkstyleModule name="freemarker" />
       <checkstyleModule name="grizzly" />
+      <checkstyleModule name="gwt" />
       <checkstyleModule name="httpclient" />
       <checkstyleModule name="javamail" />
       <checkstyleModule name="jaxb" />
@@ -1165,6 +1180,7 @@
       <stageLibrary name="fileupload" />
       <stageLibrary name="freemarker" />
       <stageLibrary name="grizzly" />
+<!-- disabled for now  <stageLibrary name="gwt" /> -->
       <stageLibrary name="httpclient" />
       <stageLibrary name="io" />
       <stageLibrary name="javamail" />
@@ -1193,6 +1209,7 @@
       <stageModule name="fileupload" />
       <stageModule name="freemarker" />
       <stageModule name="grizzly" />
+   	  <stageModule name="gwt" />
       <stageModule name="httpclient" />
       <stageModule name="javamail" />
       <stageModule name="jaxb" />
@@ -1226,6 +1243,7 @@
       <maven2Module name="example" />
       <maven2Module name="fileupload" />
       <maven2Module name="freemarker" />
+<!-- disabled for now  <maven2Module name="gwt" /> -->
       <maven2Module name="httpclient" />
       <maven2Module name="javamail" />
       <maven2Module name="jaxb" />
