@@ -8,6 +8,7 @@ Changes log
  - Fixed Spring XML loading issue related to validation in SpringContext class.
  - Fixed bug with the FileClientHelper returning wrong list of variants. Reported by Iestyn 
    Evans.
+ - Fixed NPE in the war client of the Servlet extension. Reported by Jason Terhune.
 
 [Enhancements]
  - Lowered the logging level for some Simple IO exceptions.

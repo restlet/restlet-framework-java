@@ -45,85 +45,89 @@ import com.noelios.restlet.local.WarClientHelper;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ServletWarClientHelper extends WarClientHelper {
-	/** The Servlet context to use. */
-	private ServletContext servletContext;
+    /** The Servlet context to use. */
+    private ServletContext servletContext;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param client
-	 *            The client to help.
-	 * @param servletContext
-	 *            The Servlet context
-	 */
-	public ServletWarClientHelper(Client client, ServletContext servletContext) {
-		super(client);
-		this.servletContext = servletContext;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param client
+     *                The client to help.
+     * @param servletContext
+     *                The Servlet context
+     */
+    public ServletWarClientHelper(Client client, ServletContext servletContext) {
+        super(client);
+        this.servletContext = servletContext;
+    }
 
-	/**
-	 * Returns the Servlet context.
-	 * 
-	 * @return The Servlet context.
-	 */
-	public ServletContext getServletContext() {
-		return this.servletContext;
-	}
+    /**
+     * Returns the Servlet context.
+     * 
+     * @return The Servlet context.
+     */
+    public ServletContext getServletContext() {
+        return this.servletContext;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void handleWar(Request request, Response response) {
-		if (request.getMethod().equals(Method.GET)
-				|| request.getMethod().equals(Method.HEAD)) {
-			String basePath = request.getResourceRef().getPath();
-			int lastSlashIndex = basePath.lastIndexOf('/');
-			String entry = (lastSlashIndex == -1) ? basePath : basePath
-					.substring(lastSlashIndex + 1);
-			Representation output = null;
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void handleWar(Request request, Response response) {
+        if (request.getMethod().equals(Method.GET)
+                || request.getMethod().equals(Method.HEAD)) {
+            String basePath = request.getResourceRef().getPath();
+            int lastSlashIndex = basePath.lastIndexOf('/');
+            String entry = (lastSlashIndex == -1) ? basePath : basePath
+                    .substring(lastSlashIndex + 1);
+            Representation output = null;
 
-			if (basePath.endsWith("/")) {
-				// Return the directory listing
-				Set<String> entries = getServletContext().getResourcePaths(
-						basePath);
-				ReferenceList rl = new ReferenceList(entries.size());
-				rl.setIdentifier(request.getResourceRef());
+            if (basePath.endsWith("/")) {
+                // Return the directory listing
+                Set<String> entries = getServletContext().getResourcePaths(
+                        basePath);
+                // Directory listing may be null.
+                if (entries != null) {
+                    ReferenceList rl = new ReferenceList(entries.size());
+                    rl.setIdentifier(request.getResourceRef());
 
-				for (Iterator<String> iter = entries.iterator(); iter.hasNext();) {
-					entry = iter.next();
-					rl.add(new Reference(basePath
-							+ entry.substring(basePath.length())));
-				}
+                    for (Iterator<String> iter = entries.iterator(); iter
+                            .hasNext();) {
+                        entry = iter.next();
+                        rl.add(new Reference(basePath
+                                + entry.substring(basePath.length())));
+                    }
 
-				output = rl.getTextRepresentation();
-			} else {
-				// Return the entry content
-				MetadataService metadataService = getMetadataService(request);
-				InputStream ris = getServletContext().getResourceAsStream(
-						basePath);
-				if (ris != null) {
-					output = new InputRepresentation(ris, metadataService
-							.getDefaultMediaType());
-					output.setIdentifier(request.getResourceRef());
-					updateMetadata(metadataService, entry, output);
+                    output = rl.getTextRepresentation();
+                }
+            } else {
+                // Return the entry content
+                MetadataService metadataService = getMetadataService(request);
+                InputStream ris = getServletContext().getResourceAsStream(
+                        basePath);
+                if (ris != null) {
+                    output = new InputRepresentation(ris, metadataService
+                            .getDefaultMediaType());
+                    output.setIdentifier(request.getResourceRef());
+                    updateMetadata(metadataService, entry, output);
 
-					// See if the Servlet context specified a particular Mime
-					// Type
-					String mediaType = getServletContext()
-							.getMimeType(basePath);
+                    // See if the Servlet context specified a particular Mime
+                    // Type
+                    String mediaType = getServletContext()
+                            .getMimeType(basePath);
 
-					if (mediaType != null) {
-						output.setMediaType(new MediaType(mediaType));
-					}
-				}
-			}
+                    if (mediaType != null) {
+                        output.setMediaType(new MediaType(mediaType));
+                    }
+                }
+            }
 
-			response.setEntity(output);
-			response.setStatus(Status.SUCCESS_OK);
-		} else {
-			response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-			response.getAllowedMethods().add(Method.GET);
-			response.getAllowedMethods().add(Method.HEAD);
-		}
-	}
+            response.setEntity(output);
+            response.setStatus(Status.SUCCESS_OK);
+        } else {
+            response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            response.getAllowedMethods().add(Method.GET);
+            response.getAllowedMethods().add(Method.HEAD);
+        }
+    }
 
 }
