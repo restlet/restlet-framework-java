@@ -85,16 +85,19 @@ public class ServletWarClientHelper extends WarClientHelper {
                 // Return the directory listing
                 Set<String> entries = getServletContext().getResourcePaths(
                         basePath);
-                ReferenceList rl = new ReferenceList(entries.size());
-                rl.setIdentifier(request.getResourceRef());
+                if (entries != null) {
+                    ReferenceList rl = new ReferenceList(entries.size());
+                    rl.setIdentifier(request.getResourceRef());
 
-                for (Iterator<String> iter = entries.iterator(); iter.hasNext();) {
-                    entry = iter.next();
-                    rl.add(new Reference(basePath
-                            + entry.substring(basePath.length())));
+                    for (Iterator<String> iter = entries.iterator(); iter
+                            .hasNext();) {
+                        entry = iter.next();
+                        rl.add(new Reference(basePath
+                                + entry.substring(basePath.length())));
+                    }
+
+                    output = rl.getTextRepresentation();
                 }
-
-                output = rl.getTextRepresentation();
             } else {
                 // Return the entry content
                 InputStream ris = getServletContext().getResourceAsStream(
