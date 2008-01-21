@@ -79,7 +79,7 @@ public class SimpleTrainTest extends JaxRsTestCase {
             return;
         // Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
         // Method.GET, MediaType.TEXT_ALL);
-        // FIXME assertEquals(Status.SUCCESS_CREATED, response.getStatus());
+        // TODO assertEquals(Status.SUCCESS_CREATED, response.getStatus());
         // This request fails because methods for text/plain and for text/html
         // are available, but it is not specified, which to use.
 
