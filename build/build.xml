@@ -804,7 +804,7 @@
       <pomModule name="fileupload" />
       <pomModule name="freemarker" />
       <pomModule name="grizzly" />
-<!-- disabled for now  <pomModule name="gwt" /> -->
+      <pomModule name="gwt" />
       <pomModule name="httpclient" />
       <pomModule name="javamail" />
       <pomModule name="jaxb" />
@@ -860,6 +860,7 @@
       </copy>
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@major-number@" value="${major-number}" />
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@minor-number@" value="${minor-number}" />
+      <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@release-type@" value="${release-type}" />
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@release-number@" value="${release-number}" />
       <compileModule name="api" />
       <compileModule name="ri" />
@@ -1180,7 +1181,6 @@
       <stageLibrary name="fileupload" />
       <stageLibrary name="freemarker" />
       <stageLibrary name="grizzly" />
-<!-- disabled for now  <stageLibrary name="gwt" /> -->
       <stageLibrary name="httpclient" />
       <stageLibrary name="io" />
       <stageLibrary name="javamail" />
@@ -1236,14 +1236,14 @@
    <target name="stage-maven" depends="stage-maven-2" if="do-maven" description="Generate the maven distributions."/>
    
    <!-- STAGE-MAVEN-2 target -->
-   <target name="stage-maven-2" depends="init" if="do-nsis" description="Generate the maven-2.x distributions.">
+   <target name="stage-maven-2" depends="init" if="do-maven" description="Generate the maven-2.x distributions.">
       <delete dir="${dist-maven2}" verbose="false" quiet="true" includeEmptyDirs="true" />
       <maven2Module name="api"/>
       <maven2Module name="ri"/>
       <maven2Module name="example" />
       <maven2Module name="fileupload" />
       <maven2Module name="freemarker" />
-<!-- disabled for now  <maven2Module name="gwt" /> -->
+   	  <maven2Module name="gwt" />
       <maven2Module name="httpclient" />
       <maven2Module name="javamail" />
       <maven2Module name="jaxb" />

@@ -73,7 +73,7 @@ public abstract class Engine {
     private static final String providerResource = "META-INF/services/org.restlet.util.Engine";
 
     /** Release number. */
-    public static final String RELEASE_NUMBER = "@release-number@";
+    public static final String RELEASE_NUMBER = "@release-type@@release-number@";
 
     /** Complete version. */
     public static final String VERSION = MAJOR_NUMBER + '.' + MINOR_NUMBER

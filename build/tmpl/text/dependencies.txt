@@ -57,6 +57,11 @@ com.noelios.restlet.example (Tutorial examples)
  - edu.purdue.cs.bloat_1.0 (for book examples)
 
 
+com.noelios.restlet.ext.gwt_1.5 (Integration with GWT 1.5)
+--------------------------------------
+ - com.noelios.restlet.ext.servlet
+ 
+
 com.noelios.restlet.ext.httpclient_3.1 (HTTP client connector based on Apache Commons HTTP Client)
 --------------------------------------
  - org.apache.commons.codec 1.3

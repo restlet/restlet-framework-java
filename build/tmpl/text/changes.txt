@@ -43,7 +43,7 @@ Changes log
    Koops for the JAX-RS implementation.
  - Deprecated Status.isInfo(), replaced by isInformational() to follow HTTP naming.
 
-1.1-SNAPSHOT (2007-12-24)
+1.1 Milestone 1 (2007-12-24)
 [Bugs fixed]
  - Overridden the StringRepresentation#setCharacterSet method, in order to refresh the 
    size of the representation. Reported by Calvin Cheng.
