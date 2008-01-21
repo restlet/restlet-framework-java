@@ -137,14 +137,17 @@ public final class Tag extends Metadata {
 
         if (result) {
             Tag that = (Tag) object;
+
             if (checkWeakness) {
                 result = (that.isWeak() == isWeak());
             }
 
-            if (getName() == null) {
-                result = (that.getName() == null);
-            } else {
-                result = getName().equals(that.getName());
+            if (result) {
+                if (getName() == null) {
+                    result = (that.getName() == null);
+                } else {
+                    result = getName().equals(that.getName());
+                }
             }
         }
 
