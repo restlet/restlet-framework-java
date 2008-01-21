@@ -10,6 +10,8 @@ Changes log
  - WriterRepresentation was missing a default implementation for getReader() abstract method.
  - If an error is found in HttpClientHelper.sendRequest(), StreamClientHelper ignores it and 
    continues to parse the response when it should stop processing. Fixed by Kevin Conaway.
+ - Status.isSuccess(), is*Error(), isRedirection() and isInfo() methods now support status classes
+   as specified in HTTP 1.1. Reported by Paul J. Lucas.
  
 [Enhancements] 
  - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 
@@ -39,6 +41,7 @@ Changes log
    attached to them. Suggested by Paul J. Lucas.
  - Added Engine.formatCookie(), formatCookieSetting() and equivalent parse*() methods. Contributed by Stephan
    Koops for the JAX-RS implementation.
+ - Deprecated Status.isInfo(), replaced by isInformational() to follow HTTP naming.
 
 1.1-SNAPSHOT (2007-12-24)
 [Bugs fixed]

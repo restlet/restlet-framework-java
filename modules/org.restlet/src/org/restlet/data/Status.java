@@ -528,63 +528,27 @@ public final class Status extends Metadata {
     public static final Status CONNECTOR_ERROR_INTERNAL = new Status(1002);
 
     /**
-     * Indicates if the status is a client error status.
+     * Indicates if the status is a client error status, meaning "The request
+     * contains bad syntax or cannot be fulfilled".
      * 
      * @param code
      *                The code of the status.
      * @return True if the status is a client error status.
      */
     public static boolean isClientError(int code) {
-        boolean result = false;
-
-        switch (code) {
-        case 400:
-        case 401:
-        case 402:
-        case 403:
-        case 404:
-        case 405:
-        case 406:
-        case 407:
-        case 408:
-        case 409:
-        case 410:
-        case 411:
-        case 412:
-        case 413:
-        case 414:
-        case 415:
-        case 416:
-        case 417:
-        case 422:
-        case 423:
-        case 424:
-            result = true;
-            break;
-        }
-
-        return result;
+        return (code >= 400) && (code <= 499);
     }
 
     /**
-     * Indicates if the status is a connector error status.
+     * Indicates if the status is a connector error status, meaning "The
+     * connector failed to send or receive an apparently valid message".
      * 
      * @param code
      *                The code of the status.
      * @return True if the status is a server error status.
      */
     public static boolean isConnectorError(int code) {
-        boolean result = false;
-
-        switch (code) {
-        case 1000:
-        case 1001:
-        case 1002:
-            result = true;
-            break;
-        }
-
-        return result;
+        return (code >= 1000) && (code <= 1099);
     }
 
     /**
@@ -600,100 +564,64 @@ public final class Status extends Metadata {
     }
 
     /**
-     * Indicates if the status is an information status.
+     * Indicates if the status is an information status, meaning "request
+     * received, continuing process".
      * 
      * @param code
      *                The code of the status.
      * @return True if the status is an information status.
      */
-    public static boolean isInfo(int code) {
-        boolean result = false;
-
-        switch (code) {
-        case 100:
-        case 101:
-        case 102:
-            result = true;
-            break;
-        }
-
-        return result;
+    public static boolean isInformational(int code) {
+        return (code >= 100) && (code <= 199);
     }
 
     /**
-     * Indicates if the status is a redirection status.
+     * Indicates if the status is an information status.
+     * 
+     * @param code
+     *                The code of the status.
+     * @return True if the status is an information status.
+     * @deprecated Use {@link #isInformational(int)} instead.
+     */
+    @Deprecated
+    public static boolean isInfo(int code) {
+        return isInformational(code);
+    }
+
+    /**
+     * Indicates if the status is a redirection status, meaning "Further action
+     * must be taken in order to complete the request".
      * 
      * @param code
      *                The code of the status.
      * @return True if the status is a redirection status.
      */
     public static boolean isRedirection(int code) {
-        boolean result = false;
-
-        switch (code) {
-        case 300:
-        case 301:
-        case 302:
-        case 303:
-        case 304:
-        case 305:
-        case 307:
-            result = true;
-            break;
-        }
-
-        return result;
+        return (code >= 300) && (code <= 399);
     }
 
     /**
-     * Indicates if the status is a server error status.
+     * Indicates if the status is a server error status, meaning "The server
+     * failed to fulfill an apparently valid request".
      * 
      * @param code
      *                The code of the status.
      * @return True if the status is a server error status.
      */
     public static boolean isServerError(int code) {
-        boolean result = false;
-
-        switch (code) {
-        case 500:
-        case 501:
-        case 502:
-        case 503:
-        case 504:
-        case 505:
-        case 507:
-            result = true;
-            break;
-        }
-
-        return result;
+        return (code >= 500) && (code <= 599);
     }
 
     /**
-     * Indicates if the status is a success status.
+     * Indicates if the status is a success status, meaning "The action was
+     * successfully received, understood, and accepted".
      * 
      * @param code
      *                The code of the status.
      * @return True if the status is a success status.
      */
     public static boolean isSuccess(int code) {
-        boolean result = false;
-
-        switch (code) {
-        case 200:
-        case 201:
-        case 202:
-        case 203:
-        case 204:
-        case 205:
-        case 206:
-        case 207:
-            result = true;
-            break;
-        }
-
-        return result;
+        return (code >= 200) && (code <= 299);
     }
 
     /**
@@ -1450,7 +1378,8 @@ public final class Status extends Metadata {
     }
 
     /**
-     * Indicates if the status is a client error status.
+     * Indicates if the status is a client error status, meaning "The request
+     * contains bad syntax or cannot be fulfilled".
      * 
      * @return True if the status is a client error status.
      */
@@ -1459,7 +1388,8 @@ public final class Status extends Metadata {
     }
 
     /**
-     * Indicates if the status is a connector error status.
+     * Indicates if the status is a connector error status, meaning "The
+     * connector failed to send or receive an apparently valid message".
      * 
      * @return True if the status is a connector error status.
      */
@@ -1480,13 +1410,26 @@ public final class Status extends Metadata {
      * Indicates if the status is an information status.
      * 
      * @return True if the status is an information status.
+     * @deprecated Use {@link #isInformational()} instead.
      */
+    @Deprecated
     public boolean isInfo() {
         return isInfo(getCode());
     }
 
     /**
-     * Indicates if the status is a redirection status.
+     * Indicates if the status is an information status, meaning "request
+     * received, continuing process".
+     * 
+     * @return True if the status is an information status.
+     */
+    public boolean isInformational() {
+        return isInformational(getCode());
+    }
+
+    /**
+     * Indicates if the status is a redirection status, meaning "Further action
+     * must be taken in order to complete the request".
      * 
      * @return True if the status is a redirection status.
      */
@@ -1495,7 +1438,8 @@ public final class Status extends Metadata {
     }
 
     /**
-     * Indicates if the status is a server error status.
+     * Indicates if the status is a server error status, meaning "The server
+     * failed to fulfill an apparently valid request".
      * 
      * @return True if the status is a server error status.
      */
@@ -1504,7 +1448,8 @@ public final class Status extends Metadata {
     }
 
     /**
-     * Indicates if the status is a success status.
+     * Indicates if the status is a success status, meaning "The action was
+     * successfully received, understood, and accepted".
      * 
      * @return True if the status is a success status.
      */
