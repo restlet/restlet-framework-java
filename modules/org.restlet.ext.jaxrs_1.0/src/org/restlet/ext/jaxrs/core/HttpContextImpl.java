@@ -34,9 +34,12 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.restlet.data.Conditions;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
+import org.restlet.data.Status;
+import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.util.Series;
@@ -50,6 +53,9 @@ import org.restlet.util.Series;
  */
 public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         HttpHeaders {
+
+    private static final int STATUS_PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED
+            .getCode();
 
     private org.restlet.data.Request restletRequest;
 
@@ -114,17 +120,17 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
 
     /**
      * Get any cookies that accompanied the request.
+     * 
      * @return a map of cookie name (String) to Cookie.
      * @see HttpHeaders#getCookies()
      */
     public Map<String, Cookie> getCookies() {
         if (this.cookies == null) {
-        	Map<String, Cookie> c = new HashMap<String, Cookie>();
-        	for(org.restlet.data.Cookie rc : restletRequest.getCookies())
-        	{
-            	Cookie cookie = Util.convertCookie(rc);
-            	c.put(cookie.getName(), cookie);
-        	}
+            Map<String, Cookie> c = new HashMap<String, Cookie>();
+            for (org.restlet.data.Cookie rc : restletRequest.getCookies()) {
+                Cookie cookie = Util.convertCookie(rc);
+                c.put(cookie.getName(), cookie);
+            }
             this.cookies = c;
         }
         return this.cookies;
@@ -158,16 +164,16 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     /**
      * Evaluate request preconditions based on the passed in value.
      * 
-     * @param eTag
+     * @param entityTag
      *                an ETag for the current state of the resource
      * @return null if the preconditions are met or a Response that should be
      *         returned if the preconditions are not met.
      * 
      * @see javax.ws.rs.core.Request#evaluatePreconditions(javax.ws.rs.core.EntityTag)
+     * @see #evaluatePreconditions(Date, EntityTag)
      */
-    public Response evaluatePreconditions(EntityTag tag) {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+    public Response evaluatePreconditions(EntityTag entityTag) {
+        return evaluatePreconditions(null, entityTag);
     }
 
     /**
@@ -179,29 +185,10 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      * @return null if the preconditions are met or a Response that should be
      *         returned if the preconditions are not met.
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date)
+     * @see #evaluatePreconditions(Date, EntityTag)
      */
     public Response evaluatePreconditions(Date lastModified) {
-        Date modSinceCond = this.restletRequest.getConditions().getModifiedSince();
-        if(modSinceCond == null)
-            return null;
-        if(modSinceCond.after(lastModified))   // if(2007.after(2008))
-        {
-            Method requestMethod = restletRequest.getMethod();
-            if(requestMethod.equals(Method.GET) || requestMethod.equals(Method.HEAD))
-            {
-                ResponseBuilder rb = Response.notModified();
-                return rb.build();
-            }
-            else
-            {
-                // wenn GET, dann 304, bei anderen Methoden andere ergebnisse (Precondition failed)
-                throw new NotYetImplementedException("Only implemented for GET and HEAD");
-            }
-        }
-        else
-        {
-            return null;
-        }
+        return evaluatePreconditions(lastModified, null);
     }
 
     /**
@@ -210,16 +197,111 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      * @param lastModified
      *                a date that specifies the modification date of the
      *                resource
-     * @param eTag
+     * @param entityTag
      *                an ETag for the current state of the resource
      * @return null if the preconditions are met or a Response that should be
-     *         returned if the preconditions are not met.
+     *         returned if the preconditions are not met. TODO JSR311: die
+     *         evaluatePrecondition kann auch be erfüllten Precodutions ne
+     *         Response zurückeben, z.B. bei "if-Unmodified-Since"
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date,
      *      javax.ws.rs.core.EntityTag)
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC
+     *      2616, section 10.3.5: Status 304: Not Modiied</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.13">RFC
+     *      2616, section 10.4.13: Status 412: Precondition Failed</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-13.3">RFC 2616,
+     *      section 13.3: (Caching) Validation Model</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.24">RFC 2616,
+     *      section 14.24: Header "If-Match"</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.25">RFC 2616,
+     *      section 14.25: Header "If-Modified-Since"</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.26">RFC 2616,
+     *      section 14.26: Header "If-None-Match"</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.28">RFC 2616,
+     *      section 14.28: Header "If-Unmodified-Since"</a>
      */
-    public Response evaluatePreconditions(Date lastModified, EntityTag tag) {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+    public Response evaluatePreconditions(Date lastModified, EntityTag entityTag) {
+        if (lastModified == null && entityTag == null)
+            return null;
+        ResponseBuilder rb = null;
+        Method requestMethod = restletRequest.getMethod();
+        Conditions conditions = this.restletRequest.getConditions();
+        if (lastModified != null) {
+            // Header "If-Modified-Since"
+            Date modSinceCond = conditions.getModifiedSince();
+            if (modSinceCond != null) {
+                if (modSinceCond.after(lastModified)) {
+                    // the Entity was not changed
+                    boolean readRequest = requestMethod.equals(Method.GET)
+                            || requestMethod.equals(Method.HEAD);
+                    if (readRequest) {
+                        rb = Response.notModified();
+                        rb.lastModified(lastModified);
+                        rb.tag(entityTag);
+                    } else {
+                        return precFailed();
+                    }
+                } else {
+                    // entity was changed -> check for other precoditions
+                }
+            }
+            // Header "If-Unmodified-Since"
+            Date unmodSinceCond = conditions.getUnmodifiedSince();
+            if (unmodSinceCond != null) {
+                if (unmodSinceCond.after(lastModified)) {
+                    // entity was not changed -> Web Service must recalculate it
+                    return null;
+                } else {
+                    // the Entity was changed
+                    return precFailed();
+                }
+            }
+        }
+        if (entityTag != null) {
+            Tag actualEntityTag = Util.convertEntityTag(entityTag);
+            // Header "If-Match"
+            List<Tag> requestMatchETags = conditions.getMatch();
+            if (!requestMatchETags.isEmpty()) {
+                boolean match = checkIfOneMatch(requestMatchETags,
+                        actualEntityTag);
+                if (!match) {
+                    return precFailed();
+                }
+            } else {
+                // default answer to the request
+            }
+            // Header "If-None-Match"
+            List<Tag> requestNoneMatchETags = conditions.getNoneMatch();
+            if (!requestNoneMatchETags.isEmpty()) {
+                boolean match = checkIfOneMatch(requestNoneMatchETags,
+                        actualEntityTag);
+                if (match) {
+                    return precFailed();
+                }
+            } else {
+                // default answer to the request
+            }
+        }
+        if (rb != null)
+            return rb.build();
+        return null;
+    }
+
+    /**
+     * @return
+     */
+    private Response precFailed() {
+        return Response.status(STATUS_PREC_FAILED).build();
+        // TODO welche Header setzen bei PrecFailed?
+    }
+
+    private boolean checkIfOneMatch(List<Tag> requestETags, Tag entityTag) {
+        for (Tag requestETag : requestETags) {
+            if (entityTag.equals(requestETag)) // TODO strong compare benutzen
+                // (http://tools.ietf.org/html/rfc2616#section-13.3.3)
+                return true;
+        }
+        return false;
     }
 
     /**

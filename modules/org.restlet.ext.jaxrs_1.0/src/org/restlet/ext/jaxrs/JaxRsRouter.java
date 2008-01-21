@@ -613,7 +613,7 @@ public class JaxRsRouter extends Restlet {
                                                     .equals(Method.GET)) {
                                         bestMethod = currentMethod;
                                     } else {
-                                        // FIXME JSR311: it is not an internal
+                                        // TODO JSR311: it is not an internal
                                         // server error in
                                         // SimpleTrainTest.testGetTextAll()
                                         throwMultipleResourceMethods();

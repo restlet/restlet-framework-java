@@ -86,7 +86,10 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder cacheControl(CacheControl cacheControl) {
-        getMetadata().add(HttpHeaders.CACHE_CONTROL, cacheControl);
+        if (cacheControl == null)
+            getMetadata().remove(HttpHeaders.CACHE_CONTROL);
+        else
+            getMetadata().putSingle(HttpHeaders.CACHE_CONTROL, cacheControl);
         return this;
     }
 
@@ -101,8 +104,11 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder contentLocation(URI location) {
-        getMetadata().putSingle(HttpHeaders.CONTENT_LOCATION,
-                location.toASCIIString());
+        if (location == null)
+            getMetadata().remove(HttpHeaders.CONTENT_LOCATION);
+        else
+            getMetadata().putSingle(HttpHeaders.CONTENT_LOCATION,
+                    location.toASCIIString());
         return this;
     }
 
@@ -120,8 +126,10 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     @Override
     public ResponseBuilder cookie(NewCookie... cookies) {
         Map<String, NewCookie> newCookies = getNewCookies();
-        for (NewCookie cookie : cookies)
-            newCookies.put(cookie.getName(), cookie);
+        for (NewCookie cookie : cookies) {
+            if (cookie != null)
+                newCookies.put(cookie.getName(), cookie);
+        }
         return this;
     }
 
@@ -141,7 +149,8 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     }
 
     /**
-     * Set the value of a specific header on the ResponseBuilder.
+     * Set the value of a specific header on the ResponseBuilder. If the value
+     * is null, an previous set value for the given name will be removed.
      * 
      * @param name
      *                the name of the header
@@ -157,20 +166,21 @@ public class ResponseBuilderImpl extends ResponseBuilder {
         if (name == null)
             throw new IllegalArgumentException(
                     "You must give a name of the header");
-        if (name.equals(HttpHeaders.SET_COOKIE))
-        {
-            if(value instanceof NewCookie)
+        if (name.equals(HttpHeaders.SET_COOKIE)) {
+            if (value instanceof NewCookie)
                 this.cookie((NewCookie) value);
-            else if(value instanceof Cookie)
-                this.cookie(new NewCookie((Cookie)value));
-            else if(value instanceof CharSequence)
+            else if (value instanceof Cookie)
+                this.cookie(new NewCookie((Cookie) value));
+            else if (value instanceof CharSequence)
                 this.cookie(NewCookie.parse(value.toString()));
             else
-                throw new IllegalArgumentException("A Cookie must be of type NewCookie or String");
-        }
-        else
-        {
-            getMetadata().add(name, value);
+                throw new IllegalArgumentException(
+                        "A Cookie must be of type NewCookie or String");
+        } else {
+            if (value == null)
+                getMetadata().remove(name);
+            else
+                getMetadata().add(name, value);
         }
         return this;
     }
@@ -186,7 +196,10 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder language(String language) {
-        getMetadata().putSingle(HttpHeaders.CONTENT_LANGUAGE, language);
+        if (language == null)
+            getMetadata().remove(HttpHeaders.CONTENT_LANGUAGE);
+        else
+            getMetadata().putSingle(HttpHeaders.CONTENT_LANGUAGE, language);
         return this;
     }
 
@@ -201,7 +214,10 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder lastModified(Date lastModified) {
-        getMetadata().putSingle(HttpHeaders.LAST_MODIFIED, lastModified);
+        if (lastModified == null)
+            getMetadata().remove(HttpHeaders.LAST_MODIFIED);
+        else
+            getMetadata().putSingle(HttpHeaders.LAST_MODIFIED, lastModified);
         return this;
     }
 
@@ -216,7 +232,10 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder location(URI location) {
-        getMetadata().putSingle(HttpHeaders.LOCATION, location);
+        if (location == null)
+            getMetadata().remove(HttpHeaders.LOCATION);
+        else
+            getMetadata().putSingle(HttpHeaders.LOCATION, location);
         return this;
     }
 
@@ -240,7 +259,6 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     /**
      * Set the entity tag on the ResponseBuilder.
      * 
-     * 
      * @param tag
      *                the entity tag
      * @return the updated ResponseBuilder
@@ -248,7 +266,10 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder tag(EntityTag tag) {
-        getMetadata().add(HttpHeaders.ETAG, tag);
+        if (tag == null)
+            getMetadata().remove(HttpHeaders.ETAG);
+        else
+            getMetadata().putSingle(HttpHeaders.ETAG, tag);
         return this;
     }
 
@@ -265,7 +286,10 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     @Override
     public ResponseBuilder tag(String tag) {
         // TODO JSR311: should the runtime reject a weak entity tag?
-        getMetadata().add(HttpHeaders.ETAG, tag);
+        if (tag == null)
+            getMetadata().remove(HttpHeaders.ETAG);
+        else
+            getMetadata().putSingle(HttpHeaders.ETAG, tag);
         return this;
     }
 
@@ -276,7 +300,10 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder type(MediaType type) {
-        getMetadata().putSingle(HttpHeaders.CONTENT_TYPE, type);
+        if (type == null)
+            getMetadata().remove(HttpHeaders.CONTENT_TYPE);
+        else
+            getMetadata().putSingle(HttpHeaders.CONTENT_TYPE, type);
         return this;
     }
 
@@ -298,7 +325,6 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     /**
      * Set representation metadata on the ResponseBuilder.
      * 
-     * 
      * @param variant
      *                metadata of the response entity
      * @return the updated ResponseBuilder
@@ -306,6 +332,8 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder variant(Variant variant) {
+        if (variant == null)
+            throw new IllegalArgumentException("The variant must not be null");
         MultivaluedMap<String, Object> metadata = getMetadata();
         metadata.putSingle(HttpHeaders.CONTENT_LANGUAGE, variant.getLanguage());
         metadata.putSingle(HttpHeaders.CONTENT_ENCODING, variant.getEncoding());

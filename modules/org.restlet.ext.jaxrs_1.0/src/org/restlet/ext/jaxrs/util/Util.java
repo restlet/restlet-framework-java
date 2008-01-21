@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
@@ -46,6 +47,8 @@ import org.restlet.data.Preference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.data.Tag;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Engine;
 import org.restlet.util.Series;
@@ -66,66 +69,266 @@ public class Util {
     public static final String ORG_RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
 
     /**
-     * Tests, if the given String is empty or "/". Will not throw a
-     * NullPointerException.
+     * Converts a JAX-RS Cookie to a Restlet Cookie
      * 
-     * @param string
-     * @return Returns true, if the given string ist null, empty or equals "/"
+     * @param jaxRsCookie
+     *                the JAX-RS Cookie
+     * @return the Restlet Cookie
      */
-    public static boolean isEmptyOrSlash(String string) {
-        return string == null || string.length() == 0 || string.equals("/");
+    public static org.restlet.data.Cookie convertCookie(Cookie jaxRsCookie) {
+        if (jaxRsCookie == null)
+            return null;
+        return new org.restlet.data.Cookie(jaxRsCookie.getVersion(),
+                jaxRsCookie.getName(), jaxRsCookie.getValue(), jaxRsCookie
+                        .getPath(), jaxRsCookie.getDomain());
     }
 
     /**
-     * Tests, if the given array is empty. Will not throw a
-     * NullPointerException.
+     * Converts a Restlet Cookie to a JAX-RS Cookie
      * 
-     * @param array
-     * @return Returns true, if the given array ist null or has zero elements,
-     *         otherwise false.
-     * @see #isEmpty(List)
+     * @param restletCookie
+     *                the Restlet Cookie
+     * @return the JAX-RS Cookie
      */
-    public static boolean isEmpty(Object[] array) {
-        if (array == null || array.length == 0)
-            return true;
-        return false;
+    public static Cookie convertCookie(org.restlet.data.Cookie restletCookie) {
+        if (restletCookie == null)
+            return null;
+        return new Cookie(restletCookie.getName(), restletCookie.getValue(),
+                restletCookie.getPath(), restletCookie.getDomain(),
+                restletCookie.getVersion());
     }
 
     /**
-     * Checks, if the list is empty.
+     * Converts a JAX-RS-EntityTag to a Restlet-EntityTag
      * 
-     * @param list
-     * @return true, if the list is empty or null, or false, if the list
-     *         contains elements.
-     * @see #isEmpty(Object[])
+     * @param jaxRsEntityTag
+     *                the JAX-RS-EntityTag to convert.
+     * @return The corresponding Restlet-Entity-Tag
      */
-    public static boolean isEmpty(List<?> list) {
-        return (list == null || list.isEmpty());
+    public static Tag convertEntityTag(EntityTag jaxRsEntityTag) {
+        if (jaxRsEntityTag == null)
+            return null;
+        return new Tag(jaxRsEntityTag.getValue(), jaxRsEntityTag.isWeak());
     }
 
     /**
-     * Checks, if the list contains elements.
+     * Converts a Restlet-EntityTag to a JAX-RS-EntityTag
      * 
-     * @param list
-     * @return true, if the list contains elements, or false, if the list is
-     *         empty or null.
+     * @param restletEntityTag
+     *                the Restlet-EntityTag to convert.
+     * @return The corresponding JAX-RS-Entity-Tag
      */
-    public static boolean isNotEmpty(List<?> list) {
-        return (list != null && !list.isEmpty());
+    public static EntityTag convertEntityTag(Tag restletEntityTag) {
+        if (restletEntityTag == null)
+            return null;
+        return new EntityTag(restletEntityTag.getName(), restletEntityTag
+                .isWeak());
     }
 
     /**
-     * @param list
+     * Convert a JAX-RS MediaType to a Restlet MediaType.
+     * 
+     * @param jaxRsMediaType
+     * @return the converted MediaType
+     */
+    public static org.restlet.data.MediaType convertMediaType(
+            MediaType jaxRsMediaType) {
+        if (jaxRsMediaType == null)
+            return null;
+        Series<Parameter> parameters = convertToSeries(jaxRsMediaType
+                .getParameters());
+        String name = jaxRsMediaType.getType() + "/"
+                + jaxRsMediaType.getSubtype();
+        return new org.restlet.data.MediaType(name, parameters);
+    }
+
+    /**
+     * Convert a Restlet MediaType to a JAX-RS MediaType.
+     * 
+     * @param restletMediaType
+     * @return the converted MediaType
+     */
+    public static MediaType convertMediaType(
+            org.restlet.data.MediaType restletMediaType) {
+        if (restletMediaType == null)
+            return null;
+        Map<String, String> parameters = convertSeries(restletMediaType
+                .getParameters());
+        return new MediaType(restletMediaType.getMainType(), restletMediaType
+                .getSubType(), parameters);
+    }
+
+    /**
+     * @param parameters
+     * @return
+     */
+    public static Map<String, String> convertSeries(Series<Parameter> parameters) {
+        if (parameters == null)
+            return null;
+        Map<String, String> map = new HashMap<String, String>();
+        for (Parameter parameter : parameters) {
+            map.put(parameter.getName(), parameter.getValue());
+        }
+        return map;
+    }
+
+    /**
+     * Converts the Restlet JAX-RS NewCookie to a CookieSettings.
+     * 
+     * @param newCookie
+     * @return
+     * @throws IllegalArgumentException
+     */
+    public static CookieSetting convertToCookieSetting(NewCookie newCookie)
+            throws IllegalArgumentException {
+        if (newCookie == null)
+            return null;
+        return new CookieSetting(newCookie.getVersion(), newCookie.getName(),
+                newCookie.getValue(), newCookie.getPath(), newCookie
+                        .getDomain(), newCookie.getComment(), newCookie
+                        .getMaxAge(), newCookie.isSecure());
+    }
+
+    /**
+     * Converts the Restlet CookieSettings to a JAX-RS NewCookie.
+     * 
+     * @param cookieSetting
+     * @return
+     * @throws IllegalArgumentException
+     */
+    public static NewCookie convertToNewCookie(CookieSetting cookieSetting)
+            throws IllegalArgumentException {
+        if (cookieSetting == null)
+            return null;
+        return new NewCookie(cookieSetting.getName(), cookieSetting.getValue(),
+                cookieSetting.getPath(), cookieSetting.getDomain(),
+                cookieSetting.getVersion(), cookieSetting.getComment(),
+                cookieSetting.getMaxAge(), cookieSetting.isSecure());
+    }
+
+    /**
+     * @param parameters
+     * @return a form with the given parameters. Will never return null.
+     */
+    public static Form convertToSeries(Map<String, String> parameters) {
+        Form form = new Form();
+        if (parameters == null)
+            return form;
+        for (Map.Entry<String, String> parameter : parameters.entrySet())
+            form.add(parameter.getKey(), parameter.getValue());
+        return form;
+    }
+
+    /**
+     * 
+     * @param jaxRsHeaders
+     *                Headers of an JAX-RS-Response.
+     * @param restletResponse
+     *                Restlet Response to copy the headers in.
+     * @param logger
+     *                The logger to use
+     * @see javax.ws.rs.core.Response#getMetadata()
+     */
+    public static void copyResponseHeaders(
+            final MultivaluedMap<String, Object> jaxRsHeaders,
+            Response restletResponse, Logger logger) {
+        Collection<Parameter> headers = new ArrayList<Parameter>();
+        for (Map.Entry<String, List<Object>> m : jaxRsHeaders.entrySet()) {
+            String headerName = m.getKey();
+            for (Object headerValue : m.getValue()) {
+                String hValue;
+                if (headerValue == null)
+                    hValue = null;
+                else if (headerValue instanceof Date)
+                    hValue = formatDate((Date) headerValue, false);
+                // TODO temporarily constant not as cookie;
+                else
+                    hValue = headerValue.toString();
+                headers.add(new Parameter(headerName, hValue));
+            }
+        }
+        if (restletResponse.getEntity() == null) {
+            // TODO Jerome: wie bekommt man am elegantesten ne leere
+            // Repräsentation?
+            restletResponse.setEntity(new StringRepresentation(""));
+        }
+        Engine.getInstance().copyResponseHeaders(headers, restletResponse,
+                logger);
+    }
+
+    /**
+     * Creates an modifiable Collection with the given Objects in it, and no
+     * other objects.
+     * 
+     * @param object1
+     * @param object2
      * @param <A>
-     * @return Returns the last Element of the list
-     * @throws IndexOutOfBoundsException
-     *                 If the list is empty
+     * @return Returns the created list with the given objects in it
      */
-    public static <A> A getLastElement(List<A> list)
-            throws IndexOutOfBoundsException {
-        if (list instanceof LinkedList)
-            return ((LinkedList<A>) list).getLast();
-        return list.get(list.size() - 1);
+    public static <A> Collection<A> createColl(A object1, A object2) {
+        Collection<A> coll = new ArrayList<A>();
+        coll.add(object1);
+        coll.add(object2);
+        return coll;
+    }
+
+    /**
+     * Creates an modifiable List with the given Object in it, and no other
+     * objects.
+     * 
+     * @param object
+     * @param <A>
+     * @return Returns the created list with the given object in it
+     */
+    public static <A> List<A> createList(A object) {
+        List<A> list = new ArrayList<A>();
+        list.add(object);
+        return list;
+    }
+
+    /**
+     * Ensures that the path starts wirh a string. if not, a slash will be added
+     * at the beginning.
+     * 
+     * @param path
+     * @return
+     */
+    public static String ensureStartSlash(String path) {
+        if (path.startsWith("/"))
+            return path;
+        return "/" + path;
+    }
+
+    /**
+     * Check if the given objects are equal. Can deal with null references. if
+     * both elements are null, than the result is true.
+     * 
+     * @param object1
+     * @param object2
+     * @return
+     */
+    public static boolean equals(Object object1, Object object2) {
+        if (object1 == null)
+            return object2 == null;
+        return object1.equals(object2);
+    }
+
+    /**
+     * Converte the given Date into a String. Copied from
+     * {@link com.noelios.restlet.HttpCall}.
+     * 
+     * @param date
+     *                Date to format
+     * @param cookie
+     *                if true, using RFC 1036 format, otherwise RFC 1123 format.
+     * @return
+     */
+    public static String formatDate(Date date, boolean cookie) {
+        if (cookie) {
+            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
+        } else {
+            return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
+        }
     }
 
     /**
@@ -190,56 +393,6 @@ public class Util {
     }
 
     /**
-     * 
-     * @param jaxRsHeaders
-     *                Headers of an JAX-RS-Response.
-     * @param restletResponse
-     *                Restlet Response to copy the headers in.
-     * @param logger
-     *                The logger to use
-     * @see javax.ws.rs.core.Response#getMetadata()
-     */
-    public static void copyResponseHeaders(
-            final MultivaluedMap<String, Object> jaxRsHeaders,
-            Response restletResponse, Logger logger) {
-        Collection<Parameter> headers = new ArrayList<Parameter>();
-        for (Map.Entry<String, List<Object>> m : jaxRsHeaders.entrySet()) {
-            String headerName = m.getKey();
-            for (Object headerValue : m.getValue()) {
-                String hValue;
-                if (headerValue == null)
-                    hValue = null;
-                else if (headerValue instanceof Date)
-                    hValue = formatDate((Date) headerValue, false);
-                // TODO temporarily constant not as cookie;
-                else
-                    hValue = headerValue.toString();
-                headers.add(new Parameter(headerName, hValue));
-            }
-        }
-        Engine.getInstance().copyResponseHeaders(headers, restletResponse,
-                logger);
-    }
-
-    /**
-     * Converte the given Date into a String. Copied from
-     * {@link com.noelios.restlet.HttpCall}.
-     * 
-     * @param date
-     *                Date to format
-     * @param cookie
-     *                if true, using RFC 1036 format, otherwise RFC 1123 format.
-     * @return
-     */
-    public static String formatDate(Date date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
-        } else {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
-        }
-    }
-
-    /**
      * @param request
      * @return Returns the HTTP-Headers-Form from the Request.
      */
@@ -257,73 +410,17 @@ public class Util {
     }
 
     /**
-     * Ensures that the path starts wirh a string. if not, a slash will be added
-     * at the beginning.
-     * 
-     * @param path
-     * @return
-     */
-    public static String ensureStartSlash(String path) {
-        if (path.startsWith("/"))
-            return path;
-        return "/" + path;
-    }
-
-    /**
-     * Creates an modifiable List with the given Object in it, and no other
-     * objects.
-     * 
-     * @param object
+     * @param list
      * @param <A>
-     * @return Returns the created list with the given object in it
+     * @return Returns the last Element of the list
+     * @throws IndexOutOfBoundsException
+     *                 If the list is empty
      */
-    public static <A> List<A> createList(A object) {
-        List<A> list = new ArrayList<A>();
-        list.add(object);
-        return list;
-    }
-
-    /**
-     * Creates an modifiable Collection with the given Objects in it, and no
-     * other objects.
-     * 
-     * @param object1
-     * @param object2
-     * @param <A>
-     * @return Returns the created list with the given objects in it
-     */
-    public static <A> Collection<A> createColl(A object1, A object2) {
-        Collection<A> coll = new ArrayList<A>();
-        coll.add(object1);
-        coll.add(object2);
-        return coll;
-    }
-
-    /**
-     * Check if the given objects are equal. Can deal with null references. if
-     * both elements are null, than the result is true.
-     * 
-     * @param object1
-     * @param object2
-     * @return
-     */
-    public static boolean equals(Object object1, Object object2) {
-        if (object1 == null)
-            return object2 == null;
-        return object1.equals(object2);
-    }
-
-    /**
-     * @see Arrays#toList(Object[])
-     * @param <E>
-     * @param elements
-     * @return
-     */
-    public static <E> List<E> toList(E[] elements) {
-        List<E> list = new ArrayList<E>(elements.length);
-        for (E element : elements)
-            list.add(element);
-        return list;
+    public static <A> A getLastElement(List<A> list)
+            throws IndexOutOfBoundsException {
+        if (list instanceof LinkedList)
+            return ((LinkedList<A>) list).getLast();
+        return list.get(list.size() - 1);
     }
 
     /**
@@ -340,6 +437,55 @@ public class Util {
         // TODO irgendwie irgendwas loggen
         throw new WebApplicationException(e, Status.SERVER_ERROR_INTERNAL
                 .getCode());
+    }
+
+    /**
+     * Checks, if the list is empty.
+     * 
+     * @param list
+     * @return true, if the list is empty or null, or false, if the list
+     *         contains elements.
+     * @see #isEmpty(Object[])
+     */
+    public static boolean isEmpty(List<?> list) {
+        return (list == null || list.isEmpty());
+    }
+
+    /**
+     * Tests, if the given array is empty. Will not throw a
+     * NullPointerException.
+     * 
+     * @param array
+     * @return Returns true, if the given array ist null or has zero elements,
+     *         otherwise false.
+     * @see #isEmpty(List)
+     */
+    public static boolean isEmpty(Object[] array) {
+        if (array == null || array.length == 0)
+            return true;
+        return false;
+    }
+
+    /**
+     * Tests, if the given String is empty or "/". Will not throw a
+     * NullPointerException.
+     * 
+     * @param string
+     * @return Returns true, if the given string ist null, empty or equals "/"
+     */
+    public static boolean isEmptyOrSlash(String string) {
+        return string == null || string.length() == 0 || string.equals("/");
+    }
+
+    /**
+     * Checks, if the list contains elements.
+     * 
+     * @param list
+     * @return true, if the list contains elements, or false, if the list is
+     *         empty or null.
+     */
+    public static boolean isNotEmpty(List<?> list) {
+        return (list != null && !list.isEmpty());
     }
 
     /**
@@ -367,110 +513,15 @@ public class Util {
     }
 
     /**
-     * Convert a Restlet MediaType to a JAX-RS MediaType.
-     * 
-     * @param restletMediaType
-     * @return the converted MediaType
-     */
-    public static MediaType convertMediaType(
-            org.restlet.data.MediaType restletMediaType) {
-        Map<String, String> parameters = convertSeries(restletMediaType
-                .getParameters());
-        return new MediaType(restletMediaType.getMainType(), restletMediaType
-                .getSubType(), parameters);
-    }
-
-    /**
-     * @param parameters
+     * @see Arrays#toList(Object[])
+     * @param <E>
+     * @param elements
      * @return
      */
-    public static Map<String, String> convertSeries(Series<Parameter> parameters) {
-        Map<String, String> map = new HashMap<String, String>();
-        for (Parameter parameter : parameters) {
-            map.put(parameter.getName(), parameter.getValue());
-        }
-        return map;
-    }
-
-    /**
-     * Convert a JAX-RS MediaType to a Restlet MediaType.
-     * 
-     * @param jaxRsMediaType
-     * @return the converted MediaType
-     */
-    public static org.restlet.data.MediaType convertMediaType(
-            MediaType jaxRsMediaType) {
-        Series<Parameter> parameters = convertToSeries(jaxRsMediaType
-                .getParameters());
-        String name = jaxRsMediaType.getType() + "/"
-                + jaxRsMediaType.getSubtype();
-        return new org.restlet.data.MediaType(name, parameters);
-    }
-
-    /**
-     * @param parameters
-     * @return
-     */
-    public static Form convertToSeries(Map<String, String> parameters) {
-        Form form = new Form();
-        for (Map.Entry<String, String> parameter : parameters.entrySet())
-            form.add(parameter.getKey(), parameter.getValue());
-        return form;
-    }
-
-    /**
-     * Converts a Restlet Cookie to a JAX-RS Cookie
-     * 
-     * @param restletCookie
-     *                the Restlet Cookie
-     * @return the JAX-RS Cookie
-     */
-    public static Cookie convertCookie(org.restlet.data.Cookie restletCookie) {
-        return new Cookie(restletCookie.getName(), restletCookie.getValue(),
-                restletCookie.getPath(), restletCookie.getDomain(),
-                restletCookie.getVersion());
-    }
-
-    /**
-     * Converts a JAX-RS Cookie to a Restlet Cookie
-     * 
-     * @param jaxRsCookie
-     *                the JAX-RS Cookie
-     * @return the Restlet Cookie
-     */
-    public static org.restlet.data.Cookie convertCookie(Cookie jaxRsCookie) {
-        return new org.restlet.data.Cookie(jaxRsCookie.getVersion(),
-                jaxRsCookie.getName(), jaxRsCookie.getValue(), jaxRsCookie
-                        .getPath(), jaxRsCookie.getDomain());
-    }
-
-    /**
-     * Converts the Restlet CookieSettings to a JAX-RS NewCookie.
-     * 
-     * @param cookieSetting
-     * @return
-     * @throws IllegalArgumentException
-     */
-    public static NewCookie convertToNewCookie(CookieSetting cookieSetting)
-            throws IllegalArgumentException {
-        return new NewCookie(cookieSetting.getName(), cookieSetting.getValue(),
-                cookieSetting.getPath(), cookieSetting.getDomain(),
-                cookieSetting.getVersion(), cookieSetting.getComment(),
-                cookieSetting.getMaxAge(), cookieSetting.isSecure());
-    }
-
-    /**
-     * Converts the Restlet JAX-RS NewCookie to a CookieSettings.
-     * 
-     * @param newCookie
-     * @return
-     * @throws IllegalArgumentException
-     */
-    public static CookieSetting convertToCookieSetting(NewCookie newCookie)
-            throws IllegalArgumentException {
-        return new CookieSetting(newCookie.getVersion(), newCookie.getName(),
-                newCookie.getValue(), newCookie.getPath(), newCookie
-                        .getDomain(), newCookie.getComment(), newCookie
-                        .getMaxAge(), newCookie.isSecure());
+    public static <E> List<E> toList(E[] elements) {
+        List<E> list = new ArrayList<E>(elements.length);
+        for (E element : elements)
+            list.add(element);
+        return list;
     }
 }
