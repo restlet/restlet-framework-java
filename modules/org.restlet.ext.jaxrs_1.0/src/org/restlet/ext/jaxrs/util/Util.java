@@ -249,10 +249,8 @@ public class Util {
             throws IllegalArgumentException {
         MediaType mediaType = convertMediaType(restletVariant.getMediaType(),
                 restletVariant.getCharacterSet());
-        String language = Util.getOnlyElement(restletVariant.getLanguages())
-                .getName();
-        String encoding = Util.getOnlyElement(restletVariant.getEncodings())
-                .getName();
+        String language = Util.getOnlyMetadataName(restletVariant.getLanguages());
+        String encoding = Util.getOnlyMetadataName(restletVariant.getEncodings());
         return new Variant(mediaType, language, encoding);
     }
 
@@ -514,6 +512,21 @@ public class Util {
             throw new IllegalArgumentException(
                     "The list must have exactly one element");
         return list.get(0);
+    }
+    
+    /**
+     * Returns the Name of the only element of the list of the given Metadata.
+     * Returns null, if the list is empty or null.
+     * @param metadatas
+     * @return the name of the Metadata
+     * @see #getOnlyElement(List)
+     */
+    public static String getOnlyMetadataName(List<? extends Metadata> metadatas)
+    {
+        Metadata metadata = getOnlyElement(metadatas);
+        if(metadata == null)
+            return null;
+        return metadata.getName();
     }
 
     /**

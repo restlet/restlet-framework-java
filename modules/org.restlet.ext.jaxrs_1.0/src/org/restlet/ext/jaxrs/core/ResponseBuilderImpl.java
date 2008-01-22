@@ -64,7 +64,9 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     public Response build() {
         if (this.response == null)
             return new ResponseImpl();
-        // TODO aus HttpContextImpl den Vary-Header laden. Auch in thesis dokumentieren, dass das hier geladen wird, weil nicht festgeleht ist, wann es geladen werden soll. 
+        // TODO aus HttpContextImpl den Vary-Header laden. Auch in thesis
+        // dokumentieren, dass das hier geladen wird, weil nicht festgeleht ist,
+        // wann es geladen werden soll.
         Response r = this.response;
         if (this.newCookies != null) {
             MultivaluedMap<String, Object> metadata = getMetadata();
@@ -205,6 +207,22 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     }
 
     /**
+     * Set the language on the ResponseBuilder. <br/>This method is not required
+     * by the JAX-RS API bu is used from {@link #variant(Variant)}.
+     * 
+     * @param encoding
+     *                the encoding of the response entity
+     * @return the updated ResponseBuilder
+     */
+    public ResponseBuilder encoding(String encoding) {
+        if (encoding == null)
+            getMetadata().remove(HttpHeaders.CONTENT_ENCODING);
+        else
+            getMetadata().putSingle(HttpHeaders.CONTENT_ENCODING, encoding);
+        return this;
+    }
+
+    /**
      * Set the last modified date on the ResponseBuilder.
      * 
      * 
@@ -335,10 +353,9 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     public ResponseBuilder variant(Variant variant) {
         if (variant == null)
             throw new IllegalArgumentException("The variant must not be null");
-        MultivaluedMap<String, Object> metadata = getMetadata();
-        metadata.putSingle(HttpHeaders.CONTENT_LANGUAGE, variant.getLanguage());
-        metadata.putSingle(HttpHeaders.CONTENT_ENCODING, variant.getEncoding());
-        metadata.putSingle(HttpHeaders.CONTENT_TYPE, variant.getMediaType());
+        this.language(variant.getLanguage());
+        this.encoding(variant.getEncoding());
+        this.type(variant.getMediaType());
         return this;
     }
 
