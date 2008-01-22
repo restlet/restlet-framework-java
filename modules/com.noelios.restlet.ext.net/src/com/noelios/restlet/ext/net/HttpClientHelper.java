@@ -21,6 +21,8 @@ package com.noelios.restlet.ext.net;
 import java.io.IOException;
 import java.util.logging.Level;
 
+import javax.net.ssl.HostnameVerifier;
+
 import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -80,6 +82,9 @@ import com.noelios.restlet.http.HttpClientCall;
  * </tr>
  * </table>
  * 
+ * It is also possible to specify a hostname verifier for HTTPS connections. See
+ * the {@link #getHostnameVerifier()} method for details.
+ * 
  * @see <a
  *      href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>
@@ -96,6 +101,17 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
         super(client);
         getProtocols().add(Protocol.HTTP);
         getProtocols().add(Protocol.HTTPS);
+    }
+
+    /**
+     * Returns the hostname verifier by looking up the
+     * "org.restlet.ssl.hostnameVerifier" attribute of the client's context.
+     * 
+     * @return The hostname verifier or null.
+     */
+    public HostnameVerifier getHostnameVerifier() {
+        return (HostnameVerifier) getClient().getContext().getAttributes().get(
+                "org.restlet.ssl.hostnameVerifier");
     }
 
     /**

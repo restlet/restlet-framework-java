@@ -31,6 +31,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.HostnameVerifier;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
@@ -94,7 +95,16 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                     .isFollowRedirects());
             this.connection.setUseCaches(getHelper().isUseCaches());
             this.responseHeadersAdded = false;
-            setConfidential(this.connection instanceof HttpsURLConnection);
+
+            if (this.connection instanceof HttpsURLConnection) {
+                setConfidential(true);
+                HostnameVerifier verifier = helper.getHostnameVerifier();
+
+                if (verifier != null) {
+                    HttpsURLConnection https = (HttpsURLConnection) this.connection;
+                    https.setHostnameVerifier(verifier);
+                }
+            }
         } else {
             throw new IllegalArgumentException(
                     "Only HTTP or HTTPS resource URIs are allowed here");
