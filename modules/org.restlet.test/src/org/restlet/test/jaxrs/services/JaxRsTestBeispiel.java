@@ -18,42 +18,43 @@
 
 package org.restlet.test.jaxrs.services;
 
-import org.restlet.Component;
+import java.util.Collection;
+
+import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.test.jaxrs.services.tests.JaxRsTestCase;
+import org.restlet.test.jaxrs.services.tests.ServerWrapper;
 
 /**
  * 
  * @author Stephan
- *
+ * 
  */
-public class JaxRsTestBeispiel
-{
+public class JaxRsTestBeispiel {
     /**
      * 
      * @param args
      * @throws Exception
      */
-	public static void main(String[] args) throws Exception
-	{
-		JaxRsTestBeispiel beispiel = new JaxRsTestBeispiel();
-		beispiel.run();
-	}
-	
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	public void run() throws Exception
-	{
-		Component component = JaxRsTestCase.startServer(JaxRsTestCase.PROTOCOL, JaxRsTestCase.PORT, SimpleTrain.class);
-		doUntilServerRunning();
-		JaxRsTestCase.stopServer(component);
-	}
+    public static void main(String[] args) throws Exception {
+        JaxRsTestBeispiel beispiel = new JaxRsTestBeispiel();
+        beispiel.run();
+    }
 
-	protected void doUntilServerRunning() throws Exception
-	{
-		Thread.sleep(300);
-		System.out.println("Server mit Tastendruck beenden . . .");
-		System.in.read();
-	}
+    /**
+     * 
+     * @throws Exception
+     */
+    @SuppressWarnings("all")
+    public void run() throws Exception {
+        ServerWrapper serverWrapper = JaxRsTestCase.getServerWrapper();
+        serverWrapper.startServer((Collection)Util.createList(SimpleTrain.class), JaxRsTestCase.PORT);
+        doUntilServerRunning();
+        serverWrapper.stopServer();
+    }
+
+    protected void doUntilServerRunning() throws Exception {
+        Thread.sleep(300);
+        System.out.println("Server mit Tastendruck beenden . . .");
+        System.in.read();
+    }
 }

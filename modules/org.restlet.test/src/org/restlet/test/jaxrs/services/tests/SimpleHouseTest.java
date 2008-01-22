@@ -21,7 +21,6 @@ package org.restlet.test.jaxrs.services.tests;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.restlet.Component;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Response;
@@ -38,13 +37,13 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public static void testGetHtmlText() throws Exception {
-        Response response = JaxRsTestCase.accessServer(SimpleHouse.class,
+        Response response = accessServer(SimpleHouse.class,
                 Method.GET, MediaType.TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
     }
 
     public static void testGetPlainText() throws Exception {
-        Response response = JaxRsTestCase.accessServer(SimpleHouse.class,
+        Response response = accessServer(SimpleHouse.class,
                 Method.GET, MediaType.TEXT_PLAIN);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation representation = response.getEntity();
@@ -54,7 +53,7 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public static void testGetTextAll() throws Exception {
-        Response response = JaxRsTestCase.accessServer(SimpleHouse.class,
+        Response response = accessServer(SimpleHouse.class,
                 Method.GET, MediaType.TEXT_ALL);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation representation = response.getEntity();
@@ -64,9 +63,9 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public void testHead1() throws Exception {
-        Response responseGett = JaxRsTestCase.accessServer(SimpleHouse.class,
+        Response responseGett = accessServer(SimpleHouse.class,
                 "headTest1", Method.GET, MediaType.TEXT_HTML);
-        Response responseHead = JaxRsTestCase.accessServer(SimpleHouse.class,
+        Response responseHead = accessServer(SimpleHouse.class,
                 "headTest1", Method.HEAD, MediaType.TEXT_HTML);
         if (responseGett.getStatus().isError())
             System.out.println(responseGett.getEntity().getText());
@@ -85,9 +84,9 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public void testHead2() throws Exception {
-        Response responseGett = JaxRsTestCase.accessServer(SimpleHouse.class,
+        Response responseGett = accessServer(SimpleHouse.class,
                 "headTest2", Method.GET, MediaType.TEXT_HTML);
-        Response responseHead = JaxRsTestCase.accessServer(SimpleHouse.class,
+        Response responseHead = accessServer(SimpleHouse.class,
                 "headTest2", Method.HEAD, MediaType.TEXT_HTML);
         if (responseGett.getStatus().isError())
             System.out.println(responseGett.getEntity().getText());
@@ -106,9 +105,9 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public void testHead2plain() throws Exception {
-        Response responseGett = JaxRsTestCase.accessServer(SimpleHouse.class,
+        Response responseGett = accessServer(SimpleHouse.class,
                 "headTest2", Method.GET, MediaType.TEXT_PLAIN);
-        Response responseHead = JaxRsTestCase.accessServer(SimpleHouse.class,
+        Response responseHead = accessServer(SimpleHouse.class,
                 "headTest2", Method.HEAD, MediaType.TEXT_PLAIN);
         if (responseGett.getStatus().isError())
             System.out.println(responseGett.getEntity().getText());
@@ -138,11 +137,5 @@ public class SimpleHouseTest extends JaxRsTestCase {
 
         response = accessServer(SimpleHouse.class, "xyz", Method.OPTIONS);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
-    }
-
-    public static void main(String[] args) throws Exception {
-        Component component = startServer(SimpleHouse.class);
-        System.in.read();
-        stopServer(component);
     }
 }

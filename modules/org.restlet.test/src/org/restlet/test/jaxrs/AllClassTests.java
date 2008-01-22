@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.restlet.test.jaxrs.core.JaxRsUriInfoTest;
+import org.restlet.test.jaxrs.services.tests.DoublePathTest;
 import org.restlet.test.jaxrs.util.UtilTests;
 
 public class AllClassTests extends TestCase {
@@ -32,6 +33,7 @@ public class AllClassTests extends TestCase {
         mySuite.addTestSuite(PathRegExpTests.class);
         mySuite.addTestSuite(UtilTests.class);
         mySuite.addTestSuite(JaxRsUriInfoTest.class);
+        mySuite.addTestSuite(DoublePathTest.class);
         return mySuite;
     }
 }

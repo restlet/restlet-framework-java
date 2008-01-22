@@ -31,23 +31,28 @@ import javax.ws.rs.ProduceMime;
 @Path("/train")
 public class SimpleTrain {
 
+    public static boolean checkForValidConstructor = true;
+
     public SimpleTrain() {
-        throw new RuntimeException(
-                "This Constructor is not allowed, because another constructors has more elements");
+        if (checkForValidConstructor)
+            throw new RuntimeException(
+                    "This Constructor is not allowed, because another constructors has more elements");
     }
 
     public SimpleTrain(Integer x) {
         "".equals(x);
-        throw new RuntimeException(
-                "This Constructor is not allowed, because the paramters are not correct annotated");
+        if (checkForValidConstructor)
+            throw new RuntimeException(
+                    "This Constructor is not allowed, because the paramters are not correct annotated");
     }
 
     public SimpleTrain(String x, @HeaderParam("p")
     String p) {
         "".equals(p);
         "".equals(x);
-        throw new RuntimeException(
-                "This Constructor is not allowed, because one of the paramters are not correct annotated");
+        if (checkForValidConstructor)
+            throw new RuntimeException(
+                    "This Constructor is not allowed, because one of the paramters are not correct annotated");
     }
 
     public SimpleTrain(@HeaderParam("p")

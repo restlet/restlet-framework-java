@@ -21,7 +21,6 @@ package org.restlet.test.jaxrs.services.tests;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.restlet.Component;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -141,11 +140,5 @@ public class SimpleTrainTest extends JaxRsTestCase {
     public void testOptions() throws Exception {
         Response response = accessServer(SimpleTrain.class, Method.OPTIONS);
         assertAllowedMethod(response, Method.GET);
-    }
-
-    public static void main(String[] args) throws Exception {
-        Component component = startServer(SimpleTrain.class);
-        System.in.read();
-        stopServer(component);
     }
 }
