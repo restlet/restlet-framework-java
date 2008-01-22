@@ -291,51 +291,111 @@ public class Component extends Restlet {
     }
 
     /**
-     * Starts all the connectors then the component.
+     * Starts the component. First it starts all the connectors (clients then
+     * servers) and then starts the component's internal helper. Finally it
+     * calls the start method of the super class.
+     * 
+     * @see #startClients()
+     * @see #startServers()
+     * @see #startHelper()
      */
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
-            if (this.clients != null) {
-                for (Client client : this.clients) {
-                    client.start();
-                }
-            }
-
-            if (this.servers != null) {
-                for (Server server : this.servers) {
-                    server.start();
-                }
-            }
-
-            if (getHelper() != null)
-                getHelper().start();
-
+            startClients();
+            startServers();
+            startHelper();
             super.start();
         }
     }
 
     /**
-     * Stops the component and all its connectors.
+     * Starts the client connectors.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void startClients() throws Exception {
+        if (this.clients != null) {
+            for (Client client : this.clients) {
+                client.start();
+            }
+        }
+    }
+
+    /**
+     * Starts the internal helper allowing incoming requests to be served.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void startHelper() throws Exception {
+        if (getHelper() != null)
+            getHelper().start();
+    }
+
+    /**
+     * Starts the server connectors.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void startServers() throws Exception {
+        if (this.servers != null) {
+            for (Server server : this.servers) {
+                server.start();
+            }
+        }
+    }
+
+    /**
+     * Stops the component. First it stops the component's internal helper and
+     * then stops all the connectors (servers then clients). Finally it calls
+     * the stop method of the super class.
+     * 
+     * @see #stopHelper()
+     * @see #stopServers()
+     * @see #stopClients()
      */
     @Override
     public synchronized void stop() throws Exception {
-        if (getHelper() != null)
-            getHelper().stop();
+        stopHelper();
+        stopServers();
+        stopClients();
+        super.stop();
+    }
 
+    /**
+     * Stops the client connectors.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void stopClients() throws Exception {
         if (this.clients != null) {
             for (Client client : this.clients) {
                 client.stop();
             }
         }
+    }
 
+    /**
+     * Stops the internal helper allowing incoming requests to be served.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void stopHelper() throws Exception {
+        if (getHelper() != null)
+            getHelper().stop();
+    }
+
+    /**
+     * Stops the server connectors.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void stopServers() throws Exception {
         if (this.servers != null) {
             for (Server server : this.servers) {
                 server.stop();
             }
         }
-
-        super.stop();
     }
 
 }
