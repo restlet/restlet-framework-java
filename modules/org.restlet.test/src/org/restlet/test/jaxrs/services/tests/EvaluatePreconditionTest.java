@@ -41,6 +41,8 @@ import org.restlet.test.jaxrs.services.EvaluatePreconditionService;
  * @author Stephan Koops
  */
 public class EvaluatePreconditionTest extends JaxRsTestCase {
+    private static final Status PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+
     /**
      * After than 2008-01-08, 12h
      * 
@@ -106,34 +108,58 @@ public class EvaluatePreconditionTest extends JaxRsTestCase {
 
         response = accessServer(EvaluatePreconditionService.class, "date",
                 Method.PUT, conditions);
-        assertEquals(Status.CLIENT_ERROR_PRECONDITION_FAILED, response
-                .getStatus());
+        assertEquals(PREC_FAILED, response.getStatus());
+        assertTrue("Entity must contain \"was not modified\"", response
+                .getEntity().getText().contains(
+                        "The entity was not modified since"));
 
         conditions = new Conditions();
         conditions.setModifiedSince(BEFORE);
         conditions.setMatch(Util.createList(new Tag("shkhsdk")));
         response = accessServer(EvaluatePreconditionService.class, "date",
                 Method.GET, conditions);
-        assertEquals(Status.CLIENT_ERROR_PRECONDITION_FAILED, response
-                .getStatus());
+        assertEquals(PREC_FAILED, response.getStatus());
+        String entityText = response.getEntity().getText();
+        assertTrue(
+                "Entity must contain \"was not modified\" or \"does not match Entity Tag\", but is \""
+                        + entityText + "\"",
+                entityText.contains("The entity was not modified since")
+                        || entityText
+                                .contains("The entity does not match Entity Tag"));
 
         response = accessServer(EvaluatePreconditionService.class, "date",
                 Method.PUT, conditions);
-        assertEquals(Status.CLIENT_ERROR_PRECONDITION_FAILED, response
-                .getStatus());
+        assertEquals(PREC_FAILED, response.getStatus());
+        assertTrue(
+                "Entity must contain \"was not modified\" or \"does not match Entity Tag\", but is \""
+                        + entityText + "\"",
+                entityText.contains("The entity was not modified since")
+                        || entityText
+                                .contains("The entity does not match Entity Tag"));
 
         conditions = new Conditions();
         conditions.setModifiedSince(AFTER);
         conditions.setMatch(Util.createList(new Tag("shkhsdk")));
         response = accessServer(EvaluatePreconditionService.class, "date",
                 Method.GET, conditions);
-        assertEquals(Status.CLIENT_ERROR_PRECONDITION_FAILED, response
-                .getStatus());
+        assertEquals(PREC_FAILED, response.getStatus());
+        entityText = response.getEntity().getText();
+        assertTrue(
+                "Entity must contain \"was not modified\" or \"does not match Entity Tag\", but is \""
+                        + entityText + "\"",
+                entityText.contains("The entity was not modified since")
+                        || entityText
+                                .contains("The entity does not match Entity Tag"));
 
         response = accessServer(EvaluatePreconditionService.class, "date",
                 Method.PUT, conditions);
-        assertEquals(Status.CLIENT_ERROR_PRECONDITION_FAILED, response
-                .getStatus());
+        assertEquals(PREC_FAILED, response.getStatus());
+        assertTrue(
+                "Entity must contain \"was not modified\" or \"does not match Entity Tag\", but is \""
+                        + entityText + "\"",
+                entityText.contains("The entity was not modified since")
+                        || entityText
+                                .contains("The entity does not match Entity Tag"));
     }
 
     @SuppressWarnings("deprecation")
@@ -152,11 +178,6 @@ public class EvaluatePreconditionTest extends JaxRsTestCase {
         // differ from that sent in any previous response for the same
         // variant
         // TODO JSR311: Wie das vorige einhalten?
-
-        // wenn GET, dann 304, bei anderen Methoden andere Ergebnisse
-        // (Precondition failed)
-        // 304:
-        // * muss das Datum der letzten Änderung enthalten
     }
 
     public void testGetEntityTagMatch() throws Exception {
@@ -176,8 +197,10 @@ public class EvaluatePreconditionTest extends JaxRsTestCase {
         conditions.setMatch(Util.createList(new Tag("affer")));
         response = accessServer(EvaluatePreconditionService.class, "date",
                 Method.GET, conditions);
-        assertEquals(Status.CLIENT_ERROR_PRECONDITION_FAILED, response
-                .getStatus());
+        assertEquals(PREC_FAILED, response.getStatus());
+        assertTrue("Entity must contain \"does not match Entity Tag\"",
+                response.getEntity().getText().contains(
+                        "The entity does not match Entity Tag"));
     }
 
     public void testGetEntityTagNoneMatch() throws Exception {
@@ -185,8 +208,10 @@ public class EvaluatePreconditionTest extends JaxRsTestCase {
         conditions.setNoneMatch(Util.createList(getEntityTagFromDatastore()));
         Response response = accessServer(EvaluatePreconditionService.class,
                 "date", Method.GET, conditions);
-        assertEquals(Status.CLIENT_ERROR_PRECONDITION_FAILED, response
-                .getStatus());
+        assertEquals(PREC_FAILED, response.getStatus());
+        assertTrue("Entity must contain \"matches Entity Tag\"", response
+                .getEntity().getText()
+                .contains("The entity matches Entity Tag"));
 
         conditions = new Conditions();
         conditions.setNoneMatch(Util.createList(new Tag("affer")));
@@ -252,8 +277,9 @@ public class EvaluatePreconditionTest extends JaxRsTestCase {
         conditions.setUnmodifiedSince(BEFORE);
         response = accessServer(EvaluatePreconditionService.class, "date",
                 Method.GET, conditions);
-        assertEquals(Status.CLIENT_ERROR_PRECONDITION_FAILED, response
-                .getStatus());
+        assertEquals(PREC_FAILED, response.getStatus());
+        assertTrue("Entity must contain \"was modified\"", response.getEntity()
+                .getText().contains("The entity was modified since"));
 
         // LATER testen, was bei ungültigem Datum passiert:
         // If-Unmodified-Since-Header ignorieren.
@@ -274,8 +300,10 @@ public class EvaluatePreconditionTest extends JaxRsTestCase {
         conditions.setModifiedSince(AFTER);
         response = accessServer(EvaluatePreconditionService.class, "date",
                 Method.PUT, conditions);
-        assertEquals(Status.CLIENT_ERROR_PRECONDITION_FAILED, response
-                .getStatus());
+        assertEquals(PREC_FAILED, response.getStatus());
+        assertTrue("Entity must contain \"was not modified\"", response
+                .getEntity().getText().contains(
+                        "The entity was not modified since"));
     }
 
     public void testPutUnmodifiedSince() throws Exception {
@@ -289,8 +317,10 @@ public class EvaluatePreconditionTest extends JaxRsTestCase {
         conditions.setUnmodifiedSince(BEFORE);
         response = accessServer(EvaluatePreconditionService.class, "date",
                 Method.PUT, conditions);
-        assertEquals(Status.CLIENT_ERROR_PRECONDITION_FAILED, response
-                .getStatus());
+        assertEquals(PREC_FAILED, response.getStatus());
+        assertTrue("Entity must contain \"was not modified\"", response
+                .getEntity().getText()
+                .contains("The entity was modified since"));
 
         // LATER testen, was bei ungültigem Datum passiert:
         // If-Unmodified-Since-Header ignorieren.
