@@ -35,6 +35,7 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.data.Conditions;
+import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
@@ -200,9 +201,10 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      * @param entityTag
      *                an ETag for the current state of the resource
      * @return null if the preconditions are met or a Response that should be
-     *         returned if the preconditions are not met. TODO JSR311: die
-     *         evaluatePrecondition kann auch be erfüllten Precodutions ne
-     *         Response zurückeben, z.B. bei "if-Unmodified-Since"
+     *         returned if the preconditions are not met.<br                 />
+     *         TODO JSR311: die evaluatePrecondition kann auch be erfüllten
+     *         Precodutions ne Response zurückeben, z.B. bei
+     *         "if-Unmodified-Since"
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date,
      *      javax.ws.rs.core.EntityTag)
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC
@@ -239,7 +241,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
                         rb.lastModified(lastModified);
                         rb.tag(entityTag);
                     } else {
-                        return precFailed();
+                        return precFailed("The entity was not modified since "
+                                + Util.formatDate(modSinceCond, false));
                     }
                 } else {
                     // entity was changed -> check for other precoditions
@@ -253,7 +256,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
                     return null;
                 } else {
                     // the Entity was changed
-                    return precFailed();
+                    return precFailed("The entity was modified since "
+                            + Util.formatDate(unmodSinceCond, false));
                 }
             }
         }
@@ -265,7 +269,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
                 boolean match = checkIfOneMatch(requestMatchETags,
                         actualEntityTag);
                 if (!match) {
-                    return precFailed();
+                    return precFailed("The entity does not match Entity Tag "
+                            + entityTag);
                 }
             } else {
                 // default answer to the request
@@ -276,7 +281,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
                 boolean match = checkIfOneMatch(requestNoneMatchETags,
                         actualEntityTag);
                 if (match) {
-                    return precFailed();
+                    return precFailed("The entity matches Entity Tag "
+                            + entityTag);
                 }
             } else {
                 // default answer to the request
@@ -288,17 +294,26 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     }
 
     /**
-     * @return
+     * Creates a response with status 412 (Precondition Failed).
+     * 
+     * @param message
+     *                Plain Text error message. Will be returned as entity.
+     * @return Returns a response with status 412 (Precondition Failed) and the
+     *         given message as entity.
      */
-    private Response precFailed() {
-        return Response.status(STATUS_PREC_FAILED).build();
-        // TODO welche Header setzen bei PrecFailed?
+    private Response precFailed(String message) {
+        ResponseBuilder rb = Response.status(STATUS_PREC_FAILED);
+        rb.entity(message);
+        rb.language(Language.ENGLISH.getName());
+        rb.type(Util.convertMediaType(org.restlet.data.MediaType.TEXT_PLAIN));
+        return rb.build();
     }
 
     private boolean checkIfOneMatch(List<Tag> requestETags, Tag entityTag) {
+        if (entityTag.isWeak())
+            return false;
         for (Tag requestETag : requestETags) {
-            if (entityTag.equals(requestETag)) // TODO strong compare benutzen
-                // (http://tools.ietf.org/html/rfc2616#section-13.3.3)
+            if (entityTag.equals(requestETag))
                 return true;
         }
         return false;
