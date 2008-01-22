@@ -240,6 +240,7 @@ public class Reference {
      *                The optional query component for hierarchical identifiers.
      * @param fragment
      *                The optional fragment identifier.
+     * @return The reference as String.
      */
     public static String toString(String scheme, String hostName,
             Integer hostPort, String path, String query, String fragment) {
@@ -265,6 +266,7 @@ public class Reference {
      *                The optional query component for hierarchical identifiers.
      * @param fragment
      *                The optional fragment identifier.
+     * @return The relative reference as a String.
      */
     public static String toString(String relativePart, String query,
             String fragment) {
@@ -302,6 +304,7 @@ public class Reference {
      *                The optional query component for hierarchical identifiers.
      * @param fragment
      *                The optional fragment identifier.
+     * @return The reference a String.
      */
     public static String toString(String scheme, String host, String path,
             String query, String fragment) {
@@ -485,6 +488,7 @@ public class Reference {
      *                The parameter name.
      * @param value
      *                The optional parameter value.
+     * @return The updated reference.
      */
     public Reference addQueryParameter(String name, String value) {
         String query = getQuery();
@@ -513,6 +517,7 @@ public class Reference {
      * 
      * @param value
      *                The segment value to add.
+     * @return The updated reference.
      */
     public Reference addSegment(String value) {
         String path = getPath();
@@ -530,6 +535,23 @@ public class Reference {
         }
 
         return this;
+    }
+
+    @Override
+    public Reference clone() {
+        Reference newRef = new Reference();
+
+        if (this.equals(this.baseRef)) {
+            newRef.baseRef = newRef;
+        } else {
+            newRef.baseRef = this.baseRef.clone();
+        }
+
+        newRef.fragmentIndex = fragmentIndex;
+        newRef.internalRef = internalRef;
+        newRef.queryIndex = queryIndex;
+        newRef.schemeIndex = schemeIndex;
+        return newRef;
     }
 
     /**
@@ -903,12 +925,12 @@ public class Reference {
      * should only be invoked for absolute references, otherwise an
      * IllegalArgumentException will be raised.
      * 
+     * @param base
+     *                The base reference to use.
      * @throws IllegalArgumentException
      *                 If the relative reference is computed although the
      *                 reference or the base reference are not absolute or not
      *                 hierarchical.
-     * @param base
-     *                The base reference to use.
      * @return The current reference relatively to a base reference.
      */
     public Reference getRelativeRef(Reference base) {
@@ -1595,12 +1617,11 @@ public class Reference {
     /**
      * Sets the fragment identifier.
      * 
+     * @param fragment
+     *                The fragment identifier.
      * @throws IllegalArgumentException
      *                 if the fragment parameter contains the fragment delimiter
      *                 ('#').
-     * 
-     * @param fragment
-     *                The fragment identifier.
      */
     public void setFragment(String fragment) {
         if ((fragment != null) && (fragment.indexOf('#') != -1)) {
@@ -1682,11 +1703,11 @@ public class Reference {
     /**
      * Sets the optional port number for server based hierarchical identifiers.
      * 
-     * @throws IllegalArgumentException
-     *                 If the autority has not been defined.
      * @param port
      *                The optional port number for server based hierarchical
      *                identifiers.
+     * @throws IllegalArgumentException
+     *                 If the autority has not been defined.
      */
     public void setHostPort(Integer port) {
         String authority = getAuthority();
@@ -1709,12 +1730,11 @@ public class Reference {
     /**
      * Sets the absolute resource identifier.
      * 
+     * @param identifier
+     *                The absolute resource identifier.
      * @throws IllegalArgumentException
      *                 If the identifier parameter contains the fragment
      *                 delimiter ('#').
-     * 
-     * @param identifier
-     *                The absolute resource identifier.
      */
     public void setIdentifier(String identifier) {
         if (identifier == null)
@@ -1990,12 +2010,11 @@ public class Reference {
     /**
      * Sets the user info component for server based hierarchical identifiers.
      * 
-     * @throws IllegalArgumentException
-     *                 If the autority part has not been defined.
-     * 
      * @param userInfo
      *                The user info component for server based hierarchical
      *                identifiers.
+     * @throws IllegalArgumentException
+     *                 If the autority part has not been defined.
      */
     public void setUserInfo(String userInfo) {
         String authority = getAuthority();

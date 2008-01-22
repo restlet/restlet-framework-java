@@ -34,6 +34,7 @@ Changes log
    Issue reported by Paul J. Lucas.
  - Added Handler.getQuery() method to easily return the request's target resource reference query as a
    parsed form (series of parameters). Suggested by Kevin Conaway.
+ - Added a Reference.clone() method. Contributed by Stephan Koops.
 
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
