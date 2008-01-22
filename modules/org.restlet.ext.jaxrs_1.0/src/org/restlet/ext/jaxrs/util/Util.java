@@ -38,9 +38,13 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Variant;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.Encoding;
 import org.restlet.data.Form;
+import org.restlet.data.Language;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
@@ -59,6 +63,12 @@ import org.restlet.util.Series;
  * @author Stephan Koops
  */
 public class Util {
+
+    /**
+     * Paramater in the JAX-RS MediaType for the charset. See MIME
+     * specification.
+     */
+    private static final String CHARSET_PARAM = "charset";
 
     /**
      * The header in the attribute map to return the HTTP headers.
@@ -146,14 +156,20 @@ public class Util {
      * Convert a Restlet MediaType to a JAX-RS MediaType.
      * 
      * @param restletMediaType
+     *                the MediaType to convert.
+     * @param restletCharacterSet
+     *                the CharacterSet for the MediaType; may be null.
      * @return the converted MediaType
      */
     public static MediaType convertMediaType(
-            org.restlet.data.MediaType restletMediaType) {
+            org.restlet.data.MediaType restletMediaType,
+            org.restlet.data.CharacterSet restletCharacterSet) {
         if (restletMediaType == null)
             return null;
         Map<String, String> parameters = convertSeries(restletMediaType
                 .getParameters());
+        if (restletCharacterSet != null)
+            parameters.put(CHARSET_PARAM, restletCharacterSet.getName());
         return new MediaType(restletMediaType.getMainType(), restletMediaType
                 .getSubType(), parameters);
     }
@@ -220,6 +236,51 @@ public class Util {
     }
 
     /**
+     * Converts the given Restlet Variant to a JAX-RS Variant TODO javadoc
+     * 
+     * @param restletVariant
+     * @return
+     * @throws IllegalArgumentException
+     *                 If the given Variant does not contain exactly one
+     *                 language and one
+     */
+    public static Variant convertVariant(
+            org.restlet.resource.Variant restletVariant)
+            throws IllegalArgumentException {
+        MediaType mediaType = convertMediaType(restletVariant.getMediaType(),
+                restletVariant.getCharacterSet());
+        String language = Util.getOnlyElement(restletVariant.getLanguages())
+                .getName();
+        String encoding = Util.getOnlyElement(restletVariant.getEncodings())
+                .getName();
+        return new Variant(mediaType, language, encoding);
+    }
+
+    /**
+     * Converts the given JAX-RS Variants to Restlet Variants.
+     * 
+     * @param jaxRsVariants
+     * @return
+     */
+    public static List<org.restlet.resource.Variant> convertVariants(
+            List<Variant> jaxRsVariants) {
+        List<org.restlet.resource.Variant> restletVariants = new ArrayList<org.restlet.resource.Variant>();
+        for (Variant jaxRsVariant : jaxRsVariants) {
+            org.restlet.resource.Variant restletVariant = new org.restlet.resource.Variant();
+            restletVariant.setCharacterSet(getCharacterSet(jaxRsVariant
+                    .getMediaType()));
+            restletVariant.setEncodings(Util.createList(Encoding
+                    .valueOf(jaxRsVariant.getEncoding())));
+            restletVariant.setLanguages(Util.createList(Language
+                    .valueOf(jaxRsVariant.getLanguage())));
+            restletVariant.setMediaType(convertMediaType(jaxRsVariant
+                    .getMediaType()));
+            restletVariants.add(restletVariant);
+        }
+        return restletVariants;
+    }
+
+    /**
      * 
      * @param jaxRsHeaders
      *                Headers of an JAX-RS-Response.
@@ -258,31 +319,35 @@ public class Util {
 
     /**
      * Creates an modifiable Collection with the given Objects in it, and no
-     * other objects.
+     * other objects. nulls will be ignored.
      * 
      * @param object1
      * @param object2
      * @param <A>
-     * @return Returns the created list with the given objects in it
+     * @return Returns the created list with the given objects in it.
      */
     public static <A> Collection<A> createColl(A object1, A object2) {
         Collection<A> coll = new ArrayList<A>();
-        coll.add(object1);
-        coll.add(object2);
+        if (object1 != null)
+            coll.add(object1);
+        if (object2 != null)
+            coll.add(object2);
         return coll;
     }
 
     /**
      * Creates an modifiable List with the given Object in it, and no other
-     * objects.
+     * objects. If the given object is null, than an empty List will returned
      * 
      * @param object
      * @param <A>
-     * @return Returns the created list with the given object in it
+     * @return Returns the created list with the given object in it or an empty
+     *         list, if the given object is null.
      */
     public static <A> List<A> createList(A object) {
         List<A> list = new ArrayList<A>();
-        list.add(object);
+        if (object != null)
+            list.add(object);
         return list;
     }
 
@@ -329,6 +394,11 @@ public class Util {
         } else {
             return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
         }
+    }
+
+    private static CharacterSet getCharacterSet(MediaType mediaType) {
+        String charset = mediaType.getParameters().get(CHARSET_PARAM);
+        return CharacterSet.valueOf(charset);
     }
 
     /**
@@ -421,6 +491,29 @@ public class Util {
         if (list instanceof LinkedList)
             return ((LinkedList<A>) list).getLast();
         return list.get(list.size() - 1);
+    }
+
+    /**
+     * Returns the only element of the list, or null, if the List is null or
+     * empty.
+     * 
+     * @param <A>
+     * @param list
+     *                a List with at most one element
+     * @return The element of the List, or null, if there is no element.
+     * @throws IllegalArgumentException
+     *                 if the list contains more than one element.
+     */
+    public static <A> A getOnlyElement(List<A> list)
+            throws IllegalArgumentException {
+        if (list == null)
+            return null;
+        if (list.isEmpty())
+            return null;
+        if (list.size() > 1)
+            throw new IllegalArgumentException(
+                    "The list must have exactly one element");
+        return list.get(0);
     }
 
     /**

@@ -41,7 +41,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.util.Series;
 
@@ -305,7 +304,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         ResponseBuilder rb = Response.status(STATUS_PREC_FAILED);
         rb.entity(message);
         rb.language(Language.ENGLISH.getName());
-        rb.type(Util.convertMediaType(org.restlet.data.MediaType.TEXT_PLAIN));
+        rb.type(Util.convertMediaType(org.restlet.data.MediaType.TEXT_PLAIN,
+                null));
         return rb.build();
     }
 
@@ -331,12 +331,19 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      * @return the variant that best matches the request.
      * @see Variant.VariantListBuilder
      * @throws IllegalArgumentException
-     *                 if variants is empty
+     *                 if variants is null or empty.
      * @see Request#selectVariant(List)
      */
     public Variant selectVariant(List<Variant> variants)
             throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        throw new NotYetImplementedException();
+        if (variants == null || variants.isEmpty())
+            throw new IllegalArgumentException();
+        List<org.restlet.resource.Variant> restletVariants = Util
+                .convertVariants(variants);
+        org.restlet.resource.Variant bestRestlVar = restletRequest
+                .getClientInfo().getPreferredVariant(restletVariants, null);
+        Variant bestVariant = Util.convertVariant(bestRestlVar);
+        // TODO Response.setVaryHeader(bestVariant)
+        return bestVariant;
     }
 }

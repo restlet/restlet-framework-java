@@ -48,8 +48,9 @@ public class MediaTypeHeaderDelegate implements HeaderDelegate<MediaType> {
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#fromString(java.lang.String)
      */
     public MediaType fromString(String string) throws IllegalArgumentException {
-        return Util
-                .convertMediaType(org.restlet.data.MediaType.valueOf(string));
+        return Util.convertMediaType(
+                org.restlet.data.MediaType.valueOf(string), null);
+        // TODO also characterSet.
     }
 
     /**
