@@ -149,12 +149,10 @@ public class UriBuilderImpl extends UriBuilder {
      */
     @Override
     public UriBuilder clone() {
-        throw new NotYetImplementedException(
-                "Reference.clone() not yet checked in");
-        // UriBuilderImpl uriBuilder = new UriBuilderImpl();
-        // uriBuilder.encode = this.encode;
-        // uriBuilder.reference = this.reference.clone();
-        // return uriBuilder;
+        UriBuilderImpl uriBuilder = new UriBuilderImpl();
+        uriBuilder.encode = this.encode;
+        uriBuilder.reference = this.reference.clone();
+        return uriBuilder;
     }
 
     /**
