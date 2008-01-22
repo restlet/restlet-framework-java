@@ -46,18 +46,17 @@ import org.restlet.resource.Representation;
 
 abstract class AbstractJaxRsWrapper {
 
-    private PathRegExp uriTemplateRegExp;
+    private PathRegExp pathRegExp;
 
     AbstractJaxRsWrapper(Path path) {
-        this.uriTemplateRegExp = convertUriTemplateToRegularExpression(path,
-                true);
+        this.pathRegExp = convertPathToRegularExpression(path, true);
     }
 
     /**
      * @return Returns the regular expression for the URI template
      */
     public final PathRegExp getPathRegExp() {
-        return this.uriTemplateRegExp;
+        return this.pathRegExp;
     }
 
     private static final Collection<Class<? extends Annotation>> VALID_ANNOTATIONS = createValidAnnotations();
@@ -81,12 +80,15 @@ abstract class AbstractJaxRsWrapper {
      *                parameters.
      * @param restletRequest
      *                the Restlet request
-     * @param allTemplParamsEnc Contains all Parameters, that are read from the called URI.
+     * @param allTemplParamsEnc
+     *                Contains all Parameters, that are read from the called
+     *                URI.
      * @return the parameter array
      */
     protected static Object[] getParameterValues(
             Annotation[][] parameterAnnotationss, Class<?>[] parameterTypes,
-            MatchingResult matchingResult, Request restletRequest, MultivaluedMap<String, String> allTemplParamsEnc) {
+            MatchingResult matchingResult, Request restletRequest,
+            MultivaluedMap<String, String> allTemplParamsEnc) {
         int paramNo = parameterTypes.length;
         if (paramNo == 0)
             return new Object[0];
@@ -96,9 +98,10 @@ abstract class AbstractJaxRsWrapper {
         for (int i = 0; i < args.length; i++) {
             try {
                 Object arg = getParameterValue(parameterAnnotationss[i],
-                        parameterTypes[i], matchingResult, restletRequest, httpContext, allTemplParamsEnc, i);
-                if(httpContext == null && arg instanceof HttpContextImpl)
-                    httpContext = (HttpContextImpl)arg;
+                        parameterTypes[i], matchingResult, restletRequest,
+                        httpContext, allTemplParamsEnc, i);
+                if (httpContext == null && arg instanceof HttpContextImpl)
+                    httpContext = (HttpContextImpl) arg;
                 args[i] = arg;
             } catch (IllegalAnnotationException e) {
                 if (annotRequired)
@@ -114,14 +117,22 @@ abstract class AbstractJaxRsWrapper {
     /**
      * Returns the parameter value for a parameter of a JAX-RS method or
      * constructor.
+     * 
      * @param paramAnnotations
      *                annotations on the parameters
-     * @param paramClass the wished type
-     * @param matchingResult the MatchingResult
-     * @param restletRequest the Restlet request
-     * @param httpContext an already created HttpContextImpl and returned or null
-     * @param allTemplParamsEnc Contains all Parameters, that are read from the called URI.
-     * @param indexForExcMessages the index of the parameter, for exception messages.
+     * @param paramClass
+     *                the wished type
+     * @param matchingResult
+     *                the MatchingResult
+     * @param restletRequest
+     *                the Restlet request
+     * @param httpContext
+     *                an already created HttpContextImpl and returned or null
+     * @param allTemplParamsEnc
+     *                Contains all Parameters, that are read from the called
+     *                URI.
+     * @param indexForExcMessages
+     *                the index of the parameter, for exception messages.
      * @return the parameter value
      * @throws IllegalAnnotationException
      *                 Thrown, when no valid annotation was found. For
@@ -130,8 +141,9 @@ abstract class AbstractJaxRsWrapper {
      */
     private static Object getParameterValue(Annotation[] paramAnnotations,
             Class<?> paramClass, MatchingResult matchingResult,
-            Request restletRequest, HttpContextImpl httpContext, MultivaluedMap<String, String> allTemplParamsEnc, int indexForExcMessages)
-            throws IllegalAnnotationException {
+            Request restletRequest, HttpContextImpl httpContext,
+            MultivaluedMap<String, String> allTemplParamsEnc,
+            int indexForExcMessages) throws IllegalAnnotationException {
         for (Annotation annotation : paramAnnotations) {
             Class<? extends Annotation> annotationType = annotation
                     .annotationType();
@@ -146,8 +158,9 @@ abstract class AbstractJaxRsWrapper {
                         ((PathParam) annotation).value());
                 return getParameterValueFromParam(paramClass, pathParamValue);
             } else if (annotationType.equals(HttpContext.class)) {
-                if(httpContext == null)
-                    httpContext = new HttpContextImpl(restletRequest, allTemplParamsEnc);
+                if (httpContext == null)
+                    httpContext = new HttpContextImpl(restletRequest,
+                            allTemplParamsEnc);
                 return httpContext;
             } else if (annotationType.equals(MatrixParam.class)) {
                 throw new NotYetImplementedException();
@@ -238,8 +251,8 @@ abstract class AbstractJaxRsWrapper {
      * 
      * @return
      */
-    private static PathRegExp convertUriTemplateToRegularExpression(
-            Path template, boolean ensureStartSlash) {
+    private static PathRegExp convertPathToRegularExpression(Path template,
+            boolean ensureStartSlash) {
         if (template == null)
             return new PathRegExp("", true);
         String pathTemplate = template.value();

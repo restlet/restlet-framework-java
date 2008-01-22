@@ -18,6 +18,7 @@
 
 package org.restlet.ext.jaxrs.util;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,6 +49,7 @@ import org.restlet.data.Language;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -77,6 +79,28 @@ public class Util {
      * @see #getHttpHeaders(Response)
      */
     public static final String ORG_RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
+
+    /**
+     * Checks, if the String is a valid URI scheme
+     * @param scheme the String to check.
+     * @throws IllegalArgumentException If the string is not a valid URI scheme.
+     */
+    public static void checkValidScheme(String scheme)
+            throws IllegalArgumentException {
+        if(scheme == null)
+            throw new IllegalArgumentException("The scheme must not be null");
+        int schemeLength = scheme.length();
+        if(schemeLength == 0)
+            throw new IllegalArgumentException("The scheme must not be an empty String");
+        char c = scheme.charAt(0);
+        if (!((c > 64 && c <= 90) || (c > 92 && c <= 118)))
+            throw new IllegalArgumentException("The first character of a scheme must be an alphabetic character");
+        for (int i = 1; i < schemeLength; i++) {
+            c = scheme.charAt(i);
+            if (!((c > 64 && c <= 90) || (c > 92 && c <= 118) || (c == '+') || (c == '-') || (c == '.')))
+                throw new IllegalArgumentException("The "+i+". character of a scheme must be an alphabetic character, a number, a '+', a '-' or a '.'");
+        }
+    }
 
     /**
      * Converts a JAX-RS Cookie to a Restlet Cookie
@@ -249,8 +273,10 @@ public class Util {
             throws IllegalArgumentException {
         MediaType mediaType = convertMediaType(restletVariant.getMediaType(),
                 restletVariant.getCharacterSet());
-        String language = Util.getOnlyMetadataName(restletVariant.getLanguages());
-        String encoding = Util.getOnlyMetadataName(restletVariant.getEncodings());
+        String language = Util.getOnlyMetadataName(restletVariant
+                .getLanguages());
+        String encoding = Util.getOnlyMetadataName(restletVariant
+                .getEncodings());
         return new Variant(mediaType, language, encoding);
     }
 
@@ -313,6 +339,40 @@ public class Util {
         }
         Engine.getInstance().copyResponseHeaders(headers, restletResponse,
                 logger);
+    }
+
+    /**
+     * Copies the non-null components of the supplied URI to the Reference
+     * replacing any existing values for those components.
+     * 
+     * @param uri
+     *                the URI to copy components from.
+     * @param reference
+     *                The Reference to copy the URI data in.
+     * @throws IllegalArgumentException
+     *                 if uri is null
+     * @see javax.ws.rs.core.UriBuilder#uri(URI)
+     */
+    public static void copyUriToReference(URI uri, Reference reference)
+            throws IllegalArgumentException {
+        if (uri == null)
+            throw new IllegalArgumentException("The URI must not be null");
+        if (uri.getAuthority() != null)
+            reference.setAuthority(uri.getAuthority());
+        if (uri.getFragment() != null)
+            reference.setFragment(uri.getFragment());
+        if (uri.getHost() != null)
+            reference.setHostDomain(uri.getHost());
+        if (uri.getPort() >= 0)
+            reference.setHostPort(uri.getPort());
+        if (uri.getPath() != null)
+            reference.setPath(uri.getPath());
+        if (uri.getQuery() != null)
+            reference.setQuery(uri.getQuery());
+        if (uri.getScheme() != null)
+            reference.setScheme(uri.getScheme());
+        if (uri.getUserInfo() != null)
+            reference.setUserInfo(uri.getUserInfo());
     }
 
     /**
@@ -513,18 +573,18 @@ public class Util {
                     "The list must have exactly one element");
         return list.get(0);
     }
-    
+
     /**
      * Returns the Name of the only element of the list of the given Metadata.
      * Returns null, if the list is empty or null.
+     * 
      * @param metadatas
      * @return the name of the Metadata
      * @see #getOnlyElement(List)
      */
-    public static String getOnlyMetadataName(List<? extends Metadata> metadatas)
-    {
+    public static String getOnlyMetadataName(List<? extends Metadata> metadatas) {
         Metadata metadata = getOnlyElement(metadatas);
-        if(metadata == null)
+        if (metadata == null)
             return null;
         return metadata.getName();
     }

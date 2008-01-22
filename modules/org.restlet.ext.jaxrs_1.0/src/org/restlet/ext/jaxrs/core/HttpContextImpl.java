@@ -344,6 +344,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
                 .getClientInfo().getPreferredVariant(restletVariants, null);
         Variant bestVariant = Util.convertVariant(bestRestlVar);
         // TODO Response.setVaryHeader(bestVariant)
+        // testen, auch wenn der Response nicht explizit erzeugt wird.
         return bestVariant;
     }
 }

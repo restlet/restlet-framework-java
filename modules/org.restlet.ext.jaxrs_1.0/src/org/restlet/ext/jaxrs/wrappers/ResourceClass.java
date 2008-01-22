@@ -57,7 +57,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param jaxRsClass
      * @return
      */
-    private static Path getPathAnnotation(Class<?> jaxRsClass) {
+    public static Path getPathAnnotation(Class<?> jaxRsClass) {
         if (jaxRsClass == null)
             throw new IllegalArgumentException(
                     "The jaxRsClass must not be null");
