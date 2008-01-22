@@ -18,6 +18,9 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 @Path("/requestTestService")
 public class RequestService {
 
+    public static final String GERMAN_TEXT = "Text auf deutsch";
+    public static final String ENGLISH_TEXT = "Text in english";
+
     @GET
     @Path("date")
     public Response get(@HttpContext
@@ -74,6 +77,11 @@ public class RequestService {
         variants.add(new Variant(MediaType.parse("text/html"), "de", null));
         variants.add(new Variant(MediaType.parse("text/plain"), "de", null));
         Variant variant = request.selectVariant(variants);
-        throw new UnsupportedOperationException("Not yet implemented");
+        String entity;
+        if(variant.getLanguage().equals("en"))
+            entity = ENGLISH_TEXT;
+        else
+            entity = GERMAN_TEXT;
+        return Response.ok(entity).variant(variant).build();
     }
 }

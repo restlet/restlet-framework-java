@@ -32,6 +32,8 @@ import junit.framework.TestCase;
 
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.data.ClientInfo;
+import org.restlet.data.Conditions;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
@@ -117,6 +119,26 @@ public abstract class JaxRsTestCase extends TestCase {
         Request request = new Request(httpMethod, reference);
         addAcceptedMediaTypes(request, mediaTypes);
         // ausgeben(request);
+        Response response = client.handle(request);
+        return response;
+    }
+
+    /**
+     * @param klasse
+     * @param subPath
+     * @param httpMethod
+     * @param conditions
+     * @return
+     */
+    public static Response accessServer(Class<?> klasse, String subPath,
+            Method httpMethod, Conditions conditions, ClientInfo clientInfo) {
+        Reference reference = createReference(klasse, subPath);
+        Client client = new Client(PROTOCOL);
+        Request request = new Request(httpMethod, reference);
+        if(conditions != null)
+            request.setConditions(conditions);
+        if(clientInfo != null)
+            request.setClientInfo(clientInfo);
         Response response = client.handle(request);
         return response;
     }
