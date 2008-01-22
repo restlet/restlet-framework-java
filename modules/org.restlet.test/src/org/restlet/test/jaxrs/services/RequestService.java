@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 @Path("/requestTestService")
-public class EvaluatePreconditionService {
+public class RequestService {
 
     @GET
     @Path("date")

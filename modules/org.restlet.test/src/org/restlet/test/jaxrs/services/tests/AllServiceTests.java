@@ -31,7 +31,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(SimpleHouseTest.class);
         mySuite.addTestSuite(MultipleResourcesTest.class);
         mySuite.addTestSuite(DoublePathTest.class);
-        mySuite.addTestSuite(EvaluatePreconditionTest.class);
+        mySuite.addTestSuite(RequestTest.class);
         return mySuite;
     }
 }
