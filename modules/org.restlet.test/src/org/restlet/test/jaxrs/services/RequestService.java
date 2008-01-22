@@ -1,14 +1,18 @@
 package org.restlet.test.jaxrs.services;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpContext;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 @Path("/requestTestService")
@@ -57,5 +61,19 @@ public class RequestService {
     public Response options() {
         return Response.ok().header("Allow", "ABC, DEF").header("Allow", "GHI")
                 .build();
+    }
+    
+    @GET
+    @Path("selectVariants")
+    public Response getSelectVariants(@HttpContext
+    Request request)
+    {
+        List<Variant> variants = new ArrayList<Variant>();
+        variants.add(new Variant(MediaType.parse("text/html"), "en", null));
+        variants.add(new Variant(MediaType.parse("text/plain"), "en", null));
+        variants.add(new Variant(MediaType.parse("text/html"), "de", null));
+        variants.add(new Variant(MediaType.parse("text/plain"), "de", null));
+        Variant variant = request.selectVariant(variants);
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
