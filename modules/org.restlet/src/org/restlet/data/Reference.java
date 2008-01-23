@@ -541,7 +541,9 @@ public class Reference {
     public Reference clone() {
         Reference newRef = new Reference();
 
-        if (this.equals(this.baseRef)) {
+        if (this.baseRef == null) {
+            newRef.baseRef = null;
+        } else if (this.equals(this.baseRef)) {
             newRef.baseRef = newRef;
         } else {
             newRef.baseRef = this.baseRef.clone();
@@ -585,7 +587,7 @@ public class Reference {
         String part = isRelative() ? getRelativePart()
                 : getSchemeSpecificPart();
 
-        if (part.startsWith("//")) {
+        if ((part != null) && part.startsWith("//")) {
             int index = part.indexOf('/', 2);
 
             if (index != -1) {
@@ -769,10 +771,18 @@ public class Reference {
      */
     public String getLastSegment() {
         String result = null;
-        int lastSlash = getPath().lastIndexOf('/');
+        String path = getPath();
 
-        if (lastSlash != -1) {
-            result = getPath().substring(lastSlash + 1);
+        if (path != null) {
+            if (path.endsWith("/")) {
+                path = path.substring(0, path.length() - 1);
+            }
+
+            int lastSlash = path.lastIndexOf('/');
+
+            if (lastSlash != -1) {
+                result = path.substring(lastSlash + 1);
+            }
         }
 
         return result;
@@ -1570,7 +1580,9 @@ public class Reference {
         String newPart;
         String newAuthority = (authority == null) ? "" : "//" + authority;
 
-        if (oldPart.startsWith("//")) {
+        if (oldPart == null) {
+            newPart = newAuthority;
+        } else if (oldPart.startsWith("//")) {
             int index = oldPart.indexOf('/', 2);
 
             if (index != -1) {
@@ -1665,7 +1677,9 @@ public class Reference {
     public void setHostDomain(String domain) {
         String authority = getAuthority();
 
-        if (authority != null) {
+        if (authority == null) {
+            setAuthority(domain);
+        } else {
             if (domain == null) {
                 domain = "";
             } else {
@@ -1768,8 +1782,9 @@ public class Reference {
         String newPart = null;
 
         if (oldPart != null) {
-            if (path == null)
+            if (path == null) {
                 path = "";
+            }
 
             if (oldPart.startsWith("//")) {
                 // Authority found
@@ -1778,6 +1793,7 @@ public class Reference {
                 if (index1 != -1) {
                     // Path found
                     int index2 = oldPart.indexOf('?');
+
                     if (index2 != -1) {
                         // Query found
                         newPart = oldPart.substring(0, index1) + path
@@ -1789,6 +1805,7 @@ public class Reference {
                 } else {
                     // No path found
                     int index2 = oldPart.indexOf('?');
+
                     if (index2 != -1) {
                         // Query found
                         newPart = oldPart.substring(0, index2) + path
@@ -1801,6 +1818,7 @@ public class Reference {
             } else {
                 // No authority found
                 int index = oldPart.indexOf('?');
+
                 if (index != -1) {
                     // Query found
                     newPart = path + oldPart.substring(index);

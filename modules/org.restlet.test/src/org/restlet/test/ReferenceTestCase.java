@@ -18,6 +18,9 @@
 
 package org.restlet.test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 
@@ -383,8 +386,8 @@ public class ReferenceTestCase extends RestletTestCase {
     public void testEquals() throws Exception {
         Reference ref1 = getDefaultReference();
         Reference ref2 = getDefaultReference();
-        assertTrue(ref1.equals(ref2));
         assertEquals(ref1, ref2);
+        assertTrue(ref1.equals(ref2));
     }
 
     /**
@@ -476,4 +479,67 @@ public class ReferenceTestCase extends RestletTestCase {
         ref.addQueryParameter("abc", "123");
         assertEquals("http://restlet.org?abc=123", ref.toString());
     }
+
+    public void testEmptyRef() {
+        Reference reference = new Reference();
+        reference.setAuthority("testAuthority"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setBaseRef("http://localhost"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setFragment("fragment"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setHostDomain("localhost"); // must not produce NPE
+        assertEquals("localhost", reference.getAuthority());
+        reference.setHostPort(new Integer(4711)); // must not produce NPE
+        assertEquals("localhost:4711", reference.getAuthority());
+        reference.setUserInfo("sdgj:skdfj"); // must not produce NPE
+        assertEquals("sdgj:skdfj@localhost:4711", reference.getAuthority());
+
+        reference = new Reference();
+        reference.setIdentifier("http://host/abc/wkj"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setPath("loc/alhost"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setProtocol(Protocol.HTTPS); // must not produce NPE
+
+        reference = new Reference();
+        reference.setQuery("a=b&c=&g=1"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setRelativePart("http://localhost"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setScheme("skjf"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setSchemeSpecificPart("host/afjhsd"); // must not produce NPE
+
+        reference = new Reference();
+        List<String> segments = new ArrayList<String>();
+        segments.add("skhf");
+        segments.add("sgdfg");
+        segments.add("xiz");
+        reference.setSegments(segments); // must not produce NPE
+    }
+
+    public void testGetLastSegment() {
+        Reference reference = new Reference("http://hostname");
+        assertNull(reference.getLastSegment());
+        reference = new Reference("http://hostname/");
+        assertNull("", reference.getLastSegment());
+        reference = new Reference("http://hostname/abc");
+        assertEquals("abc", reference.getLastSegment());
+        reference = new Reference("http://hostname/abc/");
+        assertEquals("abc", reference.getLastSegment());
+        reference = new Reference("http://hostname/123/abc/");
+        assertEquals("abc", reference.getLastSegment());
+        reference = new Reference("http://hostname/123/abc");
+        assertEquals("abc", reference.getLastSegment());
+    }
+
 }
