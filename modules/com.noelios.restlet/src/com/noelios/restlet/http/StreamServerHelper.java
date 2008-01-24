@@ -189,7 +189,7 @@ public class StreamServerHelper extends HttpServerHelper {
         public void run() {
             try {
                 helper.handle(new StreamServerCall(helper.getServer(), socket
-                        .getInputStream(), socket.getOutputStream()));
+                        .getInputStream(), socket.getOutputStream(), socket));
             } catch (IOException ex) {
                 helper.getLogger().log(Level.WARNING,
                         "Unexpected error while handling a call", ex);

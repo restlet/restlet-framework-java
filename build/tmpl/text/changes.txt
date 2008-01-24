@@ -12,6 +12,8 @@ Changes log
    continues to parse the response when it should stop processing. Fixed by Kevin Conaway.
  - Status.isSuccess(), is*Error(), isRedirection() and isInfo() methods now support status classes
    as specified in HTTP 1.1. Reported by Paul J. Lucas.
+ - The request ClientInfo address and port were not available for the default connector and the 
+   Grizzly connector. Patch contributed by Kevin Conaway.
  
 [Enhancements] 
  - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 

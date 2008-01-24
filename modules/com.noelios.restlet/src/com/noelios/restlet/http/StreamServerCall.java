@@ -21,6 +21,7 @@ package com.noelios.restlet.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
@@ -40,10 +41,13 @@ import com.noelios.restlet.util.KeepAliveOutputStream;
 public class StreamServerCall extends HttpServerCall {
 
     /** The request input stream. */
-    private InputStream requestStream;
+    private final InputStream requestStream;
 
     /** The response output stream. */
-    private OutputStream responseStream;
+    private final OutputStream responseStream;
+    
+    /** The connecting user */
+    private final Socket socket;
 
     /**
      * Constructor.
@@ -54,12 +58,15 @@ public class StreamServerCall extends HttpServerCall {
      *                The request input stream.
      * @param responseStream
      *                The response output stream.
+     * @param socket
+     *                The request socket
      */
     public StreamServerCall(Server server, InputStream requestStream,
-            OutputStream responseStream) {
+            OutputStream responseStream, Socket socket) {
         super(server);
         this.requestStream = requestStream;
         this.responseStream = responseStream;
+        this.socket = socket;
 
         try {
             readRequestHead(getRequestHeadStream());
@@ -67,6 +74,16 @@ public class StreamServerCall extends HttpServerCall {
             getLogger().log(Level.WARNING, "Unable to parse the HTTP request",
                     ioe);
         }
+    }
+    
+    @Override
+    public String getClientAddress() {
+        return socket.getInetAddress().getHostAddress();
+    }
+
+    @Override
+    public int getClientPort() {
+        return socket.getPort();
     }
 
     @Override

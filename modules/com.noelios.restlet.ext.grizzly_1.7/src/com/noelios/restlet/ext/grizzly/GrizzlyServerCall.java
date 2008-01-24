@@ -47,13 +47,13 @@ import com.sun.grizzly.util.SSLOutputWriter;
 public class GrizzlyServerCall extends HttpServerCall {
 
     /** The underlying socket channel. */
-    private SocketChannel socketChannel;
+    private final SocketChannel socketChannel;
 
     /** Recycled stream. */
-    private ByteBufferInputStream requestStream = new ByteBufferInputStream();
+    private final ByteBufferInputStream requestStream;
 
     /** The NIO byte buffer. */
-    private ByteBuffer byteBuffer;
+    private final ByteBuffer byteBuffer;
 
     /**
      * Constructor.
@@ -71,20 +71,32 @@ public class GrizzlyServerCall extends HttpServerCall {
             SelectionKey key, boolean confidential) {
         super(server);
         setConfidential(confidential);
-
+        
+        this.byteBuffer = byteBuffer;
+        this.requestStream = new ByteBufferInputStream();
+        this.requestStream.setSelectionKey(key);
+        this.requestStream.setByteBuffer(byteBuffer);
+        this.socketChannel = (SocketChannel) key.channel();
+        
+        this.getRequestHeaders().clear();
+        
         try {
-            this.byteBuffer = byteBuffer;
-            this.requestStream.setSelectionKey(key);
-            this.requestStream.setByteBuffer(byteBuffer);
-            this.socketChannel = (SocketChannel) key.channel();
-            this.getRequestHeaders().clear();
-
             // Read the request header
             readRequestHead(requestStream);
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING, "Unable to parse the HTTP request",
                     ioe);
         }
+    }
+    
+    @Override
+    public String getClientAddress() {
+        return socketChannel.socket().getInetAddress().getHostAddress();
+    }
+
+    @Override
+    public int getClientPort() {
+        return socketChannel.socket().getPort();
     }
 
     @Override
