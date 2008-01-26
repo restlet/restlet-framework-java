@@ -28,8 +28,13 @@ import javax.ws.rs.ProduceMime;
  * @author Stephan Koops
  * 
  */
-@Path("/train")
+@Path(SimpleTrain.PATH)
 public class SimpleTrain {
+    /**
+     * The path is here available to check it from the tests. It is not required
+     * for JAX-RS
+     */
+    public static final String PATH = "/train";
 
     public static boolean checkForValidConstructor = true;
 

@@ -54,7 +54,7 @@ import javax.ws.rs.core.UriInfo;
 // Path.value: "/widgets/123" -> id = 123
 // Path.encode: automatisch dekodiert oder nicht ("%20" wird zu Space etc)
 // Path.limited: wird erstmal ignoriert
-@Path("cars")
+@Path(CarListResource.PATH)
 public class CarListResource {
 
     // TODO Test a Root Resource Class with PathParam in UriTemplate
@@ -68,6 +68,10 @@ public class CarListResource {
      * 
      */
     public static final String OFFERS = "This are test offers";
+
+    public static final String PATH = "cars";
+
+    public static final String OFFERS_PATH = "offers";
 
     /**
      * Konstruktoren von Root-Resourcen werden von der JAX-RS-Laufzeitumgebung
@@ -110,13 +114,13 @@ public class CarListResource {
      *                 Muss gefangen werden. Sie kann einen Request enthalten.
      */
     @GET
-    @Path("offers")
+    @Path(OFFERS_PATH)
     public String getOffers() throws WebApplicationException {
         return OFFERS;
     }
 
     @POST
-    @Path("offers")
+    @Path(OFFERS_PATH)
     public Response newCar() {
         try {
             return Response.created(new URI("../5")).build();

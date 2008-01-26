@@ -59,7 +59,7 @@ public class CarResource {
      * @return
      */
     @Path("engine")
-    EngineResource findEngine() {
+    public EngineResource findEngine() {
         return new EngineResource(this);
     }
 

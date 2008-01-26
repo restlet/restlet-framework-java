@@ -30,6 +30,33 @@ import org.restlet.ext.jaxrs.util.Util;
 
 @SuppressWarnings("unchecked")
 public class UtilTests extends TestCase {
+    
+    public void testCheckForInvalidUriChars()
+    {
+        Util.checkForInvalidUriChars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890{}", -1, "");
+        checkForInvalidCharFail("a:a");
+        checkForInvalidCharFail("a:1");
+        checkForInvalidCharFail("/a:");
+        checkForInvalidCharFail("a:");
+        Util.checkForInvalidUriChars("a", -1, "");
+        checkForInvalidCharFail("/");
+        checkForInvalidCharFail(" ");
+        checkForInvalidCharFail("\0");
+        Util.checkForInvalidUriChars("\\", -1, "");
+    }
+    
+    private void checkForInvalidCharFail(String uriPart)
+    {
+        try
+        {
+            Util.checkForInvalidUriChars(uriPart, -1, "");
+            fail("\""+uriPart+"\" contains an invalid char. The test must fail");
+        }
+        catch(IllegalArgumentException e)
+        {
+            // wonderful
+        }
+    }
 
     public void testConvertMetadataList1() {
         Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
