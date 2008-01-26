@@ -12,10 +12,12 @@ import org.restlet.test.jaxrs.services.path.IllegalPathService2;
 
 public class JaxRsRouterTest extends TestCase {
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }
@@ -37,8 +39,7 @@ public class JaxRsRouterTest extends TestCase {
         }
     }
 
-    public void testEncodePath()
-    {
+    public void testEncodePath() {
         JaxRsRouter router = new JaxRsRouter();
         router.attach(SimpleTrain.class);
         try {

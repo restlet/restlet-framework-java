@@ -76,6 +76,20 @@ public abstract class ChainHelper extends Helper {
     }
 
     /**
+     * Sets the next Restlet after the chain.
+     * 
+     * @param next
+     *                The Restlet to process after the chain.
+     */
+    protected synchronized void setNext(Restlet next) {
+        if (getFirst() == null) {
+            setFirst(next);
+        } else {
+            getLast().setNext(next);
+        }
+    }
+
+    /**
      * Creates a new log filter. Allows overriding.
      * 
      * @param context
@@ -112,7 +126,7 @@ public abstract class ChainHelper extends Helper {
      * 
      * @return the last Filter.
      */
-    private Filter getLast() {
+    protected Filter getLast() {
         return this.last;
     }
 
@@ -122,7 +136,7 @@ public abstract class ChainHelper extends Helper {
      * @param last
      *                The last Filter.
      */
-    private void setLast(Filter last) {
+    protected void setLast(Filter last) {
         this.last = last;
     }
 

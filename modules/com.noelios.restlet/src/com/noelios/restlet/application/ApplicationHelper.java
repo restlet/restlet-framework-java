@@ -255,4 +255,8 @@ public class ApplicationHelper extends Helper {
         this.last = last;
     }
 
+    @Override
+    public void update() throws Exception {
+    }
+
 }

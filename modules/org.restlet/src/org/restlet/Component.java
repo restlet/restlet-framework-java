@@ -398,4 +398,14 @@ public class Component extends Restlet {
         }
     }
 
+    /**
+     * Updates the component to take into account changes to the virtual hosts.
+     * This method doesn't stop the connectors or the applications or Restlets
+     * attached to the virtual hosts. It just updates the internal routes
+     * between the virtual hosts and the attached Restlets or applications.<br>
+     */
+    public synchronized void updateHosts() throws Exception {
+        getHelper().update();
+    }
+
 }

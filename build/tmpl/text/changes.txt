@@ -42,6 +42,8 @@ Changes log
  - Added the ability to specify a hostname verifier for the HTTPS client based on JDK's net package.
    Contributed by Alex Milowski.
  - Improved robustness of Reference when starting with an empty URI. Contributed by Stephan Koops.
+ - Added Component.updateHosts() method to update the routes after dynamic changes to virtual hosts.
+   Suggested and contributed in part by Alex Milowski. 
 
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.

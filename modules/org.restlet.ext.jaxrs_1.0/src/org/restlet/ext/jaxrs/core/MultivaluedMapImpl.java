@@ -93,6 +93,7 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements
      * 
      * @return A copy of this map
      */
+    @Override
     public MultivaluedMapImpl<K, V> clone() {
         MultivaluedMapImpl<K, V> clone = new MultivaluedMapImpl<K, V>();
         for (Map.Entry<K, List<V>> entry : this.entrySet())

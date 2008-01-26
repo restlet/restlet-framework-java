@@ -86,4 +86,8 @@ public class ConnectorHelper extends Helper {
     public synchronized void stop() throws Exception {
     }
 
+    @Override
+    public void update() throws Exception {
+    }
+
 }

@@ -26,7 +26,6 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Server;
@@ -45,11 +44,11 @@ import com.noelios.restlet.StatusFilter;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ComponentHelper extends ChainHelper {
-    /** The helped component. */
-    private volatile Component component;
-
     /** The internal client router. */
     private volatile ClientRouter clientRouter;
+
+    /** The helped component. */
+    private volatile Component component;
 
     /** The internal server router. */
     private volatile ServerRouter serverRouter;
@@ -65,110 +64,6 @@ public class ComponentHelper extends ChainHelper {
         this.component = component;
         this.clientRouter = new ClientRouter(getComponent());
         this.serverRouter = new ServerRouter(getComponent());
-    }
-
-    /**
-     * Creates a new context.
-     * 
-     * @param loggerName
-     *                The JDK's logger name to use for contextual logging.
-     * @return The new context.
-     */
-    @Override
-    public Context createContext(String loggerName) {
-        return new ComponentContext(this, Logger.getLogger(loggerName));
-    }
-
-    /**
-     * Returns the internal client router.
-     * 
-     * @return the internal client router.
-     */
-    public ClientRouter getClientRouter() {
-        return this.clientRouter;
-    }
-
-    /**
-     * Returns the helped component.
-     * 
-     * @return The helped component.
-     */
-    protected Component getComponent() {
-        return this.component;
-    }
-
-    /**
-     * Returns the internal host router.
-     * 
-     * @return the internal host router.
-     */
-    public ServerRouter getServerRouter() {
-        return this.serverRouter;
-    }
-
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     */
-    @Override
-    public void handle(Request request, Response response) {
-        if (getFirst() != null) {
-            getFirst().handle(request, response);
-        } else {
-            response.setStatus(Status.SERVER_ERROR_INTERNAL);
-            getComponent()
-                    .getLogger()
-                    .log(Level.SEVERE,
-                            "The component wasn't properly started, it can't handle calls.");
-        }
-    }
-
-    /** Start callback. */
-    @Override
-    public synchronized void start() throws Exception {
-        // Initialization of services
-        Filter lastFilter = null;
-
-        // Checking if all applications have proper connectors
-        boolean success = checkVirtualHost(getComponent().getDefaultHost());
-        if (success) {
-            for (VirtualHost host : getComponent().getHosts()) {
-                success = success && checkVirtualHost(host);
-            }
-        }
-
-        // Let's actually start the component
-        if (!success) {
-            getComponent().stop();
-        } else {
-            // Logging of calls
-            if (getComponent().getLogService().isEnabled()) {
-                lastFilter = createLogFilter(getComponent().getContext(),
-                        getComponent().getLogService());
-                setFirst(lastFilter);
-            }
-
-            // Addition of status pages
-            if (getComponent().getStatusService().isEnabled()) {
-                Filter statusFilter = createStatusFilter(getComponent());
-                if (lastFilter != null)
-                    lastFilter.setNext(statusFilter);
-                if (getFirst() == null)
-                    setFirst(statusFilter);
-                lastFilter = statusFilter;
-            }
-
-            // Reattach the original filter's attached Restlet
-            if (getFirst() == null) {
-                setFirst(getServerRouter());
-            } else {
-                lastFilter.setNext(getServerRouter());
-            }
-        }
     }
 
     /**
@@ -256,6 +151,18 @@ public class ComponentHelper extends ChainHelper {
     }
 
     /**
+     * Creates a new context.
+     * 
+     * @param loggerName
+     *                The JDK's logger name to use for contextual logging.
+     * @return The new context.
+     */
+    @Override
+    public Context createContext(String loggerName) {
+        return new ComponentContext(this, Logger.getLogger(loggerName));
+    }
+
+    /**
      * Creates a new status filter. Allows overriding.
      * 
      * @param component
@@ -264,6 +171,85 @@ public class ComponentHelper extends ChainHelper {
      */
     protected StatusFilter createStatusFilter(Component component) {
         return new ComponentStatusFilter(component);
+    }
+
+    /**
+     * Returns the internal client router.
+     * 
+     * @return the internal client router.
+     */
+    public ClientRouter getClientRouter() {
+        return this.clientRouter;
+    }
+
+    /**
+     * Returns the helped component.
+     * 
+     * @return The helped component.
+     */
+    protected Component getComponent() {
+        return this.component;
+    }
+
+    /**
+     * Returns the internal host router.
+     * 
+     * @return the internal host router.
+     */
+    public ServerRouter getServerRouter() {
+        return this.serverRouter;
+    }
+
+    /**
+     * Handles a call.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     */
+    @Override
+    public void handle(Request request, Response response) {
+        if (getFirst() != null) {
+            getFirst().handle(request, response);
+        } else {
+            response.setStatus(Status.SERVER_ERROR_INTERNAL);
+            getComponent()
+                    .getLogger()
+                    .log(Level.SEVERE,
+                            "The component wasn't properly started, it can't handle calls.");
+        }
+    }
+
+    /** Start callback. */
+    @Override
+    public synchronized void start() throws Exception {
+        // Checking if all applications have proper connectors
+        boolean success = checkVirtualHost(getComponent().getDefaultHost());
+        if (success) {
+            for (VirtualHost host : getComponent().getHosts()) {
+                success = success && checkVirtualHost(host);
+            }
+        }
+
+        // Let's actually start the component
+        if (!success) {
+            getComponent().stop();
+        } else {
+            // Logging of calls
+            if (getComponent().getLogService().isEnabled()) {
+                addFilter(createLogFilter(getComponent().getContext(),
+                        getComponent().getLogService()));
+            }
+
+            // Addition of status pages
+            if (getComponent().getStatusService().isEnabled()) {
+                addFilter(createStatusFilter(getComponent()));
+            }
+
+            // Reattach the original filter's attached Restlet
+            setNext(getServerRouter());
+        }
     }
 
     /** Stop callback. */
@@ -287,16 +273,38 @@ public class ComponentHelper extends ChainHelper {
      */
     private void stopVirtualHostApplications(VirtualHost host) throws Exception {
         for (Route route : host.getRoutes()) {
-            Restlet next = route.getNext();
-
-            if (next instanceof Application) {
-                Application application = (Application) next;
-
-                if (application.isStarted()) {
-                    application.stop();
-                }
+            if (route.getNext().isStarted()) {
+                route.getNext().stop();
             }
         }
+    }
+
+    @Override
+    public void update() throws Exception {
+        // Note the old router to be able to stop it at the end
+        ServerRouter oldRouter = getServerRouter();
+
+        // Set the new server router that will compute the new routes when the
+        // first request will be received (automatic start).
+        setServerRouter(new ServerRouter(getComponent()));
+
+        // Replace the old server router
+        setNext(getServerRouter());
+
+        // Stop the old server router
+        if (oldRouter != null) {
+            oldRouter.stop();
+        }
+    }
+
+    /**
+     * Sets the internal host router.
+     * 
+     * @param serverRouter
+     *                The internal host router.
+     */
+    public void setServerRouter(ServerRouter serverRouter) {
+        this.serverRouter = serverRouter;
     }
 
 }

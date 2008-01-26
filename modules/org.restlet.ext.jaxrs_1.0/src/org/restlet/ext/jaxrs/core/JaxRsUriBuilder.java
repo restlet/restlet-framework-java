@@ -45,7 +45,10 @@ import org.restlet.util.Template;
  */
 public class JaxRsUriBuilder extends UriBuilder {
 
-    private class IteratorVariableResolver /*implements Template.VariableResolver*/ {
+    private class IteratorVariableResolver /*
+                                             * implements
+                                             * Template.VariableResolver
+                                             */{
         private int i = 0;
 
         private Map<String, String> retrievedValues = new HashMap<String, String>();
@@ -188,20 +191,17 @@ public class JaxRsUriBuilder extends UriBuilder {
     @SuppressWarnings("unchecked")
     public URI build(final Map<String, String> values)
             throws IllegalArgumentException, UriBuilderException {
-        throw new NotYetImplementedException("Waiting for Restlet Core API patch");
+        throw new NotYetImplementedException(
+                "Waiting for Restlet Core API patch");
         /*
-        Template template = new Template(toStringWithCheck(false));
-        return buildUri(template.format(new Template.VariableResolver() {
-            public String resolve(String variableName) {
-                String varValue = values.get(variableName);
-                if (varValue == null)
-                    throw new IllegalArgumentException(
-                            "The value Map must contain a value for all given Templet variables. The value for variable "
-                                    + variableName + " is missing");
-                return varValue;
-            }
-        }));
-        //*/
+         * Template template = new Template(toStringWithCheck(false)); return
+         * buildUri(template.format(new Template.VariableResolver() { public
+         * String resolve(String variableName) { String varValue =
+         * values.get(variableName); if (varValue == null) throw new
+         * IllegalArgumentException( "The value Map must contain a value for all
+         * given Templet variables. The value for variable " + variableName + "
+         * is missing"); return varValue; } })); //
+         */
     }
 
     /**
@@ -230,11 +230,12 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public URI build(String... values) throws IllegalArgumentException,
             UriBuilderException {
-        throw new NotYetImplementedException("Waiting for Restlet Core API patch");
+        throw new NotYetImplementedException(
+                "Waiting for Restlet Core API patch");
         /*
-        Template template = new Template(toStringWithCheck(false));
-        return buildUri(template.format(new IteratorVariableResolver(values)));
-        //*/
+         * Template template = new Template(toStringWithCheck(false)); return
+         * buildUri(template.format(new IteratorVariableResolver(values))); //
+         */
     }
 
     /**
@@ -313,7 +314,8 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder fragment(String fragment) throws IllegalArgumentException {
-        this.fragment = Util.encode(fragment, Integer.MIN_VALUE, "fragment", this.encode, true);
+        this.fragment = Util.encode(fragment, Integer.MIN_VALUE, "fragment",
+                this.encode, true);
         return this;
     }
 
@@ -430,8 +432,10 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder matrixParam(String name, String value)
             throws IllegalArgumentException {
-        name = Util.encode(name, Integer.MIN_VALUE, "matrix parameter name", this.encode, true);
-        value = Util.encode(value, Integer.MIN_VALUE, "matrix parameter value", this.encode, true);
+        name = Util.encode(name, Integer.MIN_VALUE, "matrix parameter name",
+                this.encode, true);
+        value = Util.encode(value, Integer.MIN_VALUE, "matrix parameter value",
+                this.encode, true);
         this.pathSegments.getLast().getMatrixParameters().add(name, value);
         return this;
     }
@@ -461,7 +465,7 @@ public class JaxRsUriBuilder extends UriBuilder {
         if (resource == null)
             throw new IllegalArgumentException(
                     "The root resource class must not be null");
-        addPathSegments(ResourceClass.getPathTemplate(ResourceClass
+        addPathSegments(AbstractJaxRsWrapper.getPathTemplate(ResourceClass
                 .getPathAnnotation(resource, true)));
         return this;
     }
@@ -611,8 +615,10 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder queryParam(String name, String value)
             throws IllegalArgumentException {
-        name = Util.encode(name, Integer.MIN_VALUE, "query parameter name", this.encode, true);
-        value = Util.encode(value, Integer.MIN_VALUE, "query parameter value", this.encode, true);
+        name = Util.encode(name, Integer.MIN_VALUE, "query parameter name",
+                this.encode, true);
+        value = Util.encode(value, Integer.MIN_VALUE, "query parameter value",
+                this.encode, true);
         StringBuilder query;
         if (this.query == null) {
             query = new StringBuilder();
@@ -882,7 +888,8 @@ public class JaxRsUriBuilder extends UriBuilder {
         // password? This is deprecated (RFC3986, section 3.2.1) and more
         // complicated to encode, because of the ":" is allowed one times.
         // TODO one ":" is allowed.
-        this.userInfo = Util.encode(ui, Integer.MIN_VALUE, "userInfo", this.encode, true);
+        this.userInfo = Util.encode(ui, Integer.MIN_VALUE, "userInfo",
+                this.encode, true);
         return this;
     }
 }

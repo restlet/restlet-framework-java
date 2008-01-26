@@ -54,4 +54,10 @@ public abstract class Helper {
 
     /** Stop callback. */
     public abstract void stop() throws Exception;
+
+    /**
+     * Update callback with less impact than a {@link #stop()} followed by a
+     * {@link #start()}.
+     */
+    public abstract void update() throws Exception;
 }
