@@ -26,10 +26,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -496,6 +498,25 @@ public class Util {
     }
 
     /**
+     * Creates an modifiable Set with the given Object in it, and no other
+     * objects. If the given object is null, than an empty Set will returned.
+     * 
+     * @param <A>
+     * @param objects
+     * @return the created Set
+     */
+    public static <A> Set<A> createSet(A... objects) {
+        Set<A> set = new HashSet<A>();
+        int l = objects.length;
+        for (int i = 0; i < l; i++) {
+            A o = objects[i];
+            if (o != null)
+                set.add(o);
+        }
+        return set;
+    }
+
+    /**
      * Encodes the given string, if encoding is enabled. If encoding is
      * disabled, the methods checks the validaty of the containing characters.
      * 
@@ -545,7 +566,7 @@ public class Util {
         int l = uriPart.length();
         for (int i = 0; i < l; i++) {
             char c = uriPart.charAt(i);
-            if (c == '{' || c == '}' || (encodeSlash && c == '/'))
+            if (c == '{' || c == '}' || (!encodeSlash && c == '/'))
                 stb.append(c);
             else
                 stb.append(Reference.encode(uriPart.substring(i, i + 1)));

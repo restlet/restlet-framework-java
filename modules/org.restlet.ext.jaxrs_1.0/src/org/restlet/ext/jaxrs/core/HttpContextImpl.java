@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
@@ -37,6 +38,7 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.data.Conditions;
+import org.restlet.data.Dimension;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
@@ -62,6 +64,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
 
     private org.restlet.data.Request restletRequest;
 
+    private org.restlet.data.Response restletResponse;
+
     private List<MediaType> acceptedMediaTypes;
 
     private Map<String, Cookie> cookies;
@@ -78,14 +82,18 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      *                The Restlet request to wrap. Must not be null.
      * @param templateParametersEncoded
      *                The template parameters. Must not be null.
+     * @param restletResponse
+     *                TODO
      */
     public HttpContextImpl(org.restlet.data.Request restletRequest,
-            MultivaluedMap<String, String> templateParametersEncoded) {
+            MultivaluedMap<String, String> templateParametersEncoded,
+            org.restlet.data.Response restletResponse) {
         super(restletRequest.getResourceRef(), templateParametersEncoded);
         if (templateParametersEncoded == null)
             throw new IllegalArgumentException(
                     "The templateParameter must not be null");
         this.restletRequest = restletRequest;
+        this.restletResponse = restletResponse;
     }
 
     // HttpHeaders methods
@@ -346,18 +354,29 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         org.restlet.resource.Variant bestRestlVar = restletRequest
                 .getClientInfo().getPreferredVariant(restletVariants, null);
         Variant bestVariant = Util.convertVariant(bestRestlVar);
+        
+        Set<Dimension> dimensions = restletResponse.getDimensions();
+        if(bestRestlVar.getCharacterSet() != null)
+            dimensions.add(Dimension.CHARACTER_SET);
+        if(bestRestlVar.getEncodings() != null)
+            dimensions.add(Dimension.ENCODING);
+        if(bestRestlVar.getLanguages() != null)
+            dimensions.add(Dimension.LANGUAGE);
+        if(bestRestlVar.getMediaType() != null)
+            dimensions.add(Dimension.MEDIA_TYPE);
         // TODO Response.setVaryHeader(bestVariant)
-        // testen, auch wenn der Response nicht explizit erzeugt wird.
         return bestVariant;
     }
 
     public String getAuthenticationScheme() {
-        throw new NotYetImplementedException("SecurityContext.getAuthenticationScheme()");
+        throw new NotYetImplementedException(
+                "SecurityContext.getAuthenticationScheme()");
         // TODO SecurityContext.getAuthenticationScheme()
     }
 
     public Principal getUserPrincipal() {
-        throw new NotYetImplementedException("SecurityContext.getUserPrincipal()");
+        throw new NotYetImplementedException(
+                "SecurityContext.getUserPrincipal()");
         // TODO SecurityContext.getUserPrincipal()
     }
 

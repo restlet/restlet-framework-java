@@ -353,7 +353,7 @@ public class JaxRsRouter extends Restlet {
         // LATER Do I use dynamic proxies, to inject instance variables?
         try {
             o = resClass.createInstance(resClAndTemplate.matchingResult,
-                    allTemplParamsEnc, restletRequest);
+                    allTemplParamsEnc, restletRequest, restletResponse);
         } catch (Exception e) {
             throw handleInvokeException(e, restletResponse, "createInstance",
                     "Could not create new instance of root resource class");
@@ -400,7 +400,7 @@ public class JaxRsRouter extends Restlet {
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
                 o = subResourceLocator.createSubResource(o, matchingResult,
-                        allTemplParamsEnc, restletRequest);
+                        allTemplParamsEnc, restletRequest, restletResponse);
             } catch (Exception e) {
                 throw handleInvokeException(e, restletResponse,
                         "createSubResource",
@@ -907,7 +907,7 @@ public class JaxRsRouter extends Restlet {
         Object result;
         try {
             result = resourceMethod.invoke(resourceObject, matchingResult,
-                    allTemplParamsEnc, restletRequest);
+                    allTemplParamsEnc, restletRequest, restletResponse);
         } catch (Exception e) {
             throw handleInvokeException(e, restletResponse, "invoke",
                     "Can not invoke the resource method");

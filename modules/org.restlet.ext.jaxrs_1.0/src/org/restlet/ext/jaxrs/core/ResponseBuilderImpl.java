@@ -64,9 +64,6 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     public Response build() {
         if (this.response == null)
             return new ResponseImpl();
-        // TODO aus HttpContextImpl den Vary-Header laden. Auch in thesis
-        // dokumentieren, dass das hier geladen wird, weil nicht festgeleht ist,
-        // wann es geladen werden soll.
         Response r = this.response;
         if (this.newCookies != null) {
             MultivaluedMap<String, Object> metadata = getMetadata();

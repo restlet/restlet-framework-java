@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
+import org.restlet.data.Dimension;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -330,6 +331,8 @@ public class RequestTest extends JaxRsTestCase {
         Response response = accessServer(RequestService.class, "selectVariants", Method.GET, null, clientInfo);
         assertEqualMediaType(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertEquals(new Language("de"), Util.getOnlyElement(response.getEntity().getLanguages()));
+        assertTrue("dimensions must contain "+Dimension.MEDIA_TYPE, response.getDimensions().contains(Dimension.MEDIA_TYPE));
+        assertTrue("dimensions must contain "+Dimension.LANGUAGE, response.getDimensions().contains(Dimension.LANGUAGE));
 
         clientInfo.getAcceptedMediaTypes().add(new Preference<MediaType>(MediaType.TEXT_PLAIN, 1f));
         response = accessServer(RequestService.class, "selectVariants", Method.GET, null, clientInfo);

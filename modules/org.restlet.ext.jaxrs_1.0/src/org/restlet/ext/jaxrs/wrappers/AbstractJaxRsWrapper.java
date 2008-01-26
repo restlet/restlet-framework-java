@@ -35,6 +35,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.MatchingResult;
 import org.restlet.ext.jaxrs.PathRegExp;
 import org.restlet.ext.jaxrs.core.HttpContextImpl;
@@ -181,6 +182,8 @@ public abstract class AbstractJaxRsWrapper {
      *                the MatchingResult
      * @param restletRequest
      *                the Restlet request
+     * @param restletResponse
+     *                the Restlet response
      * @param httpContext
      *                an already created HttpContextImpl and returned or null
      * @param allTemplParamsEnc
@@ -196,7 +199,8 @@ public abstract class AbstractJaxRsWrapper {
      */
     private Object getParameterValue(Annotation[] paramAnnotations,
             Class<?> paramClass, MatchingResult matchingResult,
-            Request restletRequest, HttpContextImpl httpContext,
+            Request restletRequest, Response restletResponse,
+            HttpContextImpl httpContext,
             MultivaluedMap<String, String> allTemplParamsEnc,
             int indexForExcMessages) throws IllegalAnnotationException {
         for (Annotation annotation : paramAnnotations) {
@@ -221,7 +225,7 @@ public abstract class AbstractJaxRsWrapper {
             } else if (annotationType.equals(Context.class)) {
                 if (httpContext == null)
                     httpContext = new HttpContextImpl(restletRequest,
-                            allTemplParamsEnc);
+                            allTemplParamsEnc, restletResponse);
                 return httpContext;
             } else if (annotationType.equals(MatrixParam.class)) {
                 throw new NotYetImplementedException();
@@ -236,7 +240,7 @@ public abstract class AbstractJaxRsWrapper {
                 + ". parameter requires one of the following annotations: "
                 + VALID_ANNOTATIONS);
     }
-    
+
     /**
      * Returns the parameter value array for a JAX-RS method or constructor.
      * 
@@ -250,14 +254,16 @@ public abstract class AbstractJaxRsWrapper {
      *                parameters.
      * @param restletRequest
      *                the Restlet request
+     * @param restletResponse
+     *                the Restlet response
      * @param allTemplParamsEnc
      *                Contains all Parameters, that are read from the called
      *                URI.
      * @return the parameter array
      */
-    protected Object[] getParameterValues(
-            Annotation[][] parameterAnnotationss, Class<?>[] parameterTypes,
-            MatchingResult matchingResult, Request restletRequest,
+    protected Object[] getParameterValues(Annotation[][] parameterAnnotationss,
+            Class<?>[] parameterTypes, MatchingResult matchingResult,
+            Request restletRequest, Response restletResponse,
             MultivaluedMap<String, String> allTemplParamsEnc) {
         int paramNo = parameterTypes.length;
         if (paramNo == 0)
@@ -269,7 +275,7 @@ public abstract class AbstractJaxRsWrapper {
             try {
                 Object arg = getParameterValue(parameterAnnotationss[i],
                         parameterTypes[i], matchingResult, restletRequest,
-                        httpContext, allTemplParamsEnc, i);
+                        restletResponse, httpContext, allTemplParamsEnc, i);
                 if (httpContext == null && arg instanceof HttpContextImpl)
                     httpContext = (HttpContextImpl) arg;
                 args[i] = arg;
