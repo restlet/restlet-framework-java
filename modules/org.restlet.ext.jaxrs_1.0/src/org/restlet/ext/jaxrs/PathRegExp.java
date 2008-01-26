@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.ws.rs.Path;
 
+import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
@@ -168,7 +169,10 @@ public class PathRegExp {
      * @return
      */
     private String getWithEmptyVars() {
+        throw new NotYetImplementedException("Waiting for Restlet Core API patch");
+        /*
         return this.template.format(EmptyStringVariableResolver);
+        //*/
     }
 
     /**
@@ -200,8 +204,8 @@ public class PathRegExp {
      * VariableResolver that returns "" vor every variable name
      * @author Stephan Koops
      */
-    private static class EverNullVariableResolver implements
-            Template.VariableResolver {
+    private static class EverNullVariableResolver /*implements
+            Template.VariableResolver */{
         public String resolve(String variableName) {
             return "";
         }

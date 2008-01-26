@@ -32,6 +32,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
 
 import org.restlet.data.Reference;
+import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.wrappers.AbstractJaxRsWrapper;
 import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
@@ -44,7 +45,7 @@ import org.restlet.util.Template;
  */
 public class JaxRsUriBuilder extends UriBuilder {
 
-    private class IteratorVariableResolver implements Template.VariableResolver {
+    private class IteratorVariableResolver /*implements Template.VariableResolver*/ {
         private int i = 0;
 
         private Map<String, String> retrievedValues = new HashMap<String, String>();
@@ -187,6 +188,8 @@ public class JaxRsUriBuilder extends UriBuilder {
     @SuppressWarnings("unchecked")
     public URI build(final Map<String, String> values)
             throws IllegalArgumentException, UriBuilderException {
+        throw new NotYetImplementedException("Waiting for Restlet Core API patch");
+        /*
         Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(new Template.VariableResolver() {
             public String resolve(String variableName) {
@@ -198,6 +201,7 @@ public class JaxRsUriBuilder extends UriBuilder {
                 return varValue;
             }
         }));
+        //*/
     }
 
     /**
@@ -226,8 +230,11 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public URI build(String... values) throws IllegalArgumentException,
             UriBuilderException {
+        throw new NotYetImplementedException("Waiting for Restlet Core API patch");
+        /*
         Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(new IteratorVariableResolver(values)));
+        //*/
     }
 
     /**
