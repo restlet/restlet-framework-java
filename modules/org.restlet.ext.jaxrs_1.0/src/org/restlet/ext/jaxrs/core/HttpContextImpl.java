@@ -83,7 +83,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      * @param templateParametersEncoded
      *                The template parameters. Must not be null.
      * @param restletResponse
-     *                TODO
+     *                The Restlet response
      */
     public HttpContextImpl(org.restlet.data.Request restletRequest,
             MultivaluedMap<String, String> templateParametersEncoded,

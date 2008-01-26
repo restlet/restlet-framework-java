@@ -121,12 +121,12 @@ public class RootResourceClass extends ResourceClass {
     }
 
     /**
-     * 
-     * @param matchingResult
-     * @param allTemplParamsEnc
-     * @param restletRequ
+     * Creates an instance o fthe class
+     * @param matchingResult the MatchingResult
+     * @param allTemplParamsEnc all template parameters, encoded
+     * @param restletRequ Th restlet request
      * @param restletResponse
-     *                TODO
+     *                The Restlet response.
      * @return
      * @throws Exception
      */
