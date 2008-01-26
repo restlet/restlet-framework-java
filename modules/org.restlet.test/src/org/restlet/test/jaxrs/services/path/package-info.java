@@ -16,20 +16,12 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.ext.jaxrs.wrappers;
-
-import org.restlet.ext.jaxrs.PathRegExp;
-
 /**
- * This interface describes a sub resource locator or a sub resource method. See
- * section 1.5 and 2.3.1 of JSR-311-Spec
- * 
- * @author Stephan Koops
+ * This package contains some Restful WebServices to test if the {@link Path} is
+ * checked right.
+ * @see JaxRsRouterTest#testEncodePath()
  */
-public interface SubResourceMethodOrLocator {
+package org.restlet.test.jaxrs.services.path;
 
-    /**
-     * @return Returns the Regular Expression of the path.
-     */
-    public PathRegExp getPathRegExp();
-}
+import javax.ws.rs.Path;
+import org.restlet.test.jaxrs.JaxRsRouterTest;

@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
@@ -44,6 +45,8 @@ import org.restlet.ext.jaxrs.util.Util;
  */
 public class JaxRsUriInfo implements UriInfo {
 
+    private static Logger logger = Logger.getLogger("JaxRsUriInfo.unexpected");
+    
     protected Reference reference;
 
     private FormMulvaltivaluedMap queryParametersDecoded;
@@ -74,10 +77,10 @@ public class JaxRsUriInfo implements UriInfo {
     /**
      * Creates a new UriInfo. When using this constructor, the
      * templateParameters are not available.
-     * 
      * @param reference
      *                The Restlet reference that will be wrapped. Must not be
      *                null.
+     * 
      * @see #JaxRsUriInfo(Reference, MultivaluedMap)
      */
     public JaxRsUriInfo(Reference reference) {
@@ -163,9 +166,9 @@ public class JaxRsUriInfo implements UriInfo {
         List<String> segments = this.reference.getRelativeRef().getSegments();
         List<PathSegment> pathSegments = new ArrayList<PathSegment>(segments
                 .size());
-        for (String segment : segments) {
-            pathSegments.add(new JaxRsPathSegment(segment, decode, false));
-        }
+        int l = segments.size();
+        for(int i=0; i<l; i++)
+            pathSegments.add(new JaxRsPathSegment(segments.get(i), decode, false, false, i));
         return pathSegments;
     }
 
@@ -176,7 +179,7 @@ public class JaxRsUriInfo implements UriInfo {
         try {
             return new URI(reference.toString(true, true));
         } catch (URISyntaxException e) {
-            throw Util.handleException(e);
+            throw Util.handleException(e, logger, "Could not create URI");
         }
     }
 
@@ -203,7 +206,7 @@ public class JaxRsUriInfo implements UriInfo {
         try {
             return new URI(reference.toString(false, false));
         } catch (URISyntaxException e) {
-            throw Util.handleException(e);
+            throw Util.handleException(e, logger, "Could not create URI");
         }
     }
 
@@ -230,7 +233,7 @@ public class JaxRsUriInfo implements UriInfo {
         try {
             return new URI(getBaseUriStr());
         } catch (URISyntaxException e) {
-            throw Util.handleException(e);
+            throw Util.handleException(e, logger, "Could not create URI");
         }
     }
 

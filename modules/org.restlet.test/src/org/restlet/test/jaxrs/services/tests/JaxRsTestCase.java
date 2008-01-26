@@ -26,8 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.ws.rs.Path;
-
 import junit.framework.TestCase;
 
 import org.restlet.Client;
@@ -43,6 +41,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
@@ -222,10 +221,9 @@ public abstract class JaxRsTestCase extends TestCase {
         reference.setProtocol(PROTOCOL);
         reference.setAuthority("localhost");
         reference.setHostPort(PORT);
-        Path pathAnnotation = jaxRsClass.getAnnotation(Path.class);
-        if (pathAnnotation == null)
+        String path = ResourceClass.getPathTemplate(jaxRsClass);
+        if (path == null)
             throw new RuntimeException("no @Path available on " + jaxRsClass);
-        String path = pathAnnotation.value();
         if (!path.startsWith("/"))
             path = "/" + path;
         if (subPath != null && subPath.length() > 0)
@@ -286,7 +284,7 @@ public abstract class JaxRsTestCase extends TestCase {
         super.setUp();
         this.startServer(createRootResourceColl());
         try {
-            Thread.sleep(300);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

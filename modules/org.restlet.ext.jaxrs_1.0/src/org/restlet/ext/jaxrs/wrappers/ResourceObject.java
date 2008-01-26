@@ -18,45 +18,53 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
+
 /**
  * Represents a resource Object
+ * 
  * @author Stephan
- *
+ * 
  */
 public class ResourceObject {
-	private Object resourceObject;
-	private ResourceClass resourceClass;
-	
-	/**
-	 * Creates a new wrapper for a resource object
-	 * @param resourceObject the resource object
-	 * @param resourceClass the wrapped resource class
-	 */
-	public ResourceObject(Object resourceObject, ResourceClass resourceClass)
-	{
-		if(resourceObject instanceof ResourceObject)
-			throw new IllegalArgumentException("The given resource class object should not be an instance of the wrapping class ResourceObject");
-		this.resourceObject = resourceObject;
-		this.resourceClass = resourceClass;
-	}
+    private ResourceClass resourceClass;
+
+    private Object resourceObject;
 
     /**
      * Creates a new wrapper for a resource object
-     * @param resourceObject the resource object
+     * 
+     * @param resourceObject
+     *                the resource object
      */
-	public ResourceObject(Object resourceObject)
-	{
-		this(resourceObject, new ResourceClass(resourceObject.getClass()));
-	}
+    public ResourceObject(Object resourceObject) {
+        this(resourceObject, new ResourceClass(resourceObject.getClass()));
+    }
 
-	Object getResourceObject() {
-		return resourceObject;
-	}
+    /**
+     * Creates a new wrapper for a resource object
+     * 
+     * @param resourceObject
+     *                the resource object
+     * @param resourceClass
+     *                the wrapped resource class
+     * @param logger The logger to log unexpected Exceptions.
+    */
+    public ResourceObject(Object resourceObject, ResourceClass resourceClass) {
+        if (resourceObject instanceof ResourceObject)
+            throw new IllegalArgumentException(
+                    "The given resource class object should not be an instance of the wrapping class ResourceObject");
+        this.resourceObject = resourceObject;
+        this.resourceClass = resourceClass;
+    }
 
-	/**
-	 * @return Returns the wrapped resource class.
-	 */
-	public ResourceClass getResourceClass() {
-		return resourceClass;
-	}
+    /**
+     * @return Returns the wrapped resource class.
+     */
+    public ResourceClass getResourceClass() {
+        return resourceClass;
+    }
+
+    Object getResourceObject() {
+        return resourceObject;
+    }
 }

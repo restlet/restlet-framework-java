@@ -17,6 +17,7 @@
  */
 package org.restlet.ext.jaxrs.core;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -41,6 +43,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.util.Series;
 
@@ -52,7 +55,7 @@ import org.restlet.util.Series;
  * 
  */
 public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
-        HttpHeaders {
+        HttpHeaders, SecurityContext {
 
     private static final int STATUS_PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED
             .getCode();
@@ -346,5 +349,25 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         // TODO Response.setVaryHeader(bestVariant)
         // testen, auch wenn der Response nicht explizit erzeugt wird.
         return bestVariant;
+    }
+
+    public String getAuthenticationScheme() {
+        throw new NotYetImplementedException("SecurityContext.getAuthenticationScheme()");
+        // TODO SecurityContext.getAuthenticationScheme()
+    }
+
+    public Principal getUserPrincipal() {
+        throw new NotYetImplementedException("SecurityContext.getUserPrincipal()");
+        // TODO SecurityContext.getUserPrincipal()
+    }
+
+    public boolean isSecure() {
+        throw new NotYetImplementedException("SecurityContext.isSecure()");
+        // TODO SecurityContext.isSecure()
+    }
+
+    public boolean isUserInRole(String role) {
+        throw new NotYetImplementedException("SecurityContext.isUserInRole()");
+        // TODO SecurityContext.isUserInRole()
     }
 }

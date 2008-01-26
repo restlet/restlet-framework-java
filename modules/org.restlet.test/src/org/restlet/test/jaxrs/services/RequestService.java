@@ -8,7 +8,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.HttpContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
@@ -23,7 +23,7 @@ public class RequestService {
 
     @GET
     @Path("date")
-    public Response get(@HttpContext
+    public Response get(@Context
     Request request) {
         Date modificDate = getLastModificationDateFromDatastore();
         EntityTag entityTag = getEntityTagFromDatastore();
@@ -40,7 +40,7 @@ public class RequestService {
 
     @PUT
     @Path("date")
-    public Response put(@HttpContext
+    public Response put(@Context
     Request request) {
         Date modificDate = getLastModificationDateFromDatastore();
         EntityTag entityTag = getEntityTagFromDatastore();
@@ -68,7 +68,7 @@ public class RequestService {
     
     @GET
     @Path("selectVariants")
-    public Response getSelectVariants(@HttpContext
+    public Response getSelectVariants(@Context
     Request request)
     {
         List<Variant> variants = new ArrayList<Variant>();

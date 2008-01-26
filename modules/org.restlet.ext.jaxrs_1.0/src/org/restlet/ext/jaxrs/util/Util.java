@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
@@ -124,6 +125,7 @@ public class Util {
      */
     public static void checkForInvalidUriChars(String uriPart, int index,
             String errMessName) throws IllegalArgumentException {
+        // LATER Characters in variables should not be checked.
         int l = uriPart.length();
         for (int i = 0; i < l; i++) {
             char c = uriPart.charAt(i);
@@ -507,17 +509,22 @@ public class Util {
      *                The name for the message
      * @param encode
      *                see {@link #encode}
+     * @param encodeSlash
+     *                if encode is true: if encodeSlash is true, than slashes
+     *                are also converted, otherwise not. if encode is false,
+     *                this is ignored.
      * @return
      * @throws IllegalArgumentException
      *                 if the char is invalid.
      */
     public static String encode(String uriPart, int index, String errMessName,
-            boolean encode) throws IllegalArgumentException {
+            boolean encode, boolean encodeSlash)
+            throws IllegalArgumentException {
         if (uriPart == null)
             throw throwIllegalArgExc(index, errMessName, uriPart,
                     " must not be null");
         if (encode)
-            return encodeNotBraces(uriPart);
+            return encodeNotBraces(uriPart, encodeSlash);
         else
             checkForInvalidUriChars(uriPart, index, errMessName);
         return uriPart;
@@ -526,18 +533,22 @@ public class Util {
     /**
      * This methods encodes the given String, but doesn't encode braces.
      * 
-     * @param string
-     * @return
+     * @param uriPart
+     *                the String to encode
+     * @param encodeSlash
+     *                if encodeSlash is true, than slashes are also converted,
+     *                otherwise not.
+     * @return the encoded String
      */
-    public static String encodeNotBraces(String string) {
+    public static String encodeNotBraces(String uriPart, boolean encodeSlash) {
         StringBuilder stb = new StringBuilder();
-        int l = string.length();
+        int l = uriPart.length();
         for (int i = 0; i < l; i++) {
-            char c = string.charAt(i);
-            if (c == '{' || c == '}')
+            char c = uriPart.charAt(i);
+            if (c == '{' || c == '}' || (encodeSlash && c == '/'))
                 stb.append(c);
             else
-                stb.append(Reference.encode(string.substring(i, i + 1)));
+                stb.append(Reference.encode(uriPart.substring(i, i + 1)));
         }
         return stb.toString();
     }
@@ -724,16 +735,18 @@ public class Util {
 
     /**
      * This method throws an WebApplicationException for Exceptions where is no
-     * planned handling.
+     * planned handling. Logs the excption (warn Level).
      * 
-     * @param e
+     * @param e the catched Exception
+     * @param logger the logger to log the messade
+     * @param logMessage the message to log.
      * @return Will never return anyithing, because the generated exceptions
      *         will be thrown. You an formally thro the returned exception (e.g.
      *         in a catch block). So the compiler is sure, that the method will
      *         be left here.
      */
-    public static RuntimeException handleException(Exception e) {
-        // TODO irgendwie irgendwas loggen
+    public static RuntimeException handleException(Exception e, Logger logger, String logMessage) {
+        logger.log(Level.WARNING, logMessage, e);
         throw new WebApplicationException(e, Status.SERVER_ERROR_INTERNAL
                 .getCode());
     }
@@ -815,9 +828,9 @@ public class Util {
      * 
      * @param index
      *                index, starting with zero.
-     * @param errMessName
+     * @param errMessName the name of the string with illegal characters
      * @param illegalString
-     *                TODO
+     *                the illegal String
      * @param messageEnd
      * @return
      */

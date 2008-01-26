@@ -16,20 +16,30 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.ext.jaxrs.wrappers;
+package org.restlet.test.jaxrs.services.path;
 
-import org.restlet.ext.jaxrs.PathRegExp;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.ProduceMime;
 
 /**
- * This interface describes a sub resource locator or a sub resource method. See
- * section 1.5 and 2.3.1 of JSR-311-Spec
+ * This class contains only an invalid path, so the Runtime must have a problem
+ * to use it.
  * 
  * @author Stephan Koops
+ * 
  */
-public interface SubResourceMethodOrLocator {
-
+@Path("/ho:use")
+public class IllegalPathService1 {
     /**
-     * @return Returns the Regular Expression of the path.
+     * This method is only available, that the class has something that it can
+     * do.
+     * 
+     * @return
      */
-    public PathRegExp getPathRegExp();
+    @GET
+    @ProduceMime("text/plain")
+    public String getPlainText() {
+        return "";
+    }
 }

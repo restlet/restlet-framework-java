@@ -88,10 +88,19 @@ public class JaxRsPathSegment implements PathSegment {
      *                true, if the path and the marix parameters should be
      *                encoded. Braces are not encoded. (they are used for
      *                variables.)
+     * @param checkForInvalidChars
+     *                if true, than the path is checked for invalid chars, if
+     *                decode and encode is both false.
+     * @param indexForErrMess
+     *                If the user adds more than one path segment with one call,
+     *                you can give the index for an error message here. Set -1,
+     *                if none. See
+     *                {@link Util#checkForInvalidUriChars(String, int, String)}
      * @throws IllegalArgumentException
      *                 if decode and encode is both true
      */
-    public JaxRsPathSegment(String segment, boolean decode, boolean encode)
+    public JaxRsPathSegment(String segment, boolean decode, boolean encode,
+            boolean checkForInvalidChars, int indexForErrMess)
             throws IllegalArgumentException {
         if (decode && encode)
             throw new IllegalArgumentException(
@@ -107,12 +116,16 @@ public class JaxRsPathSegment implements PathSegment {
             path = segment;
             this.matrParamEncoded = null;
         }
-        if (decode)
+        if (decode) {
             this.path = Reference.decode(path);
-        else if (encode)
-            this.path = Util.encodeNotBraces(path);
-        else
+        } else if (encode) {
+            this.path = Util.encodeNotBraces(path, true);
+        } else {
+            if (checkForInvalidChars)
+                Util.checkForInvalidUriChars(path, indexForErrMess,
+                        "new path segment");
             this.path = path;
+        }
     }
 
     /**
@@ -171,9 +184,10 @@ public class JaxRsPathSegment implements PathSegment {
                     key = Reference.decode(keyEnc);
                     value = Reference.decode(valueEnc);
                 } else if (encodeAndCheckWhenNotDecode) {
-                    key = Util.encode(keyEnc, i, " matrix parameter key", true);
-                    value = Util.encode(valueEnc, i, " matrix parameter value",
+                    key = Util.encode(keyEnc, i, " matrix parameter key", true,
                             true);
+                    value = Util.encode(valueEnc, i, " matrix parameter value",
+                            true, true);
                 } else {
 
                     key = keyEnc;

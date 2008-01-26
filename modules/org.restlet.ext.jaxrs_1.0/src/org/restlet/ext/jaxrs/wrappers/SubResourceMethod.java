@@ -23,26 +23,31 @@ import java.lang.reflect.Method;
 import javax.ws.rs.Path;
 
 /**
- * A method of a resource class that is used to handle requests on a sub-resource of the corresponding resource, see section 2.3.1.
+ * A method of a resource class that is used to handle requests on a
+ * sub-resource of the corresponding resource, see section 2.3.1.
  * 
  * The differentiator is the presence or absence of request method designator:
- * Present Such methods, known as sub-resource methods, are treated like a normal resource method (see
- * section 2.2) except the method is only invoked for request URIs that match a URI template created by
- * concatenating the URI template of the resource class with the URI template of the method.
+ * Present Such methods, known as sub-resource methods, are treated like a
+ * normal resource method (see section 2.2) except the method is only invoked
+ * for request URIs that match a URI template created by concatenating the URI
+ * template of the resource class with the URI template of the method.
  * 
  * @author Stephan Koops
- *
+ * 
  */
-public class SubResourceMethod extends ResourceMethod implements SubResourceMethodOrLocator{
+public class SubResourceMethod extends ResourceMethod implements
+        SubResourceMethodOrLocator {
 
     /**
      * Creates a new Wrapper for a SubResourceMethod
+     * 
      * @param javaMethod
      * @param path
      * @param resourceClass
      * @param httpMethod
      */
-	public SubResourceMethod(Method javaMethod, Path path, ResourceClass resourceClass, org.restlet.data.Method httpMethod) {
-		super(javaMethod, path, resourceClass, httpMethod);
-	}
+    public SubResourceMethod(Method javaMethod, Path path,
+            ResourceClass resourceClass, org.restlet.data.Method httpMethod) {
+        super(javaMethod, path, resourceClass, httpMethod);
+    }
 }

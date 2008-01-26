@@ -31,7 +31,7 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.HttpContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Request;
@@ -44,136 +44,39 @@ import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.resource.Representation;
 
-abstract class AbstractJaxRsWrapper {
-
-    private PathRegExp pathRegExp;
-
-    AbstractJaxRsWrapper(Path path) {
-        this.pathRegExp = convertPathToRegularExpression(path, true);
-    }
-
-    /**
-     * @return Returns the regular expression for the URI template
-     */
-    public final PathRegExp getPathRegExp() {
-        return this.pathRegExp;
-    }
+/**
+ * An abstract wrapper class. contains some useful static methods.
+ * 
+ * @author Stephan Koops
+ */
+public abstract class AbstractJaxRsWrapper {
 
     private static final Collection<Class<? extends Annotation>> VALID_ANNOTATIONS = createValidAnnotations();
 
+    /**
+     * Implementation of function R(A) in JSR-311-Spec, Revision 151, Version
+     * 2007-12-07, Section 2.5.1 Converting URI Templates to Regular Expressions
+     * 
+     * @param ensureStartSlash
+     * @param path
+     * 
+     * @return
+     */
+    private static PathRegExp convertPathToRegularExpression(Path template,
+            boolean ensureStartSlash) {
+        if (template == null)
+            return new PathRegExp("", true);
+        String pathTemplate = getPathTemplate(template);
+        if (ensureStartSlash)
+            pathTemplate = Util.ensureStartSlash(pathTemplate);
+        // LATER Path.encode auch bearbeiten
+        return new PathRegExp(pathTemplate, template.limited());
+    }
+
     @SuppressWarnings("unchecked")
     private static Collection<Class<? extends Annotation>> createValidAnnotations() {
-        return Arrays.asList(HttpContext.class, HeaderParam.class,
+        return Arrays.asList(Context.class, HeaderParam.class,
                 MatrixParam.class, QueryParam.class, PathParam.class);
-    }
-
-    /**
-     * Returns the parameter value array for a JAX-RS method or constructor.
-     * 
-     * @param parameterAnnotationss
-     *                the array of arrays of annotations for the method or
-     *                constructor.
-     * @param parameterTypes
-     *                the array of types for the method or constructor.
-     * @param matchingResult
-     *                the matching result contains the values of the path
-     *                parameters.
-     * @param restletRequest
-     *                the Restlet request
-     * @param allTemplParamsEnc
-     *                Contains all Parameters, that are read from the called
-     *                URI.
-     * @return the parameter array
-     */
-    protected static Object[] getParameterValues(
-            Annotation[][] parameterAnnotationss, Class<?>[] parameterTypes,
-            MatchingResult matchingResult, Request restletRequest,
-            MultivaluedMap<String, String> allTemplParamsEnc) {
-        int paramNo = parameterTypes.length;
-        if (paramNo == 0)
-            return new Object[0];
-        Object[] args = new Object[paramNo];
-        boolean annotRequired = false;
-        HttpContextImpl httpContext = null; // cached
-        for (int i = 0; i < args.length; i++) {
-            try {
-                Object arg = getParameterValue(parameterAnnotationss[i],
-                        parameterTypes[i], matchingResult, restletRequest,
-                        httpContext, allTemplParamsEnc, i);
-                if (httpContext == null && arg instanceof HttpContextImpl)
-                    httpContext = (HttpContextImpl) arg;
-                args[i] = arg;
-            } catch (IllegalAnnotationException e) {
-                if (annotRequired)
-                    throw e;
-                annotRequired = true;
-                args[i] = getParameterValueFromRepr(parameterTypes[i],
-                        restletRequest.getEntity());
-            }
-        }
-        return args;
-    }
-
-    /**
-     * Returns the parameter value for a parameter of a JAX-RS method or
-     * constructor.
-     * 
-     * @param paramAnnotations
-     *                annotations on the parameters
-     * @param paramClass
-     *                the wished type
-     * @param matchingResult
-     *                the MatchingResult
-     * @param restletRequest
-     *                the Restlet request
-     * @param httpContext
-     *                an already created HttpContextImpl and returned or null
-     * @param allTemplParamsEnc
-     *                Contains all Parameters, that are read from the called
-     *                URI.
-     * @param indexForExcMessages
-     *                the index of the parameter, for exception messages.
-     * @return the parameter value
-     * @throws IllegalAnnotationException
-     *                 Thrown, when no valid annotation was found. For
-     *                 (Sub)ResourceMethods this is one times allowed; than the
-     *                 given request entity should taken as parameter.
-     */
-    private static Object getParameterValue(Annotation[] paramAnnotations,
-            Class<?> paramClass, MatchingResult matchingResult,
-            Request restletRequest, HttpContextImpl httpContext,
-            MultivaluedMap<String, String> allTemplParamsEnc,
-            int indexForExcMessages) throws IllegalAnnotationException {
-        for (Annotation annotation : paramAnnotations) {
-            Class<? extends Annotation> annotationType = annotation
-                    .annotationType();
-            // if something is added here, you have to check if you have to add
-            // it in RootResourceClass#checkParamAnnotations(..)
-            if (annotationType.equals(HeaderParam.class)) {
-                String headerParamValue = Util.getHttpHeaders(restletRequest)
-                        .getFirstValue(((HeaderParam) annotation).value()); // TODO read javadoc of HeaderParam again.
-                return getParameterValueFromParam(paramClass, headerParamValue);
-            } else if (annotationType.equals(PathParam.class)) {
-                String pathParamValue = matchingResult.getVariables().get(
-                        ((PathParam) annotation).value()); // TODO read javadoc of PathParam again.
-                return getParameterValueFromParam(paramClass, pathParamValue);
-            } else if (annotationType.equals(HttpContext.class)) {
-                if (httpContext == null)
-                    httpContext = new HttpContextImpl(restletRequest,
-                            allTemplParamsEnc);
-                return httpContext;
-            } else if (annotationType.equals(MatrixParam.class)) {
-                throw new NotYetImplementedException();
-            } else if (annotationType.equals(QueryParam.class)) {
-                String queryParamValue = restletRequest.getResourceRef()
-                        .getQueryAsForm().getFirstValue(
-                                ((QueryParam) annotation).value());
-                return getParameterValueFromParam(paramClass, queryParamValue);
-            }
-        }
-        throw new IllegalAnnotationException("The " + indexForExcMessages
-                + ". parameter requires one of the following annotations: "
-                + VALID_ANNOTATIONS);
     }
 
     /**
@@ -243,22 +146,148 @@ abstract class AbstractJaxRsWrapper {
     }
 
     /**
-     * Implementation of function R(A) in JSR-311-Spec, Revision 151, Version
-     * 2007-12-07, Section 2.5.1 Converting URI Templates to Regular Expressions
+     * Returns the path from the annotation. It will be encoded if necessary. If
+     * it should not be encoded, this method checks, if all characters are
+     * valid.
      * 
-     * @param ensureStartSlash
      * @param path
-     * 
-     * @return
+     *                The {@link Path} annotation. Must not be null.
+     * @return the encoded path template
+     * @see Path#encode()
      */
-    private static PathRegExp convertPathToRegularExpression(Path template,
-            boolean ensureStartSlash) {
-        if (template == null)
-            return new PathRegExp("", true);
-        String pathTemplate = template.value();
-        if (ensureStartSlash)
-            pathTemplate = Util.ensureStartSlash(pathTemplate);
-        // LATER Path.encode auch bearbeiten
-        return new PathRegExp(pathTemplate, template.limited());
+    public static String getPathTemplate(Path path) {
+        String pathTemplate = path.value();
+        if (path.encode())
+            return Util.encodeNotBraces(pathTemplate, false);
+        Util.checkForInvalidUriChars(pathTemplate, -1, "path template");
+        return pathTemplate;
+    }
+
+    private PathRegExp pathRegExp;
+
+    AbstractJaxRsWrapper(Path path) {
+        this.pathRegExp = convertPathToRegularExpression(path, true);
+    }
+
+    /**
+     * Returns the parameter value for a parameter of a JAX-RS method or
+     * constructor.
+     * 
+     * @param paramAnnotations
+     *                annotations on the parameters
+     * @param paramClass
+     *                the wished type
+     * @param matchingResult
+     *                the MatchingResult
+     * @param restletRequest
+     *                the Restlet request
+     * @param httpContext
+     *                an already created HttpContextImpl and returned or null
+     * @param allTemplParamsEnc
+     *                Contains all Parameters, that are read from the called
+     *                URI.
+     * @param indexForExcMessages
+     *                the index of the parameter, for exception messages.
+     * @return the parameter value
+     * @throws IllegalAnnotationException
+     *                 Thrown, when no valid annotation was found. For
+     *                 (Sub)ResourceMethods this is one times allowed; than the
+     *                 given request entity should taken as parameter.
+     */
+    private Object getParameterValue(Annotation[] paramAnnotations,
+            Class<?> paramClass, MatchingResult matchingResult,
+            Request restletRequest, HttpContextImpl httpContext,
+            MultivaluedMap<String, String> allTemplParamsEnc,
+            int indexForExcMessages) throws IllegalAnnotationException {
+        for (Annotation annotation : paramAnnotations) {
+            Class<? extends Annotation> annotationType = annotation
+                    .annotationType();
+            // if something is added here, you have to check if you have to add
+            // it in RootResourceClass#checkParamAnnotations(..)
+            if (annotationType.equals(HeaderParam.class)) {
+                String headerParamValue = Util.getHttpHeaders(restletRequest)
+                        .getFirstValue(((HeaderParam) annotation).value()); // TODO
+                // read
+                // javadoc
+                // of
+                // HeaderParam
+                // again.
+                return getParameterValueFromParam(paramClass, headerParamValue);
+            } else if (annotationType.equals(PathParam.class)) {
+                String pathParamValue = matchingResult.getVariables().get(
+                        ((PathParam) annotation).value()); // TODO read javadoc
+                // of PathParam again.
+                return getParameterValueFromParam(paramClass, pathParamValue);
+            } else if (annotationType.equals(Context.class)) {
+                if (httpContext == null)
+                    httpContext = new HttpContextImpl(restletRequest,
+                            allTemplParamsEnc);
+                return httpContext;
+            } else if (annotationType.equals(MatrixParam.class)) {
+                throw new NotYetImplementedException();
+            } else if (annotationType.equals(QueryParam.class)) {
+                String queryParamValue = restletRequest.getResourceRef()
+                        .getQueryAsForm().getFirstValue(
+                                ((QueryParam) annotation).value());
+                return getParameterValueFromParam(paramClass, queryParamValue);
+            }
+        }
+        throw new IllegalAnnotationException("The " + indexForExcMessages
+                + ". parameter requires one of the following annotations: "
+                + VALID_ANNOTATIONS);
+    }
+    
+    /**
+     * Returns the parameter value array for a JAX-RS method or constructor.
+     * 
+     * @param parameterAnnotationss
+     *                the array of arrays of annotations for the method or
+     *                constructor.
+     * @param parameterTypes
+     *                the array of types for the method or constructor.
+     * @param matchingResult
+     *                the matching result contains the values of the path
+     *                parameters.
+     * @param restletRequest
+     *                the Restlet request
+     * @param allTemplParamsEnc
+     *                Contains all Parameters, that are read from the called
+     *                URI.
+     * @return the parameter array
+     */
+    protected Object[] getParameterValues(
+            Annotation[][] parameterAnnotationss, Class<?>[] parameterTypes,
+            MatchingResult matchingResult, Request restletRequest,
+            MultivaluedMap<String, String> allTemplParamsEnc) {
+        int paramNo = parameterTypes.length;
+        if (paramNo == 0)
+            return new Object[0];
+        Object[] args = new Object[paramNo];
+        boolean annotRequired = false;
+        HttpContextImpl httpContext = null; // cached
+        for (int i = 0; i < args.length; i++) {
+            try {
+                Object arg = getParameterValue(parameterAnnotationss[i],
+                        parameterTypes[i], matchingResult, restletRequest,
+                        httpContext, allTemplParamsEnc, i);
+                if (httpContext == null && arg instanceof HttpContextImpl)
+                    httpContext = (HttpContextImpl) arg;
+                args[i] = arg;
+            } catch (IllegalAnnotationException e) {
+                if (annotRequired)
+                    throw e;
+                annotRequired = true;
+                args[i] = getParameterValueFromRepr(parameterTypes[i],
+                        restletRequest.getEntity());
+            }
+        }
+        return args;
+    }
+
+    /**
+     * @return Returns the regular expression for the URI template
+     */
+    public final PathRegExp getPathRegExp() {
+        return this.pathRegExp;
     }
 }

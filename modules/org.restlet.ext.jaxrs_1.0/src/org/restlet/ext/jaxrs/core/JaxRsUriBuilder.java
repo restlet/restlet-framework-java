@@ -32,8 +32,9 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.wrappers.AbstractJaxRsWrapper;
+import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.util.Template;
 
@@ -43,7 +44,7 @@ import org.restlet.util.Template;
  */
 public class JaxRsUriBuilder extends UriBuilder {
 
-    private class IteratorVariableResolver /*implements Template.VariableResolver*/ {
+    private class IteratorVariableResolver implements Template.VariableResolver {
         private int i = 0;
 
         private Map<String, String> retrievedValues = new HashMap<String, String>();
@@ -95,11 +96,55 @@ public class JaxRsUriBuilder extends UriBuilder {
     }
 
     /**
-     * @param segment
+     * Adds the path of the
+     * 
+     * @Path to the path.
+     * @param path
+     * @throws IllegalArgumentException
      */
-    private void addPathSegment(String segment) {
-        pathSegments.add(new JaxRsPathSegment(segment, false, encode));
-        // LATER test for !encode
+    private void addPathSegments(Path path) throws IllegalArgumentException {
+        if (path == null)
+            throw new IllegalArgumentException(
+                    "The given class is no root resource class, because it is not annotated with @Path");
+        addPathSegments(AbstractJaxRsWrapper.getPathTemplate(path));
+        // LATER encode Path
+    }
+
+    /**
+     * Adds the given path to the current path.
+     * 
+     * @param path
+     *                may contain "/". The path will be splitted there,
+     *                independent of {@link #encode}
+     */
+    private void addPathSegments(String path) {
+        if (path.startsWith("/"))
+            path = path.substring(1);
+        if (path.length() == 0)
+            return;
+        addPathSegments(path.split("/"));
+    }
+
+    /**
+     * Adds the given path segments to the path of the UriBuilder.
+     * 
+     * @param segments
+     *                must not be null.
+     * @throws NullPointerException
+     *                 if segments is null
+     */
+    private void addPathSegments(String[] segments) {
+        // first check all predonditions
+        List<JaxRsPathSegment> pathSegments = new ArrayList<JaxRsPathSegment>(
+                segments.length);
+        int l = segments.length;
+        for (int i = 0; i < l; i++)
+            pathSegments.add(new JaxRsPathSegment(segments[i], false, encode,
+                    true, i));
+
+        // than add
+        for (JaxRsPathSegment pathSegment : pathSegments)
+            this.pathSegments.add(pathSegment);
     }
 
     /**
@@ -142,8 +187,6 @@ public class JaxRsUriBuilder extends UriBuilder {
     @SuppressWarnings("unchecked")
     public URI build(final Map<String, String> values)
             throws IllegalArgumentException, UriBuilderException {
-        throw new NotYetImplementedException("Waiting for Restlet Core API patch");
-        /*
         Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(new Template.VariableResolver() {
             public String resolve(String variableName) {
@@ -155,7 +198,6 @@ public class JaxRsUriBuilder extends UriBuilder {
                 return varValue;
             }
         }));
-        //*/
     }
 
     /**
@@ -184,11 +226,8 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public URI build(String... values) throws IllegalArgumentException,
             UriBuilderException {
-        throw new NotYetImplementedException("Waiting for Restlet Core API patch");
-        /*
         Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(new IteratorVariableResolver(values)));
-        //*/
     }
 
     /**
@@ -267,18 +306,8 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder fragment(String fragment) throws IllegalArgumentException {
-        this.fragment = encode(fragment, "fragment");
+        this.fragment = Util.encode(fragment, Integer.MIN_VALUE, "fragment", this.encode, true);
         return this;
-    }
-
-    /**
-     * @see Util#encode(String, String, boolean)
-     * @param string
-     * @param errMessName
-     * @return
-     */
-    private String encode(String string, String errMessName) {
-        return Util.encode(string, Integer.MIN_VALUE, errMessName, this.encode);
     }
 
     /**
@@ -394,8 +423,8 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder matrixParam(String name, String value)
             throws IllegalArgumentException {
-        name = encode(name, "matrix parameter name");
-        value = encode(value, "matrix parameter value");
+        name = Util.encode(name, Integer.MIN_VALUE, "matrix parameter name", this.encode, true);
+        value = Util.encode(value, Integer.MIN_VALUE, "matrix parameter value", this.encode, true);
         this.pathSegments.getLast().getMatrixParameters().add(name, value);
         return this;
     }
@@ -425,23 +454,9 @@ public class JaxRsUriBuilder extends UriBuilder {
         if (resource == null)
             throw new IllegalArgumentException(
                     "The root resource class must not be null");
-        addPathSegments(ResourceClass.getPathAnnotation(resource));
+        addPathSegments(ResourceClass.getPathTemplate(ResourceClass
+                .getPathAnnotation(resource, true)));
         return this;
-    }
-
-    /**
-     * Adds the path of the
-     * 
-     * @Path to the path.
-     * @param path
-     * @throws IllegalArgumentException
-     */
-    private void addPathSegments(Path path) throws IllegalArgumentException {
-        if (path == null)
-            throw new IllegalArgumentException(
-                    "The given class is no root resource class, because it is not annotated with @Path");
-        addPathSegments(path.value());
-        // LATER encode Path
     }
 
     /**
@@ -472,25 +487,25 @@ public class JaxRsUriBuilder extends UriBuilder {
         if (methodName == null)
             throw new IllegalArgumentException(
                     "The method name must not be null");
-        Method resMethod = null;
+        String resMethodPath = null;
         for (Method method : resource.getMethods()) {
             if (!method.getName().equals(methodName))
                 continue;
-            Path path = method.getAnnotation(Path.class);
+            String path = AbstractMethodWrapper.getPathTemplate(method);
             if (path == null)
                 continue;
-            if (resMethod != null)
+            if (resMethodPath != null && !resMethodPath.equals(path))
                 throw new IllegalArgumentException("The class " + resource
                         + " has more than one methods with the name "
                         + methodName + " annotated with @Path");
-            resMethod = method;
+            resMethodPath = path;
         }
-        if (resMethod == null)
+        if (resMethodPath == null)
             throw new IllegalArgumentException("The class " + resource
                     + " has no method with the name " + methodName
                     + " annotated with @Path");
         path(resource);
-        path(resMethod);
+        addPathSegments(resMethodPath);
         return this;
     }
 
@@ -550,13 +565,7 @@ public class JaxRsUriBuilder extends UriBuilder {
     public UriBuilder path(String... segments) throws IllegalArgumentException {
         if (segments == null)
             throw new IllegalArgumentException("The segments must not be null");
-        // first check preconditions
-        for (int i = 0; i < segments.length; i++)
-            segments[i] = Util.encode(segments[i], i,
-                    "segment of the path (index started with 0)", this.encode);
-        // than add segments
-        for (String segment : segments)
-            addPathSegment(segment);
+        addPathSegments(segments);
         return this;
     }
 
@@ -595,8 +604,8 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder queryParam(String name, String value)
             throws IllegalArgumentException {
-        name = encode(name, "query parameter name");
-        value = encode(value, "query parameter value");
+        name = Util.encode(name, Integer.MIN_VALUE, "query parameter name", this.encode, true);
+        value = Util.encode(value, Integer.MIN_VALUE, "query parameter value", this.encode, true);
         StringBuilder query;
         if (this.query == null) {
             query = new StringBuilder();
@@ -662,24 +671,6 @@ public class JaxRsUriBuilder extends UriBuilder {
         this.pathSegments.clear();
         addPathSegments(path);
         return this;
-    }
-
-    /**
-     * Adds the given path to the current path.
-     * 
-     * @param path
-     *                may contain "/". The path will be splitted there,
-     *                independent of {@link #encode}
-     */
-    private void addPathSegments(String path) {
-        if (path.startsWith("/"))
-            path = path.substring(1);
-        if (path.length() > 0) {
-            String[] pathSegments = path.split("/");
-            for (String pathSegment : pathSegments) {
-                addPathSegment(pathSegment);
-            }
-        }
     }
 
     /**
@@ -884,7 +875,7 @@ public class JaxRsUriBuilder extends UriBuilder {
         // password? This is deprecated (RFC3986, section 3.2.1) and more
         // complicated to encode, because of the ":" is allowed one times.
         // TODO one ":" is allowed.
-        this.userInfo = encode(ui, "userInfo");
+        this.userInfo = Util.encode(ui, Integer.MIN_VALUE, "userInfo", this.encode, true);
         return this;
     }
 }

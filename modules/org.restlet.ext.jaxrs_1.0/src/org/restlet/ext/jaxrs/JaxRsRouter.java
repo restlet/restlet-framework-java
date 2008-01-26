@@ -55,6 +55,7 @@ import org.restlet.ext.jaxrs.wrappers.SubResourceMethodOrLocator;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
+
 /**
  * The router choose the JAX-RS resource class and method to use for a request.
  * This class has methods {@link #attach(Class)} and {@link #detach(Class)} like

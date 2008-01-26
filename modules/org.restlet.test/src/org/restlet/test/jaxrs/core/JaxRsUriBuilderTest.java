@@ -80,9 +80,21 @@ public class JaxRsUriBuilderTest extends TestCase {
      * Test method for
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#encode(boolean)}.
      */
-    public void _testEncode() throws Exception {
-        // TODO UriBuilderText.testEncode()
-        fail("Not yet implemented");
+    public void testEncode() throws Exception {
+        UriBuilder uriBuilder = RuntimeDelegate.getInstance().createUriBuilder();
+        uriBuilder.encode(false);
+        uriBuilder.host("www.xyz.de");
+        uriBuilder.scheme("http");
+        uriBuilder.path("path1", "path2");
+        try {
+            uriBuilder.path("hh:ho");
+            fail("must fail, because of invalid character");
+        } catch (IllegalArgumentException e) {
+            // wonderful
+        }
+        uriBuilder.encode(true);
+        uriBuilder.path("hh:ho");
+        assertEqualsURI("http://www.xyz.de/path1/path2/hh%3Aho", uriBuilder);
     }
 
     /**
@@ -479,7 +491,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder1.encode(false);
         uriBuilder1.userInfo("username");
         assertEqualsURI("http://username@localhost/path1/path2", uriBuilder1);
-        // TODO test: uriBuilder1.userInfo("username:password");
+        // LATER test: uriBuilder1.userInfo("username:password");
         // assertEquals("http://username:password@localhost/path1/path2",uriBuilder1.build().toString());
     }
 }

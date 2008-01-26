@@ -35,33 +35,125 @@ import javax.ws.rs.Path;
  */
 public class ResourceClass extends AbstractJaxRsWrapper {
 
+    /**
+     * @param jaxRsClass
+     * @param requirePath
+     * @return the path annotation or null, if no is present.
+     * @throws IllegalArgumentException
+     *                 if the jaxRsClass is null.
+     */
+    public static Path getPathAnnotation(Class<?> jaxRsClass,
+            boolean requirePath) throws IllegalArgumentException {
+        if (jaxRsClass == null)
+            throw new IllegalArgumentException(
+                    "The jaxRsClass must not be null");
+        Path path = jaxRsClass.getAnnotation(Path.class);
+        if (requirePath && path == null)
+            throw new IllegalArgumentException(
+                    "The root resource class does not have a @Path annotation");
+        return path;
+    }
+
+    /**
+     * Returns the path template of the given root resource class
+     * 
+     * @param rootResourceClass
+     * @return the path template
+     * @throws IllegalArgumentException
+     *                 if the rootResourceClass is not annotated with
+     * @Path
+     * @see Path
+     */
+    public static String getPathTemplate(Class<?> rootResourceClass)
+            throws IllegalArgumentException {
+        Path path = rootResourceClass.getAnnotation(Path.class);
+        if (path == null)
+            throw new IllegalArgumentException(
+                    "The class "
+                            + rootResourceClass.getName()
+                            + " is not a root resource class, because it is not annotated with @Path");
+        return AbstractJaxRsWrapper.getPathTemplate(path);
+    }
+
     protected Class<?> jaxRsClass;
 
-    private Collection<SubResourceMethodOrLocator> subResourceMethodsAndLocators;
+    private Collection<SubResourceLocator> subResourceLocators;
 
     private Collection<SubResourceMethod> subResourceMethods;
 
-    private Collection<SubResourceLocator> subResourceLocators;
+    private Collection<SubResourceMethodOrLocator> subResourceMethodsAndLocators;
+
+    /**
+     * Creates a new root resource class wrapper. Will not set the path, because
+     * it is not available for a normal resource class.
+     * 
+     * @param jaxRsClass
+     */
+    public ResourceClass(Class<?> jaxRsClass) {
+        super(null);
+        this.jaxRsClass = jaxRsClass;
+    }
 
     /**
      * Creates a new root resource class wrapper.
      * 
      * @param jaxRsClass
+     * @param requirePath
+     *                the subclass RootResourceClass must give true here, other
+     *                classes must give false
      */
-    public ResourceClass(Class<?> jaxRsClass) {
-        super(getPathAnnotation(jaxRsClass));
+    protected ResourceClass(Class<?> jaxRsClass, boolean requirePath) {
+        super(getPathAnnotation(jaxRsClass, requirePath));
         this.jaxRsClass = jaxRsClass;
     }
 
+    @Override
+    public boolean equals(Object anotherObject) {
+        if (this == anotherObject)
+            return true;
+        if (!(anotherObject instanceof ResourceClass))
+            return false;
+        ResourceClass otherResourceClass = (ResourceClass) anotherObject;
+        return this.jaxRsClass.equals(otherResourceClass.jaxRsClass);
+    }
+
     /**
-     * @param jaxRsClass
-     * @return
+     * @return Returns the wrapped root resource class.
      */
-    public static Path getPathAnnotation(Class<?> jaxRsClass) {
-        if (jaxRsClass == null)
-            throw new IllegalArgumentException(
-                    "The jaxRsClass must not be null");
-        return jaxRsClass.getAnnotation(Path.class);
+    public final Class<?> getJaxRsClass() {
+        return jaxRsClass;
+    }
+
+    /**
+     * @return Returns the sub resource locators of the given class.
+     */
+    public final Iterable<SubResourceLocator> getSubResourceLocators() {
+        if (this.subResourceLocators == null)
+            internalSetSubResourceMethodsAndLocators();
+        return subResourceLocators;
+    }
+
+    /**
+     * @return Return the sub resource methods of the given class.
+     */
+    public final Iterable<SubResourceMethod> getSubResourceMethods() {
+        if (this.subResourceMethods == null)
+            internalSetSubResourceMethodsAndLocators();
+        return this.subResourceMethods;
+    }
+
+    /**
+     * @return Returns the sub resource locatores and sub resource methods.
+     */
+    public final Collection<SubResourceMethodOrLocator> getSubResourceMethodsAndLocators() {
+        if (this.subResourceMethodsAndLocators == null)
+            internalSetSubResourceMethodsAndLocators();
+        return this.subResourceMethodsAndLocators;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.jaxRsClass.hashCode();
     }
 
     /**
@@ -105,58 +197,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         this.subResourceMethodsAndLocators = srmls;
     }
 
-    /**
-     * @return Returns the sub resource locatores and sub resource methods.
-     */
-    public final Collection<SubResourceMethodOrLocator> getSubResourceMethodsAndLocators() {
-        if (this.subResourceMethodsAndLocators == null)
-            internalSetSubResourceMethodsAndLocators();
-        return this.subResourceMethodsAndLocators;
-    }
-
-    /**
-     * @return Return the sub resource methods of the given class.
-     */
-    public final Iterable<SubResourceMethod> getSubResourceMethods() {
-        if (this.subResourceMethods == null)
-            internalSetSubResourceMethodsAndLocators();
-        return this.subResourceMethods;
-    }
-
-    /**
-     * @return Returns the sub resource locators of the given class.
-     */
-    public final Iterable<SubResourceLocator> getSubResourceLocators() {
-        if (this.subResourceLocators == null)
-            internalSetSubResourceMethodsAndLocators();
-        return subResourceLocators;
-    }
-
-    /**
-     * @return Returns the wrapped root resource class.
-     */
-    public final Class<?> getJaxRsClass() {
-        return jaxRsClass;
-    }
-
-
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[" + this.jaxRsClass + "]";
-    }
-
-    @Override
-    public boolean equals(Object anotherObject) {
-        if (this == anotherObject)
-            return true;
-        if (!(anotherObject instanceof ResourceClass))
-            return false;
-        ResourceClass otherResourceClass = (ResourceClass) anotherObject;
-        return this.jaxRsClass.equals(otherResourceClass.jaxRsClass);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.jaxRsClass.hashCode();
     }
 }
