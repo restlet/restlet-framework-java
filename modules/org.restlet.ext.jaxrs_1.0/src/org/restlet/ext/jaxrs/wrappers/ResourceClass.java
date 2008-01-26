@@ -84,8 +84,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         // TODO z.Zt. werden alle Methoden geladen, auch die nicht-public
         for (Method javaMethod : classMethods) {
             Path path = javaMethod.getAnnotation(Path.class);
-            if (path == null)
-                path = javaMethod.getClass().getAnnotation(Path.class);
             org.restlet.data.Method httpMethod = ResourceMethod
                     .getHttpMethod(javaMethod);
             if (httpMethod != null) {

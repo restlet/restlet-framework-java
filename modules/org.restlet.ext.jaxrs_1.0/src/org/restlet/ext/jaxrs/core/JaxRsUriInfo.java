@@ -164,7 +164,7 @@ public class JaxRsUriInfo implements UriInfo {
         List<PathSegment> pathSegments = new ArrayList<PathSegment>(segments
                 .size());
         for (String segment : segments) {
-            pathSegments.add(new JaxRsPathSegment(segment, decode));
+            pathSegments.add(new JaxRsPathSegment(segment, decode, false));
         }
         return pathSegments;
     }

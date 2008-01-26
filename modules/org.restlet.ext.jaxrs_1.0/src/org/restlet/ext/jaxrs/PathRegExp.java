@@ -18,13 +18,12 @@
 
 package org.restlet.ext.jaxrs;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.ws.rs.Path;
 
+import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
@@ -166,12 +165,15 @@ public class PathRegExp {
         return noLitChars;
     }
 
-	/**
-	 * @return
-	 */
-	private String getWithEmptyVars() {
-		return this.template.format(EverNullStringMap);
-	}
+    /**
+     * @return
+     */
+    private String getWithEmptyVars() {
+        throw new NotYetImplementedException("Waiting for Restlet Core API patch");
+        /*
+        return this.template.format(EmptyStringVariableResolver);
+        //*/
+    }
 
     /**
      * @return Returns the number of capturing groups.
@@ -181,78 +183,31 @@ public class PathRegExp {
     }
 
     @Override
-    public boolean equals(Object anotherObject)
-    {
+    public boolean equals(Object anotherObject) {
         // TODO talk with Jerome about Template.equals(Object)
-        if(this == anotherObject)
+        if (this == anotherObject)
             return true;
-        if(!(anotherObject instanceof PathRegExp))
+        if (!(anotherObject instanceof PathRegExp))
             return false;
-        PathRegExp otherRegExp = (PathRegExp)anotherObject;
+        PathRegExp otherRegExp = (PathRegExp) anotherObject;
         return this.getWithEmptyVars().equals(otherRegExp.getWithEmptyVars());
     }
-    
+
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return this.template.hashCode();
     }
-    
-    private static EverNullStringMap EverNullStringMap = new EverNullStringMap();
 
-    static class EverNullStringMap implements Map<String, Object> {
+    private static EverNullVariableResolver EmptyStringVariableResolver = new EverNullVariableResolver();
 
-        public void clear() {
-            throw new UnsupportedOperationException();
-        }
-
-        public boolean containsKey(Object key) {
-            return (key instanceof String);
-        }
-
-        public boolean containsValue(Object value) {
-            return (value instanceof String)
-                    && (((String) value).length() == 0);
-        }
-
-        public Set<java.util.Map.Entry<String, Object>> entrySet() {
-            throw new UnsupportedOperationException();
-        }
-
-        @SuppressWarnings("unused")
-        public Object get(Object key) {
+    /**
+     * VariableResolver that returns "" vor every variable name
+     * @author Stephan Koops
+     */
+    private static class EverNullVariableResolver /*implements
+            Template.VariableResolver */{
+        public String resolve(String variableName) {
             return "";
-        }
-
-        public boolean isEmpty() {
-            return false;
-        }
-
-        public Set<String> keySet() {
-            throw new UnsupportedOperationException();
-        }
-
-        @SuppressWarnings("unused")
-        public Object put(String key, Object value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @SuppressWarnings("unused")
-        public void putAll(Map<? extends String, ? extends Object> t) {
-            throw new UnsupportedOperationException();
-        }
-
-        @SuppressWarnings("unused")
-        public Object remove(Object key) {
-            throw new UnsupportedOperationException();
-        }
-
-        public int size() {
-            return Integer.MAX_VALUE;
-        }
-
-        public Collection<Object> values() {
-            throw new UnsupportedOperationException();
         }
     }
 }

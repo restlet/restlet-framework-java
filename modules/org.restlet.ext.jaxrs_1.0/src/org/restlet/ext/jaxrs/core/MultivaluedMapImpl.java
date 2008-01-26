@@ -21,6 +21,7 @@ package org.restlet.ext.jaxrs.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -32,14 +33,18 @@ import javax.ws.rs.core.MultivaluedMap;
  * @param <K>
  * @param <V>
  */
-public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements MultivaluedMap<K, V> {
+public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements
+        MultivaluedMap<K, V> {
 
     private static final long serialVersionUID = 6228280442855580961L;
 
     /**
      * Add a value to the current list of values for the supplied key.
-     * @param key the key 
-     * @param value the value to be added.
+     * 
+     * @param key
+     *                the key
+     * @param value
+     *                the value to be added.
      * @see MultivaluedMap#add(Object, Object)
      */
     public void add(K key, V value) {
@@ -53,9 +58,11 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements Mul
 
     /**
      * A shortcut to get the first value of the supplied key.
-     * @param key the key
-     * @return the first value for the specified key or null if the key is
-     * not in the map.
+     * 
+     * @param key
+     *                the key
+     * @return the first value for the specified key or null if the key is not
+     *         in the map.
      * @see MultivaluedMap#getFirst(Object)
      */
     public V getFirst(K key) {
@@ -66,16 +73,30 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements Mul
     }
 
     /**
-     * Set the key's value to be a one item list consisting of the supplied value.
-     * Any existing values will be replaced.
+     * Set the key's value to be a one item list consisting of the supplied
+     * value. Any existing values will be replaced.
      * 
-     * @param key the key
-     * @param value the single value of the key
+     * @param key
+     *                the key
+     * @param value
+     *                the single value of the key
      * @see MultivaluedMap#putSingle(Object, Object)
      */
     public void putSingle(K key, V value) {
         List<V> list = new ArrayList<V>(1);
         list.add(value);
         this.put(key, list);
+    }
+
+    /**
+     * Creates a clone of this map. The contained values are not cloned.
+     * 
+     * @return A copy of this map
+     */
+    public MultivaluedMapImpl<K, V> clone() {
+        MultivaluedMapImpl<K, V> clone = new MultivaluedMapImpl<K, V>();
+        for (Map.Entry<K, List<V>> entry : this.entrySet())
+            clone.put(entry.getKey(), new ArrayList<V>(entry.getValue()));
+        return clone;
     }
 }

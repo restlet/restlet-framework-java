@@ -18,12 +18,17 @@
 
 package org.restlet.ext.jaxrs.spi;
 
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
 
+import org.restlet.ext.jaxrs.core.JaxRsUriBuilder;
 import org.restlet.ext.jaxrs.core.ResponseBuilderImpl;
-import org.restlet.ext.jaxrs.core.UriBuilderImpl;
 import org.restlet.ext.jaxrs.core.VariantListBuilderImpl;
 
 /**
@@ -70,7 +75,7 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
      */
     @Override
     public UriBuilder createUriBuilder() {
-        return new UriBuilderImpl();
+        return new JaxRsUriBuilder();
     }
 
     /**

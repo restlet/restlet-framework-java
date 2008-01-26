@@ -18,6 +18,7 @@
 
 package org.restlet.ext.jaxrs.util;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,24 +82,109 @@ public class Util {
     public static final String ORG_RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
 
     /**
+     * appends the given String to the StringBuilder. If convertBraces is true,
+     * all "{" and "}" are converted to "%7B" and "%7D"
+     * 
+     * @param stb
+     *                the Appendable to append on
+     * @param string
+     *                the CharSequence to append
+     * @param convertBraces
+     *                if true, all braces are converted, if false then not.
+     * @throws IOException
+     *                 If the Appendable have a problem
+     */
+    public static void append(Appendable stb, CharSequence string,
+            boolean convertBraces) throws IOException {
+        if (!convertBraces) {
+            stb.append(string);
+            return;
+        }
+        int l = string.length();
+        for (int i = 0; i < l; i++) {
+            char c = string.charAt(i);
+            if (c == '{')
+                stb.append("%7B");
+            else if (c == '}')
+                stb.append("%7D");
+            else
+                stb.append(c);
+        }
+    }
+
+    /**
+     * Checks, if the string contains characters that are reserved in URIs.
+     * 
+     * @see <a href="http://tools.ietf.org/html/rfc3986#section-2.2">RFC 3986,
+     *      Section 2.2</a>
+     * @param uriPart
+     * @param index
+     * @param errMessName
+     * @throws IllegalArgumentException
+     */
+    public static void checkForInvalidUriChars(String uriPart, int index,
+            String errMessName) throws IllegalArgumentException {
+        int l = uriPart.length();
+        for (int i = 0; i < l; i++) {
+            char c = uriPart.charAt(i);
+            switch (c) {
+            case ':':
+            case '/':
+            case '?':
+            case '#':
+            case '[':
+            case ']':
+            case '@':
+            case '!':
+            case '$':
+            case '&':
+            case '\'':
+            case '(':
+            case ')':
+            case '*':
+            case '+':
+            case ',':
+            case ';':
+            case '=':
+                throw throwIllegalArgExc(index, errMessName, uriPart,
+                        " contains at least one reservec character: " + c
+                                + ". They must be encoded.");
+            }
+            if (c == ' ' || c < 32 || c >= 127)
+                throw throwIllegalArgExc(index, errMessName, uriPart,
+                        " contains at least one illegal character: " + c
+                                + ". They must be encoded.");
+        }
+    }
+
+    /**
      * Checks, if the String is a valid URI scheme
-     * @param scheme the String to check.
-     * @throws IllegalArgumentException If the string is not a valid URI scheme.
+     * 
+     * @param scheme
+     *                the String to check.
+     * @throws IllegalArgumentException
+     *                 If the string is not a valid URI scheme.
      */
     public static void checkValidScheme(String scheme)
             throws IllegalArgumentException {
-        if(scheme == null)
+        if (scheme == null)
             throw new IllegalArgumentException("The scheme must not be null");
         int schemeLength = scheme.length();
-        if(schemeLength == 0)
-            throw new IllegalArgumentException("The scheme must not be an empty String");
+        if (schemeLength == 0)
+            throw new IllegalArgumentException(
+                    "The scheme must not be an empty String");
         char c = scheme.charAt(0);
         if (!((c > 64 && c <= 90) || (c > 92 && c <= 118)))
-            throw new IllegalArgumentException("The first character of a scheme must be an alphabetic character");
+            throw new IllegalArgumentException(
+                    "The first character of a scheme must be an alphabetic character");
         for (int i = 1; i < schemeLength; i++) {
             c = scheme.charAt(i);
-            if (!((c > 64 && c <= 90) || (c > 92 && c <= 118) || (c == '+') || (c == '-') || (c == '.')))
-                throw new IllegalArgumentException("The "+i+". character of a scheme must be an alphabetic character, a number, a '+', a '-' or a '.'");
+            if (!((c > 64 && c <= 90) || (c > 92 && c <= 118) || (c == '+')
+                    || (c == '-') || (c == '.')))
+                throw new IllegalArgumentException(
+                        "The "
+                                + i
+                                + ". character of a scheme must be an alphabetic character, a number, a '+', a '-' or a '.'");
         }
     }
 
@@ -379,34 +465,81 @@ public class Util {
      * Creates an modifiable Collection with the given Objects in it, and no
      * other objects. nulls will be ignored.
      * 
-     * @param object1
-     * @param object2
+     * @param objects
      * @param <A>
      * @return Returns the created list with the given objects in it.
      */
-    public static <A> Collection<A> createColl(A object1, A object2) {
-        Collection<A> coll = new ArrayList<A>();
-        if (object1 != null)
-            coll.add(object1);
-        if (object2 != null)
-            coll.add(object2);
-        return coll;
+    public static <A> Collection<A> createColl(A... objects) {
+        return createList(objects);
     }
 
     /**
      * Creates an modifiable List with the given Object in it, and no other
      * objects. If the given object is null, than an empty List will returned
      * 
-     * @param object
+     * @param objects
      * @param <A>
      * @return Returns the created list with the given object in it or an empty
      *         list, if the given object is null.
      */
-    public static <A> List<A> createList(A object) {
+    public static <A> List<A> createList(A... objects) {
         List<A> list = new ArrayList<A>();
-        if (object != null)
-            list.add(object);
+        int l = objects.length;
+        for (int i = 0; i < l; i++) {
+            A o = objects[i];
+            if (o != null)
+                list.add(o);
+        }
         return list;
+    }
+
+    /**
+     * Encodes the given string, if encoding is enabled. If encoding is
+     * disabled, the methods checks the validaty of the containing characters.
+     * 
+     * @param uriPart
+     *                the string to encode or check. Must not be null; result
+     *                are not defined.
+     * @param index
+     *                index in an array or list if necessary. If not necessary,
+     *                set it lower than zero.
+     * @param errMessName
+     *                The name for the message
+     * @param encode
+     *                see {@link #encode}
+     * @return
+     * @throws IllegalArgumentException
+     *                 if the char is invalid.
+     */
+    public static String encode(String uriPart, int index, String errMessName,
+            boolean encode) throws IllegalArgumentException {
+        if (uriPart == null)
+            throw throwIllegalArgExc(index, errMessName, uriPart,
+                    " must not be null");
+        if (encode)
+            return encodeNotBraces(uriPart);
+        else
+            checkForInvalidUriChars(uriPart, index, errMessName);
+        return uriPart;
+    }
+
+    /**
+     * This methods encodes the given String, but doesn't encode braces.
+     * 
+     * @param string
+     * @return
+     */
+    public static String encodeNotBraces(String string) {
+        StringBuilder stb = new StringBuilder();
+        int l = string.length();
+        for (int i = 0; i < l; i++) {
+            char c = string.charAt(i);
+            if (c == '{' || c == '}')
+                stb.append(c);
+            else
+                stb.append(Reference.encode(string.substring(i, i + 1)));
+        }
+        return stb.toString();
     }
 
     /**
@@ -676,6 +809,34 @@ public class Util {
             metadatas.add(preference.getMetadata());
         }
         return new ArrayList<Collection<? extends Metadata>>(map.values());
+    }
+
+    /**
+     * 
+     * @param index
+     *                index, starting with zero.
+     * @param errMessName
+     * @param illegalString
+     *                TODO
+     * @param messageEnd
+     * @return
+     */
+    private static IllegalArgumentException throwIllegalArgExc(int index,
+            String errMessName, String illegalString, String messageEnd) {
+        StringBuilder stb = new StringBuilder();
+        stb.append("The ");
+        if (index >= 0) {
+            stb.append(index);
+            stb.append(". ");
+        }
+        stb.append(errMessName);
+        stb.append(" (");
+        stb.append(illegalString);
+        stb.append(")");
+        stb.append(messageEnd);
+        if (index >= 0)
+            stb.append(" (index starting with 0)");
+        throw new IllegalArgumentException(stb.toString());
     }
 
     /**

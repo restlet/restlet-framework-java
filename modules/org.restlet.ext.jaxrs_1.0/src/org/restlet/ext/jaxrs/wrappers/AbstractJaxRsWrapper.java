@@ -151,11 +151,11 @@ abstract class AbstractJaxRsWrapper {
             // it in RootResourceClass#checkParamAnnotations(..)
             if (annotationType.equals(HeaderParam.class)) {
                 String headerParamValue = Util.getHttpHeaders(restletRequest)
-                        .getFirstValue(((HeaderParam) annotation).value());
+                        .getFirstValue(((HeaderParam) annotation).value()); // TODO read javadoc of HeaderParam again.
                 return getParameterValueFromParam(paramClass, headerParamValue);
             } else if (annotationType.equals(PathParam.class)) {
                 String pathParamValue = matchingResult.getVariables().get(
-                        ((PathParam) annotation).value());
+                        ((PathParam) annotation).value()); // TODO read javadoc of PathParam again.
                 return getParameterValueFromParam(paramClass, pathParamValue);
             } else if (annotationType.equals(HttpContext.class)) {
                 if (httpContext == null)
