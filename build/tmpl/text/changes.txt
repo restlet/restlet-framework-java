@@ -46,7 +46,9 @@ Changes log
  - Improved robustness of Reference when starting with an empty URI. Contributed by Stephan Koops.
  - Added Component.updateHosts() method to update the routes after dynamic changes to virtual hosts.
    Suggested and contributed in part by Alex Milowski. 
-
+ - Added format(Object) and resolve(Object,String) methods to Template to allow for custom variable resolution.
+   Enhancement suggested by Stephan Koops.
+  
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
  - Handlers now return a SERVER_INTERNAL_ERROR instead of CLIENT_NOT_FOUND when no next Restlet is

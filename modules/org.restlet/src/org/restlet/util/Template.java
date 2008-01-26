@@ -553,17 +553,49 @@ public class Template {
     }
 
     /**
+     * Resolves variable values based on a map.
+     * 
+     * @author Jerome Louvel (contact@noelios.com)
+     */
+    private class UserResolver extends VariableResolver {
+        /** The user object to help resolution. */
+        private Object userObject;
+
+        /**
+         * Constructor.
+         * 
+         * @param userObject
+         *                The user object to help resolution.
+         */
+        public UserResolver(Object userObject) {
+            this.userObject = userObject;
+        }
+
+        @Override
+        public String resolve(String variableName) {
+            return Template.this.resolve(this.userObject, variableName);
+        }
+    }
+
+    /**
      * Resolves variable values.
      * 
      * @author Jerome Louvel (contact@noelios.com)
      */
     private abstract class VariableResolver {
+        /**
+         * Resolves a variable name into a value.
+         * 
+         * @param variableName
+         *                The variable name to resolve.
+         * @return The resolved value.
+         */
         public abstract String resolve(String variableName);
     }
 
-    public static final int MODE_STARTS_WITH = 1;
-
     public static final int MODE_EQUALS = 2;
+
+    public static final int MODE_STARTS_WITH = 1;
 
     /**
      * Indicates if the given character is alphabetical (a-z or A-Z).
@@ -622,9 +654,6 @@ public class Template {
         return (character >= 'A') && (character <= 'Z');
     }
 
-    /** The pattern to use for formatting or parsing. */
-    private String pattern;
-
     /** The default variable to use when no matching variable descriptor exists. */
     private Variable defaultVariable;
 
@@ -634,14 +663,17 @@ public class Template {
     /** The matching mode to use when parsing a formatted reference. */
     private int matchingMode;
 
-    /** The map of variables associated to the route's template. */
-    private Map<String, Variable> variables;
+    /** The pattern to use for formatting or parsing. */
+    private String pattern;
 
     /** The internal Regex pattern. */
     private Pattern regexPattern;
 
     /** The sequence of Regex variable names as found in the pattern string. */
     private List<String> regexVariables;
+
+    /** The map of variables associated to the route's template. */
+    private Map<String, Variable> variables;
 
     /**
      * Default constructor. Each variable matches any sequence of characters by
@@ -828,6 +860,22 @@ public class Template {
     }
 
     /**
+     * Creates a formatted string based on the given user object.<br>
+     * <br>
+     * Note that for this method to work, variables will be resolved using the
+     * {@link #resolve(Object, String)} method. Therefore, in order to make
+     * usage of this custom format method, you will need to subclass the
+     * Template class and override the {@link #resolve(Object, String)} method.
+     * 
+     * @param userObject
+     *                The user object to help resolution.
+     * @return The formatted string.
+     */
+    public String format(Object userObject) {
+        return format(new UserResolver(userObject));
+    }
+
+    /**
      * Creates a formatted string based on the given request.
      * 
      * @param request
@@ -852,7 +900,8 @@ public class Template {
         StringBuilder varBuffer = null;
         char next;
         boolean inVariable = false;
-        for (int i = 0; i < getPattern().length(); i++) {
+        int patternLength = getPattern().length();
+        for (int i = 0; i < patternLength; i++) {
             next = getPattern().charAt(i);
 
             if (inVariable) {
@@ -891,7 +940,6 @@ public class Template {
                 }
             }
         }
-
         return result.toString();
     }
 
@@ -1340,6 +1388,30 @@ public class Template {
         }
     }
 
+    /**
+     * Resolves a variable name into a value using a user provided object. The
+     * userObject is the one that is sent via the {@link #format(Object)}
+     * method.<br>
+     * <br>
+     * The default behavior is to return null. Therefore, in order to make usage
+     * of this custom resolution, you will need to subclass the Template class
+     * and override this method.
+     * 
+     * @param userObject
+     *                The user object to help resolution.
+     * @param variableName
+     *                The variable name to resolve.
+     * @return The resolved value.
+     */
+    protected String resolve(Object userObject, String variableName) {
+        return null;
+    }
+
+    /**
+     * Sets the variable to use, if no variable is given.
+     * 
+     * @param defaultVariable
+     */
     public void setDefaultVariable(Variable defaultVariable) {
         this.defaultVariable = defaultVariable;
     }
