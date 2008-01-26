@@ -145,11 +145,11 @@ public class JaxRsUriBuilderTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        uriBuilder1 = new JaxRsUriBuilder();
+        uriBuilder1 = RuntimeDelegate.getInstance().createUriBuilder();
         uriBuilder1.host("localhost");
         uriBuilder1.path("path1", "path2");
         uriBuilder1.scheme("http");
-        uriBuilderWithVars = new JaxRsUriBuilder();
+        uriBuilderWithVars = RuntimeDelegate.getInstance().createUriBuilder();
         uriBuilderWithVars.encode(false);
         uriBuilderWithVars.host("localhost");
         uriBuilderWithVars.scheme("http");

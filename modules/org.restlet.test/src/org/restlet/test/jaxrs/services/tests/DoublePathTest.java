@@ -32,21 +32,14 @@ public class DoublePathTest extends TestCase {
         router.attach(DoublePath1.class);
     }
 
-    public static void testAttachSamePathDouble() throws Exception {
-        if(false) // TODO this feature is not yet ready implemented.
-        {         // The PathRegExp class needs a compare.
-                  // This must be discussed with Jerome.
-            JaxRsRouter router = new JaxRsRouter();
-            router.attach(DoublePath1.class);
-            try
-            {
-                router.attach(DoublePath2.class);
-                fail("Attach two root resource classes with the same @Path must raise an Excption");
-            }
-            catch(IllegalArgumentException e)
-            {
-                // wunderful, exception raised :-)
-            }
+    public static void _testAttachSamePathDouble() throws Exception {
+        JaxRsRouter router = new JaxRsRouter();
+        router.attach(DoublePath1.class);
+        try {
+            router.attach(DoublePath2.class);
+            fail("Attach two root resource classes with the same @Path must raise an Excption");
+        } catch (IllegalArgumentException e) {
+            // wunderful, exception raised :-)
         }
     }
 }
