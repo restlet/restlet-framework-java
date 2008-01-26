@@ -7,17 +7,34 @@
 		class="org.restlet.ext.spring.SpringComponent">
 		<property name="server" ref="server" />
 		<property name="defaultTarget" ref="application" />
+		<property name="hosts">
+			<list>
+				<ref bean="virtualHost" />
+			</list>
+		</property>
 	</bean>
 
 	<bean id="server" class="org.restlet.ext.spring.SpringServer">
 		<constructor-arg value="http" />
 		<constructor-arg value="8182" />
-        <property name="parameters">
-            <props>
-                <prop key="key1">value1</prop>
-                <prop key="key2">value2</prop>
-            </props>
-        </property>
+		<property name="parameters">
+			<props>
+				<prop key="key1">value1</prop>
+				<prop key="key2">value2</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="virtualHost" class="org.restlet.ext.spring.SpringHost">
+		<property name="hostDomain"
+			value="mydomain.com|www.mydomain.com" />
+		<property name="attachments">
+			<map>
+				<entry key="/">
+					<ref bean="application" />
+				</entry>
+			</map>
+		</property>
 	</bean>
 
 	<bean id="application"

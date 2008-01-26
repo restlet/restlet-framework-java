@@ -44,7 +44,7 @@ import org.restlet.resource.Resource;
  * </pre>
  * 
  * @see <a href="http://www.springframework.org/">Spring home page</a>
- * @author Jerome Louvel (contact@noelios.com)</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class SpringRouter extends Router {
 

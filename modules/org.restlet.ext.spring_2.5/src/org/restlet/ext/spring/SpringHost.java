@@ -23,20 +23,37 @@ import java.util.Map;
 import org.restlet.VirtualHost;
 
 /**
- * Virtual host that is easily configurable with Spring.
+ * Virtual host that is easily configurable with Spring. Here is a usage
+ * example:
+ * 
+ * <pre>
+ *     &lt;bean id=&quot;virtualHost&quot; class=&quot;org.restlet.ext.spring.SpringHost&quot;&gt;
+ *         &lt;property name=&quot;hostDomain&quot;
+ *                 value=&quot;mydomain.com|www.mydomain.com&quot; /&gt;
+ *         &lt;property name=&quot;attachments&quot;&gt;
+ *             &lt;map&gt;
+ *                 &lt;entry key=&quot;/&quot;&gt;
+ *                     &lt;ref bean=&quot;application&quot; /&gt;
+ *                 &lt;/entry&gt;
+ *             &lt;/map&gt;
+ *         &lt;/property&gt;
+ *     &lt;/bean&gt;
+ * </pre>
  * 
  * @see <a href="http://www.springframework.org/">Spring home page</a>
- * @author Jerome Louvel (contact@noelios.com)</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class SpringHost extends VirtualHost {
 
     /**
-     * Sets the modifiable list of routes.
+     * Sets the map of routes to attach. The map keys are the URI templates and
+     * the values can be either Restlet instances, Resource subclasses (as Class
+     * instances or as qualified class names).
      * 
      * @param routes
-     *                The modifiable list of routes.
+     *                The map of routes to attach.
      */
-    public void setRoutes(Map<String, Object> routes) {
+    public void setAttachments(Map<String, Object> routes) {
         SpringRouter.setAttachments(this, routes);
     }
 
