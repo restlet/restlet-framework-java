@@ -133,20 +133,23 @@ public class RootResourceClass extends ResourceClass {
      * @param restletResponse
      *                The Restlet response.
      * @param authenticator
-     *                TODO
+     *                Authenticator for role requests, see
+     *                {@link SecurityContext#isUserInRole(String)}.
      * @return
      * @throws Exception
      */
     public ResourceObject createInstance(MatchingResult matchingResult,
             MultivaluedMap<String, String> allTemplParamsEnc,
-            Request restletRequ, Response restletResponse, Authenticator authenticator) throws Exception {
+            Request restletRequ, Response restletResponse,
+            Authenticator authenticator) throws Exception {
         Object[] args;
         if (constructor.getParameterTypes().length == 0)
             args = new Object[0];
         else
             args = getParameterValues(constructor.getParameterAnnotations(),
                     constructor.getParameterTypes(), matchingResult,
-                    restletRequ, restletResponse, allTemplParamsEnc, authenticator);
+                    restletRequ, restletResponse, allTemplParamsEnc,
+                    authenticator);
         return new ResourceObject(constructor.newInstance(args), this);
     }
 

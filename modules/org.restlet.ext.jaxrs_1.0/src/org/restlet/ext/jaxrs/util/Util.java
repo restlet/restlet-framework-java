@@ -358,10 +358,10 @@ public class Util {
     }
 
     /**
-     * Converts the given Restlet Variant to a JAX-RS Variant TODO javadoc
+     * Converts the given Restlet Variant to a JAX-RS Variant
      * 
      * @param restletVariant
-     * @return
+     * @return the JAX-RS Variant
      * @throws IllegalArgumentException
      *                 If the given Variant does not contain exactly one
      *                 language and one
@@ -764,7 +764,9 @@ public class Util {
 
     /**
      * Gets the logged in user.
-     * @param request The Restlet request
+     * 
+     * @param request
+     *                The Restlet request
      * @return The Principal of the logged in user.
      * @see #setPrincipal(Principal, Request)
      */
@@ -774,8 +776,11 @@ public class Util {
 
     /**
      * Sets the logged in user.
-     * @param principal The Principal of the logged in user.
-     * @param request The Restlet request
+     * 
+     * @param principal
+     *                The Principal of the logged in user.
+     * @param request
+     *                The Restlet request
      * @see #getPrincipal(Request)
      */
     public static void setPrincipal(Principal principal, Request request) {

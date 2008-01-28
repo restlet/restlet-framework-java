@@ -171,7 +171,7 @@ public class RequestTest extends JaxRsTestCase {
         // - Expires, Cache-Control, and/or Vary, if the field-value might
         // differ from that sent in any previous response for the same
         // variant
-        // TODO gefragt: Wie das vorige einhalten?
+        // gefragt: JSR311 Wie das vorige einhalten?
     }
 
     public void testGetEntityTagMatch() throws Exception {

@@ -33,6 +33,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.SecurityContext;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -193,7 +194,8 @@ public abstract class AbstractJaxRsWrapper {
      * @param indexForExcMessages
      *                the index of the parameter, for exception messages.
      * @param authenticator
-     *                TODO
+     *                Authenticator for the roles, see
+     *                {@link SecurityContext#isUserInRole(String)}.
      * @return the parameter value
      * @throws IllegalAnnotationException
      *                 Thrown, when no valid annotation was found. For
@@ -219,8 +221,9 @@ public abstract class AbstractJaxRsWrapper {
                 return getParameterValueFromParam(paramClass, headerParamValue);
             } else if (annotationType.equals(PathParam.class)) {
                 String pathParamValue = matchingResult.getVariables().get(
-                        ((PathParam) annotation).value()); // TODO read javadoc
-                // of PathParam again.
+                        ((PathParam) annotation).value()); 
+                // TODO read javadoc of PathParam again.
+                // TODO PathParam: @Encode verwenden 
                 return getParameterValueFromParam(paramClass, pathParamValue);
             } else if (annotationType.equals(Context.class)) {
                 if (httpContext == null)
@@ -262,7 +265,8 @@ public abstract class AbstractJaxRsWrapper {
      *                Contains all Parameters, that are read from the called
      *                URI.
      * @param authenticator
-     *                TODO
+     *                Authenticator for roles, see
+     *                {@link SecurityContext#isUserInRole(String)}
      * @return the parameter array
      */
     protected Object[] getParameterValues(Annotation[][] parameterAnnotationss,

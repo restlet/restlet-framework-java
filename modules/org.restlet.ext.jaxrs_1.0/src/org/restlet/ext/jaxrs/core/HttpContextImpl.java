@@ -407,7 +407,6 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         return authScheme.getName();
         // LATER is SecurityContext.CLIENT_CERT_AUTH supported?
         // LATER FORM_AUTH wird wohl auch nicht unterstützt.
-        // TODO TESTEN SecurityContext.getAuthenticationScheme()
     }
 
     /**
@@ -422,7 +421,6 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      */
     public Principal getUserPrincipal() {
         return Util.getPrincipal(request);
-        // TODO TESTEN SecurityContext.getUserPrincipal()
     }
 
     /**
@@ -435,7 +433,6 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      */
     public boolean isSecure() {
         return this.request.isConfidential();
-        // TODO TESTEN: SecurityContext.isSecure()
     }
 
     /**
@@ -453,6 +450,5 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     public boolean isUserInRole(String role) {
         Principal principal = Util.getPrincipal(request);
         return authenticator.isUserInRole(principal, role);
-        // TODO TESTEN SecurityContext.isUserInRole()
     }
 }

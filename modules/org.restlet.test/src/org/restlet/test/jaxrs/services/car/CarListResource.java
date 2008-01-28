@@ -50,9 +50,6 @@ import javax.ws.rs.core.UriInfo;
  * 
  * @author Stephan Koops
  */
-// Path.value: "/widgets/123" -> id = 123
-// Path.encode: automatisch dekodiert oder nicht ("%20" wird zu Space etc)
-// Path.limited: wird erstmal ignoriert
 @Path(CarListResource.PATH)
 public class CarListResource {
 

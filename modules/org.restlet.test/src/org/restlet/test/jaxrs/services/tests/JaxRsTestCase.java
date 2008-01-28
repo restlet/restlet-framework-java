@@ -379,8 +379,7 @@ public abstract class JaxRsTestCase extends TestCase {
 
     /**
      * @param rootResourceClasses
-     * @param protocol
-     *                TODO
+     * @param protocol Protocoll for the Server
      * @param port
      * @param challengeScheme
      * @throws Exception
