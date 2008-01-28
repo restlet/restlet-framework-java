@@ -23,9 +23,12 @@ import java.util.Collection;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.AllowAllAuthenticator;
 import org.restlet.ext.jaxrs.Authenticator;
+import org.restlet.ext.jaxrs.JaxRsGuard;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 
 /**
@@ -37,8 +40,6 @@ import org.restlet.ext.jaxrs.JaxRsRouter;
  * 
  */
 public class RestletServerWrapper implements ServerWrapper {
-
-    public static final Protocol PROTOCOL = Protocol.HTTP;
 
     private Authenticator authenticator;
 
@@ -80,15 +81,19 @@ public class RestletServerWrapper implements ServerWrapper {
      * @throws Exception
      */
     public void startServer(final Collection<Class<?>> rootResourceClasses,
-            int port) throws Exception {
+            Protocol protocol, int port, final ChallengeScheme challengeScheme, Parameter contextParameter)
+            throws Exception {
         Component comp = new Component();
-        comp.getServers().add(PROTOCOL, port);
+        if (contextParameter != null)
+            comp.getContext().getParameters().add(contextParameter);
+        comp.getServers().add(protocol, port);
 
         // Create an application
         Application application = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
-                JaxRsRouter router = new JaxRsRouter(getContext(), authenticator);
+                JaxRsGuard router = JaxRsRouter.getGuarded(getContext(),
+                        challengeScheme, "", authenticator);
                 Collection<Class<?>> rrcs = rootResourceClasses;
                 for (Class<?> cl : rrcs) {
                     router.attach(cl);

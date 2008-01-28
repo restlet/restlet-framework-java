@@ -34,7 +34,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.Context;
-import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
@@ -87,40 +86,20 @@ public class JaxRsRouter extends Restlet {
      *                requesting the credentials.S
      * @param authenticator
      *                the Authenticator which checks the credentials and the
-     *                roles. Must not be null; see {@link AllowAllAuthenticator}
-     *                and {@link ForbidAllAuthenticator}.
-     * @return
+     *                roles. Must not be null; see {@link AllowAllAuthenticator},
+     *                {@link ForbidAllAuthenticator} or
+     *                {@link ThrowExcAuthenticator}.
+     * @return Returns the Guard. you can attach root resource classes directly.
+     *         If you want to set other properties in the {@link JaxRsRouter},
+     *         use the method {@link JaxRsGuard#getNext()}.
      */
-    public static JaxRsRouter getGuarded(Context context,
+    public static JaxRsGuard getGuarded(Context context,
             ChallengeScheme challangeScheme, String realmName,
             Authenticator authenticator) {
         JaxRsGuard guard = new JaxRsGuard(context, challangeScheme, realmName,
                 authenticator);
-        return getGuarded(context, guard, authenticator);
-    }
-
-    /**
-     * Creates a guarded JaxRsRouter. The credentials are checked by the given
-     * Guard. The roles are checked by the Authenticator.
-     * 
-     * @param context
-     *                the context from the parent
-     * @param guard
-     *                Guard which checks the access. It must set a Principal in
-     *                the Request attributes, see
-     *                {@link Util#setPrincipal(java.security.Principal, Request)}
-     * @param authenticator
-     *                the Authenticator which checks the credentials and the
-     *                roles. Must not be null; see {@link AllowAllAuthenticator}
-     *                and {@link ForbidAllAuthenticator}.
-     * @return
-     */
-    public static JaxRsRouter getGuarded(Context context, Guard guard,
-            Authenticator authenticator) {
-        Router router = new Router(context);
-        router.attach(guard);
         guard.setNext(new JaxRsRouter(context, authenticator));
-        return router;
+        return guard;
     }
 
     /**

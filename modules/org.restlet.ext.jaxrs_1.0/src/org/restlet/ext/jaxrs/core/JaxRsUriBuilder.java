@@ -853,17 +853,19 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder uri(URI uri) throws IllegalArgumentException {
+        if (uri.getScheme() != null)
+            this.scheme = uri.getScheme();
         if (uri.getHost() != null)
             this.host = uri.getHost();
         this.port = uri.getPort();
         if (uri.getUserInfo() != null)
             this.userInfo = uri.getUserInfo();
-        if (uri.getFragment() != null)
-            this.fragment = uri.getFragment();
+        if (uri.getPath() != null)
+            this.replacePath(uri.getPath());
         if (uri.getQuery() != null)
             this.query = uri.getQuery();
-        if (uri.getScheme() != null)
-            this.scheme = uri.getScheme();
+        if (uri.getFragment() != null)
+            this.fragment = uri.getFragment();
         return this;
     }
 

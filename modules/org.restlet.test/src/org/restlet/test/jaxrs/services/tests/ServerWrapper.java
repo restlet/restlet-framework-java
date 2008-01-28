@@ -20,11 +20,15 @@ package org.restlet.test.jaxrs.services.tests;
 import java.util.Collection;
 
 import org.restlet.Component;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 
 /**
  * This interface wraps a server for the tests. The default implementation is
  * the {@link RestletServerWrapper}, but there are other implementations
  * possible, for example for the JSR-311 reference implementation Jersey.
+ * 
  * @see JaxRsTestCase#setServerWrapper(ServerWrapper)
  * 
  * @author Stephan
@@ -35,13 +39,22 @@ public interface ServerWrapper {
      * Starts the server with the given protocol on the given port with the
      * given Collection of root resource classes. The method {@link #setUp()}
      * will do this on every test start up.
+     * 
      * @param rootResourceClasses
+     * @param protocol
+     *                the protocol to use
      * @param port
+     * @param challengeScheme
+     *                The challenge scheme for authentification
+     * @param contextParameter
+     *                A parameter to add to the context. may be null
      * @return Returns the started component. Should be stopped with
      *         {@link #stopServer(Component)}
      * @throws Exception
      */
-    public void startServer(final Collection<Class<?>> rootResourceClasses, int port) throws Exception;
+    public void startServer(final Collection<Class<?>> rootResourceClasses,
+            Protocol protocol, int port, ChallengeScheme challengeScheme,
+            Parameter contextParameter) throws Exception;
 
     /**
      * Stops the component. The method {@link #tearDown()} do this after every

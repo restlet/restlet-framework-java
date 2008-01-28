@@ -29,6 +29,9 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import junit.framework.AssertionFailedError;
+import junit.framework.TestCase;
+
 import org.restlet.data.Reference;
 import org.restlet.ext.jaxrs.core.JaxRsPathSegment;
 import org.restlet.ext.jaxrs.core.JaxRsUriBuilder;
@@ -36,9 +39,6 @@ import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
 import org.restlet.test.jaxrs.services.SimpleTrain;
 import org.restlet.test.jaxrs.services.car.CarListResource;
 import org.restlet.test.jaxrs.services.car.CarResource;
-
-import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
 
 /**
  * @author Stephan
@@ -81,7 +81,8 @@ public class JaxRsUriBuilderTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#encode(boolean)}.
      */
     public void testEncode() throws Exception {
-        UriBuilder uriBuilder = RuntimeDelegate.getInstance().createUriBuilder();
+        UriBuilder uriBuilder = RuntimeDelegate.getInstance()
+                .createUriBuilder();
         uriBuilder.encode(false);
         uriBuilder.host("www.xyz.de");
         uriBuilder.scheme("http");
@@ -113,9 +114,8 @@ public class JaxRsUriBuilderTest extends TestCase {
             String expectedScheme, String expectedUserInfo,
             String expectedHost, int expectedPort, String expectedQuery,
             JaxRsPathSegment... expectedPathSegments) {
-        if(actualUriBuilder instanceof JaxRsUriBuilder)
-        {
-            JaxRsUriBuilder jaxRsUriBuilder = (JaxRsUriBuilder)actualUriBuilder;
+        if (actualUriBuilder instanceof JaxRsUriBuilder) {
+            JaxRsUriBuilder jaxRsUriBuilder = (JaxRsUriBuilder) actualUriBuilder;
             assertEquals(expectedScheme, jaxRsUriBuilder.getScheme());
             assertEquals(expectedUserInfo, jaxRsUriBuilder.getUserInfo());
             assertEquals(expectedHost, jaxRsUriBuilder.getHost());
@@ -125,7 +125,8 @@ public class JaxRsUriBuilderTest extends TestCase {
             for (int i = 0; i < expectedPathSegments.length; i++) {
                 PathSegment expectedPathSegment = expectedPathSegments[i];
                 JaxRsPathSegment actPathSegm = actPathSegms.get(i);
-                assertEquals(i + ". path segm:", expectedPathSegment, actPathSegm);
+                assertEquals(i + ". path segm:", expectedPathSegment,
+                        actPathSegm);
             }
             assertEquals(expectedPathSegments.length, actPathSegms.size());
             CharSequence actualQuery = jaxRsUriBuilder.getQuery();
@@ -133,23 +134,24 @@ public class JaxRsUriBuilderTest extends TestCase {
                 actualQuery = actualQuery.toString();
             assertEquals(expectedQuery, actualQuery);
         }
-        UriBuilder expectedUriBuilder = RuntimeDelegate.getInstance().createUriBuilder();
+        UriBuilder expectedUriBuilder = RuntimeDelegate.getInstance()
+                .createUriBuilder();
         expectedUriBuilder.encode(false);
-        if(expectedScheme != null)
+        if (expectedScheme != null)
             expectedUriBuilder.scheme(expectedScheme);
-        if(expectedUserInfo != null)
+        if (expectedUserInfo != null)
             expectedUriBuilder.userInfo(expectedUserInfo);
-        if(expectedHost != null)
+        if (expectedHost != null)
             expectedUriBuilder.host(expectedHost);
         expectedUriBuilder.port(expectedPort);
-        for(JaxRsPathSegment pathSegment: expectedPathSegments)
-        {
+        for (JaxRsPathSegment pathSegment : expectedPathSegments) {
             expectedUriBuilder.path(pathSegment.getPath());
-            for(Map.Entry<String, List<String>> mpEntry : pathSegment.getMatrixParameters().entrySet())
-                for(String mpValue : mpEntry.getValue())
+            for (Map.Entry<String, List<String>> mpEntry : pathSegment
+                    .getMatrixParameters().entrySet())
+                for (String mpValue : mpEntry.getValue())
                     expectedUriBuilder.matrixParam(mpEntry.getKey(), mpValue);
         }
-        if(expectedQuery != null)
+        if (expectedQuery != null)
             expectedUriBuilder.replaceQueryParams(expectedQuery);
         assertEquals(expectedUriBuilder.build(), actualUriBuilder.build());
     }
@@ -301,7 +303,8 @@ public class JaxRsUriBuilderTest extends TestCase {
      */
     public void testPathMethodArray() throws Exception {
         uriBuilder1.replacePath("");
-        Method findCar = CarListResource.class.getMethod("findCar", String.class);
+        Method findCar = CarListResource.class.getMethod("findCar",
+                String.class);
         Method engine = CarResource.class.getMethod("findEngine");
         uriBuilder1.path(CarListResource.class);
         uriBuilder1.path(findCar, engine);
@@ -428,10 +431,10 @@ public class JaxRsUriBuilderTest extends TestCase {
 
         uriBuilder = UriBuilder.fromPath("path1/path2/abc.html");
         if (uriBuilder instanceof JaxRsUriBuilder) {
-            assertEqualUriBuilder(uriBuilder, null, null,
-                    null, -1, null, new JaxRsPathSegment("path1", null),
-                    new JaxRsPathSegment("path2", null), new JaxRsPathSegment(
-                            "abc.html", null));
+            assertEqualUriBuilder(uriBuilder, null, null, null, -1, null,
+                    new JaxRsPathSegment("path1", null), new JaxRsPathSegment(
+                            "path2", null), new JaxRsPathSegment("abc.html",
+                            null));
         }
         assertEqualsURI("path1/path2/abc.html", uriBuilder);
 
@@ -441,10 +444,10 @@ public class JaxRsUriBuilderTest extends TestCase {
             MultivaluedMapImpl<String, String> map2 = new MultivaluedMapImpl<String, String>();
             map2.add("mp1", "mv%3F1");
             map2.add("mp2", "mv2");
-            assertEqualUriBuilder(uriBuilder, null, null,
-                    null, -1, null, new JaxRsPathSegment("path1", null),
-                    new JaxRsPathSegment("path2", map2), new JaxRsPathSegment(
-                            "abc.html", null));
+            assertEqualUriBuilder(uriBuilder, null, null, null, -1, null,
+                    new JaxRsPathSegment("path1", null), new JaxRsPathSegment(
+                            "path2", map2), new JaxRsPathSegment("abc.html",
+                            null));
         }
         assertEquals("path1/path2;mp1=mv%3F1;mp2=mv2/abc.html", uriBuilder
                 .build().toString());
@@ -456,10 +459,10 @@ public class JaxRsUriBuilderTest extends TestCase {
             MultivaluedMapImpl<String, String> map2 = new MultivaluedMapImpl<String, String>();
             map2.add("mp1", "mv1%3F");
             map2.add("mp2", "mv2");
-            assertEqualUriBuilder(uriBuilder, null, null,
-                    null, -1, null, new JaxRsPathSegment("path1", null),
-                    new JaxRsPathSegment("path2", map2), new JaxRsPathSegment(
-                            "abc.html", null));
+            assertEqualUriBuilder(uriBuilder, null, null, null, -1, null,
+                    new JaxRsPathSegment("path1", null), new JaxRsPathSegment(
+                            "path2", map2), new JaxRsPathSegment("abc.html",
+                            null));
         }
         assertEqualsURI(path, uriBuilder);
     }
@@ -480,7 +483,17 @@ public class JaxRsUriBuilderTest extends TestCase {
         // TODO test again Jersey Implementation
         URI u = new URI("ftp", "test.org", null, null, "fragment");
         uriBuilder1.uri(u);
-        assertEqualsURI("ftp://test.org/path1/path2#fragment", uriBuilder1);
+        assertEqualsURI("ftp://test.org#fragment", uriBuilder1);
+
+        u = new URI("ftp", "test.org", "/path", "qu=ery", "fragment");
+        uriBuilder1.uri(u);
+        assertEqualsURI("ftp://test.org/path?qu=ery#fragment", uriBuilder1);
+
+        String id = "4711";
+        URI collectionUri = new URI(
+                "http://localhost:8181/SecurityContextTestService");
+        URI location = UriBuilder.fromUri(collectionUri).path("{id}").build(id);
+        assertEqualsURI(collectionUri + "/4711", location);
     }
 
     /**

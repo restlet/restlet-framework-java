@@ -15,9 +15,8 @@ public class Template extends org.restlet.util.Template {
      * 
      * @see org.restlet.util.Template.VariableResolver
      */
-    public interface VariableResolver
-    // extends org.restlet.util.Template.VariableResolver
-    {
+    public interface VariableResolver extends
+            org.restlet.util.Template.VariableResolver {
         /**
          * Resolves a variable name into a value. Copy of
          * {@link org.restlet.util.Template.VariableResolver}.
@@ -54,9 +53,5 @@ public class Template extends org.restlet.util.Template {
      */
     public String format(VariableResolver resolver) {
         return super.format(resolver);
-    }
-    
-    protected String resolve(Object userObject, String variableName) {
-        throw new NotYetImplementedException("waiting while Disussing a API change");
     }
 }

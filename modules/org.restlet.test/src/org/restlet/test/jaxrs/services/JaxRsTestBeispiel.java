@@ -20,6 +20,8 @@ package org.restlet.test.jaxrs.services;
 
 import java.util.Collection;
 
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.test.jaxrs.services.tests.JaxRsTestCase;
 import org.restlet.test.jaxrs.services.tests.ServerWrapper;
@@ -47,7 +49,7 @@ public class JaxRsTestBeispiel {
     @SuppressWarnings("all")
     public void run() throws Exception {
         ServerWrapper serverWrapper = JaxRsTestCase.getServerWrapper();
-        serverWrapper.startServer((Collection)Util.createList(SimpleTrain.class), JaxRsTestCase.PORT);
+        serverWrapper.startServer((Collection)Util.createList(SimpleTrain.class), Protocol.HTTP, JaxRsTestCase.PORT, ChallengeScheme.HTTP_BASIC, null);
         doUntilServerRunning();
         serverWrapper.stopServer();
     }

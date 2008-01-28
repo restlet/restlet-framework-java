@@ -31,11 +31,13 @@ import junit.framework.TestCase;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -53,10 +55,8 @@ import org.restlet.ext.jaxrs.wrappers.ResourceClass;
  * 
  */
 public abstract class JaxRsTestCase extends TestCase {
-    
-    public static final int PORT = 8181;
 
-    public static final Protocol PROTOCOL = Protocol.HTTP;
+    public static final int PORT = 8181;
 
     /**
      * ServerWrapper to use.
@@ -102,7 +102,8 @@ public abstract class JaxRsTestCase extends TestCase {
     @SuppressWarnings("unchecked")
     public static Response accessServer(Class<?> klasse, String subPath,
             Method httpMethod) {
-        return accessServer(klasse, subPath, httpMethod, (Collection) null, null);
+        return accessServer(klasse, subPath, httpMethod, (Collection) null,
+                null);
     }
 
     /**
@@ -115,9 +116,24 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     @SuppressWarnings("unchecked")
     public static Response accessServer(Class<?> klasse, String subPath,
-            Method httpMethod, Collection mediaTypes, ChallengeResponse challengeResponse) {
+            Method httpMethod, Collection mediaTypes,
+            ChallengeResponse challengeResponse) {
         Reference reference = createReference(klasse, subPath);
-        Client client = new Client(PROTOCOL);
+        return accessServer(reference, httpMethod, mediaTypes,
+                challengeResponse);
+    }
+
+    /**
+     * @param reference
+     * @param httpMethod
+     * @param mediaTypes
+     * @param challengeResponse
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static Response accessServer(Reference reference, Method httpMethod,
+            Collection mediaTypes, ChallengeResponse challengeResponse) {
+        Client client = new Client(Protocol.HTTP);
         Request request = new Request(httpMethod, reference);
         addAcceptedMediaTypes(request, mediaTypes);
         request.setChallengeResponse(challengeResponse);
@@ -136,11 +152,11 @@ public abstract class JaxRsTestCase extends TestCase {
     public static Response accessServer(Class<?> klasse, String subPath,
             Method httpMethod, Conditions conditions, ClientInfo clientInfo) {
         Reference reference = createReference(klasse, subPath);
-        Client client = new Client(PROTOCOL);
+        Client client = new Client(Protocol.HTTP);
         Request request = new Request(httpMethod, reference);
-        if(conditions != null)
+        if (conditions != null)
             request.setConditions(conditions);
-        if(clientInfo != null)
+        if (clientInfo != null)
             request.setClientInfo(clientInfo);
         Response response = client.handle(request);
         return response;
@@ -222,7 +238,7 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     public static Reference createReference(Class<?> jaxRsClass, String subPath) {
         Reference reference = new Reference();
-        reference.setProtocol(PROTOCOL);
+        reference.setProtocol(Protocol.HTTP);
         reference.setAuthority("localhost");
         reference.setHostPort(PORT);
         String path = ResourceClass.getPathTemplate(jaxRsClass);
@@ -286,8 +302,7 @@ public abstract class JaxRsTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        if(shouldStartServerInSetUp())
-        {
+        if (shouldStartServerInSetUp()) {
             startServer();
             try {
                 Thread.sleep(100);
@@ -305,11 +320,43 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     /**
-     * @see #startServer(int, Collection)
+     * @throws Exception
+     */
+    protected void startServer(Protocol protocol) throws Exception {
+        this.startServer(createRootResourceColl(), protocol, PORT, null);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected void startServer(Protocol protocol, Parameter contextParameter)
+            throws Exception {
+        this.startServer(createRootResourceColl(), protocol, PORT, null,
+                contextParameter);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected void startServer(ChallengeScheme challengeScheme)
+            throws Exception {
+        this.startServer(createRootResourceColl(), challengeScheme);
+    }
+
+    /**
+     * @see #startServer(Collection, int)
      */
     private void startServer(final Collection<Class<?>> rootResourceClasses)
             throws Exception {
-        startServer(PORT, rootResourceClasses);
+        startServer(rootResourceClasses, PORT);
+    }
+
+    /**
+     * @see #startServer(Collection, int)
+     */
+    private void startServer(final Collection<Class<?>> rootResourceClasses,
+            ChallengeScheme challengeScheme) throws Exception {
+        startServer(rootResourceClasses, Protocol.HTTP, PORT, challengeScheme);
     }
 
     /**
@@ -317,16 +364,47 @@ public abstract class JaxRsTestCase extends TestCase {
      * given Collection of root resource classes. The method {@link #setUp()}
      * will do this on every test start up.
      * 
-     * @param port
      * @param rootResourceClasses
+     * @param port
+     * 
      * @return Returns the started component. Should be stopped with
      *         {@link #stopServer(Component)}
      * @throws Exception
      */
-    public void startServer(int port,
-            final Collection<Class<?>> rootResourceClasses) throws Exception {
+    protected void startServer(final Collection<Class<?>> rootResourceClasses,
+            int port) throws Exception {
+        final ChallengeScheme challengeScheme = ChallengeScheme.HTTP_BASIC;
+        startServer(rootResourceClasses, Protocol.HTTP, port, challengeScheme);
+    }
+
+    /**
+     * @param rootResourceClasses
+     * @param protocol
+     *                TODO
+     * @param port
+     * @param challengeScheme
+     * @throws Exception
+     */
+    public void startServer(final Collection<Class<?>> rootResourceClasses,
+            Protocol protocol, int port, final ChallengeScheme challengeScheme)
+            throws Exception {
+        startServer(rootResourceClasses, protocol, port, challengeScheme, null);
+    }
+
+    /**
+     * @param rootResourceClasses
+     * @param protocol
+     * @param port
+     * @param challengeScheme
+     * @param contextParameter
+     * @throws Exception
+     */
+    protected void startServer(final Collection<Class<?>> rootResourceClasses,
+            Protocol protocol, int port, final ChallengeScheme challengeScheme,
+            Parameter contextParameter) throws Exception {
         try {
-            serverWrapper.startServer(rootResourceClasses, port);
+            serverWrapper.startServer(rootResourceClasses, protocol, port,
+                    challengeScheme, contextParameter);
         } catch (Exception e) {
             try {
                 serverWrapper.stopServer();
