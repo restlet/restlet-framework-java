@@ -24,8 +24,8 @@ import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.AllowAllAuthorizator;
-import org.restlet.ext.jaxrs.Authorizator;
+import org.restlet.ext.jaxrs.AllowAllAuthenticator;
+import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 
 /**
@@ -40,32 +40,32 @@ public class RestletServerWrapper implements ServerWrapper {
 
     public static final Protocol PROTOCOL = Protocol.HTTP;
 
-    private Authorizator authorizator;
+    private Authenticator authenticator;
 
     private Component component;
 
     public RestletServerWrapper() {
-        this.authorizator = AllowAllAuthorizator.getInstance();
+        this.authenticator = AllowAllAuthenticator.getInstance();
     }
 
     /**
-     * @return the authorizator
+     * @return the authenticator
      */
-    public Authorizator getAuthorizator() {
-        return authorizator;
+    public Authenticator getAuthorizator() {
+        return authenticator;
     }
 
     /**
-     * @param authorizator
-     *                the authorizator to set. Must not be null
+     * @param authenticator
+     *                the authenticator to set. Must not be null
      * @throws IllegalArgumentException
      */
-    public void setAuthorizator(Authorizator authorizator)
+    public void setAuthorizator(Authenticator authenticator)
             throws IllegalArgumentException {
-        if (authorizator == null)
+        if (authenticator == null)
             throw new IllegalArgumentException(
-                    "The authorizator must not be null");
-        this.authorizator = authorizator;
+                    "The authenticator must not be null");
+        this.authenticator = authenticator;
     }
 
     /**
@@ -88,7 +88,7 @@ public class RestletServerWrapper implements ServerWrapper {
         Application application = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
-                JaxRsRouter router = new JaxRsRouter(getContext(), authorizator);
+                JaxRsRouter router = new JaxRsRouter(getContext(), authenticator);
                 Collection<Class<?>> rrcs = rootResourceClasses;
                 for (Class<?> cl : rrcs) {
                     router.attach(cl);

@@ -28,9 +28,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.AllowAllAuthorizator;
-import org.restlet.ext.jaxrs.Authorizator;
-import org.restlet.ext.jaxrs.ForbidAllAuthorizator;
+import org.restlet.ext.jaxrs.AllowAllAuthenticator;
+import org.restlet.ext.jaxrs.Authenticator;
+import org.restlet.ext.jaxrs.ForbidAllAuthenticator;
 import org.restlet.test.jaxrs.services.SecurityContextService;
 
 /**
@@ -47,14 +47,14 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     /**
-     * @param authorizator
+     * @param authenticator
      * @return true, if it could be set, or false if not.
      */
-    private boolean setAuthroizator(Authorizator authorizator) {
+    private boolean setAuthroizator(Authenticator authenticator) {
         ServerWrapper serverWrapper = getServerWrapper();
         if (serverWrapper instanceof RestletServerWrapper) {
             RestletServerWrapper restletServerWrapper = ((RestletServerWrapper) serverWrapper);
-            restletServerWrapper.setAuthorizator(authorizator);
+            restletServerWrapper.setAuthorizator(authenticator);
             return true;
         }
         return false;
@@ -66,7 +66,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testAllowAll() throws Exception {
-        if (!setAuthroizator(AllowAllAuthorizator.getInstance()))
+        if (!setAuthroizator(AllowAllAuthenticator.getInstance()))
             return;
         startServer();
         Response response;
@@ -84,7 +84,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testForbidAll() throws Exception {
-        if (!setAuthroizator(ForbidAllAuthorizator.getInstance()))
+        if (!setAuthroizator(ForbidAllAuthenticator.getInstance()))
             return;
         startServer();
         Response response;
@@ -97,7 +97,7 @@ public class SecurityContextTest extends JaxRsTestCase {
 
     public void testNoRoles() throws Exception {
         // FIXME dieser Test ist noch nicht fertig
-        Authorizator exampleAuthorizator = new Authorizator() {
+        Authenticator exampleAuthorizator = new Authenticator() {
 
             /**
              * @returns true, if the first char of the password is 'a'
