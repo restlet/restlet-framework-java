@@ -131,7 +131,10 @@ public class Route extends Filter {
     }
 
     /**
-     * Constructor.
+     * Constructor. The URIs will be matched agains the template using the
+     * {@link Template#MODE_STARTS_WITH} matching mode. This can be changed by
+     * getting the template and calling {@link Template#setMatchingMode(int)}
+     * with {@link Template#MODE_EQUALS} for exact matching.
      * 
      * @param router
      *                The parent router.

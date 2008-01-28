@@ -95,6 +95,7 @@ public class JaxRsGuard extends org.restlet.Guard {
     /**
      * @see Guard#authenticate(Request)
      */
+    @Override
     public int authenticate(Request request) {
         int result = super.authenticate(request);
         if (result == 0) // no credetinals found
@@ -133,6 +134,7 @@ public class JaxRsGuard extends org.restlet.Guard {
         getNext().detach(jaxRsClass);
     }
 
+    @Override
     public JaxRsRouter getNext() {
         return (JaxRsRouter) super.getNext();
     }

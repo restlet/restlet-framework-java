@@ -59,6 +59,7 @@ public class PrincipalImpl implements Principal, Serializable {
      *         by this principal, and false otherwise.
      * @see
      */
+    @Override
     public boolean equals(Object another) {
         if (another == this)
             return true;
@@ -82,6 +83,7 @@ public class PrincipalImpl implements Principal, Serializable {
      * 
      * @return a hashcode for this principal.
      */
+    @Override
     public int hashCode() {
         return this.name.hashCode();
     }
@@ -91,6 +93,7 @@ public class PrincipalImpl implements Principal, Serializable {
      * 
      * @return a string representation of this principal.
      */
+    @Override
     public String toString() {
         return getName();
     }

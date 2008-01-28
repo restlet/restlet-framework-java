@@ -95,6 +95,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
             MultivaluedMap<String, String> templateParametersEncoded,
             org.restlet.data.Response response, Authenticator authenticator) {
         super(request.getResourceRef(), templateParametersEncoded);
+
         if (templateParametersEncoded == null)
             throw new IllegalArgumentException(
                     "The templateParameter must not be null");
@@ -362,8 +363,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
             throw new IllegalArgumentException();
         List<org.restlet.resource.Variant> restletVariants = Util
                 .convertVariants(variants);
-        org.restlet.resource.Variant bestRestlVar = request
-                .getClientInfo().getPreferredVariant(restletVariants, null);
+        org.restlet.resource.Variant bestRestlVar = request.getClientInfo()
+                .getPreferredVariant(restletVariants, null);
         Variant bestVariant = Util.convertVariant(bestRestlVar);
 
         Set<Dimension> dimensions = response.getDimensions();
@@ -392,17 +393,17 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      */
     public String getAuthenticationScheme() {
         Principal principal = Util.getPrincipal(request);
-        if(principal == null)
+        if (principal == null)
             return null;
         ChallengeResponse challengeResponse = request.getChallengeResponse();
-        if(challengeResponse == null)
+        if (challengeResponse == null)
             return null;
         ChallengeScheme authScheme = challengeResponse.getScheme();
-        if(authScheme == null)
+        if (authScheme == null)
             return null;
-        if(authScheme.equals(ChallengeScheme.HTTP_BASIC))
+        if (authScheme.equals(ChallengeScheme.HTTP_BASIC))
             return SecurityContext.BASIC_AUTH;
-        if(authScheme.equals(ChallengeScheme.HTTP_DIGEST))
+        if (authScheme.equals(ChallengeScheme.HTTP_DIGEST))
             return SecurityContext.DIGEST_AUTH;
         return authScheme.getName();
         // LATER is SecurityContext.CLIENT_CERT_AUTH supported?

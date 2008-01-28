@@ -26,6 +26,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Resource;
 import org.restlet.util.RouteList;
+import org.restlet.util.Template;
 
 /**
  * Restlet routing calls to one of the attached routes. Each route can compute
@@ -62,6 +63,11 @@ public class Router extends Restlet {
     public static final int BEST = 1;
 
     /**
+     * Each call will be routed according to a custom mode.
+     */
+    public static final int CUSTOM = 6;
+
+    /**
      * Each call is routed to the first route if the required score is reached.
      * If the required score is not reached, then the route is skipped and the
      * next one is considered.
@@ -93,25 +99,14 @@ public class Router extends Restlet {
      */
     public static final int RANDOM = 5;
 
-    /**
-     * Each call will be routed according to a custom mode.
-     */
-    public static final int CUSTOM = 6;
-
-    /** Finder class to instantiate. */
-    private volatile Class<? extends Finder> finderClass;
-
-    /** The modifiable list of routes. */
-    private volatile RouteList routes;
+    /** The default matching mode to use when selecting routes based on URIs. */
+    private int defaultMatchingMode;
 
     /** The default route tested if no other one was available. */
     private volatile Route defaultRoute;
 
-    /** The routing mode. */
-    private volatile int routingMode;
-
-    /** The minimum score required to have a match. */
-    private volatile float requiredScore;
+    /** Finder class to instantiate. */
+    private volatile Class<? extends Finder> finderClass;
 
     /**
      * The maximum number of attempts if no attachment could be matched on the
@@ -119,8 +114,17 @@ public class Router extends Restlet {
      */
     private volatile int maxAttempts;
 
+    /** The minimum score required to have a match. */
+    private volatile float requiredScore;
+
     /** The delay (in milliseconds) before a new attempt. */
     private volatile long retryDelay;
+
+    /** The modifiable list of routes. */
+    private volatile RouteList routes;
+
+    /** The routing mode. */
+    private volatile int routingMode;
 
     /**
      * Constructor. Note that usage of this constructor is not recommended as
@@ -141,6 +145,7 @@ public class Router extends Restlet {
     public Router(Context context) {
         super(context);
         this.routes = new RouteList();
+        this.defaultMatchingMode = Template.MODE_STARTS_WITH;
         this.defaultRoute = null;
         this.finderClass = Finder.class;
         this.routingMode = BEST;
@@ -218,7 +223,7 @@ public class Router extends Restlet {
      * @return The created route.
      */
     public Route attachDefault(Restlet defaultTarget) {
-        Route result = createRoute("", defaultTarget);
+        Route result = new Route(this, "", defaultTarget);
         setDefaultRoute(result);
         return result;
     }
@@ -261,7 +266,9 @@ public class Router extends Restlet {
      * @return The created route.
      */
     protected Route createRoute(String uriPattern, Restlet target) {
-        return new Route(this, uriPattern, target);
+        Route result = new Route(this, uriPattern, target);
+        result.getTemplate().setMatchingMode(getDefaultMatchingMode());
+        return result;
     }
 
     /**
@@ -292,6 +299,16 @@ public class Router extends Restlet {
      */
     protected Route getCustom(Request request, Response response) {
         return null;
+    }
+
+    /**
+     * Returns the default matching mode to use when selecting routes based on
+     * URIs.
+     * 
+     * @return The default matching mode.
+     */
+    public int getDefaultMatchingMode() {
+        return defaultMatchingMode;
     }
 
     /**
@@ -454,6 +471,17 @@ public class Router extends Restlet {
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
+    }
+
+    /**
+     * Sets the default matching mode to use when selecting routes based on
+     * URIs.
+     * 
+     * @param defaultMatchingMode
+     *                The default matching mode.
+     */
+    public void setDefaultMatchingMode(int defaultMatchingMode) {
+        this.defaultMatchingMode = defaultMatchingMode;
     }
 
     /**

@@ -50,6 +50,7 @@ Changes log
    Enhancement suggested by Stephan Koops.
  - Added new Spring NRE extension containing a SpringServerServlet facilitating the Servlet + Spring + Restlet
    trio integration. Contributed by Florian Schwarz.
+ - Added "defaultMatchingMode" property on Router. Suggested by William Pietri.
   
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
