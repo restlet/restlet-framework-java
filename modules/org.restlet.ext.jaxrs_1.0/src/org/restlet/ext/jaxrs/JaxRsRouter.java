@@ -36,6 +36,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -55,7 +56,6 @@ import org.restlet.ext.jaxrs.wrappers.SubResourceMethodOrLocator;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
-
 /**
  * The router choose the JAX-RS resource class and method to use for a request.
  * This class has methods {@link #attach(Class)} and {@link #detach(Class)} like
@@ -72,6 +72,35 @@ import org.restlet.resource.StringRepresentation;
  * @author Stephan Koops
  */
 public class JaxRsRouter extends Restlet {
+
+    /**
+     * Creates a guarded JaxRsRouter. The credentials and the roles are checked
+     * by the Authorizator.
+     * 
+     * @param context
+     *                the context from the parent
+     * @param challangeScheme
+     *                the {@link ChallengeScheme}
+     * @param realmName
+     *                the name of the realm, presented to the client while
+     *                requesting the credentials.S
+     * @param authorizator
+     *                the Authorizator which checks the credentials and the
+     *                roles. Must not be null; see {@link AllowAllAuthorizator}
+     *                and {@link ForbidAllAuthorizator}.
+     * @return
+     */
+    public static Restlet getGuarded(Context context,
+            ChallengeScheme challangeScheme, String realmName,
+            Authorizator authorizator) {
+        Router router = new Router(context);
+        JaxRsGuard guard = new JaxRsGuard(context, challangeScheme, realmName,
+                authorizator);
+        router.attach(guard);
+        guard.setNext(new JaxRsRouter(context, authorizator));
+        return router;
+    }
+
     /**
      * This set must only changed by adding or removing a root resource class to
      * this JaxRsRouter.
@@ -80,6 +109,8 @@ public class JaxRsRouter extends Restlet {
      * @see #detach(Class)
      */
     private Set<RootResourceClass> rootResourceClasses = new HashSet<RootResourceClass>();
+
+    private Authorizator authorizator;
 
     /**
      * The default Restlet used when a root resource can not be found.
@@ -173,22 +204,16 @@ public class JaxRsRouter extends Restlet {
     private Restlet errorRestletMultipleRootResourceClasses = DEFAULT_MULTIPLE_ROOT_RESOURCE_CLASSES;
 
     /**
-     * Creates a new JaxRsRouter. You should use the other Constructor.
-     * 
-     * @see #JaxRsRouter(Context)
-     * @see Restlet#Restlet()
-     */
-    public JaxRsRouter() {
-        super();
-    }
-
-    /**
      * Creates a new JaxRsRouter with the given Context
      * 
      * @param context
+     * @param authorizator
+     *                The Authorizator, must not be null.
+     * @see Restlet#Restlet(Context)
      */
-    public JaxRsRouter(Context context) {
+    public JaxRsRouter(Context context, Authorizator authorizator) {
         super(context);
+        this.setAuthorizator(authorizator);
     }
 
     /**
@@ -353,7 +378,8 @@ public class JaxRsRouter extends Restlet {
         // LATER Do I use dynamic proxies, to inject instance variables?
         try {
             o = resClass.createInstance(resClAndTemplate.matchingResult,
-                    allTemplParamsEnc, restletRequest, restletResponse);
+                    allTemplParamsEnc, restletRequest, restletResponse,
+                    authorizator);
         } catch (Exception e) {
             throw handleInvokeException(e, restletResponse, "createInstance",
                     "Could not create new instance of root resource class");
@@ -400,7 +426,8 @@ public class JaxRsRouter extends Restlet {
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
                 o = subResourceLocator.createSubResource(o, matchingResult,
-                        allTemplParamsEnc, restletRequest, restletResponse);
+                        allTemplParamsEnc, restletRequest, restletResponse,
+                        authorizator);
             } catch (Exception e) {
                 throw handleInvokeException(e, restletResponse,
                         "createSubResource",
@@ -844,9 +871,6 @@ public class JaxRsRouter extends Restlet {
         return bestRrc;
     }
 
-    // TODO JSR311: What about an injectable Interface "AuthenticatedUser" or
-    // something like this?
-
     /**
      * @param e
      * @param restletResponse
@@ -907,7 +931,8 @@ public class JaxRsRouter extends Restlet {
         Object result;
         try {
             result = resourceMethod.invoke(resourceObject, matchingResult,
-                    allTemplParamsEnc, restletRequest, restletResponse);
+                    allTemplParamsEnc, restletRequest, restletResponse,
+                    authorizator);
         } catch (Exception e) {
             throw handleInvokeException(e, restletResponse, "invoke",
                     "Can not invoke the resource method");
@@ -1260,5 +1285,24 @@ public class JaxRsRouter extends Restlet {
             super.handle(request, response);
             response.setStatus(status);
         }
+    }
+
+    /**
+     * @return the authorizator
+     */
+    public Authorizator getAuthorizator() {
+        return authorizator;
+    }
+
+    /**
+     * @param authorizator
+     *                the authorizator to set
+     */
+    public void setAuthorizator(Authorizator authorizator) {
+        if (authorizator == null)
+            throw new IllegalArgumentException(" You can use the "
+                    + AllowAllAuthorizator.class.getName() + " or the "
+                    + ForbidAllAuthorizator.class.getName());
+        this.authorizator = authorizator;
     }
 }

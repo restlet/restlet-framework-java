@@ -25,6 +25,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.ext.jaxrs.Authorizator;
 import org.restlet.ext.jaxrs.MatchingResult;
 
 /**
@@ -63,13 +64,14 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                URI.
      * @param restletRequest the Restlet request
      * @param restletResponse the Restlet response
+     * @param authorizator The logged in User
      * @return Returns the wrapped sub resource object.
      * @throws Exception
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
             MatchingResult matchingResult,
             MultivaluedMap<String, String> allTemplParamsEnc,
-            Request restletRequest, Response restletResponse) throws Exception {
+            Request restletRequest, Response restletResponse, Authorizator authorizator) throws Exception {
         Object[] args;
         Class<?>[] parameterTypes = this.javaMethod.getParameterTypes();
         if (parameterTypes.length == 0)
@@ -77,7 +79,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         else
             args = getParameterValues(javaMethod.getParameterAnnotations(),
                     parameterTypes, matchingResult, restletRequest,
-                    restletResponse, allTemplParamsEnc);
+                    restletResponse, allTemplParamsEnc, authorizator);
         Object subResourceObject = javaMethod.invoke(resourceObject
                 .getResourceObject(), args);
         return new ResourceObject(subResourceObject);

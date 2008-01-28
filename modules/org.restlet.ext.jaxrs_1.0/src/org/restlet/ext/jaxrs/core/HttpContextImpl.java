@@ -37,6 +37,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Conditions;
 import org.restlet.data.Dimension;
 import org.restlet.data.Language;
@@ -45,7 +47,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
+import org.restlet.ext.jaxrs.Authorizator;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.util.Series;
 
@@ -62,9 +64,9 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     private static final int STATUS_PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED
             .getCode();
 
-    private org.restlet.data.Request restletRequest;
+    private org.restlet.data.Request request;
 
-    private org.restlet.data.Response restletResponse;
+    private org.restlet.data.Response response;
 
     private List<MediaType> acceptedMediaTypes;
 
@@ -76,24 +78,38 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
 
     private FormMulvaltivaluedMap requestHeaders;
 
+    private Authorizator authorizator;
+
     /**
      * 
-     * @param restletRequest
+     * @param request
      *                The Restlet request to wrap. Must not be null.
      * @param templateParametersEncoded
      *                The template parameters. Must not be null.
-     * @param restletResponse
+     * @param response
      *                The Restlet response
+     * @param authorizator
+     *                The authorizator. Must not be null.
      */
-    public HttpContextImpl(org.restlet.data.Request restletRequest,
+    public HttpContextImpl(org.restlet.data.Request request,
             MultivaluedMap<String, String> templateParametersEncoded,
-            org.restlet.data.Response restletResponse) {
-        super(restletRequest.getResourceRef(), templateParametersEncoded);
+            org.restlet.data.Response response, Authorizator authorizator) {
+        super(request.getResourceRef(), templateParametersEncoded);
         if (templateParametersEncoded == null)
             throw new IllegalArgumentException(
                     "The templateParameter must not be null");
-        this.restletRequest = restletRequest;
-        this.restletResponse = restletResponse;
+        if (response == null)
+            throw new IllegalArgumentException(
+                    "The Restlet Response must not be null");
+        if (request == null)
+            throw new IllegalArgumentException(
+                    "The Restlet Request must not be null");
+        if (authorizator == null)
+            throw new IllegalArgumentException(
+                    "The Authorizator must not be null.");
+        this.request = request;
+        this.response = response;
+        this.authorizator = authorizator;
     }
 
     // HttpHeaders methods
@@ -103,7 +119,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      */
     public List<MediaType> getAcceptableMediaTypes() {
         if (this.acceptedMediaTypes == null) {
-            List<Preference<org.restlet.data.MediaType>> restletAccMediaTypes = restletRequest
+            List<Preference<org.restlet.data.MediaType>> restletAccMediaTypes = request
                     .getClientInfo().getAcceptedMediaTypes();
             List<MediaType> accMediaTypes = new ArrayList<MediaType>(
                     restletAccMediaTypes.size());
@@ -138,7 +154,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     public Map<String, Cookie> getCookies() {
         if (this.cookies == null) {
             Map<String, Cookie> c = new HashMap<String, Cookie>();
-            for (org.restlet.data.Cookie rc : restletRequest.getCookies()) {
+            for (org.restlet.data.Cookie rc : request.getCookies()) {
                 Cookie cookie = Util.convertCookie(rc);
                 c.put(cookie.getName(), cookie);
             }
@@ -167,7 +183,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     public MultivaluedMap<String, String> getRequestHeaders() {
         if (this.requestHeaders == null) {
             this.requestHeaders = new FormMulvaltivaluedMap(Util
-                    .getHttpHeaders(restletRequest));
+                    .getHttpHeaders(request));
         }
         return this.requestHeaders;
     }
@@ -210,11 +226,6 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      *                resource
      * @param entityTag
      *                an ETag for the current state of the resource
-     * @return null if the preconditions are met or a Response that should be
-     *         returned if the preconditions are not met.<br                 />
-     *         TODO JSR311: die evaluatePrecondition kann auch be erfüllten
-     *         Precodutions ne Response zurückeben, z.B. bei
-     *         "if-Unmodified-Since"
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date,
      *      javax.ws.rs.core.EntityTag)
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC
@@ -236,8 +247,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         if (lastModified == null && entityTag == null)
             return null;
         ResponseBuilder rb = null;
-        Method requestMethod = restletRequest.getMethod();
-        Conditions conditions = this.restletRequest.getConditions();
+        Method requestMethod = request.getMethod();
+        Conditions conditions = this.request.getConditions();
         if (lastModified != null) {
             // Header "If-Modified-Since"
             Date modSinceCond = conditions.getModifiedSince();
@@ -351,42 +362,97 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
             throw new IllegalArgumentException();
         List<org.restlet.resource.Variant> restletVariants = Util
                 .convertVariants(variants);
-        org.restlet.resource.Variant bestRestlVar = restletRequest
+        org.restlet.resource.Variant bestRestlVar = request
                 .getClientInfo().getPreferredVariant(restletVariants, null);
         Variant bestVariant = Util.convertVariant(bestRestlVar);
-        
-        Set<Dimension> dimensions = restletResponse.getDimensions();
-        if(bestRestlVar.getCharacterSet() != null)
+
+        Set<Dimension> dimensions = response.getDimensions();
+        if (bestRestlVar.getCharacterSet() != null)
             dimensions.add(Dimension.CHARACTER_SET);
-        if(bestRestlVar.getEncodings() != null)
+        if (bestRestlVar.getEncodings() != null)
             dimensions.add(Dimension.ENCODING);
-        if(bestRestlVar.getLanguages() != null)
+        if (bestRestlVar.getLanguages() != null)
             dimensions.add(Dimension.LANGUAGE);
-        if(bestRestlVar.getMediaType() != null)
+        if (bestRestlVar.getMediaType() != null)
             dimensions.add(Dimension.MEDIA_TYPE);
-        // TODO Response.setVaryHeader(bestVariant)
         return bestVariant;
     }
 
+    /**
+     * Returns the string value of the authentication scheme used to protect the
+     * resource. If the resource is not authenticated, null is returned.
+     * 
+     * Values are the same as the CGI variable AUTH_TYPE
+     * 
+     * @return one of the static members BASIC_AUTH, FORM_AUTH,
+     *         CLIENT_CERT_AUTH, DIGEST_AUTH (suitable for == comparison) or the
+     *         container-specific string indicating the authentication scheme,
+     *         or null if the request was not authenticated.
+     * @see SecurityContext#getAuthenticationScheme()
+     */
     public String getAuthenticationScheme() {
-        throw new NotYetImplementedException(
-                "SecurityContext.getAuthenticationScheme()");
-        // TODO SecurityContext.getAuthenticationScheme()
+        Principal principal = Util.getPrincipal(request);
+        if(principal == null)
+            return null;
+        ChallengeResponse challengeResponse = request.getChallengeResponse();
+        if(challengeResponse == null)
+            return null;
+        ChallengeScheme authScheme = challengeResponse.getScheme();
+        if(authScheme == null)
+            return null;
+        String authSchemeName = authScheme.getName();
+        if(authSchemeName.equals(ChallengeScheme.HTTP_BASIC))
+            return SecurityContext.BASIC_AUTH;
+        if(authSchemeName.equals(ChallengeScheme.HTTP_DIGEST))
+            return SecurityContext.DIGEST_AUTH;
+        return authSchemeName;
+        // LATER is SecurityContext.CLIENT_CERT_AUTH supported?
+        // LATER FORM_AUTH wird wohl auch nicht unterstützt.
+        // TODO TESTEN SecurityContext.getAuthenticationScheme()
     }
 
+    /**
+     * Returns a <code>java.security.Principal</code> object containing the
+     * name of the current authenticated user. If the user has not been
+     * authenticated, the method returns null.
+     * 
+     * @return a <code>java.security.Principal</code> containing the name of
+     *         the user making this request; null if the user has not been
+     *         authenticated
+     * @see SecurityContext#getUserPrincipal()
+     */
     public Principal getUserPrincipal() {
-        throw new NotYetImplementedException(
-                "SecurityContext.getUserPrincipal()");
-        // TODO SecurityContext.getUserPrincipal()
+        return Util.getPrincipal(request);
+        // TODO TESTEN SecurityContext.getUserPrincipal()
     }
 
+    /**
+     * Returns a boolean indicating whether this request was made using a secure
+     * channel, such as HTTPS.
+     * 
+     * @return <code>true</code> if the request was made using a secure
+     *         channel, <code>false</code> otherwise
+     * @see SecurityContext#isSecure()
+     */
     public boolean isSecure() {
-        throw new NotYetImplementedException("SecurityContext.isSecure()");
-        // TODO SecurityContext.isSecure()
+        return this.request.isConfidential();
+        // TODO TESTEN: SecurityContext.isSecure()
     }
 
+    /**
+     * Returns a boolean indicating whether the authenticated user is included
+     * in the specified logical "role". If the user has not been authenticated,
+     * the method returns <code>false</code>.
+     * 
+     * @param role
+     *                a <code>String</code> specifying the name of the role
+     * @return a <code>boolean</code> indicating whether the user making the
+     *         request belongs to a given role; <code>false</code> if the user
+     *         has not been authenticated
+     * @see SecurityContext#isUserInRole(String)
+     */
     public boolean isUserInRole(String role) {
-        throw new NotYetImplementedException("SecurityContext.isUserInRole()");
-        // TODO SecurityContext.isUserInRole()
+        return authorizator.isUserInRole(Util.getPrincipal(request), role);
+        // TODO TESTEN SecurityContext.isUserInRole()
     }
 }

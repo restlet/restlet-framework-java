@@ -32,12 +32,11 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
+import org.restlet.ext.jaxrs.util.Template;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.wrappers.AbstractJaxRsWrapper;
 import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
-import org.restlet.util.Template;
 
 /**
  * @author Stephan Koops
@@ -45,10 +44,7 @@ import org.restlet.util.Template;
  */
 public class JaxRsUriBuilder extends UriBuilder {
 
-    private class IteratorVariableResolver /*
-                                             * implements
-                                             * Template.VariableResolver
-                                             */{
+    private class IteratorVariableResolver implements Template.VariableResolver {
         private int i = 0;
 
         private Map<String, String> retrievedValues = new HashMap<String, String>();
@@ -191,17 +187,19 @@ public class JaxRsUriBuilder extends UriBuilder {
     @SuppressWarnings("unchecked")
     public URI build(final Map<String, String> values)
             throws IllegalArgumentException, UriBuilderException {
-        throw new NotYetImplementedException(
-                "Waiting for Restlet Core API patch");
-        /*
-         * Template template = new Template(toStringWithCheck(false)); return
-         * buildUri(template.format(new Template.VariableResolver() { public
-         * String resolve(String variableName) { String varValue =
-         * values.get(variableName); if (varValue == null) throw new
-         * IllegalArgumentException( "The value Map must contain a value for all
-         * given Templet variables. The value for variable " + variableName + "
-         * is missing"); return varValue; } })); //
-         */
+        // throw new NotYetImplementedException(
+        // "Waiting for Restlet Core API patch");
+        Template template = new Template(toStringWithCheck(false));
+        return buildUri(template.format(new Template.VariableResolver() {
+            public String resolve(String variableName) {
+                String varValue = values.get(variableName);
+                if (varValue == null)
+                    throw new IllegalArgumentException(
+                            "The value Map must contain a value for all given Templet variables. The value for variable "
+                                    + variableName + " is missing");
+                return varValue;
+            }
+        }));
     }
 
     /**
@@ -230,12 +228,10 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public URI build(String... values) throws IllegalArgumentException,
             UriBuilderException {
-        throw new NotYetImplementedException(
-                "Waiting for Restlet Core API patch");
-        /*
-         * Template template = new Template(toStringWithCheck(false)); return
-         * buildUri(template.format(new IteratorVariableResolver(values))); //
-         */
+        // throw new NotYetImplementedException(
+        // "Waiting for Restlet Core API patch");
+        Template template = new Template(toStringWithCheck(false));
+        return buildUri(template.format(new IteratorVariableResolver(values)));
     }
 
     /**
@@ -295,7 +291,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder encode(boolean enable) {
-        // TODO JSR311 perhaps getEncode(), to set it for one method and set it
+        // gefragt: JSR311 perhaps getEncode(), to set it for one method and set it
         // back to the old value.
         this.encode = enable;
         return this;
@@ -655,7 +651,7 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder replaceMatrixParams(String matrixParams)
             throws IllegalArgumentException {
-        // TODO JSR311: null should be allowed on UriBuilder.replace*(String)
+        // gefragt: JSR311: null should be allowed on UriBuilder.replace*(String)
         if (matrixParams == null)
             throw new IllegalArgumentException(
                     "The matrix parameters must not be null. Use \"\" to clear the matrix parameters");
@@ -704,7 +700,7 @@ public class JaxRsUriBuilder extends UriBuilder {
             throws IllegalArgumentException {
         if (query == null)
             throw new IllegalArgumentException("The query must not be null");
-        // TODO JSR311: how encode the query? ignore "?" and "=", other chars?
+        // gefragt: JSR311: how encode the query? ignore "?" and "=", other chars?
         // LATER check query param
         this.query = query;
         return this;
@@ -884,7 +880,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder userInfo(String ui) throws IllegalArgumentException {
-        // TODO JSR311: UriBuilder.userInfo: can the userinfo contain a
+        // gefragt: JSR311: UriBuilder.userInfo: can the userinfo contain a
         // password? This is deprecated (RFC3986, section 3.2.1) and more
         // complicated to encode, because of the ":" is allowed one times.
         // TODO one ":" is allowed.

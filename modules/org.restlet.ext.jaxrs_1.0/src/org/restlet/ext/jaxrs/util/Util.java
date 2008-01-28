@@ -20,6 +20,7 @@ package org.restlet.ext.jaxrs.util;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -83,6 +84,13 @@ public class Util {
      * @see #getHttpHeaders(Response)
      */
     public static final String ORG_RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
+
+    /**
+     * Name of the Header Principal in the request attributes.
+     * 
+     * @see Principal
+     */
+    public static final String JAVA_SECURITY_HEADER = "java.security.Principal";
 
     /**
      * appends the given String to the StringBuilder. If convertBraces is true,
@@ -755,18 +763,40 @@ public class Util {
     }
 
     /**
+     * Gets the logged in user.
+     * @param request The Restlet request
+     * @return The Principal of the logged in user.
+     */
+    public static Principal getPrincipal(Request request) {
+        return (Principal) request.getAttributes().get(JAVA_SECURITY_HEADER);
+    }
+
+    /**
+     * Sets the logged in user.
+     * @param principal The Principal of the logged in user.
+     * @param request The Restlet request
+     */
+    public static void setPrincipal(Principal principal, Request request) {
+        request.getAttributes().put(JAVA_SECURITY_HEADER, principal);
+    }
+
+    /**
      * This method throws an WebApplicationException for Exceptions where is no
      * planned handling. Logs the excption (warn Level).
      * 
-     * @param e the catched Exception
-     * @param logger the logger to log the messade
-     * @param logMessage the message to log.
+     * @param e
+     *                the catched Exception
+     * @param logger
+     *                the logger to log the messade
+     * @param logMessage
+     *                the message to log.
      * @return Will never return anyithing, because the generated exceptions
      *         will be thrown. You an formally thro the returned exception (e.g.
      *         in a catch block). So the compiler is sure, that the method will
      *         be left here.
      */
-    public static RuntimeException handleException(Exception e, Logger logger, String logMessage) {
+    public static RuntimeException handleException(Exception e, Logger logger,
+            String logMessage) {
         logger.log(Level.WARNING, logMessage, e);
         throw new WebApplicationException(e, Status.SERVER_ERROR_INTERNAL
                 .getCode());
@@ -849,7 +879,8 @@ public class Util {
      * 
      * @param index
      *                index, starting with zero.
-     * @param errMessName the name of the string with illegal characters
+     * @param errMessName
+     *                the name of the string with illegal characters
      * @param illegalString
      *                the illegal String
      * @param messageEnd

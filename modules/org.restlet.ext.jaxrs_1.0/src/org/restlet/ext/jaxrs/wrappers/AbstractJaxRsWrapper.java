@@ -36,6 +36,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.ext.jaxrs.Authorizator;
 import org.restlet.ext.jaxrs.MatchingResult;
 import org.restlet.ext.jaxrs.PathRegExp;
 import org.restlet.ext.jaxrs.core.HttpContextImpl;
@@ -191,6 +192,8 @@ public abstract class AbstractJaxRsWrapper {
      *                URI.
      * @param indexForExcMessages
      *                the index of the parameter, for exception messages.
+     * @param authorizator
+     *                TODO
      * @return the parameter value
      * @throws IllegalAnnotationException
      *                 Thrown, when no valid annotation was found. For
@@ -202,7 +205,8 @@ public abstract class AbstractJaxRsWrapper {
             Request restletRequest, Response restletResponse,
             HttpContextImpl httpContext,
             MultivaluedMap<String, String> allTemplParamsEnc,
-            int indexForExcMessages) throws IllegalAnnotationException {
+            int indexForExcMessages, Authorizator authorizator)
+            throws IllegalAnnotationException {
         for (Annotation annotation : paramAnnotations) {
             Class<? extends Annotation> annotationType = annotation
                     .annotationType();
@@ -221,7 +225,9 @@ public abstract class AbstractJaxRsWrapper {
             } else if (annotationType.equals(Context.class)) {
                 if (httpContext == null)
                     httpContext = new HttpContextImpl(restletRequest,
-                            allTemplParamsEnc, restletResponse);
+                            allTemplParamsEnc, restletResponse, authorizator);
+                // TODO Jerome: I need to know if the restlet Request was
+                // authenticated.
                 return httpContext;
             } else if (annotationType.equals(MatrixParam.class)) {
                 throw new NotYetImplementedException();
@@ -255,12 +261,15 @@ public abstract class AbstractJaxRsWrapper {
      * @param allTemplParamsEnc
      *                Contains all Parameters, that are read from the called
      *                URI.
+     * @param authorizator
+     *                TODO
      * @return the parameter array
      */
     protected Object[] getParameterValues(Annotation[][] parameterAnnotationss,
             Class<?>[] parameterTypes, MatchingResult matchingResult,
             Request restletRequest, Response restletResponse,
-            MultivaluedMap<String, String> allTemplParamsEnc) {
+            MultivaluedMap<String, String> allTemplParamsEnc,
+            Authorizator authorizator) {
         int paramNo = parameterTypes.length;
         if (paramNo == 0)
             return new Object[0];
@@ -271,7 +280,8 @@ public abstract class AbstractJaxRsWrapper {
             try {
                 Object arg = getParameterValue(parameterAnnotationss[i],
                         parameterTypes[i], matchingResult, restletRequest,
-                        restletResponse, httpContext, allTemplParamsEnc, i);
+                        restletResponse, httpContext, allTemplParamsEnc, i,
+                        authorizator);
                 if (httpContext == null && arg instanceof HttpContextImpl)
                     httpContext = (HttpContextImpl) arg;
                 args[i] = arg;

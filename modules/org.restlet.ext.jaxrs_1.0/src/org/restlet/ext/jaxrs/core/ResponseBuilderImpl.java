@@ -301,7 +301,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder tag(String tag) {
-        // TODO JSR311: should the runtime reject a weak entity tag?
+        // gefragt: JSR311: should the runtime reject a weak entity tag?
         if (tag == null)
             getMetadata().remove(HttpHeaders.ETAG);
         else
