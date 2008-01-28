@@ -63,7 +63,7 @@ import org.restlet.resource.StringRepresentation;
  * the Restlet {@link Router}. The variable names in this class are often the
  * same as in the JAX-RS-Definition.<br />
  * 
- * LATER The class JaxRsRouterImpl is not thread save while attach or detach
+ * LATER The class JaxRsRouter is not thread save while attach or detach
  * classes.
  * 
  * @see <a href="https://jsr311.dev.java.net/"> Java Service Request 311</a>
@@ -72,10 +72,10 @@ import org.restlet.resource.StringRepresentation;
  * 
  * @author Stephan Koops
  */
-public class JaxRsRouterImpl extends Restlet {
+public class JaxRsRouter extends Restlet {
 
     /**
-     * Creates a guarded JaxRsRouterImpl. The credentials and the roles are checked
+     * Creates a guarded JaxRsRouter. The credentials and the roles are checked
      * by the Authenticator.
      * 
      * @param context
@@ -91,7 +91,7 @@ public class JaxRsRouterImpl extends Restlet {
      *                and {@link ForbidAllAuthenticator}.
      * @return
      */
-    public static JaxRsGuard getGuarded(Context context,
+    public static JaxRsRouter getGuarded(Context context,
             ChallengeScheme challangeScheme, String realmName,
             Authenticator authenticator) {
         JaxRsGuard guard = new JaxRsGuard(context, challangeScheme, realmName,
@@ -100,7 +100,7 @@ public class JaxRsRouterImpl extends Restlet {
     }
 
     /**
-     * Creates a guarded JaxRsRouterImpl. The credentials are checked by the given
+     * Creates a guarded JaxRsRouter. The credentials are checked by the given
      * Guard. The roles are checked by the Authenticator.
      * 
      * @param context
@@ -115,17 +115,17 @@ public class JaxRsRouterImpl extends Restlet {
      *                and {@link ForbidAllAuthenticator}.
      * @return
      */
-    public static JaxRsGuard getGuarded(Context context, Guard guard,
+    public static JaxRsRouter getGuarded(Context context, Guard guard,
             Authenticator authenticator) {
         Router router = new Router(context);
         router.attach(guard);
-        guard.setNext(new JaxRsRouterImpl(context, authenticator));
+        guard.setNext(new JaxRsRouter(context, authenticator));
         return router;
     }
 
     /**
      * This set must only changed by adding or removing a root resource class to
-     * this JaxRsRouterImpl.
+     * this JaxRsRouter.
      * 
      * @see #attach(Class)
      * @see #detach(Class)
@@ -226,7 +226,7 @@ public class JaxRsRouterImpl extends Restlet {
     private Restlet errorRestletMultipleRootResourceClasses = DEFAULT_MULTIPLE_ROOT_RESOURCE_CLASSES;
 
     /**
-     * Creates a new JaxRsRouterImpl with the given Context
+     * Creates a new JaxRsRouter with the given Context
      * 
      * @param context
      * @param authenticator
@@ -237,7 +237,7 @@ public class JaxRsRouterImpl extends Restlet {
      *                {@link ThrowExcAuthenticator}.
      * @see Restlet#Restlet(Context)
      */
-    public JaxRsRouterImpl(Context context, Authenticator authenticator) {
+    public JaxRsRouter(Context context, Authenticator authenticator) {
         super(context);
         this.setAuthorizator(authenticator);
     }
@@ -927,7 +927,7 @@ public class JaxRsRouterImpl extends Restlet {
      * Is thrown when an this reqeust is already handled, for example because of
      * an handled exception resulting in an error while method invokation. The
      * Exception or whatever was handled and the necessary data in
-     * org.restlet.data.Response were set, so that the JaxRsRouterImpl must not do
+     * org.restlet.data.Response were set, so that the JaxRsRouter must not do
      * anything.
      * 
      * @author Stephan Koops
