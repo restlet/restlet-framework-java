@@ -24,6 +24,8 @@ import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
+import org.restlet.ext.jaxrs.AllowAllAuthorizator;
+import org.restlet.ext.jaxrs.Authorizator;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 
 /**
@@ -37,20 +39,48 @@ import org.restlet.ext.jaxrs.JaxRsRouter;
 public class RestletServerWrapper implements ServerWrapper {
 
     public static final Protocol PROTOCOL = Protocol.HTTP;
-	
+
+    private Authorizator authorizator;
+
     private Component component;
+
+    public RestletServerWrapper() {
+        this.authorizator = AllowAllAuthorizator.getInstance();
+    }
+
+    /**
+     * @return the authorizator
+     */
+    public Authorizator getAuthorizator() {
+        return authorizator;
+    }
+
+    /**
+     * @param authorizator
+     *                the authorizator to set. Must not be null
+     * @throws IllegalArgumentException
+     */
+    public void setAuthorizator(Authorizator authorizator)
+            throws IllegalArgumentException {
+        if (authorizator == null)
+            throw new IllegalArgumentException(
+                    "The authorizator must not be null");
+        this.authorizator = authorizator;
+    }
 
     /**
      * Starts the server with the given protocol on the given port with the
      * given Collection of root resource classes. The method {@link #setUp()}
      * will do this on every test start up.
+     * 
      * @param rootResourceClasses
      * @param port
      * @return Returns the started component. Should be stopped with
      *         {@link #stopServer(Component)}
      * @throws Exception
      */
-    public void startServer(final Collection<Class<?>> rootResourceClasses, int port) throws Exception {
+    public void startServer(final Collection<Class<?>> rootResourceClasses,
+            int port) throws Exception {
         Component comp = new Component();
         comp.getServers().add(PROTOCOL, port);
 
@@ -58,7 +88,7 @@ public class RestletServerWrapper implements ServerWrapper {
         Application application = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
-                JaxRsRouter router = new JaxRsRouter(getContext());
+                JaxRsRouter router = new JaxRsRouter(getContext(), authorizator);
                 Collection<Class<?>> rrcs = rootResourceClasses;
                 for (Class<?> cl : rrcs) {
                     router.attach(cl);
@@ -81,7 +111,7 @@ public class RestletServerWrapper implements ServerWrapper {
      * @throws Exception
      */
     public void stopServer() throws Exception {
-        if(this.component != null)
+        if (this.component != null)
             this.component.stop();
     }
 }

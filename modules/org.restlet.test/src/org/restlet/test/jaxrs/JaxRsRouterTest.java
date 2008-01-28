@@ -3,6 +3,7 @@ package org.restlet.test.jaxrs;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import org.restlet.ext.jaxrs.AllowAllAuthorizator;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.test.jaxrs.services.DoublePath1;
 import org.restlet.test.jaxrs.services.DoublePath2;
@@ -12,24 +13,22 @@ import org.restlet.test.jaxrs.services.path.IllegalPathService2;
 
 public class JaxRsRouterTest extends TestCase {
 
-    @Override
     protected void setUp() throws Exception {
         super.setUp();
     }
 
-    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }
 
     public void testAttachDouble() throws Exception {
-        JaxRsRouter router = new JaxRsRouter();
+        JaxRsRouter router = new JaxRsRouter(null, AllowAllAuthorizator.getInstance());
         router.attach(DoublePath1.class);
         router.attach(DoublePath1.class);
     }
 
     public void testAttachSamePathDouble() throws Exception {
-        JaxRsRouter router = new JaxRsRouter();
+        JaxRsRouter router = new JaxRsRouter(null, AllowAllAuthorizator.getInstance());
         router.attach(DoublePath1.class);
         try {
             router.attach(DoublePath2.class);
@@ -40,7 +39,7 @@ public class JaxRsRouterTest extends TestCase {
     }
 
     public void testEncodePath() {
-        JaxRsRouter router = new JaxRsRouter();
+        JaxRsRouter router = new JaxRsRouter(null, AllowAllAuthorizator.getInstance());
         router.attach(SimpleTrain.class);
         try {
             router.attach(IllegalPathService1.class);

@@ -30,6 +30,7 @@ import junit.framework.TestCase;
 
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.MediaType;
@@ -52,6 +53,7 @@ import org.restlet.ext.jaxrs.wrappers.ResourceClass;
  * 
  */
 public abstract class JaxRsTestCase extends TestCase {
+    
     public static final int PORT = 8181;
 
     public static final Protocol PROTOCOL = Protocol.HTTP;
@@ -62,7 +64,7 @@ public abstract class JaxRsTestCase extends TestCase {
     private static ServerWrapper serverWrapper = new RestletServerWrapper();
 
     /**
-     * @see #accessServer(Class, String, Method, Collection)
+     * @see #accessServer(Class, String, Method, Collection, ChallengeResponse)
      */
     @SuppressWarnings("unchecked")
     public static Response accessServer(Class<?> klasse, Method httpMethod) {
@@ -83,7 +85,7 @@ public abstract class JaxRsTestCase extends TestCase {
     @SuppressWarnings("unchecked")
     public static Response accessServer(Class<?> klasse, Method httpMethod,
             Collection mediaTypes) throws IllegalArgumentException {
-        return accessServer(klasse, null, httpMethod, mediaTypes);
+        return accessServer(klasse, null, httpMethod, mediaTypes, null);
     }
 
     /**
@@ -100,7 +102,7 @@ public abstract class JaxRsTestCase extends TestCase {
     @SuppressWarnings("unchecked")
     public static Response accessServer(Class<?> klasse, String subPath,
             Method httpMethod) {
-        return accessServer(klasse, subPath, httpMethod, (Collection) null);
+        return accessServer(klasse, subPath, httpMethod, (Collection) null, null);
     }
 
     /**
@@ -108,15 +110,17 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param subPath
      * @param httpMethod
      * @param mediaTypes
+     * @param challengeResponse
      * @return
      */
     @SuppressWarnings("unchecked")
     public static Response accessServer(Class<?> klasse, String subPath,
-            Method httpMethod, Collection mediaTypes) {
+            Method httpMethod, Collection mediaTypes, ChallengeResponse challengeResponse) {
         Reference reference = createReference(klasse, subPath);
         Client client = new Client(PROTOCOL);
         Request request = new Request(httpMethod, reference);
         addAcceptedMediaTypes(request, mediaTypes);
+        request.setChallengeResponse(challengeResponse);
         // ausgeben(request);
         Response response = client.handle(request);
         return response;
@@ -148,7 +152,7 @@ public abstract class JaxRsTestCase extends TestCase {
         Collection<MediaType> mediaTypes = null;
         if (mediaType != null)
             mediaTypes = Collections.singleton(mediaType);
-        return accessServer(klasse, subPath, httpMethod, mediaTypes);
+        return accessServer(klasse, subPath, httpMethod, mediaTypes, null);
     }
 
     /**
@@ -193,17 +197,17 @@ public abstract class JaxRsTestCase extends TestCase {
 
     /**
      * @param mediaType
-     * @param mediaTypeQual
+     * @param mediaTypeQuality
      *                default is 1.
      * @return
      */
     @SuppressWarnings("unchecked")
     public static Collection<Preference<MediaType>> createPrefColl(
-            MediaType mediaType, float mediaTypeQual) {
+            MediaType mediaType, float mediaTypeQuality) {
         if (mediaType == null)
             return Collections.EMPTY_LIST;
         return Collections.singleton(new Preference<MediaType>(mediaType,
-                mediaTypeQual));
+                mediaTypeQuality));
     }
 
     /**
@@ -282,37 +286,30 @@ public abstract class JaxRsTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        this.startServer(createRootResourceColl());
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        if(shouldStartServerInSetUp())
+        {
+            startServer();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 
     /**
-     * @see #startServer(Protocol, int, Collection)
+     * @throws Exception
      */
-    public void startServer(Class<?> klasse) throws Exception {
-        startServer(PORT, klasse);
+    protected void startServer() throws Exception {
+        this.startServer(createRootResourceColl());
     }
 
     /**
-     * @see #startServer(Protocol, int, Collection)
+     * @see #startServer(int, Collection)
      */
-    public void startServer(final Collection<Class<?>> rootResourceClasses)
+    private void startServer(final Collection<Class<?>> rootResourceClasses)
             throws Exception {
         startServer(PORT, rootResourceClasses);
-    }
-
-    /**
-     * @see #startServer(Protocol, int, Collection)
-     */
-    public void startServer(int port, Class<?> rootResourceClass)
-            throws Exception {
-        final Collection<Class<?>> rootResourceClasses = new ArrayList<Class<?>>();
-        rootResourceClasses.add(rootResourceClass);
-        startServer(port, rootResourceClasses);
     }
 
     /**
@@ -320,7 +317,6 @@ public abstract class JaxRsTestCase extends TestCase {
      * given Collection of root resource classes. The method {@link #setUp()}
      * will do this on every test start up.
      * 
-     * @param protocol
      * @param port
      * @param rootResourceClasses
      * @return Returns the started component. Should be stopped with
@@ -339,6 +335,10 @@ public abstract class JaxRsTestCase extends TestCase {
             }
             throw e;
         }
+    }
+
+    protected boolean shouldStartServerInSetUp() {
+        return true;
     }
 
     @Override
