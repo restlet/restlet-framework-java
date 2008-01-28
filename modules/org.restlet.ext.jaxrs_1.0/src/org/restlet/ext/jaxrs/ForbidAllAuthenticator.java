@@ -24,36 +24,38 @@ package org.restlet.ext.jaxrs;
 import java.security.Principal;
 
 /**
- * @see Authorizator
- * @see ForbidAllAuthorizator
+ * An Authenticator that forbid every what it is requested.
+ * @see Authenticator
+ * @see AllowAllAuthenticator
+ * @see ThrowExcAuthenticator
  * @author Stephan Koops
  */
-public class AllowAllAuthorizator implements Authorizator {
-    
-    private static AllowAllAuthorizator instance;
+public class ForbidAllAuthenticator implements Authenticator {
+
+    private static ForbidAllAuthenticator instance;
     
     /**
-     * Returns an instance of the AllowAllAuthorizator
+     * Returns an instance of the AllowAllAuthenticator
      * @return the singelton instance.
      */
-    public static AllowAllAuthorizator getInstance()
+    public static ForbidAllAuthenticator getInstance()
     {
         if(instance == null)
-            instance = new AllowAllAuthorizator();
+            instance = new ForbidAllAuthenticator();
         return instance;
     }
     
     /**
-     * @see org.restlet.ext.jaxrs.Authorizator#isUserInRole(Principal, java.lang.String)
+     * @see org.restlet.ext.jaxrs.Authenticator#isUserInRole(Principal, java.lang.String)
      */
     public boolean isUserInRole(Principal principal, String role) {
-        return true;
+        return false;
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.Authorizator#checkSecret(String, char[])
+     * @see org.restlet.ext.jaxrs.Authenticator#checkSecret(String, char[])
      */
     public boolean checkSecret(String identifier, char[] secret) {
-        return true;
+        return false;
     }
 }

@@ -766,6 +766,7 @@ public class Util {
      * Gets the logged in user.
      * @param request The Restlet request
      * @return The Principal of the logged in user.
+     * @see #setPrincipal(Principal, Request)
      */
     public static Principal getPrincipal(Request request) {
         return (Principal) request.getAttributes().get(JAVA_SECURITY_HEADER);
@@ -775,6 +776,7 @@ public class Util {
      * Sets the logged in user.
      * @param principal The Principal of the logged in user.
      * @param request The Restlet request
+     * @see #getPrincipal(Request)
      */
     public static void setPrincipal(Principal principal, Request request) {
         request.getAttributes().put(JAVA_SECURITY_HEADER, principal);

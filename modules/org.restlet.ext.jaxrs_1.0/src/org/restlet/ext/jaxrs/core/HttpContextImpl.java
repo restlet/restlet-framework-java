@@ -47,7 +47,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.ext.jaxrs.Authorizator;
+import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.util.Series;
 
@@ -78,7 +78,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
 
     private FormMulvaltivaluedMap requestHeaders;
 
-    private Authorizator authorizator;
+    private Authenticator authenticator;
 
     /**
      * 
@@ -88,12 +88,12 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      *                The template parameters. Must not be null.
      * @param response
      *                The Restlet response
-     * @param authorizator
-     *                The authorizator. Must not be null.
+     * @param authenticator
+     *                The authenticator. Must not be null.
      */
     public HttpContextImpl(org.restlet.data.Request request,
             MultivaluedMap<String, String> templateParametersEncoded,
-            org.restlet.data.Response response, Authorizator authorizator) {
+            org.restlet.data.Response response, Authenticator authenticator) {
         super(request.getResourceRef(), templateParametersEncoded);
         if (templateParametersEncoded == null)
             throw new IllegalArgumentException(
@@ -104,12 +104,12 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         if (request == null)
             throw new IllegalArgumentException(
                     "The Restlet Request must not be null");
-        if (authorizator == null)
+        if (authenticator == null)
             throw new IllegalArgumentException(
-                    "The Authorizator must not be null.");
+                    "The Authenticator must not be null.");
         this.request = request;
         this.response = response;
-        this.authorizator = authorizator;
+        this.authenticator = authenticator;
     }
 
     // HttpHeaders methods
@@ -452,7 +452,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      * @see SecurityContext#isUserInRole(String)
      */
     public boolean isUserInRole(String role) {
-        return authorizator.isUserInRole(Util.getPrincipal(request), role);
+        return authenticator.isUserInRole(Util.getPrincipal(request), role);
         // TODO TESTEN SecurityContext.isUserInRole()
     }
 }

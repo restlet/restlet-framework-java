@@ -33,7 +33,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.jaxrs.Authorizator;
+import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.MatchingResult;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
 
@@ -132,21 +132,21 @@ public class RootResourceClass extends ResourceClass {
      *                Th restlet request
      * @param restletResponse
      *                The Restlet response.
-     * @param authorizator
+     * @param authenticator
      *                TODO
      * @return
      * @throws Exception
      */
     public ResourceObject createInstance(MatchingResult matchingResult,
             MultivaluedMap<String, String> allTemplParamsEnc,
-            Request restletRequ, Response restletResponse, Authorizator authorizator) throws Exception {
+            Request restletRequ, Response restletResponse, Authenticator authenticator) throws Exception {
         Object[] args;
         if (constructor.getParameterTypes().length == 0)
             args = new Object[0];
         else
             args = getParameterValues(constructor.getParameterAnnotations(),
                     constructor.getParameterTypes(), matchingResult,
-                    restletRequ, restletResponse, allTemplParamsEnc, authorizator);
+                    restletRequ, restletResponse, allTemplParamsEnc, authenticator);
         return new ResourceObject(constructor.newInstance(args), this);
     }
 

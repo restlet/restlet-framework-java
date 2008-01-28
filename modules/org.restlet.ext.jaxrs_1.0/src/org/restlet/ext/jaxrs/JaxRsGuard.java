@@ -26,30 +26,30 @@ import org.restlet.data.Request;
 /**
  * This JaxRsGuard is used to check credentials and roles for a JaxRsRouter.
  * 
- * @see JaxRsRouter#getGuarded(Context, ChallengeScheme, String, Authorizator)
+ * @see JaxRsRouter#getGuarded(Context, ChallengeScheme, String, Authenticator)
  * @author Stephan Koops
  */
 public class JaxRsGuard extends org.restlet.Guard {
 
-    private Authorizator authorizator;
+    private Authenticator authenticator;
 
     /**
      * @param context
      * @param scheme
      * @param realm
-     * @param authorizator must not be null
+     * @param authenticator must not be null
      * @throws IllegalArgumentException
-     *                 if the authorizator is null.
+     *                 if the authenticator is null.
      */
     public JaxRsGuard(Context context, ChallengeScheme scheme, String realm,
-            Authorizator authorizator) throws IllegalArgumentException {
+            Authenticator authenticator) throws IllegalArgumentException {
         super(context, scheme, realm);
-        if (authorizator == null)
+        if (authenticator == null)
             throw new IllegalArgumentException(
-                    "The Authorizator must not be null. You can use the "
-                            + AllowAllAuthorizator.class.getName() + " or the "
-                            + ForbidAllAuthorizator.class.getName());
-        this.authorizator = authorizator;
+                    "The Authenticator must not be null. You can use the "
+                            + AllowAllAuthenticator.class.getName() + " or the "
+                            + ForbidAllAuthenticator.class.getName());
+        this.authenticator = authenticator;
     }
 
     /**
@@ -65,7 +65,7 @@ public class JaxRsGuard extends org.restlet.Guard {
      */
     @Override
     public boolean checkSecret(Request request, String identifier, char[] secret) {
-        return this.authorizator.checkSecret(identifier, secret);
+        return this.authenticator.checkSecret(identifier, secret);
     }
 
     /**
@@ -75,7 +75,7 @@ public class JaxRsGuard extends org.restlet.Guard {
     @Deprecated
     @Override
     protected boolean checkSecret(String identifier, char[] secret) {
-        return this.authorizator.checkSecret(identifier, secret);
+        return this.authenticator.checkSecret(identifier, secret);
     }
 
     @Override

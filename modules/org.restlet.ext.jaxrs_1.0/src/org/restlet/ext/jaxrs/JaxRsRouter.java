@@ -34,6 +34,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.Context;
+import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
@@ -75,7 +76,7 @@ public class JaxRsRouter extends Restlet {
 
     /**
      * Creates a guarded JaxRsRouter. The credentials and the roles are checked
-     * by the Authorizator.
+     * by the Authenticator.
      * 
      * @param context
      *                the context from the parent
@@ -84,20 +85,41 @@ public class JaxRsRouter extends Restlet {
      * @param realmName
      *                the name of the realm, presented to the client while
      *                requesting the credentials.S
-     * @param authorizator
-     *                the Authorizator which checks the credentials and the
-     *                roles. Must not be null; see {@link AllowAllAuthorizator}
-     *                and {@link ForbidAllAuthorizator}.
+     * @param authenticator
+     *                the Authenticator which checks the credentials and the
+     *                roles. Must not be null; see {@link AllowAllAuthenticator}
+     *                and {@link ForbidAllAuthenticator}.
      * @return
      */
     public static Restlet getGuarded(Context context,
             ChallengeScheme challangeScheme, String realmName,
-            Authorizator authorizator) {
-        Router router = new Router(context);
+            Authenticator authenticator) {
         JaxRsGuard guard = new JaxRsGuard(context, challangeScheme, realmName,
-                authorizator);
+                authenticator);
+        return getGuarded(context, guard, authenticator);
+    }
+
+    /**
+     * Creates a guarded JaxRsRouter. The credentials are checked by the given
+     * Guard. The roles are checked by the Authenticator.
+     * 
+     * @param context
+     *                the context from the parent
+     * @param guard
+     *                Guard which checks the access. It must set a Principal in
+     *                the Request attributes, see
+     *                {@link Util#setPrincipal(java.security.Principal, Request)}
+     * @param authenticator
+     *                the Authenticator which checks the credentials and the
+     *                roles. Must not be null; see {@link AllowAllAuthenticator}
+     *                and {@link ForbidAllAuthenticator}.
+     * @return
+     */
+    public static Restlet getGuarded(Context context, Guard guard,
+            Authenticator authenticator) {
+        Router router = new Router(context);
         router.attach(guard);
-        guard.setNext(new JaxRsRouter(context, authorizator));
+        guard.setNext(new JaxRsRouter(context, authenticator));
         return router;
     }
 
@@ -110,7 +132,7 @@ public class JaxRsRouter extends Restlet {
      */
     private Set<RootResourceClass> rootResourceClasses = new HashSet<RootResourceClass>();
 
-    private Authorizator authorizator;
+    private Authenticator authenticator;
 
     /**
      * The default Restlet used when a root resource can not be found.
@@ -207,13 +229,13 @@ public class JaxRsRouter extends Restlet {
      * Creates a new JaxRsRouter with the given Context
      * 
      * @param context
-     * @param authorizator
-     *                The Authorizator, must not be null.
+     * @param authenticator
+     *                The Authenticator, must not be null.
      * @see Restlet#Restlet(Context)
      */
-    public JaxRsRouter(Context context, Authorizator authorizator) {
+    public JaxRsRouter(Context context, Authenticator authenticator) {
         super(context);
-        this.setAuthorizator(authorizator);
+        this.setAuthorizator(authenticator);
     }
 
     /**
@@ -379,7 +401,7 @@ public class JaxRsRouter extends Restlet {
         try {
             o = resClass.createInstance(resClAndTemplate.matchingResult,
                     allTemplParamsEnc, restletRequest, restletResponse,
-                    authorizator);
+                    authenticator);
         } catch (Exception e) {
             throw handleInvokeException(e, restletResponse, "createInstance",
                     "Could not create new instance of root resource class");
@@ -427,7 +449,7 @@ public class JaxRsRouter extends Restlet {
             try {
                 o = subResourceLocator.createSubResource(o, matchingResult,
                         allTemplParamsEnc, restletRequest, restletResponse,
-                        authorizator);
+                        authenticator);
             } catch (Exception e) {
                 throw handleInvokeException(e, restletResponse,
                         "createSubResource",
@@ -932,7 +954,7 @@ public class JaxRsRouter extends Restlet {
         try {
             result = resourceMethod.invoke(resourceObject, matchingResult,
                     allTemplParamsEnc, restletRequest, restletResponse,
-                    authorizator);
+                    authenticator);
         } catch (Exception e) {
             throw handleInvokeException(e, restletResponse, "invoke",
                     "Can not invoke the resource method");
@@ -1288,21 +1310,21 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * @return the authorizator
+     * @return the authenticator
      */
-    public Authorizator getAuthorizator() {
-        return authorizator;
+    public Authenticator getAuthorizator() {
+        return authenticator;
     }
 
     /**
-     * @param authorizator
-     *                the authorizator to set
+     * @param authenticator
+     *                the authenticator to set
      */
-    public void setAuthorizator(Authorizator authorizator) {
-        if (authorizator == null)
+    public void setAuthorizator(Authenticator authenticator) {
+        if (authenticator == null)
             throw new IllegalArgumentException(" You can use the "
-                    + AllowAllAuthorizator.class.getName() + " or the "
-                    + ForbidAllAuthorizator.class.getName());
-        this.authorizator = authorizator;
+                    + AllowAllAuthenticator.class.getName() + " or the "
+                    + ForbidAllAuthenticator.class.getName());
+        this.authenticator = authenticator;
     }
 }

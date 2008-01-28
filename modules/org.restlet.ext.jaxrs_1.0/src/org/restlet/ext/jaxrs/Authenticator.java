@@ -23,26 +23,35 @@ import java.security.Principal;
 import javax.ws.rs.core.SecurityContext;
 
 /**
+ * Interface to check user access.
  * 
  * @author Stephan Koops
+ * @see ForbidAllAuthenticator
+ * @see AllowAllAuthenticator
+ * @see ThrowExcAuthenticator
  * @see SecurityContext
  */
-public interface Authorizator { // FIXME Authorizator.checkSecret ist semantisch falsch
+public interface Authenticator {
 
     /**
-     * Checks, if the combination of the given identifier and it's secrets
-     * is valid.
+     * Checks, if the combination of the given identifier and it's secrets is
+     * valid.
+     * 
      * @param identifier
      * @param secret
      * @return true, if the credentials are valid, or false if not.
-     * @see org.restlet.Guard#checkSecret(org.restlet.data.Request, String, char[])
+     * @see org.restlet.Guard#checkSecret(org.restlet.data.Request, String,
+     *      char[])
      */
     public boolean checkSecret(String identifier, char[] secret);
 
     /**
      * Checks, if the user is in the given role, or false if not.
-     * @param principal The pricipal to check.
-     * @param role the role.
+     * 
+     * @param principal
+     *                The pricipal to check.
+     * @param role
+     *                the role.
      * @return true, if the user is in the role, false otherwise.
      */
     public boolean isUserInRole(Principal principal, String role);
