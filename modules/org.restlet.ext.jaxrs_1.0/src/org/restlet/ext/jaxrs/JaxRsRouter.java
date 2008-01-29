@@ -665,10 +665,6 @@ public class JaxRsRouter extends Restlet {
         return null;
     }
     
-    // FIXME wenn void zurückgegeben wird, wird Status 204 verwendet.
-    // FIXME wenn was anderes zurückgegeben wird, dann Status 202.
-    // FIXME Email an JSR311 von 29.1. als Option einbauen.
-
     /**
      * @throws CouldNotFindMethodException
      *                 you can throw the result, if the compiler want to get
@@ -947,7 +943,7 @@ public class JaxRsRouter extends Restlet {
                     "Can not invoke the resource method");
         }
         if (result == null) { // no representation
-            restletResponse.setStatus(Status.SUCCESS_OK);
+            restletResponse.setStatus(Status.SUCCESS_NO_CONTENT);
             restletResponse.setEntity(null);
             return;
         } else {
@@ -956,6 +952,8 @@ public class JaxRsRouter extends Restlet {
             if (result instanceof CharSequence) {
                 Representation restletRepresentation = new StringRepresentation(
                         (CharSequence) result);
+                // TODO spec says (2008-01-29) Status code 202.
+                // LATER perhaps another default as option (email 2008-01-29)
                 restletRepresentation.setMediaType(mediaType);
                 restletResponse.setEntity(restletRepresentation);
             } else if (result instanceof javax.ws.rs.core.Response) {
