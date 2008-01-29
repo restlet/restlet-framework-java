@@ -664,7 +664,7 @@ public class JaxRsRouter extends Restlet {
         }
         return null;
     }
-    
+
     /**
      * @throws CouldNotFindMethodException
      *                 you can throw the result, if the compiler want to get
@@ -948,7 +948,7 @@ public class JaxRsRouter extends Restlet {
             return;
         } else {
             restletResponse.setStatus(Status.SUCCESS_OK); // default
-            MediaType mediaType = resourceMethod.getProducedMediaType(result);
+            MediaType mediaType = determineMediaType(resourceMethod, result);
             if (result instanceof CharSequence) {
                 Representation restletRepresentation = new StringRepresentation(
                         (CharSequence) result);
@@ -963,6 +963,20 @@ public class JaxRsRouter extends Restlet {
                 throw new NotYetImplementedException();
             }
         }
+    }
+
+    /**
+     * determines the MediaType for a response. See JAX-RS-Spec, Section 2.6
+     * "Determining the MediaType of Responses"
+     * 
+     * @param resourceMethod
+     * @param result
+     * @return
+     */
+    private MediaType determineMediaType(ResourceMethod resourceMethod,
+            Object result) {
+        // TODO JaxRsRouter.determineMediaType required MessageBodyWriters.
+        return resourceMethod.getProducedMediaType(result);
     }
 
     private void jaxRsRespToRestletResp(
