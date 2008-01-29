@@ -20,8 +20,11 @@ package org.restlet.ext.jaxrs.core;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
@@ -33,7 +36,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
+import org.restlet.data.Dimension;
+import org.restlet.ext.jaxrs.util.Converter;
+import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.util.Engine;
 
 /**
  * Implementation of the {@link ResponseBuilder}
@@ -366,8 +372,38 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder variants(List<Variant> variants) {
-        // TODO ResponseBuilder.variants(List<Variant> variants)
-        throw new NotYetImplementedException();
+
+        Set<String> encodings = new HashSet<String>();
+        Set<String> languages = new HashSet<String>();
+        Set<MediaType> mediaTypes = new HashSet<MediaType>();
+        Set<String> charsets = new HashSet<String>();
+        for (Variant variant : variants) {
+            String encoding = variant.getEncoding();
+            if (encoding != null)
+                encodings.add(encoding);
+            String language = variant.getLanguage();
+            if (language != null)
+                languages.add(language);
+            MediaType mediaType = variant.getMediaType();
+            if (mediaType != null)
+                mediaTypes.add(Converter.getMediaTypeWithoutParams(mediaType));
+            String charset = Converter.getCharset(mediaType);
+            if (charset != null)
+                charsets.add(charset);
+        }
+        Set<Dimension> dimensions = new HashSet<Dimension>();
+        if(encodings.size() > 1)
+            dimensions.add(Dimension.ENCODING);
+        if(languages.size() > 1)
+            dimensions.add(Dimension.LANGUAGE);
+        if(mediaTypes.size() > 1)
+            dimensions.add(Dimension.MEDIA_TYPE);
+        if(charsets.size() > 1)
+            dimensions.add(Dimension.CHARACTER_SET);
+        String vary = Engine.getInstance().formatDimensions(dimensions);
+        if(vary != null)
+            this.getMetadata().putSingle(HttpHeaders.VARY, vary);
+        return this;
     }
 
     ResponseImpl getResponse() {

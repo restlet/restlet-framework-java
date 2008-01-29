@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -39,18 +38,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Variant;
 
-import org.restlet.data.CharacterSet;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Encoding;
 import org.restlet.data.Form;
-import org.restlet.data.Language;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
@@ -58,11 +49,9 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.data.Tag;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Engine;
-import org.restlet.util.Series;
 
 /**
  * This class contains utility methods.
@@ -70,12 +59,6 @@ import org.restlet.util.Series;
  * @author Stephan Koops
  */
 public class Util {
-
-    /**
-     * Paramater in the JAX-RS MediaType for the charset. See MIME
-     * specification.
-     */
-    private static final String CHARSET_PARAM = "charset";
 
     /**
      * The header in the attribute map to return the HTTP headers.
@@ -201,208 +184,7 @@ public class Util {
     }
 
     /**
-     * Converts a JAX-RS Cookie to a Restlet Cookie
-     * 
-     * @param jaxRsCookie
-     *                the JAX-RS Cookie
-     * @return the Restlet Cookie
-     */
-    public static org.restlet.data.Cookie convertCookie(Cookie jaxRsCookie) {
-        if (jaxRsCookie == null)
-            return null;
-        return new org.restlet.data.Cookie(jaxRsCookie.getVersion(),
-                jaxRsCookie.getName(), jaxRsCookie.getValue(), jaxRsCookie
-                        .getPath(), jaxRsCookie.getDomain());
-    }
-
-    /**
-     * Converts a Restlet Cookie to a JAX-RS Cookie
-     * 
-     * @param restletCookie
-     *                the Restlet Cookie
-     * @return the JAX-RS Cookie
-     */
-    public static Cookie convertCookie(org.restlet.data.Cookie restletCookie) {
-        if (restletCookie == null)
-            return null;
-        return new Cookie(restletCookie.getName(), restletCookie.getValue(),
-                restletCookie.getPath(), restletCookie.getDomain(),
-                restletCookie.getVersion());
-    }
-
-    /**
-     * Converts a JAX-RS-EntityTag to a Restlet-EntityTag
-     * 
-     * @param jaxRsEntityTag
-     *                the JAX-RS-EntityTag to convert.
-     * @return The corresponding Restlet-Entity-Tag
-     */
-    public static Tag convertEntityTag(EntityTag jaxRsEntityTag) {
-        if (jaxRsEntityTag == null)
-            return null;
-        return new Tag(jaxRsEntityTag.getValue(), jaxRsEntityTag.isWeak());
-    }
-
-    /**
-     * Converts a Restlet-EntityTag to a JAX-RS-EntityTag
-     * 
-     * @param restletEntityTag
-     *                the Restlet-EntityTag to convert.
-     * @return The corresponding JAX-RS-Entity-Tag
-     */
-    public static EntityTag convertEntityTag(Tag restletEntityTag) {
-        if (restletEntityTag == null)
-            return null;
-        return new EntityTag(restletEntityTag.getName(), restletEntityTag
-                .isWeak());
-    }
-
-    /**
-     * Convert a JAX-RS MediaType to a Restlet MediaType.
-     * 
-     * @param jaxRsMediaType
-     * @return the converted MediaType
-     */
-    public static org.restlet.data.MediaType convertMediaType(
-            MediaType jaxRsMediaType) {
-        if (jaxRsMediaType == null)
-            return null;
-        Series<Parameter> parameters = convertToSeries(jaxRsMediaType
-                .getParameters());
-        String name = jaxRsMediaType.getType() + "/"
-                + jaxRsMediaType.getSubtype();
-        return new org.restlet.data.MediaType(name, parameters);
-    }
-
-    /**
-     * Convert a Restlet MediaType to a JAX-RS MediaType.
-     * 
-     * @param restletMediaType
-     *                the MediaType to convert.
-     * @param restletCharacterSet
-     *                the CharacterSet for the MediaType; may be null.
-     * @return the converted MediaType
-     */
-    public static MediaType convertMediaType(
-            org.restlet.data.MediaType restletMediaType,
-            org.restlet.data.CharacterSet restletCharacterSet) {
-        if (restletMediaType == null)
-            return null;
-        Map<String, String> parameters = convertSeries(restletMediaType
-                .getParameters());
-        if (restletCharacterSet != null)
-            parameters.put(CHARSET_PARAM, restletCharacterSet.getName());
-        return new MediaType(restletMediaType.getMainType(), restletMediaType
-                .getSubType(), parameters);
-    }
-
-    /**
-     * @param parameters
-     * @return
-     */
-    public static Map<String, String> convertSeries(Series<Parameter> parameters) {
-        if (parameters == null)
-            return null;
-        Map<String, String> map = new HashMap<String, String>();
-        for (Parameter parameter : parameters) {
-            map.put(parameter.getName(), parameter.getValue());
-        }
-        return map;
-    }
-
-    /**
-     * Converts the Restlet JAX-RS NewCookie to a CookieSettings.
-     * 
-     * @param newCookie
-     * @return
-     * @throws IllegalArgumentException
-     */
-    public static CookieSetting convertToCookieSetting(NewCookie newCookie)
-            throws IllegalArgumentException {
-        if (newCookie == null)
-            return null;
-        return new CookieSetting(newCookie.getVersion(), newCookie.getName(),
-                newCookie.getValue(), newCookie.getPath(), newCookie
-                        .getDomain(), newCookie.getComment(), newCookie
-                        .getMaxAge(), newCookie.isSecure());
-    }
-
-    /**
-     * Converts the Restlet CookieSettings to a JAX-RS NewCookie.
-     * 
-     * @param cookieSetting
-     * @return
-     * @throws IllegalArgumentException
-     */
-    public static NewCookie convertToNewCookie(CookieSetting cookieSetting)
-            throws IllegalArgumentException {
-        if (cookieSetting == null)
-            return null;
-        return new NewCookie(cookieSetting.getName(), cookieSetting.getValue(),
-                cookieSetting.getPath(), cookieSetting.getDomain(),
-                cookieSetting.getVersion(), cookieSetting.getComment(),
-                cookieSetting.getMaxAge(), cookieSetting.isSecure());
-    }
-
-    /**
-     * @param parameters
-     * @return a form with the given parameters. Will never return null.
-     */
-    public static Form convertToSeries(Map<String, String> parameters) {
-        Form form = new Form();
-        if (parameters == null)
-            return form;
-        for (Map.Entry<String, String> parameter : parameters.entrySet())
-            form.add(parameter.getKey(), parameter.getValue());
-        return form;
-    }
-
-    /**
-     * Converts the given Restlet Variant to a JAX-RS Variant
-     * 
-     * @param restletVariant
-     * @return the JAX-RS Variant
-     * @throws IllegalArgumentException
-     *                 If the given Variant does not contain exactly one
-     *                 language and one
-     */
-    public static Variant convertVariant(
-            org.restlet.resource.Variant restletVariant)
-            throws IllegalArgumentException {
-        MediaType mediaType = convertMediaType(restletVariant.getMediaType(),
-                restletVariant.getCharacterSet());
-        String language = Util.getOnlyMetadataName(restletVariant
-                .getLanguages());
-        String encoding = Util.getOnlyMetadataName(restletVariant
-                .getEncodings());
-        return new Variant(mediaType, language, encoding);
-    }
-
-    /**
-     * Converts the given JAX-RS Variants to Restlet Variants.
-     * 
-     * @param jaxRsVariants
-     * @return
-     */
-    public static List<org.restlet.resource.Variant> convertVariants(
-            List<Variant> jaxRsVariants) {
-        List<org.restlet.resource.Variant> restletVariants = new ArrayList<org.restlet.resource.Variant>();
-        for (Variant jaxRsVariant : jaxRsVariants) {
-            org.restlet.resource.Variant restletVariant = new org.restlet.resource.Variant();
-            restletVariant.setCharacterSet(getCharacterSet(jaxRsVariant
-                    .getMediaType()));
-            restletVariant.setEncodings(Util.createList(Encoding
-                    .valueOf(jaxRsVariant.getEncoding())));
-            restletVariant.setLanguages(Util.createList(Language
-                    .valueOf(jaxRsVariant.getLanguage())));
-            restletVariant.setMediaType(convertMediaType(jaxRsVariant
-                    .getMediaType()));
-            restletVariants.add(restletVariant);
-        }
-        return restletVariants;
-    }
-
-    /**
+     * Copies headers into a response.
      * 
      * @param jaxRsHeaders
      *                Headers of an JAX-RS-Response.
@@ -455,22 +237,22 @@ public class Util {
             throws IllegalArgumentException {
         if (uri == null)
             throw new IllegalArgumentException("The URI must not be null");
+        if (uri.getScheme() != null)
+            reference.setScheme(uri.getScheme());
         if (uri.getAuthority() != null)
             reference.setAuthority(uri.getAuthority());
-        if (uri.getFragment() != null)
-            reference.setFragment(uri.getFragment());
         if (uri.getHost() != null)
             reference.setHostDomain(uri.getHost());
+        if (uri.getUserInfo() != null)
+            reference.setUserInfo(uri.getUserInfo());
         if (uri.getPort() >= 0)
             reference.setHostPort(uri.getPort());
         if (uri.getPath() != null)
             reference.setPath(uri.getPath());
         if (uri.getQuery() != null)
             reference.setQuery(uri.getQuery());
-        if (uri.getScheme() != null)
-            reference.setScheme(uri.getScheme());
-        if (uri.getUserInfo() != null)
-            reference.setUserInfo(uri.getUserInfo());
+        if (uri.getFragment() != null)
+            reference.setFragment(uri.getFragment());
     }
 
     /**
@@ -625,11 +407,6 @@ public class Util {
         } else {
             return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
         }
-    }
-
-    private static CharacterSet getCharacterSet(MediaType mediaType) {
-        String charset = mediaType.getParameters().get(CHARSET_PARAM);
-        return CharacterSet.valueOf(charset);
     }
 
     /**
@@ -912,15 +689,26 @@ public class Util {
     }
 
     /**
-     * @see Arrays#toList(Object[])
-     * @param <E>
-     * @param elements
+     * Creates a JAX-RS-MediaType.
+     * @param type main type of the MediaType
+     * @param subtype subtype of the MediaType
+     * @param keysAndValues parameters (optional)
+     * @return the created MediaType
+     */
+    public static MediaType createMediaType(String type, String subtype, String... keysAndValues)
+    {
+        return new MediaType(type, subtype, Util.createMap(keysAndValues));
+    }
+    
+    /**
+     * Creates a map with the given keys and values.
+     * @param keysAndValues first element is key1, second element value1, third element key2, forth element value2 and so on.
      * @return
      */
-    public static <E> List<E> toList(E[] elements) {
-        List<E> list = new ArrayList<E>(elements.length);
-        for (E element : elements)
-            list.add(element);
-        return list;
+    public static Map<String, String> createMap(String... keysAndValues) {
+        Map<String, String> map = new HashMap<String, String>();
+        for(int i=0; i<keysAndValues.length; i+=2)
+            map.put(keysAndValues[i], keysAndValues[i+1]);
+        return map;
     }
 }

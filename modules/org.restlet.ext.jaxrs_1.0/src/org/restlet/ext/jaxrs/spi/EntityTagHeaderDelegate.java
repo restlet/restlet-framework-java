@@ -22,7 +22,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 import org.restlet.data.Tag;
-import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.util.Converter;
 
 /**
  * @author Stephan Koops
@@ -49,7 +49,7 @@ public class EntityTagHeaderDelegate implements HeaderDelegate<EntityTag> {
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#fromString(java.lang.String)
      */
     public EntityTag fromString(String string) throws IllegalArgumentException {
-        return Util.convertEntityTag(Tag.parse(string));
+        return Converter.toJaxRsEntityTag(Tag.parse(string));
     }
 
     /**
@@ -63,6 +63,6 @@ public class EntityTagHeaderDelegate implements HeaderDelegate<EntityTag> {
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
     public String toString(EntityTag entityTag) {
-        return Util.convertEntityTag(entityTag).format();
+        return Converter.toRestletTag(entityTag).format();
     }
 }

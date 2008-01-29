@@ -48,6 +48,7 @@ import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.Authenticator;
+import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.util.Series;
 
@@ -156,7 +157,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         if (this.cookies == null) {
             Map<String, Cookie> c = new HashMap<String, Cookie>();
             for (org.restlet.data.Cookie rc : request.getCookies()) {
-                Cookie cookie = Util.convertCookie(rc);
+                Cookie cookie = Converter.toJaxRsCookie(rc);
                 c.put(cookie.getName(), cookie);
             }
             this.cookies = c;
@@ -284,7 +285,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
             }
         }
         if (entityTag != null) {
-            Tag actualEntityTag = Util.convertEntityTag(entityTag);
+            Tag actualEntityTag = Converter.toRestletTag(entityTag);
             // Header "If-Match"
             List<Tag> requestMatchETags = conditions.getMatch();
             if (!requestMatchETags.isEmpty()) {
@@ -327,7 +328,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         ResponseBuilder rb = Response.status(STATUS_PREC_FAILED);
         rb.entity(message);
         rb.language(Language.ENGLISH.getName());
-        rb.type(Util.convertMediaType(org.restlet.data.MediaType.TEXT_PLAIN,
+        rb.type(Converter.toJaxRsMediaType(org.restlet.data.MediaType.TEXT_PLAIN,
                 null));
         return rb.build();
     }
@@ -361,12 +362,11 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
             throws IllegalArgumentException {
         if (variants == null || variants.isEmpty())
             throw new IllegalArgumentException();
-        List<org.restlet.resource.Variant> restletVariants = Util
-                .convertVariants(variants);
+        List<org.restlet.resource.Variant> restletVariants = Converter
+                .toRestletVariants(variants);
         org.restlet.resource.Variant bestRestlVar = request.getClientInfo()
                 .getPreferredVariant(restletVariants, null);
-        Variant bestVariant = Util.convertVariant(bestRestlVar);
-
+        Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
         Set<Dimension> dimensions = response.getDimensions();
         if (bestRestlVar.getCharacterSet() != null)
             dimensions.add(Dimension.CHARACTER_SET);
