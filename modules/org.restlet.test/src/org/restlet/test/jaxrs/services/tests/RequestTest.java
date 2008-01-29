@@ -34,6 +34,7 @@ import org.restlet.data.Preference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.test.jaxrs.services.RequestService;
 
@@ -72,8 +73,8 @@ public class RequestTest extends JaxRsTestCase {
      * @return
      */
     private Tag getEntityTagFromDatastore() {
-        return Util
-                .convertEntityTag(RequestService.getEntityTagFromDatastore());
+        return Converter
+                .toRestletTag(RequestService.getEntityTagFromDatastore());
     }
 
     @Override

@@ -77,6 +77,8 @@ public class RequestService {
         variants.add(new Variant(MediaType.parse("text/html"), "de", null));
         variants.add(new Variant(MediaType.parse("text/plain"), "de", null));
         Variant variant = request.selectVariant(variants);
+        if(variant == null)
+            return Response.notAcceptable(variants).build();
         String entity;
         if(variant.getLanguage().equals("en"))
             entity = ENGLISH_TEXT;
