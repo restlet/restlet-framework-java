@@ -21,7 +21,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
-import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.util.Converter;
+import org.restlet.util.Engine;
 
 /**
  * @author Stephan Koops
@@ -40,17 +41,16 @@ public class MediaTypeHeaderDelegate implements HeaderDelegate<MediaType> {
     /**
      * Parse the supplied value and create an instance of <code>T</code>.
      * 
-     * @param value
-     *                the string value
+     * @param contentType
+     *                the contentType
      * @return the newly created instance of <code>T</code>
      * @throws IllegalArgumentException
      *                 if the supplied string cannot be parsed
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#fromString(java.lang.String)
      */
-    public MediaType fromString(String string) throws IllegalArgumentException {
-        return Util.convertMediaType(
-                org.restlet.data.MediaType.valueOf(string), null);
-        // TODO also characterSet.
+    public MediaType fromString(String contentType) throws IllegalArgumentException {
+        org.restlet.data.MediaType restletMediaType = Engine.getInstance().parseContentType(contentType);
+        return Converter.toJaxRsMediaType(restletMediaType, null);
     }
 
     /**
@@ -64,6 +64,6 @@ public class MediaTypeHeaderDelegate implements HeaderDelegate<MediaType> {
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
     public String toString(MediaType jaxRsMediaType) {
-        return Util.convertMediaType(jaxRsMediaType).toString();
+        return Converter.toRestletMediaType(jaxRsMediaType).toString();
     }
 }
