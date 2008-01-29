@@ -664,6 +664,10 @@ public class JaxRsRouter extends Restlet {
         }
         return null;
     }
+    
+    // FIXME wenn void zurückgegeben wird, wird Status 204 verwendet.
+    // FIXME wenn was anderes zurückgegeben wird, dann Status 202.
+    // FIXME Email an JSR311 von 29.1. als Option einbauen.
 
     /**
      * @throws CouldNotFindMethodException
