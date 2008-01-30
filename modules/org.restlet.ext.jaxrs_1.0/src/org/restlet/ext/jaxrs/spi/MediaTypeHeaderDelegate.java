@@ -21,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
+import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.util.Engine;
 
@@ -50,8 +51,10 @@ public class MediaTypeHeaderDelegate implements HeaderDelegate<MediaType> {
      */
     public MediaType fromString(String contentType)
             throws IllegalArgumentException {
-        org.restlet.data.MediaType restletMediaType = Engine.getInstance()
-                .parseContentType(contentType);
+        if(true)
+            throw new NotYetImplementedException("waiting for an Engine patch");
+        org.restlet.data.MediaType restletMediaType = null;
+        //Engine.getInstance().parseContentType(contentType);
         return Converter.toJaxRsMediaType(restletMediaType, null);
     }
 
