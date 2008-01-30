@@ -1,0 +1,3 @@
+# auskommentiert, weil test
+org.restlet.ext.jaxrs.bodywriter.StringWriter
+org.restlet.ext.jaxrs.bodywriter.ByteArrayWriter

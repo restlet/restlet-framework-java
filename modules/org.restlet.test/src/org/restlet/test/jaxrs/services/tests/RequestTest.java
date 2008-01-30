@@ -323,8 +323,6 @@ public class RequestTest extends JaxRsTestCase {
     
     public void testSelectVariant()
     {
-        if(true)
-            return; // wait for a patch
         ClientInfo clientInfo = new ClientInfo();
         List<Preference<Language>> accLangs = clientInfo.getAcceptedLanguages();
         accLangs.add(new Preference<Language>(Language.SPANISH, 1f));

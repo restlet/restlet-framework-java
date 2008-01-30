@@ -45,6 +45,8 @@ import org.restlet.ext.jaxrs.util.Util;
  */
 public class JaxRsUriInfo implements UriInfo {
 
+    // TODO throw IllegalStateException if called outside the scope of a request
+
     private static Logger logger = Logger.getLogger("JaxRsUriInfo.unexpected");
     
     protected Reference reference;

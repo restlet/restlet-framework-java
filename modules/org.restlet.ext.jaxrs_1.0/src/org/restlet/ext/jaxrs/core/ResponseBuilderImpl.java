@@ -21,7 +21,6 @@ import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,9 +36,7 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.data.Dimension;
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Converter;
-import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.util.Engine;
 
 /**
@@ -401,9 +398,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
             dimensions.add(Dimension.MEDIA_TYPE);
         if(charsets.size() > 1)
             dimensions.add(Dimension.CHARACTER_SET);
-        if(true)
-            throw new NotYetImplementedException("the setting of variants is not yet implemented.");
-        String vary = null;// Engine.getInstance().formatDimensions(dimensions);
+        String vary = Engine.getInstance().formatDimensions(dimensions);
         if(vary != null)
             this.getMetadata().putSingle(HttpHeaders.VARY, vary);
         return this;

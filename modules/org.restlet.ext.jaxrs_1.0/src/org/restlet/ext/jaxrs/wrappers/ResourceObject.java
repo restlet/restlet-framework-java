@@ -18,6 +18,12 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.restlet.ext.jaxrs.PathRegExp;
+import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * Represents a resource Object
@@ -47,8 +53,9 @@ public class ResourceObject {
      *                the resource object
      * @param resourceClass
      *                the wrapped resource class
-     * @param logger The logger to log unexpected Exceptions.
-    */
+     * @param logger
+     *                The logger to log unexpected Exceptions.
+     */
     public ResourceObject(Object resourceObject, ResourceClass resourceClass) {
         if (resourceObject instanceof ResourceObject)
             throw new IllegalArgumentException(
@@ -66,5 +73,34 @@ public class ResourceObject {
 
     Object getResourceObject() {
         return resourceObject;
+    }
+
+    /**
+     * Return all resource methods for the given path, ignoring HTTP method,
+     * consumed or produced mimes and so on.
+     * 
+     * @param resourceObject
+     *                The resource object
+     * @param remainingPath
+     *                the path
+     * @return The ist of ResourceMethods
+     */
+    public Collection<ResourceMethod> getMethodsForPath(String remainingPath) {
+        // LATER results may be chached, if any method is returned.
+        // The 404 case will be called rarely and produce a lot of cached data.
+        List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
+        Iterable<SubResourceMethod> subResourceMethods = this
+                .getResourceClass().getSubResourceMethods();
+        for (SubResourceMethod method : subResourceMethods) {
+            PathRegExp methodPath = method.getPathRegExp();
+            if (Util.isEmptyOrSlash(remainingPath)) {
+                if (methodPath.isEmptyOrSlash())
+                    resourceMethods.add(method);
+            } else {
+                if (methodPath.matchesWithEmpty(remainingPath))
+                    resourceMethods.add(method);
+            }
+        }
+        return resourceMethods;
     }
 }

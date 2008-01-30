@@ -30,10 +30,12 @@ import org.restlet.ext.jaxrs.util.Util;
 
 @SuppressWarnings("unchecked")
 public class UtilTests extends TestCase {
-    
-    public void testCheckForInvalidUriChars()
-    {
-        Util.checkForInvalidUriChars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890{}", -1, "");
+
+    public void testCheckForInvalidUriChars() {
+        Util
+                .checkForInvalidUriChars(
+                        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890{}",
+                        -1, "");
         checkForInvalidCharFail("a:a");
         checkForInvalidCharFail("a:1");
         checkForInvalidCharFail("/a:");
@@ -44,16 +46,13 @@ public class UtilTests extends TestCase {
         checkForInvalidCharFail("\0");
         Util.checkForInvalidUriChars("\\", -1, "");
     }
-    
-    private void checkForInvalidCharFail(String uriPart)
-    {
-        try
-        {
+
+    private void checkForInvalidCharFail(String uriPart) {
+        try {
             Util.checkForInvalidUriChars(uriPart, -1, "");
-            fail("\""+uriPart+"\" contains an invalid char. The test must fail");
-        }
-        catch(IllegalArgumentException e)
-        {
+            fail("\"" + uriPart
+                    + "\" contains an invalid char. The test must fail");
+        } catch (IllegalArgumentException e) {
             // wonderful
         }
     }
@@ -133,4 +132,20 @@ public class UtilTests extends TestCase {
         assertTrue(sorted.get(1).contains(MediaType.TEXT_HTML));
         assertTrue(sorted.get(1).contains(MediaType.TEXT_CSS));
     }
+
+    public void testIsSameOrSubType() {
+        assertTrue(Util.isSameOrSubType(MediaType.ALL, MediaType.ALL));
+        assertTrue(Util.isSameOrSubType(MediaType.TEXT_ALL, MediaType.ALL));
+        assertTrue(Util.isSameOrSubType(MediaType.TEXT_ALL, MediaType.TEXT_ALL));
+        assertTrue(Util.isSameOrSubType(MediaType.TEXT_PLAIN,
+                MediaType.TEXT_ALL));
+        assertTrue(Util.isSameOrSubType(MediaType.TEXT_PLAIN,
+                MediaType.TEXT_PLAIN));
+
+        assertFalse(Util.isSameOrSubType(MediaType.ALL, MediaType.TEXT_ALL));
+        assertFalse(Util.isSameOrSubType(MediaType.TEXT_ALL,
+                MediaType.TEXT_PLAIN));
+
+        assertFalse(Util.isSameOrSubType(MediaType.APPLICATION_ALL, MediaType.TEXT_ALL));
+}
 }

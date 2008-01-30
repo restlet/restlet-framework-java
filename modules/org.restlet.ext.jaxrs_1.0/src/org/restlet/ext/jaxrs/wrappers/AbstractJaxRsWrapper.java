@@ -202,7 +202,7 @@ public abstract class AbstractJaxRsWrapper {
      *                 (Sub)ResourceMethods this is one times allowed; than the
      *                 given request entity should taken as parameter.
      */
-    private Object getParameterValue(Annotation[] paramAnnotations,
+    private static Object getParameterValue(Annotation[] paramAnnotations,
             Class<?> paramClass, MatchingResult matchingResult,
             Request restletRequest, Response restletResponse,
             HttpContextImpl httpContext,
@@ -240,6 +240,7 @@ public abstract class AbstractJaxRsWrapper {
                                 ((QueryParam) annotation).value());
                 return getParameterValueFromParam(paramClass, queryParamValue);
             }
+            // TODO contact EntityProvider/MessageBodyReader
         }
         throw new IllegalAnnotationException("The " + indexForExcMessages
                 + ". parameter requires one of the following annotations: "
@@ -269,7 +270,7 @@ public abstract class AbstractJaxRsWrapper {
      *                {@link SecurityContext#isUserInRole(String)}
      * @return the parameter array
      */
-    protected Object[] getParameterValues(Annotation[][] parameterAnnotationss,
+    protected static Object[] getParameterValues(Annotation[][] parameterAnnotationss,
             Class<?>[] parameterTypes, MatchingResult matchingResult,
             Request restletRequest, Response restletResponse,
             MultivaluedMap<String, String> allTemplParamsEnc,

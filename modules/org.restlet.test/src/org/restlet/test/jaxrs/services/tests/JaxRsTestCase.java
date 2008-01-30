@@ -44,6 +44,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 
 /**
@@ -207,8 +208,9 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param actual
      */
     public static void assertEqualMediaType(MediaType expected, MediaType actual) {
-        assertEquals(expected.getMainType(), actual.getMainType());
-        assertEquals(expected.getSubType(), actual.getSubType());
+        expected = Converter.getMediaTypeWithoutParams(expected);
+        actual = Converter.getMediaTypeWithoutParams(actual);
+        assertEquals(expected, actual);
     }
 
     /**
@@ -305,7 +307,7 @@ public abstract class JaxRsTestCase extends TestCase {
         if (shouldStartServerInSetUp()) {
             startServer();
             try {
-                Thread.sleep(100);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

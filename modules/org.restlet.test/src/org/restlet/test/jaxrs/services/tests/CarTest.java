@@ -45,7 +45,8 @@ public class CarTest extends JaxRsTestCase {
             return;
         Response response = accessServer(CarListResource.class, Method.GET,
                 MediaType.TEXT_PLAIN);
-        assertTrue(response.getStatus().isSuccess());
+        Status status = response.getStatus();
+        assertTrue("Status should be 2xx, but is " + status, status.isSuccess());
         Representation representation = response.getEntity();
         assertEquals(CarListResource.DUMMY_CAR_LIST, representation.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, representation
@@ -61,29 +62,33 @@ public class CarTest extends JaxRsTestCase {
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
     }
 
+    @SuppressWarnings("null")
     public static void testGetOffers() throws Exception {
         if (ONLY_ONE_CAR)
             return;
         Response response = accessServer(CarListResource.class, "offers",
-                Method.GET, (MediaType)null);
+                Method.GET, (MediaType) null);
         Representation representation = response.getEntity();
         if (response.getStatus().isError())
-            System.out.println(representation.getText());
+            System.out.println(representation != null ? representation
+                    .getText() : "[no representation]");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(CarListResource.OFFERS, representation.getText());
-        assertEqualMediaType(MediaType.APPLICATION_OCTET_STREAM, representation
-                .getMediaType()); // vorläufig
+        MediaType actualMediaType = representation.getMediaType();
+        assertEqualMediaType(MediaType.TEXT_PLAIN, actualMediaType);
     }
 
+    @SuppressWarnings("null")
     public static void testGetCar() throws Exception {
         if (ONLY_OFFERS)
             return;
         String carNumber = "5%20%2B7";
         Response response = accessServer(CarListResource.class, carNumber,
-                Method.GET, (MediaType)null);
+                Method.GET, (MediaType) null);
         Representation representation = response.getEntity();
         if (response.getStatus().isError())
-            System.out.println(representation.getText());
+            System.out.println(representation != null ? representation
+                    .getText() : "[no representation]");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(CarResource.createTextRepr(carNumber), representation
                 .getText());

@@ -19,6 +19,7 @@
 package org.restlet.ext.jaxrs.util;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -512,7 +514,7 @@ public class Util {
      * @throws IllegalArgumentException
      *                 if the list contains more than one element.
      */
-    public static <A> A getOnlyElement(List<A> list)
+    public static <A> A getOnlyElement(Collection<A> list)
             throws IllegalArgumentException {
         if (list == null)
             return null;
@@ -521,7 +523,9 @@ public class Util {
         if (list.size() > 1)
             throw new IllegalArgumentException(
                     "The list must have exactly one element");
-        return list.get(0);
+        if (list instanceof List)
+            return ((List<A>) list).get(0);
+        return list.iterator().next();
     }
 
     /**
@@ -641,7 +645,7 @@ public class Util {
      * 
      * @param preferences
      * 
-     * @return Returns a List of collections of Metadata
+     * @return Returns an unmodifiable List of Collections of Metadata
      */
     public static List<Collection<? extends Metadata>> sortMetadataList(
             Collection<Preference<Metadata>> preferences) {
@@ -656,7 +660,9 @@ public class Util {
             }
             metadatas.add(preference.getMetadata());
         }
-        return new ArrayList<Collection<? extends Metadata>>(map.values());
+        return Collections
+                .unmodifiableList(new ArrayList<Collection<? extends Metadata>>(
+                        map.values()));
     }
 
     /**
@@ -690,25 +696,81 @@ public class Util {
 
     /**
      * Creates a JAX-RS-MediaType.
-     * @param type main type of the MediaType
-     * @param subtype subtype of the MediaType
-     * @param keysAndValues parameters (optional)
+     * 
+     * @param type
+     *                main type of the MediaType
+     * @param subtype
+     *                subtype of the MediaType
+     * @param keysAndValues
+     *                parameters (optional)
      * @return the created MediaType
      */
-    public static MediaType createMediaType(String type, String subtype, String... keysAndValues)
-    {
+    public static MediaType createMediaType(String type, String subtype,
+            String... keysAndValues) {
         return new MediaType(type, subtype, Util.createMap(keysAndValues));
     }
-    
+
     /**
      * Creates a map with the given keys and values.
-     * @param keysAndValues first element is key1, second element value1, third element key2, forth element value2 and so on.
+     * 
+     * @param keysAndValues
+     *                first element is key1, second element value1, third
+     *                element key2, forth element value2 and so on.
      * @return
      */
     public static Map<String, String> createMap(String... keysAndValues) {
         Map<String, String> map = new HashMap<String, String>();
-        for(int i=0; i<keysAndValues.length; i+=2)
-            map.put(keysAndValues[i], keysAndValues[i+1]);
+        for (int i = 0; i < keysAndValues.length; i += 2)
+            map.put(keysAndValues[i], keysAndValues[i + 1]);
         return map;
+    }
+
+    /**
+     * Returns all public {@link Method}s of the class with the given name
+     * (case-sensitive)
+     * 
+     * @param clazz
+     *                The {@link Class} to search the {@link Method}s.
+     * @param methodName
+     *                The name of the {@link Method} to search.
+     * @return Returns a {@link Collection} all of {@link Method}s with the
+     *         given name. Never returns null. If no methods are found an empty
+     *         Collection will be returned. The method {@link Iterator#remove()}
+     *         of this collection is supported.
+     * @throws IllegalArgumentException
+     *                 if the clazz or the method name is null.
+     */
+    public static Collection<Method> getMethodsByName(Class<?> clazz,
+            String methodName) throws IllegalArgumentException {
+        if (clazz == null)
+            throw new IllegalArgumentException("The class must not be null");
+        if (methodName == null)
+            throw new IllegalArgumentException(
+                    "The method name must not be null");
+        Collection<Method> methods = new ArrayList<Method>(2);
+        for (Method method : clazz.getMethods()) {
+            if (method.getName().equals(methodName))
+                methods.add(method);
+        }
+        return methods;
+    }
+
+    /**
+     * Checks, if the smaller MediaType is the same type as or a subtype of
+     * bigger.<br/>Examples:
+     * <ul>
+     *   <li>isSameOrSubType("text/plain", "text/*") -> true</li>
+     *   <li>isSameOrSubType("text/plain", "text/plain") -> true</li>
+     *   <li>isSameOrSubType("text/*", "text/plain") -> false</li>
+     * </ul>
+     * 
+     * 
+     * @param bigger
+     * @param smaller
+     * @return
+     */
+    public static boolean isSameOrSubType(org.restlet.data.MediaType smaller,
+            org.restlet.data.MediaType bigger) {
+        return bigger.includes(smaller);
     }
 }

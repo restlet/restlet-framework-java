@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
+import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -75,7 +76,7 @@ public class RootResourceClass extends ResourceClass {
      *                 but the type is invalid (must be UriInfo, Request or
      *                 HttpHeaders).
      */
-    private boolean checkParamAnnotations(Constructor<?> constr) {
+    private static boolean checkParamAnnotations(Constructor<?> constr) {
         Annotation[][] paramAnnotationss = constr.getParameterAnnotations();
         Class<?>[] parameterTypes = constr.getParameterTypes();
         for (int i = 0; i < paramAnnotationss.length; i++) {
@@ -89,8 +90,8 @@ public class RootResourceClass extends ResourceClass {
         return true;
     }
 
-    private boolean checkParameterAnnotation(Annotation[] parameterAnnotations,
-            Class<?> parameterType) {
+    private static boolean checkParameterAnnotation(
+            Annotation[] parameterAnnotations, Class<?> parameterType) {
         if (parameterAnnotations.length == 0)
             return false;
         for (Annotation annotation : parameterAnnotations) {
@@ -142,6 +143,36 @@ public class RootResourceClass extends ResourceClass {
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequ, Response restletResponse,
             Authenticator authenticator) throws Exception {
+        Constructor<?> constructor = this.constructor;
+        Object newInstance = createInstance(constructor, matchingResult,
+                allTemplParamsEnc, restletRequ, restletResponse, authenticator);
+        return new ResourceObject(newInstance, this);
+    }
+
+    /**
+     * Creates an instance of the root resource class.
+     * 
+     * @param constructor
+     *                the constructor to create an instance with.
+     * @param matchingResult
+     *                the MatchingResult
+     * @param allTemplParamsEnc
+     *                all template parameters, encoded
+     * @param restletRequ
+     *                The restlet request
+     * @param restletResponse
+     *                The Restlet response.
+     * @param authenticator
+     *                Authenticator for role requests, see
+     *                {@link SecurityContext#isUserInRole(String)}.
+     * @return
+     * @throws Exception
+     */
+    public static Object createInstance(Constructor<?> constructor,
+            MatchingResult matchingResult,
+            MultivaluedMap<String, String> allTemplParamsEnc,
+            Request restletRequ, Response restletResponse,
+            Authenticator authenticator) throws Exception {
         Object[] args;
         if (constructor.getParameterTypes().length == 0)
             args = new Object[0];
@@ -150,7 +181,7 @@ public class RootResourceClass extends ResourceClass {
                     constructor.getParameterTypes(), matchingResult,
                     restletRequ, restletResponse, allTemplParamsEnc,
                     authenticator);
-        return new ResourceObject(constructor.newInstance(args), this);
+        return constructor.newInstance(args);
     }
 
     @Override
@@ -168,9 +199,18 @@ public class RootResourceClass extends ResourceClass {
      *         (See JSR-311-Spec, section 2.3)
      */
     private Constructor<?> findJaxRsConstructor() {
+        return findJaxRsConstructor(getJaxRsClass());
+    }
+
+    /**
+     * @param jaxRsClass
+     * @return Returns the constructor to use for the given root resource class
+     *         (See JSR-311-Spec, section 2.3)
+     */
+    public static Constructor<?> findJaxRsConstructor(Class<?> jaxRsClass) {
         Constructor<?> constructor = null;
         int constructorParamNo = Integer.MIN_VALUE;
-        for (Constructor<?> constr : getJaxRsClass().getConstructors()) {
+        for (Constructor<?> constr : jaxRsClass.getConstructors()) {
             int constrParamNo = constr.getParameterTypes().length;
             if (constrParamNo <= constructorParamNo)
                 continue; // ignore this constructor

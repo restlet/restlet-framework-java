@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.ConsumeMime;
@@ -51,7 +50,7 @@ public class ResourceMethod extends AbstractMethodWrapper {
      * @param mimes
      * @return Returns an unmodifiable List of MediaTypes
      */
-    private static List<MediaType> convertToMediaTypes(String[] mimes) {
+    static List<MediaType> convertToMediaTypes(String[] mimes) {
         List<MediaType> mediaTypes = new ArrayList<MediaType>(mimes.length);
         for (String mime : mimes) {
             if (mime == null)
@@ -114,8 +113,9 @@ public class ResourceMethod extends AbstractMethodWrapper {
             if (consumeMime == null)
                 consumeMime = this.javaMethod.getAnnotation(ConsumeMime.class);
             if (consumeMime == null)
-                return Collections.singletonList(MediaType.ALL);
-            this.consumedMimes = convertToMediaTypes(consumeMime.value());
+                this.consumedMimes = Collections.singletonList(MediaType.ALL);
+            else
+                this.consumedMimes = convertToMediaTypes(consumeMime.value());
         }
         return consumedMimes;
     }
@@ -128,35 +128,12 @@ public class ResourceMethod extends AbstractMethodWrapper {
     }
 
     /**
-     * Determine the media type if a produced entity. see JSR-311-Spec, Section
-     * 2.6 "Determining the MediaType of Responses" <br />
-     * Is not ready implemented, yet.
-     * 
-     * @param result
-     * @return Returns the media type of the produced Entity.
-     */
-    @SuppressWarnings("all")
-    public MediaType getProducedMediaType(Object entity) {
-        // LATER getProducedMediaType(.): see JSR-311-Spec, Section 2.6
-        // "Determining the MediaType of Responses"
-        List<MediaType> producedMimes = this.getProducedMimes();
-        Iterator<MediaType> prodMimeIter = producedMimes.iterator();
-        while (prodMimeIter.hasNext()) {
-            MediaType producedMime = prodMimeIter.next();
-            if (producedMime.getSubType().equals("*"))
-                prodMimeIter.remove();
-        }
-        if (producedMimes.isEmpty())
-            return MediaType.APPLICATION_OCTET_STREAM;
-        if (producedMimes.size() == 1)
-            return producedMimes.get(0);
-        return MediaType.APPLICATION_OCTET_STREAM;
-    }
-
-    /**
      * @return Returns an unmodifiable List of MediaTypes the given Resource
-     *         Method or Resource Class produces. If no MediaType was given, a
-     *         empty List will returned. Will never return null.
+     * Method. if the method is not annotated with @{@link ProduceMime}, than
+     * the @{@link ProduceMime} of the Resource class is returned. If no @{@link ProduceMime}
+     *     can be found, an empty List will returned. This method never returns
+     *     null.
+     * 
      */
     public List<MediaType> getProducedMimes() {
         if (producedMimes == null) {

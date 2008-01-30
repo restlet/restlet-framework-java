@@ -77,6 +77,22 @@ public class Converter {
     }
 
     /**
+     * Creates a MediaType without any parameters.
+     * 
+     * @param mediaType
+     *                A MediaType, perhaps with parameters.
+     * @return Creates a MediaType without any parameters.
+     */
+    public static org.restlet.data.MediaType getMediaTypeWithoutParams(org.restlet.data.MediaType mediaType) {
+        if (mediaType == null)
+            return null;
+        Series<Parameter> parameters = mediaType.getParameters();
+        if (parameters == null || parameters.isEmpty())
+            return mediaType;
+        return new org.restlet.data.MediaType(mediaType.getName());
+    }
+
+    /**
      * Returns the Charset of the MediaType as String
      * 
      * @param mediaType

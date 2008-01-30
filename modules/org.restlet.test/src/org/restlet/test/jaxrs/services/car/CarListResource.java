@@ -111,6 +111,7 @@ public class CarListResource {
      */
     @GET
     @Path(OFFERS_PATH)
+    @ProduceMime("text/plain")
     public String getOffers() throws WebApplicationException {
         return OFFERS;
     }

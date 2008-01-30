@@ -62,6 +62,8 @@ import org.restlet.util.Series;
 public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         HttpHeaders, SecurityContext {
 
+    // TODO throw IllegalStateException if called outside the scope of a request
+
     private static final int STATUS_PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED
             .getCode();
 
@@ -328,8 +330,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         ResponseBuilder rb = Response.status(STATUS_PREC_FAILED);
         rb.entity(message);
         rb.language(Language.ENGLISH.getName());
-        rb.type(Converter.toJaxRsMediaType(org.restlet.data.MediaType.TEXT_PLAIN,
-                null));
+        rb.type(Converter.toJaxRsMediaType(
+                org.restlet.data.MediaType.TEXT_PLAIN, null));
         return rb.build();
     }
 
