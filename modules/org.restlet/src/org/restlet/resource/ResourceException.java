@@ -30,7 +30,7 @@ public class ResourceException extends Exception {
     private static final long serialVersionUID = 1L;
 
     /** The status associated to this exception. */
-    private volatile Status status;
+    private final Status status;
 
     /**
      * Constructor.
@@ -97,6 +97,7 @@ public class ResourceException extends Exception {
      *                The status to associate.
      */
     public ResourceException(final Status status) {
+        super((status == null) ? null : status.toString());
         this.status = status;
     }
 
