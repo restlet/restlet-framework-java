@@ -35,10 +35,10 @@ package org.restlet.data;
  */
 public class Metadata {
     /** The metadata name like "text/html" or "compress" or "iso-8851-1". */
-    private String name;
+    private final String name;
 
     /** The description of this metadata. */
-    private String description;
+    private final String description;
 
     /**
      * Constructor.
@@ -92,28 +92,6 @@ public class Metadata {
     @Override
     public int hashCode() {
         return (getName() == null) ? 0 : getName().hashCode();
-    }
-
-    /**
-     * Sets the description.
-     * 
-     * @param description
-     *                The description.
-     */
-    @SuppressWarnings("unused")
-    private void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * Sets the metadata name.
-     * 
-     * @param name
-     *                The metadata name.
-     */
-    @SuppressWarnings("unused")
-    private void setName(String name) {
-        this.name = name;
     }
 
     /**
