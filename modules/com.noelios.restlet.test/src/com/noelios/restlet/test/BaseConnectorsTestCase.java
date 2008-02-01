@@ -72,18 +72,18 @@ public abstract class BaseConnectorsTestCase extends TestCase {
     }
 
     public void testGrizzlyAndDefault() throws Exception {
-        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-                new StreamClientHelper(null));
+//        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+//                new StreamClientHelper(null));
     }
 
     public void testGrizzlyAndHttpClient() throws Exception {
-        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-                new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
+//        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+//                new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
     }
 
     public void testGrizzlyAndJdkNet() throws Exception {
-        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-                new com.noelios.restlet.ext.net.HttpClientHelper(null));
+//        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+//                new com.noelios.restlet.ext.net.HttpClientHelper(null));
     }
 
     public void testJettyAndDefault() throws Exception {

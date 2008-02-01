@@ -17,6 +17,7 @@ Changes log
  - Fixed issue in SpringHost preventing usage of the setRoutes(Map) method. Replaced with a 
    setAttachments(Map) method. Added Javadocs example. Reported by Simon Olofsson.
  - ResourceException wasn't setting a message. Reported by Derek Chiles.
+ - Representation.isAvailable() now returns false if the size is '0'.
  
 [Enhancements] 
  - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 

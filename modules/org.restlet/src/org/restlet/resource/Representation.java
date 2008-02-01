@@ -59,7 +59,7 @@ public abstract class Representation extends Variant {
      */
     @SuppressWarnings("hiding")
     public static final long UNKNOWN_SIZE = -1L;
-
+    
     /** Indicates if the representation's content is available. */
     private boolean available;
 
@@ -228,7 +228,7 @@ public abstract class Representation extends Variant {
      * @return True if some fresh content is available.
      */
     public boolean isAvailable() {
-        return this.available;
+        return (getSize() != 0) && this.available;
     }
 
     /**
