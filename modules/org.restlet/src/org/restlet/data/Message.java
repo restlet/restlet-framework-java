@@ -159,7 +159,8 @@ public abstract class Message {
      */
     public DomRepresentation getEntityAsDom() {
         if (this.domRepresentation == null) {
-            this.domRepresentation = new DomRepresentation(getEntity());
+            this.domRepresentation = (getEntity() == null) ? null
+                    : new DomRepresentation(getEntity());
         }
 
         return this.domRepresentation;
@@ -212,7 +213,8 @@ public abstract class Message {
      */
     public SaxRepresentation getEntityAsSax() {
         if (this.saxRepresentation == null) {
-            this.saxRepresentation = new SaxRepresentation(getEntity());
+            this.saxRepresentation = (getEntity() == null) ? null
+                    : new SaxRepresentation(getEntity());
         }
 
         return this.saxRepresentation;

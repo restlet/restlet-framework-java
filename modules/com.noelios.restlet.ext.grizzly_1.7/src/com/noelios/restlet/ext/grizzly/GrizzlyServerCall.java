@@ -71,15 +71,15 @@ public class GrizzlyServerCall extends HttpServerCall {
             SelectionKey key, boolean confidential) {
         super(server);
         setConfidential(confidential);
-        
+
         this.byteBuffer = byteBuffer;
         this.requestStream = new ByteBufferInputStream();
         this.requestStream.setSelectionKey(key);
         this.requestStream.setByteBuffer(byteBuffer);
         this.socketChannel = (SocketChannel) key.channel();
-        
+
         this.getRequestHeaders().clear();
-        
+
         try {
             // Read the request header
             readRequestHead(requestStream);
@@ -88,7 +88,7 @@ public class GrizzlyServerCall extends HttpServerCall {
                     ioe);
         }
     }
-    
+
     @Override
     public String getClientAddress() {
         return socketChannel.socket().getInetAddress().getHostAddress();
@@ -186,11 +186,13 @@ public class GrizzlyServerCall extends HttpServerCall {
         ByteArrayOutputStream headStream = new ByteArrayOutputStream(8192);
         writeResponseHead(headStream);
         ByteBuffer buffer = ByteBuffer.wrap(headStream.toByteArray());
+
         if (isConfidential()) {
             SSLOutputWriter.flushChannel(socketChannel, buffer);
         } else {
             OutputWriter.flushChannel(socketChannel, buffer);
         }
+
         buffer.clear();
     }
 }
