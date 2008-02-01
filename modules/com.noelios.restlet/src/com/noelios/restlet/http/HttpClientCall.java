@@ -129,7 +129,7 @@ public abstract class HttpClientCall extends HttpCall {
      * 
      * @return The response entity if available.
      */
-    public Representation getResponseEntity() {
+    public Representation getResponseEntity(Response response) {
         Representation result = null;
 
         long contentLength = Representation.UNKNOWN_SIZE;
@@ -311,7 +311,8 @@ public abstract class HttpClientCall extends HttpCall {
      */
     public Status sendRequest(Request request) {
         Status result = null;
-        Representation entity = request.isEntityAvailable() ? request.getEntity() : null;
+        Representation entity = request.isEntityAvailable() ? request
+                .getEntity() : null;
         try {
             if (entity != null) {
                 // Get the connector service to callback

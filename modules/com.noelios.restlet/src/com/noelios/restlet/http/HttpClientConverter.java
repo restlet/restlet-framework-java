@@ -108,7 +108,7 @@ public class HttpClientConverter extends HttpConverter {
             readResponseHeaders(httpCall, response);
 
             // Set the entity
-            response.setEntity(httpCall.getResponseEntity());
+            response.setEntity(httpCall.getResponseEntity(response));
         }
     }
 
@@ -364,11 +364,13 @@ public class HttpClientConverter extends HttpConverter {
      *                The response to update.
      * @param logger
      *                The logger to use.
-     * @see org.restlet.util.Engine#copyResponseHeaders(Iterable, Response, Logger)
-     * @see HttpClientCall#copyResponseEntityHeaders(Series, org.restlet.resource.Representation)
+     * @see org.restlet.util.Engine#copyResponseHeaders(Iterable, Response,
+     *      Logger)
+     * @see HttpClientCall#copyResponseEntityHeaders(Series,
+     *      org.restlet.resource.Representation)
      */
-    public static void copyResponseTransportHeaders(Iterable<Parameter> headers,
-            Response response, Logger logger) {
+    public static void copyResponseTransportHeaders(
+            Iterable<Parameter> headers, Response response, Logger logger) {
         // Read info from headers
         for (Parameter header : headers) {
             if (header.getName()
