@@ -16,23 +16,25 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.test.jaxrs;
+package org.restlet.test.spring;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
+import junit.framework.Test;
 import junit.framework.TestSuite;
-
-import org.restlet.test.jaxrs.services.tests.AllServiceTests;
+import org.restlet.test.SpringTestCase;
 
 /**
- * Suite with all JAX-RS unit tests.
+ * Suite with all Spring unit tests.
+ * 
+ * @author Rhett Sutphin
  */
-public class AllJaxRsTests extends TestCase {
+public class AllSpringTests extends TestCase {
     public static Test suite() {
-        TestSuite mySuite = new TestSuite();
-        mySuite.setName("all JaxRs tests");
-        mySuite.addTest(AllClassTests.suite());
-        mySuite.addTest(AllServiceTests.suite());
-        return mySuite;
+        TestSuite suite = new TestSuite();
+        suite.setName("all spring-ext tests");
+        suite.addTestSuite(SpringTestCase.class);
+        suite.addTestSuite(SpringBeanFinderTest.class);
+        suite.addTestSuite(BeanNameRouterTest.class);
+        return suite;
     }
 }

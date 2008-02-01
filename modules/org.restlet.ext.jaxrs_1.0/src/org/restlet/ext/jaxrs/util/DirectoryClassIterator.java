@@ -15,6 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+
 package org.restlet.ext.jaxrs.util;
 
 import java.io.File;
@@ -35,8 +36,6 @@ public class DirectoryClassIterator extends AbstractClasspathIterator {
     private Stack<Iterator<File>> dirStack = new Stack<Iterator<File>>();
 
     private int rootDirnameLength;
-
-    private Class<?> next;
 
     /**
      * Iterates over the classes in the given jar file.
@@ -86,20 +85,17 @@ public class DirectoryClassIterator extends AbstractClasspathIterator {
     public boolean hasNext() {
         if (this.next != null)
             return true;
-        if(dirStack.isEmpty())
+        if (dirStack.isEmpty())
             return false;
         Iterator<File> iter = dirStack.peek();
         while (iter.hasNext()) {
             File entry = iter.next();
-            if(entry.isDirectory())
-            {
+            if (entry.isDirectory()) {
                 pushDir(entry);
                 return this.hasNext();
-            }
-            else
-            {
+            } else {
                 this.next = loadClass(entry);
-                if(this.next != null)
+                if (this.next != null)
                     return true;
             }
         }
@@ -108,7 +104,6 @@ public class DirectoryClassIterator extends AbstractClasspathIterator {
     }
 
     private Class<?> loadClass(File file) {
-        return loadClassByFileName(file.getPath().substring(
-                rootDirnameLength));
+        return loadClassByFileName(file.getPath().substring(rootDirnameLength));
     }
 }

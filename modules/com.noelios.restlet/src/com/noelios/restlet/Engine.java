@@ -846,8 +846,10 @@ public class Engine extends org.restlet.util.Engine {
      * @param contentType
      *                the Content Type as String
      * @return the ContentType as MediaType; charset etc. are parameters.
-     * @throws IllegalArgumentException if the String can not be parsed.
+     * @throws IllegalArgumentException
+     *                 if the String can not be parsed.
      */
+    @Override
     public MediaType parseContentType(String contentType)
             throws IllegalArgumentException {
         try {

@@ -36,8 +36,6 @@ public class JarFileClassIterator extends AbstractClasspathIterator {
 
     private Enumeration<? extends JarEntry> jarEntryEnum;
 
-    private Class<?> next;
-
     /**
      * Iterates over the classes in the given jar file.
      * 

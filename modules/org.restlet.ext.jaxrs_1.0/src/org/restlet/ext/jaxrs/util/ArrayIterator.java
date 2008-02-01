@@ -108,6 +108,7 @@ public class ArrayIterator<E> implements ListIterator<E> {
      * 
      * @see java.lang.Object#clone()
      */
+    @Override
     public ArrayIterator<E> clone() {
         ArrayIterator<E> arrayIterator = new ArrayIterator<E>(this.array);
         arrayIterator.counter = this.counter;
