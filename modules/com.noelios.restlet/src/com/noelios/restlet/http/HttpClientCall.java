@@ -379,4 +379,40 @@ public abstract class HttpClientCall extends HttpCall {
                 && request.getEntity().getSize() == Representation.UNKNOWN_SIZE;
     }
 
+    /**
+     * Empty representation with no content.
+     */
+    private class EmptyRepresentation extends Representation {
+        @Override
+        public ReadableByteChannel getChannel() throws IOException {
+            return null;
+        }
+
+        @Override
+        public Reader getReader() throws IOException {
+            return null;
+        }
+
+        @Override
+        public InputStream getStream() throws IOException {
+            return null;
+        }
+
+        @Override
+        public void write(OutputStream outputStream) throws IOException {
+            // Do nothing
+        }
+
+        @Override
+        public void write(WritableByteChannel writableChannel)
+                throws IOException {
+            // Do nothing
+        }
+
+        @Override
+        public void write(Writer writer) throws IOException {
+            // Do nothing
+        }
+    }
+
 }
