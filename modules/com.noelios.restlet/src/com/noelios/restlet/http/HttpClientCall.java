@@ -131,66 +131,55 @@ public abstract class HttpClientCall extends HttpCall {
      */
     public Representation getResponseEntity(Response response) {
         Representation result = null;
+        // boolean available = false;
+        long size = Representation.UNKNOWN_SIZE;
 
-        long contentLength = Representation.UNKNOWN_SIZE;
-
-        // Extract the content length header
+        // Compute the content length
         Series<Parameter> responseHeaders = getResponseHeaders();
         for (Parameter header : responseHeaders) {
             if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LENGTH)) {
+                // available = true;
+
                 try {
-                    contentLength = Long.parseLong(header.getValue());
+                    size = Long.parseLong(header.getValue());
                 } catch (NumberFormatException e) {
-                    contentLength = Representation.UNKNOWN_SIZE;
+                    getLogger().warning(
+                            "Unkown value received as content lenght: \""
+                                    + header.getValue() + "\".");
+                }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
+                if (!header.getValue().equalsIgnoreCase("identity")) {
+                    // available = true;
+                    size = Representation.UNKNOWN_SIZE;
                 }
             }
         }
 
-        InputStream stream = getResponseEntityStream(contentLength);
-        ReadableByteChannel channel = getResponseEntityChannel(contentLength);
+        // if (available) {
+        if (getMethod().equals(Method.HEAD.getName())) {
+            // Create a fake entity that will contain the metadata
+            result = new EmptyRepresentation();
+        } else {
+            InputStream stream = getResponseEntityStream(size);
+            ReadableByteChannel channel = getResponseEntityChannel(size);
 
-        if (stream != null) {
-            result = new InputRepresentation(stream, null);
-        } else if (channel != null) {
-            result = new ReadableRepresentation(channel, null);
-        } else if (getMethod().equals(Method.HEAD.getName())) {
-            result = new Representation() {
-                @Override
-                public ReadableByteChannel getChannel() throws IOException {
-                    return null;
-                }
-
-                @Override
-                public Reader getReader() throws IOException {
-                    return null;
-                }
-
-                @Override
-                public InputStream getStream() throws IOException {
-                    return null;
-                }
-
-                @Override
-                public void write(OutputStream outputStream) throws IOException {
-                    // Do nothing
-                }
-
-                @Override
-                public void write(WritableByteChannel writableChannel)
-                        throws IOException {
-                    // Do nothing
-                }
-
-                @Override
-                public void write(Writer writer) throws IOException {
-                    // Do nothing
-                }
-            };
+            if (stream != null) {
+                result = new InputRepresentation(stream, null);
+            } else if (channel != null) {
+                result = new ReadableRepresentation(channel, null);
+                // } else {
+                // result = new EmptyRepresentation();
+            }
         }
 
-        if (result != null)
+        if (result != null) {
+            result.setSize(size);
             copyResponseEntityHeaders(responseHeaders, result);
+        }
+        // }
+
         return result;
     }
 

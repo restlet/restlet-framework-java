@@ -247,7 +247,7 @@ public class RequestTest extends JaxRsTestCase {
          */
 
         /**
-         * 304 must not return an entity body.
+         * 304 shouldn'tt return an entity body.
          */
         assertFalse(response.isEntityAvailable());
 

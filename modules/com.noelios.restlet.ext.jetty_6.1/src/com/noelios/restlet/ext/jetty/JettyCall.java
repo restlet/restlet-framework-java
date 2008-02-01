@@ -125,11 +125,12 @@ public class JettyCall extends HttpServerCall {
             // Copy the headers from the request object
             String headerName;
             String headerValue;
-            for (Enumeration<String> names = getConnection().getRequest()
-                    .getHeaderNames(); names.hasMoreElements();) {
+            for (Enumeration<String> names = getConnection().getRequestFields()
+                    .getFieldNames(); names.hasMoreElements();) {
                 headerName = names.nextElement();
-                for (Enumeration<String> values = getConnection().getRequest()
-                        .getHeaders(headerName); values.hasMoreElements();) {
+                for (Enumeration<String> values = getConnection()
+                        .getRequestFields().getValues(headerName); values
+                        .hasMoreElements();) {
                     headerValue = values.nextElement();
                     result.add(new Parameter(headerName, headerValue));
                 }
