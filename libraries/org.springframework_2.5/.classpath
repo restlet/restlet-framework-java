@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="org.springframework.webmvc.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.springframework.beans.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.springframework.context.jar"/>
 	<classpathentry exported="true" kind="lib" path="org.springframework.core.jar"/>

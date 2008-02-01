@@ -5,7 +5,9 @@ Bundle-SymbolicName: org.springframework
 Bundle-Version: 2.5.0
 Bundle-ClassPath: org.springframework.context.jar,
  org.springframework.core.jar,
- org.springframework.beans.jar
+ org.springframework.beans.jar,
+ org.springframework.web.jar,
+ org.springframework.webmvc.jar
 Bundle-Vendor: Spring Framework
 Export-Package: 
  org.springframework.asm,
@@ -106,5 +108,25 @@ Export-Package:
  org.springframework.web.multipart,
  org.springframework.web.multipart.commons,
  org.springframework.web.multipart.support,
+ org.springframework.web.servlet,
+ org.springframework.web.servlet.handler,
+ org.springframework.web.servlet.handler.metadata,
+ org.springframework.web.servlet.i18n,
+ org.springframework.web.servlet.mvc,
+ org.springframework.web.servlet.mvc.annotation,
+ org.springframework.web.servlet.mvc.multiaction,
+ org.springframework.web.servlet.mvc.support,
+ org.springframework.web.servlet.mvc.throwaway,
+ org.springframework.web.servlet.support,
+ org.springframework.web.servlet.tags,
+ org.springframework.web.servlet.tags.form,
+ org.springframework.web.servlet.theme,
+ org.springframework.web.servlet.view,
+ org.springframework.web.servlet.view.document,
+ org.springframework.web.servlet.view.freemarker,
+ org.springframework.web.servlet.view.jasperreports,
+ org.springframework.web.servlet.view.tiles2,
+ org.springframework.web.servlet.view.velocity,
+ org.springframework.web.servlet.view.xslt,
  org.springframework.web.util
 Require-Bundle: org.apache.commons.logging
