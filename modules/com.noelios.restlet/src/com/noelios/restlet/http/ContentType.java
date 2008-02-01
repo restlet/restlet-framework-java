@@ -50,12 +50,7 @@ public class ContentType {
      */
     public ContentType(String headerValue) {
         try {
-            PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
-                    PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
-            Preference<MediaType> pref;
-            pref = pr.readPreference();
-            this.mediaType = pref.getMetadata();
-
+            this.mediaType = parseContentType(headerValue);
             String charSet = this.mediaType.getParameters().getFirstValue(
                     "charset");
             if (charSet != null) {
@@ -63,7 +58,23 @@ public class ContentType {
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            // TODO IllegalArgumentException? remove line after think about :-)
         }
+    }
+
+    /**
+     * Parses the Content Type.
+     * 
+     * @param headerValue
+     * @return MediaType
+     * @throws IOException
+     */
+    public static MediaType parseContentType(String headerValue)
+            throws IOException {
+        PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
+                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
+        Preference<MediaType> pref = pr.readPreference();
+        return pref.getMetadata();
     }
 
     /**
@@ -83,5 +94,4 @@ public class ContentType {
     public CharacterSet getCharacterSet() {
         return characterSet;
     }
-
 }

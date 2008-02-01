@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,8 +37,10 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.Dimension;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
+import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -306,6 +309,15 @@ public abstract class Engine {
             throws IllegalArgumentException;
 
     /**
+     * Formats the given Set of Dimensions to a String for the HTTP Vary header.
+     * 
+     * @param dimensions
+     *                the dimensions to format.
+     * @return the Vary header or null, if dimensions is null or empty.
+     */
+    public abstract String formatDimensions(Collection<Dimension> dimensions);
+
+    /**
      * Returns the best variant representation for a given resource according
      * the the client preferences.<br/>A default language is provided in case
      * the variants don't match the client preferences.
@@ -351,6 +363,18 @@ public abstract class Engine {
      */
     public abstract void parse(Logger logger, Form form, String queryString,
             CharacterSet characterSet);
+
+    /**
+     * Parses the given Content Type.
+     * 
+     * @param contentType
+     *                the Content Type as String
+     * @return the ContentType as MediaType; charset etc. are parameters.
+     * @throws IllegalArgumentException
+     *                 if the String can not be parsed.
+     */
+    public abstract MediaType parseContentType(String contentType)
+            throws IllegalArgumentException;
 
     /**
      * Parses the given String to a Cookie

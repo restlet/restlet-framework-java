@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.Dimension;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -55,8 +57,10 @@ import org.restlet.util.Helper;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.component.ComponentHelper;
+import com.noelios.restlet.http.ContentType;
 import com.noelios.restlet.http.HttpClientCall;
 import com.noelios.restlet.http.HttpClientConverter;
+import com.noelios.restlet.http.HttpServerConverter;
 import com.noelios.restlet.http.StreamClientHelper;
 import com.noelios.restlet.http.StreamServerHelper;
 import com.noelios.restlet.local.DirectoryResource;
@@ -428,6 +432,11 @@ public class Engine extends org.restlet.util.Engine {
     public String formatCookieSetting(CookieSetting cookieSetting)
             throws IllegalArgumentException {
         return CookieUtils.format(cookieSetting);
+    }
+
+    @Override
+    public String formatDimensions(Collection<Dimension> dimensions) {
+        return HttpServerConverter.createVaryHeader(dimensions);
     }
 
     @Override
@@ -828,6 +837,25 @@ public class Engine extends org.restlet.util.Engine {
         } catch (IOException e) {
             throw new IllegalArgumentException(
                     "Could not read the cookie setting", e);
+        }
+    }
+
+    /**
+     * Parses the given Content Type.
+     * 
+     * @param contentType
+     *                the Content Type as String
+     * @return the ContentType as MediaType; charset etc. are parameters.
+     * @throws IllegalArgumentException if the String can not be parsed.
+     */
+    public MediaType parseContentType(String contentType)
+            throws IllegalArgumentException {
+        try {
+            return ContentType.parseContentType(contentType);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("The content type string \""
+                    + contentType + "\" can not be parsed: " + e.getMessage(),
+                    e);
         }
     }
 
