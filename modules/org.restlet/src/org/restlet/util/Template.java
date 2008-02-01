@@ -582,7 +582,7 @@ public class Template {
      * 
      * @author Jerome Louvel (contact@noelios.com)
      */
-    private abstract class VariableResolver {
+    protected abstract class VariableResolver {
         /**
          * Resolves a variable name into a value.
          * 
@@ -895,7 +895,7 @@ public class Template {
      *                The variable resolver to use.
      * @return The formatted string.
      */
-    private String format(VariableResolver resolver) {
+    public String format(VariableResolver resolver) {
         StringBuilder result = new StringBuilder();
         StringBuilder varBuffer = null;
         char next;

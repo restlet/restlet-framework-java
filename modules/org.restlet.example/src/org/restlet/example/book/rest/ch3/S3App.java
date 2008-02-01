@@ -45,9 +45,14 @@ public class S3App extends S3Authorized {
         Response response = authorizedGet(HOST);
         DomRepresentation document = response.getEntityAsDom();
 
-        // Use XPath to find the bucket names
-        for (Node node : document.getNodes("//Bucket/Name")) {
-            result.add(new S3Bucket(node.getTextContent()));
+        if (response.getStatus().isSuccess()) {
+            // Use XPath to find the bucket names
+            for (Node node : document.getNodes("//Bucket/Name")) {
+                result.add(new S3Bucket(node.getTextContent()));
+            }
+        } else {
+            System.out.println("Unable to access to your S3 buckets : "
+                    + response.getStatus());
         }
 
         return result;
