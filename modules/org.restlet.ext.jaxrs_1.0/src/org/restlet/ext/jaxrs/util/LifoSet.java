@@ -164,16 +164,19 @@ public class LifoSet<E> implements Set<E> {
         list.clear();
     }
 
+    @Override
     public String toString() {
         return this.list.toString();
     }
 
+    @Override
     public boolean equals(Object object) {
         if (!(object instanceof LifoSet))
             return false;
         return this.list.equals(((LifoSet<?>) object).list);
     }
 
+    @Override
     public int hashCode() {
         return list.hashCode();
     }

@@ -23,7 +23,6 @@ import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Converter;
-import org.restlet.util.Engine;
 
 /**
  * @author Stephan Koops

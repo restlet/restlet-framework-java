@@ -97,7 +97,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     public HttpContextImpl(org.restlet.data.Request request,
             MultivaluedMap<String, String> templateParametersEncoded,
             org.restlet.data.Response response, Authenticator authenticator) {
-        super(request.getResourceRef(), templateParametersEncoded);
+        super((request == null) ? null : request.getResourceRef(),
+                templateParametersEncoded);
 
         if (templateParametersEncoded == null)
             throw new IllegalArgumentException(

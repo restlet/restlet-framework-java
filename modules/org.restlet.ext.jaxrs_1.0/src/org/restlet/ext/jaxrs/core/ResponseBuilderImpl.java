@@ -38,7 +38,6 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.restlet.data.Dimension;
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Converter;
-import org.restlet.util.Engine;
 
 /**
  * Implementation of the {@link ResponseBuilder}
