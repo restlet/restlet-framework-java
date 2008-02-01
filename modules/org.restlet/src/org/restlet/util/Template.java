@@ -281,7 +281,7 @@ public class Template {
      * 
      * @author Jerome Louvel (contact@noelios.com)
      */
-    private class CallVariableResolver extends VariableResolver {
+    private class CallVariableResolver implements VariableResolver {
         /** The request to use as a model. */
         private Request request;
 
@@ -301,7 +301,6 @@ public class Template {
             this.response = response;
         }
 
-        @Override
         public String resolve(String variableName) {
             String result = null;
 
@@ -531,7 +530,7 @@ public class Template {
      * 
      * @author Jerome Louvel (contact@noelios.com)
      */
-    private class MapVariableResolver extends VariableResolver {
+    private class MapVariableResolver implements VariableResolver {
         /** The variables to use when formatting. */
         private Map<String, Object> map;
 
@@ -545,7 +544,6 @@ public class Template {
             this.map = map;
         }
 
-        @Override
         public String resolve(String variableName) {
             Object value = this.map.get(variableName);
             return (value == null) ? null : value.toString();
@@ -557,7 +555,7 @@ public class Template {
      * 
      * @author Jerome Louvel (contact@noelios.com)
      */
-    private class UserResolver extends VariableResolver {
+    private class UserResolver implements VariableResolver {
         /** The user object to help resolution. */
         private Object userObject;
 
@@ -571,7 +569,6 @@ public class Template {
             this.userObject = userObject;
         }
 
-        @Override
         public String resolve(String variableName) {
             return Template.this.resolve(this.userObject, variableName);
         }
@@ -582,7 +579,7 @@ public class Template {
      * 
      * @author Jerome Louvel (contact@noelios.com)
      */
-    protected abstract class VariableResolver {
+    protected interface VariableResolver {
         /**
          * Resolves a variable name into a value.
          * 
@@ -590,7 +587,7 @@ public class Template {
          *                The variable name to resolve.
          * @return The resolved value.
          */
-        public abstract String resolve(String variableName);
+        public String resolve(String variableName);
     }
 
     public static final int MODE_EQUALS = 2;
@@ -895,7 +892,7 @@ public class Template {
      *                The variable resolver to use.
      * @return The formatted string.
      */
-    public String format(VariableResolver resolver) {
+    protected String format(VariableResolver resolver) {
         StringBuilder result = new StringBuilder();
         StringBuilder varBuffer = null;
         char next;
