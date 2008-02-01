@@ -30,10 +30,8 @@ import javax.net.ssl.SSLSession;
 import org.restlet.Server;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
-import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.ReadableRepresentation;
 import org.restlet.resource.Representation;
@@ -353,13 +351,7 @@ public abstract class HttpServerCall extends HttpCall {
                 writeResponseHead(response);
                 Representation entity = response.getEntity();
 
-                if ((entity != null)
-                        && !response.getRequest().getMethod().equals(
-                                Method.HEAD)
-                        && !response.getStatus().equals(
-                                Status.SUCCESS_NO_CONTENT)
-                        && !response.getStatus().equals(
-                                Status.SUCCESS_RESET_CONTENT)) {
+                if (entity != null) {
                     // Get the connector service to callback
                     ConnectorService connectorService = getConnectorService(response
                             .getRequest());
@@ -370,16 +362,6 @@ public abstract class HttpServerCall extends HttpCall {
 
                     if (connectorService != null)
                         connectorService.afterSend(entity);
-                } else {
-                    // TODO doesn't seem to match the HTTP 1.1 specification
-                    // however it seems to fix a bug with Firefox. Let's do more
-                    // test
-                    if (response.getStatus().isRedirection()) {
-                        if (getResponseEntityStream() != null) {
-                            getResponseEntityStream().write(13); // CR
-                            getResponseEntityStream().write(10); // LF
-                        }
-                    }
                 }
 
                 if (getResponseEntityStream() != null) {

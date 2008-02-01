@@ -18,6 +18,8 @@ Changes log
    setAttachments(Map) method. Added Javadocs example. Reported by Simon Olofsson.
  - ResourceException wasn't setting a message. Reported by Derek Chiles.
  - Representation.isAvailable() now returns false if the size is '0'.
+ - Refactoring of HTTP server connectors code to better deal with HEAD request, 1xx, 204, 205, 
+   304 status codes. Issues reported by Alex Milowski. 
  
 [Enhancements] 
  - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 

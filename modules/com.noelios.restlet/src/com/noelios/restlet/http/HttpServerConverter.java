@@ -101,6 +101,51 @@ public class HttpServerConverter extends HttpConverter {
      */
     public void commit(HttpResponse response) {
         try {
+            if (response.getEntity() != null) {
+                if (response.getRequest().getMethod().equals(Method.HEAD)) {
+                    addEntityHeaders(response);
+                    response.setEntity(null);
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_NO_CONTENT)) {
+                    getLogger()
+                            .fine(
+                                    "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers.");
+                    addEntityHeaders(response);
+                    response.setEntity(null);
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_RESET_CONTENT)) {
+                    getLogger()
+                            .warning(
+                                    "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity");
+                    response.setEntity(null);
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_PARTIAL_CONTENT)) {
+                    getLogger()
+                            .warning(
+                                    "Responses with a 206 (Partial content) status aren't supported yet. Ignoring the entity");
+                    response.setEntity(null);
+                } else if (response.getStatus().equals(
+                        Status.REDIRECTION_NOT_MODIFIED)) {
+                    getLogger()
+                            .warning(
+                                    "Responses with a 304 (Not modified) status can't have an entity. Ignoring the entity");
+                    response.setEntity(null);
+                } else if (response.getStatus().isInformational()) {
+                    getLogger()
+                            .warning(
+                                    "Responses with an informational (1xx) status can't have an entity. Ignoring the entity");
+                    response.setEntity(null);
+                } else if (!response.getEntity().isAvailable()) {
+                    // An entity was returned but isn't really available
+                    getLogger()
+                            .warning(
+                                    "A response with an unavailable entity was returned. Ignoring the entity");
+                    response.setEntity(null);
+                } else {
+                    addEntityHeaders(response);
+                }
+            }
+
             // Add the response headers
             addResponseHeaders(response);
 
@@ -112,6 +157,94 @@ public class HttpServerConverter extends HttpConverter {
                     Status.SERVER_ERROR_INTERNAL.getCode());
             response.getHttpCall().setReasonPhrase(
                     "An unexpected exception occured");
+        }
+    }
+
+    /**
+     * Adds the entity headers for the handled uniform call.
+     * 
+     * @param response
+     *                The response returned.
+     */
+    @SuppressWarnings("unchecked")
+    protected void addEntityHeaders(HttpResponse response) {
+        Series<Parameter> responseHeaders = response.getHttpCall()
+                .getResponseHeaders();
+        Representation entity = response.getEntity();
+
+        if (entity == null) {
+            responseHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, "0");
+        } else {
+            if (entity.getExpirationDate() != null) {
+                responseHeaders.add(HttpConstants.HEADER_EXPIRES, response
+                        .getHttpCall().formatDate(entity.getExpirationDate(),
+                                false));
+            }
+
+            if (!entity.getEncodings().isEmpty()) {
+                StringBuilder value = new StringBuilder();
+                for (Encoding encoding : entity.getEncodings()) {
+                    if (!encoding.equals(Encoding.IDENTITY)) {
+                        if (value.length() > 0)
+                            value.append(", ");
+                        value.append(encoding.getName());
+                    }
+                    responseHeaders.add(HttpConstants.HEADER_CONTENT_ENCODING,
+                            value.toString());
+                }
+            }
+
+            if (!entity.getLanguages().isEmpty()) {
+                StringBuilder value = new StringBuilder();
+                for (int i = 0; i < entity.getLanguages().size(); i++) {
+                    if (i > 0)
+                        value.append(", ");
+                    value.append(entity.getLanguages().get(i).getName());
+                }
+                responseHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE,
+                        value.toString());
+            }
+
+            if (entity.getMediaType() != null) {
+                StringBuilder contentType = new StringBuilder(entity
+                        .getMediaType().getName());
+
+                if (entity.getCharacterSet() != null) {
+                    // Specify the character set parameter
+                    contentType.append("; charset=").append(
+                            entity.getCharacterSet().getName());
+                }
+
+                responseHeaders.add(HttpConstants.HEADER_CONTENT_TYPE,
+                        contentType.toString());
+            }
+
+            if (entity.getModificationDate() != null) {
+                responseHeaders.add(HttpConstants.HEADER_LAST_MODIFIED,
+                        response.getHttpCall().formatDate(
+                                entity.getModificationDate(), false));
+            }
+
+            if (entity.getTag() != null) {
+                responseHeaders.add(HttpConstants.HEADER_ETAG, entity.getTag()
+                        .format());
+            }
+
+            if (entity.getSize() != Representation.UNKNOWN_SIZE) {
+                responseHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, Long
+                        .toString(entity.getSize()));
+            }
+
+            if (entity.getIdentifier() != null) {
+                responseHeaders.add(HttpConstants.HEADER_CONTENT_LOCATION,
+                        entity.getIdentifier().toString());
+            }
+
+            if (entity.isDownloadable() && (entity.getDownloadName() != null)) {
+                responseHeaders.add(HttpConstants.HEADER_CONTENT_DISPOSITION,
+                        response.getHttpCall().formatContentDisposition(
+                                entity.getDownloadName()));
+            }
         }
     }
 
@@ -181,86 +314,6 @@ public class HttpServerConverter extends HttpConverter {
                         response.getStatus().getCode());
                 response.getHttpCall().setReasonPhrase(
                         response.getStatus().getDescription());
-            }
-
-            // If an entity was set during the call, copy it to the output
-            // stream;
-            if (response.getEntity() != null) {
-                Representation entity = response.getEntity();
-
-                if (entity.getExpirationDate() != null) {
-                    responseHeaders.add(HttpConstants.HEADER_EXPIRES, response
-                            .getHttpCall().formatDate(
-                                    entity.getExpirationDate(), false));
-                }
-
-                if (!entity.getEncodings().isEmpty()) {
-                    StringBuilder value = new StringBuilder();
-                    for (Encoding encoding : entity.getEncodings()) {
-                        if (!encoding.equals(Encoding.IDENTITY)) {
-                            if (value.length() > 0)
-                                value.append(", ");
-                            value.append(encoding.getName());
-                        }
-                        responseHeaders.add(
-                                HttpConstants.HEADER_CONTENT_ENCODING, value
-                                        .toString());
-                    }
-                }
-
-                if (!entity.getLanguages().isEmpty()) {
-                    StringBuilder value = new StringBuilder();
-                    for (int i = 0; i < entity.getLanguages().size(); i++) {
-                        if (i > 0)
-                            value.append(", ");
-                        value.append(entity.getLanguages().get(i).getName());
-                    }
-                    responseHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE,
-                            value.toString());
-                }
-
-                if (entity.getMediaType() != null) {
-                    StringBuilder contentType = new StringBuilder(entity
-                            .getMediaType().getName());
-
-                    if (entity.getCharacterSet() != null) {
-                        // Specify the character set parameter
-                        contentType.append("; charset=").append(
-                                entity.getCharacterSet().getName());
-                    }
-
-                    responseHeaders.add(HttpConstants.HEADER_CONTENT_TYPE,
-                            contentType.toString());
-                }
-
-                if (entity.getModificationDate() != null) {
-                    responseHeaders.add(HttpConstants.HEADER_LAST_MODIFIED,
-                            response.getHttpCall().formatDate(
-                                    entity.getModificationDate(), false));
-                }
-
-                if (entity.getTag() != null) {
-                    responseHeaders.add(HttpConstants.HEADER_ETAG, entity
-                            .getTag().format());
-                }
-
-                if (response.getEntity().getSize() != Representation.UNKNOWN_SIZE) {
-                    responseHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH,
-                            Long.toString(response.getEntity().getSize()));
-                }
-
-                if (response.getEntity().getIdentifier() != null) {
-                    responseHeaders.add(HttpConstants.HEADER_CONTENT_LOCATION,
-                            response.getEntity().getIdentifier().toString());
-                }
-                if (response.getEntity().isDownloadable()
-                        && response.getEntity().getDownloadName() != null) {
-                    responseHeaders.add(
-                            HttpConstants.HEADER_CONTENT_DISPOSITION, response
-                                    .getHttpCall().formatContentDisposition(
-                                            response.getEntity()
-                                                    .getDownloadName()));
-                }
             }
 
             // Send the Vary header only to none-MSIE user agents as MSIE seems
