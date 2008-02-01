@@ -79,9 +79,9 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     private volatile boolean confidential;
 
     /**
-     * Server socket this server is listening to.
+     * Simple connection.
      */
-    private volatile ServerSocket socket;
+    private volatile Connection connection;
 
     /**
      * Simple pipeline handler.
@@ -89,9 +89,9 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     private volatile PipelineHandler handler;
 
     /**
-     * Simple connection.
+     * Server socket this server is listening to.
      */
-    private volatile Connection connection;
+    private volatile ServerSocket socket;
 
     /**
      * Constructor.
@@ -103,18 +103,13 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
         super(server);
     }
 
-    /** Stops the Restlet. */
-    @Override
-    public void stop() throws Exception {
-        getSocket().close();
-        setSocket(null);
-        this.setHandler(null);
-        this.setConnection(null);
-
-        // For further information on how to shutdown a Simple
-        // server, see
-        // http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&forum_id=38791
-        // There seems to be place for improvement in this method.
+    /**
+     * Returns the Simple connection.
+     * 
+     * @return The Simple connection.
+     */
+    protected Connection getConnection() {
+        return connection;
     }
 
     /**
@@ -128,6 +123,15 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     }
 
     /**
+     * Returns the Simple pipeline handler.
+     * 
+     * @return The Simple pipeline handler.
+     */
+    protected PipelineHandler getHandler() {
+        return handler;
+    }
+
+    /**
      * Returns the maximum waiting time between polls of the input.
      * 
      * @return The maximum waiting time between polls of the input.
@@ -135,16 +139,6 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     public int getMaxWaitTimeMs() {
         return Integer.parseInt(getParameters().getFirstValue("maxWaitTimeMs",
                 "200"));
-    }
-
-    /**
-     * Sets the server socket this server is listening to.
-     * 
-     * @param socket
-     *                The server socket this server is listening to.
-     */
-    protected void setSocket(ServerSocket socket) {
-        this.socket = socket;
     }
 
     /**
@@ -157,41 +151,12 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     }
 
     /**
-     * Sets the Simple pipeline handler.
+     * Indicates if this service is acting in HTTP or HTTPS mode.
      * 
-     * @param handler
-     *                The Simple pipeline handler.
+     * @return True if this service is acting in HTTP or HTTPS mode.
      */
-    protected void setHandler(PipelineHandler handler) {
-        this.handler = handler;
-    }
-
-    /**
-     * Returns the Simple pipeline handler.
-     * 
-     * @return The Simple pipeline handler.
-     */
-    protected PipelineHandler getHandler() {
-        return handler;
-    }
-
-    /**
-     * Sets the Simple connection.
-     * 
-     * @param connection
-     *                The Simple connection.
-     */
-    protected void setConnection(Connection connection) {
-        this.connection = connection;
-    }
-
-    /**
-     * Returns the Simple connection.
-     * 
-     * @return The Simple connection.
-     */
-    protected Connection getConnection() {
-        return connection;
+    protected boolean isConfidential() {
+        return confidential;
     }
 
     /**
@@ -205,12 +170,53 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     }
 
     /**
-     * Indicates if this service is acting in HTTP or HTTPS mode.
+     * Sets the Simple connection.
      * 
-     * @return True if this service is acting in HTTP or HTTPS mode.
+     * @param connection
+     *                The Simple connection.
      */
-    protected boolean isConfidential() {
-        return confidential;
+    protected void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    /**
+     * Sets the Simple pipeline handler.
+     * 
+     * @param handler
+     *                The Simple pipeline handler.
+     */
+    protected void setHandler(PipelineHandler handler) {
+        this.handler = handler;
+    }
+
+    /**
+     * Sets the server socket this server is listening to.
+     * 
+     * @param socket
+     *                The server socket this server is listening to.
+     */
+    protected void setSocket(ServerSocket socket) {
+        this.socket = socket;
+    }
+
+    @Override
+    public synchronized void start() throws Exception {
+        // Sets the ephemeral port is necessary
+        setEphemeralPort(getSocket());
+        super.start();
+    }
+
+    @Override
+    public synchronized void stop() throws Exception {
+        getSocket().close();
+        setSocket(null);
+        this.setHandler(null);
+        this.setConnection(null);
+
+        // For further information on how to shutdown a Simple
+        // server, see
+        // http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&forum_id=38791
+        // There seems to be place for improvement in this method.
     }
 
 }

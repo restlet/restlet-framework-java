@@ -26,6 +26,8 @@ import org.restlet.Server;
 
 import com.noelios.restlet.http.HttpServerHelper;
 import com.sun.grizzly.Controller;
+import com.sun.grizzly.ControllerStateListener;
+import com.sun.grizzly.TCPSelectorHandler;
 
 /**
  * Base Grizzly connector.
@@ -65,6 +67,28 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
             public void run() {
                 try {
                     latch.countDown();
+
+                    controller.addStateListener(new ControllerStateListener() {
+
+                        public void onException(Throwable arg0) {
+                        }
+
+                        public void onReady() {
+                            if (getServer().getPort() == 0) {
+                                TCPSelectorHandler tsh = (TCPSelectorHandler) controller
+                                        .getSelectorHandler(Controller.Protocol.TCP);
+                                setEphemeralPort(tsh.getPortLowLevel());
+                            }
+                        }
+
+                        public void onStarted() {
+                        }
+
+                        public void onStopped() {
+                        }
+
+                    });
+
                     controller.start();
                 } catch (IOException e) {
                     getLogger().log(Level.WARNING,

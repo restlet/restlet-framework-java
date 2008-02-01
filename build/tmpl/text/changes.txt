@@ -53,6 +53,8 @@ Changes log
    trio integration. Contributed by Florian Schwarz.
  - Added "defaultMatchingMode" property on Router. Suggested by William Pietri.
  - Added "throwable" property to the Status class, respecting the immutability. Suggested by Paul J. Lucas.
+ - Added "getEphemeralPort()" method on Server to get the local port actually used by the system when the
+   "port" property is set to '0'. Suggested by William Pietri. 
   
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.

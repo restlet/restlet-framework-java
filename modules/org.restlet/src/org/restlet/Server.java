@@ -18,6 +18,8 @@
 
 package org.restlet;
 
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,14 +39,14 @@ public class Server extends Connector {
     /** The listening address if specified. */
     private volatile String address;
 
+    /** The helper provided by the implementation. */
+    private volatile Helper helper;
+
     /** The listening port if specified. */
     private volatile int port;
 
     /** The target Restlet. */
     private volatile Restlet target;
-
-    /** The helper provided by the implementation. */
-    private volatile Helper helper;
 
     /**
      * Constructor.
@@ -245,6 +247,18 @@ public class Server extends Connector {
     }
 
     /**
+     * Returns the actual ephemeral port used when the listening port is set to
+     * '0'. The default value is '-1' if no ephemeral port is known.
+     * 
+     * @return The actual ephemeral port used.
+     * @see InetSocketAddress#InetSocketAddress(int)
+     * @see ServerSocket#getLocalPort()
+     */
+    public int getEphemeralPort() {
+        return (Integer) getHelper().getAttributes().get("ephemeralPort");
+    }
+
+    /**
      * Returns the internal server.
      * 
      * @return The internal server.
@@ -301,7 +315,10 @@ public class Server extends Connector {
     }
 
     /**
-     * Sets the listening port if specified.
+     * Sets the listening port if specified. Note that '0' means that the system
+     * will pick up an ephemeral port at the binding time. This ephemeral can be
+     * retrieved once the server is started using the
+     * {@link #getEphemeralPort()} method.
      * 
      * @param port
      *                The listening port if specified.

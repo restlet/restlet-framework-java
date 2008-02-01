@@ -18,6 +18,7 @@
 
 package com.noelios.restlet;
 
+import java.net.ServerSocket;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
@@ -45,15 +46,27 @@ public class ServerHelper extends ConnectorHelper {
      */
     public ServerHelper(Server server) {
         this.server = server;
+
+        // Clear the ephemeral port
+        getAttributes().put("ephemeralPort", -1);
     }
 
     /**
-     * Returns the server to help.
+     * Returns the server context.
      * 
-     * @return The server to help.
+     * @return The server context.
      */
-    public Server getServer() {
-        return this.server;
+    public Context getContext() {
+        return getServer().getContext();
+    }
+
+    /**
+     * Returns the server logger.
+     * 
+     * @return The server logger.
+     */
+    public Logger getLogger() {
+        return getServer().getLogger();
     }
 
     /**
@@ -67,21 +80,12 @@ public class ServerHelper extends ConnectorHelper {
     }
 
     /**
-     * Returns the server logger.
+     * Returns the server to help.
      * 
-     * @return The server logger.
+     * @return The server to help.
      */
-    public Logger getLogger() {
-        return getServer().getLogger();
-    }
-
-    /**
-     * Returns the server context.
-     * 
-     * @return The server context.
-     */
-    public Context getContext() {
-        return getServer().getContext();
+    public Server getServer() {
+        return this.server;
     }
 
     /**
@@ -98,6 +102,30 @@ public class ServerHelper extends ConnectorHelper {
     }
 
     /**
+     * Sets the ephemeral port in the attributes map if necessary.
+     * 
+     * @param socket
+     *                The bound server socket.
+     */
+    public void setEphemeralPort(int localPort) {
+        // If an ephemeral port is used, make sure we update the attribute for
+        // the API
+        if (getServer().getPort() == 0) {
+            getAttributes().put("ephemeralPort", localPort);
+        }
+    }
+
+    /**
+     * Sets the ephemeral port in the attributes map if necessary.
+     * 
+     * @param socket
+     *                The bound server socket.
+     */
+    public void setEphemeralPort(ServerSocket socket) {
+        setEphemeralPort(socket.getLocalPort());
+    }
+
+    /**
      * Sets the server to help.
      * 
      * @param server
@@ -105,6 +133,14 @@ public class ServerHelper extends ConnectorHelper {
      */
     public void setServer(Server server) {
         this.server = server;
+    }
+
+    @Override
+    public synchronized void stop() throws Exception {
+        super.stop();
+
+        // Clear the ephemeral port
+        getAttributes().put("ephemeralPort", -1);
     }
 
 }

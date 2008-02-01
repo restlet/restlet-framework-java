@@ -52,36 +52,19 @@ public class ConnectorHelper extends Helper {
         return this.protocols;
     }
 
-    /**
-     * Creates a new context.
-     * 
-     * @param loggerName
-     *                The JDK's logger name to use for contextual logging.
-     * @return The new context.
-     */
     @Override
     public Context createContext(String loggerName) {
         return null;
     }
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     */
     @Override
     public void handle(Request request, Response response) {
     }
 
-    /** Start hook. */
     @Override
     public synchronized void start() throws Exception {
     }
 
-    /** Stop callback. */
     @Override
     public synchronized void stop() throws Exception {
     }

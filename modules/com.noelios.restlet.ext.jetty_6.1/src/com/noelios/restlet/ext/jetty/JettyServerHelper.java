@@ -169,6 +169,7 @@ public abstract class JettyServerHelper extends
         }
 
         getWrappedServer().start();
+        setEphemeralPort(this.connector.getLocalPort());
     }
 
     @Override

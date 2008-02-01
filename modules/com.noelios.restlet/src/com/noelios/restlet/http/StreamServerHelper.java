@@ -76,6 +76,9 @@ public class StreamServerHelper extends HttpServerHelper {
         // Create the server socket
         serverSocketChannel = createServerSocket();
 
+        // Sets the ephemeral port is necessary
+        setEphemeralPort(serverSocketChannel.socket());
+
         // Start the socket listener service
         latch = new CountDownLatch(1);
         listenerService.submit(new Listener(this, serverSocketChannel, latch,

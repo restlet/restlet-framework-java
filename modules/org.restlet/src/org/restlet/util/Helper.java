@@ -18,6 +18,9 @@
 
 package org.restlet.util;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -31,6 +34,19 @@ import org.restlet.data.Response;
 public abstract class Helper {
 
     /**
+     * The map of attributes exchanged between the API and the Engine via this
+     * helper.
+     */
+    private final Map<String, Object> attributes;
+
+    /**
+     * Constructor.
+     */
+    public Helper() {
+        this.attributes = new ConcurrentHashMap<String, Object>();
+    }
+
+    /**
      * Creates a new context.
      * 
      * @param loggerName
@@ -38,6 +54,16 @@ public abstract class Helper {
      * @return The new context.
      */
     public abstract Context createContext(String loggerName);
+
+    /**
+     * Returns the map of attributes exchanged between the API and the Engine
+     * via this helper.
+     * 
+     * @return The map of attributes.
+     */
+    public Map<String, Object> getAttributes() {
+        return this.attributes;
+    }
 
     /**
      * Handles a call.
