@@ -92,9 +92,13 @@
       <pathelement path="${classes}/${mod-jaxrs-id}" />
       <pathelement path="${mod}/${mod-jaxrs-id}/src" />
    	
-      <path refid="mod-spring-path" />
-      <pathelement path="${classes}/${mod-spring-id}" />
-      <pathelement path="${mod}/${mod-spring-id}/src" />
+      <path refid="mod-spring-api-path" />
+      <pathelement path="${classes}/${mod-spring-api-id}" />
+      <pathelement path="${mod}/${mod-spring-api-id}/src" />
+
+      <path refid="mod-spring-nre-path" />
+      <pathelement path="${classes}/${mod-spring-nre-id}" />
+      <pathelement path="${mod}/${mod-spring-nre-id}/src" />
 
       <path refid="mod-velocity-path" />
       <pathelement path="${classes}/${mod-velocity-id}" />
@@ -266,11 +270,17 @@
       <fileset dir="${lib}/${lib-simple-id}" includes="*.jar" />
    </path>
 
-   <path id="mod-spring-path">
+   <path id="mod-spring-api-path">
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-spring-id}" includes="*.jar" />
+   </path>
+
+   <path id="mod-spring-nre-path">
+      <path refid="mod-spring-api-path" />
+      <path refid="mod-servlet-path"/>
+      <pathelement path="${classes}/${mod-servlet-id}" />
    </path>
 
    <path id="mod-velocity-path">
@@ -302,7 +312,8 @@
       <pathelement path="${classes}/${mod-jxta-id}" />
       <pathelement path="${classes}/${mod-net-id}" />
       <pathelement path="${classes}/${mod-servlet-id}" />
-      <pathelement path="${classes}/${mod-spring-id}" />
+      <pathelement path="${classes}/${mod-spring-api-id}" />
+      <pathelement path="${classes}/${mod-spring-nre-id}" />
       <pathelement path="${classes}/${mod-velocity-id}" />
       <pathelement path="${classes}/${mod-wadl-id}" />
       <path refid="mod-fileupload-path" />
@@ -321,7 +332,8 @@
       <path refid="mod-net-path" />
       <path refid="mod-servlet-path" />
       <path refid="mod-simple-path" />
-      <path refid="mod-spring-path" />
+      <path refid="mod-spring-api-path" />
+      <path refid="mod-spring-nre-path" />
       <path refid="mod-velocity-path" />
       <path refid="mod-wadl-path" />
    </path>
@@ -817,7 +829,8 @@
       <pomModule name="net" />
       <pomModule name="servlet" />
       <pomModule name="simple" />
-      <pomModule name="spring" />
+      <pomModule name="spring-api" />
+      <pomModule name="spring-nre" />
       <pomModule name="velocity" />
       <pomModule name="wadl" />
       <pomModule name="example" />
@@ -881,7 +894,8 @@
       <compileModule name="servlet" />
       <compileModule name="gwt" /> <!-- depends on servlet -->
       <compileModule name="simple" />
-      <compileModule name="spring" />
+      <compileModule name="spring-api" />
+      <compileModule name="spring-nre" />
       <compileModule name="velocity" />
       <compileModule name="wadl" />
       <compileModule name="example" />
@@ -910,7 +924,8 @@
       <backportModule name="net" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="servlet" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="simple" failonwarning="@{backport-failonwarning}"/>
-      <backportModule name="spring" failonwarning="@{backport-failonwarning}"/>
+      <backportModule name="spring-api" failonwarning="@{backport-failonwarning}"/>
+      <backportModule name="spring-nre" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="velocity" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="wadl" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="example" failonwarning="@{backport-failonwarning}"/>
@@ -1015,7 +1030,8 @@
             <pathelement path="${mod}/${mod-net-id}/src/" />
             <pathelement path="${mod}/${mod-servlet-id}/src/" />
             <pathelement path="${mod}/${mod-simple-id}/src/" />
-            <pathelement path="${mod}/${mod-spring-id}/src/" />
+            <pathelement path="${mod}/${mod-spring-api-id}/src/" />
+            <pathelement path="${mod}/${mod-spring-nre-id}/src/" />
             <pathelement path="${mod}/${mod-velocity-id}/src/" />
             <pathelement path="${mod}/${mod-wadl-id}/src/" />
          </sourcepath>
@@ -1095,7 +1111,8 @@
       <findbugsModule name="net" />
       <findbugsModule name="servlet" />
       <findbugsModule name="simple" />
-      <findbugsModule name="spring" />
+      <findbugsModule name="spring-api" />
+      <findbugsModule name="spring-nre" />
       <findbugsModule name="velocity" />
       <findbugsModule name="wadl" />
       <findbugsModule name="example" />
@@ -1122,7 +1139,8 @@
       <checkstyleModule name="net" />
       <checkstyleModule name="servlet" />
       <checkstyleModule name="simple" />
-      <checkstyleModule name="spring" />
+      <checkstyleModule name="spring-api" />
+      <checkstyleModule name="spring-nre" />
       <checkstyleModule name="velocity" />
       <checkstyleModule name="wadl" />
       <checkstyleModule name="example" />
@@ -1222,7 +1240,8 @@
       <stageModule name="net" />
       <stageModule name="servlet" />
       <stageModule name="simple" />
-      <stageModule name="spring" />
+      <stageModule name="spring-api" />
+      <stageModule name="spring-nre" />
       <stageModule name="velocity" />
       <stageModule name="wadl" />
       <stageModule name="example" />
@@ -1254,7 +1273,8 @@
       <maven2Module name="net" />
       <maven2Module name="servlet" />
       <maven2Module name="simple" />
-      <maven2Module name="spring" />
+      <maven2Module name="spring-api" />
+      <maven2Module name="spring-nre" />
       <maven2Module name="velocity" />
       <maven2Module name="wadl" />
       <maven2Library name="simple" />
