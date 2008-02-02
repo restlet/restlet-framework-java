@@ -18,17 +18,12 @@
 
 package org.restlet.ext.jaxrs;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -54,6 +49,7 @@ import org.restlet.ext.jaxrs.bodywriter.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.LifoSet;
+import org.restlet.ext.jaxrs.util.ProviderLoader;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyReader;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriter;
@@ -83,8 +79,6 @@ import org.restlet.resource.StringRepresentation;
  * @author Stephan Koops
  */
 public class JaxRsRouter extends Restlet {
-
-    private static final String META_INF_SERVICES = "META-INF/services/";
 
     /**
      * Creates a guarded JaxRsRouter. The credentials and the roles are checked
@@ -242,7 +236,7 @@ public class JaxRsRouter extends Restlet {
     private void addDefaultProviders() {
         try {
             ClassLoader classLoader = this.getClass().getClassLoader();
-            loadProviders(classLoader, true);
+            ProviderLoader.loadProviders(classLoader, true, this);
         } catch (IOException e) {
             throw new RuntimeException("Could not load default providers", e);
         } catch (ClassNotFoundException e) {
@@ -254,30 +248,11 @@ public class JaxRsRouter extends Restlet {
      * Will use the given JAX-RS root resource class.
      * 
      * @param jaxRsClass
+     * @throws IllegalArgumentException
      * @see #detach(Class)
      * @see #getRootResourceClasses()
      */
-    public void attach(Class<?> jaxRsClass) {
-        try {
-            attach(jaxRsClass, false);
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Could not attach the root resource class", e);
-        }
-    }
-
-    /**
-     * @param jaxRsClass
-     * @param throwOnException
-     * @throws IllegalArgumentException
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    public void attach(Class<?> jaxRsClass, boolean throwOnException)
-            throws IllegalArgumentException, IOException,
-            ClassNotFoundException {
+    public void attach(Class<?> jaxRsClass) throws IllegalArgumentException {
         RootResourceClass newRrc = new RootResourceClass(jaxRsClass);
         PathRegExp uriTempl = newRrc.getPathRegExp();
         for (RootResourceClass rootResourceClass : this.rootResourceClasses) {
@@ -289,131 +264,24 @@ public class JaxRsRouter extends Restlet {
                                 + uriTempl.getPathPattern());
         }
         rootResourceClasses.add(newRrc);
-        ClassLoader classLoader = jaxRsClass.getClassLoader();
-        loadProviders(classLoader, throwOnException);
     }
 
     /**
-     * @param classLoader
+     * If the automatic loading of the {@link Provider}s doesn't work, you can
+     * use this method to load the providers as described in
+     * {@link ProviderLoader}.
+     * 
+     * @param jaxRsClass
      * @param throwOnException
-     * @return true, if everything got right, false if a problem occurs, and
-     *         throwOnException was false.
      * @throws IllegalArgumentException
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private boolean loadProviders(ClassLoader classLoader,
-            boolean throwOnException) throws IllegalArgumentException,
-            IOException, ClassNotFoundException {
-        boolean result = true;
-        try {
-            Class<?> providerClass = MessageBodyWriter.class;
-            // TODO z.Zt. nur MessageBodyWriter
-            Collection<Class<?>> messageBodyReaderClasses = loadClasses(
-                    classLoader, providerClass, throwOnException);
-            for (Class<?> messageBodyReaderClass : messageBodyReaderClasses) {
-                try {
-                    addProvider(messageBodyReaderClass, false, true);
-                    // TODO z.Zt. nur MessageBodyWriter
-                } catch (IllegalArgumentException e) {
-                    if (throwOnException)
-                        throw e;
-                    getLogger().log(
-                            Level.WARNING,
-                            "Could not add the MessageBodyReader "
-                                    + messageBodyReaderClass.getName(), e);
-                    result = false;
-
-                }
-            }
-        } catch (IOException e) {
-            if (throwOnException)
-                throw e;
-            getLogger().log(Level.WARNING,
-                    "Could not add the MessageBodyReaders", e);
-            result = false;
-        } catch (ClassNotFoundException e) {
-            if (throwOnException)
-                throw e;
-            getLogger().log(Level.WARNING,
-                    "Could not load a MessageBodyReader: " + e.getMessage(), e);
-            result = false;
-        }
-        return result;
-    }
-
-    /**
-     * @param classLoader
-     *                the ClassLoader to load the classes with
-     * @param interfacce
-     *                The interface to load implementations for.
-     * @param throwOnClassNotFound
-     *                if true, a catched {@link ClassNotFoundException} is
-     *                thrown, otherwise logged.
-     * @throws IOException
-     *                 if the resource under the given URL can not be read.
-     * @throws ClassNotFoundException
-     *                 if throwClassNotFound is true and a class could not be
-     *                 loaded.
-     */
-    private Collection<Class<?>> loadClasses(ClassLoader classLoader,
-            Class<?> interfacce, boolean throwOnClassNotFound)
-            throws IOException, ClassNotFoundException {
-        String filename = META_INF_SERVICES + interfacce.getName();
-        Collection<Class<?>> classes = new ArrayList<Class<?>>();
-        try {
-            Enumeration<URL> resEnum = classLoader.getResources(filename);
-            while (resEnum.hasMoreElements()) {
-                URL url = resEnum.nextElement();
-                loadClasses(url, classes, classLoader, throwOnClassNotFound);
-            }
-        } catch (IOException e) {
-            loadClasses(classLoader.getResource(filename), classes,
-                    classLoader, throwOnClassNotFound);
-        }
-        return classes;
-    }
-
-    /**
-     * Loads the classes with the names in the resource under the given URL and
-     * them to the given Collection.
-     * 
-     * @param url
-     *                the URL which describes the resource with the class names
-     * @param classColl
-     *                the collection to add the classes
-     * @param classLoader
-     *                the ClassLoader to load the classes with
-     * @param throwOnClassNotFound
-     *                if true, a catched {@link ClassNotFoundException} is
-     *                thrown, otherwise logged.
-     * @throws IOException
-     *                 if the resource under the given URL can not be read.
-     * @throws ClassNotFoundException
-     *                 if throwClassNotFound is true and a class could not be
-     *                 loaded.
-     */
-    private void loadClasses(URL url, Collection<Class<?>> classColl,
-            ClassLoader classLoader, boolean throwOnClassNotFound)
-            throws IOException, ClassNotFoundException {
-        InputStream inputStream = url.openStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                inputStream));
-        String className;
-        while ((className = reader.readLine()) != null) {
-            className = className.trim();
-            if (className.startsWith("#") || className.startsWith("//"))
-                continue; // comment
-            try {
-                Class<?> clazz = classLoader.loadClass(className);
-                classColl.add(clazz);
-            } catch (ClassNotFoundException e) {
-                if (throwOnClassNotFound)
-                    throw e;
-                getLogger().log(Level.WARNING,
-                        "Class with name " + className + " not found", e);
-            }
-        }
+    public void loadProviders(Class<?> jaxRsClass, boolean throwOnException)
+            throws IllegalArgumentException, IOException,
+            ClassNotFoundException {
+        ProviderLoader.loadProviders(jaxRsClass.getClassLoader(),
+                throwOnException, this);
     }
 
     /**
@@ -460,7 +328,7 @@ public class JaxRsRouter extends Restlet {
      *                {@link javax.ws.rs.ext.MessageBodyWriter}.
      * @throws IllegalArgumentException
      */
-    private void addProvider(Class<?> providerClass, boolean asReader,
+    public void addProvider(Class<?> providerClass, boolean asReader,
             boolean asWriter) throws IllegalArgumentException {
         Constructor<?> constructor = RootResourceClass
                 .findJaxRsConstructor(providerClass);
@@ -634,7 +502,7 @@ public class JaxRsRouter extends Restlet {
         // Part 2
         for (;;) // (j)
         {
-            // (a) If U is null or ‘/’ go to step 3
+            // (a) If U is null or '/' go to step 3
             if (Util.isEmptyOrSlash(u)) {
                 @SuppressWarnings("unchecked")
                 Map<String, String> variables = Collections.EMPTY_MAP;
@@ -754,7 +622,7 @@ public class JaxRsRouter extends Restlet {
                 methodIter.remove();
         }
         if (resourceMethods.isEmpty()) {
-            // LATER zurückgeben, welche MediaTypes unterstützt werden.
+            // LATER zurueckgeben, welche MediaTypes unterstuetzt werden.
             throw new CouldNotFindMethodException(errorRestletNotAcceptable);
         }
         // (b) and (c)
@@ -1163,8 +1031,6 @@ public class JaxRsRouter extends Restlet {
      *                URI.
      * @param restletRequest
      *                The Restlet request
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
      */
     private void invokeMethodAndHandleResult(ResourceMethod resourceMethod,
             ResourceObject resourceObject, MatchingResult matchingResult,
@@ -1177,6 +1043,9 @@ public class JaxRsRouter extends Restlet {
             result = resourceMethod.invoke(resourceObject, matchingResult,
                     allTemplParamsEnc, restletRequest, restletResponse,
                     authenticator);
+        } catch (InvocationTargetException ite) {
+            throw handleInvokeException(ite, restletResponse, "invoke",
+                    "Exception in resource method", accMediaTypes);
         } catch (Exception e) {
             throw handleInvokeException(e, restletResponse, "invoke",
                     "Can not invoke the resource method", accMediaTypes);
