@@ -56,6 +56,7 @@ public class JaxRsOutputRepresentation extends OutputRepresentation {
     public JaxRsOutputRepresentation(Object object, MediaType mediaType,
             MessageBodyWriter mbw, MultivaluedMap<String, Object> httpHeaders) {
         super(mediaType, mbw.getSize(object));
+        // TODO perhaps warning, if "text/*" or something like that?
         this.mbw = mbw;
         this.httpHeaders = httpHeaders;
         this.object = object;
