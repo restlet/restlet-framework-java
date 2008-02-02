@@ -130,7 +130,7 @@ public class LifoSet<E> implements Set<E> {
 
     /**
      * @see java.util.Collection#addAll(java.util.Collection)
-     * @return true, wenn sich dieses Set geänderd hat.
+     * @return true, if this Set was changed.
      * @param coll
      *                Collection&lt;? extends E&gt;
      */

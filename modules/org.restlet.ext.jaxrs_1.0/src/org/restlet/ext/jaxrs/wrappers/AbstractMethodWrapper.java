@@ -31,7 +31,7 @@ import org.restlet.ext.jaxrs.MatchingResult;
 
 /**
  * An abstract wrapper class. Contains some a static methods to use from
- * everywhere, otherwise not intended for public use 
+ * everywhere, otherwise not intended for public use
  * 
  * @author Stephan Koops
  */
@@ -65,8 +65,8 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
     }
 
     /**
-     * Führt die Methode aus und gibt das erzeugte Objekt aus. Es ist die
-     * Antwort-Repräsentation, die zum Client geschickt wird.
+     * Invokes the method and returned the created representation for the
+     * response.
      * 
      * @param resourceObject
      * @param matchingResult
@@ -75,9 +75,12 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @param allTemplParamsEnc
      *                Contains all Parameters, that are read from the called
      *                URI.
-     * @param restletRequest the Restlet request
-     * @param restletResponse the Restlet response
-     * @param authenticator Authenticator
+     * @param restletRequest
+     *                the Restlet request
+     * @param restletResponse
+     *                the Restlet response
+     * @param authenticator
+     *                Authenticator
      * @return
      * @throws Exception
      *                 of the native invoke of the Java method
@@ -85,7 +88,8 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
     public Object invoke(ResourceObject resourceObject,
             MatchingResult matchingResult,
             MultivaluedMap<String, String> allTemplParamsEnc,
-            Request restletRequest, Response restletResponse, Authenticator authenticator) throws Exception {
+            Request restletRequest, Response restletResponse,
+            Authenticator authenticator) throws Exception {
         Annotation[][] parameterAnnotationss = javaMethod
                 .getParameterAnnotations();
         Class<?>[] parameterTypes = javaMethod.getParameterTypes();

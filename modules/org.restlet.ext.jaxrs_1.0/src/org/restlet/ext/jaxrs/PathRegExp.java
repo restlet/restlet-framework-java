@@ -109,7 +109,7 @@ public class PathRegExp {
         // TODO JSR311: finalCapturingGroup habe ich noch nicht richtig
         // verstanden.
         if (finalCapturingGroup == null)
-            finalCapturingGroup = ""; // TODO ob das stimmt, weiﬂ ich nicht
+            finalCapturingGroup = ""; // TODO ob das stimmt, weiss ich nicht
         finalCapturingGroup = finalMatchingGroup;
         return new MatchingResult(variables, finalMatchingGroup,
                 finalCapturingGroup, variables.size());

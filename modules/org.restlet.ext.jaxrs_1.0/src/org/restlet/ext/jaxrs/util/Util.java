@@ -215,8 +215,8 @@ public class Util {
             }
         }
         if (restletResponse.getEntity() == null) {
-            // TODO Jerome: wie bekommt man am elegantesten ne leere
-            // Repräsentation?
+            // TODO Jerome: what is the most elegant way to get an empty
+            // Representation?
             restletResponse.setEntity(new StringRepresentation(""));
         }
         Engine.getInstance().copyResponseHeaders(headers, restletResponse,
@@ -759,9 +759,9 @@ public class Util {
      * Checks, if the smaller MediaType is the same type as or a subtype of
      * bigger.<br/>Examples:
      * <ul>
-     *   <li>isSameOrSubType("text/plain", "text/*") -> true</li>
-     *   <li>isSameOrSubType("text/plain", "text/plain") -> true</li>
-     *   <li>isSameOrSubType("text/*", "text/plain") -> false</li>
+     * <li>isSameOrSubType("text/plain", "text/*") -> true</li>
+     * <li>isSameOrSubType("text/plain", "text/plain") -> true</li>
+     * <li>isSameOrSubType("text/*", "text/plain") -> false</li>
      * </ul>
      * 
      * 
