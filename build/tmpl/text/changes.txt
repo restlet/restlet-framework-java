@@ -53,13 +53,14 @@ Changes log
  - Added format(Object) and resolve(Object,String) methods to Template to allow for custom variable resolution.
    Enhancement suggested by Stephan Koops.
  - Added new Spring NRE extension containing a SpringServerServlet facilitating the Servlet + Spring + Restlet
-   trio integration. Contributed by Florian Schwarz.
+   trio integration. Contributed by Florian Schwarz. Also new classes where contributed by Rhett Sutphin.
  - Added "defaultMatchingMode" property on Router. Suggested by William Pietri.
  - Added "throwable" property to the Status class, respecting the immutability. Suggested by Paul J. Lucas.
  - Added "getEphemeralPort()" method on Server to get the local port actually used by the system when the
    "port" property is set to '0'. Suggested by William Pietri. 
  - Made the inner Template.VariableResolver interface and "format(VariableResolver)" method protected. 
    Suggested by Stephan Koops for the JAX-RS extension.
+ - Added JiBX extension, alternative to JAXB. Contributed by Florian Schwarz.
   
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.

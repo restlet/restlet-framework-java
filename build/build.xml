@@ -91,6 +91,10 @@
       <path refid="mod-jaxrs-path" />
       <pathelement path="${classes}/${mod-jaxrs-id}" />
       <pathelement path="${mod}/${mod-jaxrs-id}/src" />
+
+      <path refid="mod-jibx-path" />
+      <pathelement path="${classes}/${mod-jibx-id}" />
+      <pathelement path="${mod}/${mod-jibx-id}/src" />
    	
       <path refid="mod-spring-api-path" />
       <pathelement path="${classes}/${mod-spring-api-id}" />
@@ -235,6 +239,12 @@
       <fileset dir="${lib}/${lib-jetty-id}" includes="*.jar" />
    </path>
 
+   <path id="mod-jibx-path">
+      <path refid="mod-ri-path" />
+      <pathelement path="${classes}/${mod-ri-id}" />
+      <fileset dir="${lib}/${lib-jibx-id}" includes="*.jar" />
+   </path>
+
    <path id="mod-jmx-path">
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
@@ -307,6 +317,7 @@
       <pathelement path="${classes}/${mod-jaxrs-id}" />
 	  <pathelement path="${classes}/${mod-jdbc-id}" />
       <pathelement path="${classes}/${mod-jetty-id}" />
+      <pathelement path="${classes}/${mod-jibx-id}" />
       <pathelement path="${classes}/${mod-jmx-id}" />
       <pathelement path="${classes}/${mod-json-id}" />
       <pathelement path="${classes}/${mod-jxta-id}" />
@@ -326,6 +337,7 @@
       <path refid="mod-jaxrs-path" />
       <path refid="mod-jdbc-path" />
       <path refid="mod-jetty-path" />
+      <path refid="mod-jibx-path" />
       <path refid="mod-jmx-path" />
       <path refid="mod-json-path" />
       <path refid="mod-jxta-path" />
@@ -823,6 +835,7 @@
 <!-- disabled for now  <pomModule name="jaxrs" /> -->
       <pomModule name="jdbc" ext="dbcp" />
       <pomModule name="jetty" />
+      <pomModule name="jibx" />
 <!-- disabled for now  <pomModule name="jmx" /> -->
       <pomModule name="json" />
 <!-- disabled for now  <pomModule name="jxta" /> -->
@@ -887,6 +900,7 @@
    	  <compileModule name="jaxrs" />
       <compileModule name="jdbc" />
       <compileModule name="jetty" />
+      <compileModule name="jibx" />
       <compileModule name="jmx" />
       <compileModule name="json" />
       <compileModule name="jxta" />
@@ -918,6 +932,7 @@
    	  <backportModule name="jaxrs" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jdbc" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jetty" failonwarning="@{backport-failonwarning}"/>
+      <backportModule name="jibx" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jmx" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="json" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jxta" failonwarning="@{backport-failonwarning}"/>
@@ -1024,6 +1039,7 @@
 <!-- disabled for now  <pathelement path="${mod}/${mod-jaxrs-id}/src/" /> -->
             <pathelement path="${mod}/${mod-jdbc-id}/src/" />
             <pathelement path="${mod}/${mod-jetty-id}/src/" />
+            <pathelement path="${mod}/${mod-jibx-id}/src/" />
 <!-- disabled for now  <pathelement path="${mod}/${mod-jmx-id}/src/" /> -->
             <pathelement path="${mod}/${mod-json-id}/src/" />
 <!-- disabled for now  <pathelement path="${mod}/${mod-jxta-id}/src/" /> -->
@@ -1056,6 +1072,7 @@
          <link href="http://java.sun.com/products/javamail/javadocs/" />
          <link href="https://jaxb.dev.java.net/nonav/2.1.3/docs/api/" />
          <link href="http://jetty.mortbay.org/apidocs/" />
+      	 <link href="http://jibx.sourceforge.net/api/" />
          <link href="http://static.springframework.org/spring/docs/2.0.x/api/" />
          <link href="http://www.json.org/javadoc/" />
          <link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
@@ -1101,10 +1118,11 @@
       <findbugsModule name="gwt" />
       <findbugsModule name="httpclient" />
       <findbugsModule name="javamail" />
-<!-- disabled for now  <findbugsModule name="jaxb" /> -->
+      <findbugsModule name="jaxb" />
    	  <findbugsModule name="jaxrs" />
       <findbugsModule name="jdbc" />
       <findbugsModule name="jetty" />
+      <findbugsModule name="jibx" />
 <!-- disabled for now  <findbugsModule name="jmx" /> -->
       <findbugsModule name="json" />
       <findbugsModule name="jxta" />
@@ -1133,6 +1151,7 @@
    	  <checkstyleModule name="jaxrs" />
       <checkstyleModule name="jdbc" />
       <checkstyleModule name="jetty" />
+      <checkstyleModule name="jibx" />
       <checkstyleModule name="jmx" />
       <checkstyleModule name="json" />
       <checkstyleModule name="jxta" />
@@ -1206,6 +1225,7 @@
 <!-- disabled for now  <stageLibrary name="jaxrs" /> -->
       <stageLibrary name="activation" />
       <stageLibrary name="jetty" />
+      <stageLibrary name="jibx" />
       <stageLibrary name="json" />
 <!-- disabled for now  <stageLibrary name="jxta" /> -->
       <stageLibrary name="lang" />
@@ -1232,6 +1252,7 @@
       <stageModule name="javamail" />
       <stageModule name="jaxb" />
 <!-- disabled for now  <stageModule name="jaxrs" /> -->
+      <stageModule name="jibx" />
       <stageModule name="jdbc" />
       <stageModule name="jetty" />
 <!-- disabled for now  <stageModule name="jmx" /> -->
@@ -1269,6 +1290,7 @@
 <!-- disabled for now  <maven2Module name="jaxrs" /> -->
       <maven2Module name="jdbc" />
       <maven2Module name="jetty" />
+      <maven2Module name="jibx" />
       <maven2Module name="json" />
       <maven2Module name="net" />
       <maven2Module name="servlet" />
