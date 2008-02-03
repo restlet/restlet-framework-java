@@ -407,6 +407,10 @@ public class Resource extends Handler {
             if ((variants == null) || (variants.isEmpty())) {
                 // Resource not found
                 getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                getLogger()
+                                    .warning(
+                                            "A resource should normally have at least one variant added by calling getVariants().add() in the constructor");
+
             } else if (isNegotiateContent()) {
                 Variant preferredVariant = getPreferredVariant();
 
@@ -450,7 +454,7 @@ public class Resource extends Handler {
                         } else {
                             getLogger()
                                     .warning(
-                                            "A resource with multiple variants should provide and identifier for each variants when content negotiation is turned off");
+                                            "A resource with multiple variants should provide an identifier for each variant when content negotiation is turned off");
                         }
                     }
 

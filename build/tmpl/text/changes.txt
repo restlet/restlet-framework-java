@@ -62,6 +62,7 @@ Changes log
    Suggested by Stephan Koops for the JAX-RS extension.
  - Added JiBX extension, alternative to JAXB. Contributed by Florian Schwarz.
  - Added support for nested resources in WadlComponent. Contributed by Avi Flax.
+ - Resources with no variant set now log a warning on GET requests. Contributed by Avi Flax.
   
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
