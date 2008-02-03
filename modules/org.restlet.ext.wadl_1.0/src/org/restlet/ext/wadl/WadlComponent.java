@@ -31,6 +31,8 @@ import org.restlet.data.Response;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.util.NodeSet;
+
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
@@ -96,7 +98,6 @@ public class WadlComponent extends Component {
      * @param wadl
      *                The WADL document.
      */
-    @SuppressWarnings("unchecked")
     public void attach(Representation wadl) {
         try {
             // Create a DOM representation of the WADL document
@@ -114,20 +115,7 @@ public class WadlComponent extends Component {
 
             NodeSet resources = dom.getNodes("/application/resources/resource");
             for (Node resource : resources) {
-                String uriPattern = resource.getAttributes().getNamedItem(
-                        "path").getNodeValue();
-                Node idNode = resource.getAttributes().getNamedItem("id");
-
-                if (idNode != null) {
-                    String targetClassName = idNode.getNodeValue();
-                    Class targetClass = Class.forName(targetClassName);
-                    root.attach(uriPattern, targetClass);
-                } else {
-                    getLogger()
-                            .warning(
-                                    "Unable to find the 'id' attribute of the resource element with this path attribute \""
-                                            + uriPattern + "\"");
-                }
+                attachResourceAndChildren(dom, resource, null, root);
             }
 
             // Analyzes the WADL resources base
@@ -191,6 +179,76 @@ public class WadlComponent extends Component {
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Error during the attachment of the WADL application", e);
+        }
+    }
+
+    /**
+     * Attaches a resource, as specified in a WADL document, to a specified
+     * router, then recursively attaches its child resources.
+     * 
+     * @param wadl
+     *                The WADL document which contains the resources. Needed so
+     *                child resources can be located.
+     * @param thisResource
+     *                The resource to attach.
+     * @param parentResource
+     *                The parent resource. Needed to correctly resolve the
+     *                "path" of the resource. Should be null if the resource is
+     *                root-level.
+     * @param router
+     *                The router to which to attach the resource and its
+     *                children.
+     * @throws ClassNotFoundException
+     *                 If the class name specified in the "id" attribute of the
+     *                 resource does not exist, this exception will be thrown.
+     */
+    @SuppressWarnings("unchecked")
+    protected void attachResourceAndChildren(DomRepresentation wadl,
+            Node thisResource, Node parentResource, Router router)
+            throws ClassNotFoundException {
+
+        String uriPattern = thisResource.getAttributes().getNamedItem("path")
+                .getNodeValue();
+        Node idNode = thisResource.getAttributes().getNamedItem("id");
+
+        if (idNode != null) {
+            // if there's a parentResource, add it's uriPattern to this one
+            if (parentResource != null) {
+                String parentUriPattern = parentResource.getAttributes()
+                        .getNamedItem("path").getNodeValue();
+
+                if (parentUriPattern.endsWith("/") == false
+                        && uriPattern.startsWith("/") == false) {
+                    parentUriPattern += "/";
+                }
+
+                uriPattern = parentUriPattern + uriPattern;
+
+                // set thisResource's 'path' attribute to the new uriPattern so
+                // child resources will be able to use it
+                ((Element) thisResource).setAttribute("path", uriPattern);
+            }
+
+            String targetClassName = idNode.getNodeValue();
+            Class targetClass = Class.forName(targetClassName);
+
+            // attach the resource itself
+            router.attach(uriPattern, targetClass);
+
+            // get a list of the child resources of this resource
+            NodeSet childResources = wadl.getNodes("//resource[@id='"
+                    + targetClassName + "']/resource");
+
+            // attach any children of the resource
+            for (Node childResource : childResources) {
+                attachResourceAndChildren(wadl, childResource, thisResource,
+                        router);
+            }
+        } else {
+            getLogger()
+                    .warning(
+                            "Unable to find the 'id' attribute of the resource element with this path attribute \""
+                                    + uriPattern + "\"");
         }
     }
 }

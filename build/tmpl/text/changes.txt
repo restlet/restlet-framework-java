@@ -61,6 +61,7 @@ Changes log
  - Made the inner Template.VariableResolver interface and "format(VariableResolver)" method protected. 
    Suggested by Stephan Koops for the JAX-RS extension.
  - Added JiBX extension, alternative to JAXB. Contributed by Florian Schwarz.
+ - Added support for nested resources in WadlComponent. Contributed by Avi Flax.
   
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
