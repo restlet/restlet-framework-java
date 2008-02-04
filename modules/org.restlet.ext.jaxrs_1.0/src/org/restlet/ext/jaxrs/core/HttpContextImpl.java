@@ -19,6 +19,7 @@ package org.restlet.ext.jaxrs.core;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,7 @@ import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 
 /**
@@ -337,12 +339,14 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      */
     public Map<String, Cookie> getCookies() {
         if (this.cookies == null) {
-            Map<String, Cookie> c = new HashMap<String, Cookie>();
+            Map<String, Cookie> cookies = new HashMap<String, Cookie>();
             for (org.restlet.data.Cookie rc : request.getCookies()) {
                 Cookie cookie = Converter.toJaxRsCookie(rc);
-                c.put(cookie.getName(), cookie);
+                cookies.put(cookie.getName(), cookie);
             }
-            this.cookies = c;
+            // TODO unmodifiable is useful, but it's not in the spec yet
+            // I proposed it.
+            this.cookies = Collections.unmodifiableMap(cookies);
         }
         return this.cookies;
     }
@@ -351,7 +355,17 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      * @see HttpHeaders#getLanguage()
      */
     public String getLanguage() {
-        return language;
+        if(this.language == null)
+        {
+            Representation entity = request.getEntity();
+            if(entity == null)
+                return null;
+            List<Language> languages = entity.getLanguages();
+            if(languages.isEmpty())
+                return null;
+            this.language = Util.getFirstElement(languages).getName();
+        }
+        return this.language;
     }
 
     /**

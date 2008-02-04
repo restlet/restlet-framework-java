@@ -37,14 +37,14 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public static void testGetHtmlText() throws Exception {
-        Response response = accessServer(SimpleHouse.class,
-                Method.GET, MediaType.TEXT_HTML);
+        Response response = accessServer(Method.GET,
+                SimpleHouse.class, MediaType.TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
     }
 
     public static void testGetPlainText() throws Exception {
-        Response response = accessServer(SimpleHouse.class,
-                Method.GET, MediaType.TEXT_PLAIN);
+        Response response = accessServer(Method.GET,
+                SimpleHouse.class, MediaType.TEXT_PLAIN);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation representation = response.getEntity();
         assertEquals(SimpleHouse.RERP_PLAIN_TEXT, representation.getText());
@@ -53,8 +53,8 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public static void testGetTextAll() throws Exception {
-        Response response = accessServer(SimpleHouse.class,
-                Method.GET, MediaType.TEXT_ALL);
+        Response response = accessServer(Method.GET,
+                SimpleHouse.class, MediaType.TEXT_ALL);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation representation = response.getEntity();
         assertEquals(SimpleHouse.RERP_PLAIN_TEXT, representation.getText());
@@ -63,10 +63,10 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public void testHead1() throws Exception {
-        Response responseGett = accessServer(SimpleHouse.class,
-                "headTest1", Method.GET, MediaType.TEXT_HTML);
-        Response responseHead = accessServer(SimpleHouse.class,
-                "headTest1", Method.HEAD, MediaType.TEXT_HTML);
+        Response responseGett = accessServer(Method.GET,
+                SimpleHouse.class, "headTest1", MediaType.TEXT_HTML);
+        Response responseHead = accessServer(Method.HEAD,
+                SimpleHouse.class, "headTest1", MediaType.TEXT_HTML);
         if (responseGett.getStatus().isError())
             System.out.println(responseGett.getEntity().getText());
         assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
@@ -84,10 +84,10 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public void testHead2() throws Exception {
-        Response responseGett = accessServer(SimpleHouse.class,
-                "headTest2", Method.GET, MediaType.TEXT_HTML);
-        Response responseHead = accessServer(SimpleHouse.class,
-                "headTest2", Method.HEAD, MediaType.TEXT_HTML);
+        Response responseGett = accessServer(Method.GET,
+                SimpleHouse.class, "headTest2", MediaType.TEXT_HTML);
+        Response responseHead = accessServer(Method.HEAD,
+                SimpleHouse.class, "headTest2", MediaType.TEXT_HTML);
         if (responseGett.getStatus().isError())
             System.out.println(responseGett.getEntity().getText());
         assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
@@ -105,10 +105,10 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public void testHead2plain() throws Exception {
-        Response responseGett = accessServer(SimpleHouse.class,
-                "headTest2", Method.GET, MediaType.TEXT_PLAIN);
-        Response responseHead = accessServer(SimpleHouse.class,
-                "headTest2", Method.HEAD, MediaType.TEXT_PLAIN);
+        Response responseGett = accessServer(Method.GET,
+                SimpleHouse.class, "headTest2", MediaType.TEXT_PLAIN);
+        Response responseHead = accessServer(Method.HEAD,
+                SimpleHouse.class, "headTest2", MediaType.TEXT_PLAIN);
         if (responseGett.getStatus().isError())
             System.out.println(responseGett.getEntity().getText());
         assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
@@ -126,16 +126,16 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public void testOptions() throws Exception {
-        Response response = accessServer(SimpleHouse.class, Method.OPTIONS);
+        Response response = accessServer(Method.OPTIONS, SimpleHouse.class);
         assertAllowedMethod(response, Method.GET);
 
-        response = accessServer(SimpleHouse.class, "headTest1", Method.OPTIONS);
+        response = accessServer(Method.OPTIONS, SimpleHouse.class, "headTest1");
         assertAllowedMethod(response, Method.GET, Method.HEAD, Method.POST);
 
-        response = accessServer(SimpleHouse.class, "headTest2", Method.OPTIONS);
+        response = accessServer(Method.OPTIONS, SimpleHouse.class, "headTest2");
         assertAllowedMethod(response, Method.GET, Method.HEAD);
 
-        response = accessServer(SimpleHouse.class, "xyz", Method.OPTIONS);
+        response = accessServer(Method.OPTIONS, SimpleHouse.class, "xyz");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 }

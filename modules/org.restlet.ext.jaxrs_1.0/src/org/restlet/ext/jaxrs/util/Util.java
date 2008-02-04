@@ -477,7 +477,13 @@ public class Util {
      * @return Returns the HTTP-Headers-Form from the Request.
      */
     public static Form getHttpHeaders(Request request) {
-        return (Form) request.getAttributes().get(ORG_RESTLET_HTTP_HEADERS);
+        Form headers = (Form) request.getAttributes().get(ORG_RESTLET_HTTP_HEADERS);
+        if(headers == null)
+        {
+            headers = new Form();
+            request.getAttributes().put(ORG_RESTLET_HTTP_HEADERS, headers);
+        }
+        return headers;
     }
 
     /**
@@ -486,7 +492,13 @@ public class Util {
      * @return Returns the HTTP-Headers-Form from the Response.
      */
     public static Form getHttpHeaders(Response response) {
-        return (Form) response.getAttributes().get(ORG_RESTLET_HTTP_HEADERS);
+        Form headers = (Form) response.getAttributes().get(ORG_RESTLET_HTTP_HEADERS);
+        if(headers == null)
+        {
+            headers = new Form();
+            response.getAttributes().put(ORG_RESTLET_HTTP_HEADERS, headers);
+        }
+        return headers;
     }
 
     /**

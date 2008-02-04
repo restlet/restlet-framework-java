@@ -464,7 +464,7 @@ public class JaxRsRouter extends Restlet {
                 .getRemainingPart();
         ResClAndTemplate rcat = identifyRootResourceClass(uriRemainingPart);
         ResObjAndPath resourceObjectAndPath = obtainObjectThatHandleRequest(
-                rcat, restletRequest, restletResponse, accMediaTypes);
+                rcat, restletRequest, restletResponse);
         MatchingResult matchingResult = resourceObjectAndPath.matchingResult;
         MediaType givenMediaType = restletRequest.getEntity().getMediaType();
         ResObjAndMeth method = idenifyMethodThatHandleRequest(
@@ -534,8 +534,8 @@ public class JaxRsRouter extends Restlet {
      */
     private ResObjAndPath obtainObjectThatHandleRequest(
             ResClAndTemplate resClAndTemplate, Request restletRequest,
-            Response restletResponse, List<Collection<MediaType>> accMediaTypes)
-            throws CouldNotFindMethodException, RequestHandledException {
+            Response restletResponse) throws CouldNotFindMethodException,
+            RequestHandledException {
         String u = resClAndTemplate.u;
         RootResourceClass resClass = resClAndTemplate.rrc;
         MultivaluedMap<String, String> allTemplParamsEnc = resClAndTemplate.allTemplParamsEnc;
@@ -547,9 +547,8 @@ public class JaxRsRouter extends Restlet {
                     allTemplParamsEnc, restletRequest, restletResponse,
                     authenticator);
         } catch (Exception e) {
-            throw handleInvokeException(e, restletResponse, "createInstance",
-                    "Could not create new instance of root resource class",
-                    accMediaTypes);
+            throw handleCreateException(e, restletResponse, "createInstance",
+                    "Could not create new instance of root resource class");
         }
         // Part 2
         for (;;) // (j)
@@ -584,10 +583,11 @@ public class JaxRsRouter extends Restlet {
 
             rMatch = firstMeth.getPathRegExp();
             MatchingResult matchingResult = rMatch.match(u);
-            
-            for(Map.Entry<String, String> e : matchingResult.getVariables().entrySet())
+
+            for (Map.Entry<String, String> e : matchingResult.getVariables()
+                    .entrySet())
                 allTemplParamsEnc.add(e.getKey(), e.getValue());
-            
+
             // (h) When Method is resource method
             if (firstMeth instanceof SubResourceMethod)
                 return new ResObjAndPath(o, u, matchingResult,
@@ -600,10 +600,9 @@ public class JaxRsRouter extends Restlet {
                         allTemplParamsEnc, restletRequest, restletResponse,
                         authenticator);
             } catch (Exception e) {
-                throw handleInvokeException(e, restletResponse,
+                throw handleCreateException(e, restletResponse,
                         "createSubResource",
-                        "Could not create new instance of root resource class",
-                        accMediaTypes);
+                        "Could not create new instance of root resource class");
             }
             // (j) Go to step 2a (repeat for)
         }
@@ -1016,6 +1015,8 @@ public class JaxRsRouter extends Restlet {
      * Handles the given Exception.
      * 
      * @param exception
+     * @param resourceMethod
+     *                The invokes method.
      * @param restletResponse
      * @param methodName
      * @param logMessage
@@ -1024,14 +1025,38 @@ public class JaxRsRouter extends Restlet {
      *                 the request was handled.
      */
     private RequestHandledException handleInvokeException(Exception exception,
-            Response restletResponse, String methodName, String logMessage,
-            List<Collection<MediaType>> accMediaTypes)
+            List<Collection<MediaType>> accMediaTypes,
+            ResourceMethod resourceMethod, Response restletResponse,
+            String methodName, String logMessage)
             throws RequestHandledException {
         if (exception.getCause() instanceof WebApplicationException) {
             WebApplicationException webAppExc = (WebApplicationException) exception
                     .getCause();
-            handleWebAppExc(webAppExc, restletResponse, accMediaTypes);
+            handleWebAppExc(webAppExc, restletResponse, accMediaTypes,
+                    resourceMethod);
         }
+        restletResponse.setStatus(Status.SERVER_ERROR_INTERNAL);
+        getLogger().logp(Level.WARNING, this.getClass().getName(), methodName,
+                logMessage, exception.getCause());
+        throw new RequestHandledException();
+    }
+
+    /**
+     * Handles the given Exception.
+     * 
+     * @param exception
+     * @param restletResponse
+     * @param methodName
+     * @param logMessage
+     * @param resourceMethod
+     *                The invokes method.
+     * @throws RequestHandledException
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
+     */
+    private RequestHandledException handleCreateException(Exception exception,
+            Response restletResponse, String methodName, String logMessage)
+            throws RequestHandledException {
         restletResponse.setStatus(Status.SERVER_ERROR_INTERNAL);
         getLogger().logp(Level.WARNING, this.getClass().getName(), methodName,
                 logMessage, exception.getCause());
@@ -1048,18 +1073,20 @@ public class JaxRsRouter extends Restlet {
      * @param accMediaTypes
      *                the accepted MediaType, see
      *                {@link Util#sortMetadataList(Collection)}.
+     * @param resourceMethod
+     *                The invokes method.
      * @throws RequestHandledException
      *                 throws this message to exit the method and indicate, that
      *                 the request was handled.
      */
     private RequestHandledException handleWebAppExc(
             WebApplicationException webAppExc, Response restletResponse,
-            List<Collection<MediaType>> accMediaTypes)
-            throws RequestHandledException {
+            List<Collection<MediaType>> accMediaTypes,
+            ResourceMethod resourceMethod) throws RequestHandledException {
         // the message of the Exception is not used in the
         // WebApplicationException
-        jaxRsRespToRestletResp(webAppExc.getResponse(), restletResponse, null,
-                accMediaTypes); // LATER handleInvokeException:
+        jaxRsRespToRestletResp(webAppExc.getResponse(), restletResponse,
+                resourceMethod, accMediaTypes); // LATER handleInvokeException:
         // MediaType rausfinden
         throw new RequestHandledException();
     }
@@ -1100,11 +1127,12 @@ public class JaxRsRouter extends Restlet {
                     allTemplParamsEnc, restletRequest, restletResponse,
                     authenticator);
         } catch (InvocationTargetException ite) {
-            throw handleInvokeException(ite, restletResponse, "invoke",
-                    "Exception in resource method", accMediaTypes);
+            throw handleInvokeException(ite, accMediaTypes, resourceMethod,
+                    restletResponse, "invoke", "Exception in resource method");
         } catch (Exception e) {
-            throw handleInvokeException(e, restletResponse, "invoke",
-                    "Can not invoke the resource method", accMediaTypes);
+            throw handleInvokeException(e, accMediaTypes, resourceMethod,
+                    restletResponse, "invoke",
+                    "Can not invoke the resource method");
         }
         if (result == null) { // no representation
             restletResponse.setStatus(Status.SUCCESS_NO_CONTENT);
@@ -1157,7 +1185,7 @@ public class JaxRsRouter extends Restlet {
         MessageBodyWriter mbw = mbws.getBest(accMediaTypes);
         if (mbw == null)
             throw handleWebAppExc(new WebApplicationException(406),
-                    restletResponse, accMediaTypes);
+                    restletResponse, accMediaTypes, resourceMethod);
         MediaType mediaType = Util.getFirstElement(mediaTypes);
         MultivaluedMap<String, Object> httpResponseHeaders = null;
         return new JaxRsOutputRepresentation(entity, mediaType, mbw,
@@ -1192,13 +1220,13 @@ public class JaxRsRouter extends Restlet {
         }
         if (p.size() == 1)
             return p;
-        if (p.isEmpty())
-        {
+        if (p.isEmpty()) {
             return Collections.singleton(MediaType.ALL);
         }
         if (true)
             throw new NotYetImplementedException(
-                    "The determinig of the mediaType for an entity is not ready implemented. (mediaTypes="+p+")");
+                    "The determinig of the mediaType for an entity is not ready implemented. (mediaTypes="
+                            + p + ")");
         accMediaTypes.size(); // TODO JaxRsRouter.determineMediaType
         return Collections.singleton(MediaType.ALL);
     }

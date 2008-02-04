@@ -32,7 +32,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     public static UnmodifiableMultivaluedMap<String, String> getFromForm(
             Form form, boolean caseSensitive) {
         return new UnmodifiableMultivaluedMap<String, String>(copyForm(form,
-                caseSensitive), caseSensitive);
+                !caseSensitive), caseSensitive);
     }
 
     /**
@@ -51,8 +51,6 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
 
     private boolean caseInsensitive;
 
-    // TODO TESTEN: Http-Headers soll Case-insensitiv sein
-
     @Deprecated
     @SuppressWarnings("unused")
     public void add(K key, V value) {
@@ -66,11 +64,15 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     }
 
     public boolean containsKey(Object key) {
-        if (!(key instanceof String))
-            return false;
-        if (caseInsensitive)
-            key = ((String) key).toLowerCase();
+        if (caseInsensitive && key != null)
+            map.containsKey(caseInsensitive(key.toString()));
         return map.containsKey(key);
+    }
+
+    private Object caseInsensitive(Object key) {
+        if (caseInsensitive && key != null)
+            key = key.toString().toLowerCase();
+        return key;
     }
 
     public boolean containsValue(Object value) {
@@ -88,10 +90,13 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     }
 
     public List<V> get(Object key) {
-        return Collections.unmodifiableList(map.get(key));
+        return Collections.unmodifiableList(map.get(caseInsensitive(key)));
     }
 
+    @SuppressWarnings("unchecked")
     public V getFirst(K key) {
+        if (caseInsensitive && key instanceof String)
+            key = (K)key.toString().toLowerCase();
         return map.getFirst(key);
     }
 

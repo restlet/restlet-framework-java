@@ -43,7 +43,7 @@ public class CarTest extends JaxRsTestCase {
     public static void testGetPlainText() throws Exception {
         if (ONLY_ONE_CAR || ONLY_OFFERS)
             return;
-        Response response = accessServer(CarListResource.class, Method.GET,
+        Response response = accessServer(Method.GET, CarListResource.class,
                 MediaType.TEXT_PLAIN);
         Status status = response.getStatus();
         assertTrue("Status should be 2xx, but is " + status, status.isSuccess());
@@ -56,7 +56,7 @@ public class CarTest extends JaxRsTestCase {
     public static void testGetHtmlText() throws Exception {
         if (ONLY_ONE_CAR || ONLY_OFFERS)
             return;
-        Response response = accessServer(CarListResource.class, Method.GET,
+        Response response = accessServer(Method.GET, CarListResource.class,
                 MediaType.TEXT_HTML);
         assertTrue(response.getStatus().isClientError());
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
@@ -66,8 +66,8 @@ public class CarTest extends JaxRsTestCase {
     public static void testGetOffers() throws Exception {
         if (ONLY_ONE_CAR)
             return;
-        Response response = accessServer(CarListResource.class, "offers",
-                Method.GET, (MediaType) null);
+        Response response = accessServer(Method.GET, CarListResource.class,
+                "offers", (MediaType) null);
         Representation representation = response.getEntity();
         if (response.getStatus().isError())
             System.out.println(representation != null ? representation
@@ -83,8 +83,8 @@ public class CarTest extends JaxRsTestCase {
         if (ONLY_OFFERS)
             return;
         String carNumber = "5%20%2B7";
-        Response response = accessServer(CarListResource.class, carNumber,
-                Method.GET, (MediaType) null);
+        Response response = accessServer(Method.GET, CarListResource.class,
+                carNumber, (MediaType) null);
         Representation representation = response.getEntity();
         if (response.getStatus().isError())
             System.out.println(representation != null ? representation
@@ -97,20 +97,20 @@ public class CarTest extends JaxRsTestCase {
     }
 
     public void testOptions() throws Exception {
-        Response response = accessServer(CarListResource.class, Method.OPTIONS);
+        Response response = accessServer(Method.OPTIONS, CarListResource.class);
         assertAllowedMethod(response, Method.GET);
 
-        response = accessServer(CarListResource.class, "offers", Method.OPTIONS);
+        response = accessServer(Method.OPTIONS, CarListResource.class, "offers");
         assertAllowedMethod(response, Method.GET, Method.POST);
 
-        response = accessServer(CarListResource.class, "53", Method.OPTIONS);
+        response = accessServer(Method.OPTIONS, CarListResource.class, "53");
         assertAllowedMethod(response, Method.GET);
     }
 
     public static void testDelete() throws Exception {
         if (ONLY_ONE_CAR || ONLY_OFFERS)
             return;
-        Response response = accessServer(CarListResource.class, Method.DELETE);
+        Response response = accessServer(Method.DELETE, CarListResource.class);
         assertTrue(response.getStatus().isClientError());
         assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, response
                 .getStatus());

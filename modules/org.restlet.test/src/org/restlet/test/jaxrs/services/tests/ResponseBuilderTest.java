@@ -39,8 +39,8 @@ public class ResponseBuilderTest extends JaxRsTestCase {
     }
 
     public void test1() {
-        Response response = accessServer(ResponseBuilderService.class, "1",
-                Method.GET);
+        Response response = accessServer(Method.GET, ResponseBuilderService.class,
+                "1");
         Set<Dimension> dimensions = response.getDimensions();
 
         assertTrue("dimension must contain MediaType", dimensions
@@ -50,8 +50,8 @@ public class ResponseBuilderTest extends JaxRsTestCase {
     }
 
     public void test2() {
-        Response response = accessServer(ResponseBuilderService.class, "2",
-                Method.GET);
+        Response response = accessServer(Method.GET, ResponseBuilderService.class,
+                "2");
         Set<Dimension> dimensions = response.getDimensions();
 
         assertTrue("dimension must contain Language", dimensions

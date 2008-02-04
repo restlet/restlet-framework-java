@@ -65,16 +65,16 @@ public abstract class JaxRsTestCase extends TestCase {
     private static ServerWrapper serverWrapper = new RestletServerWrapper();
 
     /**
-     * @see #accessServer(Class, String, Method, Collection, ChallengeResponse)
+     * @see #accessServer(Method, Class, String, Collection, ChallengeResponse)
      */
     @SuppressWarnings("unchecked")
-    public static Response accessServer(Class<?> klasse, Method httpMethod) {
-        return accessServer(klasse, httpMethod, (Collection) null);
+    public static Response accessServer(Method httpMethod, Class<?> klasse) {
+        return accessServer(httpMethod, klasse, (Collection) null);
     }
 
     /**
-     * @param klasse
      * @param httpMethod
+     * @param klasse
      * @param mediaTypePrefs
      *                Collection with Preference&lt;MediaType&gt; and/or
      *                MediaType.
@@ -84,57 +84,57 @@ public abstract class JaxRsTestCase extends TestCase {
      *                 Preference&lt;MediaType&gt; or a MediaType-Objekten.
      */
     @SuppressWarnings("unchecked")
-    public static Response accessServer(Class<?> klasse, Method httpMethod,
+    public static Response accessServer(Method httpMethod, Class<?> klasse,
             Collection mediaTypes) throws IllegalArgumentException {
-        return accessServer(klasse, null, httpMethod, mediaTypes, null);
+        return accessServer(httpMethod, klasse, null, mediaTypes, null);
     }
 
     /**
-     * @param klasse
      * @param httpMethod
+     * @param klasse
      * @param mediaTypePrefs
      * @return
      */
-    public static Response accessServer(Class<?> klasse, Method httpMethod,
+    public static Response accessServer(Method httpMethod, Class<?> klasse,
             MediaType mediaType) {
-        return accessServer(klasse, httpMethod, createPrefColl(mediaType, 1f));
+        return accessServer(httpMethod, klasse, createPrefColl(mediaType, 1f));
     }
 
     @SuppressWarnings("unchecked")
-    public static Response accessServer(Class<?> klasse, String subPath,
-            Method httpMethod) {
-        return accessServer(klasse, subPath, httpMethod, (Collection) null,
+    public static Response accessServer(Method httpMethod, Class<?> klasse,
+            String subPath) {
+        return accessServer(httpMethod, klasse, subPath, (Collection) null,
                 null);
     }
 
     /**
+     * @param httpMethod
      * @param klasse
      * @param subPath
-     * @param httpMethod
      * @param mediaTypes
      * @param challengeResponse
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static Response accessServer(Class<?> klasse, String subPath,
-            Method httpMethod, Collection mediaTypes,
+    public static Response accessServer(Method httpMethod, Class<?> klasse,
+            String subPath, Collection mediaTypes,
             ChallengeResponse challengeResponse) {
         Reference reference = createReference(klasse, subPath);
-        return accessServer(reference, httpMethod, mediaTypes,
+        return accessServer(httpMethod, reference, mediaTypes,
                 challengeResponse);
     }
 
     /**
-     * @param reference
      * @param httpMethod
+     * @param reference
      * @param mediaTypes
      * @param challengeResponse
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static Response accessServer(Reference reference, Method httpMethod,
+    public static Response accessServer(Method httpMethod, Reference reference,
             Collection mediaTypes, ChallengeResponse challengeResponse) {
-        Client client = new Client(Protocol.HTTP);
+        Client client = createClient();
         Request request = new Request(httpMethod, reference);
         addAcceptedMediaTypes(request, mediaTypes);
         request.setChallengeResponse(challengeResponse);
@@ -144,16 +144,23 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     /**
+     * @return
+     */
+    protected static Client createClient() {
+        return new Client(Protocol.HTTP);
+    }
+
+    /**
+     * @param httpMethod
      * @param klasse
      * @param subPath
-     * @param httpMethod
      * @param conditions
      * @return
      */
-    public static Response accessServer(Class<?> klasse, String subPath,
-            Method httpMethod, Conditions conditions, ClientInfo clientInfo) {
+    public static Response accessServer(Method httpMethod, Class<?> klasse,
+            String subPath, Conditions conditions, ClientInfo clientInfo) {
         Reference reference = createReference(klasse, subPath);
-        Client client = new Client(Protocol.HTTP);
+        Client client = createClient();
         Request request = new Request(httpMethod, reference);
         if (conditions != null)
             request.setConditions(conditions);
@@ -164,12 +171,12 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public static Response accessServer(Class<?> klasse, String subPath,
-            Method httpMethod, MediaType mediaType) {
+    public static Response accessServer(Method httpMethod, Class<?> klasse,
+            String subPath, MediaType mediaType) {
         Collection<MediaType> mediaTypes = null;
         if (mediaType != null)
             mediaTypes = Collections.singleton(mediaType);
-        return accessServer(klasse, subPath, httpMethod, mediaTypes, null);
+        return accessServer(httpMethod, klasse, subPath, mediaTypes, null);
     }
 
     /**
