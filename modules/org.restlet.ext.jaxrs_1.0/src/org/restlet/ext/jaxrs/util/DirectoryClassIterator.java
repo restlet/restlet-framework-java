@@ -90,6 +90,7 @@ public class DirectoryClassIterator extends AbstractClassIterator implements
         dirStack.push(new ArrayIterator<File>(files));
     }
 
+    @Override
     public boolean hasNext() {
         if (this.next != null)
             return true;

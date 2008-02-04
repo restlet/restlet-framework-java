@@ -113,6 +113,7 @@ public class JarFileClassIterator extends AbstractClassIterator implements
         this(new JarFile(jarFile), throwOnExc, null, null);
     }
 
+    @Override
     public boolean hasNext() {
         if (this.next != null)
             return true;

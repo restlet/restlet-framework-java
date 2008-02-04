@@ -51,6 +51,7 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class)
      */
+    @Override
     protected boolean isReadableAndWriteable(Class<?> type) {
         return byte[].class.isAssignableFrom(type);
     }
