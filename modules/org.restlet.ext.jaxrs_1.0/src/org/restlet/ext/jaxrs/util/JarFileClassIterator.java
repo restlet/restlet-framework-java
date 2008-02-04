@@ -32,7 +32,9 @@ import java.util.logging.Logger;
  * @see JarFile
  * @author Stephan Koops
  */
-public class JarFileClassIterator extends AbstractClasspathIterator {
+@SuppressWarnings("unchecked")
+public class JarFileClassIterator extends AbstractClassIterator implements
+        Iterator<Class<?>> {
 
     private Enumeration<? extends JarEntry> jarEntryEnum;
 
@@ -41,6 +43,9 @@ public class JarFileClassIterator extends AbstractClasspathIterator {
      * 
      * @param jarFile
      *                the jar file
+     * @param throwOnExc
+     *                if true, ClassNotFoundExceptions are thrown (wrapped in a
+     *                RuntimeException), if false, than they are logged.
      * @param logger
      *                a logger to log {@link Exception}s or {@link Error}s;
      *                see {@link #loadClassByFileName(String, Logger, Level)}
@@ -48,8 +53,8 @@ public class JarFileClassIterator extends AbstractClasspathIterator {
      *                the Log{@link Level} to use, must not be null; see
      *                {@link #loadClassByFileName(String, Logger, Level)}
      */
-    public JarFileClassIterator(JarFile jarFile, Logger logger, Level logLevel) {
-        super(logger, logLevel);
+    public JarFileClassIterator(JarFile jarFile, boolean throwOnExc, Logger logger, Level logLevel) {
+        super(throwOnExc, logger, logLevel);
         jarEntryEnum = jarFile.entries();
     }
 
@@ -58,6 +63,9 @@ public class JarFileClassIterator extends AbstractClasspathIterator {
      * 
      * @param jarFile
      *                the jar file
+     * @param throwOnExc
+     *                if true, ClassNotFoundExceptions are thrown (wrapped in a
+     *                RuntimeException), if false, than they are logged.
      * @param logger
      *                a logger to log {@link Exception}s or {@link Error}s;
      *                see {@link #loadClassByFileName(String, Logger, Level)}
@@ -67,9 +75,9 @@ public class JarFileClassIterator extends AbstractClasspathIterator {
      * @throws IOException
      *                 if an I/O error has occurred while opening the Jar file.
      */
-    public JarFileClassIterator(File jarFile, Logger logger, Level logLevel)
+    public JarFileClassIterator(File jarFile, boolean throwOnExc, Logger logger, Level logLevel)
             throws IOException {
-        this(new JarFile(jarFile), logger, logLevel);
+        this(new JarFile(jarFile), throwOnExc, logger, logLevel);
     }
 
     /**
@@ -78,10 +86,13 @@ public class JarFileClassIterator extends AbstractClasspathIterator {
      * 
      * @param jarFile
      *                the jar file
+     * @param throwOnExc
+     *                if true, ClassNotFoundExceptions are thrown (wrapped in a
+     *                RuntimeException), if false, than they are logged.
      * @see #JarFileClassIterator(JarFile, Logger, Level)
      */
-    public JarFileClassIterator(JarFile jarFile) {
-        this(jarFile, null, null);
+    public JarFileClassIterator(JarFile jarFile, boolean throwOnExc) {
+        this(jarFile, throwOnExc, null, null);
     }
 
     /**
@@ -89,14 +100,17 @@ public class JarFileClassIterator extends AbstractClasspathIterator {
      * 
      * @param jarFile
      *                the jar file
+     * @param throwOnExc
+     *                if true, ClassNotFoundExceptions are thrown (wrapped in a
+     *                RuntimeException), if false, than they are logged.
      * @throws IOException
      *                 if an I/O error has occurred while opening the Jar file.
      * @throws SecurityException
      *                 if access to the file is denied by the SecurityManager
      * @see JarFile
      */
-    public JarFileClassIterator(File jarFile) throws IOException {
-        this(new JarFile(jarFile), null, null);
+    public JarFileClassIterator(File jarFile, boolean throwOnExc) throws IOException {
+        this(new JarFile(jarFile), throwOnExc, null, null);
     }
 
     public boolean hasNext() {
@@ -105,6 +119,7 @@ public class JarFileClassIterator extends AbstractClasspathIterator {
         while (jarEntryEnum.hasMoreElements()) {
             JarEntry jarEntry = jarEntryEnum.nextElement();
             String fileName = jarEntry.getName();
+            // TODO if the Jar contains Jars -> recursive
             this.next = loadClassByFileName(fileName);
             if (this.next != null)
                 return true;

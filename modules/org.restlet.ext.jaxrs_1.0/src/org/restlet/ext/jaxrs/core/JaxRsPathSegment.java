@@ -105,6 +105,14 @@ public class JaxRsPathSegment implements PathSegment {
         if (decode && encode)
             throw new IllegalArgumentException(
                     "It is not meaningful to require decode AND encode");
+        if (segment == null) {
+            if (indexForErrMess >= 0)
+                throw new IllegalArgumentException("The " + indexForErrMess
+                        + ". segment must not be null");
+            else
+                throw new IllegalArgumentException(
+                        "The segment must not be null");
+        }
         this.decode = decode;
         this.encode = encode;
         int indexOfSemic = segment.indexOf(';');

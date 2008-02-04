@@ -21,6 +21,7 @@ package org.restlet.ext.jaxrs.core;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -72,6 +73,7 @@ public class JaxRsUriInfo implements UriInfo {
      */
     public JaxRsUriInfo(Reference reference,
             MultivaluedMap<String, String> templateParametersEncoded) {
+        // FIXME templateParameters must be unmodifiable
         this(reference);
         this.templateParametersEncoded = templateParametersEncoded;
     }
@@ -128,7 +130,9 @@ public class JaxRsUriInfo implements UriInfo {
      * All sequences of escaped octets are decoded, equivalent to
      * <code>getPathSegments(true)</code>.
      * 
-     * @return the list of {@link PathSegment}.
+     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
+     * map of each path segment is also unmodifiable.
+     * @throws java.lang.IllegalStateException if called outside the scope of a request
      * @see PathSegment
      * @see UriInfo#getPathSegments()
      */
@@ -148,7 +152,9 @@ public class JaxRsUriInfo implements UriInfo {
      * @param decode
      *                controls whether sequences of escaped octets are decoded
      *                (true) or not (false).
-     * @return the list of {@link PathSegment}s.
+     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
+     * map of each path segment is also unmodifiable.
+     * @throws java.lang.IllegalStateException if called outside the scope of a request
      * @see PathSegment
      * @see UriInfo#getPathSegments(boolean)
      */
@@ -171,7 +177,7 @@ public class JaxRsUriInfo implements UriInfo {
         int l = segments.size();
         for(int i=0; i<l; i++)
             pathSegments.add(new JaxRsPathSegment(segments.get(i), decode, false, false, i));
-        return pathSegments;
+        return Collections.unmodifiableList(pathSegments);
     }
 
     /**
@@ -268,10 +274,12 @@ public class JaxRsUriInfo implements UriInfo {
      * escaped octets are decoded, equivalent to
      * <code>getQueryParameters(true)</code>.
      * 
-     * @return a map of query parameter names and values.
+     * @return an unmodifiable map of query parameter names and values
+     * @throws java.lang.IllegalStateException if called outside the scope of a request
      * @see UriInfo#getQueryParameters()
      */
     public MultivaluedMap<String, String> getQueryParameters() {
+        // TODO unmodifiable
         if (queryParametersDecoded == null)
             queryParametersDecoded = new FormMulvaltivaluedMap(reference
                     .getQueryAsForm());
@@ -279,9 +287,12 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
+     * @return an unmodifiable map of query parameter names and values
+     * @throws java.lang.IllegalStateException if called outside the scope of a request
      * @see UriInfo#getQueryParameters(boolean)
      */
     public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
+        // TODO unmodifiable
         if (decode)
             return getQueryParameters();
         if (queryParametersEncoded == null) {
@@ -296,15 +307,16 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
-     * Get the values of any embedded URI template parameters. All sequences of
-     * escaped octets are decoded, equivalent to
-     * <code>getTemplateParameters(true)</code>.
-     * 
-     * @return a map of parameter names and values.
+     * Get the values of any embedded URI template parameters.
+     * All sequences of escaped octets are decoded,
+     * equivalent to <code>getTemplateParameters(true)</code>.
+     * @return an unmodifiable map of parameter names and values
+     * @throws java.lang.IllegalStateException if called outside the scope of a request
      * @see javax.ws.rs.Path
      * @see UriInfo#getTemplateParameters()
      */
     public MultivaluedMap<String, String> getTemplateParameters() {
+        // TODO unmodifiable
         if (this.templateParametersDecoded == null) {
             if(this.templateParametersEncoded == null)
                 return null;
@@ -324,9 +336,17 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
+     * Get the values of any embedded URI template parameters.
+     * 
+     * @param decode controls whether sequences of escaped octets are decoded
+     * (true) or not (false).
+     * @return an unmodifiable map of parameter names and values
+     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @see javax.ws.rs.Path
      * @see UriInfo#getTemplateParameters(boolean)
      */
     public MultivaluedMap<String, String> getTemplateParameters(boolean decode) {
+        // TODO unmodifiable
         if (decode)
             return getTemplateParameters();
         else

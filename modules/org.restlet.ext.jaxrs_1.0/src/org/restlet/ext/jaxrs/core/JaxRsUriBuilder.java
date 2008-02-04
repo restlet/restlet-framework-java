@@ -40,7 +40,7 @@ import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 
 /**
  * @author Stephan Koops
- * 
+ * @see UriBuilder
  */
 public class JaxRsUriBuilder extends UriBuilder {
 
@@ -129,7 +129,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      * Adds the given path segments to the path of the UriBuilder.
      * 
      * @param segments
-     *                must not be null.
+     *                must not be null. The strings are not splitted at '/'.
      * @throws NullPointerException
      *                 if segments is null
      */
@@ -162,7 +162,13 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public URI build() throws UriBuilderException {
-        return buildUri(toStringWithCheck(true));
+        Template template = new Template(toStringWithCheck(true));
+        return buildUri(template.format(new Template.VariableResolver() {
+            public String resolve(String variableName) {
+                throw new UriBuilderException(
+                        "The UriBuilder must not contain any template parameter");
+            }
+        }));
     }
 
     /**
@@ -187,8 +193,6 @@ public class JaxRsUriBuilder extends UriBuilder {
     @SuppressWarnings("unchecked")
     public URI build(final Map<String, String> values)
             throws IllegalArgumentException, UriBuilderException {
-        // throw new NotYetImplementedException(
-        // "Waiting for Restlet Core API patch");
         Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(new Template.VariableResolver() {
             public String resolve(String variableName) {
@@ -228,8 +232,6 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public URI build(String... values) throws IllegalArgumentException,
             UriBuilderException {
-        // throw new NotYetImplementedException(
-        // "Waiting for Restlet Core API patch");
         Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(new IteratorVariableResolver(values)));
     }
@@ -291,7 +293,8 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder encode(boolean enable) {
-        // gefragt: JSR311 perhaps getEncode(), to set it for one method and set it
+        // gefragt: JSR311 perhaps getEncode(), to set it for one method and set
+        // it
         // back to the old value.
         this.encode = enable;
         return this;
@@ -404,6 +407,11 @@ public class JaxRsUriBuilder extends UriBuilder {
         // LATER check host name for invalid characters
         this.host = host;
         return this;
+    }
+
+    @Override
+    public boolean isEncode() {
+        return this.encode;
     }
 
     /**
@@ -639,22 +647,22 @@ public class JaxRsUriBuilder extends UriBuilder {
      * parameters are tied to a particular path segment; subsequent addition of
      * path segments will not affect their position in the URI path.
      * 
-     * @param matrixParams
-     *                the matrix parameters, may contain URI template parameters
+     * @param matrix
+     *                the matrix parameters, may contain URI template
+     *                parameters. A null value will remove all matrix parameters
+     *                of the current final segment of the current URI path.
      * @return the updated UriBuilder
      * @throws IllegalArgumentException
-     *                 if matrixParams cannot be parsed or is null, or if
-     *                 automatic encoding is disabled and any matrix parameter
-     *                 name or value contains illegal characters
+     *                 if matrix cannot be parsed, or if automatic encoding is
+     *                 disabled and any matrix parameter name or value contains
+     *                 illegal characters
      * @see javax.ws.rs.core.UriBuilder#replaceMatrixParams(java.lang.String)
      */
     @Override
     public UriBuilder replaceMatrixParams(String matrixParams)
             throws IllegalArgumentException {
-        // gefragt: JSR311: null should be allowed on UriBuilder.replace*(String)
         if (matrixParams == null)
-            throw new IllegalArgumentException(
-                    "The matrix parameters must not be null. Use \"\" to clear the matrix parameters");
+            this.pathSegments.getLast().getMatrixParameters().clear();
         this.pathSegments.getLast().setMatrixParameters(
                 JaxRsPathSegment.parseMatrixParams(matrixParams, false, true));
         return this;
@@ -662,23 +670,28 @@ public class JaxRsUriBuilder extends UriBuilder {
 
     /**
      * Set the URI path. This method will overwrite any existing path segments
-     * and associated matrix parameters.
+     * and associated matrix parameters. When constructing the final path, each
+     * segment will be separated by '/' if necessary. Existing '/' characters
+     * are preserved thus a single segment value can represent multiple URI path
+     * segments.
      * 
-     * @param path
-     *                the URI path, may contain URI template parameters
+     * @param segments
+     *                the path segments, may contain URI template parameters. A
+     *                null value will unset the path component of the URI.
      * @return the updated UriBuilder
      * @throws IllegalArgumentException
-     *                 if automatic encoding is disabled and path contains
-     *                 illegal characters, or if path is null
+     *                 if any element of segments is null, or if automatic
+     *                 encoding is disabled and any element of segments contains
+     *                 illegal characters
      * @see javax.ws.rs.core.UriBuilder#replacePath(java.lang.String)
      */
     @Override
-    public UriBuilder replacePath(String path) throws IllegalArgumentException {
-        if (path == null)
-            throw new IllegalArgumentException(
-                    "You must give a path. To clear the path, use \"\"");
+    public UriBuilder replacePath(String... path)
+            throws IllegalArgumentException {
         this.pathSegments.clear();
-        addPathSegments(path);
+        if (path != null && path.length != 0)
+            for(String segment : path)
+                addPathSegments(segment);
         return this;
     }
 
@@ -687,7 +700,8 @@ public class JaxRsUriBuilder extends UriBuilder {
      * parameters.
      * 
      * @param query
-     *                the URI query string, may contain URI template parameters
+     *                the URI query string, may contain URI template parameters.
+     *                A null value will remove all query parameters.
      * @return the updated UriBuilder
      * @throws IllegalArgumentException
      *                 if query cannot be parsed or is null, or if automatic
@@ -699,8 +713,9 @@ public class JaxRsUriBuilder extends UriBuilder {
     public UriBuilder replaceQueryParams(String query)
             throws IllegalArgumentException {
         if (query == null)
-            throw new IllegalArgumentException("The query must not be null");
-        // gefragt: JSR311: how encode the query? ignore "?" and "=", other chars?
+            this.query = null;
+        // gefragt: JSR311: how encode the query? ignore "?" and "=", other
+        // chars?
         // LATER check query param
         this.query = query;
         return this;
@@ -749,10 +764,9 @@ public class JaxRsUriBuilder extends UriBuilder {
         this.host = reference.getHostDomain();
         this.port = reference.getHostPort();
         String path = reference.getPath();
-        if (path == null) {
-            this.pathSegments.clear();
-        } else {
-            this.replacePath(path);
+        this.pathSegments.clear();
+        if (path != null) {
+            this.addPathSegments(path);
         }
         this.query = reference.getQuery();
         this.fragment = reference.getFragment();

@@ -66,7 +66,7 @@ public class SimpleTrainTest extends JaxRsTestCase {
             return;
         Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
                 Method.GET, MediaType.TEXT_PLAIN);
-        assertTrue(response.getStatus().isSuccess());
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation representation = response.getEntity();
         assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, representation

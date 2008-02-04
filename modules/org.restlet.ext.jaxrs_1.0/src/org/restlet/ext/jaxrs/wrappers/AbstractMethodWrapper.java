@@ -27,7 +27,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.Authenticator;
-import org.restlet.ext.jaxrs.MatchingResult;
+import org.restlet.ext.jaxrs.impl.MatchingResult;
 
 /**
  * An abstract wrapper class. Contains some a static methods to use from

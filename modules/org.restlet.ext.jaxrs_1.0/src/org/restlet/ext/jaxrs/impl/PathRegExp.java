@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.ext.jaxrs;
+package org.restlet.ext.jaxrs.impl;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -291,7 +291,7 @@ public class JaxRsUriBuilderTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#path(java.lang.Class)}.
      */
     public void testPathClass() throws Exception {
-        uriBuilder1.replacePath("");
+        uriBuilder1.replacePath((String[])null);
         uriBuilder1.path(SimpleTrain.class);
         assertEqualsURI("http://localhost" + SimpleTrain.PATH, uriBuilder1);
         // LATER gucken, dass er @Path.encode richtig auswertet
@@ -302,7 +302,7 @@ public class JaxRsUriBuilderTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#path(java.lang.reflect.Method[])}.
      */
     public void testPathMethodArray() throws Exception {
-        uriBuilder1.replacePath("");
+        uriBuilder1.replacePath((String[])null);
         Method findCar = CarListResource.class.getMethod("findCar",
                 String.class);
         Method engine = CarResource.class.getMethod("findEngine");
@@ -317,7 +317,7 @@ public class JaxRsUriBuilderTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#path(java.lang.Class, java.lang.String)}.
      */
     public void testPathClassString() throws Exception {
-        uriBuilder1.replacePath("");
+        uriBuilder1.replacePath((String[])null);
         uriBuilder1.path(CarListResource.class, "getOffers");
         assertEqualsURI("http://localhost/" + CarListResource.PATH + "/"
                 + CarListResource.OFFERS_PATH, uriBuilder1);
@@ -368,7 +368,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder1.replacePath("newPath");
         assertEqualsURI("http://localhost/newPath", uriBuilder1);
 
-        uriBuilder1.replacePath("");
+        uriBuilder1.replacePath((String[])null);
         assertEqualUriBuilder(uriBuilder1, "http", null, "localhost", -1, null);
         try {
             assertEqualsURI("http://localhost/", uriBuilder1);

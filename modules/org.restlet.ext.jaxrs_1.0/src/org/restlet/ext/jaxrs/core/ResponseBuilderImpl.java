@@ -47,15 +47,19 @@ import org.restlet.util.Engine;
  */
 public class ResponseBuilderImpl extends ResponseBuilder {
 
-    private ResponseImpl response;
-
     private MultivaluedMap<String, Object> metadata;
+
+    private Map<String, NewCookie> newCookies;
+
+    private ResponseImpl response;
 
     /**
      * Creates a new Response Builder
      */
     public ResponseBuilderImpl() {
     }
+
+    // FIXME war das in dieser klasse, wor null alles zurücksetzt?
 
     /**
      * Create a Response instance from the current ResponseBuilder. The builder
@@ -97,6 +101,12 @@ public class ResponseBuilderImpl extends ResponseBuilder {
         return this;
     }
 
+    @Override
+    public ResponseBuilder clone() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     /**
      * Set the content location on the ResponseBuilder.
      * 
@@ -115,8 +125,6 @@ public class ResponseBuilderImpl extends ResponseBuilder {
                     location.toASCIIString());
         return this;
     }
-
-    private Map<String, NewCookie> newCookies;
 
     /**
      * Add cookies to the ResponseBuilder. If more than one cookie with the same
@@ -138,6 +146,22 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     }
 
     /**
+     * Set the language on the ResponseBuilder. <br/>This method is not required
+     * by the JAX-RS API bu is used from {@link #variant(Variant)}.
+     * 
+     * @param encoding
+     *                the encoding of the response entity
+     * @return the updated ResponseBuilder
+     */
+    public ResponseBuilder encoding(String encoding) {
+        if (encoding == null)
+            getMetadata().remove(HttpHeaders.CONTENT_ENCODING);
+        else
+            getMetadata().putSingle(HttpHeaders.CONTENT_ENCODING, encoding);
+        return this;
+    }
+
+    /**
      * Set the entity on the ResponseBuilder.
      * 
      * 
@@ -150,6 +174,24 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     public ResponseBuilder entity(Object entity) {
         this.getResponse().setEntity(entity);
         return this;
+    }
+
+    MultivaluedMap<String, Object> getMetadata() {
+        if (this.metadata == null)
+            this.metadata = getResponse().getMetadata();
+        return metadata;
+    }
+
+    Map<String, NewCookie> getNewCookies() {
+        if (this.newCookies == null)
+            this.newCookies = new HashMap<String, NewCookie>();
+        return newCookies;
+    }
+
+    ResponseImpl getResponse() {
+        if (response == null)
+            this.response = new ResponseImpl();
+        return response;
     }
 
     /**
@@ -204,22 +246,6 @@ public class ResponseBuilderImpl extends ResponseBuilder {
             getMetadata().remove(HttpHeaders.CONTENT_LANGUAGE);
         else
             getMetadata().putSingle(HttpHeaders.CONTENT_LANGUAGE, language);
-        return this;
-    }
-
-    /**
-     * Set the language on the ResponseBuilder. <br/>This method is not required
-     * by the JAX-RS API bu is used from {@link #variant(Variant)}.
-     * 
-     * @param encoding
-     *                the encoding of the response entity
-     * @return the updated ResponseBuilder
-     */
-    public ResponseBuilder encoding(String encoding) {
-        if (encoding == null)
-            getMetadata().remove(HttpHeaders.CONTENT_ENCODING);
-        else
-            getMetadata().putSingle(HttpHeaders.CONTENT_ENCODING, encoding);
         return this;
     }
 
@@ -402,23 +428,5 @@ public class ResponseBuilderImpl extends ResponseBuilder {
         if(vary != null)
             this.getMetadata().putSingle(HttpHeaders.VARY, vary);
         return this;
-    }
-
-    ResponseImpl getResponse() {
-        if (response == null)
-            this.response = new ResponseImpl();
-        return response;
-    }
-
-    MultivaluedMap<String, Object> getMetadata() {
-        if (this.metadata == null)
-            this.metadata = getResponse().getMetadata();
-        return metadata;
-    }
-
-    Map<String, NewCookie> getNewCookies() {
-        if (this.newCookies == null)
-            this.newCookies = new HashMap<String, NewCookie>();
-        return newCookies;
     }
 }

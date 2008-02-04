@@ -26,7 +26,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.Authenticator;
-import org.restlet.ext.jaxrs.MatchingResult;
+import org.restlet.ext.jaxrs.impl.MatchingResult;
 
 /**
  * A method of a resource class that is used to locate sub-resources of the

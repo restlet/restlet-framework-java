@@ -45,11 +45,12 @@ import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.bodywriter.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
+import org.restlet.ext.jaxrs.impl.MatchingResult;
+import org.restlet.ext.jaxrs.impl.PathRegExp;
+import org.restlet.ext.jaxrs.provider.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.LifoSet;
-import org.restlet.ext.jaxrs.util.ProviderLoader;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyReader;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriter;
@@ -86,26 +87,32 @@ public class JaxRsRouter extends Restlet {
      * 
      * @param context
      *                the context from the parent
-     * @param challangeScheme
-     *                the {@link ChallengeScheme}
-     * @param realmName
-     *                the name of the realm, presented to the client while
-     *                requesting the credentials.S
      * @param authenticator
      *                the Authenticator which checks the credentials and the
      *                roles. Must not be null; see {@link AllowAllAuthenticator},
      *                {@link ForbidAllAuthenticator} or
      *                {@link ThrowExcAuthenticator}.
+     * @param loadAllRootResourceClasses
+     *                if true, all accessible root resource classes are loaded.
+     * @param loadAllProviders
+     *                if true, all accessible providers are loaded.
+     * @param challangeScheme
+     *                the {@link ChallengeScheme}
+     * @param realmName
+     *                the name of the realm, presented to the client while
+     *                requesting the credentials.S
      * @return Returns the Guard. you can attach root resource classes directly.
      *         If you want to set other properties in the {@link JaxRsRouter},
      *         use the method {@link JaxRsGuard#getNext()}.
      */
     public static JaxRsGuard getGuarded(Context context,
-            ChallengeScheme challangeScheme, String realmName,
-            Authenticator authenticator) {
+            Authenticator authenticator, boolean loadAllRootResourceClasses,
+            boolean loadAllProviders, ChallengeScheme challangeScheme,
+            String realmName) {
         JaxRsGuard guard = new JaxRsGuard(context, challangeScheme, realmName,
                 authenticator);
-        guard.setNext(new JaxRsRouter(context, authenticator));
+        guard.setNext(new JaxRsRouter(context, authenticator,
+                loadAllRootResourceClasses, loadAllProviders));
         return guard;
     }
 
@@ -225,18 +232,26 @@ public class JaxRsRouter extends Restlet {
      *                {@link ForbidAllAuthenticator}, the
      *                {@link AllowAllAuthenticator} or the
      *                {@link ThrowExcAuthenticator}.
+     * @param loadAllRootResourceClasses
+     *                if true, all accessible root resource classes are loaded.
+     * @param loadAllProviders
+     *                if true, all accessible providers are loaded.
      * @see Restlet#Restlet(Context)
      */
-    public JaxRsRouter(Context context, Authenticator authenticator) {
+    public JaxRsRouter(Context context, Authenticator authenticator,
+            boolean loadAllRootResourceClasses, boolean loadAllProviders) {
         super(context);
         this.setAuthorizator(authenticator);
-        this.addDefaultProviders();
+        this.loadDefaultProviders();
+        if (loadAllRootResourceClasses || loadAllProviders)
+            JaxRsClassesLoader.loadFromClasspath(this,
+                    loadAllRootResourceClasses, loadAllProviders);
     }
 
-    private void addDefaultProviders() {
+    private void loadDefaultProviders() {
         try {
             ClassLoader classLoader = this.getClass().getClassLoader();
-            ProviderLoader.loadProviders(classLoader, true, this);
+            JaxRsClassesLoader.loadProvidersFromFile(classLoader, true, this);
         } catch (IOException e) {
             throw new RuntimeException("Could not load default providers", e);
         } catch (ClassNotFoundException e) {
@@ -247,18 +262,20 @@ public class JaxRsRouter extends Restlet {
     /**
      * Will use the given JAX-RS root resource class.
      * 
-     * @param jaxRsClass
+     * @param rootResourceClass
+     *                the JAX-RS root resource class to add.
      * @throws IllegalArgumentException
      * @see #detach(Class)
      * @see #getRootResourceClasses()
      */
-    public void attach(Class<?> jaxRsClass) throws IllegalArgumentException {
-        RootResourceClass newRrc = new RootResourceClass(jaxRsClass);
+    public void attach(Class<?> rootResourceClass)
+            throws IllegalArgumentException {
+        RootResourceClass newRrc = new RootResourceClass(rootResourceClass);
         PathRegExp uriTempl = newRrc.getPathRegExp();
-        for (RootResourceClass rootResourceClass : this.rootResourceClasses) {
-            if (rootResourceClass.getJaxRsClass().equals(jaxRsClass))
+        for (RootResourceClass rrc : this.rootResourceClasses) {
+            if (rrc.getJaxRsClass().equals(rootResourceClass))
                 return;// true;
-            if (rootResourceClass.getPathRegExp().equals(uriTempl))
+            if (rrc.getPathRegExp().equals(uriTempl))
                 throw new IllegalArgumentException(
                         "There is already a root resource class with path "
                                 + uriTempl.getPathPattern());
@@ -269,69 +286,117 @@ public class JaxRsRouter extends Restlet {
     /**
      * If the automatic loading of the {@link Provider}s doesn't work, you can
      * use this method to load the providers as described in
-     * {@link ProviderLoader}.
+     * {@link JaxRsClassesLoader}.
      * 
-     * @param jaxRsClass
+     * @param classLoader
+     *                The class loader that reaches the files
+     *                META-INF/services/javax.ws.rs.ext.MessageBodyWriter and
+     *                META-INF/services/javax.ws.rs.ext.MessageBodyWriter with a
+     *                list of the providers.
      * @param throwOnException
      * @throws IllegalArgumentException
      * @throws IOException
      * @throws ClassNotFoundException
+     * @see #loadProvidersLogExc(Class)
      */
-    public void loadProviders(Class<?> jaxRsClass, boolean throwOnException)
+    public void loadProviders(ClassLoader classLoader, boolean throwOnException)
             throws IllegalArgumentException, IOException,
             ClassNotFoundException {
-        ProviderLoader.loadProviders(jaxRsClass.getClassLoader(),
-                throwOnException, this);
+        JaxRsClassesLoader.loadProvidersFromFile(classLoader, throwOnException,
+                this);
+    }
+
+    /**
+     * If the automatic loading of the {@link Provider}s doesn't work, you can
+     * use this method to load the providers as described in
+     * {@link JaxRsClassesLoader}. Occurred Exceptions were logged.
+     * 
+     * @param classLoader
+     *                The class loader that reaches the files
+     *                META-INF/services/javax.ws.rs.ext.MessageBodyWriter and
+     *                META-INF/services/javax.ws.rs.ext.MessageBodyWriter with a
+     *                list of the providers.
+     * @see #loadProviders(Class, boolean)
+     */
+    public void loadProvidersLogExc(ClassLoader classLoader) {
+        try {
+            JaxRsClassesLoader.loadProvidersFromFile(classLoader, false, this);
+        } catch (IOException e) {
+            getLogger().log(Level.WARNING, "Could not load providers", e);
+        } catch (ClassNotFoundException e) {
+            getLogger().log(Level.WARNING, "Could not load providers", e);
+        }
     }
 
     /**
      * Detaches the JAX-RS root resource class from this router.
      * 
-     * @param jaxRsClass
+     * @param rootResourceClass
      *                The JAX-RS root resource class to detach.
      * @see #attach(Class)
      */
-    public void detach(Class<?> jaxRsClass) {
-        this.rootResourceClasses.remove(jaxRsClass);
+    public void detach(Class<?> rootResourceClass) {
+        // TODO JaxRsRouter.detach: .wrapper.RootResourceClasses auspacken und
+        // nachgucken
+        this.rootResourceClasses.remove(rootResourceClass);
     }
 
     /**
-     * Adds a MessageBodyReader and/or MessageBodyWriter to the JaxRsRouter.
+     * Adds a {@link javax.ws.rs.ext.MessageBodyReader} class to this
+     * JaxRsRouter. Typically you don't need this method, because it is done on
+     * construction time or by {@link #addProvidersFromPackage(String...)}.
      * 
-     * @param providerClass
-     *                The MessageBodyReader and/or MessageBodyWriter class to
-     *                add to the JaxRsRouter.
+     * @param messageBodyReaderClass
+     *                The {@link javax.ws.rs.ext.MessageBodyReader} class to add
+     *                to the JaxRsRouter.
      * @throws IllegalArgumentException
-     *                 If the class is not a valid provider (not a
-     *                 {@link MessageBodyReader} and not a
-     *                 {@link MessageBodyWriter}) or if no instance could be
-     *                 created.
+     *                 If no instance of the provider could created.
      */
-    public void addProvider(Class<?> providerClass)
+    public void addMessageBodyReader(Class<?> messageBodyReaderClass)
             throws IllegalArgumentException {
-        addProvider(providerClass, true, true);
+        Constructor<?> constructor = RootResourceClass
+                .findJaxRsConstructor(messageBodyReaderClass);
+        Object provider;
+        try {
+            provider = RootResourceClass.createInstance(constructor, null,
+                    null, null, null, authenticator);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "MessageBodyReader could not be instantiated: "
+                            + e.getMessage(), e);
+        }
+        this.messageBodyReaders.add(new MessageBodyReader(
+                (javax.ws.rs.ext.MessageBodyReader<?>) provider));
     }
 
     /**
-     * Adds a Provider class to the providers.
+     * Not yet implemented.
      * 
-     * @param providerClass
-     *                an object of type
-     *                {@link javax.ws.rs.ext.MessageBodyReader} and/or
-     *                {@link javax.ws.rs.ext.MessageBodyWriter}, annotated with
-     *                {@link Provider}.
-     * @param asReader
-     *                try to use this provider
-     *                {@link javax.ws.rs.ext.MessageBodyReader}.
-     * @param asWriter
-     *                try to use this provider
-     *                {@link javax.ws.rs.ext.MessageBodyWriter}.
-     * @throws IllegalArgumentException
+     * @param classLoader
+     * @param packageName
      */
-    public void addProvider(Class<?> providerClass, boolean asReader,
-            boolean asWriter) throws IllegalArgumentException {
+    @SuppressWarnings("all")
+    public void addProvidersFromPackage(ClassLoader classLoader,
+            String... packageName) {
+        // TODO JaxrsRouter.addProvidersFromPackage(..)
+        throw new NotYetImplementedException();
+    }
+
+    /**
+     * Adds a {@link javax.ws.rs.ext.MessageBodyWriter} class to this
+     * JaxRsRouter. Typically you don't need this method, because it is done on
+     * construction time or by {@link #addProvidersFromPackage(String...)}.
+     * 
+     * @param messageBodyWriterClass
+     *                The {@link javax.ws.rs.ext.MessageBodyWriter} class to add
+     *                to the JaxRsRouter.
+     * @throws IllegalArgumentException
+     *                 If no instance of the provider could created.
+     */
+    public void addMessageBodyWriter(Class<?> messageBodyWriterClass)
+            throws IllegalArgumentException {
         Constructor<?> constructor = RootResourceClass
-                .findJaxRsConstructor(providerClass);
+                .findJaxRsConstructor(messageBodyWriterClass);
         Object provider;
         try {
             provider = RootResourceClass.createInstance(constructor, null,
@@ -340,21 +405,8 @@ public class JaxRsRouter extends Restlet {
             throw new IllegalArgumentException(
                     "Provider could not be instantiated: " + e.getMessage(), e);
         }
-        boolean used = false;
-        if (asReader
-                && provider instanceof javax.ws.rs.ext.MessageBodyReader<?>) {
-            this.messageBodyReaders.add(new MessageBodyReader(
-                    (javax.ws.rs.ext.MessageBodyReader<?>) provider));
-            used = true;
-        }
-        if (asWriter
-                && provider instanceof javax.ws.rs.ext.MessageBodyWriter<?>) {
-            this.messageBodyWriters.add(new MessageBodyWriter(
-                    (javax.ws.rs.ext.MessageBodyWriter<?>) provider));
-        } else if (!used) {
-            throw new IllegalArgumentException(
-                    "This class is neither a MessageBodyReader nor a MessageBodyWriter");
-        }
+        this.messageBodyWriters.add(new MessageBodyWriter(
+                (javax.ws.rs.ext.MessageBodyWriter<?>) provider));
     }
 
     /**
@@ -1136,11 +1188,13 @@ public class JaxRsRouter extends Restlet {
         }
         if (p.size() == 1)
             return p;
+        if (p.isEmpty())
+        {
+            return Collections.singleton(MediaType.ALL);
+        }
         if (true)
             throw new NotYetImplementedException(
-                    "The determinig of the mediaType for an entity is not ready implemented.");
-        if (p.isEmpty())
-            p.add(MediaType.ALL);
+                    "The determinig of the mediaType for an entity is not ready implemented. (mediaTypes="+p+")");
         accMediaTypes.size(); // TODO JaxRsRouter.determineMediaType
         return Collections.singleton(MediaType.ALL);
     }
@@ -1354,10 +1408,10 @@ public class JaxRsRouter extends Restlet {
      * @return
      */
     public Set<Class<?>> getRootResourceClasses() {
-        Set<Class<?>> jaxRsClasses = new HashSet<Class<?>>();
+        Set<Class<?>> rrcs = new HashSet<Class<?>>();
         for (RootResourceClass rootResourceClass : this.rootResourceClasses)
-            jaxRsClasses.add(rootResourceClass.getJaxRsClass());
-        return Collections.unmodifiableSet(jaxRsClasses);
+            rrcs.add(rootResourceClass.getJaxRsClass());
+        return Collections.unmodifiableSet(rrcs);
     }
 
     class ResObjAndPath {

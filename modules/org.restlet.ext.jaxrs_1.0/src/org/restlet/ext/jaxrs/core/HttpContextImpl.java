@@ -67,11 +67,9 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     private static final int STATUS_PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED
             .getCode();
 
-    private org.restlet.data.Request request;
-
-    private org.restlet.data.Response response;
-
     private List<MediaType> acceptedMediaTypes;
+
+    private Authenticator authenticator;
 
     private Map<String, Cookie> cookies;
 
@@ -79,9 +77,11 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
 
     private MediaType mediaType;
 
+    private org.restlet.data.Request request;
+
     private FormMulvaltivaluedMap requestHeaders;
 
-    private Authenticator authenticator;
+    private org.restlet.data.Response response;
 
     /**
      * 
@@ -119,20 +119,14 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
 
     // HttpHeaders methods
 
-    /**
-     * @see HttpHeaders#getAcceptableMediaTypes()
-     */
-    public List<MediaType> getAcceptableMediaTypes() {
-        if (this.acceptedMediaTypes == null) {
-            List<Preference<org.restlet.data.MediaType>> restletAccMediaTypes = request
-                    .getClientInfo().getAcceptedMediaTypes();
-            List<MediaType> accMediaTypes = new ArrayList<MediaType>(
-                    restletAccMediaTypes.size());
-            for (Preference<org.restlet.data.MediaType> mediaTypePref : restletAccMediaTypes)
-                accMediaTypes.add(createJaxRsMediaType(mediaTypePref));
-            this.acceptedMediaTypes = accMediaTypes;
+    private boolean checkIfOneMatch(List<Tag> requestETags, Tag entityTag) {
+        if (entityTag.isWeak())
+            return false;
+        for (Tag requestETag : requestETags) {
+            if (entityTag.equals(requestETag))
+                return true;
         }
-        return this.acceptedMediaTypes;
+        return false;
     }
 
     private MediaType createJaxRsMediaType(
@@ -151,75 +145,20 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     }
 
     /**
-     * Get any cookies that accompanied the request.
-     * 
-     * @return a map of cookie name (String) to Cookie.
-     * @see HttpHeaders#getCookies()
-     */
-    public Map<String, Cookie> getCookies() {
-        if (this.cookies == null) {
-            Map<String, Cookie> c = new HashMap<String, Cookie>();
-            for (org.restlet.data.Cookie rc : request.getCookies()) {
-                Cookie cookie = Converter.toJaxRsCookie(rc);
-                c.put(cookie.getName(), cookie);
-            }
-            this.cookies = c;
-        }
-        return this.cookies;
-    }
-
-    /**
-     * @see HttpHeaders#getLanguage()
-     */
-    public String getLanguage() {
-        return language;
-    }
-
-    /**
-     * @see HttpHeaders#getMediaType()
-     */
-    public MediaType getMediaType() {
-        return this.mediaType;
-    }
-
-    /**
-     * @see HttpHeaders#getRequestHeaders()
-     */
-    public MultivaluedMap<String, String> getRequestHeaders() {
-        if (this.requestHeaders == null) {
-            this.requestHeaders = new FormMulvaltivaluedMap(Util
-                    .getHttpHeaders(request));
-        }
-        return this.requestHeaders;
-    }
-
-    /**
-     * Evaluate request preconditions based on the passed in value.
-     * 
-     * @param entityTag
-     *                an ETag for the current state of the resource
-     * @return null if the preconditions are met or a Response that should be
-     *         returned if the preconditions are not met.
-     * 
-     * @see javax.ws.rs.core.Request#evaluatePreconditions(javax.ws.rs.core.EntityTag)
-     * @see #evaluatePreconditions(Date, EntityTag)
-     */
-    public Response evaluatePreconditions(EntityTag entityTag) {
-        return evaluatePreconditions(null, entityTag);
-    }
-
-    /**
      * Evaluate request preconditions based on the passed in value.
      * 
      * @param lastModified
      *                a date that specifies the modification date of the
      *                resource
-     * @return null if the preconditions are met or a Response that should be
-     *         returned if the preconditions are not met.
+     * @return null if the preconditions are met or a ResponseBuilder set with
+     *         the appropriate status if the preconditions are not met.
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * 
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date)
      * @see #evaluatePreconditions(Date, EntityTag)
      */
-    public Response evaluatePreconditions(Date lastModified) {
+    public ResponseBuilder evaluatePreconditions(Date lastModified) {
         return evaluatePreconditions(lastModified, null);
     }
 
@@ -231,6 +170,13 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      *                resource
      * @param entityTag
      *                an ETag for the current state of the resource
+     * @return null if the preconditions are met or a ResponseBuilder set with
+     *         the appropriate status if the preconditions are not met. A
+     *         returned ResponseBuilder will include an ETag header set with the
+     *         value of eTag.
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * 
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date,
      *      javax.ws.rs.core.EntityTag)
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC
@@ -248,7 +194,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.28">RFC 2616,
      *      section 14.28: Header "If-Unmodified-Since"</a>
      */
-    public Response evaluatePreconditions(Date lastModified, EntityTag entityTag) {
+    public ResponseBuilder evaluatePreconditions(Date lastModified,
+            EntityTag entityTag) {
         if (lastModified == null && entityTag == null)
             return null;
         ResponseBuilder rb = null;
@@ -314,72 +261,41 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
                 // default answer to the request
             }
         }
-        if (rb != null)
-            return rb.build();
-        return null;
+        return rb;
     }
 
     /**
-     * Creates a response with status 412 (Precondition Failed).
+     * Evaluate request preconditions based on the passed in value.
      * 
-     * @param message
-     *                Plain Text error message. Will be returned as entity.
-     * @return Returns a response with status 412 (Precondition Failed) and the
-     *         given message as entity.
+     * @param entityTag
+     *                an ETag for the current state of the resource
+     * @return null if the preconditions are met or a ResponseBuilder set with
+     *         the appropriate status if the preconditions are not met. A
+     *         returned ResponseBuilder will include an ETag header set with the
+     *         value of eTag.
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see javax.ws.rs.core.Request#evaluatePreconditions(javax.ws.rs.core.EntityTag)
+     * @see #evaluatePreconditions(Date, EntityTag)
      */
-    private Response precFailed(String message) {
-        ResponseBuilder rb = Response.status(STATUS_PREC_FAILED);
-        rb.entity(message);
-        rb.language(Language.ENGLISH.getName());
-        rb.type(Converter.toJaxRsMediaType(
-                org.restlet.data.MediaType.TEXT_PLAIN, null));
-        return rb.build();
+    public ResponseBuilder evaluatePreconditions(EntityTag entityTag) {
+        return evaluatePreconditions(null, entityTag);
     }
 
-    private boolean checkIfOneMatch(List<Tag> requestETags, Tag entityTag) {
-        if (entityTag.isWeak())
-            return false;
-        for (Tag requestETag : requestETags) {
-            if (entityTag.equals(requestETag))
-                return true;
+    /**
+     * @see HttpHeaders#getAcceptableMediaTypes()
+     */
+    public List<MediaType> getAcceptableMediaTypes() {
+        if (this.acceptedMediaTypes == null) {
+            List<Preference<org.restlet.data.MediaType>> restletAccMediaTypes = request
+                    .getClientInfo().getAcceptedMediaTypes();
+            List<MediaType> accMediaTypes = new ArrayList<MediaType>(
+                    restletAccMediaTypes.size());
+            for (Preference<org.restlet.data.MediaType> mediaTypePref : restletAccMediaTypes)
+                accMediaTypes.add(createJaxRsMediaType(mediaTypePref));
+            this.acceptedMediaTypes = accMediaTypes;
         }
-        return false;
-    }
-
-    /**
-     * Select the representation variant that best matches the request. More
-     * explicit variants are chosen ahead of less explicit ones. A vary header
-     * is computed from the supplied list and automatically added to the
-     * response.
-     * 
-     * @param variants
-     *                a list of Variant that describe all of the available
-     *                representation variants.
-     * @return the variant that best matches the request.
-     * @see Variant.VariantListBuilder
-     * @throws IllegalArgumentException
-     *                 if variants is null or empty.
-     * @see Request#selectVariant(List)
-     */
-    public Variant selectVariant(List<Variant> variants)
-            throws IllegalArgumentException {
-        if (variants == null || variants.isEmpty())
-            throw new IllegalArgumentException();
-        List<org.restlet.resource.Variant> restletVariants = Converter
-                .toRestletVariants(variants);
-        org.restlet.resource.Variant bestRestlVar = request.getClientInfo()
-                .getPreferredVariant(restletVariants, null);
-        Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
-        Set<Dimension> dimensions = response.getDimensions();
-        if (bestRestlVar.getCharacterSet() != null)
-            dimensions.add(Dimension.CHARACTER_SET);
-        if (bestRestlVar.getEncodings() != null)
-            dimensions.add(Dimension.ENCODING);
-        if (bestRestlVar.getLanguages() != null)
-            dimensions.add(Dimension.LANGUAGE);
-        if (bestRestlVar.getMediaType() != null)
-            dimensions.add(Dimension.MEDIA_TYPE);
-        return bestVariant;
+        return this.acceptedMediaTypes;
     }
 
     /**
@@ -411,6 +327,49 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         return authScheme.getName();
         // LATER is SecurityContext.CLIENT_CERT_AUTH supported?
         // LATER FORM_AUTH wird wohl auch nicht unterstützt.
+    }
+
+    /**
+     * Get any cookies that accompanied the request.
+     * 
+     * @return a map of cookie name (String) to Cookie.
+     * @see HttpHeaders#getCookies()
+     */
+    public Map<String, Cookie> getCookies() {
+        if (this.cookies == null) {
+            Map<String, Cookie> c = new HashMap<String, Cookie>();
+            for (org.restlet.data.Cookie rc : request.getCookies()) {
+                Cookie cookie = Converter.toJaxRsCookie(rc);
+                c.put(cookie.getName(), cookie);
+            }
+            this.cookies = c;
+        }
+        return this.cookies;
+    }
+
+    /**
+     * @see HttpHeaders#getLanguage()
+     */
+    public String getLanguage() {
+        return language;
+    }
+
+    /**
+     * @see HttpHeaders#getMediaType()
+     */
+    public MediaType getMediaType() {
+        return this.mediaType;
+    }
+
+    /**
+     * @see HttpHeaders#getRequestHeaders()
+     */
+    public MultivaluedMap<String, String> getRequestHeaders() {
+        if (this.requestHeaders == null) {
+            this.requestHeaders = new FormMulvaltivaluedMap(Util
+                    .getHttpHeaders(request));
+        }
+        return this.requestHeaders;
     }
 
     /**
@@ -454,5 +413,58 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     public boolean isUserInRole(String role) {
         Principal principal = Util.getPrincipal(request);
         return authenticator.isUserInRole(principal, role);
+    }
+
+    /**
+     * Creates a response with status 412 (Precondition Failed).
+     * 
+     * @param message
+     *                Plain Text error message. Will be returned as entity.
+     * @return Returns a response with status 412 (Precondition Failed) and the
+     *         given message as entity.
+     */
+    private ResponseBuilder precFailed(String message) {
+        ResponseBuilder rb = Response.status(STATUS_PREC_FAILED);
+        rb.entity(message);
+        rb.language(Language.ENGLISH.getName());
+        rb.type(Converter.toJaxRsMediaType(
+                org.restlet.data.MediaType.TEXT_PLAIN, null));
+        return rb;
+    }
+
+    /**
+     * Select the representation variant that best matches the request. More
+     * explicit variants are chosen ahead of less explicit ones. A vary header
+     * is computed from the supplied list and automatically added to the
+     * response.
+     * 
+     * @param variants
+     *                a list of Variant that describe all of the available
+     *                representation variants.
+     * @return the variant that best matches the request.
+     * @see Variant.VariantListBuilder
+     * @throws IllegalArgumentException
+     *                 if variants is null or empty.
+     * @see Request#selectVariant(List)
+     */
+    public Variant selectVariant(List<Variant> variants)
+            throws IllegalArgumentException {
+        if (variants == null || variants.isEmpty())
+            throw new IllegalArgumentException();
+        List<org.restlet.resource.Variant> restletVariants = Converter
+                .toRestletVariants(variants);
+        org.restlet.resource.Variant bestRestlVar = request.getClientInfo()
+                .getPreferredVariant(restletVariants, null);
+        Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
+        Set<Dimension> dimensions = response.getDimensions();
+        if (bestRestlVar.getCharacterSet() != null)
+            dimensions.add(Dimension.CHARACTER_SET);
+        if (bestRestlVar.getEncodings() != null)
+            dimensions.add(Dimension.ENCODING);
+        if (bestRestlVar.getLanguages() != null)
+            dimensions.add(Dimension.LANGUAGE);
+        if (bestRestlVar.getMediaType() != null)
+            dimensions.add(Dimension.MEDIA_TYPE);
+        return bestVariant;
     }
 }

@@ -211,6 +211,9 @@ public class JaxRsUriInfoTest extends TestCase {
         JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR, uri);
     }
 
+    // TODO returned MultivaluesMap must be unmodifiable
+    // TODO more JaxRsUriInfo tests
+    
     /**
      * Test method for
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getQueryParameters()}.

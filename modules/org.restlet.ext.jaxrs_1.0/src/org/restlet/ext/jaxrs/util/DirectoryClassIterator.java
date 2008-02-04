@@ -31,7 +31,9 @@ import java.util.logging.Logger;
  * 
  * @author Stephan Koops
  */
-public class DirectoryClassIterator extends AbstractClasspathIterator {
+@SuppressWarnings("unchecked")
+public class DirectoryClassIterator extends AbstractClassIterator implements
+        Iterator<Class<?>> {
 
     private Stack<Iterator<File>> dirStack = new Stack<Iterator<File>>();
 
@@ -42,6 +44,9 @@ public class DirectoryClassIterator extends AbstractClasspathIterator {
      * 
      * @param directory
      *                the root directory for the packages
+     * @param throwOnExc
+     *                if true, ClassNotFoundExceptions are thrown (wrapped in a
+     *                RuntimeException), if false, than they are logged.
      * @param logger
      *                a logger to log {@link Exception}s or {@link Error}s;
      *                see {@link #loadClassByFileName(String, Logger, Level)}
@@ -49,8 +54,8 @@ public class DirectoryClassIterator extends AbstractClasspathIterator {
      *                the Log{@link Level} to use, must not be null; see
      *                {@link #loadClassByFileName(String, Logger, Level)}
      */
-    public DirectoryClassIterator(File directory, Logger logger, Level logLevel) {
-        super(logger, logLevel);
+    public DirectoryClassIterator(File directory, boolean throwOnExc, Logger logger, Level logLevel) {
+        super(throwOnExc, logger, logLevel);
         pushDir(directory);
         rootDirnameLength = directory.getPath().length() + 1;
     }
@@ -60,9 +65,12 @@ public class DirectoryClassIterator extends AbstractClasspathIterator {
      * 
      * @param directory
      *                the root directory for the packages
+     * @param throwOnExc
+     *                if true, ClassNotFoundExceptions are thrown (wrapped in a
+     *                RuntimeException), if false, than they are logged.
      */
-    public DirectoryClassIterator(File directory) {
-        this(directory, null, null);
+    public DirectoryClassIterator(File directory, boolean throwOnExc) {
+        this(directory, throwOnExc, null, null);
     }
 
     /**

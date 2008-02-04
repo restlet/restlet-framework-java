@@ -18,20 +18,7 @@
 
 package org.restlet.ext.jaxrs.util;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.util.DateUtils;
-import org.restlet.util.Variable;
 
 /**
  * Copy of {@link org.restlet.util.Template}, but some methods public instead
@@ -45,7 +32,7 @@ public class Template extends org.restlet.util.Template {
      * 
      * @author Jerome Louvel (contact@noelios.com)
      */
-    public interface VariableResolver {
+    public interface VariableResolver extends org.restlet.util.Template.VariableResolver {
         /**
          * Resolves a variable name into a value.
          * 
@@ -86,10 +73,11 @@ public class Template extends org.restlet.util.Template {
         super(logger, pattern);
     }
 
-    @Override
-    protected String resolve(Object userObject, String variableName) {
-        VariableResolver variableResolver = (VariableResolver) userObject;
-        return variableResolver.resolve(variableName);
+    public String format(VariableResolver resolver) {
+        return super.format(resolver);
     }
 
+    public String format(Object o) {
+        throw new UnsupportedOperationException();
+    }
 }

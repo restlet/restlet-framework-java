@@ -35,8 +35,8 @@ import javax.ws.rs.core.UriInfo;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.Authenticator;
-import org.restlet.ext.jaxrs.MatchingResult;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
+import org.restlet.ext.jaxrs.impl.MatchingResult;
 
 /**
  * Instances represents a root resource class.

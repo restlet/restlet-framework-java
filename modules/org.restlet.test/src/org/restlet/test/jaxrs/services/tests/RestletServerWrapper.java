@@ -81,8 +81,8 @@ public class RestletServerWrapper implements ServerWrapper {
      * @throws Exception
      */
     public void startServer(final Collection<Class<?>> rootResourceClasses,
-            Protocol protocol, int port, final ChallengeScheme challengeScheme, Parameter contextParameter)
-            throws Exception {
+            Protocol protocol, int port, final ChallengeScheme challengeScheme,
+            Parameter contextParameter) throws Exception {
         Component comp = new Component();
         if (contextParameter != null)
             comp.getContext().getParameters().add(contextParameter);
@@ -93,7 +93,7 @@ public class RestletServerWrapper implements ServerWrapper {
             @Override
             public Restlet createRoot() {
                 JaxRsGuard router = JaxRsRouter.getGuarded(getContext(),
-                        challengeScheme, "", authenticator);
+                        authenticator, false, false, challengeScheme, "");
                 Collection<Class<?>> rrcs = rootResourceClasses;
                 for (Class<?> cl : rrcs) {
                     router.attach(cl);
