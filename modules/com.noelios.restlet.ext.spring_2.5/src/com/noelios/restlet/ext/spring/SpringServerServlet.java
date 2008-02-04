@@ -18,6 +18,8 @@
 
 package com.noelios.restlet.ext.spring;
 
+import java.util.Enumeration;
+
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
@@ -27,11 +29,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.noelios.restlet.application.ApplicationContext;
 import com.noelios.restlet.ext.servlet.ServerServlet;
 import com.noelios.restlet.ext.servlet.ServletContextAdapter;
+import com.noelios.restlet.ext.servlet.ServletWarClient;
 
 /**
- * This class is similiar to the ServerServlet, but instead of creating the used
- * Application-Restlet and Component-Restlet, it lookups them up from a Spring
- * WebApplicationContext.
+ * This class is similar to the ServerServlet, but instead of creating the used
+ * Restlet-Application and Restlet-Component, it lookups them up from the
+ * SpringContext which is found in the ServletContext.
  * 
  * @author Florian Schwarz
  */
@@ -40,37 +43,35 @@ public class SpringServerServlet extends ServerServlet {
     private static final long serialVersionUID = 110030403435929871L;
 
     /**
-     * Name of the attribute key containing a bean-id of the application to use.
+     * Name of the Servlet parameter containing a bean-id of the application to
+     * use.
      */
-    public static final String APPLICATION_KEY = "org.restlet.application";
+    public static final String APPLICATION_BEAN_PARAM_NAME = "org.restlet.application";
 
     /**
-     * Name of the attribute key containing a bean-id of the component to use.
+     * Name of the Servlet parameter containing a bean-id of the component to
+     * use.
      */
-    public static final String COMPONENT_KEY = "org.restlet.component";
+    public static final String Component_BEAN_PARAM_NAME = "org.restlet.component";
 
     /**
      * Lookups the single Restlet-Application used by this Servlet from the
      * SpringContext inside the ServletContext. The bean name looked up is
-     * {@link #APPLICATION_KEY}. If no bean is found,
+     * {@link #APPLICATION_BEAN_PARAM_NAME}.
      * 
      * @param context
      *                The Context for the Application.
-     * 
-     * @return The Restlet-Application to use or null if unable to lookup or
-     *         create.
+     * @return The Restlet-Application to use.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Application createApplication(Context context) {
         Application application = null;
 
         String applicationBeanName = getInitParameter(
-                SpringServerServlet.APPLICATION_KEY, null);
-
-        if (getWebApplicationContext().containsBean(applicationBeanName)) {
-            application = (Application) getWebApplicationContext().getBean(
-                    applicationBeanName);
-        }
+                SpringServerServlet.APPLICATION_BEAN_PARAM_NAME, null);
+        application = (Application) getWebApplicationContext().getBean(
+                applicationBeanName);
 
         if (application != null) {
             // Set the context based on the Servlet's context
@@ -79,6 +80,32 @@ public class SpringServerServlet extends ServerServlet {
             application.setContext(new ApplicationContext(application,
                     new ServletContextAdapter(this, context),
                     applicationContext.getLogger()));
+
+            // Set the special WAR client
+            applicationContext.setWarClient(new ServletWarClient(
+                    applicationContext, this.getServletConfig()
+                            .getServletContext()));
+
+            // Copy all the servlet parameters into the context
+            String initParam;
+
+            // Copy all the Web component initialization parameters
+            javax.servlet.ServletConfig servletConfig = getServletConfig();
+            for (Enumeration<String> enum1 = servletConfig
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = enum1.nextElement();
+                applicationContext.getParameters().add(initParam,
+                        servletConfig.getInitParameter(initParam));
+            }
+
+            // Copy all the Web Application initialization parameters
+            for (Enumeration<String> enum1 = getServletContext()
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = enum1.nextElement();
+                applicationContext.getParameters().add(initParam,
+                        getServletContext().getInitParameter(initParam));
+            }
+
         } else {
             application = super.createApplication(context);
         }
@@ -89,22 +116,18 @@ public class SpringServerServlet extends ServerServlet {
     /**
      * Lookups the single RestletComponent used by this Servlet from the
      * SpringContext inside the ServletContext. The bean name looked up is
-     * {@link #COMPONENT_KEY}.
+     * {@link #Component_BEAN_PARAM_NAME}.
      * 
-     * @return The Restlet-Component to use or null if unable to lookup or
-     *         create.
+     * @return The Restlet-Component to use.
      */
-
     @Override
     public Component createComponent() {
         Component component = null;
-        String componentBeanName = getInitParameter(
-                SpringServerServlet.COMPONENT_KEY, null);
 
-        if (getWebApplicationContext().containsBean(componentBeanName)) {
-            component = (Component) getWebApplicationContext().getBean(
-                    componentBeanName);
-        }
+        String componentBeanName = getInitParameter(Component_BEAN_PARAM_NAME,
+                null);
+        component = (Component) getWebApplicationContext().getBean(
+                componentBeanName);
 
         if (component == null) {
             component = super.createComponent();
@@ -113,12 +136,18 @@ public class SpringServerServlet extends ServerServlet {
         return component;
     }
 
+    /**
+     * Get the Spring WebApplicationContext from the ServletContext. (by hand
+     * would be webApplicationContext applicationContext =
+     * (WebApplicationContext)
+     * getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);)
+     * 
+     * @return The Spring WebApplicationContext.
+     */
     public WebApplicationContext getWebApplicationContext() {
-        // by hand would be
-        // webApplicationContext applicationContext = (WebApplicationContext)
-        // getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 
         return WebApplicationContextUtils
                 .getRequiredWebApplicationContext(getServletContext());
     }
+
 }
