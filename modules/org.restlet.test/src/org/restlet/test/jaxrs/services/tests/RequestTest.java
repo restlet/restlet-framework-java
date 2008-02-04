@@ -242,11 +242,6 @@ public class RequestTest extends JaxRsTestCase {
         // assertEquals(getEntityTagFromDatastore(), response.getEntity().getTag());
         // assertEquals(0, response.getEntity().getSize());
 
-        /**
-         * 304 shouldn'tt return an entity body.
-         */
-        assertFalse(response.isEntityAvailable());
-
         // LATER test, what happens, because of Range-Header
         // see RFC2616, top of page 131
     }
