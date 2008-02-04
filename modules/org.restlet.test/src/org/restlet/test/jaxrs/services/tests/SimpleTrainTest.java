@@ -76,27 +76,27 @@ public class SimpleTrainTest extends JaxRsTestCase {
     public static void testGetTextAll() throws Exception {
         if (ONLY_M2)
             return;
-        // Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
+        Response response;
+        // TODO This request fails because methods for text/plain and for
+        // text/html are available, but it is not specified, which to use.
+        // response = JaxRsTestCase.accessServer(SimpleTrain.class,
         // Method.GET, MediaType.TEXT_ALL);
-        // TODO assertEquals(Status.SUCCESS_CREATED, response.getStatus());
-        // This request fails because methods for text/plain and for text/html
-        // are available, but it is not specified, which to use.
+        // assertEquals(Status.SUCCESS_OK, response.getStatus());
 
-        // response = JaxRsTester.accessServer(SimpleTrain.class, Method.GET,
-        // MediaType.TEXT_CALENDAR);
-        // assertTrue(response.getStatus().isSuccess()); representation =
-        // response.getEntity();
-        // assertEquals(SimpleTrain.RERP_ANY_TEXT, representation.getText());
-        // TODO assertEquals(MediaType.TEXT_PLAIN,
-        // representation.getMediaType());
+        response = accessServer(SimpleTrain.class, Method.GET,
+                MediaType.TEXT_PLAIN);
+        assertTrue(response.getStatus().isSuccess());
+        Representation representation = response.getEntity();
+        assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
+        assertEquals(MediaType.TEXT_PLAIN, representation.getMediaType());
     }
 
     public static void testGetTextMultiple1() throws Exception {
         if (ONLY_M2 || ONLY_TEXT_ALL)
             return;
         Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
-                Method.GET, Util.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
-                        MediaType.TEXT_CALENDAR }));
+                Method.GET, Util.createList(new Object[] {
+                        PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_CALENDAR }));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation representation = response.getEntity();
         assertEqualMediaType(MediaType.TEXT_PLAIN, representation
@@ -108,8 +108,8 @@ public class SimpleTrainTest extends JaxRsTestCase {
         if (ONLY_TEXT_ALL)
             return;
         Response response = JaxRsTestCase.accessServer(SimpleTrain.class,
-                Method.GET, Util.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
-                        MediaType.TEXT_HTML }));
+                Method.GET, Util.createList(new Object[] {
+                        PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation representation = response.getEntity();
         assertEqualMediaType(MediaType.TEXT_HTML, representation.getMediaType());
@@ -120,11 +120,11 @@ public class SimpleTrainTest extends JaxRsTestCase {
         if (ONLY_M2 || ONLY_TEXT_ALL)
             return;
         Response responseHead = JaxRsTestCase.accessServer(SimpleTrain.class,
-                Method.HEAD, Util.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
-                        MediaType.TEXT_HTML }));
+                Method.HEAD, Util.createList(new Object[] {
+                        PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
         Response responseGett = JaxRsTestCase.accessServer(SimpleTrain.class,
-                Method.GET, Util.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
-                        MediaType.TEXT_HTML }));
+                Method.GET, Util.createList(new Object[] {
+                        PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
         assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
         assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
         Representation representationHead = responseHead.getEntity();

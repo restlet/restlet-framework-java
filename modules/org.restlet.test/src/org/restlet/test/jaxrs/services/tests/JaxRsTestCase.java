@@ -210,9 +210,7 @@ public abstract class JaxRsTestCase extends TestCase {
     public static void assertEqualMediaType(MediaType expected, MediaType actual) {
         expected = Converter.getMediaTypeWithoutParams(expected);
         actual = Converter.getMediaTypeWithoutParams(actual);
-        
-        // TODO fixme
-        // assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     /**
