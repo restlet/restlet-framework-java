@@ -16,7 +16,8 @@ Changes log
  - Updated JSON JAR to latest version.
  - Externalize mappings between file extensions and media types in the MetadataService. 
    Reported by Alex Milowsky.
-
+ - Close an open BufferedReader in IdentClient class.
+ 
 1.0.7 (2007-12-22)
 [Bugs fixed]
  - Fixed bug in the matching of "*" E-Tags. Patch contributed by Alex Milowski. 
