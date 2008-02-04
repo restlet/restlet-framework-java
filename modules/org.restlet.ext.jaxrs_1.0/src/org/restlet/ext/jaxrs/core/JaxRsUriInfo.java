@@ -32,7 +32,6 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Form;
-import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.ext.jaxrs.util.Util;
 
@@ -49,17 +48,17 @@ public class JaxRsUriInfo implements UriInfo {
     // TODO throw IllegalStateException if called outside the scope of a request
 
     private static Logger logger = Logger.getLogger("JaxRsUriInfo.unexpected");
-    
+
     protected Reference reference;
 
-    private FormMulvaltivaluedMap queryParametersDecoded;
+    private UnmodifiableMultivaluedMap<String, String> queryParametersDecoded;
 
-    private FormMulvaltivaluedMap queryParametersEncoded;
+    private UnmodifiableMultivaluedMap<String, String> queryParametersEncoded;
 
-    protected MultivaluedMap<String, String> templateParametersDecoded;
+    protected UnmodifiableMultivaluedMap<String, String> templateParametersDecoded;
 
     /** is null, if no templateParameters given on creation */
-    protected MultivaluedMap<String, String> templateParametersEncoded;
+    protected UnmodifiableMultivaluedMap<String, String> templateParametersEncoded;
 
     /**
      * Creates a new UriInfo.
@@ -72,8 +71,7 @@ public class JaxRsUriInfo implements UriInfo {
      *                templateParameters are not available.
      */
     public JaxRsUriInfo(Reference reference,
-            MultivaluedMap<String, String> templateParametersEncoded) {
-        // FIXME templateParameters must be unmodifiable
+            UnmodifiableMultivaluedMap<String, String> templateParametersEncoded) {
         this(reference);
         this.templateParametersEncoded = templateParametersEncoded;
     }
@@ -81,6 +79,7 @@ public class JaxRsUriInfo implements UriInfo {
     /**
      * Creates a new UriInfo. When using this constructor, the
      * templateParameters are not available.
+     * 
      * @param reference
      *                The Restlet reference that will be wrapped. Must not be
      *                null.
@@ -91,7 +90,8 @@ public class JaxRsUriInfo implements UriInfo {
         if (reference == null)
             throw new IllegalArgumentException("The reference must not be null");
         if (reference.getBaseRef() == null)
-            throw new IllegalArgumentException("The reference must contains a baseRef");
+            throw new IllegalArgumentException(
+                    "The reference must contains a baseRef");
         this.reference = reference;
     }
 
@@ -130,9 +130,10 @@ public class JaxRsUriInfo implements UriInfo {
      * All sequences of escaped octets are decoded, equivalent to
      * <code>getPathSegments(true)</code>.
      * 
-     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
-     * map of each path segment is also unmodifiable.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @return an unmodifiable list of {@link PathSegment}. The matrix
+     *         parameter map of each path segment is also unmodifiable.
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
      * @see PathSegment
      * @see UriInfo#getPathSegments()
      */
@@ -152,9 +153,10 @@ public class JaxRsUriInfo implements UriInfo {
      * @param decode
      *                controls whether sequences of escaped octets are decoded
      *                (true) or not (false).
-     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
-     * map of each path segment is also unmodifiable.
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @return an unmodifiable list of {@link PathSegment}. The matrix
+     *         parameter map of each path segment is also unmodifiable.
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
      * @see PathSegment
      * @see UriInfo#getPathSegments(boolean)
      */
@@ -175,8 +177,9 @@ public class JaxRsUriInfo implements UriInfo {
         List<PathSegment> pathSegments = new ArrayList<PathSegment>(segments
                 .size());
         int l = segments.size();
-        for(int i=0; i<l; i++)
-            pathSegments.add(new JaxRsPathSegment(segments.get(i), decode, false, false, i));
+        for (int i = 0; i < l; i++)
+            pathSegments.add(new JaxRsPathSegment(segments.get(i), true, decode,
+                    false, false, i));
         return Collections.unmodifiableList(pathSegments);
     }
 
@@ -227,7 +230,14 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getAbsolutePathBuilder()
      */
     public UriBuilder getAbsolutePathBuilder() {
-        return UriBuilder.fromPath(reference.toString(false, false));
+        UriBuilder b = new JaxRsUriBuilder();
+        b.encode(false);
+        try {
+            b.uri(URI.create(reference.toString(true, false)));
+        } catch (NullPointerException ex) {
+            throw new IllegalArgumentException(ex.getMessage(), ex);
+        }
+        return b;
     }
 
     /**
@@ -248,10 +258,9 @@ public class JaxRsUriInfo implements UriInfo {
     private String baseUri;
 
     private String getBaseUriStr() {
-        if (this.baseUri == null)
-        {
+        if (this.baseUri == null) {
             Reference baseRef = reference.getBaseRef();
-            if(baseRef != null)
+            if (baseRef != null)
                 this.baseUri = baseRef.toString(false, false);
         }
         return baseUri;
@@ -275,50 +284,48 @@ public class JaxRsUriInfo implements UriInfo {
      * <code>getQueryParameters(true)</code>.
      * 
      * @return an unmodifiable map of query parameter names and values
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
      * @see UriInfo#getQueryParameters()
      */
     public MultivaluedMap<String, String> getQueryParameters() {
-        // TODO unmodifiable
         if (queryParametersDecoded == null)
-            queryParametersDecoded = new FormMulvaltivaluedMap(reference
-                    .getQueryAsForm());
+            queryParametersDecoded = UnmodifiableMultivaluedMap.getFromForm(
+                    reference.getQueryAsForm(), false);
         return queryParametersDecoded;
     }
 
     /**
      * @return an unmodifiable map of query parameter names and values
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
      * @see UriInfo#getQueryParameters(boolean)
      */
     public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
-        // TODO unmodifiable
         if (decode)
             return getQueryParameters();
         if (queryParametersEncoded == null) {
-            Form queryForm = reference.getQueryAsForm();
-            for (Parameter param : queryForm) {
-                param.setName(Reference.encode(param.getName()));
-                param.setValue(Reference.encode(param.getValue()));
-            }
-            queryParametersEncoded = new FormMulvaltivaluedMap(queryForm);
+            Form queryForm = new Form(reference.getQuery(), null);
+            // TODO Jerome bleibt das ok, wenn der CharSet null ist?
+            queryParametersEncoded = UnmodifiableMultivaluedMap.getFromForm(queryForm, false);
         }
         return queryParametersEncoded;
     }
 
     /**
-     * Get the values of any embedded URI template parameters.
-     * All sequences of escaped octets are decoded,
-     * equivalent to <code>getTemplateParameters(true)</code>.
+     * Get the values of any embedded URI template parameters. All sequences of
+     * escaped octets are decoded, equivalent to
+     * <code>getTemplateParameters(true)</code>.
+     * 
      * @return an unmodifiable map of parameter names and values
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
      * @see javax.ws.rs.Path
      * @see UriInfo#getTemplateParameters()
      */
     public MultivaluedMap<String, String> getTemplateParameters() {
-        // TODO unmodifiable
         if (this.templateParametersDecoded == null) {
-            if(this.templateParametersEncoded == null)
+            if (this.templateParametersEncoded == null)
                 return null;
             MultivaluedMap<String, String> templParamsDec = new MultivaluedMapImpl<String, String>();
             for (Map.Entry<String, List<String>> entryEnc : this.templateParametersEncoded
@@ -330,7 +337,7 @@ public class JaxRsUriInfo implements UriInfo {
                     valuesDec.add(Reference.decode(valueEnc));
                 templParamsDec.put(keyDec, valuesDec);
             }
-            this.templateParametersDecoded = templParamsDec;
+            this.templateParametersDecoded = new UnmodifiableMultivaluedMap<String, String>(templParamsDec, false);
         }
         return this.templateParametersDecoded;
     }
@@ -338,15 +345,16 @@ public class JaxRsUriInfo implements UriInfo {
     /**
      * Get the values of any embedded URI template parameters.
      * 
-     * @param decode controls whether sequences of escaped octets are decoded
-     * (true) or not (false).
+     * @param decode
+     *                controls whether sequences of escaped octets are decoded
+     *                (true) or not (false).
      * @return an unmodifiable map of parameter names and values
-     * @throws java.lang.IllegalStateException if called outside the scope of a request
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
      * @see javax.ws.rs.Path
      * @see UriInfo#getTemplateParameters(boolean)
      */
     public MultivaluedMap<String, String> getTemplateParameters(boolean decode) {
-        // TODO unmodifiable
         if (decode)
             return getTemplateParameters();
         else
@@ -362,8 +370,8 @@ public class JaxRsUriInfo implements UriInfo {
         UriInfo other = (UriInfo) anotherObject;
         return this.getBaseUri().equals(other.getBaseUri())
                 && this.getPathSegments().equals(other.getPathSegments())
-                && Util.equals(this.getTemplateParameters(),
-                        other.getTemplateParameters());
+                && Util.equals(this.getTemplateParameters(), other
+                        .getTemplateParameters());
     }
 
     @Override

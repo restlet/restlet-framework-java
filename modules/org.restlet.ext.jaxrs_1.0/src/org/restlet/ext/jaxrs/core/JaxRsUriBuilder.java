@@ -139,8 +139,8 @@ public class JaxRsUriBuilder extends UriBuilder {
                 segments.length);
         int l = segments.length;
         for (int i = 0; i < l; i++)
-            pathSegments.add(new JaxRsPathSegment(segments[i], false, encode,
-                    true, i));
+            pathSegments.add(new JaxRsPathSegment(segments[i], false, false,
+                    encode, true, i));
 
         // than add
         for (JaxRsPathSegment pathSegment : pathSegments)
@@ -321,15 +321,6 @@ public class JaxRsUriBuilder extends UriBuilder {
     /**
      * Intended for testing only.
      * 
-     * @return the encode
-     */
-    public boolean getEncode() {
-        return encode;
-    }
-
-    /**
-     * Intended for testing only.
-     * 
      * @return the fragment
      */
     public String getFragment() {
@@ -409,6 +400,12 @@ public class JaxRsUriBuilder extends UriBuilder {
         return this;
     }
 
+    /**
+     * Get the current state of automatic encoding.
+     * 
+     * @return true if automatic encoding is enable, false otherwise
+     * @see UriBuilder#isEncode()
+     */
     @Override
     public boolean isEncode() {
         return this.encode;
@@ -690,7 +687,7 @@ public class JaxRsUriBuilder extends UriBuilder {
             throws IllegalArgumentException {
         this.pathSegments.clear();
         if (path != null && path.length != 0)
-            for(String segment : path)
+            for (String segment : path)
                 addPathSegments(segment);
         return this;
     }
@@ -867,19 +864,35 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder uri(URI uri) throws IllegalArgumentException {
-        if (uri.getScheme() != null)
-            this.scheme = uri.getScheme();
-        if (uri.getHost() != null)
-            this.host = uri.getHost();
-        this.port = uri.getPort();
-        if (uri.getUserInfo() != null)
-            this.userInfo = uri.getUserInfo();
-        if (uri.getPath() != null)
-            this.replacePath(uri.getPath());
-        if (uri.getQuery() != null)
-            this.query = uri.getQuery();
-        if (uri.getFragment() != null)
-            this.fragment = uri.getFragment();
+        if (this.encode) {
+            if (uri.getScheme() != null)
+                this.scheme = uri.getScheme();
+            if (uri.getHost() != null)
+                this.host = uri.getHost();
+            this.port = uri.getPort();
+            if (uri.getUserInfo() != null)
+                this.userInfo = uri.getUserInfo();
+            if (uri.getPath() != null)
+                this.replacePath(uri.getPath());
+            if (uri.getQuery() != null)
+                this.query = uri.getQuery();
+            if (uri.getFragment() != null)
+                this.fragment = uri.getFragment();
+        } else {
+            if (uri.getScheme() != null)
+                this.scheme = uri.getScheme();
+            if (uri.getHost() != null)
+                this.host = uri.getHost();
+            this.port = uri.getPort();
+            if (uri.getRawUserInfo() != null)
+                this.userInfo = uri.getRawUserInfo();
+            if (uri.getRawPath() != null)
+                this.replacePath(uri.getRawPath());
+            if (uri.getRawQuery() != null)
+                this.query = uri.getRawQuery();
+            if (uri.getRawFragment() != null)
+                this.fragment = uri.getRawFragment();
+        }
         return this;
     }
 

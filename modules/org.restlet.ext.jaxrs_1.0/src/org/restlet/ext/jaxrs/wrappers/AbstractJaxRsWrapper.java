@@ -39,6 +39,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.core.HttpContextImpl;
+import org.restlet.ext.jaxrs.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.exceptions.CanNotIntatiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.IllegalAnnotationException;
 import org.restlet.ext.jaxrs.impl.MatchingResult;
@@ -212,23 +213,20 @@ public abstract class AbstractJaxRsWrapper {
         for (Annotation annotation : paramAnnotations) {
             Class<? extends Annotation> annotationType = annotation
                     .annotationType();
-            // if something is added here, you have to check if you have to add
-            // it in RootResourceClass#checkParamAnnotations(..)
             if (annotationType.equals(HeaderParam.class)) {
                 String headerParamValue = Util.getHttpHeaders(restletRequest)
                         .getFirstValue(((HeaderParam) annotation).value());
-                // TODO read javadoc of HeaderParam again.
+                // TODO HeaderParam: case insensitive
                 return getParameterValueFromParam(paramClass, headerParamValue);
             } else if (annotationType.equals(PathParam.class)) {
                 String pathParamValue = matchingResult.getVariables().get(
                         ((PathParam) annotation).value()); 
-                // TODO read javadoc of PathParam again.
                 // TODO PathParam: @Encode verwenden 
                 return getParameterValueFromParam(paramClass, pathParamValue);
             } else if (annotationType.equals(Context.class)) {
                 if (httpContext == null)
                     httpContext = new HttpContextImpl(restletRequest,
-                            allTemplParamsEnc, restletResponse, authenticator);
+                            new UnmodifiableMultivaluedMap<String, String>(allTemplParamsEnc, false), restletResponse, authenticator);
                 // TODO Jerome: I need to know if the restlet Request was
                 // authenticated.
                 return httpContext;

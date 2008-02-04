@@ -22,6 +22,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * 
@@ -90,5 +92,31 @@ public class SimpleTrain {
     @ProduceMime("text/html")
     public String getHtmlText() {
         return RERP_HTML_TEXT;
+    }
+
+    @GET
+    @Path("decode/{string}")
+    public String getTemplParamDecoded(@Context
+    UriInfo uriInfo) {
+        try {
+            uriInfo.getTemplateParameters(true).add("jkghjk", "khlökh");
+            return "The Template Parameter MultivaluedMap must be unmodifiable.";
+        } catch (UnsupportedOperationException e) {
+            // ok
+        }
+        return uriInfo.getTemplateParameters(true).getFirst("string");
+    }
+
+    @GET
+    @Path("encode/{string}")
+    public String getTemplParamEncoded(@Context
+    UriInfo uriInfo) {
+        try {
+            uriInfo.getTemplateParameters(false).add("jkghjk", "khlökh");
+            return "The Template Parameter MultivaluedMap must be unmodifiable.";
+        } catch (UnsupportedOperationException e) {
+            // ok
+        }
+        return uriInfo.getTemplateParameters(false).getFirst("string");
     }
 }

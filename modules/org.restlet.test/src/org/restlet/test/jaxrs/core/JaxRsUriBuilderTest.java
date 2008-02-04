@@ -291,7 +291,7 @@ public class JaxRsUriBuilderTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#path(java.lang.Class)}.
      */
     public void testPathClass() throws Exception {
-        uriBuilder1.replacePath((String[])null);
+        uriBuilder1.replacePath((String[]) null);
         uriBuilder1.path(SimpleTrain.class);
         assertEqualsURI("http://localhost" + SimpleTrain.PATH, uriBuilder1);
         // LATER gucken, dass er @Path.encode richtig auswertet
@@ -302,7 +302,7 @@ public class JaxRsUriBuilderTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#path(java.lang.reflect.Method[])}.
      */
     public void testPathMethodArray() throws Exception {
-        uriBuilder1.replacePath((String[])null);
+        uriBuilder1.replacePath((String[]) null);
         Method findCar = CarListResource.class.getMethod("findCar",
                 String.class);
         Method engine = CarResource.class.getMethod("findEngine");
@@ -317,7 +317,7 @@ public class JaxRsUriBuilderTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#path(java.lang.Class, java.lang.String)}.
      */
     public void testPathClassString() throws Exception {
-        uriBuilder1.replacePath((String[])null);
+        uriBuilder1.replacePath((String[]) null);
         uriBuilder1.path(CarListResource.class, "getOffers");
         assertEqualsURI("http://localhost/" + CarListResource.PATH + "/"
                 + CarListResource.OFFERS_PATH, uriBuilder1);
@@ -368,7 +368,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder1.replacePath("newPath");
         assertEqualsURI("http://localhost/newPath", uriBuilder1);
 
-        uriBuilder1.replacePath((String[])null);
+        uriBuilder1.replacePath((String[]) null);
         assertEqualUriBuilder(uriBuilder1, "http", null, "localhost", -1, null);
         try {
             assertEqualsURI("http://localhost/", uriBuilder1);
@@ -396,45 +396,45 @@ public class JaxRsUriBuilderTest extends TestCase {
 
         uriBuilder1.schemeSpecificPart("//shkf/akfshdf");
         assertEqualUriBuilder(uriBuilder1, "http", null, "shkf", -1, null,
-                new JaxRsPathSegment("akfshdf", null));
+                new JaxRsPathSegment("akfshdf", false, null));
 
         uriBuilder1.schemeSpecificPart("//user@shkf/akfshdf/akjhf");
         assertEqualUriBuilder(uriBuilder1, "http", "user", "shkf", -1, null,
-                new JaxRsPathSegment("akfshdf", null), new JaxRsPathSegment(
-                        "akjhf", null));
+                new JaxRsPathSegment("akfshdf", false, null),
+                new JaxRsPathSegment("akjhf", false, null));
 
         uriBuilder1.schemeSpecificPart("//shkf:4711/akjhf?a=b");
         assertEqualUriBuilder(uriBuilder1, "http", null, "shkf", 4711, "a=b",
-                new JaxRsPathSegment("akjhf", null));
+                new JaxRsPathSegment("akjhf", false, null));
 
         uriBuilder1.schemeSpecificPart("//www.domain.org/akjhf;1=2?a=b");
         MultivaluedMapImpl<String, String> mp = new MultivaluedMapImpl<String, String>();
         mp.putSingle("1", "2");
         assertEqualUriBuilder(uriBuilder1, "http", null, "www.domain.org", -1,
-                "a=b", new JaxRsPathSegment("akjhf", mp));
+                "a=b", new JaxRsPathSegment("akjhf", false, mp));
 
         uriBuilder1.schemeSpecificPart("//www.domain.org/akjhf;1=2;3=4?a=b");
         mp = new MultivaluedMapImpl<String, String>();
         mp.putSingle("1", "2");
         mp.putSingle("3", "4");
         assertEqualUriBuilder(uriBuilder1, "http", null, "www.domain.org", -1,
-                "a=b", new JaxRsPathSegment("akjhf", mp));
+                "a=b", new JaxRsPathSegment("akjhf", false, mp));
     }
 
     public void testStaticFromPath() throws Exception {
         UriBuilder uriBuilder = UriBuilder.fromPath("path");
         if (uriBuilder instanceof JaxRsUriBuilder) {
             assertEqualUriBuilder((JaxRsUriBuilder) uriBuilder, null, null,
-                    null, -1, null, new JaxRsPathSegment("path", null));
+                    null, -1, null, new JaxRsPathSegment("path", false, null));
         }
         assertEqualsURI("path", uriBuilder);
 
         uriBuilder = UriBuilder.fromPath("path1/path2/abc.html");
         if (uriBuilder instanceof JaxRsUriBuilder) {
             assertEqualUriBuilder(uriBuilder, null, null, null, -1, null,
-                    new JaxRsPathSegment("path1", null), new JaxRsPathSegment(
-                            "path2", null), new JaxRsPathSegment("abc.html",
-                            null));
+                    new JaxRsPathSegment("path1", false, null),
+                    new JaxRsPathSegment("path2", false, null),
+                    new JaxRsPathSegment("abc.html", false, null));
         }
         assertEqualsURI("path1/path2/abc.html", uriBuilder);
 
@@ -445,9 +445,9 @@ public class JaxRsUriBuilderTest extends TestCase {
             map2.add("mp1", "mv%3F1");
             map2.add("mp2", "mv2");
             assertEqualUriBuilder(uriBuilder, null, null, null, -1, null,
-                    new JaxRsPathSegment("path1", null), new JaxRsPathSegment(
-                            "path2", map2), new JaxRsPathSegment("abc.html",
-                            null));
+                    new JaxRsPathSegment("path1", false, null),
+                    new JaxRsPathSegment("path2", false, map2),
+                    new JaxRsPathSegment("abc.html", false, null));
         }
         assertEquals("path1/path2;mp1=mv%3F1;mp2=mv2/abc.html", uriBuilder
                 .build().toString());
@@ -460,9 +460,9 @@ public class JaxRsUriBuilderTest extends TestCase {
             map2.add("mp1", "mv1%3F");
             map2.add("mp2", "mv2");
             assertEqualUriBuilder(uriBuilder, null, null, null, -1, null,
-                    new JaxRsPathSegment("path1", null), new JaxRsPathSegment(
-                            "path2", map2), new JaxRsPathSegment("abc.html",
-                            null));
+                    new JaxRsPathSegment("path1", false, null),
+                    new JaxRsPathSegment("path2", false, map2),
+                    new JaxRsPathSegment("abc.html", false, null));
         }
         assertEqualsURI(path, uriBuilder);
     }

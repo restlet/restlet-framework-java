@@ -79,7 +79,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
 
     private org.restlet.data.Request request;
 
-    private FormMulvaltivaluedMap requestHeaders;
+    private UnmodifiableMultivaluedMap<String, String> requestHeaders;
 
     private org.restlet.data.Response response;
 
@@ -95,7 +95,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      *                The authenticator. Must not be null.
      */
     public HttpContextImpl(org.restlet.data.Request request,
-            MultivaluedMap<String, String> templateParametersEncoded,
+            UnmodifiableMultivaluedMap<String, String> templateParametersEncoded,
             org.restlet.data.Response response, Authenticator authenticator) {
         super((request == null) ? null : request.getResourceRef(),
                 templateParametersEncoded);
@@ -366,8 +366,8 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      */
     public MultivaluedMap<String, String> getRequestHeaders() {
         if (this.requestHeaders == null) {
-            this.requestHeaders = new FormMulvaltivaluedMap(Util
-                    .getHttpHeaders(request));
+            this.requestHeaders = UnmodifiableMultivaluedMap.getFromForm(Util
+                    .getHttpHeaders(request), false);
         }
         return this.requestHeaders;
     }

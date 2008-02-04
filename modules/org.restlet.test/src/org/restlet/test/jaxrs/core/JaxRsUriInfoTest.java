@@ -22,12 +22,14 @@ import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import junit.framework.TestCase;
 
 import org.restlet.data.Reference;
 import org.restlet.ext.jaxrs.core.JaxRsUriInfo;
+import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 
 /**
  * @author Stephan Koops
@@ -39,6 +41,18 @@ public class JaxRsUriInfoTest extends TestCase {
 
     private static final Reference BASE_REF = new Reference(BASE_REF_STR);
 
+    private static final String RELATIV_1 = "relativ/a/b";
+
+    private static final String RELATIV_2 = "relativ/%20a%20/%21b%40%2C";
+
+    private static final String RELATIV_2_DECODED = "relativ/ a /!b@,";
+
+    private static final UriInfo URI_INFO_1 = new JaxRsUriInfo(new Reference(
+            BASE_REF, BASE_REF_STR + RELATIV_1));
+
+    private static final UriInfo URI_INFO_2 = new JaxRsUriInfo(new Reference(
+            BASE_REF, BASE_REF_STR + RELATIV_2));
+
     private static final JaxRsUriInfo URI_INFO_3 = new JaxRsUriInfo(
             new Reference(BASE_REF, BASE_REF_STR + "hfk;abc=def;ghi=jkl/hjh"));
 
@@ -46,22 +60,93 @@ public class JaxRsUriInfoTest extends TestCase {
             new Reference(BASE_REF, BASE_REF_STR + "hfk;ghi=jkl;abc=def/hjh"));
 
     private static final JaxRsUriInfo URI_INFO_5 = new JaxRsUriInfo(
-            new Reference(BASE_REF, BASE_REF_STR + "hfk;abc=%20def;ghi=jkl/hjh"));
+            new Reference(BASE_REF, BASE_REF_STR + "hfk;abc=%20def;ghi=jkl"));
 
-    private static final JaxRsUriInfo URI_INFO_6 = new JaxRsUriInfo(
-            new Reference(BASE_REF, BASE_REF_STR + "hfk;ghi=jkl;abc= def/hjh"));
+    private static final JaxRsUriInfo URI_INFO_7 = new JaxRsUriInfo(
+            new Reference(BASE_REF, BASE_REF_STR + "abc?def=123&ghi=456"));
 
-    private static final String RELATIV_1 = "relativ/a/b";
+    private static final JaxRsUriInfo URI_INFO_8 = new JaxRsUriInfo(
+            new Reference(BASE_REF, BASE_REF_STR + "abc?def=1+23&gh%20i=45%206"));
 
-    private static final UriInfo URI_INFO_1 = new JaxRsUriInfo(new Reference(
-            BASE_REF, BASE_REF_STR + RELATIV_1));
+    private void checkEntry(String expectedValue, String key,
+            MultivaluedMap<String, String> templateParameters) {
+        assertEquals(expectedValue, templateParameters.getFirst(key));
+    }
 
-    private static final String RELATIV_2 = "relativ/%20a%20/!b@%2C";
+    // the Template parameters are tested in SimpleTrain and SimpleTrainTest
 
-    private static final String RELATIV_2_DECODED = "relativ/ a /!b@,";
+    /**
+     * @param pathSegments
+     * @param path0
+     * @param tpSize0
+     *                templatParamaterSize
+     * @param path1
+     * @param tpSize1
+     * @param path2
+     * @param tpSize2
+     */
+    private void checkPathSegments(List<PathSegment> pathSegments,
+            String path0, int tpSize0, String path1, int tpSize1, String path2,
+            int tpSize2) {
+        assertEquals(3, pathSegments.size());
+        PathSegment pathSegment0 = pathSegments.get(0);
+        PathSegment pathSegment1 = pathSegments.get(1);
+        PathSegment pathSegment2 = pathSegments.get(2);
+        assertEquals(path0, pathSegment0.getPath());
+        assertEquals(tpSize0, pathSegment0.getMatrixParameters().size());
+        assertEquals(path1, pathSegment1.getPath());
+        assertEquals(tpSize1, pathSegment1.getMatrixParameters().size());
+        assertEquals(path2, pathSegment2.getPath());
+        assertEquals(tpSize2, pathSegment2.getMatrixParameters().size());
+    }
 
-    private static final UriInfo URI_INFO_2 = new JaxRsUriInfo(new Reference(
-            BASE_REF, BASE_REF_STR + RELATIV_2));
+    /**
+     * Test method for
+     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getRequestUriBuilder()}.
+     */
+    public void testEqualsObject() {
+        assertTrue(URI_INFO_3.equals(URI_INFO_4));
+    }
+
+    /**
+     * Test method for
+     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getAbsolutePath()}.
+     */
+    public void testGetAbsolutePath() throws Exception {
+        JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
+                URI_INFO_1.getAbsolutePath());
+        JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_2,
+                URI_INFO_2.getAbsolutePath());
+    }
+
+    /**
+     * Test method for
+     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getAbsolutePathBuilder()}.
+     */
+    public void testGetAbsolutePathBuilder() throws Exception {
+        JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
+                URI_INFO_1.getAbsolutePathBuilder());
+        JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_2,
+                URI_INFO_2.getAbsolutePathBuilder());
+    }
+
+    /**
+     * Test method for
+     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getBaseUri()}.
+     */
+    public void testGetBaseUri() {
+        URI baseUri1 = URI_INFO_1.getBaseUri();
+        assertEquals(BASE_REF_STR, baseUri1.toString());
+    }
+
+    /**
+     * Test method for
+     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getBaseUriBuilder()}.
+     */
+    public void testGetBaseUriBuilder() throws Exception {
+        URI uri = URI_INFO_1.getBaseUri();
+        JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR, uri);
+    }
 
     /**
      * Test method for {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getPath()}.
@@ -107,7 +192,7 @@ public class JaxRsUriInfoTest extends TestCase {
         checkPathSegments(URI_INFO_2.getPathSegments(true), "relativ", 0,
                 " a ", 0, "!b@,", 0);
         checkPathSegments(URI_INFO_2.getPathSegments(false), "relativ", 0,
-                "%20a%20", 0, "!b@%2C", 0);
+                "%20a%20", 0, "%21b%40%2C", 0);
 
         UriInfo uriInfo = new JaxRsUriInfo(new Reference(BASE_REF, BASE_REF_STR
                 + "abc/def;ghi=jkl;mno=pqr/stu;vwx=yz"));
@@ -126,34 +211,43 @@ public class JaxRsUriInfoTest extends TestCase {
         checkEntry("yz", "vwx", templateParameters2);
     }
 
-    private void checkEntry(String expectedValue, String key,
-            MultivaluedMap<String, String> templateParameters) {
-        assertEquals(expectedValue, templateParameters.getFirst(key));
+    /**
+     * Test method for
+     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getQueryParameters(boolean)}.
+     */
+    public void testGetQueryParametersDecoded() {
+        assertEquals("123", URI_INFO_7.getQueryParameters(true).getFirst("def"));
+        assertEquals("456", URI_INFO_7.getQueryParameters(true).getFirst("ghi"));
+        assertEquals(2, URI_INFO_7.getQueryParameters(true).size());
+
+        assertEquals("1 23", URI_INFO_8.getQueryParameters(true)
+                .getFirst("def"));
+        assertEquals("45 6", URI_INFO_8.getQueryParameters(true).getFirst(
+                "gh i"));
+        assertEquals(2, URI_INFO_7.getQueryParameters(true).size());
     }
 
     /**
-     * @param pathSegments
-     * @param path0
-     * @param tpSize0
-     *                templatParamaterSize
-     * @param path1
-     * @param tpSize1
-     * @param path2
-     * @param tpSize2
+     * Test method for
+     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getQueryParameters()}.
      */
-    private void checkPathSegments(List<PathSegment> pathSegments,
-            String path0, int tpSize0, String path1, int tpSize1, String path2,
-            int tpSize2) {
-        assertEquals(3, pathSegments.size());
-        PathSegment pathSegment0 = pathSegments.get(0);
-        PathSegment pathSegment1 = pathSegments.get(1);
-        PathSegment pathSegment2 = pathSegments.get(2);
-        assertEquals(path0, pathSegment0.getPath());
-        assertEquals(tpSize0, pathSegment0.getMatrixParameters().size());
-        assertEquals(path1, pathSegment1.getPath());
-        assertEquals(tpSize1, pathSegment1.getMatrixParameters().size());
-        assertEquals(path2, pathSegment2.getPath());
-        assertEquals(tpSize2, pathSegment2.getMatrixParameters().size());
+    public void testGetQueryParametersEncoded() {
+        assertEquals("123", URI_INFO_7.getQueryParameters(false)
+                .getFirst("def"));
+        assertEquals("456", URI_INFO_7.getQueryParameters(false)
+                .getFirst("ghi"));
+        assertEquals(2, URI_INFO_7.getQueryParameters(false).size());
+
+        assertEquals("1+23", URI_INFO_8.getQueryParameters(false).getFirst(
+                "def"));
+        assertEquals("45%206", URI_INFO_8.getQueryParameters(false).getFirst(
+                "gh%20i"));
+        assertEquals(2, URI_INFO_8.getQueryParameters(false).size());
+    }
+
+    public void testGetQueryParametersUnmodifiable() {
+        assertUnmodifiable(URI_INFO_5.getQueryParameters(true));
+        assertUnmodifiable(URI_INFO_5.getQueryParameters(false));
     }
 
     /**
@@ -165,85 +259,20 @@ public class JaxRsUriInfoTest extends TestCase {
         assertEquals(new URI("http://localhost/test/relativ/a/b"), uri1);
     }
 
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getRequestUriBuilder()}.
-     */
-    public void testEqualsObject() {
-        assertTrue(URI_INFO_3.equals(URI_INFO_4));
+    public void testGetRequestUriBuilder() throws Exception {
+        UriBuilder uriBuilder1 = URI_INFO_1.getRequestUriBuilder();
+        JaxRsUriBuilderTest.assertEqualsURI(
+                "http://localhost/test/relativ/a/b", uriBuilder1);
     }
 
-    public void _testGetRequestUriBuilder() {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getAbsolutePath()}.
-     */
-    public void _testGetAbsolutePath() {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getAbsolutePathBuilder()}.
-     */
-    public void _testGetAbsolutePathBuilder() {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getBaseUri()}.
-     */
-    public void testGetBaseUri() {
-        URI baseUri1 = URI_INFO_1.getBaseUri();
-        assertEquals(BASE_REF_STR, baseUri1.toString());
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getBaseUriBuilder()}.
-     */
-    public void testGetBaseUriBuilder() throws Exception {
-        URI uri = URI_INFO_1.getBaseUri();
-        JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR, uri);
-    }
-
-    // TODO returned MultivaluesMap must be unmodifiable
-    // TODO more JaxRsUriInfo tests
-    
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getQueryParameters()}.
-     */
-    public void _testGetQueryParameters() {
-        URI_INFO_1.getQueryParameters();
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getQueryParameters(boolean)}.
-     */
-    public void _testGetQueryParametersBoolean() {
-        fail("Not yet implemented");
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getTemplateParameters(boolean)}.
-     */
-    public void testGetTemplateParametersBoolean() {
-        assertEquals(URI_INFO_3.getTemplateParameters(true), URI_INFO_4
-                .getTemplateParameters(true));
-        assertEquals(URI_INFO_3.getTemplateParameters(false), URI_INFO_4
-                .getTemplateParameters(false));
-
-        assertEquals(URI_INFO_5.getTemplateParameters(true), URI_INFO_6
-                .getTemplateParameters(true));
-        assertEquals(URI_INFO_5.getTemplateParameters(false), URI_INFO_6
-                .getTemplateParameters(false));
+    protected static void assertUnmodifiable(
+            MultivaluedMap<String, String> multivaluedMap) {
+        try {
+            multivaluedMap.add("jh,", "hkj");
+        } catch (NotYetImplementedException usoe) {
+            throw usoe;
+        } catch (UnsupportedOperationException usoe) {
+            // must be thrown, because it should be unmodifiable
+        }
     }
 }

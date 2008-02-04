@@ -59,8 +59,6 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     public ResponseBuilderImpl() {
     }
 
-    // FIXME war das in dieser klasse, wor null alles zurücksetzt?
-
     /**
      * Create a Response instance from the current ResponseBuilder. The builder
      * is reset to a blank state equivalent to calling the ok method.

@@ -584,6 +584,10 @@ public class JaxRsRouter extends Restlet {
 
             rMatch = firstMeth.getPathRegExp();
             MatchingResult matchingResult = rMatch.match(u);
+            
+            for(Map.Entry<String, String> e : matchingResult.getVariables().entrySet())
+                allTemplParamsEnc.add(e.getKey(), e.getValue());
+            
             // (h) When Method is resource method
             if (firstMeth instanceof SubResourceMethod)
                 return new ResObjAndPath(o, u, matchingResult,
