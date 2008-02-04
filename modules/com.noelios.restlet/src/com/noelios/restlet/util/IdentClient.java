@@ -61,6 +61,7 @@ public class IdentClient {
 
         if ((logger != null) && (clientAddress != null) && (clientPort != -1)
                 && (serverPort != -1)) {
+            BufferedReader in = null;
             try {
                 // Compose the IDENT request
                 StringBuilder sb = new StringBuilder();
@@ -76,8 +77,8 @@ public class IdentClient {
                 socket.getOutputStream().write(request.getBytes());
 
                 // Read the response
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        socket.getInputStream()));
+                in = new BufferedReader(new InputStreamReader(socket
+                        .getInputStream()));
                 String response = in.readLine();
 
                 // Parse the response
@@ -105,9 +106,9 @@ public class IdentClient {
                         ioe);
             } finally {
                 try {
-                    // Always attempt to close the socket
-                    if (socket != null)
-                        socket.close();
+                    // Always attempt to close the reader, therefore the socket
+                    if (in != null)
+                        in.close();
                 } catch (IOException ioe) {
                     logger.log(Level.FINE, "Unable to close the socket", ioe);
                 }
