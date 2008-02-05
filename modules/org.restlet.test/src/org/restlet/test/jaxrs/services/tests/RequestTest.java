@@ -63,7 +63,17 @@ public class RequestTest extends JaxRsTestCase {
 
     private static final Status PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED;
 
-    @Override
+    public static void main(String[] args) throws Exception {
+        RequestTest requestTest = new RequestTest();
+        requestTest.startServer();
+        System.out.println("Server started on port "+requestTest.getPort());
+        System.out.println("press key to stop");
+        System.in.read();
+        requestTest.stopServer();
+        System.out.println("server stopped");
+    }
+    
+   @Override
     @SuppressWarnings("unchecked")
     protected Collection createRootResourceColl() {
         return Collections.singleton(RequestService.class);

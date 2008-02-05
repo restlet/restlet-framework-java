@@ -62,7 +62,6 @@ import org.restlet.ext.jaxrs.wrappers.SubResourceLocator;
 import org.restlet.ext.jaxrs.wrappers.SubResourceMethod;
 import org.restlet.ext.jaxrs.wrappers.SubResourceMethodOrLocator;
 import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
 
 /**
  * The router choose the JAX-RS resource class and method to use for a request.
@@ -650,8 +649,6 @@ public class JaxRsRouter extends Restlet {
                 if (!allowedMethods.isEmpty()) {
                     if (allowedMethods.contains(Method.GET))
                         allowedMethods.add(Method.HEAD);
-                    // LATER not necessary, if Restlet issue 417 is resolved
-                    restletResp.setEntity(new StringRepresentation(""));
                 }
                 throw new RequestHandledException();
             }

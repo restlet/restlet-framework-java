@@ -64,4 +64,6 @@ public interface ServerWrapper {
      * @throws Exception
      */
     public void stopServer() throws Exception;
+
+    public int getPort();
 }

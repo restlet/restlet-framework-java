@@ -332,7 +332,7 @@ public abstract class JaxRsTestCase extends TestCase {
      * @throws Exception
      */
     protected void startServer(Protocol protocol) throws Exception {
-        this.startServer(createRootResourceColl(), protocol, PORT, null);
+        startServer(createRootResourceColl(), protocol, PORT, null);
     }
 
     /**
@@ -340,7 +340,7 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     protected void startServer(Protocol protocol, Parameter contextParameter)
             throws Exception {
-        this.startServer(createRootResourceColl(), protocol, PORT, null,
+        startServer(createRootResourceColl(), protocol, PORT, null,
                 contextParameter);
     }
 
@@ -380,7 +380,7 @@ public abstract class JaxRsTestCase extends TestCase {
      *         {@link #stopServer(Component)}
      * @throws Exception
      */
-    protected void startServer(final Collection<Class<?>> rootResourceClasses,
+    protected static void startServer(final Collection<Class<?>> rootResourceClasses,
             int port) throws Exception {
         final ChallengeScheme challengeScheme = ChallengeScheme.HTTP_BASIC;
         startServer(rootResourceClasses, Protocol.HTTP, port, challengeScheme);
@@ -393,7 +393,7 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param challengeScheme
      * @throws Exception
      */
-    public void startServer(final Collection<Class<?>> rootResourceClasses,
+    protected static void startServer(final Collection<Class<?>> rootResourceClasses,
             Protocol protocol, int port, final ChallengeScheme challengeScheme)
             throws Exception {
         startServer(rootResourceClasses, protocol, port, challengeScheme, null);
@@ -407,7 +407,7 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param contextParameter
      * @throws Exception
      */
-    protected void startServer(final Collection<Class<?>> rootResourceClasses,
+    protected static void startServer(final Collection<Class<?>> rootResourceClasses,
             Protocol protocol, int port, final ChallengeScheme challengeScheme,
             Parameter contextParameter) throws Exception {
         try {
@@ -427,9 +427,21 @@ public abstract class JaxRsTestCase extends TestCase {
         return true;
     }
 
+    protected int getPort()
+    {
+        return serverWrapper.getPort();
+    }
+    
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+        stopServer();
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected void stopServer() throws Exception {
         serverWrapper.stopServer();
     }
 }

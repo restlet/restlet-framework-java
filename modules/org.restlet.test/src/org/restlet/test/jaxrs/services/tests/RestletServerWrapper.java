@@ -119,4 +119,8 @@ public class RestletServerWrapper implements ServerWrapper {
         if (this.component != null)
             this.component.stop();
     }
+
+    public int getPort() {
+        return this.component.getServers().iterator().next().getPort();
+    }
 }

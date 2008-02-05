@@ -43,19 +43,36 @@ class JaxRsClassesLoader {
             JaxRsRouter jaxRsRouter, boolean asRootResourceClass,
             boolean asProvider) throws IllegalArgumentException {
         boolean result = false;
-        if (asRootResourceClass) {
-            if (clazz.isAnnotationPresent(Path.class)) {
-                jaxRsRouter.attach(clazz);
-                result = true;
-            }
-        }
         if (asProvider) {
             if (clazz.isAssignableFrom(MessageBodyReader.class)) {
+                if (!clazz.isAnnotationPresent(Provider.class)) {
+                    String msg = "The class "
+                            + clazz.getName()
+                            + " implements the MessageBodyReader, but is not annotated with @Provider. Will although use it as MessageBodyReader.";
+                    jaxRsRouter.getLogger().log(Level.INFO, msg);
+                }
                 jaxRsRouter.addMessageBodyReader(clazz);
                 result = true;
             }
             if (clazz.isAssignableFrom(MessageBodyWriter.class)) {
+                if (!clazz.isAnnotationPresent(Provider.class)) {
+                    String msg = "The class "
+                            + clazz.getName()
+                            + " implements the MessageBodyWriter, but is not annotated with @Provider. Will although use it as MessageBodyWriter.";
+                    jaxRsRouter.getLogger().log(Level.INFO, msg);
+                }
                 jaxRsRouter.addMessageBodyWriter(clazz);
+                result = true;
+            } else if (!result && clazz.isAnnotationPresent(Provider.class)) {
+                String msg = "The class "
+                        + clazz.getName()
+                        + " is annotated with @Provider, but does nor implement MessageBodyWriter nor MessageBodyReader. Don't know how to use it.";
+                jaxRsRouter.getLogger().log(Level.INFO, msg);
+            }
+        }
+        if (asRootResourceClass) {
+            if (clazz.isAnnotationPresent(Path.class)) {
+                jaxRsRouter.attach(clazz);
                 result = true;
             }
         }
@@ -110,14 +127,16 @@ class JaxRsClassesLoader {
      */
     static void loadProvidersFromFile(ClassLoader classLoader,
             boolean throwOnException, JaxRsRouter jaxRsRouter)
-            throws IllegalArgumentException, IOException, ClassNotFoundException {
+            throws IllegalArgumentException, IOException,
+            ClassNotFoundException {
         try {
             @SuppressWarnings("unchecked")
             Iterator<Class<MessageBodyWriter<?>>> rIter = new ServiceProviderIterator(
                     MessageBodyWriter.class, throwOnException, classLoader,
                     jaxRsRouter.getLogger(), Level.WARNING);
             while (rIter.hasNext()) {
-                Class<javax.ws.rs.ext.MessageBodyWriter<?>> clazz = rIter.next();
+                Class<javax.ws.rs.ext.MessageBodyWriter<?>> clazz = rIter
+                        .next();
                 jaxRsRouter.addMessageBodyWriter(clazz);
             }
             @SuppressWarnings("unchecked")
@@ -125,18 +144,19 @@ class JaxRsClassesLoader {
                     MessageBodyReader.class, throwOnException, classLoader,
                     jaxRsRouter.getLogger(), Level.WARNING);
             while (wIter.hasNext()) {
-                Class<javax.ws.rs.ext.MessageBodyReader<?>> clazz = wIter.next();
+                Class<javax.ws.rs.ext.MessageBodyReader<?>> clazz = wIter
+                        .next();
                 jaxRsRouter.addMessageBodyReader(clazz);
             }
         } catch (WrappedClassLoadException e) {
             Throwable cause = e.getCause();
-            if(cause instanceof Error)
-                throw (Error)cause;
-            if(cause instanceof RuntimeException)
-                throw (RuntimeException)cause;
-            if(cause instanceof ClassNotFoundException)
+            if (cause instanceof Error)
+                throw (Error) cause;
+            if (cause instanceof RuntimeException)
+                throw (RuntimeException) cause;
+            if (cause instanceof ClassNotFoundException)
                 throw (ClassNotFoundException) cause;
-            if(cause instanceof IOException)
+            if (cause instanceof IOException)
                 throw (IOException) cause;
             throw e;
         }

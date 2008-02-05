@@ -32,12 +32,12 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.jaxrs.util.Template;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.wrappers.AbstractJaxRsWrapper;
 import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.util.Resolver;
+import org.restlet.util.Template;
 
 /**
  * @author Stephan Koops

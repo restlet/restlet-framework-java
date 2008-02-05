@@ -295,7 +295,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
                     restletAccMediaTypes.size());
             for (Preference<org.restlet.data.MediaType> mediaTypePref : restletAccMediaTypes)
                 accMediaTypes.add(createJaxRsMediaType(mediaTypePref));
-            this.acceptedMediaTypes = accMediaTypes;
+            this.acceptedMediaTypes = Collections.unmodifiableList(accMediaTypes);
         }
         return this.acceptedMediaTypes;
     }
@@ -344,8 +344,6 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
                 Cookie cookie = Converter.toJaxRsCookie(rc);
                 cookies.put(cookie.getName(), cookie);
             }
-            // TODO unmodifiable is useful, but it's not in the spec yet
-            // I proposed it.
             this.cookies = Collections.unmodifiableMap(cookies);
         }
         return this.cookies;
