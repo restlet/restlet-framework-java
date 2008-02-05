@@ -48,10 +48,10 @@ public class JarFileClassIterator extends AbstractClassIterator implements
      *                RuntimeException), if false, than they are logged.
      * @param logger
      *                a logger to log {@link Exception}s or {@link Error}s;
-     *                see {@link #loadClassByFileName(String, Logger, Level)}
+     *                see {@link #loadClassByFileName(String, boolean, Logger, Level)}
      * @param logLevel
      *                the Log{@link Level} to use, must not be null; see
-     *                {@link #loadClassByFileName(String, Logger, Level)}
+     *                {@link #loadClassByFileName(String, boolean, Logger, Level)}
      */
     public JarFileClassIterator(JarFile jarFile, boolean throwOnExc, Logger logger, Level logLevel) {
         super(throwOnExc, logger, logLevel);
@@ -68,10 +68,10 @@ public class JarFileClassIterator extends AbstractClassIterator implements
      *                RuntimeException), if false, than they are logged.
      * @param logger
      *                a logger to log {@link Exception}s or {@link Error}s;
-     *                see {@link #loadClassByFileName(String, Logger, Level)}
+     *                see {@link #loadClassByFileName(String, boolean, Logger, Level)}
      * @param logLevel
      *                the Log{@link Level} to use, must not be null; see
-     *                {@link #loadClassByFileName(String, Logger, Level)}
+     *                {@link #loadClassByFileName(String, boolean, Logger, Level)}
      * @throws IOException
      *                 if an I/O error has occurred while opening the Jar file.
      */

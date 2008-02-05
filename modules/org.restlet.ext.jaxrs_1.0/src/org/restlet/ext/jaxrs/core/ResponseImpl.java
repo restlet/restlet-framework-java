@@ -49,6 +49,15 @@ public class ResponseImpl extends Response {
         this.status = status;
     }
 
+    @Override
+    public ResponseImpl clone()
+    {
+        ResponseImpl newResp = new ResponseImpl(this.status);
+        newResp.entity = this.entity;
+        newResp.metadata = new MultivaluedMapImpl<String, Object>(this.metadata);
+        return newResp;
+    }
+    
     /**
      * @see javax.ws.rs.core.Response#getEntity()
      */

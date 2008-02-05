@@ -169,8 +169,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         Collection<SubResourceMethod> srms = new ArrayList<SubResourceMethod>();
         Collection<SubResourceLocator> srls = new ArrayList<SubResourceLocator>();
         Method[] classMethods = jaxRsClass.getMethods();
-        // TODO muss der auch mit nicht-public-Methoden umgehen koennen? Wenn
-        // ja, dann muss ich wohl ein Proxy bauen, der im gleichen Package
+        // TODO JSR311: muss der auch mit nicht-public-Methoden umgehen koennen?
+        // Wenn ja, dann muss ich wohl ein Proxy bauen, der im gleichen Package
         // sitzt. Tests entsprechend anpassen
         // classMethods = jaxRsClass.getDeclaredMethods();
         // TODO z.Zt. werden alle Methoden geladen, auch die nicht-public

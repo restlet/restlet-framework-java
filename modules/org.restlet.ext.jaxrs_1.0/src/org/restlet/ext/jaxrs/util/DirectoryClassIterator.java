@@ -49,12 +49,14 @@ public class DirectoryClassIterator extends AbstractClassIterator implements
      *                RuntimeException), if false, than they are logged.
      * @param logger
      *                a logger to log {@link Exception}s or {@link Error}s;
-     *                see {@link #loadClassByFileName(String, Logger, Level)}
+     *                see
+     *                {@link #loadClassByFileName(String, boolean, Logger, Level)}
      * @param logLevel
      *                the Log{@link Level} to use, must not be null; see
-     *                {@link #loadClassByFileName(String, Logger, Level)}
+     *                {@link #loadClassByFileName(String, boolean, Logger, Level)}
      */
-    public DirectoryClassIterator(File directory, boolean throwOnExc, Logger logger, Level logLevel) {
+    public DirectoryClassIterator(File directory, boolean throwOnExc,
+            Logger logger, Level logLevel) {
         super(throwOnExc, logger, logLevel);
         pushDir(directory);
         rootDirnameLength = directory.getPath().length() + 1;
@@ -112,7 +114,29 @@ public class DirectoryClassIterator extends AbstractClassIterator implements
         return this.hasNext();
     }
 
-    private Class<?> loadClass(File file) {
+    /**
+     * Loads the class with the given file name. <br />
+     * Example: <code>loadClassByFileName("java/lang/String.class")</code>
+     * will load the class {@link java.util.String}.
+     * 
+     * @param file
+     *                file representing the class to load.
+     * @return
+     *                <ul>
+     *                <li>Returns the loaded class, if it could be loaded.</li>
+     *                <li>If the class could not be loaded and throwOnExc is
+     *                <ul>
+     *                <li><code>true</code>, the {@link Throwable} is
+     *                thrown, wrapped in a WrappedClassLoadException.</li>
+     *                <li><code>false</code>, null is returned. If a logger
+     *                was given, the {@link Exception} or {@link Error} was
+     *                logged.</li>
+     *                </ul>
+     *                </ul>
+     * @throws WrappedClassLoadException
+     *                 see return info.
+     */
+    private Class<?> loadClass(File file) throws WrappedClassLoadException {
         return loadClassByFileName(file.getPath().substring(rootDirnameLength));
     }
 }

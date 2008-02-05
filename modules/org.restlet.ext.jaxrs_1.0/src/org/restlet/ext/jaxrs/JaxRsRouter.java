@@ -1169,11 +1169,8 @@ public class JaxRsRouter extends Restlet {
             throws RequestHandledException {
         if (entity instanceof Representation)
             return (Representation) entity;
-        if (entity == null) {
-            return null;// return new EmptyRepresentation();
-            // TODO Jerome: wie bekommt man Response ohne Entity, aber mit
-            // Metadata hin?
-        }
+        if (entity == null)
+            return null;
         Class<? extends Object> entityClass = entity.getClass();
         MessageBodyWriterSet mbws = this.messageBodyWriters.subSet(entityClass);
         Collection<MediaType> mediaTypes = determineMediaType(resourceMethod,

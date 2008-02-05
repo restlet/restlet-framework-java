@@ -39,6 +39,24 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements
     private static final long serialVersionUID = 6228280442855580961L;
 
     /**
+     * Creates a new empty {@link MultivaluedMapImpl}
+     */
+    public MultivaluedMapImpl() {
+    }
+
+    /**
+     * Creates a copy of the given {@link MultivaluedMap}.
+     * 
+     * @param old
+     *                the {@link MultivaluedMap} to copy. The values are not
+     *                cloned.
+     */
+    public MultivaluedMapImpl(MultivaluedMap<K, V> old) {
+        for (Map.Entry<K, List<V>> entry : old.entrySet())
+            this.put(entry.getKey(), new ArrayList<V>(entry.getValue()));
+    }
+
+    /**
      * Add a value to the current list of values for the supplied key.
      * 
      * @param key
@@ -54,6 +72,16 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements
             this.put(key, list);
         }
         list.add(value);
+    }
+
+    /**
+     * Creates a clone of this map. The contained values are not cloned.
+     * 
+     * @return A copy of this map
+     */
+    @Override
+    public MultivaluedMapImpl<K, V> clone() {
+        return new MultivaluedMapImpl<K, V>(this);
     }
 
     /**
@@ -86,18 +114,5 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements
         List<V> list = new ArrayList<V>(1);
         list.add(value);
         this.put(key, list);
-    }
-
-    /**
-     * Creates a clone of this map. The contained values are not cloned.
-     * 
-     * @return A copy of this map
-     */
-    @Override
-    public MultivaluedMapImpl<K, V> clone() {
-        MultivaluedMapImpl<K, V> clone = new MultivaluedMapImpl<K, V>();
-        for (Map.Entry<K, List<V>> entry : this.entrySet())
-            clone.put(entry.getKey(), new ArrayList<V>(entry.getValue()));
-        return clone;
     }
 }

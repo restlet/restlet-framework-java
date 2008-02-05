@@ -48,7 +48,7 @@ public class ClasspathIterator extends AbstractClassIterator implements
      *                null, if Exceptions should not be logged.
      * @param logLevel
      *                the Log{@link Level} to use, must not be null; see
-     *                {@link #loadClassByFileName(String, Logger, Level)}
+     *                {@link #loadClassByFileName(String, boolean, Logger, Level)}
      */
     public ClasspathIterator(boolean throwOnExc, Logger logger, Level logLevel) {
         super(throwOnExc, logger, logLevel);

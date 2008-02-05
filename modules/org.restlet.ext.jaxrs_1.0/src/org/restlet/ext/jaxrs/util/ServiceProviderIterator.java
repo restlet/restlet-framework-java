@@ -157,10 +157,8 @@ public class ServiceProviderIterator<T> extends AbstractClassIterator implements
                     return true;
                 }
             } catch (ClassNotFoundException e) {
-                // TODO class not found
                 if (throwOnExc)
-                    throw new RuntimeException("class " + className
-                            + " not found", e);
+                    throw new WrappedClassLoadException(className, e);
                 log("Class with name " + className + " not found", e);
             }
         }

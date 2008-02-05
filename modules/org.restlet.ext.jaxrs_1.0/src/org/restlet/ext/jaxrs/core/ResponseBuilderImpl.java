@@ -99,10 +99,16 @@ public class ResponseBuilderImpl extends ResponseBuilder {
         return this;
     }
 
+    /**
+     * @see javax.ws.rs.core.Response.ResponseBuilder#clone()
+     */
     @Override
-    public ResponseBuilder clone() {
-        // TODO Auto-generated method stub
-        return null;
+    public ResponseBuilderImpl clone() {
+        ResponseBuilderImpl newRb = new ResponseBuilderImpl();
+        newRb.response = this.response.clone();
+        newRb.newCookies = new HashMap<String, NewCookie>(this.newCookies);
+        // metadatas are read from the response.
+        return newRb;
     }
 
     /**

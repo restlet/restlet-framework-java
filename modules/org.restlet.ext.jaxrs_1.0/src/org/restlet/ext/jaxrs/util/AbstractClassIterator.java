@@ -36,17 +36,32 @@ abstract class AbstractClassIterator {
      * 
      * @param fileName
      *                Filename relativ to the package root.
+     * @param throwOnExc
+     *                if true, than a catched Exception is thrown, otherwise
+     *                null will returned.
      * @param logger
      *                logger to log an {@link Exception} or {@link Error}.
      * @param logLevel
      *                Level to log occuring {@link Exception} or {@link Error}.
      *                If null, {@link Level#INFO} is used.
-     * @return Returns the loaded class or null, if the class could not be
-     *         loaded, for whatever reason. If a logger was given, the
-     *         {@link Exception} or {@link Error} was logged.
+     * @return
+     *                <ul>
+     *                <li>Returns the loaded class, if it could be loaded.</li>
+     *                <li>If the class could not be loaded and throwOnExc is
+     *                <ul>
+     *                <li><code>true</code>, the {@link Throwable} is
+     *                thrown, wrapped in a WrappedClassLoadException.</li>
+     *                <li><code>false</code>, null is returned. If a logger
+     *                was given, the {@link Exception} or {@link Error} was
+     *                logged.</li>
+     *                </ul>
+     *                </ul>
+     * @throws WrappedClassLoadException
+     *                 see return info.
      */
-    public static Class<?> loadClassByFileName(String fileName, Logger logger,
-            Level logLevel) {
+    public static Class<?> loadClassByFileName(String fileName,
+            boolean throwOnExc, Logger logger, Level logLevel)
+            throws WrappedClassLoadException {
         String cn;
         if (fileName.endsWith(".class"))
             cn = fileName.substring(0, fileName.length() - 6);
@@ -58,6 +73,8 @@ abstract class AbstractClassIterator {
         try {
             return Class.forName(classname);
         } catch (Throwable e) {
+            if (throwOnExc)
+                throw new WrappedClassLoadException(classname, e);
             if (logger != null) {
                 if (logLevel == null)
                     logLevel = Level.INFO;
@@ -83,10 +100,11 @@ abstract class AbstractClassIterator {
      *                the root directory for the packages
      * @param logger
      *                a logger to log {@link Exception}s or {@link Error}s;
-     *                see {@link #loadClassByFileName(String, Logger, Level)}
+     *                see
+     *                {@link #loadClassByFileName(String, boolean, Logger, Level)}
      * @param logLevel
      *                the Log{@link Level} to use, must not be null; see
-     *                {@link #loadClassByFileName(String, Logger, Level)}
+     *                {@link #loadClassByFileName(String, boolean, Logger, Level)}
      */
     protected AbstractClassIterator(boolean throwOnExc, Logger logger,
             Level logLevel) {
@@ -125,9 +143,31 @@ abstract class AbstractClassIterator {
      */
     public abstract boolean hasNext() throws WrappedClassLoadException;
 
-    protected Class<?> loadClassByFileName(String fileName) {
-        // TODO class not found
-        return loadClassByFileName(fileName, logger, logLevel);
+    /**
+     * Loads the class with the given file name. <br />
+     * Example: <code>loadClassByFileName("java/lang/String.class")</code>
+     * will load the class {@link java.util.String}.
+     * 
+     * @param fileName
+     *                Filename relativ to the package root.
+     * @return
+     *                <ul>
+     *                <li>Returns the loaded class, if it could be loaded.</li>
+     *                <li>If the class could not be loaded and throwOnExc is
+     *                <ul>
+     *                <li><code>true</code>, the {@link Throwable} is
+     *                thrown, wrapped in a WrappedClassLoadException.</li>
+     *                <li><code>false</code>, null is returned. If a logger
+     *                was given, the {@link Exception} or {@link Error} was
+     *                logged.</li>
+     *                </ul>
+     *                </ul>
+     * @throws WrappedClassLoadException
+     *                 see return info.
+     */
+    protected Class<?> loadClassByFileName(String fileName)
+            throws WrappedClassLoadException {
+        return loadClassByFileName(fileName, throwOnExc, logger, logLevel);
     }
 
     /**

@@ -126,7 +126,7 @@ public class PathRegExp {
     }
 
     /**
-     * See JSR-311-Spec, Section 2.5, Algorithmus, Teil 3a, Punkt 1.
+     * See JSR-311-Spec, Section 2.5, Algorithm, part 3a, point 1.
      * 
      * @param remainingPath
      * @return
@@ -158,9 +158,6 @@ public class PathRegExp {
     public int getNumberOfLiteralChars() {
         if (noLitChars == null) {
             noLitChars = getWithEmptyVars().length();
-            // TODO Jerome: a corresponding Formatter is better, because the Map
-            // does not keep all Map constraints and it is a little bit faster
-            // and less code.
         }
         return noLitChars;
     }
@@ -181,7 +178,6 @@ public class PathRegExp {
 
     @Override
     public boolean equals(Object anotherObject) {
-        // TODO talk with Jerome about Template.equals(Object)
         if (this == anotherObject)
             return true;
         if (!(anotherObject instanceof PathRegExp))
@@ -198,7 +194,7 @@ public class PathRegExp {
     private static EverNullVariableResolver EmptyStringVariableResolver = new EverNullVariableResolver();
 
     /**
-     * VariableResolver that returns "" vor every variable name
+     * VariableResolver that returns "" for every variable name
      * 
      * @author Stephan Koops
      */
