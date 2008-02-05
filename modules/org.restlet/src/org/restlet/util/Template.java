@@ -550,30 +550,6 @@ public class Template {
         }
     }
 
-    /**
-     * Resolves variable values based on a map.
-     * 
-     * @author Jerome Louvel (contact@noelios.com)
-     */
-    private class UserResolver implements Resolver {
-        /** The user object to help resolution. */
-        private Object userObject;
-
-        /**
-         * Constructor.
-         * 
-         * @param userObject
-         *                The user object to help resolution.
-         */
-        public UserResolver(Object userObject) {
-            this.userObject = userObject;
-        }
-
-        public String resolve(String variableName) {
-            return Template.this.resolve(this.userObject, variableName);
-        }
-    }
-
     public static final int MODE_EQUALS = 2;
 
     public static final int MODE_STARTS_WITH = 1;
@@ -838,22 +814,6 @@ public class Template {
      */
     public String format(Map<String, Object> variables) {
         return format(new MapVariableResolver(variables));
-    }
-
-    /**
-     * Creates a formatted string based on the given user object.<br>
-     * <br>
-     * Note that for this method to work, variables will be resolved using the
-     * {@link #resolve(Object, String)} method. Therefore, in order to make
-     * usage of this custom format method, you will need to subclass the
-     * Template class and override the {@link #resolve(Object, String)} method.
-     * 
-     * @param userObject
-     *                The user object to help resolution.
-     * @return The formatted string.
-     */
-    public String format(Object userObject) {
-        return format(new UserResolver(userObject));
     }
 
     /**
@@ -1367,25 +1327,6 @@ public class Template {
         default:
             return Character.toString(character);
         }
-    }
-
-    /**
-     * Resolves a variable name into a value using a user provided object. The
-     * userObject is the one that is sent via the {@link #format(Object)}
-     * method.<br>
-     * <br>
-     * The default behavior is to return null. Therefore, in order to make usage
-     * of this custom resolution, you will need to subclass the Template class
-     * and override this method.
-     * 
-     * @param userObject
-     *                The user object to help resolution.
-     * @param variableName
-     *                The variable name to resolve.
-     * @return The resolved value.
-     */
-    protected String resolve(Object userObject, String variableName) {
-        return null;
     }
 
     /**
