@@ -25,5 +25,5 @@ public class Notizen
 {
     // schreiben von grossem Content in Restlet: org.restlet.resource.WritableRepresentation
     // TODO An implementation MUST allow other runtime exceptions to propagate to the underlying container. This allows existing container facilities (e.g. a Servlet filter) to be used to handle the error if desired.
-    // TODO LATER auswerten
+    // LATER alle LATERs in Masterarbeit uebernehmen
 }

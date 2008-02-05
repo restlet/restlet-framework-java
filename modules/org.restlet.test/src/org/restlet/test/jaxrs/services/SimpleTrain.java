@@ -21,6 +21,7 @@ package org.restlet.test.jaxrs.services;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -118,5 +119,11 @@ public class SimpleTrain {
             // ok
         }
         return uriInfo.getTemplateParameters(false).getFirst("string");
+    }
+
+    @GET
+    @Path(value="multSegm/{string}", limited=false)
+    public String getMultSegment(@PathParam("string") String string) {
+        return string;
     }
 }

@@ -93,8 +93,7 @@ public class SecurityContextTest extends JaxRsTestCase {
             }
         }))
             return;
-        Response response;
-        response = get();
+        Response response = get();
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
 
         response = post();
@@ -104,8 +103,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     public void testAllowAll() throws Exception {
         if (!startServer(AllowAllAuthenticator.getInstance()))
             return;
-        Response response;
-        response = get();
+        Response response = get();
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         response = post();
@@ -122,21 +120,20 @@ public class SecurityContextTest extends JaxRsTestCase {
             return;
         ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "u", "p");
-        Response response;
-        response = get("authenticationScheme", cr);
+        Response response = get("authenticationScheme", cr);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
         assertEquals(SecurityContext.BASIC_AUTH, entity);
     }
 
+    // TODO waiting for Digest Auth is running
     public void _testAuthenticationSchemeDigest() throws Exception {
         if (!setAuthroizator(AllowAllAuthenticator.getInstance()))
             return;
         startServer(ChallengeScheme.HTTP_DIGEST);
         ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_DIGEST, "u", "p");
-        Response response;
-        response = get("authenticationScheme", cr);
+        Response response = get("authenticationScheme", cr);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
         assertEquals(SecurityContext.DIGEST_AUTH, entity);
@@ -145,23 +142,12 @@ public class SecurityContextTest extends JaxRsTestCase {
     public void testForbidAll() throws Exception {
         if (!startServer(ForbidAllAuthenticator.getInstance()))
             return;
-        Response response;
-        response = get();
+        Response response = get();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
         response = post();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
     }
-
-    public void testSecure() throws Exception {
-        if (!startServer(AllowAllAuthenticator.getInstance()))
-            return;
-        Response response;
-        response = get("secure");
-        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
-    }
-
-    // hope that Restlet Request.isConfidential(); works right with HTTPS
 
     /**
      * @throws Exception
@@ -226,11 +212,19 @@ public class SecurityContextTest extends JaxRsTestCase {
                 .getStatus());
     }
 
+    // hope that Restlet Request.isConfidential(); works right with HTTPS
+
+    public void testSecure() throws Exception {
+        if (!startServer(AllowAllAuthenticator.getInstance()))
+            return;
+        Response response = get("secure");
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+    }
+
     public void testUserPrincipal() throws Exception {
         if (!startServer(AllowAllAuthenticator.getInstance()))
             return;
-        Response response;
-        response = get("userPrincipal");
+        Response response = get("userPrincipal");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
         assertEquals("", entity);

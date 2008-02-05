@@ -106,7 +106,7 @@ public class SimpleTrainTest extends JaxRsTestCase {
     }
 
     public void testGetWithSlashInUriParam() throws IOException {
-        Response response = get("decode/abc/def");
+        Response response = get("multSegm/abc/def");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc/def", response.getEntity().getText());
     }
@@ -133,7 +133,7 @@ public class SimpleTrainTest extends JaxRsTestCase {
     }
 
     public void testOptions() throws Exception {
-        Response response = accessServer(Method.OPTIONS, SimpleTrain.class);
+        Response response = options();
         assertAllowedMethod(response, Method.GET);
     }
 

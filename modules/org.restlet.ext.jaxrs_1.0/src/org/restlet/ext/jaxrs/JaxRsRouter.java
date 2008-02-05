@@ -367,7 +367,7 @@ public class JaxRsRouter extends Restlet {
         Object provider;
         try {
             provider = RootResourceClass.createInstance(constructor, null,
-                    null, null, null, authenticator);
+                    null, null, authenticator);
         } catch (Exception e) {
             String message = "MessageBodyReader could not be instantiated";
             if (e.getMessage() != null)
@@ -415,7 +415,7 @@ public class JaxRsRouter extends Restlet {
         Object provider;
         try {
             provider = RootResourceClass.createInstance(constructor, null,
-                    null, null, null, authenticator);
+                    null, null, authenticator);
         } catch (Exception e) {
             throw new IllegalArgumentException(
                     "Provider could not be instantiated: " + e.getMessage(), e);
@@ -450,11 +450,9 @@ public class JaxRsRouter extends Restlet {
             }
             ResourceMethod resourceMethod = resObjAndMeth.resourceMethod;
             ResourceObject resourceObject = resObjAndMeth.resourceObject;
-            MatchingResult matchingResult = resObjAndMeth.matchingResult;
             MultivaluedMap<String, String> allTemplParamsEnc = resObjAndMeth.allTemplParamsEnc;
             invokeMethodAndHandleResult(resourceMethod, resourceObject,
-                    matchingResult, allTemplParamsEnc, request, response,
-                    accMediaTypes);
+                    allTemplParamsEnc, request, response, accMediaTypes);
         } catch (RequestHandledException e) {
             // Exception was handled and data were set into the Response.
         }
@@ -480,12 +478,10 @@ public class JaxRsRouter extends Restlet {
         ResClAndTemplate rcat = identifyRootResourceClass(uriRemainingPart);
         ResObjAndPath resourceObjectAndPath = obtainObjectThatHandleRequest(
                 rcat, restletRequest, restletResponse);
-        MatchingResult matchingResult = resourceObjectAndPath.matchingResult;
         MediaType givenMediaType = restletRequest.getEntity().getMediaType();
         ResObjAndMeth method = idenifyMethodThatHandleRequest(
                 resourceObjectAndPath, restletResponse, givenMediaType,
                 accMediaTypes);
-        method.matchingResult = matchingResult;
         return method;
     }
 
@@ -531,10 +527,19 @@ public class JaxRsRouter extends Restlet {
         MatchingResult matchResult = rMatch.match(u);
         u = matchResult.getFinalCapturingGroup();
         MultivaluedMap<String, String> allTemplParamsEnc = new MultivaluedMapImpl<String, String>();
+        addMrVarsToMap(matchResult, allTemplParamsEnc);
+        return new ResClAndTemplate(u, tClass, allTemplParamsEnc);
+    }
+
+    /**
+     * @param matchResult
+     * @param allTemplParamsEnc
+     */
+    private void addMrVarsToMap(MatchingResult matchResult,
+            MultivaluedMap<String, String> allTemplParamsEnc) {
         for (Map.Entry<String, String> varEntry : matchResult.getVariables()
                 .entrySet())
             allTemplParamsEnc.add(varEntry.getKey(), varEntry.getValue());
-        return new ResClAndTemplate(u, tClass, matchResult, allTemplParamsEnc);
     }
 
     /**
@@ -558,9 +563,8 @@ public class JaxRsRouter extends Restlet {
         ResourceObject o;
         // LATER Do I use dynamic proxies, to inject instance variables?
         try {
-            o = resClass.createInstance(resClAndTemplate.matchingResult,
-                    allTemplParamsEnc, restletRequest, restletResponse,
-                    authenticator);
+            o = resClass.createInstance(allTemplParamsEnc,
+                    restletRequest, restletResponse, authenticator);
         } catch (Exception e) {
             throw handleCreateException(e, restletResponse, "createInstance",
                     "Could not create new instance of root resource class");
@@ -570,10 +574,7 @@ public class JaxRsRouter extends Restlet {
         {
             // (a) If U is null or '/' go to step 3
             if (Util.isEmptyOrSlash(u)) {
-                @SuppressWarnings("unchecked")
-                Map<String, String> variables = Collections.EMPTY_MAP;
-                return new ResObjAndPath(o, u, new MatchingResult(variables,
-                        "", "", 0), allTemplParamsEnc);
+                return new ResObjAndPath(o, u, allTemplParamsEnc);
             }
             // (b) Set C = class ofO,E = {}
             Collection<SubResourceMethodOrLocator> eWithMethod = new ArrayList<SubResourceMethodOrLocator>();
@@ -599,21 +600,17 @@ public class JaxRsRouter extends Restlet {
             rMatch = firstMeth.getPathRegExp();
             MatchingResult matchingResult = rMatch.match(u);
 
-            for (Map.Entry<String, String> e : matchingResult.getVariables()
-                    .entrySet())
-                allTemplParamsEnc.add(e.getKey(), e.getValue());
+            addMrVarsToMap(matchingResult, allTemplParamsEnc);
 
             // (h) When Method is resource method
             if (firstMeth instanceof SubResourceMethod)
-                return new ResObjAndPath(o, u, matchingResult,
-                        allTemplParamsEnc);
+                return new ResObjAndPath(o, u, allTemplParamsEnc);
             // (g) and (i)
             u = matchingResult.getFinalCapturingGroup();
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
-                o = subResourceLocator.createSubResource(o, matchingResult,
-                        allTemplParamsEnc, restletRequest, restletResponse,
-                        authenticator);
+                o = subResourceLocator.createSubResource(o, allTemplParamsEnc,
+                        restletRequest, restletResponse, authenticator);
             } catch (Exception e) {
                 throw handleCreateException(e, restletResponse,
                         "createSubResource",
@@ -657,7 +654,8 @@ public class JaxRsRouter extends Restlet {
         removeNotSupportedHttpMethod(resourceMethods, httpMethod, alsoGet);
         if (resourceMethods.isEmpty()) {
             if (httpMethod.equals(Method.OPTIONS)) {
-                Set<Method> allowedMethods = resObj.getResourceClass().getAllowedMethods(remainingPath);
+                Set<Method> allowedMethods = resObj.getResourceClass()
+                        .getAllowedMethods(remainingPath);
                 restletResp.getAllowedMethods().addAll(allowedMethods);
                 throw new RequestHandledException();
             }
@@ -694,6 +692,9 @@ public class JaxRsRouter extends Restlet {
             throw new RuntimeException(
                     "Found no method, but there must be one.");
         }
+        MatchingResult mr = bestResourceMethod.getPathRegExp().match(
+                remainingPath);
+        addMrVarsToMap(mr, allTemplParamsEnc);
         return new ResObjAndMeth(resObj, bestResourceMethod, allTemplParamsEnc);
     }
 
@@ -1113,8 +1114,6 @@ public class JaxRsRouter extends Restlet {
     /**
      * @param resourceMethod
      * @param resourceObject
-     * @param matchingResult
-     *                The matching result
      * @param allTemplParamsEnc
      *                Contains all Parameters, that are read from the called
      *                URI.
@@ -1122,16 +1121,14 @@ public class JaxRsRouter extends Restlet {
      *                The Restlet request
      */
     private void invokeMethodAndHandleResult(ResourceMethod resourceMethod,
-            ResourceObject resourceObject, MatchingResult matchingResult,
-            MultivaluedMap<String, String> allTemplParamsEnc,
-            Request restletRequest, Response restletResponse,
-            List<Collection<MediaType>> accMediaTypes)
+            ResourceObject resourceObject, MultivaluedMap<String, String> allTemplParamsEnc,
+            Request restletRequest,
+            Response restletResponse, List<Collection<MediaType>> accMediaTypes)
             throws RequestHandledException {
         Object result;
         try {
-            result = resourceMethod.invoke(resourceObject, matchingResult,
-                    allTemplParamsEnc, restletRequest, restletResponse,
-                    authenticator);
+            result = resourceMethod.invoke(resourceObject, allTemplParamsEnc,
+                    restletRequest, restletResponse, authenticator);
         } catch (InvocationTargetException ite) {
             throw handleInvokeException(ite, accMediaTypes, resourceMethod,
                     restletResponse, "invoke", "Exception in resource method");
@@ -1455,16 +1452,12 @@ public class JaxRsRouter extends Restlet {
 
         private String remainingPath;
 
-        private MatchingResult matchingResult;
-
         private MultivaluedMap<String, String> allTemplParamsEnc;
 
         ResObjAndPath(ResourceObject resourceObject, String remainingPath,
-                MatchingResult matchingResult,
                 MultivaluedMap<String, String> allTemplParamsEnc) {
             this.resourceObject = resourceObject;
             this.remainingPath = remainingPath;
-            this.matchingResult = matchingResult;
             this.allTemplParamsEnc = allTemplParamsEnc;
         }
     }
@@ -1474,8 +1467,6 @@ public class JaxRsRouter extends Restlet {
         private ResourceObject resourceObject;
 
         private ResourceMethod resourceMethod;
-
-        private MatchingResult matchingResult; // is added not on creation
 
         private MultivaluedMap<String, String> allTemplParamsEnc;
 
@@ -1496,14 +1487,10 @@ public class JaxRsRouter extends Restlet {
 
         MultivaluedMap<String, String> allTemplParamsEnc;
 
-        private MatchingResult matchingResult;
-
         ResClAndTemplate(String u, RootResourceClass rrc,
-                MatchingResult matchingResult,
                 MultivaluedMap<String, String> allTemplParamsEnc) {
             this.u = u;
             this.rrc = rrc;
-            this.matchingResult = matchingResult;
             this.allTemplParamsEnc = allTemplParamsEnc;
         }
     }

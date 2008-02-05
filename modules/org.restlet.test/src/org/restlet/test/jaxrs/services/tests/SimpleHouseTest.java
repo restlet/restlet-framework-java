@@ -105,16 +105,16 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public void testOptions() throws Exception {
-        Response response = accessServer(Method.OPTIONS, SimpleHouse.class);
+        Response response = options();
         assertAllowedMethod(response, Method.GET);
 
-        response = accessServer(Method.OPTIONS, SimpleHouse.class, "headTest1");
+        response = options("headTest1");
         assertAllowedMethod(response, Method.GET, Method.HEAD, Method.POST);
 
-        response = accessServer(Method.OPTIONS, SimpleHouse.class, "headTest2");
+        response = options("headTest2");
         assertAllowedMethod(response, Method.GET, Method.HEAD);
 
-        response = accessServer(Method.OPTIONS, SimpleHouse.class, "xyz");
+        response = options("xyz");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 }

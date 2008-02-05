@@ -34,11 +34,66 @@ import java.util.logging.Logger;
 public class PackageIterator extends AbstractClassIterator implements
         Iterator<Class<?>> {
 
-    private Enumeration<URL> dirEnum;
-
     private Iterator<Class<?>> currentIter;
 
-    private String packageName;
+    private Enumeration<URL> dirEnum;
+
+    private int packageNameLength;
+
+    /**
+     * Creates an Iterator over all classes in the classpath.
+     * 
+     * @param classLoader
+     *                the {@link ClassLoader} that reaches the package.
+     * @param packagge
+     *                the package to iterate over the classes.
+     * @throws IOException
+     *                 if the package resource could not be read.
+     */
+    public PackageIterator(ClassLoader classLoader, Package packagge)
+            throws IOException {
+        this(classLoader, packagge.getName(), false, null, null);
+    }
+
+    /**
+     * Creates an Iterator over all classes in the classpath.
+     * 
+     * @param classLoader
+     *                the {@link ClassLoader} that reaches the package.
+     * @param packagge
+     *                the package to iterate over the classes.
+     * @param throwOnExc
+     *                if true, ClassNotFoundExceptions are thrown (wrapped in a
+     *                RuntimeException), if false, than they are logged.
+     * @param logger
+     *                a logger to log {@link Exception}s or {@link Error}s, or
+     *                null, if Exceptions should not be logged.
+     * @param logLevel
+     *                the Log{@link Level} to use, must not be null; see
+     *                {@link #loadClassByFileName(String, boolean, Logger, Level)}
+     * @throws IOException
+     *                 if the package resource could not be read.
+     */
+    public PackageIterator(ClassLoader classLoader, Package packagge,
+            boolean throwOnExc, Logger logger, Level logLevel)
+            throws IOException {
+        this(classLoader, packagge.getName(), throwOnExc, logger, logLevel);
+    }
+
+    /**
+     * Creates an Iterator over all classes in the classpath.
+     * 
+     * @param classLoader
+     *                the {@link ClassLoader} that reaches the package.
+     * @param packageName
+     *                the name of the package
+     * @throws IOException
+     *                 if the package resource could not be read.
+     */
+    public PackageIterator(ClassLoader classLoader, String packageName)
+            throws IOException {
+        this(classLoader, packageName, false, null, null);
+    }
 
     /**
      * Creates an Iterator over all classes in the classpath.
@@ -64,27 +119,11 @@ public class PackageIterator extends AbstractClassIterator implements
             throws IOException {
         super(throwOnExc, logger, logLevel);
         dirEnum = classLoader.getResources(packageName.replace('.', '/'));
-        this.packageName = packageName;
-    }
-
-    /**
-     * Creates an Iterator over all classes in the classpath.
-     * 
-     * @param classLoader
-     *                the {@link ClassLoader} that reaches the package.
-     * @param packageName
-     *                the name of the package
-     * @throws IOException
-     *                 if the package resource could not be read.
-     */
-    public PackageIterator(ClassLoader classLoader, String packageName)
-            throws IOException {
-        this(classLoader, packageName, false, null, null);
+        this.packageNameLength = packageName.length();
     }
 
     @Override
     public boolean hasNext() throws WrappedClassLoadException {
-        // TODO Package.getPackages()
         if (this.next != null) {
             return true;
         }
@@ -98,7 +137,7 @@ public class PackageIterator extends AbstractClassIterator implements
             if (f.isDirectory()) {
                 String path = f.getPath();
                 File rootDir = new File(path.substring(0, path.length()
-                        - packageName.length()));
+                        - packageNameLength));
                 currentIter = new DirectoryClassIterator(f, rootDir, false,
                         throwOnExc, logger, logLevel);
                 return this.hasNext();

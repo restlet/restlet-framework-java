@@ -59,7 +59,6 @@ public class FileProvider extends AbstractProvider<File> {
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         try {
-            // TODO FileProvider: Dateiname lesen
             File file = File.createTempFile("FileProvider", ".tmp");
             super.copyStream(entityStream, new FileOutputStream(file));
             return file;
@@ -73,7 +72,6 @@ public class FileProvider extends AbstractProvider<File> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         InputStream inputStream = new FileInputStream(file);
-        // TODO FileProvider: Dateiname setzten
         copyAndCloseStream(inputStream, entityStream);
     }
 }

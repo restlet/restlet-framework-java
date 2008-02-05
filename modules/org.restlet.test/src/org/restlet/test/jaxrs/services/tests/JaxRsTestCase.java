@@ -31,7 +31,6 @@ import javax.ws.rs.Path;
 import junit.framework.TestCase;
 
 import org.restlet.Client;
-import org.restlet.Component;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
@@ -68,14 +67,6 @@ public abstract class JaxRsTestCase extends TestCase {
     private static ServerWrapper serverWrapper = new RestletServerWrapper();
 
     /**
-     * @see #accessServer(Method, Class, String, Collection, ChallengeResponse)
-     */
-    @SuppressWarnings("unchecked")
-    public static Response accessServer(Method httpMethod, Class<?> klasse) {
-        return accessServer(httpMethod, klasse, (Collection) null);
-    }
-
-    /**
      * @param httpMethod
      * @param klasse
      * @param mediaTypePrefs
@@ -84,30 +75,12 @@ public abstract class JaxRsTestCase extends TestCase {
      * @return
      * @throws IllegalArgumentException
      *                 If an element in the mediaTypes is neither a
-     *                 Preference&lt;MediaType&gt; or a MediaType-Objekten.
+     *                 Preference&lt;MediaType&gt; or a MediaType object.
      */
     @SuppressWarnings("unchecked")
     public static Response accessServer(Method httpMethod, Class<?> klasse,
             Collection mediaTypes) throws IllegalArgumentException {
         return accessServer(httpMethod, klasse, null, mediaTypes, null);
-    }
-
-    /**
-     * @param httpMethod
-     * @param klasse
-     * @param mediaTypePrefs
-     * @return
-     */
-    public static Response accessServer(Method httpMethod, Class<?> klasse,
-            MediaType mediaType) {
-        return accessServer(httpMethod, klasse, createPrefColl(mediaType, 1f));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Response accessServer(Method httpMethod, Class<?> klasse,
-            String subPath) {
-        return accessServer(httpMethod, klasse, subPath, (Collection) null,
-                null);
     }
 
     /**
@@ -124,7 +97,7 @@ public abstract class JaxRsTestCase extends TestCase {
             ChallengeResponse challengeResponse) {
         Reference reference = createReference(klasse, subPath);
         return accessServer(httpMethod, reference, mediaTypes,
-                challengeResponse);
+                challengeResponse, null);
     }
 
     /**
@@ -154,21 +127,6 @@ public abstract class JaxRsTestCase extends TestCase {
         if (mediaType != null)
             mediaTypes = Collections.singleton(mediaType);
         return accessServer(httpMethod, klasse, subPath, mediaTypes, null);
-    }
-
-    /**
-     * @param httpMethod
-     * @param reference
-     * @param mediaTypes
-     * @param challengeResponse
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static Response accessServer(Method httpMethod, Reference reference,
-            Collection mediaTypes, ChallengeResponse challengeResponse) {
-        Representation entity = null;
-        return accessServer(httpMethod, reference, mediaTypes,
-                challengeResponse, entity);
     }
 
     /**
@@ -246,11 +204,10 @@ public abstract class JaxRsTestCase extends TestCase {
      *                default is 1.
      * @return
      */
-    @SuppressWarnings("unchecked")
     public static Collection<Preference<MediaType>> createPrefColl(
             MediaType mediaType, float mediaTypeQuality) {
         if (mediaType == null)
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         return Collections.singleton(new Preference<MediaType>(mediaType,
                 mediaTypeQuality));
     }
@@ -325,64 +282,6 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     /**
-     * Starts the server with the given protocol on the given port with the
-     * given Collection of root resource classes. The method {@link #setUp()}
-     * will do this on every test start up.
-     * 
-     * @param rootResourceClasses
-     * @param port
-     * 
-     * @return Returns the started component. Should be stopped with
-     *         {@link #stopServer(Component)}
-     * @throws Exception
-     */
-    protected static void startServer(
-            final Collection<Class<?>> rootResourceClasses, int port)
-            throws Exception {
-        final ChallengeScheme challengeScheme = ChallengeScheme.HTTP_BASIC;
-        startServer(rootResourceClasses, Protocol.HTTP, port, challengeScheme);
-    }
-
-    /**
-     * @param rootResourceClasses
-     * @param protocol
-     *                Protocoll for the Server
-     * @param port
-     * @param challengeScheme
-     * @throws Exception
-     */
-    protected static void startServer(
-            final Collection<Class<?>> rootResourceClasses, Protocol protocol,
-            int port, final ChallengeScheme challengeScheme) throws Exception {
-        startServer(rootResourceClasses, protocol, port, challengeScheme, null);
-    }
-
-    /**
-     * @param rootResourceClasses
-     * @param protocol
-     * @param port
-     * @param challengeScheme
-     * @param contextParameter
-     * @throws Exception
-     */
-    protected static void startServer(
-            final Collection<Class<?>> rootResourceClasses, Protocol protocol,
-            int port, final ChallengeScheme challengeScheme,
-            Parameter contextParameter) throws Exception {
-        try {
-            serverWrapper.startServer(rootResourceClasses, protocol, port,
-                    challengeScheme, contextParameter);
-        } catch (Exception e) {
-            try {
-                serverWrapper.stopServer();
-            } catch (Exception e1) {
-                // ignore exception, throw before catched Exception later
-            }
-            throw e;
-        }
-    }
-
-    /**
      * Checks, if the allowed methods of an OPTIONS request are the given one.
      * 
      * @param optionsResponse
@@ -409,15 +308,15 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     public Response get() {
-        return accessServer(Method.GET, getRootResourceClass());
+        return accessServer(Method.GET, getRootResourceClass(), null, null);
     }
 
     public Response get(MediaType mediaType) {
-        return accessServer(Method.GET, getRootResourceClass(), mediaType);
+        return accessServer(Method.GET, getRootResourceClass(), null, mediaType);
     }
 
     public Response get(String subPath) {
-        return accessServer(Method.GET, getRootResourceClass(), subPath);
+        return accessServer(Method.GET, getRootResourceClass(), subPath, null);
     }
 
     public Response get(String subPath, ChallengeResponse cr) {
@@ -435,7 +334,7 @@ public abstract class JaxRsTestCase extends TestCase {
                 mediaType);
     }
 
-    protected int getPort() {
+    public int getPort() {
         return serverWrapper.getPort();
     }
 
@@ -457,8 +356,20 @@ public abstract class JaxRsTestCase extends TestCase {
                 mediaType);
     }
 
+    /**
+     * @see #accessServer(Method, Class, String, Collection, ChallengeResponse)
+     */
+    public Response options() {
+        return accessServer(Method.OPTIONS, getRootResourceClass(), null, null);
+    }
+
+    public Response options(String subPath) {
+        return accessServer(Method.OPTIONS, getRootResourceClass(), subPath,
+                null);
+    }
+
     public Response post() {
-        return accessServer(Method.POST, getRootResourceClass());
+        return accessServer(Method.POST, getRootResourceClass(), null, null);
     }
 
     public Response post(String subPath, ChallengeResponse cr) {
@@ -496,10 +407,16 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     /**
+     * Starts the server with the given protocol on the given port with the
+     * given Collection of root resource classes. The method {@link #setUp()}
+     * will do this on every test start up.
+     * 
      * @throws Exception
      */
     protected void startServer() throws Exception {
-        this.startServer(getRootResourceColl());
+        final ChallengeScheme challengeScheme = ChallengeScheme.HTTP_BASIC;
+        startServer(getRootResourceColl(), Protocol.HTTP, PORT,
+                challengeScheme, null);
     }
 
     /**
@@ -507,39 +424,32 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     protected void startServer(ChallengeScheme challengeScheme)
             throws Exception {
-        this.startServer(getRootResourceColl(), challengeScheme);
+        startServer(getRootResourceColl(), Protocol.HTTP, PORT,
+                challengeScheme, null);
     }
 
     /**
-     * @see #startServer(Collection, int)
-     */
-    private void startServer(final Collection<Class<?>> rootResourceClasses)
-            throws Exception {
-        startServer(rootResourceClasses, PORT);
-    }
-
-    /**
-     * @see #startServer(Collection, int)
+     * @param rootResourceClasses
+     * @param protocol
+     * @param port
+     * @param challengeScheme
+     * @param contextParameter
+     * @throws Exception
      */
     private void startServer(final Collection<Class<?>> rootResourceClasses,
-            ChallengeScheme challengeScheme) throws Exception {
-        startServer(rootResourceClasses, Protocol.HTTP, PORT, challengeScheme);
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected void startServer(Protocol protocol) throws Exception {
-        startServer(getRootResourceColl(), protocol, PORT, null);
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected void startServer(Protocol protocol, Parameter contextParameter)
-            throws Exception {
-        startServer(getRootResourceColl(), protocol, PORT, null,
-                contextParameter);
+            Protocol protocol, int port, final ChallengeScheme challengeScheme,
+            Parameter contextParameter) throws Exception {
+        try {
+            serverWrapper.startServer(rootResourceClasses, protocol, port,
+                    challengeScheme, contextParameter);
+        } catch (Exception e) {
+            try {
+                serverWrapper.stopServer();
+            } catch (Exception e1) {
+                // ignore exception, throw before catched Exception later
+            }
+            throw e;
+        }
     }
 
     /**

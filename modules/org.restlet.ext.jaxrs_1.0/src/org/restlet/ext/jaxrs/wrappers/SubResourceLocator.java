@@ -26,7 +26,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.Authenticator;
-import org.restlet.ext.jaxrs.impl.MatchingResult;
 
 /**
  * A method of a resource class that is used to locate sub-resources of the
@@ -57,29 +56,30 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * 
      * @param resourceObject
      *                the wrapped resource object.
-     * @param matchingResult
-     *                the matching result, containing the path variables
      * @param allTemplParamsEnc
      *                Contains all Parameters, that are read from the called
      *                URI.
-     * @param restletRequest the Restlet request
-     * @param restletResponse the Restlet response
-     * @param authenticator The logged in User
+     * @param restletRequest
+     *                the Restlet request
+     * @param restletResponse
+     *                the Restlet response
+     * @param authenticator
+     *                The logged in User
      * @return Returns the wrapped sub resource object.
      * @throws Exception
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
-            MatchingResult matchingResult,
             MultivaluedMap<String, String> allTemplParamsEnc,
-            Request restletRequest, Response restletResponse, Authenticator authenticator) throws Exception {
+            Request restletRequest, Response restletResponse,
+            Authenticator authenticator) throws Exception {
         Object[] args;
         Class<?>[] parameterTypes = this.javaMethod.getParameterTypes();
         if (parameterTypes.length == 0)
             args = new Object[0];
         else
             args = getParameterValues(javaMethod.getParameterAnnotations(),
-                    parameterTypes, matchingResult, restletRequest,
-                    restletResponse, allTemplParamsEnc, authenticator);
+                    parameterTypes, restletRequest, restletResponse,
+                    allTemplParamsEnc, authenticator);
         Object subResourceObject = javaMethod.invoke(resourceObject
                 .getResourceObject(), args);
         return new ResourceObject(subResourceObject);

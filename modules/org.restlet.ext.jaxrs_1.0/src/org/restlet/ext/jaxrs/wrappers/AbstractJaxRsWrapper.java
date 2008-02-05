@@ -42,7 +42,6 @@ import org.restlet.ext.jaxrs.core.HttpContextImpl;
 import org.restlet.ext.jaxrs.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.exceptions.CanNotIntatiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.IllegalAnnotationException;
-import org.restlet.ext.jaxrs.impl.MatchingResult;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Util;
@@ -181,8 +180,6 @@ public abstract class AbstractJaxRsWrapper {
      *                annotations on the parameters
      * @param paramClass
      *                the wished type
-     * @param matchingResult
-     *                the MatchingResult
      * @param restletRequest
      *                the Restlet request
      * @param restletResponse
@@ -204,28 +201,31 @@ public abstract class AbstractJaxRsWrapper {
      *                 given request entity should taken as parameter.
      */
     private static Object getParameterValue(Annotation[] paramAnnotations,
-            Class<?> paramClass, MatchingResult matchingResult,
-            Request restletRequest, Response restletResponse,
-            HttpContextImpl httpContext,
+            Class<?> paramClass, Request restletRequest,
+            Response restletResponse, HttpContextImpl httpContext,
             MultivaluedMap<String, String> allTemplParamsEnc,
-            int indexForExcMessages, Authenticator authenticator)
+            int indexForExcMessages,
+            Authenticator authenticator)
             throws IllegalAnnotationException {
         for (Annotation annotation : paramAnnotations) {
             Class<? extends Annotation> annotationType = annotation
                     .annotationType();
             if (annotationType.equals(HeaderParam.class)) {
-                String headerParamValue = Util.getHttpHeaders(restletRequest)
+                String headerParamValue = Util
+                        .getHttpHeaders(restletRequest)
                         .getFirstValue(((HeaderParam) annotation).value(), true);
                 return getParameterValueFromParam(paramClass, headerParamValue);
             } else if (annotationType.equals(PathParam.class)) {
-                String pathParamValue = matchingResult.getVariables().get(
-                        ((PathParam) annotation).value()); 
-                // TODO PathParam: @Encode verwenden 
+                String pathParamValue = allTemplParamsEnc
+                        .getFirst(((PathParam) annotation).value());
+                // TODO PathParam: @Encode verwenden
                 return getParameterValueFromParam(paramClass, pathParamValue);
             } else if (annotationType.equals(Context.class)) {
                 if (httpContext == null)
                     httpContext = new HttpContextImpl(restletRequest,
-                            new UnmodifiableMultivaluedMap<String, String>(allTemplParamsEnc, false), restletResponse, authenticator);
+                            new UnmodifiableMultivaluedMap<String, String>(
+                                    allTemplParamsEnc, false), restletResponse,
+                            authenticator);
                 // TODO Jerome: I need to know if the restlet Request was
                 // authenticated.
                 return httpContext;
@@ -252,9 +252,6 @@ public abstract class AbstractJaxRsWrapper {
      *                constructor.
      * @param parameterTypes
      *                the array of types for the method or constructor.
-     * @param matchingResult
-     *                the matching result contains the values of the path
-     *                parameters.
      * @param restletRequest
      *                the Restlet request
      * @param restletResponse
@@ -267,8 +264,8 @@ public abstract class AbstractJaxRsWrapper {
      *                {@link SecurityContext#isUserInRole(String)}
      * @return the parameter array
      */
-    protected static Object[] getParameterValues(Annotation[][] parameterAnnotationss,
-            Class<?>[] parameterTypes, MatchingResult matchingResult,
+    protected static Object[] getParameterValues(
+            Annotation[][] parameterAnnotationss, Class<?>[] parameterTypes,
             Request restletRequest, Response restletResponse,
             MultivaluedMap<String, String> allTemplParamsEnc,
             Authenticator authenticator) {
@@ -281,9 +278,8 @@ public abstract class AbstractJaxRsWrapper {
         for (int i = 0; i < args.length; i++) {
             try {
                 Object arg = getParameterValue(parameterAnnotationss[i],
-                        parameterTypes[i], matchingResult, restletRequest,
-                        restletResponse, httpContext, allTemplParamsEnc, i,
-                        authenticator);
+                        parameterTypes[i], restletRequest, restletResponse,
+                        httpContext, allTemplParamsEnc, i, authenticator);
                 if (httpContext == null && arg instanceof HttpContextImpl)
                     httpContext = (HttpContextImpl) arg;
                 args[i] = arg;

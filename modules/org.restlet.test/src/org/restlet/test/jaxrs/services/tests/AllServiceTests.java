@@ -30,6 +30,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(HttpHeaderTest.class);
         mySuite.addTestSuite(SimpleTrainTest.class);
         mySuite.addTestSuite(SimpleHouseTest.class);
+        mySuite.addTestSuite(PathParamTest.class);
         mySuite.addTestSuite(RequestTest.class);
         mySuite.addTestSuite(ResponseBuilderTest.class);
         mySuite.addTestSuite(SecurityContextTest.class);

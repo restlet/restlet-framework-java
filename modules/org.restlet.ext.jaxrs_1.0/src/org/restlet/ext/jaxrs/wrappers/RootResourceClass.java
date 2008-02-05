@@ -36,7 +36,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
-import org.restlet.ext.jaxrs.impl.MatchingResult;
 
 /**
  * Instances represents a root resource class.
@@ -125,8 +124,6 @@ public class RootResourceClass extends ResourceClass {
     /**
      * Creates an instance of the root resource class.
      * 
-     * @param matchingResult
-     *                the MatchingResult
      * @param allTemplParamsEnc
      *                all template parameters, encoded
      * @param restletRequ
@@ -136,16 +133,17 @@ public class RootResourceClass extends ResourceClass {
      * @param authenticator
      *                Authenticator for role requests, see
      *                {@link SecurityContext#isUserInRole(String)}.
+     * 
      * @return
      * @throws Exception
      */
-    public ResourceObject createInstance(MatchingResult matchingResult,
+    public ResourceObject createInstance(
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequ, Response restletResponse,
             Authenticator authenticator) throws Exception {
         Constructor<?> constructor = this.constructor;
-        Object newInstance = createInstance(constructor, matchingResult,
-                allTemplParamsEnc, restletRequ, restletResponse, authenticator);
+        Object newInstance = createInstance(constructor, allTemplParamsEnc,
+                restletRequ, restletResponse, authenticator);
         return new ResourceObject(newInstance, this);
     }
 
@@ -154,8 +152,6 @@ public class RootResourceClass extends ResourceClass {
      * 
      * @param constructor
      *                the constructor to create an instance with.
-     * @param matchingResult
-     *                the MatchingResult
      * @param allTemplParamsEnc
      *                all template parameters, encoded
      * @param restletRequ
@@ -169,7 +165,6 @@ public class RootResourceClass extends ResourceClass {
      * @throws Exception
      */
     public static Object createInstance(Constructor<?> constructor,
-            MatchingResult matchingResult,
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequ, Response restletResponse,
             Authenticator authenticator) throws Exception {
@@ -178,9 +173,8 @@ public class RootResourceClass extends ResourceClass {
             args = new Object[0];
         else
             args = getParameterValues(constructor.getParameterAnnotations(),
-                    constructor.getParameterTypes(), matchingResult,
-                    restletRequ, restletResponse, allTemplParamsEnc,
-                    authenticator);
+                    constructor.getParameterTypes(), restletRequ,
+                    restletResponse, allTemplParamsEnc, authenticator);
         return constructor.newInstance(args);
     }
 

@@ -39,7 +39,7 @@ public class CarTest extends JaxRsTestCase {
     public void testDelete() throws Exception {
         if (ONLY_ONE_CAR || ONLY_OFFERS)
             return;
-        Response response = accessServer(Method.DELETE, CarListResource.class);
+        Response response = accessServer(Method.DELETE, CarListResource.class, null, null);
         assertTrue(response.getStatus().isClientError());
         assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, response
                 .getStatus());
@@ -76,8 +76,7 @@ public class CarTest extends JaxRsTestCase {
     public void testGetHtmlText() throws Exception {
         if (ONLY_ONE_CAR || ONLY_OFFERS)
             return;
-        Response response = accessServer(Method.GET, CarListResource.class,
-                MediaType.TEXT_HTML);
+        Response response = get(MediaType.TEXT_HTML);
         assertTrue(response.getStatus().isClientError());
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
     }
@@ -110,13 +109,13 @@ public class CarTest extends JaxRsTestCase {
     }
 
     public void testOptions() throws Exception {
-        Response response = accessServer(Method.OPTIONS, CarListResource.class);
+        Response response = options();
         assertAllowedMethod(response, Method.GET);
 
-        response = accessServer(Method.OPTIONS, CarListResource.class, "offers");
+        response = options("offers");
         assertAllowedMethod(response, Method.GET, Method.POST);
 
-        response = accessServer(Method.OPTIONS, CarListResource.class, "53");
+        response = options("53");
         assertAllowedMethod(response, Method.GET);
     }
 }

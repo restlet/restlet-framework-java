@@ -13,7 +13,6 @@ import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 /**
  * 
  * @author Stephan Koops
- *
  */
 public class XmlTransformSourceProvider extends AbstractProvider<Source> {
 
@@ -22,7 +21,7 @@ public class XmlTransformSourceProvider extends AbstractProvider<Source> {
     @Override
     public long getSize(Source object) {
         // TODO Auto-generated method stub
-        return 0;
+        return -1;
     }
 
     @Override

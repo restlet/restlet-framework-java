@@ -261,7 +261,7 @@ public class RequestTest extends JaxRsTestCase {
     }
 
     public void testOptions() {
-        Response response = accessServer(Method.OPTIONS, RequestService.class);
+        Response response = options();
         Set<Method> allowedMethods = response.getAllowedMethods();
         assertTrue("allowedOptions must contain ABC", allowedMethods
                 .contains(Method.valueOf("ABC")));

@@ -53,16 +53,8 @@ import javax.ws.rs.core.UriInfo;
 @Path(CarListResource.PATH)
 public class CarListResource {
 
-    // TODO Test a Root Resource Class with PathParam in UriTemplate
-
-    /**
-     * 
-     */
     public static final String DUMMY_CAR_LIST = "[1, 2, 5]";
 
-    /**
-     * 
-     */
     public static final String OFFERS = "This are test offers";
 
     public static final String PATH = "cars";
