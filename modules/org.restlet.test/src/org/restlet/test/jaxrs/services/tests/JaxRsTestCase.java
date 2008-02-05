@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.Path;
+
 import junit.framework.TestCase;
 
 import org.restlet.Client;
@@ -63,6 +65,33 @@ public abstract class JaxRsTestCase extends TestCase {
      * ServerWrapper to use.
      */
     private static ServerWrapper serverWrapper = new RestletServerWrapper();
+
+    /**
+     * starts the Server for the given JaxRsTestCase, waits for an input from
+     * {@link System#in} and then stops the server.
+     * 
+     * @param jaxRsTestCase
+     * @throws Exception
+     */
+    public static void runServerUntilKeyPressed(JaxRsTestCase jaxRsTestCase)
+            throws Exception {
+        jaxRsTestCase.startServer();
+        Collection<Class<?>> rrcs = jaxRsTestCase.createRootResourceColl();
+        System.out
+                .println("the root resource classes are available under the following pathes:");
+        for (Class<?> rrc : rrcs) {
+            try {
+                System.out.print("http://localhost:" + jaxRsTestCase.getPort());
+                System.out.println(rrc.getAnnotation(Path.class).value());
+            } catch (RuntimeException e) {
+                e.printStackTrace(System.out);
+            }
+        }
+        System.out.println("press key to stop . . .");
+        System.in.read();
+        jaxRsTestCase.stopServer();
+        System.out.println("server stopped");
+    }
 
     /**
      * @see #accessServer(Method, Class, String, Collection, ChallengeResponse)
@@ -380,22 +409,24 @@ public abstract class JaxRsTestCase extends TestCase {
      *         {@link #stopServer(Component)}
      * @throws Exception
      */
-    protected static void startServer(final Collection<Class<?>> rootResourceClasses,
-            int port) throws Exception {
+    protected static void startServer(
+            final Collection<Class<?>> rootResourceClasses, int port)
+            throws Exception {
         final ChallengeScheme challengeScheme = ChallengeScheme.HTTP_BASIC;
         startServer(rootResourceClasses, Protocol.HTTP, port, challengeScheme);
     }
 
     /**
      * @param rootResourceClasses
-     * @param protocol Protocoll for the Server
+     * @param protocol
+     *                Protocoll for the Server
      * @param port
      * @param challengeScheme
      * @throws Exception
      */
-    protected static void startServer(final Collection<Class<?>> rootResourceClasses,
-            Protocol protocol, int port, final ChallengeScheme challengeScheme)
-            throws Exception {
+    protected static void startServer(
+            final Collection<Class<?>> rootResourceClasses, Protocol protocol,
+            int port, final ChallengeScheme challengeScheme) throws Exception {
         startServer(rootResourceClasses, protocol, port, challengeScheme, null);
     }
 
@@ -407,8 +438,9 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param contextParameter
      * @throws Exception
      */
-    protected static void startServer(final Collection<Class<?>> rootResourceClasses,
-            Protocol protocol, int port, final ChallengeScheme challengeScheme,
+    protected static void startServer(
+            final Collection<Class<?>> rootResourceClasses, Protocol protocol,
+            int port, final ChallengeScheme challengeScheme,
             Parameter contextParameter) throws Exception {
         try {
             serverWrapper.startServer(rootResourceClasses, protocol, port,
@@ -427,11 +459,10 @@ public abstract class JaxRsTestCase extends TestCase {
         return true;
     }
 
-    protected int getPort()
-    {
+    protected int getPort() {
         return serverWrapper.getPort();
     }
-    
+
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
