@@ -17,13 +17,10 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
-import java.util.Collection;
 import java.util.Set;
 
 import org.restlet.data.Dimension;
-import org.restlet.data.Method;
 import org.restlet.data.Response;
-import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.test.jaxrs.services.ResponseBuilderService;
 
 /**
@@ -34,13 +31,12 @@ public class ResponseBuilderTest extends JaxRsTestCase {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Collection<Class<?>> createRootResourceColl() {
-        return (Collection) Util.createColl(ResponseBuilderService.class);
+    protected Class<?> getRootResourceClass() {
+        return ResponseBuilderService.class;
     }
 
     public void test1() {
-        Response response = accessServer(Method.GET, ResponseBuilderService.class,
-                "1");
+        Response response = get("1");
         Set<Dimension> dimensions = response.getDimensions();
 
         assertTrue("dimension must contain MediaType", dimensions
@@ -50,8 +46,7 @@ public class ResponseBuilderTest extends JaxRsTestCase {
     }
 
     public void test2() {
-        Response response = accessServer(Method.GET, ResponseBuilderService.class,
-                "2");
+        Response response = get("2");
         Set<Dimension> dimensions = response.getDimensions();
 
         assertTrue("dimension must contain Language", dimensions

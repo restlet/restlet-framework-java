@@ -68,33 +68,6 @@ public abstract class JaxRsTestCase extends TestCase {
     private static ServerWrapper serverWrapper = new RestletServerWrapper();
 
     /**
-     * starts the Server for the given JaxRsTestCase, waits for an input from
-     * {@link System#in} and then stops the server.
-     * 
-     * @param jaxRsTestCase
-     * @throws Exception
-     */
-    public static void runServerUntilKeyPressed(JaxRsTestCase jaxRsTestCase)
-            throws Exception {
-        jaxRsTestCase.startServer();
-        Collection<Class<?>> rrcs = jaxRsTestCase.createRootResourceColl();
-        System.out
-                .println("the root resource classes are available under the following pathes:");
-        for (Class<?> rrc : rrcs) {
-            try {
-                System.out.print("http://localhost:" + jaxRsTestCase.getPort());
-                System.out.println(rrc.getAnnotation(Path.class).value());
-            } catch (RuntimeException e) {
-                e.printStackTrace(System.out);
-            }
-        }
-        System.out.println("press key to stop . . .");
-        System.in.read();
-        jaxRsTestCase.stopServer();
-        System.out.println("server stopped");
-    }
-
-    /**
      * @see #accessServer(Method, Class, String, Collection, ChallengeResponse)
      */
     @SuppressWarnings("unchecked")
@@ -117,31 +90,6 @@ public abstract class JaxRsTestCase extends TestCase {
     public static Response accessServer(Method httpMethod, Class<?> klasse,
             Collection mediaTypes) throws IllegalArgumentException {
         return accessServer(httpMethod, klasse, null, mediaTypes, null);
-    }
-
-    public static Response get(Class<?> klasse, MediaType mediaType) {
-        return accessServer(Method.GET, klasse, mediaType);
-    }
-
-    public static Response get(Class<?> klasse) {
-        return accessServer(Method.GET, klasse);
-    }
-
-    public static Response get(Class<?> klasse, String path) {
-        return accessServer(Method.GET, klasse, path);
-    }
-
-    public static Response post(Class<?> klasse, String subPath,
-            Representation entity) {
-        return post(klasse, subPath, null, null, entity);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Response post(Class<?> klasse, String subPath,
-            Collection mediaTypes, ChallengeResponse challengeResponse,
-            Representation entity) {
-        return accessServer(Method.POST, createReference(klasse, subPath),
-                mediaTypes, challengeResponse, entity);
     }
 
     /**
@@ -181,6 +129,35 @@ public abstract class JaxRsTestCase extends TestCase {
 
     /**
      * @param httpMethod
+     * @param klasse
+     * @param subPath
+     * @param conditions
+     * @return
+     */
+    public static Response accessServer(Method httpMethod, Class<?> klasse,
+            String subPath, Conditions conditions, ClientInfo clientInfo) {
+        Reference reference = createReference(klasse, subPath);
+        Client client = createClient();
+        Request request = new Request(httpMethod, reference);
+        if (conditions != null)
+            request.setConditions(conditions);
+        if (clientInfo != null)
+            request.setClientInfo(clientInfo);
+        Response response = client.handle(request);
+        return response;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Response accessServer(Method httpMethod, Class<?> klasse,
+            String subPath, MediaType mediaType) {
+        Collection<MediaType> mediaTypes = null;
+        if (mediaType != null)
+            mediaTypes = Collections.singleton(mediaType);
+        return accessServer(httpMethod, klasse, subPath, mediaTypes, null);
+    }
+
+    /**
+     * @param httpMethod
      * @param reference
      * @param mediaTypes
      * @param challengeResponse
@@ -213,42 +190,6 @@ public abstract class JaxRsTestCase extends TestCase {
         request.setEntity(entity);
         Response response = client.handle(request);
         return response;
-    }
-
-    /**
-     * @return
-     */
-    protected static Client createClient() {
-        return new Client(Protocol.HTTP);
-    }
-
-    /**
-     * @param httpMethod
-     * @param klasse
-     * @param subPath
-     * @param conditions
-     * @return
-     */
-    public static Response accessServer(Method httpMethod, Class<?> klasse,
-            String subPath, Conditions conditions, ClientInfo clientInfo) {
-        Reference reference = createReference(klasse, subPath);
-        Client client = createClient();
-        Request request = new Request(httpMethod, reference);
-        if (conditions != null)
-            request.setConditions(conditions);
-        if (clientInfo != null)
-            request.setClientInfo(clientInfo);
-        Response response = client.handle(request);
-        return response;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Response accessServer(Method httpMethod, Class<?> klasse,
-            String subPath, MediaType mediaType) {
-        Collection<MediaType> mediaTypes = null;
-        if (mediaType != null)
-            mediaTypes = Collections.singleton(mediaType);
-        return accessServer(httpMethod, klasse, subPath, mediaTypes, null);
     }
 
     /**
@@ -290,6 +231,13 @@ public abstract class JaxRsTestCase extends TestCase {
         expected = Converter.getMediaTypeWithoutParams(expected);
         actual = Converter.getMediaTypeWithoutParams(actual);
         assertEquals(expected, actual);
+    }
+
+    /**
+     * @return
+     */
+    protected static Client createClient() {
+        return new Client(Protocol.HTTP);
     }
 
     /**
@@ -338,6 +286,33 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     /**
+     * starts the Server for the given JaxRsTestCase, waits for an input from
+     * {@link System#in} and then stops the server.
+     * 
+     * @param jaxRsTestCase
+     * @throws Exception
+     */
+    public static void runServerUntilKeyPressed(JaxRsTestCase jaxRsTestCase)
+            throws Exception {
+        jaxRsTestCase.startServer();
+        Collection<Class<?>> rrcs = jaxRsTestCase.getRootResourceColl();
+        System.out
+                .println("the root resource classes are available under the following pathes:");
+        for (Class<?> rrc : rrcs) {
+            try {
+                System.out.print("http://localhost:" + jaxRsTestCase.getPort());
+                System.out.println(rrc.getAnnotation(Path.class).value());
+            } catch (RuntimeException e) {
+                e.printStackTrace(System.out);
+            }
+        }
+        System.out.println("press key to stop . . .");
+        System.in.read();
+        jaxRsTestCase.stopServer();
+        System.out.println("server stopped");
+    }
+
+    /**
      * Sets the default ServerWrapper. Should be called before setUp.
      * 
      * @param newServerWrapper
@@ -347,97 +322,6 @@ public abstract class JaxRsTestCase extends TestCase {
             throw new IllegalArgumentException(
                     "null is an illegal ServerWrapper");
         serverWrapper = newServerWrapper;
-    }
-
-    /**
-     * Checks, if the allowed methods of an OPTIONS request are the given one.
-     * 
-     * @param optionsResponse
-     * @param methods
-     *                The methods that must be allowed. If GET is included, a
-     *                check for HEAD is automaticly done. But it is no problem
-     *                to add the HEAD method.
-     */
-    public void assertAllowedMethod(Response optionsResponse, Method... methods) {
-        if (optionsResponse.getStatus().isError())
-            assertEquals(Status.SUCCESS_OK, optionsResponse.getStatus());
-        Set<Method> expectedMethods = new HashSet<Method>(Arrays
-                .asList(methods));
-        if (expectedMethods.contains(Method.GET))
-            expectedMethods.add(Method.HEAD);
-        List<Method> allowedMethods = new ArrayList<Method>(optionsResponse
-                .getAllowedMethods());
-        for (Method method : methods) {
-            assertTrue("allowedMethod must contain " + method, allowedMethods
-                    .contains(method));
-        }
-        assertEquals("allowedMethods.size invalid", expectedMethods.size(),
-                allowedMethods.size());
-    }
-
-    /**
-     * @return
-     */
-    protected abstract Collection<Class<?>> createRootResourceColl();
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        if (shouldStartServerInSetUp()) {
-            startServer();
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected void startServer() throws Exception {
-        this.startServer(createRootResourceColl());
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected void startServer(Protocol protocol) throws Exception {
-        startServer(createRootResourceColl(), protocol, PORT, null);
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected void startServer(Protocol protocol, Parameter contextParameter)
-            throws Exception {
-        startServer(createRootResourceColl(), protocol, PORT, null,
-                contextParameter);
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected void startServer(ChallengeScheme challengeScheme)
-            throws Exception {
-        this.startServer(createRootResourceColl(), challengeScheme);
-    }
-
-    /**
-     * @see #startServer(Collection, int)
-     */
-    private void startServer(final Collection<Class<?>> rootResourceClasses)
-            throws Exception {
-        startServer(rootResourceClasses, PORT);
-    }
-
-    /**
-     * @see #startServer(Collection, int)
-     */
-    private void startServer(final Collection<Class<?>> rootResourceClasses,
-            ChallengeScheme challengeScheme) throws Exception {
-        startServer(rootResourceClasses, Protocol.HTTP, PORT, challengeScheme);
     }
 
     /**
@@ -498,18 +382,164 @@ public abstract class JaxRsTestCase extends TestCase {
         }
     }
 
-    protected boolean shouldStartServerInSetUp() {
-        return true;
+    /**
+     * Checks, if the allowed methods of an OPTIONS request are the given one.
+     * 
+     * @param optionsResponse
+     * @param methods
+     *                The methods that must be allowed. If GET is included, a
+     *                check for HEAD is automaticly done. But it is no problem
+     *                to add the HEAD method.
+     */
+    public void assertAllowedMethod(Response optionsResponse, Method... methods) {
+        if (optionsResponse.getStatus().isError())
+            assertEquals(Status.SUCCESS_OK, optionsResponse.getStatus());
+        Set<Method> expectedMethods = new HashSet<Method>(Arrays
+                .asList(methods));
+        if (expectedMethods.contains(Method.GET))
+            expectedMethods.add(Method.HEAD);
+        List<Method> allowedMethods = new ArrayList<Method>(optionsResponse
+                .getAllowedMethods());
+        for (Method method : methods) {
+            assertTrue("allowedMethod must contain " + method, allowedMethods
+                    .contains(method));
+        }
+        assertEquals("allowedMethods.size invalid", expectedMethods.size(),
+                allowedMethods.size());
+    }
+
+    public Response get() {
+        return accessServer(Method.GET, getRootResourceClass());
+    }
+
+    public Response get(MediaType mediaType) {
+        return accessServer(Method.GET, getRootResourceClass(), mediaType);
+    }
+
+    public Response get(String subPath) {
+        return accessServer(Method.GET, getRootResourceClass(), subPath);
+    }
+
+    public Response get(String subPath, ChallengeResponse cr) {
+        return accessServer(Method.GET, getRootResourceClass(), subPath, null,
+                cr);
+    }
+
+    public Response get(String subPath, Conditions conditions) {
+        return accessServer(Method.GET, getRootResourceClass(), subPath,
+                conditions, null);
+    }
+
+    public Response get(String subPath, MediaType mediaType) {
+        return accessServer(Method.GET, getRootResourceClass(), subPath,
+                mediaType);
     }
 
     protected int getPort() {
         return serverWrapper.getPort();
     }
 
+    protected Class<?> getRootResourceClass() {
+        throw new UnsupportedOperationException(
+                "You must implement the methods getRootResourceClass() or createRootResourceColl(). If you only implemented createRootResourceColl(), you can't use this method");
+    }
+
+    /**
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    protected Collection<Class<?>> getRootResourceColl() {
+        return (Collection) Collections.singleton(getRootResourceClass());
+    }
+
+    public Response head(String subPath, MediaType mediaType) {
+        return accessServer(Method.HEAD, getRootResourceClass(), subPath,
+                mediaType);
+    }
+
+    public Response post() {
+        return accessServer(Method.POST, getRootResourceClass());
+    }
+
+    public Response post(String subPath, ChallengeResponse cr) {
+        return accessServer(Method.POST, getRootResourceClass(), subPath, null,
+                cr);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Response post(String subPath, Collection mediaTypes,
+            ChallengeResponse challengeResponse, Representation entity) {
+        return accessServer(Method.POST, createReference(
+                getRootResourceClass(), subPath), mediaTypes,
+                challengeResponse, entity);
+    }
+
+    public Response post(String subPath, Representation entity) {
+        return post(subPath, null, null, entity);
+    }
+
     @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        stopServer();
+    protected void setUp() throws Exception {
+        super.setUp();
+        if (shouldStartServerInSetUp()) {
+            startServer();
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    protected boolean shouldStartServerInSetUp() {
+        return true;
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected void startServer() throws Exception {
+        this.startServer(getRootResourceColl());
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected void startServer(ChallengeScheme challengeScheme)
+            throws Exception {
+        this.startServer(getRootResourceColl(), challengeScheme);
+    }
+
+    /**
+     * @see #startServer(Collection, int)
+     */
+    private void startServer(final Collection<Class<?>> rootResourceClasses)
+            throws Exception {
+        startServer(rootResourceClasses, PORT);
+    }
+
+    /**
+     * @see #startServer(Collection, int)
+     */
+    private void startServer(final Collection<Class<?>> rootResourceClasses,
+            ChallengeScheme challengeScheme) throws Exception {
+        startServer(rootResourceClasses, Protocol.HTTP, PORT, challengeScheme);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected void startServer(Protocol protocol) throws Exception {
+        startServer(getRootResourceColl(), protocol, PORT, null);
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected void startServer(Protocol protocol, Parameter contextParameter)
+            throws Exception {
+        startServer(getRootResourceColl(), protocol, PORT, null,
+                contextParameter);
     }
 
     /**
@@ -517,5 +547,11 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     protected void stopServer() throws Exception {
         serverWrapper.stopServer();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        stopServer();
     }
 }

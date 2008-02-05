@@ -27,7 +27,7 @@ import org.restlet.test.jaxrs.services.car.CarListResource;
 public class MultipleResourcesTest extends JaxRsTestCase {
     @Override
     @SuppressWarnings("unchecked")
-    protected Collection<Class<?>> createRootResourceColl() {
+    protected Collection<Class<?>> getRootResourceColl() {
         return Util.createColl(SimpleTrain.class, CarListResource.class);
     }
 

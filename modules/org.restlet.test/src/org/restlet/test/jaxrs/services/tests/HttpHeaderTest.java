@@ -20,8 +20,6 @@ package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.restlet.Client;
@@ -49,9 +47,8 @@ public class HttpHeaderTest extends JaxRsTestCase {
     private static final Class<HttpHeaderTestService> SERVICE_CLASS = HttpHeaderTestService.class;
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected Collection createRootResourceColl() {
-        return Collections.singleton(SERVICE_CLASS);
+    protected Class<?> getRootResourceClass() {
+        return SERVICE_CLASS;
     }
 
     public void testHeaderParam() throws IOException {

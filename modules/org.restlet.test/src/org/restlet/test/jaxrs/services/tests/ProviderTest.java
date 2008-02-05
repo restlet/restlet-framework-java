@@ -18,9 +18,6 @@
 
 package org.restlet.test.jaxrs.services.tests;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.DomRepresentation;
@@ -35,12 +32,12 @@ public class ProviderTest extends JaxRsTestCase {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Collection<Class<?>> createRootResourceColl() {
-        return (Collection) Collections.singleton(SERVICE_CLASS);
+    protected Class<?> getRootResourceClass() {
+        return SERVICE_CLASS;
     }
 
     public void testByteArray() throws Exception {
-        Response response = get(SERVICE_CLASS, "byteArray");
+        Response response = get("byteArray");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation representation = response.getEntity();
         assertEquals(ProviderTestService.ALPHABET, representation.getText());
@@ -54,7 +51,7 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testFile() throws Exception {
-        Response response = get(SERVICE_CLASS, "file");
+        Response response = get("file");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation entity = response.getEntity();
         assertEquals(ProviderTestService.ALPHABET, entity.getText());
@@ -63,7 +60,7 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testInputStream() throws Exception {
-        Response response = get(SERVICE_CLASS, "InputStream");
+        Response response = get("InputStream");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation entity = response.getEntity();
         assertEquals(ProviderTestService.ALPHABET, entity.getText());
@@ -72,7 +69,7 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testJaxb() throws Exception {
-        Response response = get(SERVICE_CLASS, "jaxb");
+        Response response = get("jaxb");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         DomRepresentation entity = response.getEntityAsDom();
         Node xml = entity.getDocument().getFirstChild();

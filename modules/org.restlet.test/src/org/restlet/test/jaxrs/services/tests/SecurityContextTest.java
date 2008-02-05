@@ -19,8 +19,6 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Collections;
 
 import javax.ws.rs.core.SecurityContext;
 
@@ -45,9 +43,8 @@ public class SecurityContextTest extends JaxRsTestCase {
     private static final Class<SecurityContextService> SEC_CONT_SERV = SecurityContextService.class;
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected Collection createRootResourceColl() {
-        return Collections.singleton(SEC_CONT_SERV);
+    protected Class<?> getRootResourceClass() {
+        return SEC_CONT_SERV;
     }
 
     /**
@@ -97,10 +94,10 @@ public class SecurityContextTest extends JaxRsTestCase {
         }))
             return;
         Response response;
-        response = accessServer(Method.GET, SEC_CONT_SERV);
+        response = get();
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
 
-        response = accessServer(Method.POST, SEC_CONT_SERV);
+        response = post();
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
 
@@ -108,10 +105,10 @@ public class SecurityContextTest extends JaxRsTestCase {
         if (!startServer(AllowAllAuthenticator.getInstance()))
             return;
         Response response;
-        response = accessServer(Method.GET, SEC_CONT_SERV);
+        response = get();
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
-        response = accessServer(Method.POST, SEC_CONT_SERV);
+        response = post();
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
         Reference expecretLocation = createReference(SEC_CONT_SERV, null);
         assertTrue("The location must start with " + expecretLocation
@@ -126,8 +123,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "u", "p");
         Response response;
-        response = accessServer(Method.GET, SEC_CONT_SERV,
-                "authenticationScheme", null, cr);
+        response = get("authenticationScheme", cr);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
         assertEquals(SecurityContext.BASIC_AUTH, entity);
@@ -140,8 +136,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_DIGEST, "u", "p");
         Response response;
-        response = accessServer(Method.GET, SEC_CONT_SERV,
-                "authenticationScheme", null, cr);
+        response = get("authenticationScheme", cr);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
         assertEquals(SecurityContext.DIGEST_AUTH, entity);
@@ -151,10 +146,10 @@ public class SecurityContextTest extends JaxRsTestCase {
         if (!startServer(ForbidAllAuthenticator.getInstance()))
             return;
         Response response;
-        response = accessServer(Method.GET, SEC_CONT_SERV);
+        response = get();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
-        response = accessServer(Method.POST, SEC_CONT_SERV);
+        response = post();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
     }
 
@@ -162,9 +157,10 @@ public class SecurityContextTest extends JaxRsTestCase {
         if (!startServer(AllowAllAuthenticator.getInstance()))
             return;
         Response response;
-        response = accessServer(Method.GET, SEC_CONT_SERV, "secure");
+        response = get("secure");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
+
     // hope that Restlet Request.isConfidential(); works right with HTTPS
 
     /**
@@ -201,32 +197,27 @@ public class SecurityContextTest extends JaxRsTestCase {
             return;
         ChallengeResponse challengeResponse = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "fsdf", "xyz");
-        Response response = accessServer(Method.GET, SEC_CONT_SERV, null, null,
-                challengeResponse);
+        Response response = get(null, challengeResponse);
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
         challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
                 "fsdf", "baj");
-        response = accessServer(Method.GET, SEC_CONT_SERV, null, null,
-                challengeResponse);
+        response = get(null, challengeResponse);
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
         challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
                 "fsdf", "abj");
-        response = accessServer(Method.GET, SEC_CONT_SERV, null, null,
-                challengeResponse);
+        response = get(null, challengeResponse);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
 
         challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
                 "bsdf", "abaj");
-        response = accessServer(Method.GET, SEC_CONT_SERV, null, null,
-                challengeResponse);
+        response = get(null, challengeResponse);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
                 "fsdf", "axa2");
-        response = accessServer(Method.POST, SEC_CONT_SERV, null, null,
-                challengeResponse);
+        response = post(null, challengeResponse);
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
 
         response = accessServer(Method.PUT, SEC_CONT_SERV, null, null,
@@ -239,21 +230,19 @@ public class SecurityContextTest extends JaxRsTestCase {
         if (!startServer(AllowAllAuthenticator.getInstance()))
             return;
         Response response;
-        response = accessServer(Method.GET, SEC_CONT_SERV, "userPrincipal");
+        response = get("userPrincipal");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
         assertEquals("", entity);
 
-        response = accessServer(Method.GET, SEC_CONT_SERV, "userPrincipal",
-                null, new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "abc",
-                        "def"));
+        response = get("userPrincipal", new ChallengeResponse(
+                ChallengeScheme.HTTP_BASIC, "abc", "def"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         entity = response.getEntity().getText();
         assertEquals("abc", entity);
 
-        response = accessServer(Method.GET, SEC_CONT_SERV, "userPrincipal",
-                null, new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
-                        "asdfsdfbc", "def"));
+        response = get("userPrincipal", new ChallengeResponse(
+                ChallengeScheme.HTTP_BASIC, "asdfsdfbc", "def"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         entity = response.getEntity().getText();
         assertEquals("asdfsdfbc", entity);

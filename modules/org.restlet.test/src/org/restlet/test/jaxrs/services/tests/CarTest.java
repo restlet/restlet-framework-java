@@ -18,9 +18,6 @@
 
 package org.restlet.test.jaxrs.services.tests;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Response;
@@ -34,10 +31,9 @@ public class CarTest extends JaxRsTestCase {
 
     private static final boolean ONLY_ONE_CAR = false;
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected Collection<Class<?>> createRootResourceColl() {
-        return (Collection) Collections.singleton(CarListResource.class);
+    protected Class<?> getRootResourceClass() {
+        return CarListResource.class;
     }
 
     public void testDelete() throws Exception {
@@ -55,7 +51,7 @@ public class CarTest extends JaxRsTestCase {
             return;
         String carNumber = "57";
 
-        Response response = get(CarListResource.class, carNumber);
+        Response response = get(carNumber);
         Representation entity = response.getEntity();
         if (response.getStatus().isError())
             System.out.println(entity != null ? entity.getText()
@@ -67,7 +63,7 @@ public class CarTest extends JaxRsTestCase {
         if (true) // TODO wait for issue 435
             return;
         carNumber = "5%20%2B7";
-        response = get(CarListResource.class, carNumber);
+        response = get(carNumber);
         entity = response.getEntity();
         if (response.getStatus().isError())
             System.out.println(entity != null ? entity.getText()
@@ -90,8 +86,7 @@ public class CarTest extends JaxRsTestCase {
     public void testGetOffers() throws Exception {
         if (ONLY_ONE_CAR)
             return;
-        Response response = accessServer(Method.GET, CarListResource.class,
-                "offers", (MediaType) null);
+        Response response = get("offers");
         Representation representation = response.getEntity();
         if (response.getStatus().isError())
             System.out.println(representation != null ? representation
@@ -105,8 +100,7 @@ public class CarTest extends JaxRsTestCase {
     public void testGetPlainText() throws Exception {
         if (ONLY_ONE_CAR || ONLY_OFFERS)
             return;
-        Response response = accessServer(Method.GET, CarListResource.class,
-                MediaType.TEXT_PLAIN);
+        Response response = get(MediaType.TEXT_PLAIN);
         Status status = response.getStatus();
         assertTrue("Status should be 2xx, but is " + status, status.isSuccess());
         Representation representation = response.getEntity();
