@@ -21,59 +21,41 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.activation.DataSource;
+import javax.mail.util.ByteArrayDataSource;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
-
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 
 /**
  * @author Stephan Koops
  * 
  */
 @Provider
-public class ByteArrayProvider extends AbstractProvider<byte[]> {
+public class DataSourceProvider extends AbstractProvider<DataSource> {
 
-    /**
-     * 
-     */
-    public ByteArrayProvider() {
-        //
-    }
-
-    /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
-     */
     @Override
-    public long getSize(byte[] t) {
-        return t.length;
+    public long getSize(DataSource object) {
+        return -1;
     }
 
-    /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class)
-     */
     @Override
     protected boolean isReadableAndWriteable(Class<?> type) {
-        return byte[].class.isAssignableFrom(type);
-    }
-
-    /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.OutputStream)
-     */
-    @Override
-    public void writeTo(byte[] data, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
-        entityStream.write(data);
+        return DataSource.class.isAssignableFrom(type);
     }
 
     @Override
-    public byte[] readFrom(Class<byte[]> type, MediaType mediaType,
+    public DataSource readFrom(Class<DataSource> type, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        // TODO ByteArrayProvider.readFrom
-        throw new NotYetImplementedException();
+        return new ByteArrayDataSource(entityStream, mediaType.toString());
+    }
+
+    @Override
+    public void writeTo(DataSource dataSource, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException {
+        InputStream inputStream = dataSource.getInputStream();
+        super.copyAndCloseStream(inputStream, entityStream);
     }
 }

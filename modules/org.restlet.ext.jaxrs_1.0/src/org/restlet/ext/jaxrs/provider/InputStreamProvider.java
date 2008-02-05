@@ -25,55 +25,45 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
-
 /**
- * @author Stephan Koops
+ * This Provider is used to read directly from an InputStream
  * 
+ * @author Stephan Koops
  */
 @Provider
-public class ByteArrayProvider extends AbstractProvider<byte[]> {
+public class InputStreamProvider extends AbstractProvider<InputStream> {
 
-    /**
-     * 
-     */
-    public ByteArrayProvider() {
-        //
-    }
+    // TODO alle Provider testen
 
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
     @Override
-    public long getSize(byte[] t) {
-        return t.length;
+    public long getSize(InputStream t) {
+        return -1;
     }
 
-    /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class)
-     */
     @Override
     protected boolean isReadableAndWriteable(Class<?> type) {
-        return byte[].class.isAssignableFrom(type);
+        return InputStream.class.isAssignableFrom(type);
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
+     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.OutputStream)
+     *      java.io.InputStream)
      */
     @Override
-    public void writeTo(byte[] data, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
-        entityStream.write(data);
+    public InputStream readFrom(Class<InputStream> type, MediaType mediaType,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            throws IOException {
+        return entityStream;
     }
 
     @Override
-    public byte[] readFrom(Class<byte[]> type, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException {
-        // TODO ByteArrayProvider.readFrom
-        throw new NotYetImplementedException();
+    public void writeTo(InputStream inputStream, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException {
+            copyAndCloseStream(inputStream, entityStream);
     }
 }

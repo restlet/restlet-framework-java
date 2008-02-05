@@ -1,6 +1,7 @@
 package org.restlet.ext.jaxrs;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.logging.Level;
 
@@ -10,8 +11,10 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.restlet.ext.jaxrs.util.ClasspathIterator;
+import org.restlet.ext.jaxrs.util.PackageIterator;
 import org.restlet.ext.jaxrs.util.ServiceProviderIterator;
 import org.restlet.ext.jaxrs.util.WrappedClassLoadException;
+import org.restlet.ext.jaxrs.util.WrappedLoadException;
 
 /**
  * This class loads the root resource classes and the {@link Provider}s. If the
@@ -43,8 +46,11 @@ class JaxRsClassesLoader {
             JaxRsRouter jaxRsRouter, boolean asRootResourceClass,
             boolean asProvider) throws IllegalArgumentException {
         boolean result = false;
+        int modifiers = clazz.getModifiers();
+        if(Modifier.isAbstract(modifiers) || Modifier.isInterface(modifiers))
+            return false;
         if (asProvider) {
-            if (clazz.isAssignableFrom(MessageBodyReader.class)) {
+            if (MessageBodyReader.class.isAssignableFrom(clazz)) {
                 if (!clazz.isAnnotationPresent(Provider.class)) {
                     String msg = "The class "
                             + clazz.getName()
@@ -54,7 +60,7 @@ class JaxRsClassesLoader {
                 jaxRsRouter.addMessageBodyReader(clazz);
                 result = true;
             }
-            if (clazz.isAssignableFrom(MessageBodyWriter.class)) {
+            if (MessageBodyWriter.class.isAssignableFrom(clazz)) {
                 if (!clazz.isAnnotationPresent(Provider.class)) {
                     String msg = "The class "
                             + clazz.getName()
@@ -159,6 +165,49 @@ class JaxRsClassesLoader {
             if (cause instanceof IOException)
                 throw (IOException) cause;
             throw e;
+        }
+    }
+
+    /**
+     * Load the classes in the package with the given name.
+     * 
+     * @param classLoader
+     * @param throwOnExc
+     * @param jaxRsRouter
+     * @param rootResourceClasses
+     *                if true, the classes are checked, if they are root
+     *                resource classes.
+     * @param providers
+     *                if true, the classes are checked, if they are providers,
+     *                see {@link Provider}
+     * @param packageNames
+     *                The packages to load
+     * @throws WrappedLoadException
+     *                 if the package could not be loaded, independent of
+     *                 throwOnExc
+     * @throws WrappedClassLoadException
+     *                 if throwOnExc is true and a class could not be loaded.
+     */
+    static void loadFromPackage(ClassLoader classLoader, boolean throwOnExc,
+            JaxRsRouter jaxRsRouter, boolean rootResourceClasses,
+            boolean providers, String... packageNames)
+            throws WrappedLoadException, WrappedClassLoadException {
+        if (!rootResourceClasses && !providers)
+            return;
+        for (String packageName : packageNames) {
+            Iterator<Class<?>> classIter;
+            try {
+                classIter = new PackageIterator(classLoader, packageName,
+                        throwOnExc, jaxRsRouter.getLogger(), Level.WARNING);
+            } catch (IOException e) {
+                throw new WrappedLoadException(
+                        "Could not load the package data", e);
+            }
+            while (classIter.hasNext()) {
+                Class<?> clazz = classIter.next();
+                addClassToRouter(clazz, jaxRsRouter, rootResourceClasses,
+                        providers);
+            }
         }
     }
 }

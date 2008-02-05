@@ -39,6 +39,8 @@ public class DirectoryClassIterator extends AbstractClassIterator implements
 
     private int rootDirnameLength;
 
+    private boolean subDir;
+
     /**
      * Iterates over the classes in the given jar file.
      * 
@@ -57,9 +59,39 @@ public class DirectoryClassIterator extends AbstractClassIterator implements
      */
     public DirectoryClassIterator(File directory, boolean throwOnExc,
             Logger logger, Level logLevel) {
+        this(directory, directory, true, throwOnExc, logger, logLevel);
+    }
+
+    /**
+     * Iterates over the classes in the given jar file.
+     * 
+     * @param directory
+     *                the directory to iterate
+     * @param rootDirectory
+     *                the root directory for the package name
+     * @param subDirs
+     *                if true, than sub directories are checked (recursive), if
+     *                false, then only the given directory is iterated.
+     * @param throwOnExc
+     *                if true, ClassNotFoundExceptions are thrown (wrapped in a
+     *                RuntimeException), if false, than they are logged.
+     * @param logger
+     *                a logger to log {@link Exception}s or {@link Error}s;
+     *                see
+     *                {@link #loadClassByFileName(String, boolean, Logger, Level)}
+     * @param logLevel
+     *                the Log{@link Level} to use, must not be null; see
+     *                {@link #loadClassByFileName(String, boolean, Logger, Level)}
+     */
+    public DirectoryClassIterator(File directory, File rootDirectory,
+            boolean subDirs, boolean throwOnExc, Logger logger, Level logLevel) {
         super(throwOnExc, logger, logLevel);
+        if (!directory.getPath().startsWith(rootDirectory.getPath()))
+            throw new IllegalArgumentException(
+                    "the directory must be a under the rootDirectory.");
         pushDir(directory);
-        rootDirnameLength = directory.getPath().length() + 1;
+        rootDirnameLength = rootDirectory.getPath().length() + 1;
+        this.subDir = subDirs;
     }
 
     /**
@@ -82,7 +114,7 @@ public class DirectoryClassIterator extends AbstractClassIterator implements
         File[] files = directory.listFiles(new FileFilter() {
             public boolean accept(File file) {
                 if (file.isDirectory())
-                    return true;
+                    return subDir;
                 String filename = file.getName();
                 if (filename.endsWith(".class") || filename.endsWith(".java"))
                     return true;

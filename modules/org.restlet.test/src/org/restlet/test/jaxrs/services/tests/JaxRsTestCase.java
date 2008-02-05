@@ -48,6 +48,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
+import org.restlet.resource.Representation;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
@@ -118,6 +119,31 @@ public abstract class JaxRsTestCase extends TestCase {
         return accessServer(httpMethod, klasse, null, mediaTypes, null);
     }
 
+    public static Response get(Class<?> klasse, MediaType mediaType) {
+        return accessServer(Method.GET, klasse, mediaType);
+    }
+
+    public static Response get(Class<?> klasse) {
+        return accessServer(Method.GET, klasse);
+    }
+
+    public static Response get(Class<?> klasse, String path) {
+        return accessServer(Method.GET, klasse, path);
+    }
+
+    public static Response post(Class<?> klasse, String subPath,
+            Representation entity) {
+        return post(klasse, subPath, null, null, entity);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Response post(Class<?> klasse, String subPath,
+            Collection mediaTypes, ChallengeResponse challengeResponse,
+            Representation entity) {
+        return accessServer(Method.POST, createReference(klasse, subPath),
+                mediaTypes, challengeResponse, entity);
+    }
+
     /**
      * @param httpMethod
      * @param klasse
@@ -163,11 +189,28 @@ public abstract class JaxRsTestCase extends TestCase {
     @SuppressWarnings("unchecked")
     public static Response accessServer(Method httpMethod, Reference reference,
             Collection mediaTypes, ChallengeResponse challengeResponse) {
+        Representation entity = null;
+        return accessServer(httpMethod, reference, mediaTypes,
+                challengeResponse, entity);
+    }
+
+    /**
+     * @param httpMethod
+     * @param reference
+     * @param mediaTypes
+     * @param challengeResponse
+     * @param entity
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static Response accessServer(Method httpMethod, Reference reference,
+            Collection mediaTypes, ChallengeResponse challengeResponse,
+            Representation entity) {
         Client client = createClient();
         Request request = new Request(httpMethod, reference);
         addAcceptedMediaTypes(request, mediaTypes);
         request.setChallengeResponse(challengeResponse);
-        // ausgeben(request);
+        request.setEntity(entity);
         Response response = client.handle(request);
         return response;
     }

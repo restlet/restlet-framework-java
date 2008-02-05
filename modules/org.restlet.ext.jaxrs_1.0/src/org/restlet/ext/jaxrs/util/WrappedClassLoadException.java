@@ -7,9 +7,9 @@ package org.restlet.ext.jaxrs.util;
  * 
  * @author Stephan Koops
  */
-public class WrappedClassLoadException extends RuntimeException
+public class WrappedClassLoadException extends WrappedLoadException
 {
-    private static final long serialVersionUID = 8448320871361699569L;
+    private static final long serialVersionUID = 84483241361699569L;
 
     private String className;
     

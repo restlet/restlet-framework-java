@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -34,8 +35,13 @@ import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
  */
 @Provider
 @ProduceMime("text/*")
+@ConsumeMime("text/*")
 public class StringProvider extends AbstractProvider<CharSequence> {
 
+    // TODO JSR311: wozu @Provider? Jersey Provider sind auch nicht annotiert.
+    // TODO JSR311: statt javax.transform.Source javax.xml.transform.Source?
+    // TODO wie soll man application/*+xml feststellen?
+    
     /**
      * 
      */
@@ -46,6 +52,7 @@ public class StringProvider extends AbstractProvider<CharSequence> {
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
+    @Override
     public long getSize(CharSequence t) {
         return t.length();
     }
@@ -64,6 +71,7 @@ public class StringProvider extends AbstractProvider<CharSequence> {
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
      *      java.io.OutputStream)
      */
+    @Override
     public void writeTo(CharSequence cs, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
@@ -71,6 +79,7 @@ public class StringProvider extends AbstractProvider<CharSequence> {
         entityStream.write(array);
     }
 
+    @Override
     public CharSequence readFrom(Class<CharSequence> type, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {

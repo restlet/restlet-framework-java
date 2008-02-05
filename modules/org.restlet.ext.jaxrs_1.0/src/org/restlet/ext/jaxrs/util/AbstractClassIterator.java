@@ -85,9 +85,9 @@ abstract class AbstractClassIterator {
         }
     }
 
-    private Logger logger;
+    protected Logger logger;
 
-    private Level logLevel;
+    protected Level logLevel;
 
     protected Class<?> next;
 

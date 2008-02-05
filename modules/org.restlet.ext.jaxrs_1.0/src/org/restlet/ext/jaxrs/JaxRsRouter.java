@@ -49,9 +49,12 @@ import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.impl.MatchingResult;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
 import org.restlet.ext.jaxrs.provider.JaxRsOutputRepresentation;
+import org.restlet.ext.jaxrs.provider.StringProvider;
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.LifoSet;
 import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.util.WrappedClassLoadException;
+import org.restlet.ext.jaxrs.util.WrappedLoadException;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyReader;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriter;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriterSet;
@@ -247,15 +250,11 @@ public class JaxRsRouter extends Restlet {
                     loadAllRootResourceClasses, loadAllProviders);
     }
 
-    private void loadDefaultProviders() {
-        try {
-            ClassLoader classLoader = this.getClass().getClassLoader();
-            JaxRsClassesLoader.loadProvidersFromFile(classLoader, true, this);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load default providers", e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Could not load default providers", e);
-        }
+    private void loadDefaultProviders() throws WrappedClassLoadException,
+            WrappedLoadException {
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        JaxRsClassesLoader.loadFromPackage(classLoader, true, this, false,
+                true, StringProvider.class.getPackage().getName());
     }
 
     /**
@@ -332,12 +331,22 @@ public class JaxRsRouter extends Restlet {
      * 
      * @param rootResourceClass
      *                The JAX-RS root resource class to detach.
+     * @return true, if the given root resource class was in the set and is
+     *         removed, or false, if not.
      * @see #attach(Class)
      */
-    public void detach(Class<?> rootResourceClass) {
-        // TODO JaxRsRouter.detach: .wrapper.RootResourceClasses auspacken und
-        // nachgucken
-        this.rootResourceClasses.remove(rootResourceClass);
+    public boolean detach(Class<?> rootResourceClass) {
+        if (rootResourceClass == null)
+            return false;
+        Iterator<RootResourceClass> rrcIter = rootResourceClasses.iterator();
+        while (rrcIter.hasNext()) {
+            RootResourceClass rrc = rrcIter.next();
+            if (rrc.getJaxRsClass().equals(rootResourceClass)) {
+                rrcIter.remove();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -360,9 +369,10 @@ public class JaxRsRouter extends Restlet {
             provider = RootResourceClass.createInstance(constructor, null,
                     null, null, null, authenticator);
         } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "MessageBodyReader could not be instantiated: "
-                            + e.getMessage(), e);
+            String message = "MessageBodyReader could not be instantiated";
+            if (e.getMessage() != null)
+                message += ": " + e.getMessage();
+            throw new IllegalArgumentException(message, e);
         }
         this.messageBodyReaders.add(new MessageBodyReader(
                 (javax.ws.rs.ext.MessageBodyReader<?>) provider));
@@ -372,13 +382,19 @@ public class JaxRsRouter extends Restlet {
      * Not yet implemented.
      * 
      * @param classLoader
+     * @param throwOnExc
      * @param packageName
+     * @throws WrappedLoadException
+     *                 if a package could not be loaded, independent of
+     *                 throwOnExc.
+     * @throws WrappedClassLoadException
+     *                 If a class could not be loaded and throwOnExc is true.
      */
-    @SuppressWarnings("all")
     public void addProvidersFromPackage(ClassLoader classLoader,
-            String... packageName) {
-        // TODO JaxrsRouter.addProvidersFromPackage(..)
-        throw new NotYetImplementedException();
+            boolean throwOnExc, String... packageName)
+            throws WrappedClassLoadException, WrappedLoadException {
+        JaxRsClassesLoader.loadFromPackage(classLoader, throwOnExc, this,
+                false, true, packageName);
     }
 
     /**

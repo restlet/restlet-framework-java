@@ -15,4 +15,5 @@ Require-Bundle: com.noelios.restlet,
  org.restlet.example,
  org.restlet.ext.wadl,
  javax.ws.rs,
- org.restlet.ext.jaxrs
+ org.restlet.ext.jaxrs,
+ javax.xml.bind
