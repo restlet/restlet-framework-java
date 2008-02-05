@@ -19,6 +19,7 @@
 package org.restlet.data;
 
 import org.restlet.util.Engine;
+import org.restlet.util.Series;
 
 /**
  * Authentication response sent by client to an origin server.
@@ -38,6 +39,9 @@ public final class ChallengeResponse {
     /** The raw credentials for custom challenge schemes. */
     private String credentials;
 
+    /** The additional scheme parameters. */
+    private Series<Parameter> parameters;
+
     /**
      * Constructor.
      * 
@@ -52,6 +56,7 @@ public final class ChallengeResponse {
         this.credentials = credentials;
         this.identifier = null;
         this.secret = null;
+        this.parameters = null;
     }
 
     /**
@@ -71,6 +76,7 @@ public final class ChallengeResponse {
         this.credentials = null;
         this.identifier = identifier;
         this.secret = (secret != null) ? secret.toCharArray() : null;
+        this.parameters = null;
     }
 
     /**
@@ -90,6 +96,27 @@ public final class ChallengeResponse {
         this.credentials = null;
         this.identifier = identifier;
         this.secret = secret;
+        this.parameters = null;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param scheme
+     *                The challenge scheme.
+     * @param identifier
+     *                The user identifier, such as a login name or an access
+     *                key.
+     * @param parameters
+     *                The additional scheme parameters.
+     */
+    public ChallengeResponse(final ChallengeScheme scheme,
+            final String identifier, Series<Parameter> parameters) {
+        this.scheme = scheme;
+        this.credentials = null;
+        this.identifier = identifier;
+        this.secret = null;
+        this.parameters = parameters;
     }
 
     /** {@inheritDoc} */
@@ -184,6 +211,20 @@ public final class ChallengeResponse {
         return this.secret;
     }
 
+    /**
+     * Returns the modifiable series of scheme parameters. Creates a new
+     * instance if no one has been set.
+     * 
+     * @return The modifiable series of scheme parameters.
+     */
+    public Series<Parameter> getParameters() {
+        if (this.parameters == null) {
+            this.parameters = new Form();
+        }
+
+        return this.parameters;
+    }
+
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -241,6 +282,16 @@ public final class ChallengeResponse {
      */
     public void setSecret(char[] secret) {
         this.secret = secret;
+    }
+
+    /**
+     * Sets the credential components.
+     * 
+     * @param credentialComponents
+     *                The credential components.
+     */
+    public void setCredentialComponents(Series<Parameter> credentialComponents) {
+        this.parameters = credentialComponents;
     }
 
 }

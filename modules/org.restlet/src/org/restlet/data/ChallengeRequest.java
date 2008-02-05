@@ -33,7 +33,7 @@ public final class ChallengeRequest {
     /** The authentication realm. */
     private String realm;
 
-    /** The scheme parameters. */
+    /** The additional scheme parameters. */
     private Series<Parameter> parameters;
 
     /**

@@ -138,6 +138,8 @@ public final class HttpConstants {
 
     public static final String HEADER_ALLOW = "Allow";
 
+    public static final String HEADER_AUTHENTICATION_INFO = "Authentication-Info";
+
     public static final String HEADER_AUTHORIZATION = "Authorization";
 
     public static final String HEADER_CACHE_CONTROL = "Cache-Control";

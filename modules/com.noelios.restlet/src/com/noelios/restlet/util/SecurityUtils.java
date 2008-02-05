@@ -20,6 +20,7 @@ package com.noelios.restlet.util;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.SortedMap;
@@ -27,9 +28,12 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.security.auth.login.CredentialException;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
@@ -52,6 +56,40 @@ import com.noelios.restlet.http.HttpConstants;
  */
 public class SecurityUtils {
     /**
+     * General regex pattern to extract comma separated name-value directives.
+     * This pattern captures one name and value per match(), and is repeatedly
+     * applied to the input string to extract all directives. Must handle both
+     * quoted and unquoted values as RFC2617 isn't consistent in this.
+     */
+    private static final Pattern directivesPattern = Pattern
+            .compile("([^=]+)=\"?([^\",]+)(?:\"\\s*)?,?\\s*");
+
+    /**
+     * General regex pattern to extract comma separated name-value components.
+     * This pattern captures one name and value per match(), and is repeatedly
+     * applied to the input string to extract all components. Must handle both
+     * quoted and unquoted values as RFC2617 isn't consistent in this.
+     */
+    private static final char[] HEXDIGITS = "0123456789abcdef".toCharArray();
+
+    /**
+     * Returns true if one of the provided object is null.
+     * 
+     * @param objects
+     *                a sequence of objects
+     * @return true if one of the provided object is null.
+     */
+    public static boolean anyNull(Object... objects) {
+        for (Object o : objects) {
+            if (o == null) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Formats a challenge request as a HTTP header value.
      * 
      * @param request
@@ -64,6 +102,22 @@ public class SecurityUtils {
 
         if (request.getRealm() != null) {
             sb.append(" realm=\"").append(request.getRealm()).append('"');
+
+            // Manage the DIGEST authentication particularities
+            if (request.getScheme().equals(ChallengeScheme.HTTP_DIGEST)) {
+                Series<Parameter> parameters = request.getParameters();
+                sb.append(", domain=\"").append(
+                        parameters.getFirstValue("domain")).append('"');
+                sb.append(", qop=\"auth\"");
+                // leave this value unquoted as per RFC-2617
+                sb.append(", algorithm=MD5");
+                sb.append(", nonce=\"").append(
+                        parameters.getFirstValue("nonce")).append('"');
+
+                if (parameters.getFirst("stale") != null) {
+                    sb.append(", stale=\"TRUE\"");
+                }
+            }
         }
 
         return sb.toString();
@@ -174,6 +228,24 @@ public class SecurityUtils {
                 throw new RuntimeException(
                         "Unsupported encoding, unable to encode credentials");
             }
+        } else if (challenge.getScheme().equals(ChallengeScheme.HTTP_DIGEST)) {
+            Series<Parameter> credentials = challenge.getParameters();
+
+            for (String name : credentials.getNames()) {
+                sb.append(name).append('=');
+                if (name.equals("qop") || name.equals("algorithm")
+                        || name.equals("nc")) {
+                    // these values are left unquoted as per RC2617
+                    sb.append(credentials.getFirstValue(name)).append(",");
+                } else {
+                    sb.append('"').append(credentials.getFirstValue(name))
+                            .append('"').append(",");
+                }
+            }
+
+            if (!credentials.isEmpty()) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
         } else if (challenge.getScheme().equals(ChallengeScheme.SMTP_PLAIN)) {
             try {
                 String credentials = "^@" + challenge.getIdentifier() + "^@"
@@ -246,6 +318,131 @@ public class SecurityUtils {
     }
 
     /**
+     * Checks whether the specified nonce is valid with respect to the specified
+     * secretKey, and further confirms that the nonce was generated less than
+     * lifespanMillis milliseconds ago
+     * 
+     * @param nonce
+     *                The nonce value to check.
+     * @param secretKey
+     *                The same secret value that was inserted into the nonce
+     *                when it was generated.
+     * @param lifespanMS
+     *                Nonce lifespace in milliseconds.
+     * @return True if the nonce was generated less than lifespanMS milliseconds
+     *         ago, false otherwise.
+     * @throws CredentialException
+     *                 if the nonce does not match the specified secretKey, or
+     *                 if it can't be parsed.
+     */
+    public static boolean isNonceValid(String nonce, String secretKey,
+            long lifespanMS) throws CredentialException {
+        try {
+            String decodedNonce = new String(Base64.decode(nonce));
+            long nonceTimeMS = Long.parseLong(decodedNonce.substring(0,
+                    decodedNonce.indexOf(':')));
+            if (decodedNonce.equals(nonceTimeMS + ":"
+                    + md5String(nonceTimeMS + ":" + secretKey))) {
+                // valid wrt secretKey, now check lifespan
+                return lifespanMS > (System.currentTimeMillis() - nonceTimeMS);
+            }
+        } catch (Exception e) {
+            throw new CredentialException("Error parsing nonce: " + e);
+        }
+
+        throw new CredentialException("Nonce does not match secret key!");
+    }
+
+    /**
+     * Generates a nonce as recommended in section 3.2.1 of RFC-2617, but
+     * without the ETag field. The format is: <code><pre>
+     * Base64.encodeBytes(currentTimeMS + &quot;:&quot;
+     *         + md5String(currentTimeMS + &quot;:&quot; + secretKey))
+     * </pre></code>
+     * 
+     * @param secretKey
+     *                A secret value known only by the creator of the nonce.
+     *                It's inserted into the nonce, and can be used later to
+     *                validate the nonce.
+     * @return The nonce value.
+     */
+    public static String makeNonce(String secretKey) {
+        long currentTimeMS = System.currentTimeMillis();
+        return Base64.encodeBytes(
+                (currentTimeMS + ":" + md5String(currentTimeMS + ":"
+                        + secretKey)).getBytes(), Base64.DONT_BREAK_LINES);
+    }
+
+    /**
+     * Returns the MD5 digest of target string. Target is decoded to bytes using
+     * the US-ASCII charset. The returned hexidecimal String always contains 32
+     * lowercase alphanumeric characters. For example, if target is
+     * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
+     * 
+     * @param target
+     *                The target string
+     * @return The target string digested.
+     */
+    public static String md5String(String target) {
+        try {
+            return md5String(target, "US-ASCII");
+        } catch (UnsupportedEncodingException uee) {
+            // unlikely, US-ASCII comes with every JVM
+            throw new RuntimeException(
+                    "US-ASCII is an unsupported encoding, unable to compute MD5");
+        }
+    }
+
+    /**
+     * Returns the MD5 digest of target string. Target is decoded to bytes using
+     * the named charset. The returned hexidecimal String always contains 32
+     * lowercase alphanumeric characters. For example, if target is
+     * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
+     * 
+     * @param target
+     *                The target string.
+     * @param charsetName
+     *                The charset used when applying the MD5 digest.
+     * @return The target string digested.
+     * @throws UnsupportedEncodingException
+     */
+    public static String md5String(String target, String charsetName)
+            throws UnsupportedEncodingException {
+        try {
+            byte[] md5 = MessageDigest.getInstance("MD5").digest(
+                    target.getBytes(charsetName));
+            char[] md5Chars = new char[32];
+            int i = 0;
+            for (byte b : md5) {
+                md5Chars[i++] = HEXDIGITS[(b >> 4) & 0xF];
+                md5Chars[i++] = HEXDIGITS[b & 0xF];
+            }
+            return new String(md5Chars);
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new RuntimeException(
+                    "No MD5 algorithm, unable to compute MD5");
+        }
+    }
+
+    /**
+     * Parse a credentials string, capture all name-value components and add
+     * them to the provided directives collection.
+     * 
+     * @param credentials
+     *                The credentials string to parse.
+     * @param directives
+     *                The collection of directives to update.
+     */
+    public static void parseDirectives(String credentials,
+            Series<Parameter> directives) {
+        Matcher matcher = directivesPattern.matcher(credentials);
+
+        while (matcher.find() && matcher.groupCount() == 2) {
+            directives.add(matcher.group(1), matcher.group(2));
+        }
+    }
+
+    /**
      * Parses an authenticate header into a challenge request.
      * 
      * @param header
@@ -266,6 +463,15 @@ public class SecurityUtils {
                         realm.length() - 1);
                 result = new ChallengeRequest(new ChallengeScheme("HTTP_"
                         + scheme, scheme), realmValue);
+
+                // Parse DIGEST authentication parameters.
+                if (result.getScheme().equals(ChallengeScheme.HTTP_DIGEST)) {
+                    Series<Parameter> parameters = new Form();
+                    SecurityUtils.parseDirectives(realm, parameters);
+                    result.setRealm(parameters.getFirstValue("realm"));
+                    parameters.removeAll("realm");
+                    result.setParameters(parameters);
+                }
             }
         }
 
@@ -333,6 +539,10 @@ public class SecurityUtils {
                         logger.log(Level.WARNING, "Unsupported encoding error",
                                 e);
                     }
+                } else if (result.getScheme().equals(
+                        ChallengeScheme.HTTP_DIGEST)) {
+                    SecurityUtils.parseDirectives(credentials, result
+                            .getParameters());
                 } else {
                     // Authentication impossible, scheme not supported
                     logger
@@ -383,4 +593,5 @@ public class SecurityUtils {
 
         return result;
     }
+
 }

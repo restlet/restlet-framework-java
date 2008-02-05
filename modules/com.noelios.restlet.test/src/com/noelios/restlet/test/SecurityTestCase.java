@@ -29,11 +29,24 @@ import com.noelios.restlet.util.SecurityUtils;
  */
 public class SecurityTestCase extends TestCase {
     /**
-     * Tests the cookies parsing.
+     * Tests the cookies parsing with Basic authentication.
      */
-    public void testParsing() {
+    public void testParsingBasic() {
         String authenticate1 = "Basic realm=\"Restlet tutorial\"";
         String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
+
+        assertEquals(authorization1, SecurityUtils.format(SecurityUtils
+                .parseResponse(null, null, authorization1), null, null));
+        assertEquals(authenticate1, SecurityUtils.format(SecurityUtils
+                .parseRequest(authenticate1)));
+    }
+
+    /**
+     * Tests the cookies parsing with Digest authentication.
+     */
+    public void testParsingDigest() {
+        String authenticate1 = "Digest realm=\"realm\", domain=\"/protected/ /alsoProtected/\", qop=\"auth\", algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
+        String authorization1 = "Digest cnonce=\"MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==\",qop=auth,uri=\"/protected/asdass\",username=\"admin\",nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\",response=\"a891ebedebb2046b83a9b7540f4e9554\",nc=00000001";
 
         assertEquals(authorization1, SecurityUtils.format(SecurityUtils
                 .parseResponse(null, null, authorization1), null, null));
