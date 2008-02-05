@@ -17,6 +17,7 @@
  */
 package org.restlet.ext.jaxrs.provider;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,11 +26,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
-
 /**
- * @author Stephan Koops
+ * {@link Provider} to read and write byte[]
  * 
+ * @author Stephan Koops
  */
 @Provider
 public class ByteArrayProvider extends AbstractProvider<byte[]> {
@@ -38,7 +38,6 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
      * 
      */
     public ByteArrayProvider() {
-        //
     }
 
     /**
@@ -73,7 +72,8 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
     public byte[] readFrom(Class<byte[]> type, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        // TODO ByteArrayProvider.readFrom
-        throw new NotYetImplementedException();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        copyAndCloseStream(entityStream, baos);
+        return baos.toByteArray();
     }
 }

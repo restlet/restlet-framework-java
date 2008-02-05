@@ -64,24 +64,24 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
      * Copies the data from the {@link InputStream} the {@link OutputStream}.
      * 
      * @param inputStream
-     * @param entityStream
+     * @param outputStream
      * @throws IOException
      */
-    protected void copyStream(InputStream inputStream, OutputStream entityStream)
+    protected void copyStream(InputStream inputStream, OutputStream outputStream)
             throws IOException {
         int noBytes;
         byte[] bytes = new byte[1024];
         while ((noBytes = inputStream.read(bytes)) >= 0)
-            entityStream.write(bytes, 0, noBytes);
+            outputStream.write(bytes, 0, noBytes);
     }
 
     // TODO JSR311: Jersey schliesst den InputStream, wenn er fertig ist. Wenn
     // das Pflicht ist, dann bitte in das javadoc aufnehmen.
 
     protected void copyAndCloseStream(InputStream inputStream,
-            OutputStream entityStream) throws IOException {
+            OutputStream outputStream) throws IOException {
         try {
-            copyStream(inputStream, entityStream);
+            copyStream(inputStream, outputStream);
         } finally {
             inputStream.close();
         }
@@ -102,6 +102,6 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
      *      java.io.InputStream)
      */
     public abstract T readFrom(Class<T> type, MediaType mediaType,
-            MultivaluedMap<String, String> httpResponseHeaders, InputStream entityStream)
-            throws IOException;
+            MultivaluedMap<String, String> httpResponseHeaders,
+            InputStream entityStream) throws IOException;
 }

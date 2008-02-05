@@ -37,18 +37,20 @@ public class MultipleResourcesTest extends JaxRsTestCase {
     }
 
     public void testCar() throws Exception {
-        CarTest.testGetPlainText();
-        CarTest.testGetHtmlText();
-        CarTest.testDelete();
-        CarTest.testGetCar();
-        CarTest.testGetOffers();
+        CarTest carTest = new CarTest();
+        carTest.testGetPlainText();
+        carTest.testGetHtmlText();
+        carTest.testDelete();
+        carTest.testGetCar();
+        carTest.testGetOffers();
     }
 
     public void testSimpleTrain() throws Exception {
-        SimpleTrainTest.testGetPlainText();
-        SimpleTrainTest.testGetHtmlText();
-        SimpleTrainTest.testGetTextAll();
-        SimpleTrainTest.testGetTextMultiple1();
-        SimpleTrainTest.testGetTextMultiple2();
+        SimpleTrainTest simpleTrainTest = new SimpleTrainTest();
+        simpleTrainTest.testGetPlainText();
+        simpleTrainTest.testGetHtmlText();
+        simpleTrainTest.testGetTextAll();
+        simpleTrainTest.testGetTextMultiple1();
+        simpleTrainTest.testGetTextMultiple2();
     }
 }

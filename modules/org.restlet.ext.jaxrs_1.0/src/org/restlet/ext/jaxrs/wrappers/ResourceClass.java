@@ -18,11 +18,20 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.Path;
+
+import org.restlet.data.Method;
+import org.restlet.ext.jaxrs.impl.PathRegExp;
+import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * Instances represents a root resource class.
@@ -75,6 +84,11 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         return AbstractJaxRsWrapper.getPathTemplate(path);
     }
 
+    /**
+     * Caches the allowed methods (unmodifiable) for given remainingParts.
+     */
+    private Map<String, Set<Method>> allowedMethods = new HashMap<String, Set<Method>>();
+
     protected Class<?> jaxRsClass;
 
     private Collection<SubResourceLocator> subResourceLocators;
@@ -118,10 +132,62 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     }
 
     /**
+     * Returns the allowed methods on the remainingPart. Is used for a OPTIONS
+     * request, if no special java method in the root resource class was found
+     * for the given remainingPart.
+     * 
+     * @param remainingPath
+     * @return an unmodifiable {@link Set} of the allowed methods.
+     */
+    public Set<Method> getAllowedMethods(String remainingPath) {
+        Set<Method> allowedMethods = this.allowedMethods.get(remainingPath);
+        if(allowedMethods != null)
+            return allowedMethods;
+        allowedMethods = new HashSet<Method>(6);
+        for (ResourceMethod rm : getMethodsForPath(remainingPath))
+            allowedMethods.add(rm.getHttpMethod());
+        if (!allowedMethods.isEmpty())
+            if (allowedMethods.contains(Method.GET))
+                allowedMethods.add(Method.HEAD);
+        Set<Method> unmodifiable = Collections.unmodifiableSet(allowedMethods);
+        this.allowedMethods.put(remainingPath, unmodifiable);
+        return unmodifiable;
+    }
+
+    /**
      * @return Returns the wrapped root resource class.
      */
     public final Class<?> getJaxRsClass() {
         return jaxRsClass;
+    }
+
+    /**
+     * Return all resource methods for the given path, ignoring HTTP method,
+     * consumed or produced mimes and so on.
+     * 
+     * @param resourceObject
+     *                The resource object
+     * @param remainingPath
+     *                the path
+     * @return The ist of ResourceMethods
+     */
+    public Collection<ResourceMethod> getMethodsForPath(String remainingPath) {
+        // LATER results may be chached, if any method is returned.
+        // The 404 case will be called rarely and produce a lot of cached data.
+        List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
+        Iterable<SubResourceMethod> subResourceMethods = this
+                .getSubResourceMethods();
+        for (SubResourceMethod method : subResourceMethods) {
+            PathRegExp methodPath = method.getPathRegExp();
+            if (Util.isEmptyOrSlash(remainingPath)) {
+                if (methodPath.isEmptyOrSlash())
+                    resourceMethods.add(method);
+            } else {
+                if (methodPath.matchesWithEmpty(remainingPath))
+                    resourceMethods.add(method);
+            }
+        }
+        return resourceMethods;
     }
 
     /**
@@ -168,13 +234,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         Collection<SubResourceMethodOrLocator> srmls = new ArrayList<SubResourceMethodOrLocator>();
         Collection<SubResourceMethod> srms = new ArrayList<SubResourceMethod>();
         Collection<SubResourceLocator> srls = new ArrayList<SubResourceLocator>();
-        Method[] classMethods = jaxRsClass.getMethods();
+        java.lang.reflect.Method[] classMethods = jaxRsClass.getMethods();
         // TODO JSR311: muss der auch mit nicht-public-Methoden umgehen koennen?
         // Wenn ja, dann muss ich wohl ein Proxy bauen, der im gleichen Package
         // sitzt. Tests entsprechend anpassen
         // classMethods = jaxRsClass.getDeclaredMethods();
         // TODO z.Zt. werden alle Methoden geladen, auch die nicht-public
-        for (Method javaMethod : classMethods) {
+        for (java.lang.reflect.Method javaMethod : classMethods) {
             Path path = javaMethod.getAnnotation(Path.class);
             org.restlet.data.Method httpMethod = ResourceMethod
                     .getHttpMethod(javaMethod);

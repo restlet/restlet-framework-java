@@ -647,7 +647,7 @@ public class JaxRsRouter extends Restlet {
         String remainingPath = resObjAndPath.remainingPath;
         MultivaluedMap<String, String> allTemplParamsEnc = resObjAndPath.allTemplParamsEnc;
         // (a) 1
-        Collection<ResourceMethod> resourceMethods = resObj
+        Collection<ResourceMethod> resourceMethods = resObj.getResourceClass()
                 .getMethodsForPath(remainingPath);
         if (resourceMethods.isEmpty())
             throw new CouldNotFindMethodException(
@@ -657,15 +657,8 @@ public class JaxRsRouter extends Restlet {
         removeNotSupportedHttpMethod(resourceMethods, httpMethod, alsoGet);
         if (resourceMethods.isEmpty()) {
             if (httpMethod.equals(Method.OPTIONS)) {
-                // LATER this case may be moved to ResourceObject and be cached.
-                resourceMethods = resObj.getMethodsForPath(remainingPath);
-                Set<Method> allowedMethods = restletResp.getAllowedMethods();
-                for (ResourceMethod rm : resourceMethods)
-                    allowedMethods.add(rm.getHttpMethod());
-                if (!allowedMethods.isEmpty()) {
-                    if (allowedMethods.contains(Method.GET))
-                        allowedMethods.add(Method.HEAD);
-                }
+                Set<Method> allowedMethods = resObj.getResourceClass().getAllowedMethods(remainingPath);
+                restletResp.getAllowedMethods().addAll(allowedMethods);
                 throw new RequestHandledException();
             }
             throw new CouldNotFindMethodException(errorRestletMethodNotAllowed);
@@ -1099,7 +1092,7 @@ public class JaxRsRouter extends Restlet {
         // the message of the Exception is not used in the
         // WebApplicationException
         jaxRsRespToRestletResp(webAppExc.getResponse(), restletResponse,
-                resourceMethod, accMediaTypes); // LATER handleInvokeException:
+                resourceMethod, accMediaTypes);
         // MediaType rausfinden
         throw new RequestHandledException();
     }
@@ -1319,7 +1312,7 @@ public class JaxRsRouter extends Restlet {
      *         class could be found.
      */
     public Restlet getErrorRestletResourceMethodNotFound() {
-        return this.errorRestletResourceNotFound;
+        return this.errorRestletResourceMethodNotFound;
     }
 
     /**

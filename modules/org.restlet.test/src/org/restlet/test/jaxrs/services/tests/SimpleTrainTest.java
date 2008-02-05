@@ -18,6 +18,7 @@
 
 package org.restlet.test.jaxrs.services.tests;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -32,12 +33,12 @@ import org.restlet.test.jaxrs.services.SimpleTrain;
 
 public class SimpleTrainTest extends JaxRsTestCase {
 
-    private static final Preference<MediaType> PREF_TEXTPLAIN_QUAL05 = new Preference<MediaType>(
-            MediaType.TEXT_PLAIN, 0.5f);
-
     private static final boolean ONLY_M2 = false;
 
     private static final boolean ONLY_TEXT_ALL = false;
+
+    private static final Preference<MediaType> PREF_TEXTPLAIN_QUAL05 = new Preference<MediaType>(
+            MediaType.TEXT_PLAIN, 0.5f);
 
     @SuppressWarnings("unchecked")
     @Override
@@ -45,27 +46,20 @@ public class SimpleTrainTest extends JaxRsTestCase {
         return (Collection) Collections.singleton(SimpleTrain.class);
     }
 
-    public void testUseAllTests() {
-        assertFalse("You should use all tests", ONLY_M2);
-        assertFalse("You should use all tests", ONLY_TEXT_ALL);
-    }
-
-    public static void testGetHtmlText() throws Exception {
+    public void testGetHtmlText() throws Exception {
         if (ONLY_M2 || ONLY_TEXT_ALL)
             return;
-        Response response = JaxRsTestCase.accessServer(Method.GET,
-                SimpleTrain.class, MediaType.TEXT_HTML);
+        Response response = get(SimpleTrain.class, MediaType.TEXT_HTML);
         assertTrue(response.getStatus().isSuccess());
         Representation representation = response.getEntity();
         assertEquals(SimpleTrain.RERP_HTML_TEXT, representation.getText());
         assertEqualMediaType(MediaType.TEXT_HTML, representation.getMediaType());
     }
 
-    public static void testGetPlainText() throws Exception {
+    public void testGetPlainText() throws Exception {
         if (ONLY_M2 || ONLY_TEXT_ALL)
             return;
-        Response response = JaxRsTestCase.accessServer(Method.GET,
-                SimpleTrain.class, MediaType.TEXT_PLAIN);
+        Response response = get(SimpleTrain.class, MediaType.TEXT_PLAIN);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation representation = response.getEntity();
         assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
@@ -73,7 +67,7 @@ public class SimpleTrainTest extends JaxRsTestCase {
                 .getMediaType());
     }
 
-    public static void testGetTextAll() throws Exception {
+    public  void testGetTextAll() throws Exception {
         if (ONLY_M2)
             return;
         Response response;
@@ -83,15 +77,14 @@ public class SimpleTrainTest extends JaxRsTestCase {
         // Method.GET, MediaType.TEXT_ALL);
         // assertEquals(Status.SUCCESS_OK, response.getStatus());
 
-        response = accessServer(Method.GET, SimpleTrain.class,
-                MediaType.TEXT_PLAIN);
+        response = get(SimpleTrain.class, MediaType.TEXT_PLAIN);
         assertTrue(response.getStatus().isSuccess());
         Representation representation = response.getEntity();
         assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
         assertEquals(MediaType.TEXT_PLAIN, representation.getMediaType());
     }
 
-    public static void testGetTextMultiple1() throws Exception {
+    public void testGetTextMultiple1() throws Exception {
         if (ONLY_M2 || ONLY_TEXT_ALL)
             return;
         Response response = JaxRsTestCase.accessServer(Method.GET,
@@ -104,7 +97,7 @@ public class SimpleTrainTest extends JaxRsTestCase {
         assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
     }
 
-    public static void testGetTextMultiple2() throws Exception {
+    public void testGetTextMultiple2() throws Exception {
         if (ONLY_TEXT_ALL)
             return;
         Response response = JaxRsTestCase.accessServer(Method.GET,
@@ -114,6 +107,12 @@ public class SimpleTrainTest extends JaxRsTestCase {
         Representation representation = response.getEntity();
         assertEqualMediaType(MediaType.TEXT_HTML, representation.getMediaType());
         assertEquals(SimpleTrain.RERP_HTML_TEXT, representation.getText());
+    }
+
+    public void testGetWithSlashInUriParam() throws IOException {
+        Response response = get(SimpleTrain.class, "decode/abc/def");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("abc/def", response.getEntity().getText());
     }
 
     public void testHead() throws Exception {
@@ -142,24 +141,50 @@ public class SimpleTrainTest extends JaxRsTestCase {
         assertAllowedMethod(response, Method.GET);
     }
 
-    public void testTemplParams() throws Exception {
+    public void testTemplParamsDecoded() throws Exception {
         String deEncoded = "decode";
-        Response response = accessServer(Method.GET, SimpleTrain.class,
-                deEncoded + "/66");
+        Response response = get(SimpleTrain.class, deEncoded + "/66");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation r = response.getEntity();
         assertEquals("66", r.getText());
 
-        response = accessServer(Method.GET, SimpleTrain.class,
-                deEncoded + "/a+bc");
+        response = get(SimpleTrain.class, deEncoded + "/a+bc");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         r = response.getEntity();
         assertEquals("a bc", r.getText());
 
-        response = accessServer(Method.GET, SimpleTrain.class,
-                deEncoded + "/a%20bc");
+        // TODO wait for issue 435
+        // response = accessServer(Method.GET, SimpleTrain.class,
+        // deEncoded + "/a%20bc");
+        // r = response.getEntity();
+        // System.out.println(r.getText());
+        // assertEquals(Status.SUCCESS_OK, response.getStatus());
+        // assertEquals("a bc", r.getText());
+    }
+
+    public void testTemplParamsEncoded() throws Exception {
+        String deEncoded = "encode";
+        Response response = get(SimpleTrain.class, deEncoded + "/66");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation r = response.getEntity();
+        assertEquals("66", r.getText());
+
+        response = get(SimpleTrain.class, deEncoded + "/a+bc");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         r = response.getEntity();
-        assertEquals("a bc", r.getText());
+        assertEquals("a+bc", r.getText());
+
+        // TODO wait for issue 435
+        // response = accessServer(Method.GET, SimpleTrain.class,
+        // deEncoded + "/a%20bc");
+        // r = response.getEntity();
+        // System.out.println(r.getText());
+        // assertEquals(Status.SUCCESS_OK, response.getStatus());
+        // assertEquals("a%20bc", r.getText());
+    }
+
+    public void testUseAllTests() {
+        assertFalse("You should use all tests", ONLY_M2);
+        assertFalse("You should use all tests", ONLY_TEXT_ALL);
     }
 }

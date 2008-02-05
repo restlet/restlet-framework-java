@@ -99,7 +99,7 @@ public class SimpleTrain {
     public String getTemplParamDecoded(@Context
     UriInfo uriInfo) {
         try {
-            uriInfo.getTemplateParameters(true).add("jkghjk", "khlökh");
+            uriInfo.getTemplateParameters(true).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";
         } catch (UnsupportedOperationException e) {
             // ok
@@ -112,7 +112,7 @@ public class SimpleTrain {
     public String getTemplParamEncoded(@Context
     UriInfo uriInfo) {
         try {
-            uriInfo.getTemplateParameters(false).add("jkghjk", "khlökh");
+            uriInfo.getTemplateParameters(false).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";
         } catch (UnsupportedOperationException e) {
             // ok
