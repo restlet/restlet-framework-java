@@ -20,28 +20,14 @@ package org.restlet.ext.jaxrs.util;
 
 import java.util.logging.Logger;
 
+import org.restlet.util.Resolver;
+
 /**
  * Copy of {@link org.restlet.util.Template}, but some methods public instead
  * of private.
  */
 @SuppressWarnings("all")
 public class Template extends org.restlet.util.Template {
-
-    /**
-     * Resolves variable values.
-     * 
-     * @author Jerome Louvel (contact@noelios.com)
-     */
-    public interface VariableResolver extends org.restlet.util.Template.VariableResolver {
-        /**
-         * Resolves a variable name into a value.
-         * 
-         * @param variableName
-         *                The variable name to resolve.
-         * @return The resolved value.
-         */
-        public String resolve(String variableName);
-    }
 
     public Template(Logger logger, String pattern, int matchingMode,
             int defaultType, String defaultDefaultValue,
@@ -73,7 +59,7 @@ public class Template extends org.restlet.util.Template {
         super(logger, pattern);
     }
 
-    public String format(VariableResolver resolver) {
+    public String format(Resolver resolver) {
         return super.format(resolver);
     }
 

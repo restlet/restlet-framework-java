@@ -20,6 +20,7 @@ Changes log
  - Representation.isAvailable() now returns false if the size is '0'.
  - Refactoring of HTTP server connectors code to better deal with HEAD request, 1xx, 204, 205, 
    304 status codes. Issues reported by Alex Milowski. 
+ - Ensured all modifiable collections are properly documented in the API. Suggested by Stephan Koops. 
  
 [Enhancements] 
  - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 
@@ -58,7 +59,7 @@ Changes log
  - Added "throwable" property to the Status class, respecting the immutability. Suggested by Paul J. Lucas.
  - Added "getEphemeralPort()" method on Server to get the local port actually used by the system when the
    "port" property is set to '0'. Suggested by William Pietri. 
- - Made the inner Template.VariableResolver interface and "format(VariableResolver)" method protected. 
+ - Made the inner Template.VariableResolver interface and "format(VariableResolver)" method public. 
    Suggested by Stephan Koops for the JAX-RS extension.
  - Added JiBX extension, alternative to JAXB. Contributed by Florian Schwarz.
  - Added support for nested resources in WadlComponent. Contributed by Avi Flax.

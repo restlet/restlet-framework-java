@@ -194,8 +194,10 @@ public class Directory extends Finder {
 
     /**
      * Returns the variant representations of a directory index. This method can
-     * be subclassed in order to provide alternative representations. By default
-     * it returns a simple HTML document and a textual URI list as variants.
+     * be subclassed in order to provide alternative representations.
+     * 
+     * By default it returns a simple HTML document and a textual URI list as
+     * variants. Note that a new instance of the list is created for each call.
      * 
      * @param indexContent
      *                The list of references contained in the directory index.

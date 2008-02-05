@@ -61,8 +61,8 @@ public final class Conditions {
     }
 
     /**
-     * Returns the "if-match" condition. Creates a new instance if no one has
-     * been set.
+     * Returns the modifiable list of tags for the "if-match" condition. Creates
+     * a new instance if no one has been set.
      * 
      * @return The "if-match" condition.
      */
@@ -82,8 +82,8 @@ public final class Conditions {
     }
 
     /**
-     * Returns the "if-none-match" condition. Creates a new instance if no one
-     * has been set.
+     * Returns the modifiable list of tags for the "if-none-match" condition.
+     * Creates a new instance if no one has been set.
      * 
      * @return The "if-none-match" condition.
      */

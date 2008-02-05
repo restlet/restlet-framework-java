@@ -66,8 +66,8 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the character set preferences. Creates a new instance if no one
-     * has been set.
+     * Returns the modifiable list of character set preferences. Creates a new
+     * instance if no one has been set.
      * 
      * @return The character set preferences.
      */
@@ -78,8 +78,8 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the encoding preferences. Creates a new instance if no one has
-     * been set.
+     * Returns the modifiable list of encoding preferences. Creates a new
+     * instance if no one has been set.
      * 
      * @return The encoding preferences.
      */
@@ -90,8 +90,8 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the language preferences. Creates a new instance if no one has
-     * been set.
+     * Returns the modifiable list of language preferences. Creates a new
+     * instance if no one has been set.
      * 
      * @return The language preferences.
      */
@@ -102,8 +102,8 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the media type preferences. Creates a new instance if no one has
-     * been set.
+     * Returns the modifiable list of media type preferences. Creates a new
+     * instance if no one has been set.
      * 
      * @return The media type preferences.
      */
@@ -125,12 +125,15 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the list of client IP addresses.<br/> The first address is the
-     * one of the immediate client component as returned by the
-     * getClientAdress() method and the last address should correspond to the
-     * origin client (frequently a user agent). This is useful when the user
-     * agent is separated from the origin server by a chain of intermediary
-     * components. Creates a new instance if no one has been set.
+     * Returns the modifiable list of client IP addresses.<br>
+     * <br>
+     * The first address is the one of the immediate client component as
+     * returned by the getClientAdress() method and the last address should
+     * correspond to the origin client (frequently a user agent).<br>
+     * <br>
+     * This is useful when the user agent is separated from the origin server by
+     * a chain of intermediary components. Creates a new instance if no one has
+     * been set.
      * 
      * @return The client IP addresses.
      */

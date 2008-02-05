@@ -37,6 +37,7 @@ import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.wrappers.AbstractJaxRsWrapper;
 import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
+import org.restlet.util.Resolver;
 
 /**
  * @author Stephan Koops
@@ -44,7 +45,7 @@ import org.restlet.ext.jaxrs.wrappers.ResourceClass;
  */
 public class JaxRsUriBuilder extends UriBuilder {
 
-    private class IteratorVariableResolver implements Template.VariableResolver {
+    private class IteratorVariableResolver implements Resolver {
         private int i = 0;
 
         private Map<String, String> retrievedValues = new HashMap<String, String>();
@@ -163,7 +164,7 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public URI build() throws UriBuilderException {
         Template template = new Template(toStringWithCheck(true));
-        return buildUri(template.format(new Template.VariableResolver() {
+        return buildUri(template.format(new Resolver() {
             public String resolve(String variableName) {
                 throw new UriBuilderException(
                         "The UriBuilder must not contain any template parameter");
@@ -194,7 +195,7 @@ public class JaxRsUriBuilder extends UriBuilder {
     public URI build(final Map<String, String> values)
             throws IllegalArgumentException, UriBuilderException {
         Template template = new Template(toStringWithCheck(false));
-        return buildUri(template.format(new Template.VariableResolver() {
+        return buildUri(template.format(new Resolver() {
             public String resolve(String variableName) {
                 String varValue = values.get(variableName);
                 if (varValue == null)

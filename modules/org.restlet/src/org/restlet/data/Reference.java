@@ -1200,8 +1200,8 @@ public class Reference {
     }
 
     /**
-     * Returns the segments of a hierarchical path.<br/> A new list is created
-     * for each call.
+     * Returns the list of segments in a hierarchical path.<br/> A new list is
+     * created for each call.
      * 
      * @return The segments of a hierarchical path.
      */

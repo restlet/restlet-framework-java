@@ -114,8 +114,8 @@ public class Response extends Message {
     }
 
     /**
-     * Returns the set of methods allowed on the requested resource. This
-     * property only has to be updated when a status
+     * Returns the modifiable set of methods allowed on the requested resource.
+     * This property only has to be updated when a status
      * CLIENT_ERROR_METHOD_NOT_ALLOWED is set. Creates a new instance if no one
      * has been set.
      * 
@@ -137,8 +137,8 @@ public class Response extends Message {
     }
 
     /**
-     * Returns the cookie settings provided by the server. Creates a new
-     * instance if no one has been set.
+     * Returns the modifiable series of cookie settings provided by the server.
+     * Creates a new instance if no one has been set.
      * 
      * @return The cookie settings provided by the server.
      */
@@ -149,10 +149,10 @@ public class Response extends Message {
     }
 
     /**
-     * Returns the set of selecting dimensions on which the response entity may
-     * vary. If some server-side content negotiation is done, this set should be
-     * properly updated, other it can be left empty. Creates a new instance if
-     * no one has been set.
+     * Returns the modifiable set of selecting dimensions on which the response
+     * entity may vary. If some server-side content negotiation is done, this
+     * set should be properly updated, other it can be left empty. Creates a new
+     * instance if no one has been set.
      * 
      * @return The set of dimensions on which the response entity may vary.
      */

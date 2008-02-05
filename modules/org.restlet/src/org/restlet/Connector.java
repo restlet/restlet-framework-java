@@ -74,7 +74,7 @@ public abstract class Connector extends Restlet {
     }
 
     /**
-     * Returns the protocols simultaneously supported.
+     * Returns the modifiable list of protocols simultaneously supported.
      * 
      * @return The protocols simultaneously supported.
      */

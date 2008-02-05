@@ -131,23 +131,25 @@ public final class Language extends Metadata {
     }
 
     /**
-     * Returns the possibly empty list of subtags.
+     * Returns the modifiable list of subtags. This list can be empty.
      * 
      * @return The list of subtags for this language Tag.
      */
     public List<String> getSubTags() {
-        if (subTags == null) {
-            String[] tags = getName().split("-");
-            subTags = new ArrayList<String>();
+        if (this.subTags == null) {
+            this.subTags = new ArrayList<String>();
 
-            if (tags.length > 0) {
-                for (int i = 1; i < tags.length; i++) {
-                    subTags.add(tags[i]);
+            if (getName() != null) {
+                String[] tags = getName().split("-");
+                if (tags.length > 0) {
+                    for (int i = 1; i < tags.length; i++) {
+                        this.subTags.add(tags[i]);
+                    }
                 }
             }
         }
 
-        return subTags;
+        return this.subTags;
     }
 
     /** {@inheritDoc} */

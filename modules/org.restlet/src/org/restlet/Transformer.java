@@ -130,8 +130,7 @@ public class Transformer extends Filter {
     }
 
     /**
-     * Returns the encodings of the result representation. Creates a new
-     * instance if no one has been set.
+     * Returns the modifiable list of encodings of the result representation.
      * 
      * @return The encoding of the result representation.
      */
@@ -140,8 +139,7 @@ public class Transformer extends Filter {
     }
 
     /**
-     * Returns the languages of the result representation. Creates a new
-     * instance if no one has been set.
+     * Returns the modifiable list of languages of the result representation.
      * 
      * @return The language of the result representation.
      */

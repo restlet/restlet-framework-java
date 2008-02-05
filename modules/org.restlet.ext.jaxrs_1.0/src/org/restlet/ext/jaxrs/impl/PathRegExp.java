@@ -25,6 +25,7 @@ import javax.ws.rs.Path;
 
 import org.restlet.ext.jaxrs.util.Template;
 import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.util.Resolver;
 import org.restlet.util.Variable;
 
 /**
@@ -201,8 +202,7 @@ public class PathRegExp {
      * 
      * @author Stephan Koops
      */
-    private static class EverNullVariableResolver implements
-            Template.VariableResolver {
+    private static class EverNullVariableResolver implements Resolver {
         public String resolve(String variableName) {
             return "";
         }

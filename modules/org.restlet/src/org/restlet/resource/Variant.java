@@ -118,9 +118,10 @@ public class Variant {
     }
 
     /**
-     * Returns the list of encodings applied to the entity-body. Creates a new
-     * instance if no one has been set. An "IllegalArgumentException" exception
-     * is thrown when adding a null encoding to this list.
+     * Returns the modifiable list of encodings applied to the entity-body.
+     * Creates a new instance if no one has been set. An
+     * "IllegalArgumentException" exception is thrown when adding a null
+     * encoding to this list.
      * 
      * @return The list of encodings applied to the entity-body.
      */
@@ -213,9 +214,9 @@ public class Variant {
     }
 
     /**
-     * Returns the list of languages. Creates a new instance if no one has been
-     * set. An "IllegalArgumentException" exception is thrown when adding a null
-     * language to this list.
+     * Returns the modifiable list of languages. Creates a new instance if no
+     * one has been set. An "IllegalArgumentException" exception is thrown when
+     * adding a null language to this list.
      * 
      * @return The list of languages.
      */

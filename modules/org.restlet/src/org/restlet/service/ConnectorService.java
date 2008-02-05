@@ -73,9 +73,9 @@ public class ConnectorService {
     }
 
     /**
-     * Returns the list of required client protocols. You need to update this
-     * list if you need the parent component to provide additional client
-     * connectors. Creates a new instance if no one has been set.
+     * Returns the modifiable list of required client protocols. You need to
+     * update this list if you need the parent component to provide additional
+     * client connectors.
      * 
      * @return The list of required client protocols.
      */
@@ -84,10 +84,10 @@ public class ConnectorService {
     }
 
     /**
-     * Returns the list of required server protocols. An empty list means that
-     * all protocols are potentially supported (default case). You should update
-     * this list to restrict the actual protocols supported by your application.
-     * Creates a new instance if no one has been set.
+     * Returns the modifiable list of required server protocols. An empty list
+     * means that all protocols are potentially supported (default case). You
+     * should update this list to restrict the actual protocols supported by
+     * your application.
      * 
      * @return The list of required server protocols.
      */

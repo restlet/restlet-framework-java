@@ -184,8 +184,8 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the conditions applying to this request. Creates a new instance
-     * if no one has been set.
+     * Returns the modifiable conditions applying to this request. Creates a new
+     * instance if no one has been set.
      * 
      * @return The conditions applying to this call.
      */
@@ -196,8 +196,8 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the cookies provided by the client. Creates a new instance if no
-     * one has been set.
+     * Returns the modifiable series of cookies provided by the client. Creates
+     * a new instance if no one has been set.
      * 
      * @return The cookies provided by the client.
      */

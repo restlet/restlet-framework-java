@@ -290,8 +290,7 @@ public class Guard extends Filter {
     }
 
     /**
-     * Returns the map of identifiers and secrets. Creates a new instance if no
-     * one has been set.
+     * Returns the modifiable map of identifiers and secrets.
      * 
      * @return The map of identifiers and secrets.
      */
