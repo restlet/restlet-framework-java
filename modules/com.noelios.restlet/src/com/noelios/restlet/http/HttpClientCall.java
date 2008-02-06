@@ -21,8 +21,6 @@ package com.noelios.restlet.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
@@ -154,7 +152,7 @@ public abstract class HttpClientCall extends HttpCall {
         // if (available) {
         if (getMethod().equals(Method.HEAD.getName())) {
             // Create a fake entity that will contain the metadata
-            result = new EmptyRepresentation();
+            result = Representation.createEmpty();
         } else {
             InputStream stream = getResponseEntityStream(size);
             ReadableByteChannel channel = getResponseEntityChannel(size);
@@ -360,42 +358,6 @@ public abstract class HttpClientCall extends HttpCall {
     protected boolean shouldRequestBeChunked(Request request) {
         return request.isEntityAvailable() && request.getEntity() != null
                 && request.getEntity().getSize() == Representation.UNKNOWN_SIZE;
-    }
-
-    /**
-     * Empty representation with no content.
-     */
-    private class EmptyRepresentation extends Representation {
-        @Override
-        public ReadableByteChannel getChannel() throws IOException {
-            return null;
-        }
-
-        @Override
-        public Reader getReader() throws IOException {
-            return null;
-        }
-
-        @Override
-        public InputStream getStream() throws IOException {
-            return null;
-        }
-
-        @Override
-        public void write(OutputStream outputStream) throws IOException {
-            // Do nothing
-        }
-
-        @Override
-        public void write(WritableByteChannel writableChannel)
-                throws IOException {
-            // Do nothing
-        }
-
-        @Override
-        public void write(Writer writer) throws IOException {
-            // Do nothing
-        }
     }
 
 }

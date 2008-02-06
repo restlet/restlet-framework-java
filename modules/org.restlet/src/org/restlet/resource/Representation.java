@@ -55,16 +55,71 @@ import org.restlet.data.Tag;
  */
 public abstract class Representation extends Variant {
     /**
+     * Empty representation with no content.
+     */
+    private static class EmptyRepresentation extends Representation {
+
+        /**
+         * Constructor.
+         */
+        public EmptyRepresentation() {
+            setAvailable(false);
+            setTransient(true);
+            setSize(0);
+        }
+
+        @Override
+        public ReadableByteChannel getChannel() throws IOException {
+            return null;
+        }
+
+        @Override
+        public Reader getReader() throws IOException {
+            return null;
+        }
+
+        @Override
+        public InputStream getStream() throws IOException {
+            return null;
+        }
+
+        @Override
+        public void write(OutputStream outputStream) throws IOException {
+            // Do nothing
+        }
+
+        @Override
+        public void write(WritableByteChannel writableChannel)
+                throws IOException {
+            // Do nothing
+        }
+
+        @Override
+        public void write(Writer writer) throws IOException {
+            // Do nothing
+        }
+    }
+
+    /**
      * Indicates that the size of the representation can't be known in advance.
      */
     @SuppressWarnings("hiding")
     public static final long UNKNOWN_SIZE = -1L;
-    
+
+    /**
+     * Returns a new empty representation with no content.
+     * 
+     * @return A new empty representation.
+     */
+    public static Representation createEmpty() {
+        return new EmptyRepresentation();
+    }
+
     /** Indicates if the representation's content is available. */
     private boolean available;
 
-    /** Indicates if the representation's content is transient. */
-    private boolean isTransient;
+    /** Indicates if the representation is downloadable. */
+    private boolean downloadable;
 
     /**
      * Indicates the suggested download file name for the representation's
@@ -72,8 +127,8 @@ public abstract class Representation extends Variant {
      */
     private String downloadName;
 
-    /** Indicates if the representation is downloadable. */
-    private boolean downloadable;
+    /** Indicates if the representation's content is transient. */
+    private boolean isTransient;
 
     /**
      * Default constructor.
@@ -114,16 +169,6 @@ public abstract class Representation extends Variant {
      */
     public String getDownloadName() {
         return this.downloadName;
-    }
-
-    /**
-     * Set the suggested download file name for this representation.
-     * 
-     * @param fileName
-     *                The suggested file name.
-     */
-    public void setDownloadName(String fileName) {
-        this.downloadName = fileName;
     }
 
     /**
@@ -232,6 +277,16 @@ public abstract class Representation extends Variant {
     }
 
     /**
+     * Indicates if the representation is downloadable which means that it can
+     * be obtained via a download dialog box.
+     * 
+     * @return True if the representation's content is downloadable.
+     */
+    public boolean isDownloadable() {
+        return downloadable;
+    }
+
+    /**
      * Indicates if the representation's content is transient, which means that
      * it can be obtained only once. This is often the case with representations
      * transmitted via network sockets for example. In such case, if you need to
@@ -242,16 +297,6 @@ public abstract class Representation extends Variant {
      */
     public boolean isTransient() {
         return this.isTransient;
-    }
-
-    /**
-     * Indicates if the representation is downloadable which means that it can
-     * be obtained via a download dialog box.
-     * 
-     * @return True if the representation's content is downloadable.
-     */
-    public boolean isDownloadable() {
-        return downloadable;
     }
 
     /**
@@ -283,6 +328,16 @@ public abstract class Representation extends Variant {
      */
     public void setDownloadable(boolean downloadable) {
         this.downloadable = downloadable;
+    }
+
+    /**
+     * Set the suggested download file name for this representation.
+     * 
+     * @param fileName
+     *                The suggested file name.
+     */
+    public void setDownloadName(String fileName) {
+        this.downloadName = fileName;
     }
 
     /**
