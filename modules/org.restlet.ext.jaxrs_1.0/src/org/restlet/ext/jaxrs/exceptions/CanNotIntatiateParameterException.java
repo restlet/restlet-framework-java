@@ -23,7 +23,7 @@ package org.restlet.ext.jaxrs.exceptions;
  * @author Stephan Koop
  *
  */
-public class CanNotIntatiateParameterException extends JaxRsRuntimeException {
+public class CanNotIntatiateParameterException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**

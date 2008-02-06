@@ -71,12 +71,11 @@ public class PathRegExp {
         patternStb.append('}');
         this.template = new Template(patternStb.toString(),
                 org.restlet.util.Template.MODE_EQUALS);
+        Variable defaultVariable = this.template.getDefaultVariable();
         if (limitedToOneSegment)
-            this.template.getDefaultVariable().setType(
-                    Variable.TYPE_URI_SEGMENT);
+            defaultVariable.setType(Variable.TYPE_URI_SEGMENT);
         else
-            this.template.getDefaultVariable().setType(
-                    Variable.TYPE_URI_ALL);
+            defaultVariable.setType(Variable.TYPE_URI_PATH);
 
         Variable restVar = template.getVariables().get(VARNAME_FUER_REST);
         if (restVar == null) {

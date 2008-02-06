@@ -46,16 +46,17 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
+import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.impl.MatchingResult;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
 import org.restlet.ext.jaxrs.provider.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.provider.StringProvider;
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
-import org.restlet.ext.jaxrs.util.LifoSet;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.util.WrappedClassLoadException;
 import org.restlet.ext.jaxrs.util.WrappedLoadException;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyReader;
+import org.restlet.ext.jaxrs.wrappers.MessageBodyReaderSet;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriter;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriterSet;
 import org.restlet.ext.jaxrs.wrappers.ResourceMethod;
@@ -129,7 +130,7 @@ public class JaxRsRouter extends Restlet {
 
     private Authenticator authenticator;
 
-    private Set<MessageBodyReader> messageBodyReaders = new LifoSet<MessageBodyReader>();
+    private MessageBodyReaderSet messageBodyReaders = new MessageBodyReaderSet();
 
     private MessageBodyWriterSet messageBodyWriters = new MessageBodyWriterSet();
 
@@ -563,8 +564,8 @@ public class JaxRsRouter extends Restlet {
         ResourceObject o;
         // LATER Do I use dynamic proxies, to inject instance variables?
         try {
-            o = resClass.createInstance(allTemplParamsEnc,
-                    restletRequest, restletResponse, authenticator);
+            o = resClass.createInstance(allTemplParamsEnc, restletRequest,
+                    restletResponse, authenticator);
         } catch (Exception e) {
             throw handleCreateException(e, restletResponse, "createInstance",
                     "Could not create new instance of root resource class");
@@ -610,7 +611,8 @@ public class JaxRsRouter extends Restlet {
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
                 o = subResourceLocator.createSubResource(o, allTemplParamsEnc,
-                        restletRequest, restletResponse, authenticator);
+                        restletRequest, restletResponse, authenticator,
+                        this.messageBodyReaders);
             } catch (Exception e) {
                 throw handleCreateException(e, restletResponse,
                         "createSubResource",
@@ -1045,6 +1047,7 @@ public class JaxRsRouter extends Restlet {
         restletResponse.setStatus(Status.SERVER_ERROR_INTERNAL);
         getLogger().logp(Level.WARNING, this.getClass().getName(), methodName,
                 logMessage, exception.getCause());
+        exception.printStackTrace();
         throw new RequestHandledException();
     }
 
@@ -1099,19 +1102,6 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Is thrown when an this reqeust is already handled, for example because of
-     * an handled exception resulting in an error while method invokation. The
-     * Exception or whatever was handled and the necessary data in
-     * org.restlet.data.Response were set, so that the JaxRsRouter must not do
-     * anything.
-     * 
-     * @author Stephan Koops
-     */
-    class RequestHandledException extends Exception {
-        private static final long serialVersionUID = 2765454873472711005L;
-    }
-
-    /**
      * @param resourceMethod
      * @param resourceObject
      * @param allTemplParamsEnc
@@ -1121,17 +1111,22 @@ public class JaxRsRouter extends Restlet {
      *                The Restlet request
      */
     private void invokeMethodAndHandleResult(ResourceMethod resourceMethod,
-            ResourceObject resourceObject, MultivaluedMap<String, String> allTemplParamsEnc,
-            Request restletRequest,
-            Response restletResponse, List<Collection<MediaType>> accMediaTypes)
+            ResourceObject resourceObject,
+            MultivaluedMap<String, String> allTemplParamsEnc,
+            Request restletRequest, Response restletResponse,
+            List<Collection<MediaType>> accMediaTypes)
             throws RequestHandledException {
         Object result;
         try {
             result = resourceMethod.invoke(resourceObject, allTemplParamsEnc,
-                    restletRequest, restletResponse, authenticator);
+                    restletRequest, restletResponse, authenticator,
+                    this.messageBodyReaders);
         } catch (InvocationTargetException ite) {
+            // TODO wenn RuntimeException, dann weitergeben.
             throw handleInvokeException(ite, accMediaTypes, resourceMethod,
                     restletResponse, "invoke", "Exception in resource method");
+        } catch (RequestHandledException e) {
+            throw e;
         } catch (Exception e) {
             throw handleInvokeException(e, accMediaTypes, resourceMethod,
                     restletResponse, "invoke",
@@ -1188,6 +1183,7 @@ public class JaxRsRouter extends Restlet {
                     restletResponse, accMediaTypes, resourceMethod);
         MediaType mediaType = Util.getFirstElement(mediaTypes);
         MultivaluedMap<String, Object> httpResponseHeaders = null;
+        // TODO Http-ResponseHeaders
         return new JaxRsOutputRepresentation(entity, mediaType, mbw,
                 httpResponseHeaders);
     }

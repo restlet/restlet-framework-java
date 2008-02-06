@@ -65,7 +65,7 @@ public class SimpleHouseTest extends JaxRsTestCase {
         Representation entityGett = responseGett.getEntity();
         Representation entityHead = responseHead.getEntity();
         assertEquals("4711", entityGett.getText());
-        assertEquals("", entityHead.getText());
+        assertNull(entityHead.getText());
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_HTML, entityHead.getMediaType());
     }
@@ -82,7 +82,7 @@ public class SimpleHouseTest extends JaxRsTestCase {
         Representation entityGett = responseGett.getEntity();
         Representation entityHead = responseHead.getEntity();
         assertEquals("4711", entityGett.getText());
-        assertEquals("", entityHead.getText());
+        assertNull(entityHead.getText());
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_HTML, entityHead.getMediaType());
     }
@@ -99,7 +99,7 @@ public class SimpleHouseTest extends JaxRsTestCase {
         Representation entityGett = responseGett.getEntity();
         Representation entityHead = responseHead.getEntity();
         assertEquals("4711", entityGett.getText());
-        assertEquals("", entityHead.getText());
+        assertNull(entityHead.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entityHead.getMediaType());
     }

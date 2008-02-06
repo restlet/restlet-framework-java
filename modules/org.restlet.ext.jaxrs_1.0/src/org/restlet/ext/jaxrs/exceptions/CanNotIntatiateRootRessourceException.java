@@ -24,7 +24,7 @@ package org.restlet.ext.jaxrs.exceptions;
  *
  */
 public class CanNotIntatiateRootRessourceException extends
-        JaxRsRuntimeException {
+        JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**

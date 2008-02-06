@@ -18,6 +18,7 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.ws.rs.Path;
@@ -26,6 +27,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.Authenticator;
+import org.restlet.ext.jaxrs.exceptions.CanNotIntatiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
+import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 
 /**
  * A method of a resource class that is used to locate sub-resources of the
@@ -65,13 +70,25 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                the Restlet response
      * @param authenticator
      *                The logged in User
+     * @param mbrs
+     *                {@link MessageBodyReaderSet}
      * @return Returns the wrapped sub resource object.
-     * @throws Exception
+     * @throws RequestHandledException
+     * @throws CanNotIntatiateParameterException
+     * @throws IllegalOrNoAnnotationException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws NoMessageBodyReadersException
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequest, Response restletResponse,
-            Authenticator authenticator) throws Exception {
+            Authenticator authenticator, MessageBodyReaderSet mbrs)
+            throws IllegalOrNoAnnotationException,
+            CanNotIntatiateParameterException, RequestHandledException,
+            IllegalArgumentException, IllegalAccessException,
+            InvocationTargetException, NoMessageBodyReadersException {
         Object[] args;
         Class<?>[] parameterTypes = this.javaMethod.getParameterTypes();
         if (parameterTypes.length == 0)
@@ -79,7 +96,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         else
             args = getParameterValues(javaMethod.getParameterAnnotations(),
                     parameterTypes, restletRequest, restletResponse,
-                    allTemplParamsEnc, authenticator);
+                    allTemplParamsEnc, authenticator, mbrs);
         Object subResourceObject = javaMethod.invoke(resourceObject
                 .getResourceObject(), args);
         return new ResourceObject(subResourceObject);

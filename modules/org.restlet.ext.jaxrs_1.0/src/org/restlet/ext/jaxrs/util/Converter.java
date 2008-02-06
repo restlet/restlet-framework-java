@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 
 import org.restlet.data.CharacterSet;
@@ -311,5 +312,23 @@ public class Converter {
 
     private Converter() {
         // no instance creation
+    }
+
+    /**
+     * Copies the data in the {@link MultivaluedMap} to the {@link Form}.
+     * @param mmap
+     * @return the converted Http headers or null, if null was given.
+     */
+    public static Form toForm(MultivaluedMap<String, String> mmap) {
+        if(mmap == null)
+            return null;
+        Form form = new Form();
+        for(Map.Entry<String, List<String>> entry : mmap.entrySet())
+        {
+            String name = entry.getKey();
+            for(String value : entry.getValue())
+                form.add(name, value);
+        }
+        return form;
     }
 }

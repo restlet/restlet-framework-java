@@ -20,17 +20,17 @@ package org.restlet.ext.jaxrs.exceptions;
 
 /**
  * This class is the super class for the runtime exception in this implementation.
- * @author Stephan
+ * @author Stephan Koops
  *
  */
-public class JaxRsRuntimeException extends RuntimeException {
+public class JaxRsException extends Exception {
     private static final long serialVersionUID = -7662465289573982489L;
 
     /**
      * 
      * @param message
      */
-    public JaxRsRuntimeException(String message) {
+    public JaxRsException(String message) {
         super(message);
     }
 
@@ -38,7 +38,7 @@ public class JaxRsRuntimeException extends RuntimeException {
      * 
      * @param cause
      */
-    public JaxRsRuntimeException(Throwable cause) {
+    public JaxRsException(Throwable cause) {
         super(cause);
     }
 
@@ -47,7 +47,7 @@ public class JaxRsRuntimeException extends RuntimeException {
      * @param message
      * @param cause
      */
-    public JaxRsRuntimeException(String message, Throwable cause) {
+    public JaxRsException(String message, Throwable cause) {
         super(message, cause);
     }
 }

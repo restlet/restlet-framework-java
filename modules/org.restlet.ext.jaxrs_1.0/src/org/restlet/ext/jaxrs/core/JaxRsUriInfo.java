@@ -306,7 +306,7 @@ public class JaxRsUriInfo implements UriInfo {
             return getQueryParameters();
         if (queryParametersEncoded == null) {
             Form queryForm = new Form(reference.getQuery(), null);
-            // TODO Jerome bleibt das ok, wenn der CharSet null ist?
+            // TODO Create patch for the engine that no decoding is wished. (Email 2008-02-06)
             queryParametersEncoded = UnmodifiableMultivaluedMap.getFromForm(queryForm, false);
         }
         return queryParametersEncoded;

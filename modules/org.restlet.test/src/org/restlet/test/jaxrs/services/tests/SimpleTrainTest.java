@@ -87,10 +87,9 @@ public class SimpleTrainTest extends JaxRsTestCase {
                 SimpleTrain.class, Util.createList(new Object[] {
                         PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_CALENDAR }));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation representation = response.getEntity();
-        assertEqualMediaType(MediaType.TEXT_PLAIN, representation
-                .getMediaType());
-        assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
+        Representation entity = response.getEntity();
+        assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
+        assertEquals(SimpleTrain.RERP_PLAIN_TEXT, entity.getText());
     }
 
     public void testGetTextMultiple2() throws Exception {
@@ -122,14 +121,12 @@ public class SimpleTrainTest extends JaxRsTestCase {
                         PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
         assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
         assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
-        Representation representationHead = responseHead.getEntity();
-        Representation representationGett = responseGett.getEntity();
-        assertEqualMediaType(MediaType.TEXT_HTML, representationGett
-                .getMediaType());
-        assertEqualMediaType(MediaType.TEXT_HTML, representationHead
-                .getMediaType());
-        assertEquals(SimpleTrain.RERP_HTML_TEXT, representationGett.getText());
-        assertEquals(0, representationHead.getText().length());
+        Representation entityHead = responseHead.getEntity();
+        Representation entityGett = responseGett.getEntity();
+        assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
+        assertEqualMediaType(MediaType.TEXT_HTML, entityHead.getMediaType());
+        assertEquals(SimpleTrain.RERP_HTML_TEXT, entityGett.getText());
+        assertNull("HEAD response: entity must be null", entityHead.getText());
     }
 
     public void testOptions() throws Exception {
@@ -141,41 +138,34 @@ public class SimpleTrainTest extends JaxRsTestCase {
         String deEncoded = "decode";
         Response response = get(deEncoded + "/66");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation r = response.getEntity();
-        assertEquals("66", r.getText());
+        assertEquals("66", response.getEntity().getText());
 
         response = get(deEncoded + "/a+bc");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        r = response.getEntity();
-        assertEquals("a bc", r.getText());
+        assertEquals("a bc", response.getEntity().getText());
 
-        // TODO wait for issue 435
-        // response = accessServer(Method.GET, SimpleTrain.class,
-        // deEncoded + "/a%20bc");
-        // r = response.getEntity();
-        // System.out.println(r.getText());
-        // assertEquals(Status.SUCCESS_OK, response.getStatus());
-        // assertEquals("a bc", r.getText());
+        response = get(deEncoded + "/a%20bc");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("a bc", response.getEntity().getText());
     }
 
     public void testTemplParamsEncoded() throws Exception {
         String deEncoded = "encode";
         Response response = get(deEncoded + "/66");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation r = response.getEntity();
-        assertEquals("66", r.getText());
+        assertEquals("66", response.getEntity().getText());
 
         response = get(deEncoded + "/a+bc");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        r = response.getEntity();
-        assertEquals("a+bc", r.getText());
+        assertEquals("a+bc", response.getEntity().getText());
 
-        // TODO wait for issue 435
-        // response = get(deEncoded + "/a%20bc");
-        // r = response.getEntity();
-        // System.out.println(r.getText());
-        // assertEquals(Status.SUCCESS_OK, response.getStatus());
-        // assertEquals("a%20bc", r.getText());
+        response = get(deEncoded + "/a%20bc");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("a%20bc", response.getEntity().getText());
     }
 
     public void testUseAllTests() {

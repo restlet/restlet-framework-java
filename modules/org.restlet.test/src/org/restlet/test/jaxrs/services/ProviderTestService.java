@@ -26,6 +26,11 @@ import java.io.InputStream;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.restlet.data.Form;
+import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
+import org.restlet.ext.jaxrs.util.Converter;
 
 /**
  * @author Stephan
@@ -86,5 +91,35 @@ public class ProviderTestService {
     @Path("jaxb")
     public String putJaxb(Person person) {
         return person.toString();
+    }
+
+    @GET
+    @Path("form")
+    public Form getForm() {
+        Form form = new Form();
+        form.add("firstname", "Angela");
+        form.add("lastname", "Merkel");
+        return form;
+    }
+
+    @POST
+    @Path("form")
+    public String putForm(Form form) {
+        return form.toString();
+    }
+
+    @GET
+    @Path("MultivaluedMap")
+    public MultivaluedMap<String, String> getMMap() {
+        MultivaluedMap<String, String> mmap = new MultivaluedMapImpl<String, String>();
+        mmap.add("firstname", "Angela");
+        mmap.add("lastname", "Merkel");
+        return mmap;
+    }
+
+    @POST
+    @Path("MultivaluedMap")
+    public String putMMap(MultivaluedMap<String, String> mmap) {
+        return Converter.toForm(mmap).toString();
     }
 }

@@ -47,6 +47,9 @@ public class MessageBodyReader {
      *                wrap.
      */
     public MessageBodyReader(javax.ws.rs.ext.MessageBodyReader<?> reader) {
+        if (reader == null)
+            throw new IllegalArgumentException(
+                    "The MessageBodyReader must not be null");
         this.reader = reader;
     }
 
@@ -70,8 +73,8 @@ public class MessageBodyReader {
      * @throws IOException
      * @see {@link javax.ws.rs.ext.MessageBodyReader#readFrom(Class, javax.ws.rs.core.MediaType, MultivaluedMap, InputStream)}
      */
-    public Object readFrom(Class<?> type, javax.ws.rs.core.MediaType mediaType,
-            MultivaluedMap httpHeaders, InputStream entityStream)
+    public Object readFrom(Class type, javax.ws.rs.core.MediaType mediaType,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return this.reader.readFrom(type, mediaType, httpHeaders, entityStream);
     }
@@ -92,5 +95,38 @@ public class MessageBodyReader {
                 this.consumedMimes = Collections.singletonList(MediaType.ALL);
         }
         return consumedMimes;
+    }
+
+    /**
+     * Checks, if this MessageBodyReader supports the given MediaType.
+     * 
+     * @param mediaType
+     * @return
+     */
+    public boolean supports(MediaType mediaType) {
+        for (MediaType cm : getConsumedMimes()) {
+            if (MessageBodyWriter.supports(cm, mediaType))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return this.reader.getClass().getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof MessageBodyReader))
+            return false;
+        return this.reader.equals(((MessageBodyReader) o).reader);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.reader.hashCode();
     }
 }

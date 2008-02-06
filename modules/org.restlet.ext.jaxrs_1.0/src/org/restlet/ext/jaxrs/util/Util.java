@@ -51,7 +51,8 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.ext.jaxrs.core.UnmodifiableMultivaluedMap;
+import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Engine;
 
@@ -63,7 +64,14 @@ import org.restlet.util.Engine;
 public class Util {
 
     /**
-     * The header in the attribute map to return the HTTP headers.
+     * Name of the Header Principal in the request attributes.
+     * 
+     * @see Principal
+     */
+    public static final String JAVA_SECURITY_HEADER = "java.security.Principal";
+
+    /**
+     * The name of the header {@link Form} in the attribute map.
      * 
      * @see #getHttpHeaders(Request)
      * @see #getHttpHeaders(Response)
@@ -71,11 +79,11 @@ public class Util {
     public static final String ORG_RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
 
     /**
-     * Name of the Header Principal in the request attributes.
+     * The name of the header {@link MultivaluedMap}&lt;String, String&gt; in
+     * the attribute map.
      * 
-     * @see Principal
      */
-    public static final String JAVA_SECURITY_HEADER = "java.security.Principal";
+    public static final String ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS = "org.restlet.ext.jaxrs.http.headers";
 
     /**
      * appends the given String to the StringBuilder. If convertBraces is true,
@@ -215,9 +223,7 @@ public class Util {
             }
         }
         if (restletResponse.getEntity() == null) {
-            // TODO Jerome: what is the most elegant way to get an empty
-            // Representation?
-            restletResponse.setEntity(new StringRepresentation(""));
+             restletResponse.setEntity(Representation.createEmpty());
         }
         Engine.getInstance().copyResponseHeaders(headers, restletResponse,
                 logger);
@@ -287,6 +293,37 @@ public class Util {
                 list.add(o);
         }
         return list;
+    }
+
+    /**
+     * Creates a map with the given keys and values.
+     * 
+     * @param keysAndValues
+     *                first element is key1, second element value1, third
+     *                element key2, forth element value2 and so on.
+     * @return
+     */
+    public static Map<String, String> createMap(String... keysAndValues) {
+        Map<String, String> map = new HashMap<String, String>();
+        for (int i = 0; i < keysAndValues.length; i += 2)
+            map.put(keysAndValues[i], keysAndValues[i + 1]);
+        return map;
+    }
+
+    /**
+     * Creates a JAX-RS-MediaType.
+     * 
+     * @param type
+     *                main type of the MediaType
+     * @param subtype
+     *                subtype of the MediaType
+     * @param keysAndValues
+     *                parameters (optional)
+     * @return the created MediaType
+     */
+    public static MediaType createMediaType(String type, String subtype,
+            String... keysAndValues) {
+        return new MediaType(type, subtype, Util.createMap(keysAndValues));
     }
 
     /**
@@ -477,9 +514,9 @@ public class Util {
      * @return Returns the HTTP-Headers-Form from the Request.
      */
     public static Form getHttpHeaders(Request request) {
-        Form headers = (Form) request.getAttributes().get(ORG_RESTLET_HTTP_HEADERS);
-        if(headers == null)
-        {
+        Form headers = (Form) request.getAttributes().get(
+                ORG_RESTLET_HTTP_HEADERS);
+        if (headers == null) {
             headers = new Form();
             request.getAttributes().put(ORG_RESTLET_HTTP_HEADERS, headers);
         }
@@ -492,11 +529,31 @@ public class Util {
      * @return Returns the HTTP-Headers-Form from the Response.
      */
     public static Form getHttpHeaders(Response response) {
-        Form headers = (Form) response.getAttributes().get(ORG_RESTLET_HTTP_HEADERS);
-        if(headers == null)
-        {
+        Form headers = (Form) response.getAttributes().get(
+                ORG_RESTLET_HTTP_HEADERS);
+        if (headers == null) {
             headers = new Form();
             response.getAttributes().put(ORG_RESTLET_HTTP_HEADERS, headers);
+        }
+        return headers;
+    }
+
+    /**
+     * Returns the request headers as {@link MultivaluedMap}.
+     * 
+     * @param request
+     * @return
+     */
+    public static MultivaluedMap<String, String> getJaxRsHttpHeaders(
+            Request request) {
+        @SuppressWarnings("unchecked")
+        MultivaluedMap<String, String> headers = (MultivaluedMap) request
+                .getAttributes().get(ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS);
+        if (headers == null) {
+            headers = UnmodifiableMultivaluedMap.getFromForm(
+                    getHttpHeaders(request), false);
+            request.getAttributes().put(ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS,
+                    headers);
         }
         return headers;
     }
@@ -513,6 +570,36 @@ public class Util {
         if (list instanceof LinkedList)
             return ((LinkedList<A>) list).getLast();
         return list.get(list.size() - 1);
+    }
+
+    /**
+     * Returns all public {@link Method}s of the class with the given name
+     * (case-sensitive)
+     * 
+     * @param clazz
+     *                The {@link Class} to search the {@link Method}s.
+     * @param methodName
+     *                The name of the {@link Method} to search.
+     * @return Returns a {@link Collection} all of {@link Method}s with the
+     *         given name. Never returns null. If no methods are found an empty
+     *         Collection will be returned. The method {@link Iterator#remove()}
+     *         of this collection is supported.
+     * @throws IllegalArgumentException
+     *                 if the clazz or the method name is null.
+     */
+    public static Collection<Method> getMethodsByName(Class<?> clazz,
+            String methodName) throws IllegalArgumentException {
+        if (clazz == null)
+            throw new IllegalArgumentException("The class must not be null");
+        if (methodName == null)
+            throw new IllegalArgumentException(
+                    "The method name must not be null");
+        Collection<Method> methods = new ArrayList<Method>(2);
+        for (Method method : clazz.getMethods()) {
+            if (method.getName().equals(methodName))
+                methods.add(method);
+        }
+        return methods;
     }
 
     /**
@@ -565,19 +652,6 @@ public class Util {
      */
     public static Principal getPrincipal(Request request) {
         return (Principal) request.getAttributes().get(JAVA_SECURITY_HEADER);
-    }
-
-    /**
-     * Sets the logged in user.
-     * 
-     * @param principal
-     *                The Principal of the logged in user.
-     * @param request
-     *                The Restlet request
-     * @see #getPrincipal(Request)
-     */
-    public static void setPrincipal(Principal principal, Request request) {
-        request.getAttributes().put(JAVA_SECURITY_HEADER, principal);
     }
 
     /**
@@ -652,6 +726,38 @@ public class Util {
     }
 
     /**
+     * Checks, if the smaller MediaType is the same type as or a subtype of
+     * bigger.<br/>Examples:
+     * <ul>
+     * <li>isSameOrSubType("text/plain", "text/*") -> true</li>
+     * <li>isSameOrSubType("text/plain", "text/plain") -> true</li>
+     * <li>isSameOrSubType("text/*", "text/plain") -> false</li>
+     * </ul>
+     * 
+     * 
+     * @param bigger
+     * @param smaller
+     * @return
+     */
+    public static boolean isSameOrSubType(org.restlet.data.MediaType smaller,
+            org.restlet.data.MediaType bigger) {
+        return bigger.includes(smaller);
+    }
+
+    /**
+     * Sets the logged in user.
+     * 
+     * @param principal
+     *                The Principal of the logged in user.
+     * @param request
+     *                The Restlet request
+     * @see #getPrincipal(Request)
+     */
+    public static void setPrincipal(Principal principal, Request request) {
+        request.getAttributes().put(JAVA_SECURITY_HEADER, principal);
+    }
+
+    /**
      * Sorts the Metadata by it's quality into the Collections. The list is
      * ordered by the qualities, most wanted Metadata at first.
      * 
@@ -704,85 +810,5 @@ public class Util {
         if (index >= 0)
             stb.append(" (index starting with 0)");
         throw new IllegalArgumentException(stb.toString());
-    }
-
-    /**
-     * Creates a JAX-RS-MediaType.
-     * 
-     * @param type
-     *                main type of the MediaType
-     * @param subtype
-     *                subtype of the MediaType
-     * @param keysAndValues
-     *                parameters (optional)
-     * @return the created MediaType
-     */
-    public static MediaType createMediaType(String type, String subtype,
-            String... keysAndValues) {
-        return new MediaType(type, subtype, Util.createMap(keysAndValues));
-    }
-
-    /**
-     * Creates a map with the given keys and values.
-     * 
-     * @param keysAndValues
-     *                first element is key1, second element value1, third
-     *                element key2, forth element value2 and so on.
-     * @return
-     */
-    public static Map<String, String> createMap(String... keysAndValues) {
-        Map<String, String> map = new HashMap<String, String>();
-        for (int i = 0; i < keysAndValues.length; i += 2)
-            map.put(keysAndValues[i], keysAndValues[i + 1]);
-        return map;
-    }
-
-    /**
-     * Returns all public {@link Method}s of the class with the given name
-     * (case-sensitive)
-     * 
-     * @param clazz
-     *                The {@link Class} to search the {@link Method}s.
-     * @param methodName
-     *                The name of the {@link Method} to search.
-     * @return Returns a {@link Collection} all of {@link Method}s with the
-     *         given name. Never returns null. If no methods are found an empty
-     *         Collection will be returned. The method {@link Iterator#remove()}
-     *         of this collection is supported.
-     * @throws IllegalArgumentException
-     *                 if the clazz or the method name is null.
-     */
-    public static Collection<Method> getMethodsByName(Class<?> clazz,
-            String methodName) throws IllegalArgumentException {
-        if (clazz == null)
-            throw new IllegalArgumentException("The class must not be null");
-        if (methodName == null)
-            throw new IllegalArgumentException(
-                    "The method name must not be null");
-        Collection<Method> methods = new ArrayList<Method>(2);
-        for (Method method : clazz.getMethods()) {
-            if (method.getName().equals(methodName))
-                methods.add(method);
-        }
-        return methods;
-    }
-
-    /**
-     * Checks, if the smaller MediaType is the same type as or a subtype of
-     * bigger.<br/>Examples:
-     * <ul>
-     * <li>isSameOrSubType("text/plain", "text/*") -> true</li>
-     * <li>isSameOrSubType("text/plain", "text/plain") -> true</li>
-     * <li>isSameOrSubType("text/*", "text/plain") -> false</li>
-     * </ul>
-     * 
-     * 
-     * @param bigger
-     * @param smaller
-     * @return
-     */
-    public static boolean isSameOrSubType(org.restlet.data.MediaType smaller,
-            org.restlet.data.MediaType bigger) {
-        return bigger.includes(smaller);
     }
 }

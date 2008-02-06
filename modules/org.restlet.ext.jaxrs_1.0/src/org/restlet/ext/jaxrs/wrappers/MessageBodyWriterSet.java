@@ -51,6 +51,14 @@ public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter> {
         super(c, useGivenList);
     }
 
+    @Override
+    public boolean add(MessageBodyWriter mbr) {
+        if (mbr == null)
+            throw new IllegalArgumentException(
+                    "The MessageBodyReader to add must not be null");
+        return super.add(mbr);
+    }
+
     /**
      * Returns a Collection of {@link MessageBodyWriter}s, that support the
      * given entityClass.

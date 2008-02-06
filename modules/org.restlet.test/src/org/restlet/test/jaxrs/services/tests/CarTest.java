@@ -60,8 +60,6 @@ public class CarTest extends JaxRsTestCase {
         assertEquals(CarResource.createTextRepr(carNumber), entity.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
 
-        if (true) // TODO wait for issue 435
-            return;
         carNumber = "5%20%2B7";
         response = get(carNumber);
         entity = response.getEntity();

@@ -20,6 +20,7 @@ package org.restlet.ext.jaxrs.wrappers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
@@ -35,7 +36,11 @@ import javax.ws.rs.core.UriInfo;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.Authenticator;
+import org.restlet.ext.jaxrs.exceptions.CanNotIntatiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
+import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
+import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 
 /**
  * Instances represents a root resource class.
@@ -69,10 +74,11 @@ public class RootResourceClass extends ResourceClass {
      * 
      * @param paramAnnotationss
      * @param parameterTypes
+     * @throws IllegalTypeException
      * @returns true, if the
      * @throws IllegalTypeException
-     *                 If a parameter is annotated with {@link HttpContext},
-     *                 but the type is invalid (must be UriInfo, Request or
+     *                 If a parameter is annotated with {@link Context}, but
+     *                 the type is invalid (must be UriInfo, Request or
      *                 HttpHeaders).
      */
     private static boolean checkParamAnnotations(Constructor<?> constr) {
@@ -109,8 +115,7 @@ public class RootResourceClass extends ResourceClass {
                     continue;
                 if (parameterType.equals(SecurityContext.class))
                     continue;
-                throw new IllegalTypeException(
-                        "The Type of a parameter annotated with @HttpContext must be UriInfo, Request or HttpHeaders.");
+                return false;
             } else if (annotationType.equals(MatrixParam.class)) {
                 continue;
             } else if (annotationType.equals(QueryParam.class)) {
@@ -133,7 +138,6 @@ public class RootResourceClass extends ResourceClass {
      * @param authenticator
      *                Authenticator for role requests, see
      *                {@link SecurityContext#isUserInRole(String)}.
-     * 
      * @return
      * @throws Exception
      */
@@ -162,19 +166,34 @@ public class RootResourceClass extends ResourceClass {
      *                Authenticator for role requests, see
      *                {@link SecurityContext#isUserInRole(String)}.
      * @return
+     * @throws RequestHandledException
+     * @throws CanNotIntatiateParameterException
+     * @throws IllegalOrNoAnnotationException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws IllegalArgumentException
      * @throws Exception
      */
     public static Object createInstance(Constructor<?> constructor,
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequ, Response restletResponse,
-            Authenticator authenticator) throws Exception {
+            Authenticator authenticator) throws IllegalOrNoAnnotationException,
+            CanNotIntatiateParameterException, RequestHandledException,
+            IllegalArgumentException, InstantiationException,
+            IllegalAccessException, InvocationTargetException {
         Object[] args;
-        if (constructor.getParameterTypes().length == 0)
+        if (constructor.getParameterTypes().length == 0) {
             args = new Object[0];
-        else
-            args = getParameterValues(constructor.getParameterAnnotations(),
-                    constructor.getParameterTypes(), restletRequ,
-                    restletResponse, allTemplParamsEnc, authenticator);
+        } else {
+            try {
+                args = getParameterValues(constructor.getParameterAnnotations(),
+                        constructor.getParameterTypes(), restletRequ,
+                        restletResponse, allTemplParamsEnc, authenticator, null);
+            } catch (NoMessageBodyReadersException e) {
+                throw new IllegalOrNoAnnotationException("the root resource class constructor ("+constructor+") must have annotations on any parameters. (normally this excpetion could not occur)");
+            }
+        }
         return constructor.newInstance(args);
     }
 
@@ -200,6 +219,7 @@ public class RootResourceClass extends ResourceClass {
      * @param jaxRsClass
      * @return Returns the constructor to use for the given root resource class
      *         (See JSR-311-Spec, section 2.3)
+     * @throws IllegalTypeException
      */
     public static Constructor<?> findJaxRsConstructor(Class<?> jaxRsClass) {
         Constructor<?> constructor = null;

@@ -18,6 +18,7 @@
 
 package org.restlet.test.jaxrs.services.tests;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -282,6 +283,24 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     /**
+     * prints the entity to System.out, if the status indicates an error.
+     * 
+     * @param response
+     * @throws IOException
+     */
+    public static void sysOutEntityIfError(Response response) {
+        if (response.getStatus().isError()) {
+            Representation entity = response.getEntity();
+            try {
+                System.out.println(entity.getText());
+            } catch (IOException e) {
+                System.out.println("Entity not readable: ");
+                e.printStackTrace(System.out);
+            }
+        }
+    }
+
+    /**
      * Checks, if the allowed methods of an OPTIONS request are the given one.
      * 
      * @param optionsResponse
@@ -368,25 +387,26 @@ public abstract class JaxRsTestCase extends TestCase {
                 null);
     }
 
-    public Response post() {
-        return accessServer(Method.POST, getRootResourceClass(), null, null);
-    }
-
-    public Response post(String subPath, ChallengeResponse cr) {
-        return accessServer(Method.POST, getRootResourceClass(), subPath, null,
-                cr);
+    public Response post(String subPath, Representation entity,
+            ChallengeResponse cr) {
+        return accessServer(Method.POST, createReference(
+                getRootResourceClass(), subPath), null, cr, entity);
     }
 
     @SuppressWarnings("unchecked")
-    public Response post(String subPath, Collection mediaTypes,
-            ChallengeResponse challengeResponse, Representation entity) {
+    public Response post(String subPath, Representation entity,
+            Collection accMediaTypes, ChallengeResponse challengeResponse) {
         return accessServer(Method.POST, createReference(
-                getRootResourceClass(), subPath), mediaTypes,
+                getRootResourceClass(), subPath), accMediaTypes,
                 challengeResponse, entity);
     }
 
     public Response post(String subPath, Representation entity) {
-        return post(subPath, null, null, entity);
+        return post(subPath, entity, null, null);
+    }
+
+    public Response post(Representation entity) {
+        return post(null, entity, null, null);
     }
 
     @Override

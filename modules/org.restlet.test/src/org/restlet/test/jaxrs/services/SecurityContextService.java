@@ -26,6 +26,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
@@ -47,7 +48,7 @@ public class SecurityContextService {
 
     @POST
     public Response post(@Context
-    SecurityContext securityContext, String entity, @Context
+    SecurityContext securityContext, MultivaluedMap<String, String> entity, @Context
     UriInfo uriInfo) {
         if (!securityContext.isUserInRole("fat"))
             throw new WebApplicationException(403);

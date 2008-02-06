@@ -47,7 +47,7 @@ public class JibxRepresentation extends XmlRepresentation {
      * @param bindingClass
      *                Target class for binding.
      * @return A binding factory.
-     * @throws JiBXException.
+     * @throws JiBXException
      */
     @SuppressWarnings("unchecked")
     private static synchronized IBindingFactory getBindingFactory(

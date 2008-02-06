@@ -25,7 +25,7 @@ package org.restlet.ext.jaxrs.exceptions;
  * @author Stephan
  * 
  */
-public class IllegalTypeException extends JaxRsRuntimeException {
+public class IllegalTypeException extends JaxRsException {
     private static final long serialVersionUID = 6796414811480666857L;
 
     /**

@@ -19,39 +19,39 @@
 package org.restlet.ext.jaxrs.exceptions;
 
 /**
- * Indicates, that the JAX-RS implementation observed, that it contains an error
- * in itself. An example could be an empty collection, were an empty collection
- * must not be possible. Will be removed later.
+ * This exception is thrown, if a parameter does contains
  * 
- * @author Stephan Koops
+ * @author Stephan
  * 
  */
-public class ImplementationException extends JaxRsException {
-
-    private static final long serialVersionUID = 5635188228961655076L;
+public class IllegalOrNoAnnotationException extends JaxRsException {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1900088092745095670L;
 
     /**
      * 
-     * @param message
+     * @param s
      */
-    public ImplementationException(String message) {
-        super(message);
+    public IllegalOrNoAnnotationException(String s) {
+        super(s);
     }
 
     /**
      * 
      * @param cause
      */
-    public ImplementationException(Throwable cause) {
+    public IllegalOrNoAnnotationException(Throwable cause) {
         super(cause);
     }
-    
+
     /**
      * 
      * @param message
      * @param cause
      */
-    public ImplementationException(String message, Throwable cause) {
+    public IllegalOrNoAnnotationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

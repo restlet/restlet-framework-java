@@ -24,6 +24,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
@@ -96,7 +97,12 @@ public class SecurityContextTest extends JaxRsTestCase {
         Response response = get();
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
 
-        response = post();
+        response = post(new Form().getWebRepresentation());
+        sysOutEntityIfError(response);
+        assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
+
+        response = post(new Form("abc=def").getWebRepresentation());
+        sysOutEntityIfError(response);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
 
@@ -106,7 +112,8 @@ public class SecurityContextTest extends JaxRsTestCase {
         Response response = get();
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
-        response = post();
+        response = post(new Form("abc=def").getWebRepresentation());
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
         Reference expecretLocation = createReference(SEC_CONT_SERV, null);
         assertTrue("The location must start with " + expecretLocation
@@ -145,7 +152,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         Response response = get();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
-        response = post();
+        response = post(new Form("abc=def").getWebRepresentation());
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
     }
 
@@ -181,33 +188,29 @@ public class SecurityContextTest extends JaxRsTestCase {
         };
         if (!startServer(exampleAuthorizator))
             return;
-        ChallengeResponse challengeResponse = new ChallengeResponse(
+        ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "fsdf", "xyz");
-        Response response = get(null, challengeResponse);
+        Response response = get(null, cr);
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
-        challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
-                "fsdf", "baj");
-        response = get(null, challengeResponse);
+        cr = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "fsdf", "baj");
+        response = get(null, cr);
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
-        challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
-                "fsdf", "abj");
-        response = get(null, challengeResponse);
+        cr = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "fsdf", "abj");
+        response = get(null, cr);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
 
-        challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
-                "bsdf", "abaj");
-        response = get(null, challengeResponse);
+        cr = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "bsdf", "abaj");
+        response = get(null, cr);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
-        challengeResponse = new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
-                "fsdf", "axa2");
-        response = post(null, challengeResponse);
+        cr = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "fsdf", "axa2");
+        response = post(null, new Form("abc=def").getWebRepresentation(), cr);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
 
-        response = accessServer(Method.PUT, SEC_CONT_SERV, null, null,
-                challengeResponse);
+        response = accessServer(Method.PUT, SEC_CONT_SERV, null, null, cr);
         assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, response
                 .getStatus());
     }

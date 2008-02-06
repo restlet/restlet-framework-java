@@ -15,43 +15,21 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.exceptions;
 
 /**
- * This exception is thrown, if a parameter does contains
+ * This kind of Exception is thrown, if MessageBodyReaders are used, but are not
+ * available. Normally this does not occurs.
  * 
- * @author Stephan
- * 
+ * @author Stephan Koops
  */
-public class IllegalAnnotationException extends JaxRsRuntimeException {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -1900088092745095670L;
+public class NoMessageBodyReadersException extends Exception {
+
+    private static final long serialVersionUID = 9177449724300611418L;
 
     /**
      * 
-     * @param s
      */
-    public IllegalAnnotationException(String s) {
-        super(s);
-    }
-
-    /**
-     * 
-     * @param cause
-     */
-    public IllegalAnnotationException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
-     * 
-     * @param message
-     * @param cause
-     */
-    public IllegalAnnotationException(String message, Throwable cause) {
-        super(message, cause);
+    public NoMessageBodyReadersException() {
     }
 }

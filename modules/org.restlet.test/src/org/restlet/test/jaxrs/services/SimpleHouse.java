@@ -32,7 +32,7 @@ import javax.ws.rs.ProduceMime;
  */
 @Path("/ho%20use")
 public class SimpleHouse {
-    /** Text der ausgegebenen Plain-Text-Representation. */
+    /** Text of the Plain-Text-Representation. */
     public static final String RERP_PLAIN_TEXT = "  /\\ \n /  \\ \n |  | \n +--+ \n \n This is a simple text house";
 
     /**
