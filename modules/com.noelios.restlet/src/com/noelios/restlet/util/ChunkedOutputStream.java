@@ -66,7 +66,7 @@ public class ChunkedOutputStream extends OutputStream {
      * Convenience constructor to use a default chunk size size of 2048.
      * 
      * @param destination
-     * @see {@link ChunkedOutputStream#ChunkedOutputStream(OutputStream, int)}
+     * @see #ChunkedOutputStream(OutputStream, int)
      */
     public ChunkedOutputStream(OutputStream destination) {
         this(destination, DEFAULT_CHUNK_SIZE);

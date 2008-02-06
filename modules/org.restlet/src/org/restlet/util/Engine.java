@@ -229,7 +229,7 @@ public abstract class Engine {
      *                The associated guard to callback.
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
-     * @see {@link Guard#checkSecret(String, char[])}
+     * @see Guard#checkSecret(Request, String, char[])
      */
     public abstract int authenticate(Request request, Guard guard);
 

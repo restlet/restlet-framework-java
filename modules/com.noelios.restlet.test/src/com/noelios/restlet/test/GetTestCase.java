@@ -74,7 +74,7 @@ public class GetTestCase extends BaseConnectorsTestCase {
         }
 
         @Override
-        public Representation getRepresentation(Variant variant) {
+        public Representation represent(Variant variant) {
             return new StringRepresentation("Hello world", MediaType.TEXT_PLAIN);
         }
     }

@@ -64,19 +64,19 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         super.setUp();
         checkedForChunkedResponse = true;
     }
-    
+
     @Override
     public void testGrizzlyAndDefault() throws Exception {
         checkedForChunkedResponse = false;
         super.testGrizzlyAndDefault();
     }
-    
+
     @Override
     public void testGrizzlyAndHttpClient() throws Exception {
         checkedForChunkedResponse = false;
         super.testGrizzlyAndHttpClient();
     }
-    
+
     @Override
     public void testGrizzlyAndJdkNet() throws Exception {
         checkedForChunkedResponse = false;
@@ -206,7 +206,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         }
 
         @Override
-        public Representation getRepresentation(Variant variant) {
+        public Representation represent(Variant variant) {
             return createTestXml();
         }
 

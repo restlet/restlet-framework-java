@@ -53,10 +53,10 @@ public class Guard extends Filter {
     public static final long DEFAULT_NONCE_LIFESPAN_MILLIS = 5 * 60 * 1000L;
 
     /** The URIs that define the HTTP DIGEST authentication protection domains. */
-    protected Collection<String> domainUris = Collections.singleton("/");
+    private Collection<String> domainUris = Collections.singleton("/");
 
     /** Lifespan of nonce in milliseconds */
-    protected long nonceLifespan = DEFAULT_NONCE_LIFESPAN_MILLIS;
+    private long nonceLifespan = DEFAULT_NONCE_LIFESPAN_MILLIS;
 
     /** The authentication realm. */
     private volatile String realm;
@@ -74,7 +74,7 @@ public class Guard extends Filter {
     private final ConcurrentMap<String, char[]> secrets;
 
     /** The secret key known only to server (use for HTTP DIGEST authentication). */
-    protected String serverKey = "serverKey";
+    private String serverKey = "serverKey";
 
     /**
      * Constructor.

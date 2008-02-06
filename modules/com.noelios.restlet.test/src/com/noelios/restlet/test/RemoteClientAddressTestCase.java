@@ -37,7 +37,7 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 /**
- * Test that the client address is available for all the connectors 
+ * Test that the client address is available for all the connectors
  * 
  * @author Kevin Conaway
  */
@@ -61,23 +61,24 @@ public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
     protected void call() throws Exception {
         Request request = new Request(Method.GET, uri);
         Response r = new Client(Protocol.HTTP).handle(request);
-        
+
         assertEquals(Status.SUCCESS_OK, r.getStatus());
     }
 
     public static class RemoteClientAddressResource extends Resource {
 
-        public RemoteClientAddressResource(Context ctx, Request request, Response response) {
+        public RemoteClientAddressResource(Context ctx, Request request,
+                Response response) {
             super(ctx, request, response);
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
         }
 
         @Override
-        public Representation getRepresentation(Variant variant) {
-
-            Assert.assertEquals("127.0.0.1", getRequest().getClientInfo().getAddress());
+        public Representation represent(Variant variant) {
+            Assert.assertEquals("127.0.0.1", getRequest().getClientInfo()
+                    .getAddress());
             Assert.assertTrue(getRequest().getClientInfo().getPort() > 0);
-            
+
             return new StringRepresentation("OK");
         }
     }
