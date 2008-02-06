@@ -151,7 +151,7 @@ public class JaxRsGuard extends org.restlet.Guard {
 
     @Deprecated
     @Override
-    protected char[] findSecret(String identifier) {
+    public char[] findSecret(String identifier) {
         throw new UnsupportedOperationException(
                 "This method is not needed and forbidden in this subclass");
     }

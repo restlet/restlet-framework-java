@@ -18,15 +18,16 @@
 
 package org.restlet;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.util.Engine;
 
 /**
  * Filter guarding the access to an attached Restlet.
@@ -36,6 +37,26 @@ import org.restlet.data.Status;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Guard extends Filter {
+    /** Indicates that an authentication response is considered invalid. */
+    public static final int AUTHENTICATION_INVALID = -1;
+
+    /** Indicates that an authentication response couldn't be found. */
+    public static final int AUTHENTICATION_MISSING = 0;
+
+    /** Indicates that an authentication response is stale. */
+    public static final int AUTHENTICATION_STALE = 2;
+
+    /** Indicates that an authentication response is valid. */
+    public static final int AUTHENTICATION_VALID = 1;
+
+    /** Default lifespan for generated nonces (5 minutes). */
+    public static final long DEFAULT_NONCE_LIFESPAN_MILLIS = 5 * 60 * 1000L;
+
+    /** The URIs that define the HTTP DIGEST authentication protection domains. */
+    protected Collection<String> domainUris = Collections.singleton("/");
+
+    /** Lifespan of nonce in milliseconds */
+    protected long nonceLifespan = DEFAULT_NONCE_LIFESPAN_MILLIS;
 
     /** The authentication realm. */
     private volatile String realm;
@@ -51,6 +72,9 @@ public class Guard extends Filter {
 
     /** Map of secrets (login/password combinations). */
     private final ConcurrentMap<String, char[]> secrets;
+
+    /** The secret key known only to server (use for HTTP DIGEST authentication). */
+    protected String serverKey = "serverKey";
 
     /**
      * Constructor.
@@ -74,6 +98,25 @@ public class Guard extends Filter {
             this.scheme = scheme;
             this.realm = realm;
         }
+    }
+
+    /**
+     * Alternate Constructor for HTTP DIGEST authentication scheme.
+     * 
+     * @param context
+     *                context
+     * @param realm
+     *                authentication realm
+     * @param baseUris
+     *                protection domain as a collection of base URIs
+     * @param serverKey
+     *                secret key known only to server
+     */
+    public Guard(Context context, String realm, Collection<String> baseUris,
+            String serverKey) {
+        this(context, ChallengeScheme.HTTP_DIGEST, realm);
+        this.domainUris = baseUris;
+        this.serverKey = serverKey;
     }
 
     /**
@@ -102,35 +145,8 @@ public class Guard extends Filter {
      * @see #checkSecret(String, char[])
      */
     public int authenticate(Request request) {
-        int result = 0;
-
-        if (this.scheme != null) {
-            // An authentication scheme has been defined,
-            // the request must be authenticated
-            ChallengeResponse cr = request.getChallengeResponse();
-
-            if (cr != null) {
-                if (this.scheme.equals(cr.getScheme())) {
-                    // The challenge schemes are compatible
-                    String identifier = request.getChallengeResponse()
-                            .getIdentifier();
-                    char[] secret = request.getChallengeResponse().getSecret();
-
-                    // Check the credentials
-                    if ((identifier != null) && (secret != null)) {
-                        result = checkSecret(request, identifier, secret) ? 1
-                                : -1;
-                    }
-                } else {
-                    // The challenge schemes are incompatible, we need to
-                    // challenge the client
-                }
-            } else {
-                // No challenge response found, we need to challenge the client
-            }
-        }
-
-        return result;
+        // Delegate processing to the Engine
+        return Engine.getInstance().authenticate(request, this);
     }
 
     /**
@@ -144,6 +160,7 @@ public class Guard extends Filter {
      * @return True if the request is authorized.
      */
     public boolean authorize(Request request) {
+        // Authorize everything by default
         return true;
     }
 
@@ -153,11 +170,25 @@ public class Guard extends Filter {
      * 
      * @param response
      *                The response to update.
+     * @deprecated Use the {@link #challenge(Response, boolean)} method instead.
      */
+    @Deprecated
     public void challenge(Response response) {
-        response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-        response.setChallengeRequest(new ChallengeRequest(this.scheme,
-                this.realm));
+        challenge(response, false);
+    }
+
+    /**
+     * Challenges the client by adding a challenge request to the response and
+     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
+     * 
+     * @param response
+     *                The response to update.
+     * @param stale
+     *                Indicates if the new challenge is due to a stale response.
+     */
+    public void challenge(Response response, boolean stale) {
+        // Delegate processing to the Engine
+        Engine.getInstance().challenge(response, stale, this);
     }
 
     /**
@@ -220,7 +251,7 @@ public class Guard extends Filter {
     @Override
     public int doHandle(Request request, Response response) {
         switch (authenticate(request)) {
-        case 1:
+        case AUTHENTICATION_VALID:
             // Valid credentials provided
             if (authorize(request)) {
                 accept(request, response);
@@ -228,17 +259,20 @@ public class Guard extends Filter {
                 forbid(response);
             }
             break;
-        case 0:
+        case AUTHENTICATION_MISSING:
             // No credentials provided
-            challenge(response);
+            challenge(response, false);
             break;
-        case -1:
+        case AUTHENTICATION_INVALID:
             // Invalid credentials provided
             if (isRechallengeEnabled()) {
-                challenge(response);
+                challenge(response, false);
             } else {
                 forbid(response);
             }
+            break;
+        case AUTHENTICATION_STALE:
+            challenge(response, true);
             break;
         }
 
@@ -253,7 +287,7 @@ public class Guard extends Filter {
      *                The identifier to lookup.
      * @return The secret associated to the identifier or null.
      */
-    protected char[] findSecret(String identifier) {
+    public char[] findSecret(String identifier) {
         return getSecrets().get(identifier);
     }
 
@@ -272,12 +306,31 @@ public class Guard extends Filter {
     }
 
     /**
+     * Returns the base URIs that collectively define the protected domain for
+     * HTTP Digest Authentication.
+     * 
+     * @return The base URIs.
+     */
+    public Collection<String> getDomainUris() {
+        return this.domainUris;
+    }
+
+    /**
+     * Returns the number of milliseconds between each mandatory nonce refresh.
+     * 
+     * @return The nonce lifespan.
+     */
+    public long getNonceLifespan() {
+        return this.nonceLifespan;
+    }
+
+    /**
      * Returns the authentication realm.
      * 
      * @return The authentication realm.
      */
     public String getRealm() {
-        return realm;
+        return this.realm;
     }
 
     /**
@@ -286,7 +339,7 @@ public class Guard extends Filter {
      * @return The authentication challenge scheme.
      */
     public ChallengeScheme getScheme() {
-        return scheme;
+        return this.scheme;
     }
 
     /**
@@ -299,6 +352,16 @@ public class Guard extends Filter {
     }
 
     /**
+     * Returns the secret key known only by server. This is used by the HTTP
+     * DIGEST authentication scheme.
+     * 
+     * @return The server secret key.
+     */
+    public String getServerKey() {
+        return this.serverKey;
+    }
+
+    /**
      * Indicates if a new challenge should be sent when invalid credentials are
      * received (true by default to conform to HTTP recommendations). If set to
      * false, upon reception of invalid credentials, the Guard will forbid the
@@ -307,7 +370,28 @@ public class Guard extends Filter {
      * @return True if invalid credentials result in a new challenge.
      */
     public boolean isRechallengeEnabled() {
-        return rechallengeEnabled;
+        return this.rechallengeEnabled;
+    }
+
+    /**
+     * Sets the URIs that define the HTTP DIGEST authentication protection
+     * domains.
+     * 
+     * @param domainUris
+     *                The URIs of protection domains.
+     */
+    public void setDomainUris(Collection<String> domainUris) {
+        this.domainUris = domainUris;
+    }
+
+    /**
+     * Sets the number of milliseconds between each mandatory nonce refresh.
+     * 
+     * @param lifespan
+     *                The nonce lifespan in ms.
+     */
+    public void setNonceLifespan(long lifespan) {
+        this.nonceLifespan = lifespan;
     }
 
     /**
@@ -342,4 +426,14 @@ public class Guard extends Filter {
         this.scheme = scheme;
     }
 
+    /**
+     * Sets the secret key known only by server. This is used by the HTTP DIGEST
+     * authentication scheme.
+     * 
+     * @param serverKey
+     *                The server secret key.
+     */
+    public void setServerKey(String serverKey) {
+        this.serverKey = serverKey;
+    }
 }

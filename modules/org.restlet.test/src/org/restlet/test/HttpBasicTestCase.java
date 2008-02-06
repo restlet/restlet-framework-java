@@ -126,9 +126,11 @@ public class HttpBasicTestCase extends TestCase {
     @Before
     public void makeServer() throws Exception {
         int port;
+
         if (System.getProperties().containsKey(RESTLET_TEST_PORT)) {
             port = Integer.parseInt(System.getProperty(RESTLET_TEST_PORT));
         }
+
         port = DEFAULT_PORT;
         component = new Component();
         component.getServers().add(Protocol.HTTP, port);
