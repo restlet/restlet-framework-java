@@ -244,7 +244,7 @@ public class AuthenticationUtils {
 
                         try {
                             if (!isNonceValid(nonce, guard.getServerKey(),
-                                    guard.getNonceLifespanMillis())) {
+                                    guard.getNonceLifespan())) {
                                 // Nonce expired, send challenge request with
                                 // stale=true
                                 return Guard.AUTHENTICATION_STALE;
@@ -347,7 +347,7 @@ public class AuthenticationUtils {
                     .getParameters();
             StringBuffer domain = new StringBuffer();
 
-            for (String baseUri : guard.getBaseUris()) {
+            for (String baseUri : guard.getDomainUris()) {
                 domain.append(baseUri).append(' ');
             }
 
