@@ -175,14 +175,14 @@ public class SecurityUtils {
             // Append the AWS credentials
             sb.append(challenge.getIdentifier()).append(':').append(
                     Base64.encode(toHMac(rest.toString(), new String(challenge
-                            .getSecret())), true));
+                            .getSecret())), false));
         } else if (challenge.getScheme().equals(ChallengeScheme.HTTP_BASIC)) {
             try {
                 String credentials = challenge.getIdentifier() + ':'
                         + new String(challenge.getSecret());
                 sb
                         .append(Base64.encode(credentials.getBytes("US-ASCII"),
-                                true));
+                                false));
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(
                         "Unsupported encoding, unable to encode credentials");
@@ -213,7 +213,7 @@ public class SecurityUtils {
                         + new String(challenge.getSecret());
                 sb
                         .append(Base64.encode(credentials.getBytes("US-ASCII"),
-                                true));
+                                false));
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(
                         "Unsupported encoding, unable to encode credentials");

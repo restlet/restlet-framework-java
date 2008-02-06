@@ -39,6 +39,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(DirectoryTestCase.class);
         addTestSuite(FileClientTestCase.class);
         addTestSuite(FileReferenceTestCase.class);
+        addTestSuite(FileRepresentationTestCase.class);
         addTestSuite(FilterTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
         addTestSuite(HttpBasicTestCase.class);
@@ -50,6 +51,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RestartTestCase.class);
         addTestSuite(RiapTestCase.class);
         addTestSuite(RouteListTestCase.class);
+        addTestSuite(SpringTestCase.class);
         addTestSuite(StatusTestCase.class);
         addTestSuite(TemplateTestCase.class);
         addTestSuite(TransformerTestCase.class);
