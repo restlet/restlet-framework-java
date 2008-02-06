@@ -769,7 +769,6 @@ public class Template {
             pattern.append(content);
         } else {
             pattern.append("[").append(content).append(']');
-
         }
 
         if (required) {
@@ -1120,7 +1119,6 @@ public class Template {
             final String URI_GEN_DELIMS = "\\:\\/\\?\\#\\[\\]\\@";
             final String URI_SUB_DELIMS = "\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=";
             final String URI_RESERVED = URI_GEN_DELIMS + URI_SUB_DELIMS;
-            final String URI_ALL = URI_RESERVED + URI_UNRESERVED;
             final String WORD = "\\w";
 
             // Expressions to create non-capturing groups
@@ -1131,6 +1129,9 @@ public class Template {
                     + "\\:\\@]|(?:" + PCT_ENCODED + ")";
             final String QUERY = PCHAR + "|\\/|\\?";
             final String FRAGMENT = QUERY;
+            final String URI_PATH = PCHAR + "|\\/";
+            final String URI_ALL = "[" + URI_RESERVED + URI_UNRESERVED
+                    + "]|(?:" + PCT_ENCODED + ")";
 
             StringBuilder coreRegex = new StringBuilder();
 
@@ -1148,7 +1149,7 @@ public class Template {
                 appendClass(coreRegex, ALPHA_DIGIT, variable.isRequired());
                 break;
             case Variable.TYPE_URI_ALL:
-                appendClass(coreRegex, URI_ALL, variable.isRequired());
+                appendGroup(coreRegex, URI_ALL, variable.isRequired());
                 break;
             case Variable.TYPE_URI_UNRESERVED:
                 appendClass(coreRegex, URI_UNRESERVED, variable.isRequired());
@@ -1156,9 +1157,11 @@ public class Template {
             case Variable.TYPE_WORD:
                 appendClass(coreRegex, WORD, variable.isRequired());
                 break;
-
             case Variable.TYPE_URI_FRAGMENT:
                 appendGroup(coreRegex, FRAGMENT, variable.isRequired());
+                break;
+            case Variable.TYPE_URI_PATH:
+                appendGroup(coreRegex, URI_PATH, variable.isRequired());
                 break;
             case Variable.TYPE_URI_QUERY:
                 appendGroup(coreRegex, QUERY, variable.isRequired());

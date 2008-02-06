@@ -65,7 +65,9 @@ Changes log
  - Added support for nested resources in WadlComponent. Contributed by Avi Flax.
  - Resources with no variant set now log a warning on GET requests. Contributed by Avi Flax.
  - Added static Representation.createEmpty() method to return a new empty representation. 
-  
+ - Added Variable.TYPE_URI_PATH to match any path character except in the query or fragment parts.
+   Suggested by Stephan Koops. 
+ 
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
  - Handlers now return a SERVER_INTERNAL_ERROR instead of CLIENT_NOT_FOUND when no next Restlet is

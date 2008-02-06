@@ -43,35 +43,38 @@ public final class Variable {
     /** Matches URI fragment characters. */
     public static final int TYPE_URI_FRAGMENT = 6;
 
+    /** Matches URI path characters (not the query or the fragment parts). */
+    public static final int TYPE_URI_PATH = 7;
+
     /** Matches URI query characters. */
-    public static final int TYPE_URI_QUERY = 7;
+    public static final int TYPE_URI_QUERY = 8;
 
     /** Matches URI scheme characters. */
-    public static final int TYPE_URI_SCHEME = 8;
+    public static final int TYPE_URI_SCHEME = 9;
 
     /** Matches URI segment characters. */
-    public static final int TYPE_URI_SEGMENT = 9;
+    public static final int TYPE_URI_SEGMENT = 10;
 
     /** Matches unreserved URI characters. */
-    public static final int TYPE_URI_UNRESERVED = 10;
+    public static final int TYPE_URI_UNRESERVED = 11;
 
     /** Matches all alphabetical and digital characters plus the underscore. */
-    public static final int TYPE_WORD = 11;
-
-    /** The type of variable. See TYPE_* constants. */
-    private int type;
+    public static final int TYPE_WORD = 12;
 
     /** The default value to use if the key couldn't be found in the model. */
     private String defaultValue;
-
-    /** Indicates if the variable is required or optional. */
-    private boolean required;
 
     /**
      * Indicates if the value is fixed, in which case the "defaultValue"
      * property is always used.
      */
     private boolean fixed;
+
+    /** Indicates if the variable is required or optional. */
+    private boolean required;
+
+    /** The type of variable. See TYPE_* constants. */
+    private int type;
 
     /**
      * Default constructor. Type is TYPE_ALL, default value is "", required is
