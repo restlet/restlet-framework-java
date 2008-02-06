@@ -284,9 +284,9 @@ public abstract class AbstractJaxRsWrapper {
                         allTemplParamsEnc, i, authenticator);
                 if (httpContext == null && arg instanceof HttpContextImpl)
                     httpContext = (HttpContextImpl) arg;
-            } catch (IllegalOrNoAnnotationException e) {
+            } catch (IllegalOrNoAnnotationException ionae) {
                 if (annotRequired)
-                    throw e;
+                    throw ionae;
                 annotRequired = true;
                 if (mbrs == null) {
                     throw new NoMessageBodyReadersException();
@@ -311,10 +311,10 @@ public abstract class AbstractJaxRsWrapper {
                                         .getCharacterSet());
                         arg = mbr.readFrom(paramType, jaxRsMediaType,
                                 httpHeaders, entity.getStream());
-                    } catch (IOException e1) {
+                    } catch (IOException e) {
                         throw new CanNotIntatiateParameterException(
                                 "Can not instatiate parameter of type "
-                                        + paramType.getName());
+                                        + paramType.getName(), e);
                     }
                 }
             }

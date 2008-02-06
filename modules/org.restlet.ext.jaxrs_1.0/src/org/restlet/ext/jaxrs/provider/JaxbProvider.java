@@ -20,7 +20,6 @@ package org.restlet.ext.jaxrs.provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
@@ -29,7 +28,6 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -74,10 +72,8 @@ public class JaxbProvider extends AbstractProvider<Object> {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             return unmarshaller.unmarshal(entityStream);
         } catch (JAXBException e) {
-            logger.log(Level.WARNING, "Could not unmarshal to "
-                    + type.getName(), e);
-            throw new IOException("Could not marshal to " + type.getName()
-                    + ": " + e.getMessage());
+            String message = "Could not unmarshal to " + type.getName();
+            throw logAndIOExc(logger, message, e);
         }
     }
 
@@ -94,16 +90,9 @@ public class JaxbProvider extends AbstractProvider<Object> {
             JAXBContext jaxbContext = getJaxbContext(object.getClass());
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.marshal(object, entityStream);
-        } catch (PropertyException e) {
-            logger.log(Level.WARNING, "Could not marshal the "
-                    + object.getClass().getName(), e);
-            throw new IOException("Could not marshal the "
-                    + object.getClass().getName() + ": " + e.getMessage());
         } catch (JAXBException e) {
-            logger.log(Level.WARNING, "Could not marshal the "
+            throw logAndIOExc(logger, "Could not marshal the "
                     + object.getClass().getName(), e);
-            throw new IOException("Could not marshal the "
-                    + object.getClass().getName() + ": " + e.getMessage());
         }
     }
 

@@ -20,6 +20,8 @@ package org.restlet.ext.jaxrs.provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -104,4 +106,19 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
     public abstract T readFrom(Class<T> type, MediaType mediaType,
             MultivaluedMap<String, String> httpResponseHeaders,
             InputStream entityStream) throws IOException;
+
+    /**
+     * Logs the problem and throws an IOException.
+     * @param logger
+     * @param message
+     * @param exc 
+     * @throws IOException
+     */
+    protected static IOException logAndIOExc(Logger logger, String message,
+            Throwable exc) throws IOException {
+        logger.log(Level.WARNING, message, exc);
+        if (exc == null)
+            throw new IOException(message);
+        throw new IOException(message + ": " + exc.getMessage());
+    }
 }
