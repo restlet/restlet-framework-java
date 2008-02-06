@@ -19,18 +19,18 @@
 package org.restlet.ext.jaxrs.exceptions;
 
 /**
- * This class is the super class for the exception in this implementation.
+ * Thrown if a constructor or method parameter could not be instantiated.
  * 
  * @author Stephan Koops
  */
-public abstract class JaxRsException extends Exception {
-    private static final long serialVersionUID = -7662465289573982489L;
+public class InstantiateParameterException extends JaxRsException {
+    private static final long serialVersionUID = 951579935427584482L;
 
     /**
      * 
      * @param message
      */
-    public JaxRsException(String message) {
+    public InstantiateParameterException(String message) {
         super(message);
     }
 
@@ -38,7 +38,7 @@ public abstract class JaxRsException extends Exception {
      * 
      * @param cause
      */
-    public JaxRsException(Throwable cause) {
+    public InstantiateParameterException(Throwable cause) {
         super(cause);
     }
 
@@ -47,7 +47,25 @@ public abstract class JaxRsException extends Exception {
      * @param message
      * @param cause
      */
-    public JaxRsException(String message, Throwable cause) {
+    public InstantiateParameterException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * Throws a message, that the given String value could not be converted to a
+     * primitive.
+     * 
+     * @param type
+     * @param unparseableValue
+     * @param cause
+     * @return
+     * @throws InstantiateParameterException
+     */
+    public static InstantiateParameterException primitive(Class<?> type,
+            String unparseableValue, Throwable cause)
+            throws InstantiateParameterException {
+        throw new InstantiateParameterException(
+                "Could not convert the String \"" + unparseableValue
+                        + "\" to a " + type, cause);
     }
 }

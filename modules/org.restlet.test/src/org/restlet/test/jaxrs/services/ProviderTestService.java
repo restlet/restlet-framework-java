@@ -27,6 +27,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import org.restlet.data.Form;
 import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
@@ -91,6 +93,18 @@ public class ProviderTestService {
     @Path("jaxb")
     public String putJaxb(Person person) {
         return person.toString();
+    }
+
+    @GET
+    @Path("jaxbElement")
+    public JAXBElement<Person> getJaxbElement() {
+        return new JAXBElement<Person>(new QName(""), Person.class, getJaxb());
+    }
+
+    @POST
+    @Path("jaxbElement")
+    public String putJaxb(JAXBElement<Person> person) {
+        return person.getValue().toString();
     }
 
     @GET

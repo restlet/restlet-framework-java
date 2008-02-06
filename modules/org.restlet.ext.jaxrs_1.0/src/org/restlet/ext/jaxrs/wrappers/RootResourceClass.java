@@ -36,9 +36,10 @@ import javax.ws.rs.core.UriInfo;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.Authenticator;
-import org.restlet.ext.jaxrs.exceptions.CanNotIntatiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateRootRessourceException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 
@@ -139,12 +140,18 @@ public class RootResourceClass extends ResourceClass {
      *                Authenticator for role requests, see
      *                {@link SecurityContext#isUserInRole(String)}.
      * @return
-     * @throws Exception
+     * @throws InstantiateParameterException
+     * @throws InvocationTargetException
+     * @throws RequestHandledException
+     * @throws InstantiateRootRessourceException
+     * @throws IllegalOrNoAnnotationException
      */
     public ResourceObject createInstance(
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequ, Response restletResponse,
-            Authenticator authenticator) throws Exception {
+            Authenticator authenticator) throws InstantiateParameterException,
+            IllegalOrNoAnnotationException, InstantiateRootRessourceException,
+            RequestHandledException, InvocationTargetException {
         Constructor<?> constructor = this.constructor;
         Object newInstance = createInstance(constructor, allTemplParamsEnc,
                 restletRequ, restletResponse, authenticator);
@@ -166,35 +173,50 @@ public class RootResourceClass extends ResourceClass {
      *                Authenticator for role requests, see
      *                {@link SecurityContext#isUserInRole(String)}.
      * @return
-     * @throws RequestHandledException
-     * @throws CanNotIntatiateParameterException
      * @throws IllegalOrNoAnnotationException
+     * @throws RequestHandledException
+     * @throws InstantiateParameterException
+     * @throws InstantiateRootRessourceException
+     *                 if the class could not be instantiated.
      * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     * @throws IllegalArgumentException
-     * @throws Exception
      */
     public static Object createInstance(Constructor<?> constructor,
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequ, Response restletResponse,
             Authenticator authenticator) throws IllegalOrNoAnnotationException,
-            CanNotIntatiateParameterException, RequestHandledException,
-            IllegalArgumentException, InstantiationException,
-            IllegalAccessException, InvocationTargetException {
+            RequestHandledException, InstantiateParameterException,
+            InstantiateRootRessourceException, InvocationTargetException {
         Object[] args;
         if (constructor.getParameterTypes().length == 0) {
             args = new Object[0];
         } else {
             try {
-                args = getParameterValues(constructor.getParameterAnnotations(),
-                        constructor.getParameterTypes(), restletRequ,
+                args = getParameterValues(
+                        constructor.getParameterAnnotations(), constructor
+                                .getParameterTypes(), restletRequ,
                         restletResponse, allTemplParamsEnc, authenticator, null);
             } catch (NoMessageBodyReadersException e) {
-                throw new IllegalOrNoAnnotationException("the root resource class constructor ("+constructor+") must have annotations on any parameters. (normally this excpetion could not occur)");
+                throw new IllegalOrNoAnnotationException(
+                        "the root resource class constructor ("
+                                + constructor
+                                + ") must have annotations on any parameters. (normally this excpetion could not occur)");
             }
         }
-        return constructor.newInstance(args);
+        try {
+            return constructor.newInstance(args);
+        } catch (IllegalArgumentException e) {
+            throw new InstantiateRootRessourceException(
+                    "Could not instantiate " + constructor.getDeclaringClass(),
+                    e);
+        } catch (InstantiationException e) {
+            throw new InstantiateRootRessourceException(
+                    "Could not instantiate " + constructor.getDeclaringClass(),
+                    e);
+        } catch (IllegalAccessException e) {
+            throw new InstantiateRootRessourceException(
+                    "Could not instantiate " + constructor.getDeclaringClass(),
+                    e);
+        }
     }
 
     @Override

@@ -23,13 +23,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.Authenticator;
-import org.restlet.ext.jaxrs.exceptions.CanNotIntatiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 
@@ -85,29 +87,36 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @param mbrs
      *                The {@link MessageBodyReaderSet}
      * @return
-     * @throws RequestHandledException
-     * @throws CanNotIntatiateParameterException
-     * @throws IllegalOrNoAnnotationException
+     * @throws MethodInvokeException
      * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
+     * @throws InstantiateParameterException
      * @throws NoMessageBodyReadersException
+     * @throws RequestHandledException
+     * @throws WebApplicationException
+     * @throws IllegalOrNoAnnotationException
      */
     public Object invoke(ResourceObject resourceObject,
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequest, Response restletResponse,
             Authenticator authenticator, MessageBodyReaderSet mbrs)
-            throws IllegalOrNoAnnotationException,
-            CanNotIntatiateParameterException, RequestHandledException,
-            IllegalArgumentException, IllegalAccessException,
-            InvocationTargetException, NoMessageBodyReadersException {
+            throws MethodInvokeException, InvocationTargetException,
+            IllegalOrNoAnnotationException, WebApplicationException,
+            RequestHandledException, NoMessageBodyReadersException,
+            InstantiateParameterException {
         Annotation[][] parameterAnnotationss = javaMethod
                 .getParameterAnnotations();
         Class<?>[] parameterTypes = javaMethod.getParameterTypes();
         Object[] args = getParameterValues(parameterAnnotationss,
                 parameterTypes, restletRequest, restletResponse,
                 allTemplParamsEnc, authenticator, mbrs);
-        return this.javaMethod.invoke(resourceObject.getResourceObject(), args);
+        try {
+            return this.javaMethod.invoke(resourceObject.getResourceObject(),
+                    args);
+        } catch (IllegalArgumentException e) {
+            throw new MethodInvokeException("Could not invoke " + javaMethod, e);
+        } catch (IllegalAccessException e) {
+            throw new MethodInvokeException("Could not invoke " + javaMethod, e);
+        }
     }
 
     @Override

@@ -31,6 +31,7 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
@@ -42,8 +43,8 @@ import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.core.HttpContextImpl;
 import org.restlet.ext.jaxrs.core.UnmodifiableMultivaluedMap;
-import org.restlet.ext.jaxrs.exceptions.CanNotIntatiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
@@ -94,16 +95,21 @@ public abstract class AbstractJaxRsWrapper {
      * @param paramClass
      * @param paramValue
      * @return
-     * @throws CanNotIntatiateParameterException
+     * @throws InstantiateParameterException
+     * @throws
+     * @throws WebApplicationException
      * @see PathParam
      * @see MatrixParam
      * @see QueryParam
      * @see HeaderParam
      */
     private static Object getParameterValueFromParam(Class<?> paramClass,
-            String paramValue) throws CanNotIntatiateParameterException {
+            String paramValue) throws InstantiateParameterException,
+            WebApplicationException {
         if (paramClass.equals(String.class))
             return paramValue;
+        if (paramClass.isPrimitive())
+            return getParamValueForPrimitive(paramClass, paramValue);
         try {
             Constructor<?> constructor = paramClass
                     .getConstructor(String.class);
@@ -115,24 +121,70 @@ public abstract class AbstractJaxRsWrapper {
         try {
             valueOf = paramClass.getMethod("valueOf", String.class);
         } catch (SecurityException e) {
-            throw new CanNotIntatiateParameterException("Could not convert "
+            throw new InstantiateParameterException("Could not convert "
                     + paramValue + " to a " + paramClass.getName(), e);
         } catch (NoSuchMethodException e) {
-            throw new CanNotIntatiateParameterException("Could not convert "
+            throw new InstantiateParameterException("Could not convert "
                     + paramValue + " to a " + paramClass.getName(), e);
         }
         try {
             return valueOf.invoke(null, paramValue);
         } catch (IllegalArgumentException e) {
-            throw new CanNotIntatiateParameterException("Could not convert "
+            throw new InstantiateParameterException("Could not convert "
                     + paramValue + " to a " + paramClass.getName(), e);
         } catch (IllegalAccessException e) {
-            throw new CanNotIntatiateParameterException("Could not convert "
+            throw new InstantiateParameterException("Could not convert "
                     + paramValue + " to a " + paramClass.getName(), e);
         } catch (InvocationTargetException e) {
-            throw new CanNotIntatiateParameterException("Could not convert "
+            throw new InstantiateParameterException("Could not convert "
                     + paramValue + " to a " + paramClass.getName(), e);
         }
+    }
+
+    /**
+     * @param paramClass
+     * @param paramValue
+     * @throws WebApplicationException
+     * @throws
+     */
+    private static Object getParamValueForPrimitive(Class<?> paramClass,
+            String paramValue) throws WebApplicationException, InstantiateParameterException {
+        try {
+            if (paramClass == Integer.TYPE)
+                return new Integer(paramValue);
+            if (paramClass == Double.TYPE)
+                return new Double(paramValue);
+            if (paramClass == Float.TYPE)
+                return new Float(paramValue);
+            if (paramClass == Byte.TYPE)
+                return new Byte(paramValue);
+            if (paramClass == Long.TYPE)
+                return new Long(paramValue);
+            if (paramClass == Short.TYPE)
+                return new Short(paramValue);
+            if (paramClass == Character.TYPE) {
+                if (paramValue.length() == 1)
+                    return paramValue.charAt(0);
+                throw InstantiateParameterException.primitive(paramClass,
+                        paramValue, null);
+            }
+            if (paramClass == Boolean.TYPE) {
+                if (paramValue.equalsIgnoreCase("true"))
+                    return Boolean.TRUE;
+                if (paramValue.equalsIgnoreCase("false"))
+                    return Boolean.FALSE;
+                throw InstantiateParameterException.primitive(paramClass,
+                        paramValue, null);
+            }
+        } catch (IllegalArgumentException e) {
+            throw InstantiateParameterException.primitive(paramClass,
+                    paramValue, e);
+        }
+        if (paramClass == Void.TYPE)
+            // TODO log, this can not be
+            throw new WebApplicationException(500);
+        // TODO log: new primitive type found !
+        throw new WebApplicationException(500);
     }
 
     /**
@@ -186,7 +238,9 @@ public abstract class AbstractJaxRsWrapper {
      *                 Thrown, when no valid annotation was found. For
      *                 (Sub)ResourceMethods this is one times allowed; than the
      *                 given request entity should taken as parameter.
-     * @throws CanNotIntatiateParameterException
+     * @throws InstantiateParameterException
+     * @throws
+     * @throws WebApplicationException
      */
     private static Object getParameterValue(Annotation[] paramAnnotations,
             Class<?> paramClass, Request restletRequest,
@@ -194,7 +248,7 @@ public abstract class AbstractJaxRsWrapper {
             MultivaluedMap<String, String> allTemplParamsEnc,
             int indexForExcMessages, Authenticator authenticator)
             throws IllegalOrNoAnnotationException,
-            CanNotIntatiateParameterException {
+            InstantiateParameterException, WebApplicationException {
         for (Annotation annotation : paramAnnotations) {
             Class<? extends Annotation> annotationType = annotation
                     .annotationType();
@@ -258,9 +312,11 @@ public abstract class AbstractJaxRsWrapper {
      *                The Set of {@link MessageBodyReader}s.
      * @return the parameter array
      * @throws IllegalOrNoAnnotationException
-     * @throws CanNotIntatiateParameterException
+     * @throws InstantiateParameterException
      * @throws RequestHandledException
-     * @throws NoMessageBodyReadersException 
+     * @throws NoMessageBodyReadersException
+     * @throws
+     * @throws WebApplicationException
      */
     protected static Object[] getParameterValues(
             Annotation[][] parameterAnnotationss, Class<?>[] parameterTypes,
@@ -268,7 +324,8 @@ public abstract class AbstractJaxRsWrapper {
             MultivaluedMap<String, String> allTemplParamsEnc,
             Authenticator authenticator, MessageBodyReaderSet mbrs)
             throws IllegalOrNoAnnotationException,
-            CanNotIntatiateParameterException, RequestHandledException, NoMessageBodyReadersException {
+            InstantiateParameterException, RequestHandledException,
+            NoMessageBodyReadersException, WebApplicationException {
         int paramNo = parameterTypes.length;
         if (paramNo == 0)
             return new Object[0];
@@ -312,7 +369,7 @@ public abstract class AbstractJaxRsWrapper {
                         arg = mbr.readFrom(paramType, jaxRsMediaType,
                                 httpHeaders, entity.getStream());
                     } catch (IOException e) {
-                        throw new CanNotIntatiateParameterException(
+                        throw new InstantiateParameterException(
                                 "Can not instatiate parameter of type "
                                         + paramType.getName(), e);
                     }

@@ -46,6 +46,11 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
+import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateRootRessourceException;
+import org.restlet.ext.jaxrs.exceptions.JaxRsException;
+import org.restlet.ext.jaxrs.exceptions.JaxRsRuntimeException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.impl.MatchingResult;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
@@ -358,22 +363,34 @@ public class JaxRsRouter extends Restlet {
      * @param messageBodyReaderClass
      *                The {@link javax.ws.rs.ext.MessageBodyReader} class to add
      *                to the JaxRsRouter.
-     * @throws IllegalArgumentException
-     *                 If no instance of the provider could created.
+     * @throws JaxRsRuntimeException
+     *                 if the MessageBodyReader could not be added to the
+     *                 JaxRsRouter.
      */
     public void addMessageBodyReader(Class<?> messageBodyReaderClass)
-            throws IllegalArgumentException {
+            throws JaxRsRuntimeException {
         Constructor<?> constructor = RootResourceClass
                 .findJaxRsConstructor(messageBodyReaderClass);
         Object provider;
         try {
             provider = RootResourceClass.createInstance(constructor, null,
                     null, null, authenticator);
-        } catch (Exception e) {
+        } catch (InstantiateParameterException e) {
+            // should be not possible here
+            throw new JaxRsRuntimeException(
+                    "Could not instantiate the root resource class", e);
+        } catch (JaxRsException e) {
             String message = "MessageBodyReader could not be instantiated";
             if (e.getMessage() != null)
                 message += ": " + e.getMessage();
-            throw new IllegalArgumentException(message, e);
+            throw new JaxRsRuntimeException(message, e);
+        } catch (RequestHandledException e) {
+            throw new JaxRsRuntimeException(
+                    "MessageBodyReader could not be instantiated");
+        } catch (InvocationTargetException e) {
+            throw new JaxRsRuntimeException(
+                    "The MessageBodyReader constructor throwed an Exception", e
+                            .getCause());
         }
         this.messageBodyReaders.add(new MessageBodyReader(
                 (javax.ws.rs.ext.MessageBodyReader<?>) provider));
@@ -417,9 +434,22 @@ public class JaxRsRouter extends Restlet {
         try {
             provider = RootResourceClass.createInstance(constructor, null,
                     null, null, authenticator);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Provider could not be instantiated: " + e.getMessage(), e);
+        } catch (InstantiateParameterException e) {
+            // should be not possible here
+            throw new JaxRsRuntimeException(
+                    "Could not instantiate the MessageBodyWriter", e);
+        } catch (IllegalOrNoAnnotationException e) {
+            throw new JaxRsRuntimeException(
+                    "Could not instantiate the MessageBodyWriter", e);
+        } catch (InstantiateRootRessourceException e) {
+            throw new JaxRsRuntimeException(
+                    "Could not instantiate the MessageBodyWriter", e);
+        } catch (RequestHandledException e) {
+            throw new JaxRsRuntimeException(
+                    "Could not instantiate the MessageBodyWriter", e);
+        } catch (InvocationTargetException e) {
+            throw new JaxRsRuntimeException(
+                    "Could not instantiate the MessageBodyWriter", e.getCause());
         }
         this.messageBodyWriters.add(new MessageBodyWriter(
                 (javax.ws.rs.ext.MessageBodyWriter<?>) provider));
@@ -436,24 +466,29 @@ public class JaxRsRouter extends Restlet {
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
+        @SuppressWarnings("unchecked")
+        List<Collection<MediaType>> accMediaTypes = (List) Util
+                .sortMetadataList((Collection) request.getClientInfo()
+                        .getAcceptedMediaTypes());
         try {
-            @SuppressWarnings("unchecked")
-            List<Collection<MediaType>> accMediaTypes = (List) Util
-                    .sortMetadataList((Collection) request.getClientInfo()
-                            .getAcceptedMediaTypes());
-            ResObjAndMeth resObjAndMeth;
             try {
-                resObjAndMeth = matchingRequestToResourceMethod(request,
-                        response, accMediaTypes);
-            } catch (CouldNotFindMethodException e) {
-                e.errorRestlet.handle(request, response); // e.printStackTrace()
-                return;
+                ResObjAndMeth resObjAndMeth;
+                try {
+                    resObjAndMeth = matchingRequestToResourceMethod(request,
+                            response, accMediaTypes);
+                } catch (CouldNotFindMethodException e) {
+                    e.errorRestlet.handle(request, response); // e.printStackTrace()
+                    return;
+                }
+                ResourceMethod resourceMethod = resObjAndMeth.resourceMethod;
+                ResourceObject resourceObject = resObjAndMeth.resourceObject;
+                MultivaluedMap<String, String> allTemplParamsEnc = resObjAndMeth.allTemplParamsEnc;
+                invokeMethodAndHandleResult(resourceMethod, resourceObject,
+                        allTemplParamsEnc, request, response, accMediaTypes);
+            } catch (WebApplicationException e) {
+                handleWebAppExc(e, response, accMediaTypes, null);
+                // Exception was handled and data were set into the Response.
             }
-            ResourceMethod resourceMethod = resObjAndMeth.resourceMethod;
-            ResourceObject resourceObject = resObjAndMeth.resourceObject;
-            MultivaluedMap<String, String> allTemplParamsEnc = resObjAndMeth.allTemplParamsEnc;
-            invokeMethodAndHandleResult(resourceMethod, resourceObject,
-                    allTemplParamsEnc, request, response, accMediaTypes);
         } catch (RequestHandledException e) {
             // Exception was handled and data were set into the Response.
         }
@@ -566,6 +601,8 @@ public class JaxRsRouter extends Restlet {
         try {
             o = resClass.createInstance(allTemplParamsEnc, restletRequest,
                     restletResponse, authenticator);
+        } catch (InstantiateParameterException e) {
+            throw new WebApplicationException(e, 404);
         } catch (Exception e) {
             throw handleCreateException(e, restletResponse, "createInstance",
                     "Could not create new instance of root resource class");
@@ -613,6 +650,8 @@ public class JaxRsRouter extends Restlet {
                 o = subResourceLocator.createSubResource(o, allTemplParamsEnc,
                         restletRequest, restletResponse, authenticator,
                         this.messageBodyReaders);
+            } catch (InstantiateParameterException e) {
+                throw new WebApplicationException(e, 404);
             } catch (Exception e) {
                 throw handleCreateException(e, restletResponse,
                         "createSubResource",
@@ -1121,6 +1160,8 @@ public class JaxRsRouter extends Restlet {
             result = resourceMethod.invoke(resourceObject, allTemplParamsEnc,
                     restletRequest, restletResponse, authenticator,
                     this.messageBodyReaders);
+        } catch (InstantiateParameterException e) {
+            throw new WebApplicationException(e, 404);
         } catch (InvocationTargetException ite) {
             // TODO wenn RuntimeException, dann weitergeben.
             throw handleInvokeException(ite, accMediaTypes, resourceMethod,

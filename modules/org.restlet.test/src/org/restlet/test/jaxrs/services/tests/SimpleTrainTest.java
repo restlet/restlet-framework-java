@@ -18,8 +18,6 @@
 
 package org.restlet.test.jaxrs.services.tests;
 
-import java.io.IOException;
-
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -102,12 +100,6 @@ public class SimpleTrainTest extends JaxRsTestCase {
         Representation representation = response.getEntity();
         assertEqualMediaType(MediaType.TEXT_HTML, representation.getMediaType());
         assertEquals(SimpleTrain.RERP_HTML_TEXT, representation.getText());
-    }
-
-    public void testGetWithSlashInUriParam() throws IOException {
-        Response response = get("multSegm/abc/def");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("abc/def", response.getEntity().getText());
     }
 
     public void testHead() throws Exception {

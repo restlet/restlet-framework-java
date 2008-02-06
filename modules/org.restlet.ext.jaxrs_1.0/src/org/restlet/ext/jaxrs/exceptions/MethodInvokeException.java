@@ -15,39 +15,40 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.exceptions;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
- * This class is the super class for the exception in this implementation.
+ * Indicates, that an invoke of a resource method was not possible. If the
+ * invoked method throws a Throwable, the {@link InvocationTargetException} must
+ * be used.
  * 
  * @author Stephan Koops
  */
-public abstract class JaxRsException extends Exception {
-    private static final long serialVersionUID = -7662465289573982489L;
+public class MethodInvokeException extends JaxRsException {
+
+    private static final long serialVersionUID = 1766085431784085073L;
 
     /**
-     * 
      * @param message
      */
-    public JaxRsException(String message) {
+    public MethodInvokeException(String message) {
         super(message);
     }
 
     /**
-     * 
      * @param cause
      */
-    public JaxRsException(Throwable cause) {
+    public MethodInvokeException(Throwable cause) {
         super(cause);
     }
 
     /**
-     * 
      * @param message
      * @param cause
      */
-    public JaxRsException(String message, Throwable cause) {
+    public MethodInvokeException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -28,13 +28,16 @@ public class AllServiceTests extends TestCase {
         mySuite.setName("All service tests");
         mySuite.addTestSuite(CarTest.class);
         mySuite.addTestSuite(HttpHeaderTest.class);
-        mySuite.addTestSuite(SimpleTrainTest.class);
-        mySuite.addTestSuite(SimpleHouseTest.class);
         mySuite.addTestSuite(PathParamTest.class);
+        mySuite.addTestSuite(PathParamTest2.class);
+        mySuite.addTestSuite(ProviderTest.class);
         mySuite.addTestSuite(RequestTest.class);
         mySuite.addTestSuite(ResponseBuilderTest.class);
         mySuite.addTestSuite(SecurityContextTest.class);
-
+        mySuite.addTestSuite(SimpleHouseTest.class);
+        mySuite.addTestSuite(SimpleTrainTest.class);
+        
+        // at the end because it uses multiple of the previous classes
         mySuite.addTestSuite(MultipleResourcesTest.class);
         return mySuite;
     }

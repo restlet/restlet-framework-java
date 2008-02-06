@@ -19,18 +19,18 @@
 package org.restlet.ext.jaxrs.exceptions;
 
 /**
- * Thrown if a constructor or method parameter could not be instantiated.
- * @author Stephan Koop
- *
+ * Thrown if a root resource can not be instantiated.
+ * 
+ * @author Stephan Koops
  */
-public class CanNotIntatiateParameterException extends JaxRsException {
+public class InstantiateRootRessourceException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**
      * 
      * @param message
      */
-    public CanNotIntatiateParameterException(String message) {
+    public InstantiateRootRessourceException(String message) {
         super(message);
     }
 
@@ -38,7 +38,7 @@ public class CanNotIntatiateParameterException extends JaxRsException {
      * 
      * @param cause
      */
-    public CanNotIntatiateParameterException(Throwable cause) {
+    public InstantiateRootRessourceException(Throwable cause) {
         super(cause);
     }
 
@@ -47,7 +47,7 @@ public class CanNotIntatiateParameterException extends JaxRsException {
      * @param message
      * @param cause
      */
-    public CanNotIntatiateParameterException(String message, Throwable cause) {
+    public InstantiateRootRessourceException(String message, Throwable cause) {
         super(message, cause);
     }
 }

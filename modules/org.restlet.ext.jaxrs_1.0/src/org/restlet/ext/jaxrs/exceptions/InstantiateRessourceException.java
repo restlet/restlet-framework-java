@@ -19,36 +19,21 @@
 package org.restlet.ext.jaxrs.exceptions;
 
 /**
- * Thrown if a root resource can not be instantated.
- * @author Stephan
- *
+ * Thrown if a resource can not be instantiated.
+ * 
+ * @author Stephan Koops
  */
-public class CanNotIntatiateRootRessourceException extends
-        JaxRsException {
+public class InstantiateRessourceException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**
      * 
-     * @param message
-     */
-    public CanNotIntatiateRootRessourceException(String message) {
-        super(message);
-    }
-
-    /**
-     * 
+     * @param resourceClass
      * @param cause
      */
-    public CanNotIntatiateRootRessourceException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
-     * 
-     * @param message
-     * @param cause
-     */
-    public CanNotIntatiateRootRessourceException(String message, Throwable cause) {
-        super(message, cause);
+    public InstantiateRessourceException(Class<?> resourceClass, Throwable cause) {
+        super(
+                "Could not instantiate resource class "
+                        + resourceClass.getName(), cause);
     }
 }

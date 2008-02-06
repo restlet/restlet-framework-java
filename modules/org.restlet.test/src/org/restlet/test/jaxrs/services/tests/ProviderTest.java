@@ -32,10 +32,52 @@ public class ProviderTest extends JaxRsTestCase {
 
     private static final Class<?> SERVICE_CLASS = ProviderTestService.class;
 
+    private static Form createForm() {
+        Form form = new Form();
+        form.add("firstname", "Angela");
+        form.add("lastname", "Merkel");
+        return form;
+    }
+
+    /**
+     * @param subPath
+     * @throws IOException
+     * @throws DOMException
+     */
+    private void getAndCheckJaxb(String subPath) throws Exception {
+        Response response = get(subPath);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        DomRepresentation entity = response.getEntityAsDom();
+        Node xml = entity.getDocument().getFirstChild();
+        assertEquals("person", xml.getNodeName());
+        NodeList nodeList = xml.getChildNodes();
+        Node node = nodeList.item(0);
+        assertEquals("firstname", node.getNodeName());
+        assertEquals("Angela", node.getFirstChild().getNodeValue());
+        node = nodeList.item(1);
+        assertEquals("lastname", node.getNodeName());
+        assertEquals("Merkel", node.getFirstChild().getNodeValue());
+        assertEquals(2, nodeList.getLength());
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected Class<?> getRootResourceClass() {
         return SERVICE_CLASS;
+    }
+
+    /**
+     * @param subPath
+     * @throws IOException
+     */
+    private void postAndCheck(String subPath) throws Exception {
+        Representation send = new DomRepresentation(
+                new StringRepresentation(
+                        "<person><firstname>Helmut</firstname><lastname>Kohl</lastname></person>\n"));
+        Response response = post(subPath, send);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation respEntity = response.getEntity();
+        assertEquals("Helmut Kohl", respEntity.getText());
     }
 
     public void testByteArray() throws Exception {
@@ -57,11 +99,22 @@ public class ProviderTest extends JaxRsTestCase {
         Representation entity = response.getEntity();
         assertEquals(ProviderTestService.ALPHABET, entity.getText());
 
-        entity = new StringRepresentation("big test");
-        response = post("file", entity);
+        response = post("file", new StringRepresentation("big test"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        entity = response.getEntity();
-        assertEquals("big test", entity.getText());
+        assertEquals("big test", response.getEntity().getText());
+    }
+
+    public void testForm() throws Exception {
+        Response response = get("form");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation entity = response.getEntity();
+        assertEquals("firstname=Angela&lastname=Merkel", entity.getText());
+
+        response = post("form", createForm().getWebRepresentation());
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation respEntity = response.getEntity();
+        assertEquals("[firstname: Angela, lastname: Merkel]", respEntity
+                .getText());
     }
 
     public void testInputStream() throws Exception {
@@ -77,50 +130,21 @@ public class ProviderTest extends JaxRsTestCase {
         assertEquals("big test", entity.getText());
     }
 
+    public void testJaxbElementGet() throws Exception {
+        getAndCheckJaxb("jaxbElement");
+    }
+
+    // TODO JSR311: don't know how to implement the read of a JAXBElement.
+    // public void testJaxbElementPost() throws Exception {
+    // postAndCheck("jaxbElement");
+    // }
+
     public void testJaxbGet() throws Exception {
-        Response response = get("jaxb");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        DomRepresentation entity = response.getEntityAsDom();
-        Node xml = entity.getDocument().getFirstChild();
-        assertEquals("person", xml.getNodeName());
-        NodeList nodeList = xml.getChildNodes();
-        Node node = nodeList.item(0);
-        assertEquals("firstname", node.getNodeName());
-        assertEquals("Angela", node.getFirstChild().getNodeValue());
-        node = nodeList.item(1);
-        assertEquals("lastname", node.getNodeName());
-        assertEquals("Merkel", node.getFirstChild().getNodeValue());
-        assertEquals(2, nodeList.getLength());
+        getAndCheckJaxb("jaxb");
     }
 
     public void testJaxbPost() throws Exception {
-        Representation send = new DomRepresentation(
-                new StringRepresentation(
-                        "<person><firstname>Helmut</firstname><lastname>Kohl</lastname></person>\n"));
-        Response response = post("jaxb", send);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation respEntity = response.getEntity();
-        assertEquals("Helmut Kohl", respEntity.getText());
-    }
-
-    private static Form createForm()
-    {
-        Form form = new Form();
-        form.add("firstname", "Angela");
-        form.add("lastname", "Merkel");
-        return form;
-    }
-    
-    public void testForm() throws Exception {
-        Response response = get("form");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
-        assertEquals("firstname=Angela&lastname=Merkel", entity.getText());
-
-        response = post("form", createForm().getWebRepresentation());
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation respEntity = response.getEntity();
-        assertEquals("[firstname: Angela, lastname: Merkel]", respEntity.getText());
+        postAndCheck("jaxb");
     }
 
     public void testMultivaluedMap() throws Exception {
@@ -132,7 +156,8 @@ public class ProviderTest extends JaxRsTestCase {
         response = post("MultivaluedMap", createForm().getWebRepresentation());
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation respEntity = response.getEntity();
-        assertEquals("[lastname: Merkel, firstname: Angela]", respEntity.getText());
+        assertEquals("[lastname: Merkel, firstname: Angela]", respEntity
+                .getText());
     }
 
     public void testXmlTransform() throws Exception {

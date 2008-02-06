@@ -26,7 +26,7 @@ package org.restlet.ext.jaxrs.exceptions;
  * @author Stephan Koops
  * 
  */
-public class ImplementationException extends JaxRsException {
+public class ImplementationException extends JaxRsRuntimeException  {
 
     private static final long serialVersionUID = 5635188228961655076L;
 
