@@ -328,7 +328,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
             return SecurityContext.DIGEST_AUTH;
         return authScheme.getName();
         // LATER is SecurityContext.CLIENT_CERT_AUTH supported?
-        // LATER FORM_AUTH wird wohl auch nicht unterstützt.
+        // LATER FORM_AUTH wird wohl auch nicht unterstutzt.
     }
 
     /**

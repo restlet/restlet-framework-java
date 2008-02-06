@@ -23,7 +23,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
 /**
- * Diese Klasse wird von WidgetList.findWidget zurückgegeben, wenn ein bestimmes
+ * Diese Klasse wird von WidgetList.findWidget zuruckgegeben, wenn ein bestimmes
  * Widtget angefragt wird. Diese Klasse handelt dann die Anfragen auf diesem
  * Widget. <br>
  * In der JSR-311-Spec wird diese Klasse wird als Sub-Resource bezeichnet.
@@ -53,7 +53,7 @@ public class CarResource {
     }
 
     /**
-     * Können Sub-Resourcen können auch weiter Sub-Resourcen zurückgeben?
+     * Konnen Sub-Resourcen konnen auch weiter Sub-Resourcen zuruckgeben?
      * 
      * @param id
      * @return

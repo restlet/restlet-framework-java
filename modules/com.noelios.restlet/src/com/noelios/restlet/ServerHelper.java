@@ -104,8 +104,8 @@ public class ServerHelper extends ConnectorHelper {
     /**
      * Sets the ephemeral port in the attributes map if necessary.
      * 
-     * @param socket
-     *                The bound server socket.
+     * @param localPort
+     *                The ephemeral local port.
      */
     public void setEphemeralPort(int localPort) {
         // If an ephemeral port is used, make sure we update the attribute for

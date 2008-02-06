@@ -60,7 +60,7 @@ public class SimpleTrain {
         "".equals(x);
         if (checkForValidConstructor)
             throw new RuntimeException(
-                    "This Constructor is not allowed, because one of the paramters are not correct annotated");
+                    "This Constructor is not allowed, because one of the parameters are not correct annotated");
     }
 
     public SimpleTrain(@HeaderParam("p")
@@ -69,10 +69,10 @@ public class SimpleTrain {
         // this is a valid constructor
     }
 
-    /** Text der ausgegebenen Plain-Text-Repräsentation. */
+    /** Text der ausgegebenen Plain-Text-Representation. */
     public static final String RERP_PLAIN_TEXT = "This is a simple text train";
 
-    /** Text der ausgegebenen HTML-Text-Repräsentation. */
+    /** Text der ausgegebenen HTML-Text-Representation. */
     public static final String RERP_HTML_TEXT = "<html><body>This is a simple html train</body></html>";
 
     /**
@@ -122,8 +122,9 @@ public class SimpleTrain {
     }
 
     @GET
-    @Path(value="multSegm/{string}", limited=false)
-    public String getMultSegment(@PathParam("string") String string) {
+    @Path(value = "multSegm/{string}", limited = false)
+    public String getMultSegment(@PathParam("string")
+    String string) {
         return string;
     }
 }

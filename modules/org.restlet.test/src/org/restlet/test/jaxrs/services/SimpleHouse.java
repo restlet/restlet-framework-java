@@ -32,7 +32,7 @@ import javax.ws.rs.ProduceMime;
  */
 @Path("/ho%20use")
 public class SimpleHouse {
-    /** Text der ausgegebenen Plain-Text-Repräsentation. */
+    /** Text der ausgegebenen Plain-Text-Representation. */
     public static final String RERP_PLAIN_TEXT = "  /\\ \n /  \\ \n |  | \n +--+ \n \n This is a simple text house";
 
     /**
@@ -44,59 +44,52 @@ public class SimpleHouse {
     public String getPlainText() {
         return RERP_PLAIN_TEXT;
     }
-    
+
     @HEAD
     @Path("headTest1")
     @ProduceMime("text/html")
-    public String headTest1()
-    {
+    public String headTest1() {
         return null;
     }
 
     @GET
     @Path("headTest1")
     @ProduceMime("text/html")
-    public String getTest1()
-    {
+    public String getTest1() {
         return "4711";
     }
 
     @GET
     @Path("headTest1")
     @ProduceMime("text/plain")
-    public String getTest1a()
-    {
+    public String getTest1a() {
         return "4711";
     }
 
     @POST
     @Path("headTest1")
-    public void post()
-    {
+    public void post() {
         // do nothing yet
     }
 
     @HEAD
     @Path("headTest2")
     @ProduceMime("text/html")
-    public String headTest2()
-    {
+    public String headTest2() {
         return "4711";
     }
 
     @GET
     @Path("headTest2")
     @ProduceMime("text/html")
-    public String getTest2()
-    {
+    public String getTest2() {
         return "4711";
     }
 
     @GET
     @Path("headTest2")
     @ProduceMime("text/plain")
-    public String getTest2plain()
-    {
+    public String getTest2plain() {
         return "4711";
     }
 }

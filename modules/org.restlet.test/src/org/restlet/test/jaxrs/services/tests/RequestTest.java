@@ -256,7 +256,7 @@ public class RequestTest extends JaxRsTestCase {
         assertTrue("Entity must contain \"was modified\"", response.getEntity()
                 .getText().contains("The entity was modified since"));
 
-        // LATER testen, was bei ungültigem Datum passiert:
+        // LATER testen, was bei ungultigem Datum passiert:
         // If-Unmodified-Since-Header ignorieren.
     }
 
@@ -309,7 +309,7 @@ public class RequestTest extends JaxRsTestCase {
                 .getEntity().getText()
                 .contains("The entity was modified since"));
 
-        // LATER testen, was bei ungültigem Datum passiert:
+        // LATER testen, was bei ungultigem Datum passiert:
         // If-Unmodified-Since-Header ignorieren.
     }
 

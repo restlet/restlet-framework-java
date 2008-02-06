@@ -220,6 +220,8 @@
 
    <path id="mod-jaxrs-path">
       <path refid="mod-ri-path" />
+      <path refid="mod-javamail-path" />
+      <path refid="mod-jaxb-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <fileset dir="${lib}/${lib-jaxrs-id}" includes="*.jar" />
    </path>

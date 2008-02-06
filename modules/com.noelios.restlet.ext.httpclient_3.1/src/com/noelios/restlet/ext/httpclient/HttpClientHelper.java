@@ -36,8 +36,6 @@ import com.noelios.restlet.http.HttpClientCall;
  * surely release the underlying connection. Not doing so may cause future
  * requests to block.
  * 
- * @see http://jakarta.apache.org/httpcomponents/httpclient-3.x/tutorial.html
- * 
  * Here is the list of parameters that are supported: <table>
  * <tr>
  * <th>Parameter name</th>
@@ -88,6 +86,9 @@ import com.noelios.restlet.http.HttpClientCall;
  * </tr>
  * </table>
  * 
+ * @see <a
+ *      href="http://jakarta.apache.org/httpcomponents/httpclient-3.x/tutorial.html">Apache
+ *      HTTP Client tutorial</a>
  * @see <a
  *      href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>

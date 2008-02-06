@@ -32,8 +32,8 @@ import java.util.logging.Logger;
 /**
  * A servlet which provides automatic restlet integration with an existing
  * {@link org.springframework.web.context.WebApplicationContext}. Use is
- * similar to Spring's {@link DispatcherServlet}. In web.xml, declare the
- * servlet and map its root URL:
+ * similar to Spring's {@link org.springframework.web.servlet.DispatcherServlet}.
+ * In web.xml, declare the servlet and map its root URL:
  * 
  * <pre>
  *  &lt;servlet&gt;
@@ -72,7 +72,6 @@ import java.util.logging.Logger;
  * </pre>
  * 
  * @author Rhett Sutphin
- * @see org.restlet.ext.spring.SpringBeanRouter
  */
 public class RestletFrameworkServlet extends FrameworkServlet {
     private static final String DEFAULT_TARGET_RESTLET_BEAN_NAME = "router";

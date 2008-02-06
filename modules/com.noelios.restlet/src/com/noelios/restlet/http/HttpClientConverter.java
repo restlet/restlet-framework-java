@@ -364,10 +364,9 @@ public class HttpClientConverter extends HttpConverter {
      *                The response to update.
      * @param logger
      *                The logger to use.
-     * @see org.restlet.util.Engine#copyResponseHeaders(Iterable, Response,
-     *      Logger)
-     * @see HttpClientCall#copyResponseEntityHeaders(Series,
-     *      org.restlet.resource.Representation)
+     * @see {@link Engine#copyResponseHeaders(Iterable, Response, Logger)}
+     * @see {@link HttpClientCall#copyResponseEntityHeaders(Series,
+     *      org.restlet.resource.Representation)}
      */
     public static void copyResponseTransportHeaders(
             Iterable<Parameter> headers, Response response, Logger logger) {

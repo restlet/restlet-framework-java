@@ -35,16 +35,16 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  * <p>
- * Diese Klasse soll ein Beispiel sein, an dem alle Funktionalitäten zu sehen
+ * Diese Klasse soll ein Beispiel sein, an dem alle Funktionalitaten zu sehen
  * sein sollen. Es ist an die Beispiele der Spezifikation angelehnt.
  * </p>
  * <p>
- * Für HEAD und OPTIONS: wenns ne passende Methode gibt diese aufrufen.
- * Ansonsten: Bei HEAD die für GET und Entity verwerfen, bei OPTIONS aus den
+ * Fur HEAD und OPTIONS: wenns ne passende Methode gibt diese aufrufen.
+ * Ansonsten: Bei HEAD die fur GET und Entity verwerfen, bei OPTIONS aus den
  * Metadaten der Klasse generieren. Aufpassen bei Sub-Resourcen
  * </p>
  * <p>
- * Nicht nur Methoden, auch Resource-Klassen können mit &#64;ConsumeMime oder
+ * Nicht nur Methoden, auch Resource-Klassen konnen mit &#64;ConsumeMime oder
  * &#64;ConsumeMime annotiert sein
  * </p>
  * 
@@ -63,7 +63,7 @@ public class CarListResource {
 
     /**
      * Konstruktoren von Root-Resourcen werden von der JAX-RS-Laufzeitumgebung
-     * aufgerufen. Bei mind. 1 der vorhandenen Konstruktoren müssen alle
+     * aufgerufen. Bei mind. 1 der vorhandenen Konstruktoren mussen alle
      * Parameter mit &#64;HttpContext, &#64;HeaderParam, &#64;MatrixParam,
      * &#64;QueryParam oder &#64;UriParam annotiert sein. Ein Konstruktor ohne
      * Parameter ist auch erlaubt.
@@ -77,22 +77,22 @@ public class CarListResource {
      * Http-Methoden annotiert ist. Sie behandelt die Anfrage selber.
      * </p>
      * <p>
-     * Alle Parameter bis auf einen von Resource-Methods müssen &#64;{@link MatrixParam},
+     * Alle Parameter bis auf einen von Resource-Methods mussen &#64;{@link MatrixParam},
      * &#64;{@link QueryParam}, &#64;{@link UriParam}, &#64;{@link HttpContext}
      * oder &#64;{@link HeaderParam} annotiert sein. Ein ggf. nicht annotierte
-     * Parameter bekommt die Entity übergeben. Alle Parameterklassen außer &#64;{@link HttpContext}
-     * müssen Strings verstehen können (Konstruktor oder static valueOf(String)
+     * Parameter bekommt die Entity ubergeben. Alle Parameterklassen auber &#64;{@link HttpContext}
+     * mussen Strings verstehen konnen (Konstruktor oder static valueOf(String)
      * mit genau einem String-Parameter).<br>
      * Wenn &#64;HttpContext: Klasse muss {@link UriInfo}, PrecoditionEvaluator
      * (inzwischen umbenannt, zu Provider?) oder {@link HttpHeaders}
      * </p>
      * <p>
-     * Rückgabetypen:
+     * Ruckgabetypen:
      * <ul>
      * <li>void: leerer Entity-Body</li>
      * <li>instanceof {@link Response}</li>
-     * verwendet. Dafür kann bspw. der {@link Response.Builder} verwendet werden</li>
-     * <li>sonst: gemappt von ? (früher EntityProvider, Abschnitt 3.1 der Spec)</li>
+     * verwendet. Dafur kann bspw. der {@link Response.Builder} verwendet werden</li>
+     * <li>sonst: gemappt von ? (fruher EntityProvider, Abschnitt 3.1 der Spec)</li>
      * </ul>
      * </p>
      * 
@@ -132,7 +132,7 @@ public class CarListResource {
     /**
      * Diese Methode ist ein <b>sub-resource-locator</b>, weil sie nicht mit
      * einer Http-Methoden annotiert ist. Anfragen werden von der
-     * zurückgegebenen Resource behandelt.
+     * zuruckgegebenen Resource behandelt.
      * 
      * @param id
      * @return

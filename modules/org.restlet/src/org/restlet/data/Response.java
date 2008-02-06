@@ -232,7 +232,7 @@ public class Response extends Message {
      * <br>
      * If you pass a relative target URI, it will be resolved with the current
      * base reference of the request's resource reference (see
-     * {@link Request#getResourceRef() and {@link Reference#getBaseRef()}.
+     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *                The target URI.
@@ -266,7 +266,7 @@ public class Response extends Message {
      * <br>
      * If you pass a relative target URI, it will be resolved with the current
      * base reference of the request's resource reference (see
-     * {@link Request#getResourceRef() and {@link Reference#getBaseRef()}.
+     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *                The target URI.
@@ -294,7 +294,7 @@ public class Response extends Message {
      * <br>
      * If you pass a relative target URI, it will be resolved with the current
      * base reference of the request's resource reference (see
-     * {@link Request#getResourceRef() and {@link Reference#getBaseRef()}.
+     * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
      *                The target URI.
@@ -361,8 +361,8 @@ public class Response extends Message {
      * Sets the reference that the client should follow for redirections or
      * resource creations. If you pass a relative location URI, it will be
      * resolved with the current base reference of the request's resource
-     * reference (see
-     * {@link Request#getResourceRef() and {@link Reference#getBaseRef()}.
+     * reference (see {@link Request#getResourceRef()} and
+     * {@link Reference#getBaseRef()}.
      * 
      * @param locationUri
      *                The URI to set.

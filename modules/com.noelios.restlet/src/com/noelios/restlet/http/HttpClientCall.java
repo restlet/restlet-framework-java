@@ -99,18 +99,12 @@ public abstract class HttpClientCall extends HttpCall {
     /**
      * Returns the request entity channel if it exists.
      * 
-     * @param size
-     *                The total size that will be read from the channel.
-     * 
      * @return The request entity channel if it exists.
      */
     public abstract WritableByteChannel getRequestEntityChannel();
 
     /**
      * Returns the request entity stream if it exists.
-     * 
-     * @param size
-     *                The total size that will be read from the stream.
      * 
      * @return The request entity stream if it exists.
      */

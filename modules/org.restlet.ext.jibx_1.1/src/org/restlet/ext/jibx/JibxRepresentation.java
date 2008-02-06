@@ -26,7 +26,7 @@ import org.w3c.dom.Document;
  * An XML representation based on JIBX that provides easy translation between
  * XML representations and Java objects with JIBX bindings.
  * 
- * @see JiBX (http://jibx.sourceforge.net/)
+ * @see <a href="http://jibx.sourceforge.net/">JiBX project</a>
  * 
  * @author Florian Schwarz
  */
