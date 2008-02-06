@@ -29,7 +29,7 @@ import com.noelios.restlet.util.SecurityUtils;
  */
 public class SecurityTestCase extends TestCase {
     /**
-     * Tests the cookies parsing with Basic authentication.
+     * Tests the cookies parsing.
      */
     public void testParsingBasic() {
         String authenticate1 = "Basic realm=\"Restlet tutorial\"";
@@ -53,5 +53,4 @@ public class SecurityTestCase extends TestCase {
         assertEquals(authenticate1, SecurityUtils.format(SecurityUtils
                 .parseRequest(authenticate1)));
     }
-
 }

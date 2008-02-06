@@ -36,6 +36,7 @@ import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Directory;
+import org.restlet.Guard;
 import org.restlet.Server;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
@@ -64,6 +65,7 @@ import com.noelios.restlet.http.HttpServerConverter;
 import com.noelios.restlet.http.StreamClientHelper;
 import com.noelios.restlet.http.StreamServerHelper;
 import com.noelios.restlet.local.DirectoryResource;
+import com.noelios.restlet.util.AuthenticationUtils;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.FormUtils;
@@ -199,6 +201,16 @@ public class Engine extends org.restlet.util.Engine {
         if (discoverConnectors) {
             discoverConnectors();
         }
+    }
+
+    @Override
+    public int authenticate(Request request, Guard guard) {
+        return AuthenticationUtils.authenticate(request, guard);
+    }
+
+    @Override
+    public void challenge(Response response, boolean stale, Guard guard) {
+        AuthenticationUtils.challenge(response, stale, guard);
     }
 
     /**
@@ -804,6 +816,11 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     @Override
+    public String toMd5(String target) {
+        return AuthenticationUtils.toMd5(target);
+    }
+
+    @Override
     public void parse(Logger logger, Form form, Representation webForm) {
         if (webForm != null) {
             FormUtils.parsePost(logger, form, webForm);
@@ -815,6 +832,18 @@ public class Engine extends org.restlet.util.Engine {
             CharacterSet characterSet) {
         if ((queryString != null) && !queryString.equals("")) {
             FormUtils.parseQuery(logger, form, queryString, characterSet);
+        }
+    }
+
+    @Override
+    public MediaType parseContentType(String contentType)
+            throws IllegalArgumentException {
+        try {
+            return ContentType.parseContentType(contentType);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("The content type string \""
+                    + contentType + "\" can not be parsed: " + e.getMessage(),
+                    e);
         }
     }
 
@@ -837,27 +866,6 @@ public class Engine extends org.restlet.util.Engine {
         } catch (IOException e) {
             throw new IllegalArgumentException(
                     "Could not read the cookie setting", e);
-        }
-    }
-
-    /**
-     * Parses the given Content Type.
-     * 
-     * @param contentType
-     *                the Content Type as String
-     * @return the ContentType as MediaType; charset etc. are parameters.
-     * @throws IllegalArgumentException
-     *                 if the String can not be parsed.
-     */
-    @Override
-    public MediaType parseContentType(String contentType)
-            throws IllegalArgumentException {
-        try {
-            return ContentType.parseContentType(contentType);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("The content type string \""
-                    + contentType + "\" can not be parsed: " + e.getMessage(),
-                    e);
         }
     }
 
@@ -908,4 +916,5 @@ public class Engine extends org.restlet.util.Engine {
             registerServerHelper(helper);
         }
     }
+
 }

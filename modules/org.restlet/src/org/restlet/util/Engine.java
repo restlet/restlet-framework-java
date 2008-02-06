@@ -32,6 +32,7 @@ import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Directory;
+import org.restlet.Guard;
 import org.restlet.Server;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
@@ -219,6 +220,33 @@ public abstract class Engine {
     }
 
     /**
+     * Indicates if the call is properly authenticated. By default, this
+     * delegates credential checking to checkSecret().
+     * 
+     * @param request
+     *                The request to authenticate.
+     * @param guard
+     *                The associated guard to callback.
+     * @return -1 if the given credentials were invalid, 0 if no credentials
+     *         were found and 1 otherwise.
+     * @see #checkSecret(String, char[])
+     */
+    public abstract int authenticate(Request request, Guard guard);
+
+    /**
+     * Challenges the client by adding a challenge request to the response and
+     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
+     * 
+     * @param response
+     *                The response to update.
+     * @param stale
+     *                Indicates if the new challenge is due to a stale response.
+     * @param guard
+     *                The associated guard to callback.
+     */
+    public abstract void challenge(Response response, boolean stale, Guard guard);
+
+    /**
      * Copies headers into a response.
      * 
      * @param headers
@@ -337,6 +365,18 @@ public abstract class Engine {
             List<Variant> variants, Language defaultLanguage);
 
     /**
+     * Returns the MD5 digest of the target string. Target is decoded to bytes
+     * using the US-ASCII charset. The returned hexidecimal String always
+     * contains 32 lowercase alphanumeric characters. For example, if target is
+     * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
+     * 
+     * @param target
+     *                The string to encode.
+     * @return The MD5 digest of the target string.
+     */
+    public abstract String toMd5(String target);
+
+    /**
      * Parses a representation into a form.
      * 
      * @param logger
@@ -397,4 +437,5 @@ public abstract class Engine {
      */
     public abstract CookieSetting parseCookieSetting(String cookieSetting)
             throws IllegalArgumentException;
+
 }

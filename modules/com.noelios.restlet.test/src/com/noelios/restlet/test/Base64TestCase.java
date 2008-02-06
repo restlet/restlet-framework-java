@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package com.noelios.restlet.test;
 
 import java.util.Arrays;
@@ -35,9 +34,9 @@ public class Base64TestCase extends TestCase {
         super(name);
     }
 
-    public void roundTrip(byte[] bytes, int options) throws Exception {
-        assert (Arrays.equals(
-                Base64.decode(Base64.encodeBytes(bytes, options)), bytes));
+    public void roundTrip(byte[] bytes, boolean newlines) throws Exception {
+        assert (Arrays.equals(Base64.decode(Base64.encode(bytes, newlines)),
+                bytes));
     }
 
     public void test() throws Exception {
@@ -50,9 +49,9 @@ public class Base64TestCase extends TestCase {
                 + "dGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGlu\n"
                 + "dWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRo\n"
                 + "ZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=";
-        String base64 = Base64.encodeBytes(b, Base64.DONT_BREAK_LINES);
+        String base64 = Base64.encode(b, true);
         assertEquals(s, base64);
-        roundTrip(b, Base64.DONT_BREAK_LINES);
+        roundTrip(b, true);
         assertEquals(new String(b), new String(Base64.decode(base64)));
 
         assertEquals("scott:tiger", new String(Base64
