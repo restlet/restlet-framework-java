@@ -68,7 +68,8 @@ Changes log
  - Added Variable.TYPE_URI_PATH to match any path character except in the query or fragment parts.
    Suggested by Stephan Koops and Michael Makunas.
  - Updated and tested the Atom extension to conform to the latest APP specifications. The extension currently 
-   allows to retrieve an APP Service Document and Atom Feeds.  
+   allows to retrieve an APP Service Document and Atom Feeds.
+ - Added MediaType.APPLICATION_ATOM_SERVICE_XML constant.  
  
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.

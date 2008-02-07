@@ -45,6 +45,9 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_ATOM_XML = register(
             "application/atom+xml", "Atom syndication documents");
 
+    public static final MediaType APPLICATION_ATOM_SERVICE_XML = register(
+            "application/atomsvc+xml", "Atom service documents");
+
     public static final MediaType APPLICATION_CAB = register(
             "application/vnd.ms-cab-compressed", "Microsoft Cabinet archive");
 
