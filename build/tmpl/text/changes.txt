@@ -66,7 +66,7 @@ Changes log
  - Resources with no variant set now log a warning on GET requests. Contributed by Avi Flax.
  - Added static Representation.createEmpty() method to return a new empty representation. 
  - Added Variable.TYPE_URI_PATH to match any path character except in the query or fragment parts.
-   Suggested by Stephan Koops. 
+   Suggested by Stephan Koops and Michael Makunas. 
  
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.

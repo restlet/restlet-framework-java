@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.net.ssl.SSLSession;
@@ -365,8 +366,18 @@ public abstract class HttpServerCall extends HttpCall {
                 }
 
                 if (getResponseEntityStream() != null) {
-                    getResponseEntityStream().flush();
-                    getResponseEntityStream().close();
+                    try {
+                        getResponseEntityStream().flush();
+                        getResponseEntityStream().close();
+                    } catch (IOException ioe) {
+                        // The stream was probably already closed by the
+                        // connector. Probably ok, low message priority.
+                        getLogger()
+                                .log(
+                                        Level.FINE,
+                                        "Exception while flushing and closing the entity stream.",
+                                        ioe);
+                    }
                 }
             } finally {
                 Representation entity = response.getEntity();
