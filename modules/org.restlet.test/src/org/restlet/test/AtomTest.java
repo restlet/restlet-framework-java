@@ -30,7 +30,7 @@ public class AtomTest {
     public static void main(String[] args) {
         try {
             Service atomService = new Service(
-                    "http://bitworking.org/projects/pyapp/collection.cgi?introspection=1");
+                    "http://bitworking.org/projects/apptestsite/app.cgi/service/;service_document");
             Feed atomFeed = atomService.getWorkspaces().get(0).getCollections()
                     .get(0).getFeed();
             atomFeed.write(System.out);

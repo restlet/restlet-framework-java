@@ -55,11 +55,11 @@ public class Collection {
      * Constructor.
      * 
      * @param workspace
-     *            The parent workspace.
+     *                The parent workspace.
      * @param title
-     *            The title.
+     *                The title.
      * @param href
-     *            The hypertext reference.
+     *                The hypertext reference.
      */
     public Collection(Workspace workspace, String title, String href) {
         this.workspace = workspace;
@@ -81,7 +81,7 @@ public class Collection {
      * Sets the parent workspace.
      * 
      * @param workspace
-     *            The parent workspace.
+     *                The parent workspace.
      */
     public void setWorkspace(Workspace workspace) {
         this.workspace = workspace;
@@ -100,7 +100,7 @@ public class Collection {
      * Sets the title.
      * 
      * @param title
-     *            The title.
+     *                The title.
      */
     public void setTitle(String title) {
         this.title = title;
@@ -119,7 +119,7 @@ public class Collection {
      * Sets the hypertext reference.
      * 
      * @param href
-     *            The hypertext reference.
+     *                The hypertext reference.
      */
     public void setHref(Reference href) {
         this.href = href;
@@ -138,7 +138,7 @@ public class Collection {
      * Sets the type of members.
      * 
      * @param memberType
-     *            The type of members.
+     *                The type of members.
      */
     public void setMemberType(MemberType memberType) {
         this.memberType = memberType;
@@ -149,14 +149,14 @@ public class Collection {
      * resource.
      * 
      * @param member
-     *            The member representation to post.
+     *                The member representation to post.
      * @return The reference of the new resource.
      * @throws Exception
      */
     public Reference postMember(Representation member) throws Exception {
         Request request = new Request(Method.POST, getHref(), member);
-        Response response = getWorkspace().getService().getClient().handle(
-                request);
+        Response response = getWorkspace().getService().getClientDispatcher()
+                .handle(request);
 
         if (response.getStatus().equals(Status.SUCCESS_CREATED)) {
             return response.getLocationRef();
@@ -174,9 +174,15 @@ public class Collection {
      * @throws Exception
      */
     public Feed getFeed() throws Exception {
-        Request request = new Request(Method.GET, getHref());
-        Response response = getWorkspace().getService().getClient().handle(
-                request);
+        Reference feedRef = getHref();
+
+        if (feedRef.isRelative()) {
+            feedRef.setBaseRef(getWorkspace().getService().getReference());
+        }
+
+        Request request = new Request(Method.GET, feedRef.getTargetRef());
+        Response response = getWorkspace().getService().getClientDispatcher()
+                .handle(request);
 
         if (response.getStatus().equals(Status.SUCCESS_OK)) {
             return new Feed(response.getEntity());
