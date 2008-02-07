@@ -137,7 +137,7 @@ public abstract class HttpClientCall extends HttpCall {
                     size = Long.parseLong(header.getValue());
                 } catch (NumberFormatException e) {
                     getLogger().warning(
-                            "Unkown value received as content lenght: \""
+                            "Unkown value received as content length: \""
                                     + header.getValue() + "\".");
                 }
             } else if (header.getName().equalsIgnoreCase(
@@ -169,6 +169,12 @@ public abstract class HttpClientCall extends HttpCall {
         if (result != null) {
             result.setSize(size);
             copyResponseEntityHeaders(responseHeaders, result);
+            // Informs that the size has not been specified in the header.
+            if (size == Representation.UNKNOWN_SIZE) {
+                getLogger()
+                        .info(
+                                "The length of the message body is unknown. The entity must be handled carefully");
+            }
         }
         // }
 
