@@ -304,9 +304,10 @@ public abstract class Representation extends Variant {
      * sockets, channels or files. If the representation is transient and hasn't
      * been read yet, all the remaining content will be discarded, any open
      * socket, channel, file or similar source of content will be immediately
-     * closed.
+     * closed. The representation is also no more available.
      */
     public void release() {
+        this.available = false;
     }
 
     /**

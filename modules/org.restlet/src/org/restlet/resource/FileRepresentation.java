@@ -184,6 +184,7 @@ public class FileRepresentation extends Representation {
     @Override
     public void release() {
         setFile(null);
+        super.release();
     }
 
     /**

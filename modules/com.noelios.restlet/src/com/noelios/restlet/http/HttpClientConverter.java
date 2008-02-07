@@ -109,6 +109,36 @@ public class HttpClientConverter extends HttpConverter {
 
             // Set the entity
             response.setEntity(httpCall.getResponseEntity(response));
+            // Release the representation's content for some obvious cases
+            if (response.getEntity() != null) {
+                if (response.getEntity().getSize() == 0) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                } else if (response.getRequest().getMethod()
+                        .equals(Method.HEAD)) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_NO_CONTENT)) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_RESET_CONTENT)) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_PARTIAL_CONTENT)) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                } else if (response.getStatus().equals(
+                        Status.REDIRECTION_NOT_MODIFIED)) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                } else if (response.getStatus().isInformational()) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                }
+            }
         }
     }
 

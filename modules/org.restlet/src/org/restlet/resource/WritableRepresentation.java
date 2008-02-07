@@ -56,10 +56,11 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
             throws IOException;
 
     /**
-     * Default implementation with no behavior.
+     * Calls parent's implementation.
      */
     @Override
     public void release() {
+        super.release();
     }
 
 }

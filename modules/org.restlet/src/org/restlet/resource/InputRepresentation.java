@@ -94,9 +94,9 @@ public class InputRepresentation extends StreamRepresentation {
                 logger.log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }
-
             this.stream = null;
         }
+        super.release();
     }
 
     /**

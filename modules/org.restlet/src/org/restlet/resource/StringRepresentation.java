@@ -144,6 +144,7 @@ public class StringRepresentation extends StreamRepresentation {
     @Override
     public void release() {
         setText(null);
+        super.release();
     }
 
     /**

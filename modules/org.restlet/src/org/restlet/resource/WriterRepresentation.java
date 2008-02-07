@@ -66,10 +66,11 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
     }
 
     /**
-     * Default implementation with no behavior.
+     * Calls parent's implementation.
      */
     @Override
     public void release() {
+        super.release();
     }
 
     @Override

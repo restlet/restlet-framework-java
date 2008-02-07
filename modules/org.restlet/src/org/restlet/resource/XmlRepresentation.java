@@ -304,6 +304,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
             this.namespaces.clear();
             this.namespaces = null;
         }
+        super.release();
     }
 
     /**

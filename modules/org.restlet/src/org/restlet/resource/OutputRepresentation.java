@@ -69,9 +69,10 @@ public abstract class OutputRepresentation extends StreamRepresentation {
     }
 
     /**
-     * Default implementation with no behavior.
+     * Calls parent's implementation.
      */
     @Override
     public void release() {
+        super.release();
     }
 }
