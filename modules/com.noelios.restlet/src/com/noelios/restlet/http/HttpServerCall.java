@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -46,7 +47,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Constructor.
      * 
      * @param server
-     *            The parent server connector.
+     *                The parent server connector.
      */
     public HttpServerCall(Server server) {
         this(server.getLogger(), server.getAddress(), server.getPort());
@@ -56,11 +57,11 @@ public abstract class HttpServerCall extends HttpCall {
      * Constructor.
      * 
      * @param logger
-     *            The logger.
+     *                The logger.
      * @param serverAddress
-     *            The server IP address.
+     *                The server IP address.
      * @param serverPort
-     *            The server port.
+     *                The server port.
      */
     public HttpServerCall(Logger logger, String serverAddress, int serverPort) {
         setLogger(logger);
@@ -284,7 +285,7 @@ public abstract class HttpServerCall extends HttpCall {
      * status.
      * 
      * @param response
-     *            The high-level response.
+     *                The high-level response.
      */
     public void sendResponse(Response response) throws IOException {
         if (response != null) {
@@ -309,7 +310,17 @@ public abstract class HttpServerCall extends HttpCall {
             }
 
             if (getResponseStream() != null) {
-                getResponseStream().flush();
+                try {
+                    getResponseStream().flush();
+                } catch (IOException ioe) {
+                    // The stream was probably already closed by the
+                    // connector. Probably ok, low message priority.
+                    getLogger()
+                            .log(
+                                    Level.FINE,
+                                    "Exception while flushing and closing the entity stream.",
+                                    ioe);
+                }
             }
         }
     }
@@ -320,7 +331,7 @@ public abstract class HttpServerCall extends HttpCall {
      * response stream by default.
      * 
      * @param entity
-     *            The representation to write as entity of the body.
+     *                The representation to write as entity of the body.
      * @throws IOException
      */
     public void writeResponseBody(Representation entity) throws IOException {
@@ -336,7 +347,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Writes the response status line and headers. Does nothing by default.
      * 
      * @param response
-     *            The response.
+     *                The response.
      * @throws IOException
      */
     public void writeResponseHead(Response response) throws IOException {
@@ -347,7 +358,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Writes the response head to the given output stream.
      * 
      * @param headStream
-     *            The output stream to write to.
+     *                The output stream to write to.
      * @throws IOException
      */
     protected void writeResponseHead(OutputStream headStream)
