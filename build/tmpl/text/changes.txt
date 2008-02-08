@@ -9,16 +9,17 @@ Changes log
  - Fixed bug with the FileClientHelper returning wrong list of variants. Reported by Iestyn 
    Evans.
  - Fixed bug in Tag.equals() implementation. Reported by Stephan Koops.
- - Fixed NPE in the war client of the Servlet extension. Reported by Jason Terhune.
+ - Fixed NPE in the WAR client of the Servlet extension. Reported by Jason Terhune.
  - Caught exception with Simple connector when flushing a closed stream. Now it is logged at
    a lower priority. Reported by Todd Nguyen. 
 
 [Enhancements]
  - Lowered the logging level for some Simple IO exceptions.
  - Updated JSON JAR to latest version.
- - Externalize mappings between file extensions and media types in the MetadataService. 
+ - Externalized mappings between file extensions and media types in the MetadataService. 
    Reported by Alex Milowsky.
- - Close an open BufferedReader in IdentClient class.
+ - Closed an open BufferedReader in IdentClient class.
+ - Updated FreeMarker to version 2.3.12.
  
 1.0.7 (2007-12-22)
 [Bugs fixed]

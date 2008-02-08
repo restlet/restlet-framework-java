@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FreeMarker template engine
 Bundle-SymbolicName: org.freemarker
-Bundle-Version: 2.3.11
+Bundle-Version: 2.3.12
 Bundle-ClassPath: freemarker.jar
 Bundle-Vendor: FreeMarker project
 Export-Package: freemarker,
