@@ -83,6 +83,7 @@ Changes log
    Reported by Alex Milowsky.
  - Closed an open BufferedReader in IdentClient class.
  - Updated FreeMarker to version 2.3.12.
+ - Added support for DIGEST authentication (client and server side). Contributed by Ray Waldin.
  
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
