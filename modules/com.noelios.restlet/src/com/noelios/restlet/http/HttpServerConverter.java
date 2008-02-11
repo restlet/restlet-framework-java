@@ -141,6 +141,7 @@ public class HttpServerConverter extends HttpConverter {
                         .warning(
                                 "A response with an unavailable entity was returned. Ignoring the entity");
                 response.setEntity(null);
+                addEntityHeaders(response);
             } else {
                 addEntityHeaders(response);
             }
