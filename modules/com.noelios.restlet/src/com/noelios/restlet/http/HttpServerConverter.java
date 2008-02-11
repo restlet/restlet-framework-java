@@ -134,15 +134,15 @@ public class HttpServerConverter extends HttpConverter {
                         .warning(
                                 "Responses with an informational (1xx) status can't have an entity. Ignoring the entity");
                 response.setEntity(null);
-            } else if ((response.getEntity() != null)
-                    && !response.getEntity().isAvailable()) {
-                // An entity was returned but isn't really available
-                getLogger()
-                        .warning(
-                                "A response with an unavailable entity was returned. Ignoring the entity");
-                response.setEntity(null);
-                addEntityHeaders(response);
             } else {
+                if ((response.getEntity() != null)
+                        && !response.getEntity().isAvailable()) {
+                    // An entity was returned but isn't really available
+                    getLogger()
+                            .warning(
+                                    "A response with an unavailable entity was returned. Ignoring the entity");
+                    response.setEntity(null);
+                }
                 addEntityHeaders(response);
             }
 
