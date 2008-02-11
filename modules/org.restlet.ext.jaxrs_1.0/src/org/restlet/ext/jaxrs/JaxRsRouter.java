@@ -81,7 +81,7 @@ import org.restlet.resource.Representation;
  * LATER The class JaxRsRouter is not thread save while attach or detach
  * classes.
  * 
- * @see <a href="https://jsr311.dev.java.net/"> Java Service Request 311</a>
+ * @see <a href="https://jsr311.dev.java.net/"> Java Service Request 311</a> 
  *      Because the specification is just under development the link is not set
  *      to the PDF.
  * 
@@ -249,7 +249,7 @@ public class JaxRsRouter extends Restlet {
     public JaxRsRouter(Context context, Authenticator authenticator,
             boolean loadAllRootResourceClasses, boolean loadAllProviders) {
         super(context);
-        this.setAuthorizator(authenticator);
+        this.setAuthenticator(authenticator);
         this.loadDefaultProviders();
         if (loadAllRootResourceClasses || loadAllProviders)
             JaxRsClassesLoader.loadFromClasspath(this,
@@ -511,8 +511,8 @@ public class JaxRsRouter extends Restlet {
             throws CouldNotFindMethodException, RequestHandledException {
         String uriRemainingPart = restletRequest.getResourceRef()
                 .getRemainingPart();
-        ResClAndTemplate rcat = identifyRootResourceClass(uriRemainingPart);
-        ResObjAndPath resourceObjectAndPath = obtainObjectThatHandleRequest(
+        RrcAndRemPath rcat = identifyRootResourceClass(uriRemainingPart);
+        ResObjAndRemPath resourceObjectAndPath = obtainObjectThatHandleRequest(
                 rcat, restletRequest, restletResponse);
         MediaType givenMediaType = restletRequest.getEntity().getMediaType();
         ResObjAndMeth method = idenifyMethodThatHandleRequest(
@@ -525,10 +525,12 @@ public class JaxRsRouter extends Restlet {
      * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
      * 2007-12-07, Section 2.5 Matching Requests to Resource Methods, Part 1.
      * 
-     * @return .. or null, wenn no root resource class could be found
-     * @throws RequestHandledException
+     * @return The identified root resource class, the remaning path after
+     *         identifying and the matched template parameters; see
+     *         {@link RrcAndRemPath}.
+     * @throws CouldNotFindMethodException
      */
-    private ResClAndTemplate identifyRootResourceClass(String uriRemainingPart)
+    private RrcAndRemPath identifyRootResourceClass(String uriRemainingPart)
             throws CouldNotFindMethodException {
         // 1. Identify the root resource class:
         // (a)
@@ -564,7 +566,7 @@ public class JaxRsRouter extends Restlet {
         u = matchResult.getFinalCapturingGroup();
         MultivaluedMap<String, String> allTemplParamsEnc = new MultivaluedMapImpl<String, String>();
         addMrVarsToMap(matchResult, allTemplParamsEnc);
-        return new ResClAndTemplate(u, tClass, allTemplParamsEnc);
+        return new RrcAndRemPath(tClass, u, allTemplParamsEnc);
     }
 
     /**
@@ -582,19 +584,19 @@ public class JaxRsRouter extends Restlet {
      * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
      * 2007-12-07, Section 2.5, Part 2
      * 
-     * @param resClAndTemplate
+     * @param rrcAndRemPath
      * @param restletRequest
      *                The Restlet request
      * @return Resource Object
      * @throws RequestHandledException
      */
-    private ResObjAndPath obtainObjectThatHandleRequest(
-            ResClAndTemplate resClAndTemplate, Request restletRequest,
+    private ResObjAndRemPath obtainObjectThatHandleRequest(
+            RrcAndRemPath rrcAndRemPath, Request restletRequest,
             Response restletResponse) throws CouldNotFindMethodException,
             RequestHandledException {
-        String u = resClAndTemplate.u;
-        RootResourceClass resClass = resClAndTemplate.rrc;
-        MultivaluedMap<String, String> allTemplParamsEnc = resClAndTemplate.allTemplParamsEnc;
+        String u = rrcAndRemPath.u;
+        RootResourceClass resClass = rrcAndRemPath.rrc;
+        MultivaluedMap<String, String> allTemplParamsEnc = rrcAndRemPath.allTemplParamsEnc;
         PathRegExp rMatch = resClass.getPathRegExp();
         ResourceObject o;
         // LATER Do I use dynamic proxies, to inject instance variables?
@@ -612,7 +614,7 @@ public class JaxRsRouter extends Restlet {
         {
             // (a) If U is null or '/' go to step 3
             if (Util.isEmptyOrSlash(u)) {
-                return new ResObjAndPath(o, u, allTemplParamsEnc);
+                return new ResObjAndRemPath(o, u, allTemplParamsEnc);
             }
             // (b) Set C = class ofO,E = {}
             Collection<SubResourceMethodOrLocator> eWithMethod = new ArrayList<SubResourceMethodOrLocator>();
@@ -642,7 +644,7 @@ public class JaxRsRouter extends Restlet {
 
             // (h) When Method is resource method
             if (firstMeth instanceof SubResourceMethod)
-                return new ResObjAndPath(o, u, allTemplParamsEnc);
+                return new ResObjAndRemPath(o, u, allTemplParamsEnc);
             // (g) and (i)
             u = matchingResult.getFinalCapturingGroup();
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
@@ -674,16 +676,17 @@ public class JaxRsRouter extends Restlet {
      * @throws ResourceMethodNotFoundException
      */
     private ResObjAndMeth idenifyMethodThatHandleRequest(
-            ResObjAndPath resObjAndPath, org.restlet.data.Response restletResp,
-            MediaType givenMediaType, List<Collection<MediaType>> accMediaTypes)
+            ResObjAndRemPath resObjAndRemPath,
+            org.restlet.data.Response restletResp, MediaType givenMediaType,
+            List<Collection<MediaType>> accMediaTypes)
             throws CouldNotFindMethodException, RequestHandledException {
         org.restlet.data.Method httpMethod = restletResp.getRequest()
                 .getMethod();
         // 3. Identify the method that will handle the request:
         // (a)
-        ResourceObject resObj = resObjAndPath.resourceObject;
-        String remainingPath = resObjAndPath.remainingPath;
-        MultivaluedMap<String, String> allTemplParamsEnc = resObjAndPath.allTemplParamsEnc;
+        ResourceObject resObj = resObjAndRemPath.resourceObject;
+        String remainingPath = resObjAndRemPath.remainingPath;
+        MultivaluedMap<String, String> allTemplParamsEnc = resObjAndRemPath.allTemplParamsEnc;
         // (a) 1
         Collection<ResourceMethod> resourceMethods = resObj.getResourceClass()
                 .getMethodsForPath(remainingPath);
@@ -1230,7 +1233,7 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * determines the MediaType for a response. See JAX-RS-Spec, Section 2.6
+     * Determines the MediaType for a response. See JAX-RS-Spec, Section 2.6
      * "Determining the MediaType of Responses"
      * 
      * @param resourceMethod
@@ -1239,14 +1242,11 @@ public class JaxRsRouter extends Restlet {
      *                {@link MessageBodyWriter}s, that support the entity
      *                class.
      * @return
-     * @throws IllegalArgumentException
-     * @throws NotYetImplementedException
      */
     private Collection<MediaType> determineMediaType(
             ResourceMethod resourceMethod,
             MessageBodyWriterSet mbwsForEntityClass,
-            List<Collection<MediaType>> accMediaTypes)
-            throws IllegalArgumentException, NotYetImplementedException {
+            List<Collection<MediaType>> accMediaTypes) {
         Collection<MediaType> p = new HashSet<MediaType>();
         p = resourceMethod.getProducedMimes();
         if (p.size() == 1)
@@ -1483,7 +1483,13 @@ public class JaxRsRouter extends Restlet {
         return Collections.unmodifiableSet(rrcs);
     }
 
-    class ResObjAndPath {
+    /**
+     * Structure to return the obtained {@link ResourceObject}, the remaining
+     * path after identifying the object and all matched template parameters.
+     * 
+     * @author Stephan Koops
+     */
+    class ResObjAndRemPath {
 
         private ResourceObject resourceObject;
 
@@ -1491,7 +1497,7 @@ public class JaxRsRouter extends Restlet {
 
         private MultivaluedMap<String, String> allTemplParamsEnc;
 
-        ResObjAndPath(ResourceObject resourceObject, String remainingPath,
+        ResObjAndRemPath(ResourceObject resourceObject, String remainingPath,
                 MultivaluedMap<String, String> allTemplParamsEnc) {
             this.resourceObject = resourceObject;
             this.remainingPath = remainingPath;
@@ -1499,6 +1505,13 @@ public class JaxRsRouter extends Restlet {
         }
     }
 
+    /**
+     * Structure to return the obtained {@link ResourceObject}, the
+     * {@link ResourceMethod} identifying it and all matched template
+     * parameters.
+     * 
+     * @author Stephan Koops
+     */
     class ResObjAndMeth {
 
         private ResourceObject resourceObject;
@@ -1516,18 +1529,23 @@ public class JaxRsRouter extends Restlet {
         }
     }
 
-    class ResClAndTemplate {
+    /**
+     * Structure to return the identiied {@link RootResourceClass}, the
+     * remaining path after identifying and the matched template parameters.
+     * 
+     * @author Stephan Koops
+     */
+    class RrcAndRemPath {
+        private RootResourceClass rrc;
 
         private String u;
 
-        private RootResourceClass rrc;
-
         MultivaluedMap<String, String> allTemplParamsEnc;
 
-        ResClAndTemplate(String u, RootResourceClass rrc,
+        RrcAndRemPath(RootResourceClass rrc, String u,
                 MultivaluedMap<String, String> allTemplParamsEnc) {
-            this.u = u;
             this.rrc = rrc;
+            this.u = u;
             this.allTemplParamsEnc = allTemplParamsEnc;
         }
     }
@@ -1548,6 +1566,12 @@ public class JaxRsRouter extends Restlet {
         }
     }
 
+    /**
+     * Instances of this class have a given status they return, when
+     * {@link Restlet#handle(Request, Response)} is called.
+     * 
+     * @author Stephan Koops
+     */
     private static class ReturnStatusRestlet extends Restlet {
         private Status status;
 
@@ -1565,7 +1589,7 @@ public class JaxRsRouter extends Restlet {
     /**
      * @return the authenticator
      */
-    public Authenticator getAuthorizator() {
+    public Authenticator getAuthenticator() {
         return authenticator;
     }
 
@@ -1573,11 +1597,13 @@ public class JaxRsRouter extends Restlet {
      * @param authenticator
      *                the authenticator to set
      */
-    public void setAuthorizator(Authenticator authenticator) {
+    public void setAuthenticator(Authenticator authenticator) {
         if (authenticator == null)
-            throw new IllegalArgumentException(" You can use the "
-                    + AllowAllAuthenticator.class.getName() + " or the "
-                    + ForbidAllAuthenticator.class.getName());
+            throw new IllegalArgumentException(
+                    "The authenticator must nit be null. You can use the "
+                            + AllowAllAuthenticator.class.getName()
+                            + " or the "
+                            + ForbidAllAuthenticator.class.getName());
         this.authenticator = authenticator;
     }
 }
