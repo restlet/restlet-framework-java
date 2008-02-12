@@ -32,6 +32,7 @@ import javax.ws.rs.ProduceMime;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.util.SortedMetadata;
 import org.restlet.ext.jaxrs.util.Util;
 
 /**
@@ -129,11 +130,10 @@ public class ResourceMethod extends AbstractMethodWrapper {
 
     /**
      * @return Returns an unmodifiable List of MediaTypes the given Resource
-     * Method. if the method is not annotated with @{@link ProduceMime}, than
-     * the @{@link ProduceMime} of the Resource class is returned. If no @{@link ProduceMime}
-     *     can be found, an empty List will returned. This method never returns
-     *     null.
-     * 
+     *         Method. if the method is not annotated with {@link ProduceMime},
+     *         than the {@link ProduceMime} of the Resource class is returned.
+     *         If no {@link ProduceMime} can be found, an empty (also
+     *         unmodifiable) List will returned.<br/>This method never returns null.
      */
     public List<MediaType> getProducedMimes() {
         if (producedMimes == null) {
@@ -159,15 +159,15 @@ public class ResourceMethod extends AbstractMethodWrapper {
      *         or no MediaType is given for the method, otherweise false.
      */
     public boolean isAcceptedMediaTypeSupported(
-            List<Collection<MediaType>> accMediaTypess) {
+            SortedMetadata<MediaType> accMediaTypess) {
         if (accMediaTypess == null || accMediaTypess.isEmpty())
             return true;
         List<MediaType> prodMimes = getProducedMimes();
         if (prodMimes.isEmpty())
             return true;
         for (MediaType producedMediaType : prodMimes) {
-            for (Collection<MediaType> accMediaTypes : accMediaTypess)
-                for (MediaType accMediaType : accMediaTypes)
+            //for (Iterable<MediaType> accMediaTypes : accMediaTypess)
+                for (MediaType accMediaType : accMediaTypess)
                     if (accMediaType.includes(producedMediaType))
                         return true;
         }

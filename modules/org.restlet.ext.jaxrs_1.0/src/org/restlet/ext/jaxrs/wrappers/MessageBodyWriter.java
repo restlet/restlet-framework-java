@@ -19,7 +19,6 @@ package org.restlet.ext.jaxrs.wrappers;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -92,7 +91,7 @@ public class MessageBodyWriter {
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
-    public boolean supportAtLeastOne(Collection<MediaType> mediaTypes) {
+    public boolean supportAtLeastOne(Iterable<MediaType> mediaTypes) {
         for (MediaType produced : getProducedMimes()) {
             for (MediaType requested : mediaTypes)
                 if (supports(requested, produced))
@@ -111,6 +110,7 @@ public class MessageBodyWriter {
             MediaType requestedMediaType) {
         return mbwMediaType.includes(requestedMediaType)
                 || requestedMediaType.includes(mbwMediaType);
+        // LATER Util.isCompatible(..)
     }
 
     /**

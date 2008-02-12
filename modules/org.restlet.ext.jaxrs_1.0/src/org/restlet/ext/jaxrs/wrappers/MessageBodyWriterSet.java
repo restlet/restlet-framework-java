@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.util.LifoSet;
+import org.restlet.ext.jaxrs.util.SortedMetadata;
 
 /**
  * Contains a List of wrapped {@link javax.ws.rs.ext.MessageBodyWriter}s.
@@ -102,8 +103,8 @@ public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter> {
      *         Returns null, if no adequate {@link MessageBodyWriter} could be
      *         found in this set.
      */
-    public MessageBodyWriter getBest(List<Collection<MediaType>> accMediaTypes) {
-        for (Collection<MediaType> amts : accMediaTypes)
+    public MessageBodyWriter getBest(SortedMetadata<MediaType> accMediaTypes) {
+        for (Iterable<MediaType> amts : accMediaTypes.listOfColls())
             for (MessageBodyWriter mbw : this)
                 if (mbw.supportAtLeastOne(amts))
                     return mbw;

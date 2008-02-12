@@ -45,6 +45,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.core.HttpHeaders;
 import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
@@ -56,7 +57,7 @@ import org.restlet.ext.jaxrs.impl.MatchingResult;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
 import org.restlet.ext.jaxrs.provider.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.provider.StringProvider;
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
+import org.restlet.ext.jaxrs.util.SortedMetadata;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.util.WrappedClassLoadException;
 import org.restlet.ext.jaxrs.util.WrappedLoadException;
@@ -81,7 +82,7 @@ import org.restlet.resource.Representation;
  * LATER The class JaxRsRouter is not thread save while attach or detach
  * classes.
  * 
- * @see <a href="https://jsr311.dev.java.net/"> Java Service Request 311</a> 
+ * @see <a href="https://jsr311.dev.java.net/"> Java Service Request 311</a>
  *      Because the specification is just under development the link is not set
  *      to the PDF.
  * 
@@ -467,7 +468,7 @@ public class JaxRsRouter extends Restlet {
     public void handle(Request request, Response response) {
         super.handle(request, response);
         @SuppressWarnings("unchecked")
-        List<Collection<MediaType>> accMediaTypes = (List) Util
+        SortedMetadata<MediaType> accMediaTypes = (SortedMetadata<MediaType>) Util
                 .sortMetadataList((Collection) request.getClientInfo()
                         .getAcceptedMediaTypes());
         try {
@@ -507,7 +508,7 @@ public class JaxRsRouter extends Restlet {
      */
     private ResObjAndMeth matchingRequestToResourceMethod(
             Request restletRequest, Response restletResponse,
-            List<Collection<MediaType>> accMediaTypes)
+            SortedMetadata<MediaType> accMediaTypes)
             throws CouldNotFindMethodException, RequestHandledException {
         String uriRemainingPart = restletRequest.getResourceRef()
                 .getRemainingPart();
@@ -678,7 +679,7 @@ public class JaxRsRouter extends Restlet {
     private ResObjAndMeth idenifyMethodThatHandleRequest(
             ResObjAndRemPath resObjAndRemPath,
             org.restlet.data.Response restletResp, MediaType givenMediaType,
-            List<Collection<MediaType>> accMediaTypes)
+            SortedMetadata<MediaType> accMediaTypes)
             throws CouldNotFindMethodException, RequestHandledException {
         org.restlet.data.Method httpMethod = restletResp.getRequest()
                 .getMethod();
@@ -783,14 +784,11 @@ public class JaxRsRouter extends Restlet {
      */
     private ResourceMethod getBestMethod(
             Collection<ResourceMethod> resourceMethods,
-            MediaType givenMediaType,
-            List<Collection<MediaType>> accMediaTypess, Method httpMethod)
-            throws CouldNotFindMethodException {
-        List<Collection<MediaType>> givenMediaTypes;
+            MediaType givenMediaType, SortedMetadata<MediaType> accMediaTypess,
+            Method httpMethod) throws CouldNotFindMethodException {
+        SortedMetadata<MediaType> givenMediaTypes;
         if (givenMediaType != null)
-            givenMediaTypes = Collections
-                    .singletonList((Collection<MediaType>) Collections
-                            .singletonList(givenMediaType));
+            givenMediaTypes = SortedMetadata.singleton(givenMediaType);
         else
             givenMediaTypes = null;
         // mms = methods that support the given MediaType
@@ -808,8 +806,9 @@ public class JaxRsRouter extends Restlet {
             return null;
         if (mms.size() == 1)
             return Util.getFirstKey(mms);
-        for (Collection<MediaType> accMediaTypes : accMediaTypess) {
-            for (MediaType accMediaType : accMediaTypes) {
+        // for (Iterable<MediaType> accMediaTypes : accMediaTypess)
+        {
+            for (MediaType accMediaType : accMediaTypess) {
                 ResourceMethod bestMethod = null;
                 for (Map.Entry<ResourceMethod, List<MediaType>> mm : mms
                         .entrySet()) {
@@ -870,7 +869,7 @@ public class JaxRsRouter extends Restlet {
      */
     private Map<ResourceMethod, List<MediaType>> findMethodSupportsMime(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
-            List<Collection<MediaType>> mediaTypess) {
+            SortedMetadata<MediaType> mediaTypess) {
         if (mediaTypess == null || mediaTypess.isEmpty())
             return findMethodsSupportAllTypes(resourceMethods, inOut);
         Map<ResourceMethod, List<MediaType>> mms;
@@ -892,15 +891,15 @@ public class JaxRsRouter extends Restlet {
      */
     private Map<ResourceMethod, List<MediaType>> findMethodsSupportTypeAndSubType(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
-            List<Collection<MediaType>> mediaTypess) {
+            SortedMetadata<MediaType> mediaTypess) {
         Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
         for (ResourceMethod resourceMethod : resourceMethods) {
             List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (MediaType resMethMediaType : mimes) {
-                for (Collection<MediaType> mediaTypes : mediaTypess)
-                    for (MediaType mediaType : mediaTypes)
-                        if (resMethMediaType.equals(mediaType, true))
-                            returnMethods.put(resourceMethod, mimes);
+                // for (Iterable<MediaType> mediaTypes : mediaTypess)
+                for (MediaType mediaType : mediaTypess)
+                    if (resMethMediaType.equals(mediaType, true))
+                        returnMethods.put(resourceMethod, mimes);
             }
         }
         return returnMethods;
@@ -923,18 +922,18 @@ public class JaxRsRouter extends Restlet {
 
     private Map<ResourceMethod, List<MediaType>> findMethodsSupportType(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
-            List<Collection<MediaType>> mediaTypess) {
+            SortedMetadata<MediaType> mediaTypess) {
         Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
         for (ResourceMethod resourceMethod : resourceMethods) {
             List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (MediaType resMethMediaType : mimes) {
-                for (Collection<MediaType> mediaTypes : mediaTypess)
-                    for (MediaType mediaType : mediaTypes) {
-                        String resMethMainType = resMethMediaType.getMainType();
-                        String wishedMainType = mediaType.getMainType();
-                        if (resMethMainType.equals(wishedMainType))
-                            returnMethods.put(resourceMethod, mimes);
-                    }
+                // for (Iterable<MediaType> mediaTypes : mediaTypess)
+                for (MediaType mediaType : mediaTypess) {
+                    String resMethMainType = resMethMediaType.getMainType();
+                    String wishedMainType = mediaType.getMainType();
+                    if (resMethMainType.equals(wishedMainType))
+                        returnMethods.put(resourceMethod, mimes);
+                }
             }
         }
         return returnMethods;
@@ -1076,7 +1075,7 @@ public class JaxRsRouter extends Restlet {
      *                 the request was handled.
      */
     private RequestHandledException handleInvokeException(Exception exception,
-            List<Collection<MediaType>> accMediaTypes,
+            SortedMetadata<MediaType> accMediaTypes,
             ResourceMethod resourceMethod, Response restletResponse,
             String methodName, String logMessage)
             throws RequestHandledException {
@@ -1133,7 +1132,7 @@ public class JaxRsRouter extends Restlet {
      */
     private RequestHandledException handleWebAppExc(
             WebApplicationException webAppExc, Response restletResponse,
-            List<Collection<MediaType>> accMediaTypes,
+            SortedMetadata<MediaType> accMediaTypes,
             ResourceMethod resourceMethod) throws RequestHandledException {
         // the message of the Exception is not used in the
         // WebApplicationException
@@ -1156,7 +1155,7 @@ public class JaxRsRouter extends Restlet {
             ResourceObject resourceObject,
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequest, Response restletResponse,
-            List<Collection<MediaType>> accMediaTypes)
+            SortedMetadata<MediaType> accMediaTypes)
             throws RequestHandledException {
         Object result;
         try {
@@ -1185,10 +1184,11 @@ public class JaxRsRouter extends Restlet {
             if (result instanceof javax.ws.rs.core.Response) {
                 jaxRsRespToRestletResp((javax.ws.rs.core.Response) result,
                         restletResponse, resourceMethod, accMediaTypes);
+                // TODO addMediaType etc.
                 // } else if(result instanceof URI) { // perhaps 201 or 303
             } else {
                 Representation entity = convertToRepresentation(result,
-                        resourceMethod, accMediaTypes, restletResponse);
+                        resourceMethod, accMediaTypes, restletResponse, null);
                 restletResponse.setEntity(entity);
                 // throw new NotYetImplementedException();
                 // LATER perhaps another default as option (email 2008-01-29)
@@ -1199,33 +1199,58 @@ public class JaxRsRouter extends Restlet {
     private void jaxRsRespToRestletResp(
             javax.ws.rs.core.Response jaxRsResponse, Response restletResponse,
             ResourceMethod resourceMethod,
-            List<Collection<MediaType>> accMediaTypes)
+            SortedMetadata<MediaType> accMediaTypes)
             throws RequestHandledException {
         restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
+        Object mediaTypeStr = jaxRsResponse.getMetadata().getFirst(
+                HttpHeaders.CONTENT_TYPE);
+        MediaType respMediaType = null;
+        if(mediaTypeStr != null)
+            respMediaType = MediaType.valueOf(mediaTypeStr.toString());
         restletResponse.setEntity(convertToRepresentation(jaxRsResponse
-                .getEntity(), resourceMethod, accMediaTypes, restletResponse));
+                .getEntity(), resourceMethod, accMediaTypes, restletResponse,
+                respMediaType));
         Util.copyResponseHeaders(jaxRsResponse.getMetadata(), restletResponse,
                 getLogger());
     }
 
+    /**
+     * 
+     * @param entity
+     * @param resourceMethod
+     * @param accMediaTypes
+     * @param restletResponse
+     * @param responseMediaType
+     *                The MediaType of the JAX-RS response. May be null.
+     * @return
+     * @throws RequestHandledException
+     */
     private Representation convertToRepresentation(Object entity,
             ResourceMethod resourceMethod,
-            List<Collection<MediaType>> accMediaTypes, Response restletResponse)
-            throws RequestHandledException {
+            SortedMetadata<MediaType> accMediaTypes, Response restletResponse,
+            MediaType responseMediaType) throws RequestHandledException {
         if (entity instanceof Representation)
             return (Representation) entity;
         if (entity == null)
             return null;
         Class<? extends Object> entityClass = entity.getClass();
         MessageBodyWriterSet mbws = this.messageBodyWriters.subSet(entityClass);
-        Collection<MediaType> mediaTypes = determineMediaType(resourceMethod,
-                mbws, accMediaTypes);
-        mbws = mbws.subSet(mediaTypes);
+        Set<MediaType> possMediaTypes;
+        if (responseMediaType != null)
+            possMediaTypes = Collections.singleton(responseMediaType);
+        else
+            possMediaTypes = determineMediaType16(resourceMethod, mbws,
+                    accMediaTypes, restletResponse);
+        mbws = mbws.subSet(possMediaTypes);
         MessageBodyWriter mbw = mbws.getBest(accMediaTypes);
         if (mbw == null)
             throw handleWebAppExc(new WebApplicationException(406),
                     restletResponse, accMediaTypes, resourceMethod);
-        MediaType mediaType = Util.getFirstElement(mediaTypes);
+        MediaType mediaType;
+        if (responseMediaType != null)
+            mediaType = responseMediaType;
+        else
+            mediaType = determineMediaType79(possMediaTypes, restletResponse);
         MultivaluedMap<String, Object> httpResponseHeaders = null;
         // TODO Http-ResponseHeaders
         return new JaxRsOutputRepresentation(entity, mediaType, mbw,
@@ -1234,38 +1259,83 @@ public class JaxRsRouter extends Restlet {
 
     /**
      * Determines the MediaType for a response. See JAX-RS-Spec, Section 2.6
-     * "Determining the MediaType of Responses"
+     * "Determining the MediaType of Responses", Parts 1-6
      * 
      * @param resourceMethod
      *                The ResourceMethod that created the entity.
      * @param mbwsForEntityClass
      *                {@link MessageBodyWriter}s, that support the entity
      *                class.
+     * @param accMediaTypes
+     *                see {@link Util#sortMetadataList(Collection)}
+     * @param restletResponse
+     *                The Restlet {@link Response}; needed for a not acceptable
+     *                return.
      * @return
+     * @throws RequestHandledException
      */
-    private Collection<MediaType> determineMediaType(
-            ResourceMethod resourceMethod,
+    private Set<MediaType> determineMediaType16(ResourceMethod resourceMethod,
             MessageBodyWriterSet mbwsForEntityClass,
-            List<Collection<MediaType>> accMediaTypes) {
-        Collection<MediaType> p = new HashSet<MediaType>();
-        p = resourceMethod.getProducedMimes();
-        if (p.size() == 1)
-            return p;
+            SortedMetadata<MediaType> accMediaTypes, Response restletResponse)
+            throws RequestHandledException {
+        // 1. Gather the set of producible media types P:
+        // (a) + (b)
+        Collection<MediaType> p = resourceMethod.getProducedMimes();
+        // 1. (c)
         if (p.isEmpty()) {
+            p = new ArrayList<MediaType>();
             for (MessageBodyWriter messageBodyWriter : mbwsForEntityClass)
-                p = messageBodyWriter.getProducedMimes();
+                p.addAll(messageBodyWriter.getProducedMimes());
         }
-        if (p.size() == 1)
-            return p;
-        if (p.isEmpty()) {
+        // 2.
+        if (p.isEmpty())
             return Collections.singleton(MediaType.ALL);
-        }
-        if (true)
-            throw new NotYetImplementedException(
-                    "The determinig of the mediaType for an entity is not ready implemented. (mediaTypes="
-                            + p + ")");
-        accMediaTypes.size(); // TODO JaxRsRouter.determineMediaType
-        return Collections.singleton(MediaType.ALL);
+        // 3. Obtain the acceptable media types A. If A = {}, set A = {'*/*'}
+        if (accMediaTypes.isEmpty())
+            accMediaTypes = SortedMetadata.getMediaTypeAll();
+        // 4. Sort P and A: a is already sorted.
+        // FIXME sort P
+        // 5.
+        Set<MediaType> m = new HashSet<MediaType>();
+        for (MediaType prod : p)
+            for (MediaType acc : accMediaTypes)
+                if (Util.isCompatible(prod, acc))
+                    m.add(Util.mostSpecific(prod, acc));
+        // 6.
+        if (m.isEmpty())
+            throw throwNotAcceptable(restletResponse);
+        return m;
+    }
+
+    /**
+     * Determines the MediaType for a response. See JAX-RS-Spec, Section 2.6
+     * "Determining the MediaType of Responses", Part 7-9
+     * 
+     * @param m
+     *                the possible {@link MediaType}s.
+     * @param restletResponse
+     *                The Restlet {@link Response}; needed for a not acceptable
+     *                return.
+     * @return the determined {@link MediaType}
+     * @throws RequestHandledException
+     */
+    private MediaType determineMediaType79(Set<MediaType> m,
+            Response restletResponse) throws RequestHandledException {
+        // 7.
+        for (MediaType mediaType : m)
+            if (Util.isConcrete(mediaType))
+                return mediaType;
+        // 8.
+        if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))
+            return MediaType.APPLICATION_OCTET_STREAM;
+        // 9.
+        throw throwNotAcceptable(restletResponse);
+    }
+
+    private RequestHandledException throwNotAcceptable(Response restletResponse)
+            throws RequestHandledException {
+        restletResponse.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+        throw new RequestHandledException();
     }
 
     /**

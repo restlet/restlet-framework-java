@@ -71,19 +71,19 @@ public class Util {
     public static final String JAVA_SECURITY_HEADER = "java.security.Principal";
 
     /**
+     * The name of the header {@link MultivaluedMap}&lt;String, String&gt; in
+     * the attribute map.
+     * 
+     */
+    public static final String ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS = "org.restlet.ext.jaxrs.http.headers";
+
+    /**
      * The name of the header {@link Form} in the attribute map.
      * 
      * @see #getHttpHeaders(Request)
      * @see #getHttpHeaders(Response)
      */
     public static final String ORG_RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
-
-    /**
-     * The name of the header {@link MultivaluedMap}&lt;String, String&gt; in
-     * the attribute map.
-     * 
-     */
-    public static final String ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS = "org.restlet.ext.jaxrs.http.headers";
 
     /**
      * appends the given String to the StringBuilder. If convertBraces is true,
@@ -223,7 +223,7 @@ public class Util {
             }
         }
         if (restletResponse.getEntity() == null) {
-             restletResponse.setEntity(Representation.createEmpty());
+            restletResponse.setEntity(Representation.createEmpty());
         }
         Engine.getInstance().copyResponseHeaders(headers, restletResponse,
                 logger);
@@ -745,6 +745,19 @@ public class Util {
     }
 
     /**
+     * Checks if the {@link org.restlet.data.MediaType}s are compatible.
+     * 
+     * @param mediaType1
+     * @param mediaType2
+     * @return
+     */
+    public static boolean isCompatible(org.restlet.data.MediaType mediaType1,
+            org.restlet.data.MediaType mediaType2) {
+        return mediaType1.includes(mediaType2)
+                || mediaType2.includes(mediaType1);
+    }
+
+    /**
      * Sets the logged in user.
      * 
      * @param principal
@@ -765,11 +778,12 @@ public class Util {
      * 
      * @return Returns an unmodifiable List of Collections of Metadata
      */
-    public static List<Collection<? extends Metadata>> sortMetadataList(
-            Collection<Preference<Metadata>> preferences) {
+    @SuppressWarnings("unchecked")
+    public static SortedMetadata<? extends Metadata> sortMetadataList(
+            Collection<Preference<? extends Metadata>> preferences) {
         SortedMap<Float, Collection<Metadata>> map = new TreeMap<Float, Collection<Metadata>>(
                 Collections.reverseOrder());
-        for (Preference<Metadata> preference : preferences) {
+        for (Preference<? extends Metadata> preference : preferences) {
             Float quality = preference.getQuality();
             Collection<Metadata> metadatas = map.get(quality);
             if (metadatas == null) {
@@ -778,9 +792,9 @@ public class Util {
             }
             metadatas.add(preference.getMetadata());
         }
-        return Collections
-                .unmodifiableList(new ArrayList<Collection<? extends Metadata>>(
-                        map.values()));
+        List arrayList = new ArrayList<Collection<? extends Metadata>>(map
+                .values());
+        return new SortedMetadata<Metadata>(arrayList);
     }
 
     /**
@@ -810,5 +824,55 @@ public class Util {
         if (index >= 0)
             stb.append(" (index starting with 0)");
         throw new IllegalArgumentException(stb.toString());
+    }
+
+    /**
+     * Returns the most concrete {@link MediaType} of the given MediaTypes. See
+     * JSR-311 specification, section 2.6. 'Determining the MediaType of
+     * Responses', part 5.
+     * 
+     * @param mediaTypes
+     * @return the most concrete {@link MediaType}.
+     * @throws IllegalArgumentException
+     *                 if the array is null or empty.
+     */
+    public static org.restlet.data.MediaType mostSpecific(
+            org.restlet.data.MediaType... mediaTypes)
+            throws IllegalArgumentException {
+        // LATER move to Restlet-API as static MediaType.mostSpecific(....) ?
+        if (mediaTypes == null || mediaTypes.length == 0)
+            throw new IllegalArgumentException(
+                    "You must give at least one MediaType");
+        if (mediaTypes.length == 1)
+            return mediaTypes[0];
+        org.restlet.data.MediaType mostSpecific = mediaTypes[0];
+        for (int i = 1; i < mediaTypes.length; i++) {
+            org.restlet.data.MediaType mediaType = mediaTypes[i];
+            if (mediaType.getMainType().equals("*"))
+                continue;
+            if (mostSpecific.getMainType().equals("*")) {
+                mostSpecific = mediaType;
+                continue;
+            }
+            if (mostSpecific.getSubType().equals("*")) {
+                mostSpecific = mediaType;
+                continue;
+            }
+        }
+        return mostSpecific;
+    }
+
+    /**
+     * Checks, if the given MediaType is concrete
+     * @param mediaType
+     * @return
+     */
+    public static boolean isConcrete(org.restlet.data.MediaType mediaType) {
+        // LATER move to Restlet API?
+        if (mediaType.getSubType().equals("*"))
+            return false;
+        if (mediaType.getMainType().equals("*"))
+            return false;
+        return true;
     }
 }
