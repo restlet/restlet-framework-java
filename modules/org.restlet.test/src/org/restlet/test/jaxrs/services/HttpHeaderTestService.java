@@ -26,6 +26,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
@@ -51,12 +52,14 @@ public class HttpHeaderTestService {
      */
     @GET
     @Path("HeaderParam")
+    @ProduceMime("text/plain")
     public String getHeaderParam(@HeaderParam(TEST_HEADER_NAME) String testHeaderValue) {
         return testHeaderValue;
     }
     
     @GET
     @Path("accMediaTypes")
+    @ProduceMime("text/plain")
     public String getAccMediaTypes(@Context HttpHeaders headers) {
         List<MediaType> mediaTypes = headers.getAcceptableMediaTypes();
         return mediaTypes.toString();
@@ -64,6 +67,7 @@ public class HttpHeaderTestService {
 
     @GET
     @Path("cookies/{cookieName}")
+    @ProduceMime("text/plain")
     public String getMediaTypes(@Context HttpHeaders headers, @PathParam("cookieName") String cookieName) {
         Map<String, Cookie> cookies = headers.getCookies();
         try
@@ -92,12 +96,14 @@ public class HttpHeaderTestService {
 
     @POST
     @Path("language")
+    @ProduceMime("text/plain")
     public String getLanguage(@Context HttpHeaders headers) {
         return headers.getLanguage();
     } 
 
     @GET
     @Path("header/{headername}")
+    @ProduceMime("text/plain")
     public String getHeader(@Context HttpHeaders headers, @PathParam("headername") String headername) {
         MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
         String headerValue = requestHeaders.getFirst(headername);

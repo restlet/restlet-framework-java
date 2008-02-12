@@ -24,6 +24,7 @@ import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -40,6 +41,7 @@ public class RequestService {
 
     @GET
     @Path("date")
+    @ProduceMime("text/plain")
     public Response get(@Context
     Request request) {
         Date modificDate = getLastModificationDateFromDatastore();

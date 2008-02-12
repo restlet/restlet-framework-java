@@ -23,9 +23,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -44,38 +46,45 @@ public class ProviderTestService {
 
     @GET
     @Path("byteArray")
+    @ProduceMime("application/octet-stream")
     public byte[] getByteArray() {
         return ALPHABET.getBytes();
     }
 
     @POST
     @Path("byteArray")
-    public String putByteArray(byte[] byteArray) {
+    @ProduceMime("text/plain")
+    public String postByteArray(byte[] byteArray) {
         return new String(byteArray);
     }
 
     @GET
     @Path("file")
+    @ProduceMime("application/octet-stream")
     public File getFile() {
         return new File(this.getClass().getResource("alphabet.txt").getPath());
     }
 
     @POST
     @Path("file")
-    public String putFile(File file) throws IOException {
+    @ConsumeMime("application/octet-stream")
+    @ProduceMime("text/plain")
+    public String postFile(File file) throws IOException {
         InputStream inputStream = new FileInputStream(file);
-        return putInputStream(inputStream);
+        return postInputStream(inputStream);
     }
 
     @GET
     @Path("InputStream")
+    @ProduceMime("application/octet-stream")
     public InputStream getInputStream() {
         return new ByteArrayInputStream(ALPHABET.getBytes());
     }
 
     @POST
     @Path("InputStream")
-    public String putInputStream(InputStream inputStream) throws IOException {
+    @ProduceMime("text/plain")
+    public String postInputStream(InputStream inputStream) throws IOException {
         StringBuilder stb = new StringBuilder();
         int b;
         while ((b = inputStream.read()) >= 0)
@@ -85,30 +94,37 @@ public class ProviderTestService {
 
     @GET
     @Path("jaxb")
+    @ProduceMime("text/xml")
     public Person getJaxb() {
         return new Person("Angela", "Merkel");
     }
 
     @POST
     @Path("jaxb")
-    public String putJaxb(Person person) {
+    @ConsumeMime({"text/xml", "application/xml"})
+    @ProduceMime("text/plain")
+    public String postJaxb(Person person) {
         return person.toString();
     }
 
     @GET
     @Path("jaxbElement")
+    @ProduceMime("text/xml")
     public JAXBElement<Person> getJaxbElement() {
         return new JAXBElement<Person>(new QName(""), Person.class, getJaxb());
     }
 
     @POST
     @Path("jaxbElement")
-    public String putJaxb(JAXBElement<Person> person) {
+    @ConsumeMime({"text/xml", "application/xml"})
+    @ProduceMime("text/plain")
+    public String postJaxb(JAXBElement<Person> person) {
         return person.getValue().toString();
     }
 
     @GET
     @Path("form")
+    @ProduceMime("application/x-www-form-urlencoded")
     public Form getForm() {
         Form form = new Form();
         form.add("firstname", "Angela");
@@ -118,12 +134,15 @@ public class ProviderTestService {
 
     @POST
     @Path("form")
-    public String putForm(Form form) {
+    @ProduceMime("text/plain")
+    @ConsumeMime("application/x-www-form-urlencoded")
+    public String postForm(Form form) {
         return form.toString();
     }
 
     @GET
     @Path("MultivaluedMap")
+    @ProduceMime("application/x-www-form-urlencoded")
     public MultivaluedMap<String, String> getMMap() {
         MultivaluedMap<String, String> mmap = new MultivaluedMapImpl<String, String>();
         mmap.add("firstname", "Angela");
@@ -133,7 +152,9 @@ public class ProviderTestService {
 
     @POST
     @Path("MultivaluedMap")
-    public String putMMap(MultivaluedMap<String, String> mmap) {
+    @ConsumeMime("application/x-www-form-urlencoded")
+    @ProduceMime("text/plain")
+    public String postMMap(MultivaluedMap<String, String> mmap) {
         return Converter.toForm(mmap).toString();
     }
 }

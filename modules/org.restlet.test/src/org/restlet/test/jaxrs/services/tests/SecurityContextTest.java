@@ -230,7 +230,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         Response response = get("userPrincipal");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
-        assertEquals("", entity);
+        assertEquals("-", entity);
 
         response = get("userPrincipal", new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "abc", "def"));

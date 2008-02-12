@@ -115,10 +115,10 @@ public class SimpleTrainTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
         Representation entityHead = responseHead.getEntity();
         Representation entityGett = responseGett.getEntity();
+        assertNotNull(entityHead);
+        assertNotNull(entityGett);
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
-        assertEqualMediaType(MediaType.TEXT_HTML, entityHead.getMediaType());
         assertEquals(SimpleTrain.RERP_HTML_TEXT, entityGett.getText());
-        assertNull("HEAD response: entity must be null", entityHead.getText());
     }
 
     public void testOptions() throws Exception {

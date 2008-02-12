@@ -73,7 +73,7 @@ public class RequestTest extends JaxRsTestCase {
     /**
      * @return
      */
-    private Tag getEntityTagFromDatastore() {
+    private Tag getDatastoreETag() {
         return Converter.toRestletTag(RequestService
                 .getEntityTagFromDatastore());
     }
@@ -83,34 +83,83 @@ public class RequestTest extends JaxRsTestCase {
         super.setUp();
     }
 
-    public void testGetDateAndEntityTag() throws Exception {
+    public void testSelectVariant() {
+        ClientInfo clientInfo = new ClientInfo();
+        List<Preference<Language>> accLangs = clientInfo.getAcceptedLanguages();
+        accLangs.add(new Preference<Language>(Language.SPANISH, 1f));
+        accLangs.add(new Preference<Language>(new Language("de"), 0.8f));
+        clientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(MediaType.TEXT_HTML, 0.5f));
+
+        Response response = get("selectVariants", clientInfo);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEqualMediaType(MediaType.TEXT_HTML, response.getEntity()
+                .getMediaType());
+        assertEquals(new Language("de"), Util.getOnlyElement(response
+                .getEntity().getLanguages()));
+        assertTrue("dimensions must contain " + Dimension.MEDIA_TYPE, response
+                .getDimensions().contains(Dimension.MEDIA_TYPE));
+        assertTrue("dimensions must contain " + Dimension.LANGUAGE, response
+                .getDimensions().contains(Dimension.LANGUAGE));
+
+        clientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(MediaType.TEXT_PLAIN, 1f));
+        response = get("selectVariants", clientInfo);
+        assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
+                .getMediaType());
+        assertEquals(new Language("de"), Util.getOnlyElement(response
+                .getEntity().getLanguages()));
+
+        accLangs.add(new Preference<Language>(Language.ENGLISH, 0.9f));
+        response = get("selectVariants", clientInfo);
+        assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
+                .getMediaType());
+        assertEquals(Language.ENGLISH, Util.getOnlyElement(response.getEntity()
+                .getLanguages()));
+    }
+
+    public void testDateAndEntityTag1Get() throws Exception {
+        Conditions cond = createConditions(BEFORE, getDatastoreETag());
+        Response response = get("date", cond);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    }
+
+    public void testDateAndEntityTag1Put() throws Exception {
+        Conditions cond = createConditions(BEFORE, getDatastoreETag());
+        Response response = put("date", cond);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    }
+
+    /**
+     * @param modifiedSince
+     * @param entityTag
+     * @return
+     */
+    private static Conditions createConditions(Date modifiedSince, Tag entityTag) {
         Conditions conditions = new Conditions();
-        conditions.setModifiedSince(BEFORE);
-        conditions.setMatch(Util.createList(getEntityTagFromDatastore()));
+        conditions.setModifiedSince(modifiedSince);
+        conditions.setMatch(Util.createList(entityTag));
+        return conditions;
+    }
+
+    public void testDateAndEntityTag2Get() throws Exception {
+        Conditions conditions = createConditions(AFTER, getDatastoreETag());
         Response response = get("date", conditions);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-
-        response = accessServer(Method.PUT, RequestService.class, "date",
-                conditions, null);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-
-        conditions = new Conditions();
-        conditions.setModifiedSince(AFTER);
-        conditions.setMatch(Util.createList(getEntityTagFromDatastore()));
-        response = get("date", conditions);
         assertEquals(Status.REDIRECTION_NOT_MODIFIED, response.getStatus());
+    }
 
-        response = accessServer(Method.PUT, RequestService.class, "date",
-                conditions, null);
+    public void testDateAndEntityTag2Put() throws Exception {
+        Conditions conditions = createConditions(AFTER, getDatastoreETag());
+        Response response = put("date", conditions);
         assertEquals(PREC_FAILED, response.getStatus());
         assertTrue("Entity must contain \"was not modified\"", response
                 .getEntity().getText().contains(
                         "The entity was not modified since"));
+    }
 
-        conditions = new Conditions();
-        conditions.setModifiedSince(BEFORE);
-        conditions.setMatch(Util.createList(new Tag("shkhsdk")));
-        response = get("date", conditions);
+    public void testDateAndEntityTag3Get() throws Exception {
+        Conditions conditions = createConditions(BEFORE, new Tag("shkhsdk"));
+        Response response = get("date", conditions);
         assertEquals(PREC_FAILED, response.getStatus());
         String entityText = response.getEntity().getText();
         assertTrue(
@@ -119,33 +168,39 @@ public class RequestTest extends JaxRsTestCase {
                 entityText.contains("The entity was not modified since")
                         || entityText
                                 .contains("The entity does not match Entity Tag"));
+    }
 
-        response = accessServer(Method.PUT, RequestService.class, "date",
-                conditions, null);
+    public void testDateAndEntityTag3Put() throws Exception {
+        Conditions conditions = createConditions(BEFORE, new Tag("shkhsdk"));
+        Response response = put("date", conditions);
         assertEquals(PREC_FAILED, response.getStatus());
+        String entityText = response.getEntity().getText();
         assertTrue(
                 "Entity must contain \"was not modified\" or \"does not match Entity Tag\", but is \""
                         + entityText + "\"",
                 entityText.contains("The entity was not modified since")
                         || entityText
                                 .contains("The entity does not match Entity Tag"));
+    }
 
-        conditions = new Conditions();
-        conditions.setModifiedSince(AFTER);
-        conditions.setMatch(Util.createList(new Tag("shkhsdk")));
-        response = get("date", conditions);
+    public void testDateAndEntityTag4Get() throws Exception {
+        Conditions conditions = createConditions(AFTER, new Tag("shkhsdk"));
+        Response response = get("date", conditions);
         assertEquals(PREC_FAILED, response.getStatus());
-        entityText = response.getEntity().getText();
+        String entityText = response.getEntity().getText();
         assertTrue(
                 "Entity must contain \"was not modified\" or \"does not match Entity Tag\", but is \""
                         + entityText + "\"",
                 entityText.contains("The entity was not modified since")
                         || entityText
                                 .contains("The entity does not match Entity Tag"));
+    }
 
-        response = accessServer(Method.PUT, RequestService.class, "date",
-                conditions, null);
+    public void testDateAndEntityTag4Put() throws Exception {
+        Conditions conditions = createConditions(AFTER, new Tag("shkhsdk"));
+        Response response = put("date", conditions);
         assertEquals(PREC_FAILED, response.getStatus());
+        String entityText = response.getEntity().getText();
         assertTrue(
                 "Entity must contain \"was not modified\" or \"does not match Entity Tag\", but is \""
                         + entityText + "\"",
@@ -160,7 +215,7 @@ public class RequestTest extends JaxRsTestCase {
         conditions.setModifiedSince(AFTER);
         Response response = get("date", conditions);
         assertEquals(Status.REDIRECTION_NOT_MODIFIED, response.getStatus());
-        assertEquals(0, response.getEntity().getText().length());
+        assertFalse(response.isEntityAvailable());
         // from RFC 2616, Section 10.3.5
         // The 304 response MUST include the following header fields:
         // - ETag and/or Content-Location, if the header would have been sent
@@ -173,12 +228,12 @@ public class RequestTest extends JaxRsTestCase {
 
     public void testGetEntityTagMatch() throws Exception {
         Conditions conditions = new Conditions();
-        conditions.setMatch(Util.createList(getEntityTagFromDatastore()));
+        conditions.setMatch(Util.createList(getDatastoreETag()));
         Response response = get("date", conditions);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(RequestService.getLastModificationDateFromDatastore(),
                 response.getEntity().getModificationDate());
-        assertEquals(getEntityTagFromDatastore(), response.getEntity().getTag());
+        assertEquals(getDatastoreETag(), response.getEntity().getTag());
         assertNotNull(response.getEntity().getText());
         assertTrue(response.getEntity().getSize() > 0);
 
@@ -193,7 +248,7 @@ public class RequestTest extends JaxRsTestCase {
 
     public void testGetEntityTagNoneMatch() throws Exception {
         Conditions conditions = new Conditions();
-        conditions.setNoneMatch(Util.createList(getEntityTagFromDatastore()));
+        conditions.setNoneMatch(Util.createList(getDatastoreETag()));
         Response response = get("date", conditions);
         assertEquals(PREC_FAILED, response.getStatus());
         assertTrue("Entity must contain \"matches Entity Tag\"", response
@@ -218,7 +273,7 @@ public class RequestTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(RequestService.getLastModificationDateFromDatastore(),
                 response.getEntity().getModificationDate());
-        assertEquals(getEntityTagFromDatastore(), response.getEntity().getTag());
+        assertEquals(getDatastoreETag(), response.getEntity().getTag());
         assertNotNull(response.getEntity().getText());
         assertTrue(response.getEntity().getSize() > 0);
 
@@ -245,7 +300,7 @@ public class RequestTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(RequestService.getLastModificationDateFromDatastore(),
                 response.getEntity().getModificationDate());
-        assertEquals(getEntityTagFromDatastore(), response.getEntity().getTag());
+        assertEquals(getDatastoreETag(), response.getEntity().getTag());
         assertNotNull(response.getEntity().getText());
         assertTrue(response.getEntity().getSize() > 0);
 
@@ -279,14 +334,12 @@ public class RequestTest extends JaxRsTestCase {
     public void testPutModifiedSince() throws Exception {
         Conditions conditions = new Conditions();
         conditions.setModifiedSince(BEFORE);
-        Response response = accessServer(Method.PUT, RequestService.class,
-                "date", conditions, null);
+        Response response = put("date", conditions);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         conditions = new Conditions();
         conditions.setModifiedSince(AFTER);
-        response = accessServer(Method.PUT, RequestService.class, "date",
-                conditions, null);
+        response = put("date", conditions);
         assertEquals(PREC_FAILED, response.getStatus());
         assertTrue("Entity must contain \"was not modified\"", response
                 .getEntity().getText().contains(
@@ -296,57 +349,18 @@ public class RequestTest extends JaxRsTestCase {
     public void testPutUnmodifiedSince() throws Exception {
         Conditions conditions = new Conditions();
         conditions.setUnmodifiedSince(AFTER);
-        Response response = accessServer(Method.PUT, RequestService.class,
-                "date", conditions, null);
+        Response response = put("date", conditions);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         conditions = new Conditions();
         conditions.setUnmodifiedSince(BEFORE);
-        response = accessServer(Method.PUT, RequestService.class, "date",
-                conditions, null);
+        response = put("date", conditions);
         assertEquals(PREC_FAILED, response.getStatus());
-        assertTrue("Entity must contain \"was not modified\"", response
-                .getEntity().getText()
+        String respEntity = response.getEntity().getText();
+        assertTrue("Entity must contain \"was not modified\"", respEntity
                 .contains("The entity was modified since"));
 
         // LATER testen, was bei ungultigem Datum passiert:
         // If-Unmodified-Since-Header ignorieren.
-    }
-
-    public void testSelectVariant() {
-        ClientInfo clientInfo = new ClientInfo();
-        List<Preference<Language>> accLangs = clientInfo.getAcceptedLanguages();
-        accLangs.add(new Preference<Language>(Language.SPANISH, 1f));
-        accLangs.add(new Preference<Language>(new Language("de"), 0.8f));
-        clientInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML, 0.5f));
-
-        Response response = accessServer(Method.GET, RequestService.class,
-                "selectVariants", null, clientInfo);
-        assertEqualMediaType(MediaType.TEXT_HTML, response.getEntity()
-                .getMediaType());
-        assertEquals(new Language("de"), Util.getOnlyElement(response
-                .getEntity().getLanguages()));
-        assertTrue("dimensions must contain " + Dimension.MEDIA_TYPE, response
-                .getDimensions().contains(Dimension.MEDIA_TYPE));
-        assertTrue("dimensions must contain " + Dimension.LANGUAGE, response
-                .getDimensions().contains(Dimension.LANGUAGE));
-
-        clientInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN, 1f));
-        response = accessServer(Method.GET, RequestService.class,
-                "selectVariants", null, clientInfo);
-        assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
-                .getMediaType());
-        assertEquals(new Language("de"), Util.getOnlyElement(response
-                .getEntity().getLanguages()));
-
-        accLangs.add(new Preference<Language>(Language.ENGLISH, 0.9f));
-        response = accessServer(Method.GET, RequestService.class,
-                "selectVariants", null, clientInfo);
-        assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
-                .getMediaType());
-        assertEquals(Language.ENGLISH, Util.getOnlyElement(response.getEntity()
-                .getLanguages()));
     }
 }

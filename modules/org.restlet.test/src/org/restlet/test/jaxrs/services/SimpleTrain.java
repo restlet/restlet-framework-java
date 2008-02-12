@@ -25,6 +25,8 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import org.restlet.data.MediaType;
+
 /**
  * 
  * @author Stephan Koops
@@ -96,6 +98,7 @@ public class SimpleTrain {
 
     @GET
     @Path("decode/{string}")
+    @ProduceMime("text/plain")
     public String getTemplParamDecoded(@Context
     UriInfo uriInfo) {
         try {
@@ -109,6 +112,7 @@ public class SimpleTrain {
 
     @GET
     @Path("encode/{string}")
+    @ProduceMime("text/plain")
     public String getTemplParamEncoded(@Context
     UriInfo uriInfo) {
         try {

@@ -29,11 +29,9 @@ import org.restlet.test.jaxrs.services.PathParamTestService2;
  */
 public class PathParamTest2 extends JaxRsTestCase {
 
-    private static final Class<?> SERVICE_CLASS = PathParamTestService2.class;
-
     @Override
     protected Class<?> getRootResourceClass() {
-        return SERVICE_CLASS;
+        return PathParamTestService2.class;
     }
 
     public void testGetBigDecimal() throws IOException {

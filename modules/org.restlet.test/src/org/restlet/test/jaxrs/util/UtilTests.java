@@ -18,14 +18,9 @@
 
 package org.restlet.test.jaxrs.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import junit.framework.TestCase;
 
 import org.restlet.data.MediaType;
-import org.restlet.data.Preference;
 import org.restlet.ext.jaxrs.util.Util;
 
 @SuppressWarnings("unchecked")
@@ -57,82 +52,6 @@ public class UtilTests extends TestCase {
         }
     }
 
-    public void testConvertMetadataList1() {
-        Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
-        List<Collection<MediaType>> sorted = (List) Util
-                .sortMetadataList((Collection) preferences);
-        assertEquals(0, sorted.size());
-
-        preferences.add(new Preference<MediaType>(MediaType.TEXT_HTML));
-        sorted = (List) Util.sortMetadataList((Collection) preferences);
-        assertEquals(1, sorted.size());
-        assertEquals(1, sorted.get(0).size());
-        assertEquals(MediaType.TEXT_HTML, sorted.get(0).iterator().next());
-
-        preferences.add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
-        sorted = (List) Util.sortMetadataList((Collection) preferences);
-        assertEquals(1, sorted.size());
-        assertEquals(2, sorted.get(0).size());
-        assertTrue(sorted.get(0).contains(MediaType.TEXT_HTML));
-        assertTrue(sorted.get(0).contains(MediaType.TEXT_PLAIN));
-    }
-
-    public void testConvertMetadataList2() {
-        Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
-        preferences.add(new Preference<MediaType>(MediaType.TEXT_HTML, 0.7f));
-        List<Collection<MediaType>> sorted = (List) Util
-                .sortMetadataList((Collection) preferences);
-        assertEquals(1, sorted.size());
-        assertEquals(1, sorted.get(0).size());
-        assertEquals(MediaType.TEXT_HTML, sorted.get(0).iterator().next());
-
-        preferences.add(new Preference<MediaType>(MediaType.TEXT_PLAIN, 0.5f));
-        sorted = (List) Util.sortMetadataList((Collection) preferences);
-        assertEquals(2, sorted.size());
-        assertEquals(1, sorted.get(0).size());
-        assertEquals(MediaType.TEXT_HTML, sorted.get(0).iterator().next());
-        assertEquals(1, sorted.get(1).size());
-        assertEquals(MediaType.TEXT_PLAIN, sorted.get(1).iterator().next());
-    }
-
-    public void testConvertMetadataList3() {
-        Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
-        preferences.add(new Preference<MediaType>(MediaType.TEXT_HTML, 0.5f));
-        List<Collection<MediaType>> sorted = (List) Util
-                .sortMetadataList((Collection) preferences);
-        assertEquals(1, sorted.size());
-        assertEquals(1, sorted.get(0).size());
-        assertEquals(MediaType.TEXT_HTML, sorted.get(0).iterator().next());
-
-        preferences.add(new Preference<MediaType>(MediaType.TEXT_PLAIN, 0.7f));
-        sorted = (List) Util.sortMetadataList((Collection) preferences);
-        assertEquals(2, sorted.size());
-        assertEquals(1, sorted.get(0).size());
-        assertEquals(MediaType.TEXT_PLAIN, sorted.get(0).iterator().next());
-        assertEquals(1, sorted.get(1).size());
-        assertEquals(MediaType.TEXT_HTML, sorted.get(1).iterator().next());
-    }
-
-    public void testConvertMetadataList4() {
-        Collection<Preference<MediaType>> preferences = new ArrayList<Preference<MediaType>>();
-        preferences.add(new Preference<MediaType>(MediaType.TEXT_HTML, 0.5f));
-        List<Collection<MediaType>> sorted = (List) Util
-                .sortMetadataList((Collection) preferences);
-        assertEquals(1, sorted.size());
-        assertEquals(1, sorted.get(0).size());
-        assertEquals(MediaType.TEXT_HTML, sorted.get(0).iterator().next());
-
-        preferences.add(new Preference<MediaType>(MediaType.TEXT_PLAIN, 0.7f));
-        preferences.add(new Preference<MediaType>(MediaType.TEXT_CSS, 0.5f));
-        sorted = (List) Util.sortMetadataList((Collection) preferences);
-        assertEquals(2, sorted.size());
-        assertEquals(1, sorted.get(0).size());
-        assertEquals(MediaType.TEXT_PLAIN, sorted.get(0).iterator().next());
-        assertEquals(2, sorted.get(1).size());
-        assertTrue(sorted.get(1).contains(MediaType.TEXT_HTML));
-        assertTrue(sorted.get(1).contains(MediaType.TEXT_CSS));
-    }
-
     public void testIsSameOrSubType() {
         assertTrue(Util.isSameOrSubType(MediaType.ALL, MediaType.ALL));
         assertTrue(Util.isSameOrSubType(MediaType.TEXT_ALL, MediaType.ALL));
@@ -146,6 +65,27 @@ public class UtilTests extends TestCase {
         assertFalse(Util.isSameOrSubType(MediaType.TEXT_ALL,
                 MediaType.TEXT_PLAIN));
 
-        assertFalse(Util.isSameOrSubType(MediaType.APPLICATION_ALL, MediaType.TEXT_ALL));
-}
+        assertFalse(Util.isSameOrSubType(MediaType.APPLICATION_ALL,
+                MediaType.TEXT_ALL));
+    }
+
+    public void testMostSpecificMediaType() {
+        assertEquals(MediaType.TEXT_ALL, Util.mostSpecific(MediaType.ALL,
+                MediaType.TEXT_ALL));
+        assertEquals(MediaType.TEXT_ALL, Util.mostSpecific(MediaType.TEXT_ALL,
+                MediaType.ALL));
+
+        assertEquals(MediaType.TEXT_PLAIN, Util.mostSpecific(MediaType.ALL,
+                MediaType.TEXT_ALL, MediaType.TEXT_PLAIN));
+        assertEquals(MediaType.TEXT_PLAIN, Util.mostSpecific(MediaType.ALL,
+                MediaType.TEXT_PLAIN, MediaType.TEXT_ALL));
+        assertEquals(MediaType.TEXT_PLAIN, Util.mostSpecific(
+                MediaType.TEXT_ALL, MediaType.ALL, MediaType.TEXT_PLAIN));
+        assertEquals(MediaType.TEXT_PLAIN, Util.mostSpecific(
+                MediaType.TEXT_ALL, MediaType.TEXT_PLAIN, MediaType.ALL));
+        assertEquals(MediaType.TEXT_PLAIN, Util.mostSpecific(
+                MediaType.TEXT_PLAIN, MediaType.ALL, MediaType.TEXT_ALL));
+        assertEquals(MediaType.TEXT_PLAIN, Util.mostSpecific(
+                MediaType.TEXT_PLAIN, MediaType.TEXT_ALL, MediaType.ALL));
+    }
 }

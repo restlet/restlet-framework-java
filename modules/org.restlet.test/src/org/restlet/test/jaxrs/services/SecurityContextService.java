@@ -61,6 +61,7 @@ public class SecurityContextService {
 
     @GET
     @Path("authenticationScheme")
+    @ProduceMime("text/plain")
     public String getAuthenticationScheme(@Context
     SecurityContext securityContext) {
         return securityContext.getAuthenticationScheme();
@@ -68,16 +69,18 @@ public class SecurityContextService {
 
     @GET
     @Path("userPrincipal")
+    @ProduceMime("text/plain")
     public String getUserPrincipal(@Context
     SecurityContext securityContext) {
         Principal principal = securityContext.getUserPrincipal();
         if(principal == null)
-            return "";
+            return "-";
         return principal.getName();
     }
 
     @GET
     @Path("secure")
+    @ProduceMime("text/plain")
     public String isSecure(@Context
     SecurityContext securityContext) {
         if (!securityContext.isSecure())

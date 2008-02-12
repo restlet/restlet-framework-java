@@ -64,10 +64,12 @@ public class SimpleHouseTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
         Representation entityGett = responseGett.getEntity();
         Representation entityHead = responseHead.getEntity();
-        assertEquals("4711", entityGett.getText());
-        assertNull(entityHead.getText());
+        assertNotNull(entityGett);
+        assertNotNull("Must not be null to read the entity headers", entityHead);
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_HTML, entityHead.getMediaType());
+        assertEquals("4711", entityGett.getText());
+        assertNull(entityHead.getText());
     }
 
     public void testHead2() throws Exception {
@@ -81,10 +83,12 @@ public class SimpleHouseTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
         Representation entityGett = responseGett.getEntity();
         Representation entityHead = responseHead.getEntity();
-        assertEquals("4711", entityGett.getText());
-        assertNull(entityHead.getText());
+        assertNotNull(entityGett);
+        assertNotNull("Must not be null to read the entity headers", entityHead);
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_HTML, entityHead.getMediaType());
+        assertEquals("4711", entityGett.getText());
+        assertNull(entityHead.getText());
     }
 
     public void testHead2plain() throws Exception {
@@ -98,10 +102,12 @@ public class SimpleHouseTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
         Representation entityGett = responseGett.getEntity();
         Representation entityHead = responseHead.getEntity();
-        assertEquals("4711", entityGett.getText());
-        assertNull(entityHead.getText());
+        assertNotNull(entityGett);
+        assertNotNull("Must not be null to read the entity headers", entityHead);
         assertEqualMediaType(MediaType.TEXT_PLAIN, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entityHead.getMediaType());
+        assertEquals("4711", entityGett.getText());
+        assertNull(entityHead.getText());
     }
 
     public void testOptions() throws Exception {

@@ -158,25 +158,24 @@ public abstract class JaxRsTestCase extends TestCase {
     @SuppressWarnings("unchecked")
     private static void addAcceptedMediaTypes(Request request,
             Collection mediaTypes) {
-        if (mediaTypes != null && !mediaTypes.isEmpty()) {
-            Collection<Preference<MediaType>> mediaTypePrefs = new ArrayList<Preference<MediaType>>(
-                    mediaTypes.size());
-            for (Object mediaType : mediaTypes) {
-                if (mediaType instanceof MediaType) {
-                    mediaTypePrefs.add(new Preference<MediaType>(
-                            (MediaType) mediaType));
-                } else if (mediaType instanceof Preference) {
-                    Preference<Metadata> preference = (Preference) mediaType;
-                    if (preference.getMetadata() instanceof MediaType)
-                        mediaTypePrefs.add((Preference) preference);
-                } else {
-                    throw new IllegalArgumentException(
-                            "Valid mediaTypes are only Preference<MediaType> or MediaType");
-                }
+        if (mediaTypes == null || mediaTypes.isEmpty())
+            return;
+        Collection<Preference<MediaType>> mediaTypePrefs = new ArrayList<Preference<MediaType>>(
+                mediaTypes.size());
+        for (Object mediaType : mediaTypes) {
+            if (mediaType instanceof MediaType) {
+                mediaTypePrefs.add(new Preference<MediaType>(
+                        (MediaType) mediaType));
+            } else if (mediaType instanceof Preference) {
+                Preference<Metadata> preference = (Preference) mediaType;
+                if (preference.getMetadata() instanceof MediaType)
+                    mediaTypePrefs.add((Preference) preference);
+            } else {
+                throw new IllegalArgumentException(
+                        "Valid mediaTypes are only Preference<MediaType> or MediaType");
             }
-            request.getClientInfo().getAcceptedMediaTypes().addAll(
-                    mediaTypePrefs);
         }
+        request.getClientInfo().getAcceptedMediaTypes().addAll(mediaTypePrefs);
     }
 
     /**
@@ -239,6 +238,15 @@ public abstract class JaxRsTestCase extends TestCase {
         return reference;
     }
 
+    /**
+     * @param subPath
+     * @return
+     */
+    protected Request createGetRequest(String subPath) {
+        Reference reference = createReference(getRootResourceClass(), subPath);
+        return new Request(Method.GET, reference);
+    }
+
     public static ServerWrapper getServerWrapper() {
         return serverWrapper;
     }
@@ -292,7 +300,10 @@ public abstract class JaxRsTestCase extends TestCase {
         if (response.getStatus().isError()) {
             Representation entity = response.getEntity();
             try {
-                System.out.println(entity.getText());
+                if (entity != null)
+                    System.out.println(entity.getText());
+                else
+                    System.out.println("no Entity available");
             } catch (IOException e) {
                 System.out.println("Entity not readable: ");
                 e.printStackTrace(System.out);
@@ -346,6 +357,11 @@ public abstract class JaxRsTestCase extends TestCase {
     public Response get(String subPath, Conditions conditions) {
         return accessServer(Method.GET, getRootResourceClass(), subPath,
                 conditions, null);
+    }
+
+    public Response get(String subPath, ClientInfo clientInfo) {
+        return accessServer(Method.GET, getRootResourceClass(), subPath, null,
+                clientInfo);
     }
 
     public Response get(String subPath, MediaType mediaType) {
@@ -409,13 +425,18 @@ public abstract class JaxRsTestCase extends TestCase {
         return post(null, entity, null, null);
     }
 
+    public Response put(String subPath, Conditions conditions) {
+        return accessServer(Method.PUT, getRootResourceClass(), subPath,
+                conditions, null);
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         if (shouldStartServerInSetUp()) {
             startServer();
             try {
-                Thread.sleep(100);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

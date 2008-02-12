@@ -44,16 +44,13 @@ import org.restlet.test.jaxrs.services.HttpHeaderTestService;
  */
 public class HttpHeaderTest extends JaxRsTestCase {
 
-    private static final Class<HttpHeaderTestService> SERVICE_CLASS = HttpHeaderTestService.class;
-
     @Override
     protected Class<?> getRootResourceClass() {
-        return SERVICE_CLASS;
+        return HttpHeaderTestService.class;
     }
 
     public void testHeaderParam() throws IOException {
-        Request request = new Request(Method.GET, createReference(
-                SERVICE_CLASS, "HeaderParam"));
+        Request request = createGetRequest("HeaderParam");
         Util.getHttpHeaders(request).add(
                 HttpHeaderTestService.TEST_HEADER_NAME, "abc");
         Client client = createClient();
@@ -61,16 +58,14 @@ public class HttpHeaderTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc", response.getEntity().getText());
 
-        request = new Request(Method.GET, createReference(SERVICE_CLASS,
-                "HeaderParam"));
+        request = createGetRequest("HeaderParam");
         Util.getHttpHeaders(request).add(
                 HttpHeaderTestService.TEST_HEADER_NAME.toLowerCase(), "abc");
         response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc", response.getEntity().getText());
 
-        request = new Request(Method.GET, createReference(SERVICE_CLASS,
-                "HeaderParam"));
+        request = createGetRequest("HeaderParam");
         Util.getHttpHeaders(request).add(
                 HttpHeaderTestService.TEST_HEADER_NAME.toUpperCase(), "abc");
         response = client.handle(request);
@@ -79,16 +74,14 @@ public class HttpHeaderTest extends JaxRsTestCase {
     }
 
     public void testAccMediaType() throws IOException {
-        Response response = accessServer(Method.GET, SERVICE_CLASS,
-                "accMediaTypes", MediaType.TEXT_PLAIN);
+        Response response = get("accMediaTypes", MediaType.TEXT_PLAIN);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("["+MediaType.TEXT_PLAIN.toString()+"]", response.getEntity()
-                .getText());
+        assertEquals("[" + MediaType.TEXT_PLAIN.toString() + "]", response
+                .getEntity().getText());
     }
 
     public void testCookies() throws IOException {
-        Request request = new Request(Method.GET, createReference(
-                SERVICE_CLASS, "cookies/cookieName"));
+        Request request = createGetRequest("cookies/cookieName");
         request.getCookies().add(new Cookie("cookieName", "cookie-value"));
         Client client = createClient();
         Response response = client.handle(request);
@@ -103,7 +96,7 @@ public class HttpHeaderTest extends JaxRsTestCase {
         clientInfo.setAcceptedLanguages(acceptedLanguages);
 
         Request request = new Request(Method.POST, createReference(
-                SERVICE_CLASS, "language"));
+                HttpHeaderTestService.class, "language"));
         request.setClientInfo(clientInfo);
         request.setEntity(new StringRepresentation("entity", Language.ENGLISH));
         Client client = createClient();
@@ -114,9 +107,8 @@ public class HttpHeaderTest extends JaxRsTestCase {
     }
 
     public void testHttpHeaders() throws IOException {
-        Request request = new Request(Method.GET, createReference(
-                SERVICE_CLASS, "header/"
-                        + HttpHeaderTestService.TEST_HEADER_NAME));
+        Request request = createGetRequest("header/"
+                + HttpHeaderTestService.TEST_HEADER_NAME);
         Util.getHttpHeaders(request).add(
                 HttpHeaderTestService.TEST_HEADER_NAME, "abc");
         Client client = createClient();
@@ -124,16 +116,16 @@ public class HttpHeaderTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc", response.getEntity().getText());
 
-        request = new Request(Method.GET, createReference(SERVICE_CLASS,
-                "header/" + HttpHeaderTestService.TEST_HEADER_NAME));
+        request = createGetRequest("header/"
+                + HttpHeaderTestService.TEST_HEADER_NAME);
         Util.getHttpHeaders(request).add(
                 HttpHeaderTestService.TEST_HEADER_NAME.toLowerCase(), "abc");
         response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc", response.getEntity().getText());
 
-        request = new Request(Method.GET, createReference(SERVICE_CLASS,
-                "header/" + HttpHeaderTestService.TEST_HEADER_NAME));
+        request = createGetRequest("header/"
+                + HttpHeaderTestService.TEST_HEADER_NAME);
         Util.getHttpHeaders(request).add(
                 HttpHeaderTestService.TEST_HEADER_NAME.toUpperCase(), "abc");
         response = client.handle(request);

@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.ProduceMime;
 
 import org.restlet.data.MediaType;
 
@@ -33,6 +34,7 @@ public class PathParamTestService2 {
 
     @GET
     @Path("BigDecimal/{id}")
+    @ProduceMime("text/plain")
     public String getBigDecimal(@PathParam("id")
     BigDecimal id) {
         return String.valueOf(id);
@@ -40,6 +42,7 @@ public class PathParamTestService2 {
 
     @GET
     @Path("int/{id}")
+    @ProduceMime("text/plain")
     public String getInt(@PathParam("id")
     int id) {
         return String.valueOf(id);
@@ -47,6 +50,7 @@ public class PathParamTestService2 {
 
     @GET
     @Path("Integer/{id}")
+    @ProduceMime("text/plain")
     public String getInteger(@PathParam("id")
     Integer id) {
         return String.valueOf(id);
@@ -54,6 +58,7 @@ public class PathParamTestService2 {
 
     @GET
     @Path("MediaType/{id}")
+    @ProduceMime("text/plain")
     public String getMediaType(@PathParam("id")
     MediaType id) {
         return String.valueOf(id);
@@ -61,6 +66,7 @@ public class PathParamTestService2 {
 
     @GET
     @Path("mn{id}")
+    @ProduceMime("text/plain")
     public String getMn(@PathParam("id")
     int id) {
         return String.valueOf(id);
@@ -68,6 +74,7 @@ public class PathParamTestService2 {
 
     @GET
     @Path(value = "multSegm/{string}", limited = false)
+    @ProduceMime("text/plain")
     public String getMultSegment(@PathParam("string")
     String string) {
         return string;
