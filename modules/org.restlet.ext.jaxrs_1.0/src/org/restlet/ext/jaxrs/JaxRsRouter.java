@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -516,7 +517,7 @@ public class JaxRsRouter extends Restlet {
         ResObjAndRemPath resourceObjectAndPath = obtainObjectThatHandleRequest(
                 rcat, restletRequest, restletResponse);
         MediaType givenMediaType = restletRequest.getEntity().getMediaType();
-        ResObjAndMeth method = idenifyMethodThatHandleRequest(
+        ResObjAndMeth method = identifyMethodThatHandleRequest(
                 resourceObjectAndPath, restletResponse, givenMediaType,
                 accMediaTypes);
         return method;
@@ -676,7 +677,7 @@ public class JaxRsRouter extends Restlet {
      *                 Resource Method for OPTIONS is available.
      * @throws ResourceMethodNotFoundException
      */
-    private ResObjAndMeth idenifyMethodThatHandleRequest(
+    private ResObjAndMeth identifyMethodThatHandleRequest(
             ResObjAndRemPath resObjAndRemPath,
             org.restlet.data.Response restletResp, MediaType givenMediaType,
             SortedMetadata<MediaType> accMediaTypes)
@@ -1205,7 +1206,7 @@ public class JaxRsRouter extends Restlet {
         Object mediaTypeStr = jaxRsResponse.getMetadata().getFirst(
                 HttpHeaders.CONTENT_TYPE);
         MediaType respMediaType = null;
-        if(mediaTypeStr != null)
+        if (mediaTypeStr != null)
             respMediaType = MediaType.valueOf(mediaTypeStr.toString());
         restletResponse.setEntity(convertToRepresentation(jaxRsResponse
                 .getEntity(), resourceMethod, accMediaTypes, restletResponse,
@@ -1294,7 +1295,10 @@ public class JaxRsRouter extends Restlet {
         if (accMediaTypes.isEmpty())
             accMediaTypes = SortedMetadata.getMediaTypeAll();
         // 4. Sort P and A: a is already sorted.
-        // FIXME sort P
+        Comparator<MediaType> comp = Util.MEDIA_TYPE_COMP;
+        p = Util.createTreeSet(p, comp);
+        if(p.size() > 1)
+            "".toString();
         // 5.
         Set<MediaType> m = new HashSet<MediaType>();
         for (MediaType prod : p)

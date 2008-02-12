@@ -38,6 +38,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
         return new IteratorIterator(metadatas.iterator());
     }
 
+    @SuppressWarnings("hiding")
     private class IteratorIterator<T extends Metadata> implements Iterator<T> {
         private Iterator<Iterable<T>> iterIter;
 
@@ -126,5 +127,11 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
     public static SortedMetadata<MediaType> singleton(MediaType mediaType) {
         return new SortedMetadata<MediaType>(Collections.singletonList(Util
                 .createColl(mediaType)));
+    }
+    
+    @Override
+    public String toString()
+    {
+        return this.metadatas.toString();
     }
 }

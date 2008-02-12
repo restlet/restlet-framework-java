@@ -25,6 +25,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,6 +71,30 @@ public class Util {
      * @see Principal
      */
     public static final String JAVA_SECURITY_HEADER = "java.security.Principal";
+
+    /**
+     * This comparator sorts the concrete MediaTypes to the beginning and the
+     * unconcrete to the end. The last is '*<!---->/*'
+     */
+    public static final Comparator<org.restlet.data.MediaType> MEDIA_TYPE_COMP = new Comparator<org.restlet.data.MediaType>() {
+        public int compare(org.restlet.data.MediaType mediaType1,
+                org.restlet.data.MediaType mediaType2) {
+            if (mediaType1 == null)
+                return mediaType2 == null ? 0 : 1;
+            if (mediaType2 == null)
+                return -1;
+            if (mediaType1.equals(mediaType2, false))
+                return 0;
+            int specNess1 = specificness(mediaType1);
+            int specNess2 = specificness(mediaType2);
+            int rt = specNess1 - specNess2;
+            if (rt != 0)
+                return rt;
+            // LATER optimizing possible here
+            return mediaType1.toString().compareToIgnoreCase(
+                    mediaType2.toString());
+        }
+    };
 
     /**
      * The name of the header {@link MultivaluedMap}&lt;String, String&gt; in
@@ -343,6 +369,19 @@ public class Util {
                 set.add(o);
         }
         return set;
+    }
+
+    /**
+     * @param <A>
+     * @param collection
+     * @param comparator
+     * @return
+     */
+    public static <A> Collection<A> createTreeSet(Collection<A> collection,
+            Comparator<A> comparator) {
+        Collection<A> coll2 = new TreeSet<A>(comparator);
+        coll2.addAll(collection);
+        return coll2;
     }
 
     /**
@@ -677,6 +716,34 @@ public class Util {
     }
 
     /**
+     * Checks if the {@link org.restlet.data.MediaType}s are compatible.
+     * 
+     * @param mediaType1
+     * @param mediaType2
+     * @return
+     */
+    public static boolean isCompatible(org.restlet.data.MediaType mediaType1,
+            org.restlet.data.MediaType mediaType2) {
+        return mediaType1.includes(mediaType2)
+                || mediaType2.includes(mediaType1);
+    }
+
+    /**
+     * Checks, if the given MediaType is concrete
+     * 
+     * @param mediaType
+     * @return
+     */
+    public static boolean isConcrete(org.restlet.data.MediaType mediaType) {
+        // LATER move to Restlet API?
+        if (mediaType.getSubType().equals("*"))
+            return false;
+        if (mediaType.getMainType().equals("*"))
+            return false;
+        return true;
+    }
+
+    /**
      * Checks, if the list is empty.
      * 
      * @param list
@@ -745,16 +812,39 @@ public class Util {
     }
 
     /**
-     * Checks if the {@link org.restlet.data.MediaType}s are compatible.
+     * Returns the most concrete {@link MediaType} of the given MediaTypes. See
+     * JSR-311 specification, section 2.6. 'Determining the MediaType of
+     * Responses', part 5.
      * 
-     * @param mediaType1
-     * @param mediaType2
-     * @return
+     * @param mediaTypes
+     * @return the most concrete {@link MediaType}.
+     * @throws IllegalArgumentException
+     *                 if the array is null or empty.
      */
-    public static boolean isCompatible(org.restlet.data.MediaType mediaType1,
-            org.restlet.data.MediaType mediaType2) {
-        return mediaType1.includes(mediaType2)
-                || mediaType2.includes(mediaType1);
+    public static org.restlet.data.MediaType mostSpecific(
+            org.restlet.data.MediaType... mediaTypes)
+            throws IllegalArgumentException {
+        // LATER move to Restlet-API as static MediaType.mostSpecific(....) ?
+        if (mediaTypes == null || mediaTypes.length == 0)
+            throw new IllegalArgumentException(
+                    "You must give at least one MediaType");
+        if (mediaTypes.length == 1)
+            return mediaTypes[0];
+        org.restlet.data.MediaType mostSpecific = mediaTypes[0];
+        for (int i = 1; i < mediaTypes.length; i++) {
+            org.restlet.data.MediaType mediaType = mediaTypes[i];
+            if (mediaType.getMainType().equals("*"))
+                continue;
+            if (mostSpecific.getMainType().equals("*")) {
+                mostSpecific = mediaType;
+                continue;
+            }
+            if (mostSpecific.getSubType().equals("*")) {
+                mostSpecific = mediaType;
+                continue;
+            }
+        }
+        return mostSpecific;
     }
 
     /**
@@ -799,6 +889,23 @@ public class Util {
 
     /**
      * 
+     * @param mediaType
+     * @return
+     *                <ul>
+     *                <li>1 for any concrete type (contains no star)</li>
+     *                <li>0 for the types (anything/*)</li>
+     *                <li>-1 for '*<!---->/*</li>
+     */
+    public static int specificness(org.restlet.data.MediaType mediaType) {
+        if (mediaType.equals(org.restlet.data.MediaType.ALL, true))
+            return -1;
+        if (mediaType.getSubType().equals("*"))
+            return 0;
+        return 1;
+    }
+
+    /**
+     * 
      * @param index
      *                index, starting with zero.
      * @param errMessName
@@ -824,55 +931,5 @@ public class Util {
         if (index >= 0)
             stb.append(" (index starting with 0)");
         throw new IllegalArgumentException(stb.toString());
-    }
-
-    /**
-     * Returns the most concrete {@link MediaType} of the given MediaTypes. See
-     * JSR-311 specification, section 2.6. 'Determining the MediaType of
-     * Responses', part 5.
-     * 
-     * @param mediaTypes
-     * @return the most concrete {@link MediaType}.
-     * @throws IllegalArgumentException
-     *                 if the array is null or empty.
-     */
-    public static org.restlet.data.MediaType mostSpecific(
-            org.restlet.data.MediaType... mediaTypes)
-            throws IllegalArgumentException {
-        // LATER move to Restlet-API as static MediaType.mostSpecific(....) ?
-        if (mediaTypes == null || mediaTypes.length == 0)
-            throw new IllegalArgumentException(
-                    "You must give at least one MediaType");
-        if (mediaTypes.length == 1)
-            return mediaTypes[0];
-        org.restlet.data.MediaType mostSpecific = mediaTypes[0];
-        for (int i = 1; i < mediaTypes.length; i++) {
-            org.restlet.data.MediaType mediaType = mediaTypes[i];
-            if (mediaType.getMainType().equals("*"))
-                continue;
-            if (mostSpecific.getMainType().equals("*")) {
-                mostSpecific = mediaType;
-                continue;
-            }
-            if (mostSpecific.getSubType().equals("*")) {
-                mostSpecific = mediaType;
-                continue;
-            }
-        }
-        return mostSpecific;
-    }
-
-    /**
-     * Checks, if the given MediaType is concrete
-     * @param mediaType
-     * @return
-     */
-    public static boolean isConcrete(org.restlet.data.MediaType mediaType) {
-        // LATER move to Restlet API?
-        if (mediaType.getSubType().equals("*"))
-            return false;
-        if (mediaType.getMainType().equals("*"))
-            return false;
-        return true;
     }
 }

@@ -88,16 +88,16 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param httpMethod
      * @param klasse
      * @param subPath
-     * @param mediaTypes
+     * @param accMediaTypes
      * @param challengeResponse
      * @return
      */
     @SuppressWarnings("unchecked")
     public static Response accessServer(Method httpMethod, Class<?> klasse,
-            String subPath, Collection mediaTypes,
+            String subPath, Collection accMediaTypes,
             ChallengeResponse challengeResponse) {
         Reference reference = createReference(klasse, subPath);
-        return accessServer(httpMethod, reference, mediaTypes,
+        return accessServer(httpMethod, reference, accMediaTypes,
                 challengeResponse, null);
     }
 
@@ -123,28 +123,28 @@ public abstract class JaxRsTestCase extends TestCase {
 
     @SuppressWarnings("unchecked")
     public static Response accessServer(Method httpMethod, Class<?> klasse,
-            String subPath, MediaType mediaType) {
+            String subPath, MediaType accMediaType) {
         Collection<MediaType> mediaTypes = null;
-        if (mediaType != null)
-            mediaTypes = Collections.singleton(mediaType);
+        if (accMediaType != null)
+            mediaTypes = Collections.singleton(accMediaType);
         return accessServer(httpMethod, klasse, subPath, mediaTypes, null);
     }
 
     /**
      * @param httpMethod
      * @param reference
-     * @param mediaTypes
+     * @param accMediaTypes
      * @param challengeResponse
      * @param entity
      * @return
      */
     @SuppressWarnings("unchecked")
     public static Response accessServer(Method httpMethod, Reference reference,
-            Collection mediaTypes, ChallengeResponse challengeResponse,
+            Collection accMediaTypes, ChallengeResponse challengeResponse,
             Representation entity) {
         Client client = createClient();
         Request request = new Request(httpMethod, reference);
-        addAcceptedMediaTypes(request, mediaTypes);
+        addAcceptedMediaTypes(request, accMediaTypes);
         request.setChallengeResponse(challengeResponse);
         request.setEntity(entity);
         Response response = client.handle(request);
@@ -199,16 +199,16 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     /**
-     * @param mediaType
+     * @param accMediaType
      * @param mediaTypeQuality
      *                default is 1.
      * @return
      */
     public static Collection<Preference<MediaType>> createPrefColl(
-            MediaType mediaType, float mediaTypeQuality) {
-        if (mediaType == null)
+            MediaType accMediaType, float mediaTypeQuality) {
+        if (accMediaType == null)
             return Collections.emptyList();
-        return Collections.singleton(new Preference<MediaType>(mediaType,
+        return Collections.singleton(new Preference<MediaType>(accMediaType,
                 mediaTypeQuality));
     }
 
@@ -341,8 +341,9 @@ public abstract class JaxRsTestCase extends TestCase {
         return accessServer(Method.GET, getRootResourceClass(), null, null);
     }
 
-    public Response get(MediaType mediaType) {
-        return accessServer(Method.GET, getRootResourceClass(), null, mediaType);
+    public Response get(MediaType accMediaType) {
+        return accessServer(Method.GET, getRootResourceClass(), null,
+                accMediaType);
     }
 
     public Response get(String subPath) {
@@ -364,9 +365,9 @@ public abstract class JaxRsTestCase extends TestCase {
                 clientInfo);
     }
 
-    public Response get(String subPath, MediaType mediaType) {
+    public Response get(String subPath, MediaType accMediaType) {
         return accessServer(Method.GET, getRootResourceClass(), subPath,
-                mediaType);
+                accMediaType);
     }
 
     public int getPort() {
@@ -386,9 +387,9 @@ public abstract class JaxRsTestCase extends TestCase {
         return (Collection) Collections.singleton(getRootResourceClass());
     }
 
-    public Response head(String subPath, MediaType mediaType) {
+    public Response head(String subPath, MediaType accMediaType) {
         return accessServer(Method.HEAD, getRootResourceClass(), subPath,
-                mediaType);
+                accMediaType);
     }
 
     /**

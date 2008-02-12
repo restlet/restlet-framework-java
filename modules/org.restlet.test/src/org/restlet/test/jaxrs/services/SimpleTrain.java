@@ -25,8 +25,6 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
-import org.restlet.data.MediaType;
-
 /**
  * 
  * @author Stephan Koops
