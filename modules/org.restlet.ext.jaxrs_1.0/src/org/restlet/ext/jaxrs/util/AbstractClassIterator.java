@@ -176,7 +176,7 @@ abstract class AbstractClassIterator {
      * @see Iterator#next()
      */
     @SuppressWarnings("unchecked")
-    public final Class next() throws NoSuchElementException {
+    public Class next() throws NoSuchElementException {
         if (!this.hasNext())
             throw new NoSuchElementException();
         Class<?> next = this.next;
