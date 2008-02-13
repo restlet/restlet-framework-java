@@ -20,10 +20,8 @@ package org.restlet.test;
 
 import junit.framework.TestCase;
 
-import org.restlet.Application;
-import org.restlet.Router;
+import org.restlet.ext.wadl.WadlApplication;
 import org.restlet.ext.wadl.WadlComponent;
-import org.restlet.resource.Representation;
 
 /**
  * Unit test case for the WADL extension.
@@ -33,17 +31,14 @@ import org.restlet.resource.Representation;
 public class WadlTestCase extends TestCase {
 
     public void testWadl() throws Exception {
-        WadlComponent comp = new WadlComponent();
-        Representation wadl = comp.getContext().getClientDispatcher().get(
-                "clap://class/org/restlet/test/YahooSearch.wadl").getEntity();
-        comp.attach(wadl);
+        WadlComponent comp = new WadlComponent(
+                "clap://class/org/restlet/test/YahooSearch.wadl");
 
-        Application app = (Application) comp.getHosts().get(0).getRoutes().get(
-                0).getNext();
+        WadlApplication app = (WadlApplication) comp.getHosts().get(0)
+                .getRoutes().get(0).getNext();
         assertNotNull(app);
-
-        Router root = (Router) app.getRoot();
-        assertNotNull(root);
+        assertEquals(app.getRoot(), app.getRouter());
+        assertNotNull(app.getRoot());
     }
 
 }
