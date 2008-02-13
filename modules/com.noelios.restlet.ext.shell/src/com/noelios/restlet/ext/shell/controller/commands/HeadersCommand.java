@@ -1,3 +1,21 @@
+/*
+ * Copyright 2005-2008 Noelios Consulting.
+ * 
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the "License"). You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at
+ * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL HEADER in each file and
+ * include the License file at http://www.opensource.org/licenses/cddl1.txt If
+ * applicable, add the following below this CDDL HEADER, with the fields
+ * enclosed by brackets "[]" replaced with your own identifying information:
+ * Portions Copyright [yyyy] [name of copyright owner]
+ */
+
 package com.noelios.restlet.ext.shell.controller.commands;
 
 import com.noelios.restlet.ext.shell.controller.Command;
@@ -16,6 +34,7 @@ class HeadersCommand extends Command {
         attributes.put("http", "org.restlet.http.headers");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void execute(String... args) {
         final Message message;
@@ -34,7 +53,8 @@ class HeadersCommand extends Command {
             headers = attributes.get("http");
         }
 
-        List<Parameter> httpHeaders = (List<Parameter>) message.getAttributes().get(headers);
+        List<Parameter> httpHeaders = (List<Parameter>) message.getAttributes()
+                .get(headers);
 
         if (httpHeaders == null) {
             view.output("no headers");
@@ -46,8 +66,8 @@ class HeadersCommand extends Command {
     }
 
     @Override
-    public String getUsage() {
-        return "headers [request|response] [headers]";
+    public String[] getAliases() {
+        return aliases("headers", "H");
     }
 
     @Override
@@ -56,7 +76,7 @@ class HeadersCommand extends Command {
     }
 
     @Override
-    public String[] getAliases() {
-        return aliases("headers", "H");
+    public String getUsage() {
+        return "headers [request|response] [headers]";
     }
 }

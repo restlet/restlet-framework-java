@@ -312,7 +312,6 @@ public abstract class HttpClientCall extends HttpCall {
                     }
                 }
             } catch (IOException e) {
-                result = null;
             }
         }
 
