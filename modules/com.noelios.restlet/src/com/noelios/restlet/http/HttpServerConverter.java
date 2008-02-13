@@ -127,7 +127,8 @@ public class HttpServerConverter extends HttpConverter {
                     Status.REDIRECTION_NOT_MODIFIED)) {
                 getLogger()
                         .warning(
-                                "Responses with a 304 (Not modified) status can't have an entity. Ignoring the entity");
+                                "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers.");
+                addEntityHeaders(response);
                 response.setEntity(null);
             } else if (response.getStatus().isInformational()) {
                 getLogger()
@@ -135,6 +136,7 @@ public class HttpServerConverter extends HttpConverter {
                                 "Responses with an informational (1xx) status can't have an entity. Ignoring the entity");
                 response.setEntity(null);
             } else {
+                addEntityHeaders(response);
                 if ((response.getEntity() != null)
                         && !response.getEntity().isAvailable()) {
                     // An entity was returned but isn't really available
@@ -143,7 +145,6 @@ public class HttpServerConverter extends HttpConverter {
                                     "A response with an unavailable entity was returned. Ignoring the entity");
                     response.setEntity(null);
                 }
-                addEntityHeaders(response);
             }
 
             // Add the response headers

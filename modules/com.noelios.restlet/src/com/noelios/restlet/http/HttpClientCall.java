@@ -21,6 +21,7 @@ package com.noelios.restlet.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PushbackInputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
@@ -128,23 +129,21 @@ public abstract class HttpClientCall extends HttpCall {
 
         // Compute the content length
         Series<Parameter> responseHeaders = getResponseHeaders();
-        for (Parameter header : responseHeaders) {
-            if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_LENGTH)) {
-                // available = true;
-
+        String transferEncoding = responseHeaders.getFirstValue(
+                HttpConstants.HEADER_TRANSFER_ENCODING, true);
+        if (transferEncoding != null
+                && !"identity".equalsIgnoreCase(transferEncoding)) {
+            size = Representation.UNKNOWN_SIZE;
+        } else {
+            String contentLength = responseHeaders.getFirstValue(
+                    HttpConstants.HEADER_CONTENT_LENGTH, true);
+            if (contentLength != null) {
                 try {
-                    size = Long.parseLong(header.getValue());
+                    size = Long.parseLong(contentLength);
                 } catch (NumberFormatException e) {
                     getLogger().warning(
                             "Unkown value received as content length: \""
-                                    + header.getValue() + "\".");
-                }
-            } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
-                if (!header.getValue().equalsIgnoreCase("identity")) {
-                    // available = true;
-                    size = Representation.UNKNOWN_SIZE;
+                                    + contentLength + "\".");
                 }
             }
         }
@@ -153,16 +152,28 @@ public abstract class HttpClientCall extends HttpCall {
         if (getMethod().equals(Method.HEAD.getName())) {
             // Create a fake entity that will contain the metadata
             result = Representation.createEmpty();
+        } else if (response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)) {
+            // Create a fake entity that will contain the metadata
+            result = Representation.createEmpty();
+        } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+            // Create a fake entity that will contain the metadata
+            result = Representation.createEmpty();
         } else {
-            InputStream stream = getResponseEntityStream(size);
-            ReadableByteChannel channel = getResponseEntityChannel(size);
+            if (!response.getStatus().isInformational()
+                    && !response.getStatus().equals(
+                            Status.SUCCESS_RESET_CONTENT)
+                    && !response.getStatus().equals(
+                            Status.SUCCESS_PARTIAL_CONTENT)) {
+                InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
+                ReadableByteChannel channel = getResponseEntityChannel(size);
 
-            if (stream != null) {
-                result = new InputRepresentation(stream, null);
-            } else if (channel != null) {
-                result = new ReadableRepresentation(channel, null);
-                // } else {
-                // result = new EmptyRepresentation();
+                if (stream != null) {
+                    result = new InputRepresentation(stream, null);
+                } else if (channel != null) {
+                    result = new ReadableRepresentation(channel, null);
+                    // } else {
+                    // result = new EmptyRepresentation();
+                }
             }
         }
 
@@ -262,6 +273,39 @@ public abstract class HttpClientCall extends HttpCall {
      * @return The response entity stream if it exists.
      */
     public abstract InputStream getResponseEntityStream(long size);
+
+    /**
+     * Checks if the given input stream really containes bytes to be read. If
+     * so, returns the inputStream otherwise returns null.
+     * 
+     * @param inputStream
+     *                the inputStream to check.
+     * @return null if the given inputStream does not contain any byte, an
+     *         inputStream otherwise.
+     */
+    private InputStream getUnClosedResponseEntityStream(InputStream inputStream) {
+        InputStream result = null;
+
+        if (inputStream != null) {
+            try {
+                if (inputStream.available() > 0) {
+                    result = inputStream;
+                } else {
+                    PushbackInputStream is = new PushbackInputStream(
+                            inputStream);
+                    int i = is.read();
+                    if (i >= 0) {
+                        is.unread(i);
+                        result = is;
+                    }
+                }
+            } catch (IOException e) {
+                result = null;
+            }
+        }
+
+        return result;
+    }
 
     /**
      * Parse the Content-Disposition header value

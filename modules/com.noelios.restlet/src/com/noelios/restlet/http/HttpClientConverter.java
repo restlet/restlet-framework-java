@@ -113,15 +113,12 @@ public class HttpClientConverter extends HttpConverter {
             if (response.getEntity() != null) {
                 if (response.getEntity().getSize() == 0) {
                     response.getEntity().release();
-                    response.setEntity(null);
                 } else if (response.getRequest().getMethod()
                         .equals(Method.HEAD)) {
                     response.getEntity().release();
-                    response.setEntity(null);
                 } else if (response.getStatus().equals(
                         Status.SUCCESS_NO_CONTENT)) {
                     response.getEntity().release();
-                    response.setEntity(null);
                 } else if (response.getStatus().equals(
                         Status.SUCCESS_RESET_CONTENT)) {
                     response.getEntity().release();
@@ -133,7 +130,6 @@ public class HttpClientConverter extends HttpConverter {
                 } else if (response.getStatus().equals(
                         Status.REDIRECTION_NOT_MODIFIED)) {
                     response.getEntity().release();
-                    response.setEntity(null);
                 } else if (response.getStatus().isInformational()) {
                     response.getEntity().release();
                     response.setEntity(null);
