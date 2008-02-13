@@ -1,0 +1,39 @@
+Integration 
+===========
+
+- use ant as primary build tool (actually I'm using maven2)
+    pom.xml -> project description for maven
+    exe.xml -> custom assembly used to create an executable jar
+    src/main/antlr/com/.../Usage.g -> antlr parser
+- license in source files
+
+
+Davide's ideas
+==============
+
+- implement put command (subclass PostCommand?)
+- manage representations via variables (display/save them) 
+   save foo -> save the content of the last command in the 'foo' variable
+   view foo  -> print the content of the 'foo' variable
+- representation should be cacheable
+- better support for authentication
+- generalize protocols
+- generalize representations 
+- i18n
+- refactor antlr facade 
+- command line switchdiees (via commons-cli)
+
+
+Jerome's ideas
+==============
+
+- ability to start a custom server inside the shell. The shell's component would
+  then intercept this request and give the user a choice to respond : setting
+  a status, returning a representation, reading the request's headers, etc.
+  This is mostly for debugging purpose.
+- there should be a way to execute non standard methods (MOVE, etc.) and to
+  specify extension headers
+- when the default port is used, we should display
+  "theProtocol.getDefaultPort()" instead of '-1'. We should also display "
+  (default)" right after the value.
+- convert the shell from MVC to ROA 
