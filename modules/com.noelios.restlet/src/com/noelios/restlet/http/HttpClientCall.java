@@ -148,38 +148,28 @@ public abstract class HttpClientCall extends HttpCall {
             }
         }
 
-        // if (available) {
-        if (getMethod().equals(Method.HEAD.getName())) {
-            // Create a fake entity that will contain the metadata
-            result = Representation.createEmpty();
-        } else if (response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)) {
-            // Create a fake entity that will contain the metadata
-            result = Representation.createEmpty();
-        } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
-            // Create a fake entity that will contain the metadata
-            result = Representation.createEmpty();
-        } else {
-            if (!response.getStatus().isInformational()
-                    && !response.getStatus().equals(
-                            Status.SUCCESS_RESET_CONTENT)
-                    && !response.getStatus().equals(
-                            Status.SUCCESS_PARTIAL_CONTENT)) {
-                InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
-                ReadableByteChannel channel = getResponseEntityChannel(size);
+//        if (!getMethod().equals(Method.HEAD.getName())
+//                && !response.getStatus().isInformational()
+//                && !response.getStatus()
+//                        .equals(Status.REDIRECTION_NOT_MODIFIED)
+//                && !response.getStatus().equals(Status.SUCCESS_NO_CONTENT)
+//                && !response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)
+//                && !response.getStatus().equals(Status.SUCCESS_PARTIAL_CONTENT)) {
+            InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
+            ReadableByteChannel channel = getResponseEntityChannel(size);
 
-                if (stream != null) {
-                    result = new InputRepresentation(stream, null);
-                } else if (channel != null) {
-                    result = new ReadableRepresentation(channel, null);
-                    // } else {
-                    // result = new EmptyRepresentation();
-                }
+            if (stream != null) {
+                result = new InputRepresentation(stream, null);
+            } else if (channel != null) {
+                result = new ReadableRepresentation(channel, null);
+                // } else {
+                // result = new EmptyRepresentation();
             }
-        }
+//        }
 
+        result = copyResponseEntityHeaders(responseHeaders, result);
         if (result != null) {
             result.setSize(size);
-            copyResponseEntityHeaders(responseHeaders, result);
             // Informs that the size has not been specified in the header.
             if (size == Representation.UNKNOWN_SIZE) {
                 getLogger()
@@ -193,33 +183,44 @@ public abstract class HttpClientCall extends HttpCall {
     }
 
     /**
-     * Copies headers into a response.
+     * Copies entity headers into a response and ensures that a non null
+     * representation is returned when at least one entity header is present.
      * 
      * @param responseHeaders
      *                The headers to copy.
      * @param result
      *                The Representation to update.
+     * @return a representation with the entity headers of the response or null
+     *         if no representation has been provided and the response has not
+     *         sent any entity header.
      * @throws NumberFormatException
      * @see org.restlet.util.Engine#copyResponseHeaders(Iterable, Response,
      *      Logger)
      * @see HttpClientConverter#copyResponseTransportHeaders(Iterable, Response,
      *      Logger)
      */
-    public static void copyResponseEntityHeaders(
-            Iterable<Parameter> responseHeaders, Representation result)
+    public static Representation copyResponseEntityHeaders(
+            Iterable<Parameter> responseHeaders, Representation representation)
             throws NumberFormatException {
+        Representation result = (representation == null) ? Representation
+                .createEmpty() : representation;
+        boolean entityHeaderFound = false;
         for (Parameter header : responseHeaders) {
             if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_TYPE)) {
                 ContentType contentType = new ContentType(header.getValue());
                 result.setMediaType(contentType.getMediaType());
                 result.setCharacterSet(contentType.getCharacterSet());
+                entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LENGTH)) {
                 result.setSize(Long.parseLong(header.getValue()));
+                entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_EXPIRES)) {
+                entityHeaderFound = true;
                 result.setExpirationDate(parseDate(header.getValue(), false));
+                entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_ENCODING)) {
                 HeaderReader hr = new HeaderReader(header.getValue());
@@ -231,6 +232,7 @@ public abstract class HttpClientCall extends HttpCall {
                     }
                     value = hr.readValue();
                 }
+                entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LANGUAGE)) {
                 HeaderReader hr = new HeaderReader(header.getValue());
@@ -239,21 +241,31 @@ public abstract class HttpClientCall extends HttpCall {
                     result.getLanguages().add(new Language(value));
                     value = hr.readValue();
                 }
+                entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_LAST_MODIFIED)) {
                 result.setModificationDate(parseDate(header.getValue(), false));
+                entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_ETAG)) {
                 result.setTag(Tag.parse(header.getValue()));
+                entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LOCATION)) {
                 result.setIdentifier(header.getValue());
+                entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_DISPOSITION)) {
                 result.setDownloadName(parseContentDisposition(header
                         .getValue()));
+                entityHeaderFound = true;
             }
         }
+
+        if (!entityHeaderFound) {
+            return null;
+        }
+        return result;
     }
 
     /**
