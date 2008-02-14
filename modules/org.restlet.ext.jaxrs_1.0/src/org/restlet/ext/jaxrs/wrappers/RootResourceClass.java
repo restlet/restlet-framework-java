@@ -35,7 +35,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
@@ -136,9 +135,7 @@ public class RootResourceClass extends ResourceClass {
      *                Th restlet request
      * @param restletResponse
      *                The Restlet response.
-     * @param authenticator
-     *                Authenticator for role requests, see
-     *                {@link SecurityContext#isUserInRole(String)}.
+     * @param jaxRsRouter
      * @return
      * @throws InstantiateParameterException
      * @throws InvocationTargetException
@@ -149,12 +146,12 @@ public class RootResourceClass extends ResourceClass {
     public ResourceObject createInstance(
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequ, Response restletResponse,
-            Authenticator authenticator) throws InstantiateParameterException,
+            HiddenJaxRsRouter jaxRsRouter) throws InstantiateParameterException,
             IllegalOrNoAnnotationException, InstantiateRootRessourceException,
             RequestHandledException, InvocationTargetException {
         Constructor<?> constructor = this.constructor;
         Object newInstance = createInstance(constructor, allTemplParamsEnc,
-                restletRequ, restletResponse, authenticator);
+                restletRequ, restletResponse, jaxRsRouter);
         return new ResourceObject(newInstance, this);
     }
 
@@ -169,9 +166,7 @@ public class RootResourceClass extends ResourceClass {
      *                The restlet request
      * @param restletResponse
      *                The Restlet response.
-     * @param authenticator
-     *                Authenticator for role requests, see
-     *                {@link SecurityContext#isUserInRole(String)}.
+     * @param jaxRsRouter
      * @return
      * @throws IllegalOrNoAnnotationException
      * @throws RequestHandledException
@@ -183,7 +178,7 @@ public class RootResourceClass extends ResourceClass {
     public static Object createInstance(Constructor<?> constructor,
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequ, Response restletResponse,
-            Authenticator authenticator) throws IllegalOrNoAnnotationException,
+            HiddenJaxRsRouter jaxRsRouter) throws IllegalOrNoAnnotationException,
             RequestHandledException, InstantiateParameterException,
             InstantiateRootRessourceException, InvocationTargetException {
         Object[] args;
@@ -194,7 +189,7 @@ public class RootResourceClass extends ResourceClass {
                 args = getParameterValues(
                         constructor.getParameterAnnotations(), constructor
                                 .getParameterTypes(), restletRequ,
-                        restletResponse, allTemplParamsEnc, authenticator, null);
+                        restletResponse, allTemplParamsEnc, jaxRsRouter);
             } catch (NoMessageBodyReadersException e) {
                 throw new IllegalOrNoAnnotationException(
                         "the root resource class constructor ("

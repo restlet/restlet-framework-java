@@ -62,6 +62,7 @@ import org.restlet.ext.jaxrs.util.SortedMetadata;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.util.WrappedClassLoadException;
 import org.restlet.ext.jaxrs.util.WrappedLoadException;
+import org.restlet.ext.jaxrs.wrappers.HiddenJaxRsRouter;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyReader;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyReaderSet;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriter;
@@ -89,7 +90,7 @@ import org.restlet.resource.Representation;
  * 
  * @author Stephan Koops
  */
-public class JaxRsRouter extends Restlet {
+public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
 
     /**
      * Creates a guarded JaxRsRouter. The credentials and the roles are checked
@@ -376,7 +377,7 @@ public class JaxRsRouter extends Restlet {
         Object provider;
         try {
             provider = RootResourceClass.createInstance(constructor, null,
-                    null, null, authenticator);
+                    null, null, this);
         } catch (InstantiateParameterException e) {
             // should be not possible here
             throw new JaxRsRuntimeException(
@@ -435,7 +436,7 @@ public class JaxRsRouter extends Restlet {
         Object provider;
         try {
             provider = RootResourceClass.createInstance(constructor, null,
-                    null, null, authenticator);
+                    null, null, this);
         } catch (InstantiateParameterException e) {
             // should be not possible here
             throw new JaxRsRuntimeException(
@@ -468,8 +469,8 @@ public class JaxRsRouter extends Restlet {
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
-        List<Preference<MediaType>> acceptedMediaTypes = request.getClientInfo()
-                .getAcceptedMediaTypes();
+        List<Preference<MediaType>> acceptedMediaTypes = request
+                .getClientInfo().getAcceptedMediaTypes();
         SortedMetadata<MediaType> accMediaTypes = new SortedMetadata<MediaType>(
                 acceptedMediaTypes);
         try {
@@ -604,7 +605,7 @@ public class JaxRsRouter extends Restlet {
         // LATER Do I use dynamic proxies, to inject instance variables?
         try {
             o = resClass.createInstance(allTemplParamsEnc, restletRequest,
-                    restletResponse, authenticator);
+                    restletResponse, this);
         } catch (InstantiateParameterException e) {
             throw new WebApplicationException(e, 404);
         } catch (Exception e) {
@@ -652,8 +653,7 @@ public class JaxRsRouter extends Restlet {
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
                 o = subResourceLocator.createSubResource(o, allTemplParamsEnc,
-                        restletRequest, restletResponse, authenticator,
-                        this.messageBodyReaders);
+                        restletRequest, restletResponse, this);
             } catch (InstantiateParameterException e) {
                 throw new WebApplicationException(e, 404);
             } catch (Exception e) {
@@ -1158,8 +1158,7 @@ public class JaxRsRouter extends Restlet {
         Object result;
         try {
             result = resourceMethod.invoke(resourceObject, allTemplParamsEnc,
-                    restletRequest, restletResponse, authenticator,
-                    this.messageBodyReaders);
+                    restletRequest, restletResponse, this);
         } catch (InstantiateParameterException e) {
             throw new WebApplicationException(e, 404);
         } catch (InvocationTargetException ite) {
@@ -1677,5 +1676,25 @@ public class JaxRsRouter extends Restlet {
                             + " or the "
                             + ForbidAllAuthenticator.class.getName());
         this.authenticator = authenticator;
+    }
+
+    /**
+     * for internal use only
+     * 
+     * @see org.restlet.ext.jaxrs.wrappers.HiddenJaxRsRouter#getMessageBodyReaders()
+     */
+    @Deprecated
+    public MessageBodyReaderSet getMessageBodyReaders() {
+        return this.messageBodyReaders;
+    }
+
+    /**
+     * for internal use only
+     * 
+     * @see org.restlet.ext.jaxrs.wrappers.HiddenJaxRsRouter#getMessageBodyWriters()
+     */
+    @Deprecated
+    public MessageBodyWriterSet getMessageBodyWriters() {
+        return this.messageBodyWriters;
     }
 }

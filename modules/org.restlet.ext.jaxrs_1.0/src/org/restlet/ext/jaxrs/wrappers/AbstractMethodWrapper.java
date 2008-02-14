@@ -28,9 +28,8 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.jaxrs.Authenticator;
-import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
@@ -82,10 +81,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      *                the Restlet request
      * @param restletResponse
      *                the Restlet response
-     * @param authenticator
-     *                Authenticator
-     * @param mbrs
-     *                The {@link MessageBodyReaderSet}
+     * @param jaxRsRouter
      * @return
      * @throws MethodInvokeException
      * @throws InvocationTargetException
@@ -98,7 +94,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
     public Object invoke(ResourceObject resourceObject,
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequest, Response restletResponse,
-            Authenticator authenticator, MessageBodyReaderSet mbrs)
+            HiddenJaxRsRouter jaxRsRouter)
             throws MethodInvokeException, InvocationTargetException,
             IllegalOrNoAnnotationException, WebApplicationException,
             RequestHandledException, NoMessageBodyReadersException,
@@ -108,7 +104,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         Class<?>[] parameterTypes = javaMethod.getParameterTypes();
         Object[] args = getParameterValues(parameterAnnotationss,
                 parameterTypes, restletRequest, restletResponse,
-                allTemplParamsEnc, authenticator, mbrs);
+                allTemplParamsEnc, jaxRsRouter);
         try {
             return this.javaMethod.invoke(resourceObject.getResourceObject(),
                     args);

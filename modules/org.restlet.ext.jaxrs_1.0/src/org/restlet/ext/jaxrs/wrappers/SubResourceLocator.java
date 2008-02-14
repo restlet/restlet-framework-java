@@ -27,7 +27,6 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateRessourceException;
@@ -70,10 +69,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                the Restlet request
      * @param restletResponse
      *                the Restlet response
-     * @param authenticator
-     *                The logged in User
-     * @param mbrs
-     *                {@link MessageBodyReaderSet}
+     * @param jaxRsRouter
      * @return Returns the wrapped sub resource object.
      * @throws InvocationTargetException
      * @throws InstantiateParameterException
@@ -87,7 +83,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
     public ResourceObject createSubResource(ResourceObject resourceObject,
             MultivaluedMap<String, String> allTemplParamsEnc,
             Request restletRequest, Response restletResponse,
-            Authenticator authenticator, MessageBodyReaderSet mbrs)
+            HiddenJaxRsRouter jaxRsRouter)
             throws InvocationTargetException, IllegalOrNoAnnotationException,
             WebApplicationException, RequestHandledException,
             NoMessageBodyReadersException, InstantiateRessourceException, InstantiateParameterException {
@@ -98,7 +94,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         else
             args = getParameterValues(javaMethod.getParameterAnnotations(),
                     parameterTypes, restletRequest, restletResponse,
-                    allTemplParamsEnc, authenticator, mbrs);
+                    allTemplParamsEnc, jaxRsRouter);
         Object subResourceObject;
         try {
             subResourceObject = javaMethod.invoke(resourceObject
