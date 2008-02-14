@@ -31,6 +31,7 @@ import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * An abstract wrapper class. Contains some a static methods to use from
@@ -112,5 +113,25 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         return this.getClass().getSimpleName() + "["
                 + this.javaMethod.getDeclaringClass().getSimpleName() + "."
                 + this.javaMethod.getName() + "(__)]";
+    }
+
+    /**
+     * @return Retuns the resource class
+     */
+    public ResourceClass getResourceClass() {
+        return this.resourceClass;
+    }
+
+    /**
+     * @return Returns the name of the method
+     */
+    public String getName() {
+        Class<?>[] paramTypes = this.javaMethod.getParameterTypes();
+        StringBuilder stb = new StringBuilder();
+        stb.append(this.javaMethod.getName());
+        stb.append('(');
+        Util.toStringBuilder(stb, paramTypes);
+        stb.append(')');
+        return stb.toString();
     }
 }

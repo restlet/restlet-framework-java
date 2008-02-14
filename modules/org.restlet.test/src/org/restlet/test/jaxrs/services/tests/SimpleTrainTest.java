@@ -67,8 +67,8 @@ public class SimpleTrainTest extends JaxRsTestCase {
         Response response;
         // TODO This request fails because methods for text/plain and for
         // text/html are available, but it is not specified, which to use.
-        // response = JaxRsTestCase.accessServer(SimpleTrain.class,
-        // Method.GET, MediaType.TEXT_ALL);
+        // response = get(MediaType.TEXT_ALL);
+        // sysOutEntityIfError(response);
         // assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         response = get(MediaType.TEXT_PLAIN);

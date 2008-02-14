@@ -40,6 +40,7 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -68,6 +69,7 @@ import org.restlet.ext.jaxrs.wrappers.MessageBodyReader;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyReaderSet;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriter;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriterSet;
+import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.ext.jaxrs.wrappers.ResourceMethod;
 import org.restlet.ext.jaxrs.wrappers.ResourceObject;
 import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
@@ -75,6 +77,7 @@ import org.restlet.ext.jaxrs.wrappers.SubResourceLocator;
 import org.restlet.ext.jaxrs.wrappers.SubResourceMethod;
 import org.restlet.ext.jaxrs.wrappers.SubResourceMethodOrLocator;
 import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 
 /**
  * The router choose the JAX-RS resource class and method to use for a request.
@@ -483,7 +486,9 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                     resObjAndMeth = matchingRequestToResourceMethod(
                             callContext, accMediaTypes);
                 } catch (CouldNotFindMethodException e) {
-                    e.errorRestlet.handle(request, response); // e.printStackTrace()
+                    e.errorRestlet.handle(request, response);
+                    response.setEntity(new StringRepresentation(e.getMessage(),
+                            MediaType.TEXT_PLAIN, Language.ENGLISH));
                     return;
                 }
                 callContext.setReadOnly();
@@ -568,7 +573,8 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         // (d)
         if (eAndCs.isEmpty())
             throw new CouldNotFindMethodException(
-                    errorRestletRootResourceNotFound);
+                    errorRestletRootResourceNotFound,
+                    "No root resource class found for realtiv path " + u);
         // (e) and (f)
         RootResourceClass tClass = getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eAndCs);
         // (f)
@@ -648,7 +654,9 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             // (e) If E is empty -> HTTP 404
             if (eWithMethod.isEmpty())
                 throw new CouldNotFindMethodException(
-                        errorRestletResourceNotFound);
+                        errorRestletResourceNotFound,
+                        "There is no resource object to handle the request for remaining path "
+                                + u);
             // (f) and (g) sort E, use first member of E
             SubResourceMethodOrLocator firstMeth = getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eWithMethod);
 
@@ -703,23 +711,29 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         ResourceObject resObj = resObjAndRemPath.resourceObject;
         RemainingPath u = resObjAndRemPath.u;
         // (a) 1
-        Collection<ResourceMethod> resourceMethods = resObj.getResourceClass()
+        ResourceClass resourceClass = resObj.getResourceClass();
+        Collection<ResourceMethod> resourceMethods = resourceClass
                 .getMethodsForPath(u);
         if (resourceMethods.isEmpty())
             throw new CouldNotFindMethodException(
-                    errorRestletResourceMethodNotFound);
+                    errorRestletResourceMethodNotFound,
+                    "there is no method on class " + resourceClass.getName()
+                            + " for remaining path " + u);
         // (a) 2: remove methods not support the given method
         boolean alsoGet = httpMethod.equals(Method.HEAD);
         removeNotSupportedHttpMethod(resourceMethods, httpMethod, alsoGet);
         if (resourceMethods.isEmpty()) {
             if (httpMethod.equals(Method.OPTIONS)) {
-                Set<Method> allowedMethods = resObj.getResourceClass()
-                        .getAllowedMethods(u);
+                Set<Method> allowedMethods = resourceClass.getAllowedMethods(u);
                 callContext.getResponse().getAllowedMethods().addAll(
                         allowedMethods);
                 throw new RequestHandledException();
             }
-            throw new CouldNotFindMethodException(errorRestletMethodNotAllowed);
+            throw new CouldNotFindMethodException(errorRestletMethodNotAllowed,
+                    "there is no method supporting the http method "
+                            + httpMethod + " on class "
+                            + resourceClass.getName() + " and remaining path "
+                            + u);
         }
         // (a) 3
         if (givenMediaType != null) {
@@ -731,7 +745,12 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             }
             if (resourceMethods.isEmpty())
                 throw new CouldNotFindMethodException(
-                        errorRestletUnsupportedMediaType);
+                        errorRestletUnsupportedMediaType,
+                        "there is no java method on class "
+                                + resourceClass.getName()
+                                + " supporting the http method " + httpMethod
+                                + " and remaining path " + u
+                                + " and the given media types");
         }
         // (a) 4
         Iterator<ResourceMethod> methodIter = resourceMethods.iterator();
@@ -742,7 +761,12 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         }
         if (resourceMethods.isEmpty()) {
             // LATER zurueckgeben, welche MediaTypes unterstuetzt werden.
-            throw new CouldNotFindMethodException(errorRestletNotAcceptable);
+            throw new CouldNotFindMethodException(errorRestletNotAcceptable,
+                    "there is no java method on class "
+                            + resourceClass.getName()
+                            + " supporting the http method " + httpMethod
+                            + " and remaining path " + u
+                            + " and the given and accepted media types");
         }
         // (b) and (c)
         ResourceMethod bestResourceMethod = getBestMethod(resourceMethods,
@@ -752,8 +776,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             throw new RuntimeException(
                     "Found no method, but there must be one.");
         }
-        MatchingResult mr = bestResourceMethod.getPathRegExp().match(
-                u);
+        MatchingResult mr = bestResourceMethod.getPathRegExp().match(u);
         addMrVarsToMap(mr, callContext);
         return new ResObjAndMeth(resObj, bestResourceMethod);
     }
@@ -789,7 +812,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      *                the resourceMethods that provide the required mediaType
      * @param givenMediaType
      *                The MediaType of the given entity.
-     * @param accMediaTypess
+     * @param accMediaTypes
      *                The accepted MediaTypes
      * @param httpMethod
      *                The HTTP method of the request.
@@ -799,7 +822,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      */
     private ResourceMethod getBestMethod(
             Collection<ResourceMethod> resourceMethods,
-            MediaType givenMediaType, SortedMetadata<MediaType> accMediaTypess,
+            MediaType givenMediaType, SortedMetadata<MediaType> accMediaTypes,
             Method httpMethod) throws CouldNotFindMethodException {
         SortedMetadata<MediaType> givenMediaTypes;
         if (givenMediaType != null)
@@ -816,51 +839,48 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         // check for method with best ProduceMime (secondary key)
         // mms = Methods support given MediaType and requested MediaType
         mms = findMethodSupportsMime(mms.keySet(), ConsOrProdMime.PRODUCE_MIME,
-                accMediaTypess);
+                accMediaTypes);
         if (mms.isEmpty())
             return null;
         if (mms.size() == 1)
             return Util.getFirstKey(mms);
-        // for (Iterable<MediaType> accMediaTypes : accMediaTypess)
-        {
-            for (MediaType accMediaType : accMediaTypess) {
-                ResourceMethod bestMethod = null;
-                for (Map.Entry<ResourceMethod, List<MediaType>> mm : mms
-                        .entrySet()) {
-                    for (MediaType methodMediaType : mm.getValue()) {
-                        if (accMediaType.includes(methodMediaType)) {
-                            ResourceMethod currentMethod = mm.getKey();
-                            if (bestMethod == null) {
-                                bestMethod = currentMethod;
-                            } else {
-                                if (httpMethod.equals(Method.HEAD)) {
-                                    // special handling for HEAD
-                                    if (bestMethod.getHttpMethod().equals(
-                                            Method.GET)
-                                            && currentMethod.getHttpMethod()
-                                                    .equals(Method.HEAD)) {
-                                        // ignore HEAD method
-                                    } else if (bestMethod.getHttpMethod()
-                                            .equals(Method.HEAD)
-                                            && currentMethod.getHttpMethod()
-                                                    .equals(Method.GET)) {
-                                        bestMethod = currentMethod;
-                                    } else {
-                                        // TODO JSR311: it is not an internal
-                                        // server error in
-                                        // SimpleTrainTest.testGetTextAll()
-                                        throwMultipleResourceMethods();
-                                    }
+        for (MediaType accMediaType : accMediaTypes) {
+            ResourceMethod bestMethod = null;
+            for (Map.Entry<ResourceMethod, List<MediaType>> mm : mms.entrySet()) {
+                for (MediaType methodMediaType : mm.getValue()) {
+                    if (accMediaType.includes(methodMediaType)) {
+                        ResourceMethod currentMethod = mm.getKey();
+                        if (bestMethod == null) {
+                            bestMethod = currentMethod;
+                        } else {
+                            if (httpMethod.equals(Method.HEAD)) {
+                                // special handling for HEAD
+                                Method bestMethodHttp = bestMethod
+                                        .getHttpMethod();
+                                if (bestMethodHttp.equals(Method.GET)
+                                        && currentMethod.getHttpMethod()
+                                                .equals(Method.HEAD)) {
+                                    // ignore HEAD method
+                                } else if (bestMethod.getHttpMethod().equals(
+                                        Method.HEAD)
+                                        && currentMethod.getHttpMethod()
+                                                .equals(Method.GET)) {
+                                    bestMethod = currentMethod;
                                 } else {
-                                    throwMultipleResourceMethods();
+                                    // TODO JSR311: it is not an internal
+                                    // server error in
+                                    // SimpleTrainTest.testGetTextAll()
+                                    throwMultipleResourceMethods("Multiple java methods found on "+currentMethod.getResourceClass().getName()+": "+bestMethod.getName()+" and "+currentMethod.getName());
                                 }
+                            } else {
+                                throwMultipleResourceMethods("Multiple java methods found for this request: "+bestMethod.getName()+" and "+currentMethod.getName());
                             }
                         }
                     }
                 }
-                if (bestMethod != null)
-                    return bestMethod;
             }
+            if (bestMethod != null)
+                return bestMethod;
         }
         return null;
     }
@@ -870,10 +890,10 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      *                 you can throw the result, if the compiler want to get
      *                 sure, that you leave the calling method.
      */
-    private CouldNotFindMethodException throwMultipleResourceMethods()
-            throws CouldNotFindMethodException {
+    private CouldNotFindMethodException throwMultipleResourceMethods(
+            String message) throws CouldNotFindMethodException {
         throw new CouldNotFindMethodException(
-                this.errorRestletMultipleResourceMethods);
+                this.errorRestletMultipleResourceMethods, message);
     }
 
     /**
@@ -884,14 +904,14 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      */
     private Map<ResourceMethod, List<MediaType>> findMethodSupportsMime(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
-            SortedMetadata<MediaType> mediaTypess) {
-        if (mediaTypess == null || mediaTypess.isEmpty())
+            SortedMetadata<MediaType> mediaTypes) {
+        if (mediaTypes == null || mediaTypes.isEmpty())
             return findMethodsSupportAllTypes(resourceMethods, inOut);
         Map<ResourceMethod, List<MediaType>> mms;
         mms = findMethodsSupportTypeAndSubType(resourceMethods, inOut,
-                mediaTypess);
+                mediaTypes);
         if (mms.isEmpty()) {
-            mms = findMethodsSupportType(resourceMethods, inOut, mediaTypess);
+            mms = findMethodsSupportType(resourceMethods, inOut, mediaTypes);
             if (mms.isEmpty())
                 mms = findMethodsSupportAllTypes(resourceMethods, inOut);
         }
@@ -906,12 +926,12 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      */
     private Map<ResourceMethod, List<MediaType>> findMethodsSupportTypeAndSubType(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
-            SortedMetadata<MediaType> mediaTypess) {
+            SortedMetadata<MediaType> mediaTypes) {
         Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
         for (ResourceMethod resourceMethod : resourceMethods) {
             List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (MediaType resMethMediaType : mimes) {
-                for (MediaType mediaType : mediaTypess)
+                for (MediaType mediaType : mediaTypes)
                     if (resMethMediaType.equals(mediaType, true))
                         returnMethods.put(resourceMethod, mimes);
             }
@@ -936,12 +956,12 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
 
     private Map<ResourceMethod, List<MediaType>> findMethodsSupportType(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
-            SortedMetadata<MediaType> mediaTypess) {
+            SortedMetadata<MediaType> mediaTypes) {
         Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
         for (ResourceMethod resourceMethod : resourceMethods) {
             List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (MediaType resMethMediaType : mimes) {
-                for (MediaType mediaType : mediaTypess) {
+                for (MediaType mediaType : mediaTypes) {
                     String resMethMainType = resMethMediaType.getMainType();
                     String wishedMainType = mediaType.getMainType();
                     if (resMethMainType.equals(wishedMainType))
@@ -1020,7 +1040,11 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                         // perhaps for different HTTP methods
                         continue;
                     }
-                    throwMultipleResourceMethods();
+                    String message = "There are multiple methods on the Resource class ("
+                            + bestSrml.getResourceClass().getName()
+                            + "), that could handle the request: "
+                            + bestSrml.getName() + " and " + srml.getName();
+                    throwMultipleResourceMethods(message); // FIXME
                 }
             }
         }
@@ -1066,8 +1090,13 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                 }
                 if (rrcNoCaptGroups == bestRrcNoCaptGroups) {
                     // TODO JSR311: What happens, if both are equals?
+                    String message = "there are multiple ressources for the same path: "
+                            + bestRrc.getPathRegExp()
+                            + " and "
+                            + rrc.getPathRegExp() + " (and perhaps more)";
                     throw new CouldNotFindMethodException(
-                            this.errorRestletMultipleRootResourceClasses);
+                            this.errorRestletMultipleRootResourceClasses,
+                            message);
                 }
             }
         }
@@ -1640,7 +1669,8 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
 
         private Restlet errorRestlet;
 
-        CouldNotFindMethodException(Restlet errorRestlet) {
+        CouldNotFindMethodException(Restlet errorRestlet, String message) {
+            super(message);
             this.errorRestlet = errorRestlet;
         }
     }

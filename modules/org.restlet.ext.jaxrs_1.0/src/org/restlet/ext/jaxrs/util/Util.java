@@ -921,6 +921,22 @@ public class Util {
     }
 
     /**
+     * Fügt die einzelnen Elemente durch ", " getrennt dem StringBuilder hinzu
+     * 
+     * @param stb
+     * @param array
+     */
+    public static void toStringBuilder(StringBuilder stb, Object[] array) {
+        if (array == null || array.length == 0)
+            return;
+        stb.append(array[0]);
+        for (int i = 1; i < array.length; i++) {
+            stb.append(", ");
+            stb.append(array[i]);
+        }
+    }
+
+    /**
      * 
      * @param index
      *                index, starting with zero.

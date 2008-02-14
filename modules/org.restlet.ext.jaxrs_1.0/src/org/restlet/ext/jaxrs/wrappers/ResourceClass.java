@@ -268,4 +268,11 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     public String toString() {
         return this.getClass().getSimpleName() + "[" + this.jaxRsClass + "]";
     }
+
+    /**
+     * @return returns the name of the wrapped class
+     */
+    public String getName() {
+        return this.jaxRsClass.getName();
+    }
 }

@@ -32,4 +32,14 @@ public interface SubResourceMethodOrLocator {
      * @return Returns the Regular Expression of the path.
      */
     public PathRegExp getPathRegExp();
+
+    /**
+     * @return returns the name of the java method or sub resource locator
+     */
+    public String getName();
+
+    /**
+     * @return Returns the wrapped resource class
+     */
+    public ResourceClass getResourceClass();
 }

@@ -222,8 +222,7 @@ public class RequestTest extends JaxRsTestCase {
 
         conditions = new Conditions();
         conditions.setNoneMatch(Util.createList(new Tag("affer")));
-        response = accessServer(Method.GET, RequestService.class, "date",
-                conditions, null);
+        response = get("date", conditions);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 
@@ -246,13 +245,10 @@ public class RequestTest extends JaxRsTestCase {
         conditions.setModifiedSince(AFTER);
         response = get("date", conditions);
         assertEquals(Status.REDIRECTION_NOT_MODIFIED, response.getStatus());
-
-        // TODO Waiting engine fix
-        // assertEquals(RequestService.getLastModificationDateFromDatastore(),
-        // response.getEntity().getModificationDate());
-        // assertEquals(getEntityTagFromDatastore(),
-        // response.getEntity().getTag());
-        // assertEquals(0, response.getEntity().getSize());
+        assertEquals(RequestService.getLastModificationDateFromDatastore(),
+                response.getEntity().getModificationDate());
+        assertEquals(getDatastoreETag(), response.getEntity().getTag());
+        assertEquals(0, response.getEntity().getSize());
 
         // LATER test, what happens, because of Range-Header
         // see RFC2616, top of page 131
