@@ -22,16 +22,23 @@ import java.io.IOException;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.MatrixParamTestService;
+import org.restlet.test.jaxrs.services.QueryParamTestService;
 
 /**
  * @author Stephan Koops
  */
-public class MatrixParamTest extends JaxRsTestCase {
-
+public class QueryParamTest extends JaxRsTestCase {
+    
     @Override
     protected Class<?> getRootResourceClass() {
-        return MatrixParamTestService.class;
+        return QueryParamTestService.class;
+    }
+
+    public void testDecoded() throws IOException {
+        Response response = get("qpDecoded?firstname=George%20U.&lastname=Bush");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("George U. Bush", response.getEntity().getText());
     }
 
     public void testA() throws IOException
@@ -40,41 +47,52 @@ public class MatrixParamTest extends JaxRsTestCase {
         checkOneGiven("a");
     }
     
-    public void testB() throws IOException
+    public void testQpDecoded() throws IOException
     {
-        checkBothGiven("b");
-        checkOneGiven("b");
+        checkBothGiven("qpDecoded");
+        checkOneGiven("qpDecoded");
     }
     
     public void checkBothGiven(String subPath) throws IOException {
-        Response response = get(subPath+";firstname=Angela;lastname=Merkel");
+        Response response = get(subPath+"?firstname=Angela&lastname=Merkel");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("Angela Merkel", response.getEntity().getText());
 
-        response = get(subPath+";lastname=Merkel;firstname=Angela");
+        response = get(subPath+"?lastname=Merkel&firstname=Angela");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("Angela Merkel", response.getEntity().getText());
     }
     
     public void checkOneGiven(String subPath) throws IOException {
-        Response response = get(subPath+";firstname=Goofy");
+        Response response = get(subPath+"?firstname=Goofy");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("Goofy null", response.getEntity().getText());
 
-        response = get(subPath+";lastname=Goofy");
+        response = get(subPath+"?lastname=Goofy");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("null Goofy", response.getEntity().getText());
     }
 
-    public void testEncoded() throws IOException {
-        Response response = get("encoded;firstname=George%20U.;lastname=Bush");
+    public void testQpEncoded() throws IOException {
+        Response response = get("qpEncoded?firstname=George%20U.&lastname=Bush");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("George%20U. Bush", response.getEntity().getText());
+
+        response = get("qpEncoded?lastname=Bush&firstname=George%20U.");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("George%20U. Bush", response.getEntity().getText());
     }
-
-    public void testDecoded() throws IOException {
-        Response response = get("b;firstname=George%20U.;lastname=Bush");
+    
+    public void testEncodedA() throws IOException {
+        Response response = get("encodedA?firstname=George%20U.&lastname=Bush");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("George U. Bush", response.getEntity().getText());
+        assertEquals("George%20U. Bush", response.getEntity().getText());
     }
 }

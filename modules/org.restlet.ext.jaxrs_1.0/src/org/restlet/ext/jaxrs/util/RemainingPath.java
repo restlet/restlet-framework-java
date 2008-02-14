@@ -35,7 +35,9 @@ public class RemainingPath implements Comparable<RemainingPath> {
         int mpEndPos = Integer.MAX_VALUE;
         for (int i = stb.length() - 1; i >= 0; i--) {
             char character = stb.charAt(i);
-            if (character == ';') {
+            if (character == '?') {
+                stb.delete(i, Integer.MAX_VALUE);
+            } else if (character == ';') {
                 stb.delete(i, mpEndPos);
                 mpEndPos = i;
             } else if (character == '/') {
@@ -90,11 +92,11 @@ public class RemainingPath implements Comparable<RemainingPath> {
     }
 
     /**
-     * Returns the oath without matrix parameters.
+     * Returns the oath without matrix and query parameters.
      * 
      * @return
      */
-    public String getWithoutMatrixParams() {
+    public String getWithoutParams() {
         return this.remainingPart;
     }
 }

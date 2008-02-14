@@ -36,7 +36,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
@@ -90,6 +92,10 @@ public abstract class AbstractJaxRsWrapper {
      * @param paramClass
      *                the type of the parameter to convert to
      * @param paramValue
+     * @param leaveEncoded
+     *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
+     *                and {@link PathParam}s encoded. Must be FALSE for
+     *                {@link HeaderParam}s.
      * @param jaxRsRouter
      * @return
      * @throws InstantiateParameterException
@@ -100,9 +106,12 @@ public abstract class AbstractJaxRsWrapper {
      * @see HeaderParam
      */
     private static Object convertParamValueFromParam(Class<?> paramClass,
-            String paramValue, HiddenJaxRsRouter jaxRsRouter)
+            String paramValue, boolean leaveEncoded,
+            HiddenJaxRsRouter jaxRsRouter)
             throws InstantiateParameterException, WebApplicationException {
-        if (paramClass.equals(String.class))
+        if(!leaveEncoded && paramValue != null)
+            paramValue = Reference.decode(paramValue);
+        if (paramClass.equals(String.class)) // optimization
             return paramValue;
         if (paramClass.isPrimitive())
             return getParamValueForPrimitive(paramClass, paramValue,
@@ -223,6 +232,9 @@ public abstract class AbstractJaxRsWrapper {
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
      * @param jaxRsRouter
+     * @param leaveEncoded
+     *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
+     *                and {@link PathParam}s encoded.
      * @param indexForExcMessages
      *                the index of the parameter, for exception messages.
      * @return the parameter value
@@ -235,8 +247,8 @@ public abstract class AbstractJaxRsWrapper {
      */
     private static Object getParameterValue(Annotation[] paramAnnotations,
             Class<?> paramClass, CallContext callContext,
-            HiddenJaxRsRouter jaxRsRouter, int indexForExcMessages)
-            throws IllegalOrNoAnnotationException,
+            HiddenJaxRsRouter jaxRsRouter, boolean leaveEncoded,
+            int indexForExcMessages) throws IllegalOrNoAnnotationException,
             InstantiateParameterException, WebApplicationException {
         for (Annotation annotation : paramAnnotations) {
             Class<? extends Annotation> annotationType = annotation
@@ -246,14 +258,13 @@ public abstract class AbstractJaxRsWrapper {
                         callContext.getRequest()).getFirstValue(
                         ((HeaderParam) annotation).value(), true);
                 return convertParamValueFromParam(paramClass, headerParamValue,
-                        jaxRsRouter);
+                        false, jaxRsRouter);
             }
             if (annotationType.equals(PathParam.class)) {
                 String pathParamValue = callContext
                         .getLastTemplParamEnc((PathParam) annotation);
-                // FIXME @Encode in PathParam verwenden
                 return convertParamValueFromParam(paramClass, pathParamValue,
-                        jaxRsRouter);
+                        leaveEncoded, jaxRsRouter);
             }
             if (annotationType.equals(Context.class)) {
                 return callContext;
@@ -263,17 +274,16 @@ public abstract class AbstractJaxRsWrapper {
             if (annotationType.equals(MatrixParam.class)) {
                 String pathParamValue = callContext
                         .getLastMatrixParamEnc((MatrixParam) annotation);
-                // FIXME @Encode in MatrixParam verwenden
                 return convertParamValueFromParam(paramClass, pathParamValue,
-                        jaxRsRouter);
+                        leaveEncoded, jaxRsRouter);
             }
             if (annotationType.equals(QueryParam.class)) {
-                // FIXME @Encoded: Form ist automatisch decodiert
-                String queryParamValue = callContext.getRequest()
-                        .getResourceRef().getQueryAsForm().getFirstValue(
+                Form form = Converter.toFormEncoded(callContext.getRequest()
+                        .getResourceRef().getQuery(), jaxRsRouter.getLogger());
+                String queryParamValue = form.getFirstValue(
                                 ((QueryParam) annotation).value());
                 return convertParamValueFromParam(paramClass, queryParamValue,
-                        jaxRsRouter);
+                        true, jaxRsRouter); // leaveEncoded = true -> not change
             }
         }
         throw new IllegalOrNoAnnotationException("The " + indexForExcMessages
@@ -289,6 +299,9 @@ public abstract class AbstractJaxRsWrapper {
      *                constructor.
      * @param parameterTypes
      *                the array of types for the method or constructor.
+     * @param leaveEncoded
+     *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
+     *                and {@link PathParam}s encoded.
      * @param callContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
@@ -308,7 +321,8 @@ public abstract class AbstractJaxRsWrapper {
      */
     protected static Object[] getParameterValues(
             Annotation[][] parameterAnnotationss, Class<?>[] parameterTypes,
-            CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
+            boolean leaveEncoded, CallContext callContext,
+            HiddenJaxRsRouter jaxRsRouter)
             throws IllegalOrNoAnnotationException,
             InstantiateParameterException, RequestHandledException,
             NoMessageBodyReadersException, WebApplicationException {
@@ -322,7 +336,7 @@ public abstract class AbstractJaxRsWrapper {
             Object arg;
             try {
                 arg = getParameterValue(parameterAnnotationss[i], paramType,
-                        callContext, jaxRsRouter, i);
+                        callContext, jaxRsRouter, leaveEncoded, i);
             } catch (IllegalOrNoAnnotationException ionae) {
                 if (annotRequired)
                     throw ionae;

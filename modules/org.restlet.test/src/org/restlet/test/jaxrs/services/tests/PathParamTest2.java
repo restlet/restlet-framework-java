@@ -34,6 +34,36 @@ public class PathParamTest2 extends JaxRsTestCase {
         return PathParamTestService2.class;
     }
 
+    public void testDecoded1() throws Exception {
+        Response response = get("decoded/x");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("x", response.getEntity().getText());
+
+        response = get("decoded/sjkg");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("sjkg", response.getEntity().getText());
+    }
+
+    public void testDecoded2() throws Exception {
+        Response response = get("decoded/%20");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(" ", response.getEntity().getText());
+    }
+
+    public void testEncoded() throws Exception {
+        Response response = get("encoded/x");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("x", response.getEntity().getText());
+
+        response = get("encoded/sjkg");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("sjkg", response.getEntity().getText());
+
+        response = get("encoded/%20");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("%20", response.getEntity().getText());
+    }
+
     public void testGetBigDecimal() throws IOException {
         Response response = get("BigDecimal/413624654744743534745767");
         assertEquals(Status.SUCCESS_OK, response.getStatus());

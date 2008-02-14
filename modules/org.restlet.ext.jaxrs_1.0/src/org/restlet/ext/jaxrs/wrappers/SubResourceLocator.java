@@ -89,7 +89,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             args = new Object[0];
         else
             args = getParameterValues(javaMethod.getParameterAnnotations(),
-                    parameterTypes, callContext, jaxRsRouter);
+                    parameterTypes, leaveEncoded, callContext, jaxRsRouter);
         Object subResourceObject;
         try {
             subResourceObject = javaMethod.invoke(resourceObject

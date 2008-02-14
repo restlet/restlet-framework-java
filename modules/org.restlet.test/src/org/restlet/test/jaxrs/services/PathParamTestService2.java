@@ -19,6 +19,7 @@ package org.restlet.test.jaxrs.services;
 
 import java.math.BigDecimal;
 
+import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -31,6 +32,21 @@ import org.restlet.data.MediaType;
  */
 @Path("pathParamTest/")
 public class PathParamTestService2 {
+
+    @Encoded
+    @GET
+    @ProduceMime("text/plain")
+    @Path("encoded/{string}")
+    public String encoded(@PathParam("string") String string) {
+        return string;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("decoded/{string}")
+    public String decoded(@PathParam("string") String string) {
+        return string;
+    }
 
     @GET
     @Path("BigDecimal/{id}")

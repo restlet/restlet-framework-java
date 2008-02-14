@@ -33,6 +33,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
+import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.util.Util;
 
 /**
@@ -317,9 +318,7 @@ public class JaxRsUriInfo implements UriInfo {
         if (decode)
             return getQueryParameters();
         if (queryParametersEncoded == null) {
-            Form queryForm = new Form(reference.getQuery(), null);
-            // TODO Create patch for the engine that no decoding is wished.
-            // (Email 2008-02-06)
+            Form queryForm = Converter.toFormEncoded(reference.getQuery(), logger);
             queryParametersEncoded = UnmodifiableMultivaluedMap.getFromForm(
                     queryForm, false);
         }

@@ -109,7 +109,7 @@ public class PathRegExp {
         // TODO JSR311: is it allowed, that @Path contains matrix parameters?
         // this may result in non-determinism
         // (e.g.: "path;mp1=xx" and "path;mp2=xx" request: "path;mp1=xx;mp2=xx")
-        String givenPath = remainingPath.getWithoutMatrixParams();
+        String givenPath = remainingPath.getWithoutParams();
         Map<String, String> templateVars = new HashMap<String, String>();
         boolean pathSuppl = !givenPath.endsWith("/");
         if (pathSuppl)

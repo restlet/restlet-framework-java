@@ -34,16 +34,14 @@ public class PathParamTestService {
 
     @GET
     @ProduceMime("text/plain")
-    public String get(@PathParam("var1") String var1)
-    {
+    public String get(@PathParam("var1") String var1) {
         return var1;
     }
 
     @GET
     @Path("abc/{var2}/def")
     @ProduceMime("text/plain")
-    public String get(@PathParam("var1") String var1, @PathParam("var2") String var2)
-    {
-        return var1+"\n"+var2;
+    public String get(@PathParam("var1") String var1, @PathParam("var2") String var2) {
+        return var1 + "\n" + var2;
     }
 }

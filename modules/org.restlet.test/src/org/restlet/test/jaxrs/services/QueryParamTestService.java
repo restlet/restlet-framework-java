@@ -19,48 +19,54 @@ package org.restlet.test.jaxrs.services;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
-import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
-
-import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * @author Stephan Koops
  */
-@Path("matrixParamTest")
-public class MatrixParamTestService {
+@Path("queryParamTest")
+public class QueryParamTestService {
 
     @GET
     @ProduceMime("text/plain")
     @Path("a")
-    public String getA(@MatrixParam("firstname")
-    String firstname, @MatrixParam("lastname")
+    public String getA(@QueryParam("firstname")
+    String firstname, @QueryParam("lastname")
     String lastname) {
         return firstname + " " + lastname;
     }
 
     @GET
     @ProduceMime("text/plain")
-    @Path("b")
-    public String getB(@Context
-    UriInfo uriInfo) {
-        PathSegment pSeg = Util.getLastElement(uriInfo.getPathSegments());
-        String vorname = pSeg.getMatrixParameters().getFirst("firstname");
-        String nachname = pSeg.getMatrixParameters().getFirst("lastname");
-        return vorname + " " + nachname;
-    }
-
-    @GET
-    @ProduceMime("text/plain")
-    @Path("encoded")
+    @Path("encodedA")
     @Encoded
-    public String encoded(@MatrixParam("firstname")
-    String firstname, @MatrixParam("lastname")
+    public String encodedA(@QueryParam("firstname")
+    String firstname, @QueryParam("lastname")
     String lastname) {
         return firstname + " " + lastname;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("qpDecoded")
+    public String getQueryParamsDecoded(@Context
+    UriInfo uriInfo) {
+        String firstname = uriInfo.getQueryParameters().getFirst("firstname");
+        String lastname = uriInfo.getQueryParameters().getFirst("lastname");
+        return firstname + " " + lastname;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("qpEncoded")
+    public String getQueryParamsEncoded(@Context
+    UriInfo uriInfo) {
+        String firstn = uriInfo.getQueryParameters(false).getFirst("firstname");
+        String lastn = uriInfo.getQueryParameters(false).getFirst("lastname");
+        return firstn + " " + lastn;
     }
 }

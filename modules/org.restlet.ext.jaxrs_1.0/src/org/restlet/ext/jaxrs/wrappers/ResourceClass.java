@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
 
 import org.restlet.data.Method;
@@ -97,6 +98,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     private Collection<SubResourceMethodOrLocator> subResourceMethodsAndLocators;
 
+    boolean leaveEncoded;
+
     /**
      * Creates a new root resource class wrapper. Will not set the path, because
      * it is not available for a normal resource class.
@@ -106,6 +109,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     public ResourceClass(Class<?> jaxRsClass) {
         super(null);
         this.jaxRsClass = jaxRsClass;
+        this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
     }
 
     /**
@@ -119,6 +123,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     protected ResourceClass(Class<?> jaxRsClass, boolean requirePath) {
         super(getPathAnnotation(jaxRsClass, requirePath));
         this.jaxRsClass = jaxRsClass;
+        this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
     }
 
     @Override

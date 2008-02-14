@@ -25,20 +25,31 @@ import org.restlet.ext.jaxrs.util.RemainingPath;
 @SuppressWarnings("unchecked")
 public class RemainingPathTests extends TestCase {
 
-    public void testRemoveMatrixParams1() {
+    public void testRemoveParams1() {
         aear("sdhfk", "sdhfk;sdf");
         aear("sdhfk", "sdhfk;sdf=1");
+        aear("sdhfk", "sdhfk;sdf=1?");
+        aear("sdhfk", "sdhfk;sdf=1?x");
+        aear("sdhfk", "sdhfk;sdf=1?x&");
+        aear("sdhfk", "sdhfk;sdf=1?x&;");
+        aear("sdhfk", "sdhfk;sdf=1?x&;/");
+        aear("sdhfk", "sdhfk;sdf=1?x&;c/");
+        aear("sdhfk", "sdhfk;sdf=1?x&;c/sdf");
     }
 
-    public void testRemoveMatrixParams3() {
+    public void testRemoveParams3() {
         aear("sdhfk/gkjj", "sdhfk;sdf/gkjj");
         aear("sdhfk/gkjj", "sdhfk;sdf=1/gkjj");
         aear("sdhfk/gkjj", "sdhfk;sdf=1;/gkjj");
         aear("sdhfk/gkjj", "sdhfk;sdf=1;ff/gkjj");
         aear("sdhfk/gkjj", "sdhfk;sdf=1;ff=2/gkjj");
+        aear("sdhfk/gkjj", "sdhfk;sdf=1;ff=2/gkjj?");
+        aear("sdhfk/gkjj", "sdhfk;sdf=1;ff=2/gkjj?f");
+        aear("sdhfk/gkjj", "sdhfk;sdf=1;ff=2/gkjj?f=");
+        aear("sdhfk/gkjj", "sdhfk;sdf=1;ff=2/gkjj?f=5");
     }
 
-    public void testRemoveMatrixParams5() {
+    public void testRemoveParams5() {
         aear("sdhfk/gkjj", "sdhfk/gkjj");
         aear("sdhfk/gkjj", "sdhfk;/gkjj");
         aear("sdhfk/gkjj", "sdhfk;sdf/gkjj");
@@ -48,7 +59,7 @@ public class RemainingPathTests extends TestCase {
         aear("sdhfk/gkjj", "sdhfk;sdf=1;ff=2/gkjj");
     }
 
-    public void testRemoveMatrixParams7() {
+    public void testRemoveParams7() {
         aear("sdhfk/gkjj/", "sdhfk;sdf=1;ff=2/gkjj/");
         aear("sdhfk/gkjj/", "sdhfk;sdf=1;ff=2/gkjj;/");
         aear("sdhfk/gkjj/", "sdhfk;sdf=1;ff=2/gkjj;;/");
@@ -60,8 +71,40 @@ public class RemainingPathTests extends TestCase {
         aear("sdhfk/gkjj/", "sdhfk;sdf=1;ff=2/gkjj;dd=we/;d=f;");
     }
 
-    public void testRemoveMatrixParams9() {
+    public void testRemoveParams9() {
         aear("sdhfk/gkjj/a", "sdhfk;sdf=1;ff=2/gkjj/a");
+    }
+    
+    public void testRemoveParams11() {
+        aear("/ddf", ";/ddf");
+        aear("/ddf", ";sdf/ddf");
+        aear("/ddf", ";sdf=/ddf");
+        aear("/ddf", ";sdf=sfsd/ddf");
+        aear("/ddf", ";sdf=sfsd;/ddf");
+        aear("/ddf", ";sdf=sfsd;sdf/ddf");
+    }
+
+    public void testRemoveParamsEmptyResult1() {
+        aear("", ";");
+        aear("", ";df");
+        aear("", ";df=");
+        aear("", ";df=sdfsdf");
+        aear("", ";df=sdfsdf?");
+        aear("", ";df=sdfsdf?sdf");
+        aear("", ";df=sdfsdf?sdf=");
+        aear("", ";df=sdfsdf?sdf=sdffs");
+    }
+    
+    public void testRemoveParamsEmptyResult2() {
+        aear("", "?");
+        aear("", "?df");
+        aear("", "?df=");
+        aear("", "?df=sdfsdf");
+        aear("", "?df=sdfsdf&");
+        aear("", "?df=sdfsdf&sdf");
+        aear("", "?df=sdfsdf&sdf=");
+        aear("", "?df=sdfsdf&sdf=sdffs");
+        aear("", "?df=sdfsdf?sdf=sdffs");
     }
 
     /**

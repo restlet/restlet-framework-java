@@ -33,6 +33,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(PathParamTest.class);
         mySuite.addTestSuite(PathParamTest2.class);
         mySuite.addTestSuite(ProviderTest.class);
+        mySuite.addTestSuite(QueryParamTest.class);
         mySuite.addTestSuite(RequestTest.class);
         mySuite.addTestSuite(ResponseBuilderTest.class);
         mySuite.addTestSuite(SecurityContextTest.class);

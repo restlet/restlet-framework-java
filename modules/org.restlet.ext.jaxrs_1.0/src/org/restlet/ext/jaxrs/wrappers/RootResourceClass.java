@@ -146,8 +146,8 @@ public class RootResourceClass extends ResourceClass {
             IllegalOrNoAnnotationException, InstantiateRootRessourceException,
             RequestHandledException, InvocationTargetException {
         Constructor<?> constructor = this.constructor;
-        Object newInstance = createInstance(constructor, callContext,
-                jaxRsRouter);
+        Object newInstance = createInstance(constructor, leaveEncoded,
+                callContext, jaxRsRouter);
         return new ResourceObject(newInstance, this);
     }
 
@@ -156,6 +156,9 @@ public class RootResourceClass extends ResourceClass {
      * 
      * @param constructor
      *                the constructor to create an instance with.
+     * @param leaveEncoded
+     *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
+     *                and {@link PathParam}s encoded.
      * @param callContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
@@ -170,7 +173,7 @@ public class RootResourceClass extends ResourceClass {
      * @throws InvocationTargetException
      */
     public static Object createInstance(Constructor<?> constructor,
-            CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
+            boolean leaveEncoded, CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
             throws IllegalOrNoAnnotationException, RequestHandledException,
             InstantiateParameterException, InstantiateRootRessourceException,
             InvocationTargetException {
@@ -181,7 +184,7 @@ public class RootResourceClass extends ResourceClass {
             try {
                 args = getParameterValues(
                         constructor.getParameterAnnotations(), constructor
-                                .getParameterTypes(), callContext, jaxRsRouter);
+                                .getParameterTypes(), leaveEncoded, callContext, jaxRsRouter);
             } catch (NoMessageBodyReadersException e) {
                 throw new IllegalOrNoAnnotationException(
                         "the root resource class constructor ("

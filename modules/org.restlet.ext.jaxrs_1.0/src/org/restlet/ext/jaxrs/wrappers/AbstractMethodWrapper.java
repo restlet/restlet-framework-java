@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 
@@ -57,6 +58,8 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         return AbstractJaxRsWrapper.getPathTemplate(path);
     }
 
+    boolean leaveEncoded;
+    
     Method javaMethod;
 
     ResourceClass resourceClass;
@@ -66,6 +69,12 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         super(path);
         this.javaMethod = javaMethod;
         this.resourceClass = resourceClass;
+        if(javaMethod.isAnnotationPresent(Encoded.class))
+            leaveEncoded = true;
+        else if(javaMethod.getClass().isAnnotationPresent(Encoded.class))
+            leaveEncoded = true;
+        else
+            leaveEncoded = false;
     }
 
     /**
@@ -97,7 +106,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
                 .getParameterAnnotations();
         Class<?>[] parameterTypes = javaMethod.getParameterTypes();
         Object[] args = getParameterValues(parameterAnnotationss,
-                parameterTypes, callContext, jaxRsRouter);
+                parameterTypes, leaveEncoded, callContext, jaxRsRouter);
         try {
             return this.javaMethod.invoke(resourceObject.getResourceObject(),
                     args);

@@ -21,6 +21,7 @@ package org.restlet.test.jaxrs.services.car;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
@@ -138,6 +139,7 @@ public class CarListResource {
      * @return
      */
     @Path("{id}")
+    @Encoded
     public CarResource findCar(@javax.ws.rs.PathParam("id")
     String id) {
         return new CarResource(id);

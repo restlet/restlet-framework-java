@@ -381,7 +381,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         Object provider;
         try {
             provider = RootResourceClass
-                    .createInstance(constructor, null, this);
+                    .createInstance(constructor, false, null, this);
         } catch (InstantiateParameterException e) {
             // should be not possible here
             throw new JaxRsRuntimeException(
@@ -440,7 +440,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         Object provider;
         try {
             provider = RootResourceClass
-                    .createInstance(constructor, null, this);
+                    .createInstance(constructor, false, null, this);
         } catch (InstantiateParameterException e) {
             // should be not possible here
             throw new JaxRsRuntimeException(
@@ -655,7 +655,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             if (eWithMethod.isEmpty())
                 throw new CouldNotFindMethodException(
                         errorRestletResourceNotFound,
-                        "There is no resource object to handle the request for remaining path "
+                        "The resource class "+o.getResourceClass().getName()+" could not find a resource object to handle the request for remaining path "
                                 + u);
             // (f) and (g) sort E, use first member of E
             SubResourceMethodOrLocator firstMeth = getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eWithMethod);
@@ -1044,7 +1044,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                             + bestSrml.getResourceClass().getName()
                             + "), that could handle the request: "
                             + bestSrml.getName() + " and " + srml.getName();
-                    throwMultipleResourceMethods(message); // FIXME
+                    throwMultipleResourceMethods(message);
                 }
             }
         }

@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
@@ -36,6 +37,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
 import org.restlet.data.Tag;
+import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**
@@ -329,6 +331,20 @@ public class Converter {
             for(String value : entry.getValue())
                 form.add(name, value);
         }
+        return form;
+    }
+
+    /**
+     * Converts the given query String to a Form, but do not decode the data.
+     * @param queryString
+     * @param logger
+     * @return
+     */
+    public static Form toFormEncoded(String queryString, Logger logger) {
+        Form form = new Form();
+        // FIXME Create patch for the engine that no decoding is wished.
+        // (Email 2008-02-06)
+        Engine.getInstance().parse(logger, form, queryString, null);
         return form;
     }
 }
