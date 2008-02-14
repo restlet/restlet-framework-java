@@ -52,23 +52,6 @@ public class UtilTests extends TestCase {
         }
     }
 
-    public void testIsSameOrSubType() {
-        assertTrue(Util.isSameOrSubType(MediaType.ALL, MediaType.ALL));
-        assertTrue(Util.isSameOrSubType(MediaType.TEXT_ALL, MediaType.ALL));
-        assertTrue(Util.isSameOrSubType(MediaType.TEXT_ALL, MediaType.TEXT_ALL));
-        assertTrue(Util.isSameOrSubType(MediaType.TEXT_PLAIN,
-                MediaType.TEXT_ALL));
-        assertTrue(Util.isSameOrSubType(MediaType.TEXT_PLAIN,
-                MediaType.TEXT_PLAIN));
-
-        assertFalse(Util.isSameOrSubType(MediaType.ALL, MediaType.TEXT_ALL));
-        assertFalse(Util.isSameOrSubType(MediaType.TEXT_ALL,
-                MediaType.TEXT_PLAIN));
-
-        assertFalse(Util.isSameOrSubType(MediaType.APPLICATION_ALL,
-                MediaType.TEXT_ALL));
-    }
-
     public void testMostSpecificMediaType() {
         assertEquals(MediaType.TEXT_ALL, Util.mostSpecific(MediaType.ALL,
                 MediaType.TEXT_ALL));

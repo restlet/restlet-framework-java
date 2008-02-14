@@ -39,7 +39,7 @@ import javax.xml.bind.Marshaller;
 @Provider
 public class JaxbElementProvider implements MessageBodyWriter<JAXBElement<?>> {
 
-    // TODO JSR311: dont know how to implement MessageBodyReader for JAXBElement
+    // TODO JSR311: JAXBElement-MessageBodyReader: dont know how to implement. 
 
     private Logger logger = Logger.getLogger(JaxbElementProvider.class
             .getName());

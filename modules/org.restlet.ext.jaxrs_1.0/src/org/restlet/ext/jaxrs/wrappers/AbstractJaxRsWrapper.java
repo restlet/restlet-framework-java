@@ -75,7 +75,7 @@ public abstract class AbstractJaxRsWrapper {
         String pathTemplate = getPathTemplate(template);
         if (ensureStartSlash)
             pathTemplate = Util.ensureStartSlash(pathTemplate);
-        // LATER Path.encode auch bearbeiten
+        // TESTEN Path.encode auch bearbeiten
         return new PathRegExp(pathTemplate, template.limited());
     }
 

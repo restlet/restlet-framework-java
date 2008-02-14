@@ -91,7 +91,7 @@ public class JaxRsUriBuilder extends UriBuilder {
     private String userInfo;
 
     /**
-     * 
+     * Creates a JaxRsUriBuilder
      */
     public JaxRsUriBuilder() {
     }
@@ -108,7 +108,6 @@ public class JaxRsUriBuilder extends UriBuilder {
             throw new IllegalArgumentException(
                     "The given class is no root resource class, because it is not annotated with @Path");
         addPathSegments(AbstractJaxRsWrapper.getPathTemplate(path));
-        // LATER encode Path
     }
 
     /**
@@ -314,8 +313,8 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder fragment(String fragment) throws IllegalArgumentException {
-        this.fragment = Util.encode(fragment, Integer.MIN_VALUE, "fragment",
-                this.encode, true);
+        this.fragment = Util.encode(fragment, this.encode, true,
+                Integer.MIN_VALUE, "fragment");
         return this;
     }
 
@@ -434,10 +433,10 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder matrixParam(String name, String value)
             throws IllegalArgumentException {
-        name = Util.encode(name, Integer.MIN_VALUE, "matrix parameter name",
-                this.encode, true);
-        value = Util.encode(value, Integer.MIN_VALUE, "matrix parameter value",
-                this.encode, true);
+        name = Util.encode(name, this.encode, true,
+                Integer.MIN_VALUE, "matrix parameter name");
+        value = Util.encode(value, this.encode, true,
+                Integer.MIN_VALUE, "matrix parameter value");
         this.pathSegments.getLast().getMatrixParameters().add(name, value);
         return this;
     }
@@ -617,10 +616,10 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder queryParam(String name, String value)
             throws IllegalArgumentException {
-        name = Util.encode(name, Integer.MIN_VALUE, "query parameter name",
-                this.encode, true);
-        value = Util.encode(value, Integer.MIN_VALUE, "query parameter value",
-                this.encode, true);
+        name = Util.encode(name, this.encode, true,
+                Integer.MIN_VALUE, "query parameter name");
+        value = Util.encode(value, this.encode, true,
+                Integer.MIN_VALUE, "query parameter value");
         StringBuilder query;
         if (this.query == null) {
             query = new StringBuilder();
@@ -914,8 +913,8 @@ public class JaxRsUriBuilder extends UriBuilder {
         // password? This is deprecated (RFC3986, section 3.2.1) and more
         // complicated to encode, because of the ":" is allowed one times.
         // TODO one ":" is allowed.
-        this.userInfo = Util.encode(ui, Integer.MIN_VALUE, "userInfo",
-                this.encode, true);
+        this.userInfo = Util.encode(ui, this.encode, true,
+                Integer.MIN_VALUE, "userInfo");
         return this;
     }
 }

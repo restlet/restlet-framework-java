@@ -26,6 +26,7 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * Class to wrap a {@link javax.ws.rs.ext.MessageBodyWriter}
@@ -94,23 +95,10 @@ public class MessageBodyWriter {
     public boolean supportAtLeastOne(Iterable<MediaType> mediaTypes) {
         for (MediaType produced : getProducedMimes()) {
             for (MediaType requested : mediaTypes)
-                if (supports(requested, produced))
+                if (Util.isCompatible(requested, produced))
                     return true;
         }
         return false;
-    }
-
-    /**
-     * 
-     * @param mbwMediaType
-     * @param requestedMediaType
-     * @return
-     */
-    public static boolean supports(MediaType mbwMediaType,
-            MediaType requestedMediaType) {
-        return mbwMediaType.includes(requestedMediaType)
-                || requestedMediaType.includes(mbwMediaType);
-        // LATER Util.isCompatible(..)
     }
 
     /**

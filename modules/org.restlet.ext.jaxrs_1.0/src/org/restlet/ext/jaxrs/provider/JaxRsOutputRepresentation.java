@@ -24,6 +24,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.util.Converter;
+import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriter;
 import org.restlet.resource.OutputRepresentation;
 
@@ -56,7 +57,8 @@ public class JaxRsOutputRepresentation extends OutputRepresentation {
     public JaxRsOutputRepresentation(Object object, MediaType mediaType,
             MessageBodyWriter mbw, MultivaluedMap<String, Object> httpHeaders) {
         super(mediaType, mbw.getSize(object));
-        // TODO perhaps warning, if "text/*" or something like that?
+        if(!Util.isConcrete(mediaType))
+            throw new IllegalArgumentException(mediaType+" is not concrete");
         this.mbw = mbw;
         this.httpHeaders = httpHeaders;
         this.object = object;

@@ -342,9 +342,9 @@ public class Converter {
      */
     public static Form toFormEncoded(String queryString, Logger logger) {
         Form form = new Form();
-        // FIXME Create patch for the engine that no decoding is wished.
-        // (Email 2008-02-06)
         Engine.getInstance().parse(logger, form, queryString, null);
+        // TODO wait for patch: (Email 2008-02-06)
+        // Engine.getInstance().parseLeaveEncoded(logger, form, queryString);
         return form;
     }
 }

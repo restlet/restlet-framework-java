@@ -143,7 +143,7 @@ public class ProviderTest extends JaxRsTestCase {
         getAndCheckJaxb("jaxbElement");
     }
 
-    // TODO JSR311: don't know how to implement the read of a JAXBElement.
+    // TODO JSR311: JAXBElement: don't know how to implement the read
     // public void testJaxbElementPost() throws Exception {
     // postAndCheck("jaxbElement");
     // }

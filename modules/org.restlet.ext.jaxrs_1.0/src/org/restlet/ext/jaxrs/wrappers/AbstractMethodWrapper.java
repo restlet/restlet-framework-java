@@ -139,7 +139,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         StringBuilder stb = new StringBuilder();
         stb.append(this.javaMethod.getName());
         stb.append('(');
-        Util.toStringBuilder(stb, paramTypes);
+        Util.append(stb, paramTypes);
         stb.append(')');
         return stb.toString();
     }

@@ -77,10 +77,10 @@ public class JaxRsPathSegment implements PathSegment {
                     key = Reference.decode(keyEnc);
                     value = Reference.decode(valueEnc);
                 } else if (encodeAndCheckWhenNotDecode) {
-                    key = Util.encode(keyEnc, i, " matrix parameter key", true,
-                            true);
-                    value = Util.encode(valueEnc, i, " matrix parameter value",
-                            true, true);
+                    key = Util.encode(keyEnc, true, true, i,
+                            " matrix parameter key");
+                    value = Util.encode(valueEnc, true, true,
+                            i, " matrix parameter value");
                 } else {
 
                     key = keyEnc;

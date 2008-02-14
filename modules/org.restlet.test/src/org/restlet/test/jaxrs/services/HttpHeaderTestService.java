@@ -45,7 +45,7 @@ public class HttpHeaderTestService {
     
     public static final String TEST_HEADER_NAME = "testHeader";
     
-    // TODO TESTEN: @Context Http-Headers soll Case-insensitiv sein
+    // TESTEN: @Context Http-Headers soll Case-insensitiv sein
 
     /**
      * @return

@@ -86,7 +86,7 @@ public class Util {
             int rt = specNess1 - specNess2;
             if (rt != 0)
                 return rt;
-            // LATER optimizing possible here
+            // LATER optimizing possible here: do not use toString()
             return mediaType1.toString().compareToIgnoreCase(
                     mediaType2.toString());
         }
@@ -139,17 +139,36 @@ public class Util {
     }
 
     /**
+     * appends the array elements to the {@link StringBuilder}, separated by ", ".
+     * 
+     * @param stb
+     *                The {@link StringBuilder} to append the array elements.
+     * @param array
+     *                The array to append to the {@link StringBuilder}.
+     */
+    public static void append(StringBuilder stb, Object[] array) {
+        if (array == null || array.length == 0)
+            return;
+        stb.append(array[0]);
+        for (int i = 1; i < array.length; i++) {
+            stb.append(", ");
+            stb.append(array[i]);
+        }
+    }
+
+    /**
      * Checks, if the string contains characters that are reserved in URIs.
      * 
      * @see <a href="http://tools.ietf.org/html/rfc3986#section-2.2">RFC 3986,
      *      Section 2.2</a>
      * @param uriPart
-     * @param index
+     * @param indexForErrMessage
      * @param errMessName
      * @throws IllegalArgumentException
      */
-    public static void checkForInvalidUriChars(String uriPart, int index,
-            String errMessName) throws IllegalArgumentException {
+    public static void checkForInvalidUriChars(String uriPart,
+            int indexForErrMessage, String errMessName)
+            throws IllegalArgumentException {
         // LATER Characters in variables should not be checked.
         int l = uriPart.length();
         for (int i = 0; i < l; i++) {
@@ -173,14 +192,14 @@ public class Util {
             case ',':
             case ';':
             case '=':
-                throw throwIllegalArgExc(index, errMessName, uriPart,
-                        " contains at least one reservec character: " + c
-                                + ". They must be encoded.");
+                throw throwIllegalArgExc(indexForErrMessage, errMessName,
+                        uriPart, " contains at least one reservec character: "
+                                + c + ". They must be encoded.");
             }
             if (c == ' ' || c < 32 || c >= 127)
-                throw throwIllegalArgExc(index, errMessName, uriPart,
-                        " contains at least one illegal character: " + c
-                                + ". They must be encoded.");
+                throw throwIllegalArgExc(indexForErrMessage, errMessName,
+                        uriPart, " contains at least one illegal character: "
+                                + c + ". They must be encoded.");
         }
     }
 
@@ -207,11 +226,12 @@ public class Util {
         for (int i = 1; i < schemeLength; i++) {
             c = scheme.charAt(i);
             if (!((c > 64 && c <= 90) || (c > 92 && c <= 118) || (c == '+')
-                    || (c == '-') || (c == '.')))
-                throw new IllegalArgumentException(
-                        "The "
-                                + i
-                                + ". character of a scheme must be an alphabetic character, a number, a '+', a '-' or a '.'");
+                    || (c == '-') || (c == '.'))) {
+                String message = "The "
+                        + i
+                        + ". character of a scheme must be an alphabetic character, a number, a '+', a '-' or a '.'";
+                throw new IllegalArgumentException(message);
+            }
         }
     }
 
@@ -387,31 +407,31 @@ public class Util {
      * @param uriPart
      *                the string to encode or check. Must not be null; result
      *                are not defined.
-     * @param index
-     *                index in an array or list if necessary. If not necessary,
-     *                set it lower than zero.
-     * @param errMessName
-     *                The name for the message
      * @param encode
      *                see {@link #encode}
      * @param encodeSlash
      *                if encode is true: if encodeSlash is true, than slashes
      *                are also converted, otherwise not. if encode is false,
      *                this is ignored.
+     * @param indexForErrMessage
+     *                index in an array or list if necessary. If not necessary,
+     *                set it lower than zero.
+     * @param errMessName
+     *                The name for the message
      * @return
      * @throws IllegalArgumentException
      *                 if the char is invalid.
      */
-    public static String encode(String uriPart, int index, String errMessName,
-            boolean encode, boolean encodeSlash)
+    public static String encode(String uriPart, boolean encode,
+            boolean encodeSlash, int indexForErrMessage, String errMessName)
             throws IllegalArgumentException {
         if (uriPart == null)
-            throw throwIllegalArgExc(index, errMessName, uriPart,
+            throw throwIllegalArgExc(indexForErrMessage, errMessName, uriPart,
                     " must not be null");
         if (encode)
             return encodeNotBraces(uriPart, encodeSlash);
         else
-            checkForInvalidUriChars(uriPart, index, errMessName);
+            checkForInvalidUriChars(uriPart, indexForErrMessage, errMessName);
         return uriPart;
     }
 
@@ -700,8 +720,8 @@ public class Util {
      * Gets the logged in user.
      * 
      * @param request
-     *                The Restlet request
-     * @return The Principal of the logged in user.
+     *                The Restlet {@link Request}
+     * @return The {@link Principal} of the logged in user.
      * @see #setPrincipal(Principal, Request)
      */
     public static Principal getPrincipal(Request request) {
@@ -709,8 +729,8 @@ public class Util {
     }
 
     /**
-     * This method throws an WebApplicationException for Exceptions where is no
-     * planned handling. Logs the excption (warn Level).
+     * This method throws an {@link WebApplicationException} for Exceptions
+     * where is no planned handling. Logs the exception (warn {@link Level}).
      * 
      * @param e
      *                the catched Exception
@@ -738,6 +758,7 @@ public class Util {
      * @return
      */
     public static boolean isCompatible(org.restlet.data.MediaType mediaType1,
+    // TODO Jerome: move to Restlet API?
             org.restlet.data.MediaType mediaType2) {
         return mediaType1.includes(mediaType2)
                 || mediaType2.includes(mediaType1);
@@ -751,7 +772,7 @@ public class Util {
      * @see #specificness(org.restlet.data.MediaType)
      */
     public static boolean isConcrete(org.restlet.data.MediaType mediaType) {
-        // LATER move to Restlet API?
+        // TODO Jerome: move to Restlet API?
         if (mediaType.getSubType().equals("*"))
             return false;
         if (mediaType.getMainType().equals("*"))
@@ -809,25 +830,6 @@ public class Util {
     }
 
     /**
-     * Checks, if the smaller MediaType is the same type as or a subtype of
-     * bigger.<br/>Examples:
-     * <ul>
-     * <li>isSameOrSubType("text/plain", "text/*") -> true</li>
-     * <li>isSameOrSubType("text/plain", "text/plain") -> true</li>
-     * <li>isSameOrSubType("text/*", "text/plain") -> false</li>
-     * </ul>
-     * 
-     * 
-     * @param bigger
-     * @param smaller
-     * @return
-     */
-    public static boolean isSameOrSubType(org.restlet.data.MediaType smaller,
-            org.restlet.data.MediaType bigger) {
-        return bigger.includes(smaller);
-    }
-
-    /**
      * Returns the most concrete {@link MediaType} of the given MediaTypes. See
      * JSR-311 specification, section 2.6. 'Determining the MediaType of
      * Responses', part 5.
@@ -840,7 +842,7 @@ public class Util {
     public static org.restlet.data.MediaType mostSpecific(
             org.restlet.data.MediaType... mediaTypes)
             throws IllegalArgumentException {
-        // LATER move to Restlet-API as static MediaType.mostSpecific(....) ?
+        // TODO Jerome: move to Restlet-API? static MediaType.mostSpecific(...)
         if (mediaTypes == null || mediaTypes.length == 0)
             throw new IllegalArgumentException(
                     "You must give at least one MediaType");
@@ -903,14 +905,17 @@ public class Util {
     }
 
     /**
+     * Returns the specificness of the given {@link org.restlet.data.MediaType}:
+     * <ul>
+     * <li>1 for any concrete type (contains no star)</li>
+     * <li>0 for the types (anything/*)</li>
+     * <li>-1 for '*<!---->/*</li>
+     * </ul>
      * 
      * @param mediaType
-     * @return
-     *                <ul>
-     *                <li>1 for any concrete type (contains no star)</li>
-     *                <li>0 for the types (anything/*)</li>
-     *                <li>-1 for '*<!---->/*</li>
+     * @return 1, 0 or -1
      * @see #isConcrete(org.restlet.data.MediaType)
+     * @see #sortByConcreteness(Collection)
      */
     public static int specificness(org.restlet.data.MediaType mediaType) {
         if (mediaType.equals(org.restlet.data.MediaType.ALL, true))
@@ -918,22 +923,6 @@ public class Util {
         if (mediaType.getSubType().equals("*"))
             return 0;
         return 1;
-    }
-
-    /**
-     * Fügt die einzelnen Elemente durch ", " getrennt dem StringBuilder hinzu
-     * 
-     * @param stb
-     * @param array
-     */
-    public static void toStringBuilder(StringBuilder stb, Object[] array) {
-        if (array == null || array.length == 0)
-            return;
-        stb.append(array[0]);
-        for (int i = 1; i < array.length; i++) {
-            stb.append(", ");
-            stb.append(array[i]);
-        }
     }
 
     /**

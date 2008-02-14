@@ -32,13 +32,14 @@ public class AllClassTests extends TestCase {
     public static Test suite() {
         TestSuite mySuite = new TestSuite();
         mySuite.setName("All class tests");
-        mySuite.addTestSuite(PathRegExpTests.class);
-        mySuite.addTestSuite(UtilTests.class);
-        mySuite.addTestSuite(JaxRsUriInfoTest.class);
         mySuite.addTestSuite(JaxRsPathSegmentTest.class);
         mySuite.addTestSuite(JaxRsRouterTest.class);
+        mySuite.addTestSuite(JaxRsUriInfoTest.class);
         mySuite.addTestSuite(JaxRsUriBuilderTest.class);
+        mySuite.addTestSuite(PathRegExpTests.class);
         mySuite.addTestSuite(RemainingPathTests.class);
+        mySuite.addTestSuite(RootResourceClassTest.class);
+        mySuite.addTestSuite(UtilTests.class);
         return mySuite;
     }
 }
