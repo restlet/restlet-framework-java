@@ -713,7 +713,7 @@ public class JaxRsUriBuilder extends UriBuilder {
             this.query = null;
         // gefragt: JSR311: how encode the query? ignore "?" and "=", other
         // chars?
-        // LATER check query param
+        // LATER check query parameters for validity
         this.query = query;
         return this;
     }

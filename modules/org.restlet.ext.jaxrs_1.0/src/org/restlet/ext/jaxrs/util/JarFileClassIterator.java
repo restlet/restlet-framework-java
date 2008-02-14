@@ -120,7 +120,7 @@ public class JarFileClassIterator extends AbstractClassIterator implements
         while (jarEntryEnum.hasMoreElements()) {
             JarEntry jarEntry = jarEntryEnum.nextElement();
             String fileName = jarEntry.getName();
-            // TODO if the Jar contains Jars -> recursive
+            // LATER if the Jar contains Jars -> recursive
             this.next = loadClassByFileName(fileName);
             if (this.next != null)
                 return true;

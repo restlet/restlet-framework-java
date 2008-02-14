@@ -504,7 +504,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder1.encode(false);
         uriBuilder1.userInfo("username");
         assertEqualsURI("http://username@localhost/path1/path2", uriBuilder1);
-        // TODO all Builder only forbid the chars, with meaning in the context.
+        // LATER all Builders only forbid the chars, with meaning in the context.
         // LATER test: uriBuilder1.userInfo("username:password");
         // assertEquals("http://username:password@localhost/path1/path2",uriBuilder1.build().toString());
     }

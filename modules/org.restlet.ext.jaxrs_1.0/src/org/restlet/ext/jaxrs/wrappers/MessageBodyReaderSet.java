@@ -103,7 +103,7 @@ public class MessageBodyReaderSet extends LifoSet<MessageBodyReader> {
      *         this Set is empty.
      */
     public MessageBodyReader getBest(MediaType mediaType, Class<?> paramType) {
-        // LATER may be cached for speed.
+        // LATER optimization: may be cached for speed.
         MessageBodyReaderSet mbrs = this.subSet(mediaType).subSet(paramType);
         if (mbrs.isEmpty())
             return null;

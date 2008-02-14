@@ -760,7 +760,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                 methodIter.remove();
         }
         if (resourceMethods.isEmpty()) {
-            // LATER zurueckgeben, welche MediaTypes unterstuetzt werden.
+            // LATER return MediaTypes are supported.
             throw new CouldNotFindMethodException(errorRestletNotAcceptable,
                     "there is no java method on class "
                             + resourceClass.getName()
@@ -771,11 +771,6 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         // (b) and (c)
         ResourceMethod bestResourceMethod = getBestMethod(resourceMethods,
                 givenMediaType, accMediaTypes, httpMethod);
-        if (bestResourceMethod == null) {
-            // LATER keine Methode gefunden.
-            throw new RuntimeException(
-                    "Found no method, but there must be one.");
-        }
         MatchingResult mr = bestResourceMethod.getPathRegExp().match(u);
         addMrVarsToMap(mr, callContext);
         return new ResObjAndMeth(resObj, bestResourceMethod);
@@ -806,7 +801,9 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      * i.e. a method that explicitly lists one of the requested media types is
      * sorted before a method that lists *<!---->/*. Quality parameter values
      * are also used such that x/y;q=1.0 < x/y;q=0.7. <br/> See JSR-311 Spec,
-     * section 2.5, Part 3b+c
+     * section 2.5, Part 3b+c.
+     * <br/>
+     * Never returns null.
      * 
      * @param resourceMethods
      *                the resourceMethods that provide the required mediaType
@@ -833,7 +830,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         Map<ResourceMethod, List<MediaType>> mms = findMethodSupportsMime(
                 resourceMethods, ConsOrProdMime.CONSUME_MIME, givenMediaTypes);
         if (mms.isEmpty())
-            return null;
+            throw new WebApplicationException(500);
         if (mms.size() == 1)
             return Util.getFirstKey(mms);
         // check for method with best ProduceMime (secondary key)
@@ -841,7 +838,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         mms = findMethodSupportsMime(mms.keySet(), ConsOrProdMime.PRODUCE_MIME,
                 accMediaTypes);
         if (mms.isEmpty())
-            return null;
+            throw new WebApplicationException(500);
         if (mms.size() == 1)
             return Util.getFirstKey(mms);
         for (MediaType accMediaType : accMediaTypes) {
@@ -882,7 +879,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             if (bestMethod != null)
                 return bestMethod;
         }
-        return null;
+        throw new WebApplicationException(500);
     }
 
     /**
@@ -1302,7 +1299,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             mediaType = determineMediaType79(possMediaTypes, callContext
                     .getResponse());
         MultivaluedMap<String, Object> httpResponseHeaders = null;
-        // TODO Http-ResponseHeaders
+        // TODO Response Headers for MessageBodyWriter is null until now.
         return new JaxRsOutputRepresentation(entity, mediaType, mbw,
                 httpResponseHeaders);
     }

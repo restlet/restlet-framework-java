@@ -68,7 +68,7 @@ public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter> {
      * @return
      */
     public MessageBodyWriterSet subSet(Class<?> entityClass) {
-        // LATER may be cached for speed.
+        // LATER optimization: may be cached for speed.
         List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
         for (MessageBodyWriter mbw : this) {
             if (mbw.isWriteable(entityClass))
