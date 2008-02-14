@@ -83,6 +83,7 @@ public abstract class AbstractJaxRsWrapper {
     private static Collection<Class<? extends Annotation>> createValidAnnotations() {
         return Arrays.asList(Context.class, HeaderParam.class,
                 MatrixParam.class, QueryParam.class, PathParam.class);
+        // TODO @CookieParam
     }
 
     /**
@@ -253,7 +254,11 @@ public abstract class AbstractJaxRsWrapper {
         for (Annotation annotation : paramAnnotations) {
             Class<? extends Annotation> annotationType = annotation
                     .annotationType();
+            if (annotationType.equals(Context.class)) {
+                return callContext;
+            }
             if (annotationType.equals(HeaderParam.class)) {
+                // TODO @DefaultValue
                 String headerParamValue = Util.getHttpHeaders(
                         callContext.getRequest()).getFirstValue(
                         ((HeaderParam) annotation).value(), true);
@@ -261,23 +266,21 @@ public abstract class AbstractJaxRsWrapper {
                         false, jaxRsRouter);
             }
             if (annotationType.equals(PathParam.class)) {
+                // TODO @DefaultValue
                 String pathParamValue = callContext
                         .getLastTemplParamEnc((PathParam) annotation);
                 return convertParamValueFromParam(paramClass, pathParamValue,
                         leaveEncoded, jaxRsRouter);
             }
-            if (annotationType.equals(Context.class)) {
-                return callContext;
-                // TODO Jerome: I need to know if the restlet Request was
-                // authenticated.
-            }
             if (annotationType.equals(MatrixParam.class)) {
+                // TODO @DefaultValue
                 String pathParamValue = callContext
                         .getLastMatrixParamEnc((MatrixParam) annotation);
                 return convertParamValueFromParam(paramClass, pathParamValue,
                         leaveEncoded, jaxRsRouter);
             }
             if (annotationType.equals(QueryParam.class)) {
+                // TODO @DefaultValue
                 Form form = Converter.toFormEncoded(callContext.getRequest()
                         .getResourceRef().getQuery(), jaxRsRouter.getLogger());
                 String queryParamValue = form.getFirstValue(
@@ -285,6 +288,7 @@ public abstract class AbstractJaxRsWrapper {
                 return convertParamValueFromParam(paramClass, queryParamValue,
                         true, jaxRsRouter); // leaveEncoded = true -> not change
             }
+            // TODO @CookieParam
         }
         throw new IllegalOrNoAnnotationException("The " + indexForExcMessages
                 + ". parameter requires one of the following annotations: "

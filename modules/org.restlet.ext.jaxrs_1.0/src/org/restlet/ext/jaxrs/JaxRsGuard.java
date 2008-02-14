@@ -81,6 +81,7 @@ public class JaxRsGuard extends org.restlet.Guard {
      */
     @Override
     public void accept(Request request, Response response) {
+        // TODO Jerome: I need to know if the restlet Request was authenticated.
         Principal principal = null;
         ChallengeResponse challengeResponse = request.getChallengeResponse();
         if (challengeResponse != null) {
