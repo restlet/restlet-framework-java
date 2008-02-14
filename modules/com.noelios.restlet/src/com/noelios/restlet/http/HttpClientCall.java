@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
-import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;

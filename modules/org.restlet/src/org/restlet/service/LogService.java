@@ -158,11 +158,11 @@ public class LogService {
     /**
      * Indicates if the identity check (as specified by RFC1413) is enabled.
      * 
-     * @param enabled
+     * @param identityCheck
      *                True if the identity check is enabled.
      */
-    public void setIdentityCheck(boolean enabled) {
-        this.identityCheck = enabled;
+    public void setIdentityCheck(boolean identityCheck) {
+        this.identityCheck = identityCheck;
     }
 
 }
