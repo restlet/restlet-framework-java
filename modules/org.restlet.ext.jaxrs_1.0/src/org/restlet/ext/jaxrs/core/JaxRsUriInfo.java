@@ -51,13 +51,13 @@ public class JaxRsUriInfo implements UriInfo {
 
     private String baseUri;
 
-    private boolean readOnly = false;
-
     protected Reference reference;
+
+    private boolean readOnly = false;
 
     private List<PathSegment> pathSegmentsDecoded = null;
 
-    protected List<PathSegment> pathSegmentsEncoded = null;
+    private List<PathSegment> pathSegmentsEncoded = null;
 
     private MultivaluedMap<String, String> queryParametersDecoded;
 
@@ -115,18 +115,6 @@ public class JaxRsUriInfo implements UriInfo {
         if (!isChangeable())
             throw new IllegalStateException(
                     "The CallContext is no longer changeable");
-    }
-
-    /**
-     * Checks, if this object is readable. If not, a
-     * {@link IllegalStateException} is thrown.
-     * 
-     * @throws IllegalStateException
-     */
-    protected void checkReadable() throws IllegalStateException {
-        if (!isReadable())
-            throw new IllegalStateException(
-                    "The CallContext is not readable yet");
     }
 
     private List<PathSegment> createPathSegments(boolean decode) {
@@ -371,13 +359,12 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getTemplateParameters()
      */
     public MultivaluedMap<String, String> getTemplateParameters() {
-        checkReadable();
         if (this.templateParametersDecoded == null) {
             if (this.templateParametersEncoded == null)
                 return null;
             MultivaluedMapImpl<String, String> templParamsDec = new MultivaluedMapImpl<String, String>();
-            for (Map.Entry<String, List<String>> entryEnc : this
-                    .templateParametersEncoded.entrySet()) {
+            for (Map.Entry<String, List<String>> entryEnc : this.templateParametersEncoded
+                    .entrySet()) {
                 String keyDec = Reference.decode(entryEnc.getKey());
                 List<String> valuesEnc = entryEnc.getValue();
                 List<String> valuesDec = new ArrayList<String>(valuesEnc.size());
@@ -385,8 +372,11 @@ public class JaxRsUriInfo implements UriInfo {
                     valuesDec.add(Reference.decode(valueEnc));
                 templParamsDec.put(keyDec, valuesDec);
             }
-            this.templateParametersDecoded = UnmodifiableMultivaluedMap.get(
-                    templParamsDec, false);
+            UnmodifiableMultivaluedMap<String, String> tpd;
+            tpd = UnmodifiableMultivaluedMap.get(templParamsDec, false);
+            if (isChangeable())
+                return tpd;
+            this.templateParametersDecoded = tpd;
         }
         return this.templateParametersDecoded;
     }
@@ -404,7 +394,6 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getTemplateParameters(boolean)
      */
     public MultivaluedMap<String, String> getTemplateParameters(boolean decode) {
-        checkReadable();
         if (decode) {
             return getTemplateParameters();
         } else {
@@ -413,13 +402,11 @@ public class JaxRsUriInfo implements UriInfo {
         }
     }
 
-    /**
-     * @param templateParametersEncoded
-     *                the templateParametersEncoded to set
-     */
-    protected void setTemplateParametersEncoded(
-            MultivaluedMap<String, String> templateParametersEncoded) {
-        this.templateParametersEncoded = templateParametersEncoded;
+    @Override
+    public int hashCode() {
+        return this.getBaseUriStr().hashCode()
+                ^ this.getPathSegments().hashCode()
+                ^ this.getTemplateParameters().hashCode();
     }
 
     /**
@@ -431,27 +418,23 @@ public class JaxRsUriInfo implements UriInfo {
         return templateParametersEncoded;
     }
 
-    @Override
-    public int hashCode() {
-        return this.getBaseUriStr().hashCode()
-                ^ this.getPathSegments().hashCode()
-                ^ this.getTemplateParameters().hashCode();
-    }
-
     protected boolean isChangeable() {
         return !this.readOnly;
     }
 
-    protected boolean isReadable() {
-        // FIXME source sortieren
-        return this.readOnly;
-    }
-
     /**
-     * Sets the Context readonly. Write is now allowed. FIXME vielleicht lesen
-     * nur erlauben, wenn readonly.
+     * Sets the Context readonly. Write is now allowed.
      */
     public void setReadOnly() {
         this.readOnly = true;
+    }
+
+    /**
+     * @param templateParametersEncoded
+     *                the templateParametersEncoded to set
+     */
+    protected void setTemplateParametersEncoded(
+            MultivaluedMap<String, String> templateParametersEncoded) {
+        this.templateParametersEncoded = templateParametersEncoded;
     }
 }

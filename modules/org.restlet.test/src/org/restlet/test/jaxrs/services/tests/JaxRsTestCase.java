@@ -232,8 +232,12 @@ public abstract class JaxRsTestCase extends TestCase {
             throw new RuntimeException("no @Path available on " + jaxRsClass);
         if (!path.startsWith("/"))
             path = "/" + path;
-        if (subPath != null && subPath.length() > 0)
-            path += "/" + subPath;
+        if (subPath != null) {
+            if (subPath.startsWith(";"))
+                path += subPath;
+            else if (subPath.length() > 0)
+                path += "/" + subPath;
+        }
         reference.setPath(path);
         return reference;
     }

@@ -517,13 +517,13 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @return
      */
     public String getLastMatrixParamEnc(MatrixParam matrixParamAnnot) {
-        // TODO TESTEN @MarixParam
         String mpName = matrixParamAnnot.value();
-        for(int i = pathSegmentsEncoded.size()-1; i>= 0; i--)
+        List<PathSegment> pathSegments = getPathSegments(false);
+        for(int i = pathSegments.size()-1; i>= 0; i--)
         {
-            PathSegment pathSegment = pathSegmentsEncoded.get(i);
+            PathSegment pathSegment = pathSegments.get(i);
             List<String> mpValues = pathSegment.getMatrixParameters().get(mpName);
-            if(!mpValues.isEmpty())
+            if(mpValues != null && !mpValues.isEmpty())
                 return Util.getLastElement(mpValues);
         }
         return null;

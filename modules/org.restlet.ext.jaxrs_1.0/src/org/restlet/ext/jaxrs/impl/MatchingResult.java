@@ -22,9 +22,11 @@ import java.util.Map;
 
 import javax.ws.rs.Path;
 
+import org.restlet.ext.jaxrs.util.RemainingPath;
+
 /**
- * Wraps a result of a matching of a concrete path aganinst a path pattern.
- * @author Stephan
+ * Wraps a result of a matching of a concrete path against a path pattern.
+ * @author Stephan Koops
  *
  */
 public class MatchingResult {
@@ -32,7 +34,7 @@ public class MatchingResult {
 
     private String finalMatchingGroup;
 
-    private String finalCapturingGroup;
+    private RemainingPath finalCapturingGroup;
 
     private int numberOfCapturingGroups;
 
@@ -48,7 +50,7 @@ public class MatchingResult {
             int numberOfCapturingGroups) {
         this.variables = variables;
         this.finalMatchingGroup = finalMatchingGroup;
-        this.finalCapturingGroup = finalCapturingGroup;
+        this.finalCapturingGroup = new RemainingPath(finalCapturingGroup);
         this.numberOfCapturingGroups = numberOfCapturingGroups;
     }
 
@@ -71,7 +73,7 @@ public class MatchingResult {
      * 
      * @return Returns the final capturing group.
      */
-    public String getFinalCapturingGroup() {
+    public RemainingPath getFinalCapturingGroup() {
         return finalCapturingGroup;
     }
 

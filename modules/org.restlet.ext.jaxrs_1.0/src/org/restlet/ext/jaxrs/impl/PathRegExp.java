@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.ws.rs.Path;
 
+import org.restlet.ext.jaxrs.util.RemainingPath;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.util.Resolver;
 import org.restlet.util.Template;
@@ -86,20 +87,37 @@ public class PathRegExp {
     }
 
     /**
-     * @param givenPath
-     * @return Returns an MatchingResult, if the givenPath matches to this
+     * Checks if this regular expression matches the given remaining path.
+     * 
+     * @param remainingPath
+     * @return Returns an MatchingResult, if the remainingPath matches to this
+     *         template, or null, if not.
+     */
+    public MatchingResult match(String remainingPath) {
+        return this.match(new RemainingPath(remainingPath));
+    }
+
+    /**
+     * Checks if this regular expression matches the given remaining path.
+     * 
+     * @param remainingPath
+     * @return Returns an MatchingResult, if the remainingPath matches to this
      *         template, or null, if not.
      */
     @SuppressWarnings("unchecked")
-    public MatchingResult match(String givenPath) {
-        Map<String, String> variables = new HashMap<String, String>();
+    public MatchingResult match(RemainingPath remainingPath) {
+        // TODO JSR311: is it allowed, that @Path contains matrix parameters?
+        // this may result in non-determinism
+        // (e.g.: "path;mp1=xx" and "path;mp2=xx" request: "path;mp1=xx;mp2=xx")
+        String givenPath = remainingPath.getWithoutMatrixParams();
+        Map<String, String> templateVars = new HashMap<String, String>();
         boolean pathSuppl = !givenPath.endsWith("/");
         if (pathSuppl)
             givenPath += '/';
-        boolean matches = template.parse(givenPath, (Map) variables) >= 0;
+        boolean matches = template.parse(givenPath, (Map) templateVars) >= 0;
         if (!matches)
             return null;
-        String finalMatchingGroup = variables.remove(VARNAME_FUER_REST);
+        String finalMatchingGroup = templateVars.remove(VARNAME_FUER_REST);
         if (finalMatchingGroup.length() > 0) {
             if (pathSuppl && finalMatchingGroup.endsWith("/"))
                 finalMatchingGroup = finalMatchingGroup.substring(0,
@@ -107,15 +125,15 @@ public class PathRegExp {
             if (!finalMatchingGroup.startsWith("/"))
                 finalMatchingGroup = "/" + finalMatchingGroup;
         }
-        String finalCapturingGroup = variables.get(Util.getLastElement(template
-                .getVariableNames()));
+        String finalCapturingGroup = templateVars.get(Util
+                .getLastElement(template.getVariableNames()));
         // TODO JSR311: finalCapturingGroup habe ich noch nicht richtig
         // verstanden.
         if (finalCapturingGroup == null)
             finalCapturingGroup = ""; // TODO ob das stimmt, weiss ich nicht
         finalCapturingGroup = finalMatchingGroup;
-        return new MatchingResult(variables, finalMatchingGroup,
-                finalCapturingGroup, variables.size());
+        return new MatchingResult(templateVars, finalMatchingGroup,
+                finalCapturingGroup, templateVars.size());
     }
 
     /**
@@ -133,11 +151,11 @@ public class PathRegExp {
      * @param remainingPath
      * @return
      */
-    public boolean matchesWithEmpty(String remainingPath) {
+    public boolean matchesWithEmpty(RemainingPath remainingPath) {
         MatchingResult matchingResult = this.match(remainingPath);
         if (matchingResult == null)
             return false;
-        return Util.isEmptyOrSlash(matchingResult.getFinalCapturingGroup());
+        return matchingResult.getFinalCapturingGroup().isEmptyOrSlash();
     }
 
     /**

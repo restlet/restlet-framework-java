@@ -58,6 +58,7 @@ import org.restlet.ext.jaxrs.impl.MatchingResult;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
 import org.restlet.ext.jaxrs.provider.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.provider.StringProvider;
+import org.restlet.ext.jaxrs.util.RemainingPath;
 import org.restlet.ext.jaxrs.util.SortedMetadata;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.util.WrappedClassLoadException;
@@ -516,10 +517,9 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             CallContext callContext, SortedMetadata<MediaType> accMediaTypes)
             throws CouldNotFindMethodException, RequestHandledException {
         Request restletRequest = callContext.getRequest();
-        String uriRemainingPart = restletRequest.getResourceRef()
-                .getRemainingPart();
-        RrcAndRemPath rcat = identifyRootResourceClass(uriRemainingPart,
-                callContext);
+        RemainingPath u = new RemainingPath(restletRequest.getResourceRef()
+                .getRemainingPart());
+        RrcAndRemPath rcat = identifyRootResourceClass(u, callContext);
         ResObjAndRemPath resourceObjectAndPath = obtainObjectThatHandleRequest(
                 rcat, callContext);
         MediaType givenMediaType = restletRequest.getEntity().getMediaType();
@@ -542,11 +542,10 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      *                Restlet {@link Response}.
      * @throws CouldNotFindMethodException
      */
-    private RrcAndRemPath identifyRootResourceClass(String uriRemainingPart,
+    private RrcAndRemPath identifyRootResourceClass(RemainingPath u,
             CallContext callContext) throws CouldNotFindMethodException {
         // 1. Identify the root resource class:
         // (a)
-        String u = uriRemainingPart;
         // c: Set<Class>: root resource classes
         // e: Set<RegExp>
         // Map<UriTemplateRegExp, Class> eAndCs = new HashMap();
@@ -612,10 +611,9 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
     private ResObjAndRemPath obtainObjectThatHandleRequest(
             RrcAndRemPath rrcAndRemPath, CallContext callContext)
             throws CouldNotFindMethodException, RequestHandledException {
-        String u = rrcAndRemPath.u;
+        RemainingPath u = rrcAndRemPath.u;
         RootResourceClass resClass = rrcAndRemPath.rrc;
         PathRegExp rMatch = resClass.getPathRegExp();
-        // FIXME CallContext und allTemplateParamsEnc sauber handeln
         ResourceObject o;
         // LATER Do I use dynamic proxies, to inject instance variables?
         try {
@@ -630,7 +628,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         for (;;) // (j)
         {
             // (a) If U is null or '/' go to step 3
-            if (Util.isEmptyOrSlash(u)) {
+            if (u.isEmptyOrSlash()) {
                 return new ResObjAndRemPath(o, u);
             }
             // (b) Set C = class ofO,E = {}
@@ -703,10 +701,10 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         // 3. Identify the method that will handle the request:
         // (a)
         ResourceObject resObj = resObjAndRemPath.resourceObject;
-        String remainingPath = resObjAndRemPath.remainingPath;
+        RemainingPath u = resObjAndRemPath.u;
         // (a) 1
         Collection<ResourceMethod> resourceMethods = resObj.getResourceClass()
-                .getMethodsForPath(remainingPath);
+                .getMethodsForPath(u);
         if (resourceMethods.isEmpty())
             throw new CouldNotFindMethodException(
                     errorRestletResourceMethodNotFound);
@@ -716,7 +714,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         if (resourceMethods.isEmpty()) {
             if (httpMethod.equals(Method.OPTIONS)) {
                 Set<Method> allowedMethods = resObj.getResourceClass()
-                        .getAllowedMethods(remainingPath);
+                        .getAllowedMethods(u);
                 callContext.getResponse().getAllowedMethods().addAll(
                         allowedMethods);
                 throw new RequestHandledException();
@@ -755,7 +753,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                     "Found no method, but there must be one.");
         }
         MatchingResult mr = bestResourceMethod.getPathRegExp().match(
-                remainingPath);
+                u);
         addMrVarsToMap(mr, callContext);
         return new ResObjAndMeth(resObj, bestResourceMethod);
     }
@@ -1577,6 +1575,23 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
     }
 
     /**
+     * Structure to return the identiied {@link RootResourceClass}, the
+     * remaining path after identifying and the matched template parameters.
+     * 
+     * @author Stephan Koops
+     */
+    class RrcAndRemPath {
+        private RootResourceClass rrc;
+
+        private RemainingPath u;
+
+        RrcAndRemPath(RootResourceClass rrc, RemainingPath u) {
+            this.rrc = rrc;
+            this.u = u;
+        }
+    }
+
+    /**
      * Structure to return the obtained {@link ResourceObject}, the remaining
      * path after identifying the object and all matched template parameters.
      * 
@@ -1586,11 +1601,11 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
 
         private ResourceObject resourceObject;
 
-        private String remainingPath;
+        private RemainingPath u;
 
-        ResObjAndRemPath(ResourceObject resourceObject, String remainingPath) {
+        ResObjAndRemPath(ResourceObject resourceObject, RemainingPath u) {
             this.resourceObject = resourceObject;
-            this.remainingPath = remainingPath;
+            this.u = u;
         }
     }
 
@@ -1611,23 +1626,6 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                 ResourceMethod resourceMethod) {
             this.resourceObject = resourceObject;
             this.resourceMethod = resourceMethod;
-        }
-    }
-
-    /**
-     * Structure to return the identiied {@link RootResourceClass}, the
-     * remaining path after identifying and the matched template parameters.
-     * 
-     * @author Stephan Koops
-     */
-    class RrcAndRemPath {
-        private RootResourceClass rrc;
-
-        private String u;
-
-        RrcAndRemPath(RootResourceClass rrc, String u) {
-            this.rrc = rrc;
-            this.u = u;
         }
     }
 

@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.impl.MatchingResult;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
+import org.restlet.ext.jaxrs.util.RemainingPath;
 
 /**
  * @author Stephan Koops
@@ -72,13 +73,13 @@ public class PathRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals("", matchingResult.getFinalCapturingGroup());
+        assertEquals(new RemainingPath(""), matchingResult.getFinalCapturingGroup());
 
         regExpOneSegment1.match(VALID_PATH_2);
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals("", matchingResult.getFinalCapturingGroup());
+        assertEquals(new RemainingPath(""), matchingResult.getFinalCapturingGroup());
     }
 
     /**
@@ -91,13 +92,13 @@ public class PathRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals("", matchingResult.getFinalCapturingGroup());
+        assertEquals(new RemainingPath(""), matchingResult.getFinalCapturingGroup());
 
         matchingResult = regExpMultipleSegments1.match(VALID_PATH_2);
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals("", matchingResult.getFinalCapturingGroup());
+        assertEquals(new RemainingPath(""), matchingResult.getFinalCapturingGroup());
     }
 
     /**
@@ -114,7 +115,7 @@ public class PathRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals("", matchingResult.getFinalCapturingGroup());
+        assertEquals(new RemainingPath(""), matchingResult.getFinalCapturingGroup());
     }
 
     /**

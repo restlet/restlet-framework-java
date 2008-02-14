@@ -25,6 +25,7 @@ import junit.framework.TestSuite;
 import org.restlet.test.jaxrs.core.JaxRsPathSegmentTest;
 import org.restlet.test.jaxrs.core.JaxRsUriBuilderTest;
 import org.restlet.test.jaxrs.core.JaxRsUriInfoTest;
+import org.restlet.test.jaxrs.util.RemainingPathTests;
 import org.restlet.test.jaxrs.util.UtilTests;
 
 public class AllClassTests extends TestCase {
@@ -37,6 +38,7 @@ public class AllClassTests extends TestCase {
         mySuite.addTestSuite(JaxRsPathSegmentTest.class);
         mySuite.addTestSuite(JaxRsRouterTest.class);
         mySuite.addTestSuite(JaxRsUriBuilderTest.class);
+        mySuite.addTestSuite(RemainingPathTests.class);
         return mySuite;
     }
 }

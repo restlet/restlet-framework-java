@@ -31,7 +31,7 @@ import javax.ws.rs.Path;
 
 import org.restlet.data.Method;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
-import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.util.RemainingPath;
 
 /**
  * Instances represents a root resource class.
@@ -87,7 +87,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     /**
      * Caches the allowed methods (unmodifiable) for given remainingParts.
      */
-    private Map<String, Set<Method>> allowedMethods = new HashMap<String, Set<Method>>();
+    private Map<RemainingPath, Set<Method>> allowedMethods = new HashMap<RemainingPath, Set<Method>>();
 
     protected Class<?> jaxRsClass;
 
@@ -139,9 +139,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param remainingPath
      * @return an unmodifiable {@link Set} of the allowed methods.
      */
-    public Set<Method> getAllowedMethods(String remainingPath) {
+    public Set<Method> getAllowedMethods(RemainingPath remainingPath) {
         Set<Method> allowedMethods = this.allowedMethods.get(remainingPath);
-        if(allowedMethods != null)
+        if (allowedMethods != null)
             return allowedMethods;
         allowedMethods = new HashSet<Method>(6);
         for (ResourceMethod rm : getMethodsForPath(remainingPath))
@@ -171,7 +171,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      *                the path
      * @return The ist of ResourceMethods
      */
-    public Collection<ResourceMethod> getMethodsForPath(String remainingPath) {
+    public Collection<ResourceMethod> getMethodsForPath(
+            RemainingPath remainingPath) {
         // LATER results may be chached, if any method is returned.
         // The 404 case will be called rarely and produce a lot of cached data.
         List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
@@ -179,7 +180,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                 .getSubResourceMethods();
         for (SubResourceMethod method : subResourceMethods) {
             PathRegExp methodPath = method.getPathRegExp();
-            if (Util.isEmptyOrSlash(remainingPath)) {
+            if (remainingPath.isEmptyOrSlash()) {
                 if (methodPath.isEmptyOrSlash())
                     resourceMethods.add(method);
             } else {
