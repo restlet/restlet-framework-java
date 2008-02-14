@@ -61,13 +61,20 @@ public class RequestTest extends JaxRsTestCase {
 
     private static final Status PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED;
 
-    public static void main(String[] args) throws Exception {
-        runServerUntilKeyPressed(new RequestTest());
+    /**
+     * @param modifiedSince
+     * @param entityTag
+     * @return
+     */
+    private static Conditions createConditions(Date modifiedSince, Tag entityTag) {
+        Conditions conditions = new Conditions();
+        conditions.setModifiedSince(modifiedSince);
+        conditions.setMatch(Util.createList(entityTag));
+        return conditions;
     }
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return RequestService.class;
+    public static void main(String[] args) throws Exception {
+        runServerUntilKeyPressed(new RequestTest());
     }
 
     /**
@@ -79,43 +86,13 @@ public class RequestTest extends JaxRsTestCase {
     }
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    protected Class<?> getRootResourceClass() {
+        return RequestService.class;
     }
 
-    public void testSelectVariant() {
-        ClientInfo clientInfo = new ClientInfo();
-        List<Preference<Language>> accLangs = clientInfo.getAcceptedLanguages();
-        accLangs.add(new Preference<Language>(Language.SPANISH, 1f));
-        accLangs.add(new Preference<Language>(new Language("de"), 0.8f));
-        clientInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML, 0.5f));
-
-        Response response = get("selectVariants", clientInfo);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEqualMediaType(MediaType.TEXT_HTML, response.getEntity()
-                .getMediaType());
-        assertEquals(new Language("de"), Util.getOnlyElement(response
-                .getEntity().getLanguages()));
-        assertTrue("dimensions must contain " + Dimension.MEDIA_TYPE, response
-                .getDimensions().contains(Dimension.MEDIA_TYPE));
-        assertTrue("dimensions must contain " + Dimension.LANGUAGE, response
-                .getDimensions().contains(Dimension.LANGUAGE));
-
-        clientInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN, 1f));
-        response = get("selectVariants", clientInfo);
-        assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
-                .getMediaType());
-        assertEquals(new Language("de"), Util.getOnlyElement(response
-                .getEntity().getLanguages()));
-
-        accLangs.add(new Preference<Language>(Language.ENGLISH, 0.9f));
-        response = get("selectVariants", clientInfo);
-        assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
-                .getMediaType());
-        assertEquals(Language.ENGLISH, Util.getOnlyElement(response.getEntity()
-                .getLanguages()));
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
     }
 
     public void testDateAndEntityTag1Get() throws Exception {
@@ -128,18 +105,6 @@ public class RequestTest extends JaxRsTestCase {
         Conditions cond = createConditions(BEFORE, getDatastoreETag());
         Response response = put("date", cond);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-    }
-
-    /**
-     * @param modifiedSince
-     * @param entityTag
-     * @return
-     */
-    private static Conditions createConditions(Date modifiedSince, Tag entityTag) {
-        Conditions conditions = new Conditions();
-        conditions.setModifiedSince(modifiedSince);
-        conditions.setMatch(Util.createList(entityTag));
-        return conditions;
     }
 
     public void testDateAndEntityTag2Get() throws Exception {
@@ -362,5 +327,40 @@ public class RequestTest extends JaxRsTestCase {
 
         // LATER testen, was bei ungultigem Datum passiert:
         // If-Unmodified-Since-Header ignorieren.
+    }
+
+    public void testSelectVariant() {
+        ClientInfo clientInfo = new ClientInfo();
+        List<Preference<Language>> accLangs = clientInfo.getAcceptedLanguages();
+        accLangs.add(new Preference<Language>(Language.SPANISH, 1f));
+        accLangs.add(new Preference<Language>(new Language("de"), 0.8f));
+        clientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(MediaType.TEXT_HTML, 0.5f));
+
+        Response response = get("selectVariants", clientInfo);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEqualMediaType(MediaType.TEXT_HTML, response.getEntity()
+                .getMediaType());
+        assertEquals(new Language("de"), Util.getOnlyElement(response
+                .getEntity().getLanguages()));
+        assertTrue("dimensions must contain " + Dimension.MEDIA_TYPE, response
+                .getDimensions().contains(Dimension.MEDIA_TYPE));
+        assertTrue("dimensions must contain " + Dimension.LANGUAGE, response
+                .getDimensions().contains(Dimension.LANGUAGE));
+
+        clientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(MediaType.TEXT_PLAIN, 1f));
+        response = get("selectVariants", clientInfo);
+        assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
+                .getMediaType());
+        assertEquals(new Language("de"), Util.getOnlyElement(response
+                .getEntity().getLanguages()));
+
+        accLangs.add(new Preference<Language>(Language.ENGLISH, 0.9f));
+        response = get("selectVariants", clientInfo);
+        assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
+                .getMediaType());
+        assertEquals(Language.ENGLISH, Util.getOnlyElement(response.getEntity()
+                .getLanguages()));
     }
 }

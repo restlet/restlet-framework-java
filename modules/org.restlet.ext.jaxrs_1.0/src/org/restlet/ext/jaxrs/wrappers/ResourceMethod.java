@@ -67,8 +67,8 @@ public class ResourceMethod extends AbstractMethodWrapper {
             Class<? extends Annotation> annoType = annotation.annotationType();
             HttpMethod httpMethodAnnot = annoType
                     .getAnnotation(HttpMethod.class);
-            if (httpMethodAnnot != null) { // Annotation der Annotation der
-                // Methode ist HTTP-Methode
+            if (httpMethodAnnot != null) {
+                // Annotation of Annotation of the method is the HTTP-Method
                 String httpMethodName = httpMethodAnnot.value();
                 return org.restlet.data.Method.valueOf(httpMethodName);
             }
@@ -133,7 +133,8 @@ public class ResourceMethod extends AbstractMethodWrapper {
      *         Method. if the method is not annotated with {@link ProduceMime},
      *         than the {@link ProduceMime} of the Resource class is returned.
      *         If no {@link ProduceMime} can be found, an empty (also
-     *         unmodifiable) List will returned.<br/>This method never returns null.
+     *         unmodifiable) List will returned.<br/>This method never returns
+     *         null.
      */
     public List<MediaType> getProducedMimes() {
         if (producedMimes == null) {
@@ -166,10 +167,9 @@ public class ResourceMethod extends AbstractMethodWrapper {
         if (prodMimes.isEmpty())
             return true;
         for (MediaType producedMediaType : prodMimes) {
-            //for (Iterable<MediaType> accMediaTypes : accMediaTypess)
-                for (MediaType accMediaType : accMediaTypess)
-                    if (accMediaType.includes(producedMediaType))
-                        return true;
+            for (MediaType accMediaType : accMediaTypess)
+                if (Util.isCompatible(accMediaType, producedMediaType))
+                    return true;
         }
         return false;
     }

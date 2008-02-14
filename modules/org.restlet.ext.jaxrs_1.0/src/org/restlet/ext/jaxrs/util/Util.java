@@ -733,6 +733,7 @@ public class Util {
      * 
      * @param mediaType
      * @return
+     * @see #specificness(org.restlet.data.MediaType)
      */
     public static boolean isConcrete(org.restlet.data.MediaType mediaType) {
         // LATER move to Restlet API?
@@ -861,6 +862,32 @@ public class Util {
     }
 
     /**
+     * Returns a new {@link List}, which contains all
+     * {@link org.restlet.data.MediaType}s of the given List, sorted by it's
+     * concreteness, the concrete {@link org.restlet.data.MediaType} at the
+     * beginning.
+     * 
+     * @param mediaTypes
+     * @return
+     * @see Util#specificness(org.restlet.data.MediaType)
+     */
+    public static List<org.restlet.data.MediaType> sortByConcreteness(
+            Collection<org.restlet.data.MediaType> mediaTypes) {
+        List<org.restlet.data.MediaType> newList = new ArrayList<org.restlet.data.MediaType>(
+                mediaTypes.size());
+        for (org.restlet.data.MediaType mediaType : mediaTypes)
+            if (specificness(mediaType) > 0)
+                newList.add(mediaType);
+        for (org.restlet.data.MediaType mediaType : mediaTypes)
+            if (specificness(mediaType) == 0)
+                newList.add(mediaType);
+        for (org.restlet.data.MediaType mediaType : mediaTypes)
+            if (specificness(mediaType) < 0)
+                newList.add(mediaType);
+        return newList;
+    }
+
+    /**
      * Sorts the Metadata by it's quality into the Collections. The list is
      * ordered by the qualities, most wanted Metadata at first.
      * 
@@ -895,6 +922,7 @@ public class Util {
      *                <li>1 for any concrete type (contains no star)</li>
      *                <li>0 for the types (anything/*)</li>
      *                <li>-1 for '*<!---->/*</li>
+     * @see #isConcrete(org.restlet.data.MediaType)
      */
     public static int specificness(org.restlet.data.MediaType mediaType) {
         if (mediaType.equals(org.restlet.data.MediaType.ALL, true))

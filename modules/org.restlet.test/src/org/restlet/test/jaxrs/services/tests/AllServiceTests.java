@@ -27,6 +27,7 @@ public class AllServiceTests extends TestCase {
         TestSuite mySuite = new TestSuite();
         mySuite.setName("All service tests");
         mySuite.addTestSuite(CarTest.class);
+        mySuite.addTestSuite(DeterminingMediaTypeTest.class);
         mySuite.addTestSuite(HttpHeaderTest.class);
         mySuite.addTestSuite(PathParamTest.class);
         mySuite.addTestSuite(PathParamTest2.class);

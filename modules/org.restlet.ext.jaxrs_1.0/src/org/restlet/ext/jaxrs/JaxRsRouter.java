@@ -24,7 +24,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -897,7 +896,6 @@ public class JaxRsRouter extends Restlet {
         for (ResourceMethod resourceMethod : resourceMethods) {
             List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (MediaType resMethMediaType : mimes) {
-                // for (Iterable<MediaType> mediaTypes : mediaTypess)
                 for (MediaType mediaType : mediaTypess)
                     if (resMethMediaType.equals(mediaType, true))
                         returnMethods.put(resourceMethod, mimes);
@@ -928,7 +926,6 @@ public class JaxRsRouter extends Restlet {
         for (ResourceMethod resourceMethod : resourceMethods) {
             List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
             for (MediaType resMethMediaType : mimes) {
-                // for (Iterable<MediaType> mediaTypes : mediaTypess)
                 for (MediaType mediaType : mediaTypess) {
                     String resMethMainType = resMethMediaType.getMainType();
                     String wishedMainType = mediaType.getMainType();
@@ -1236,9 +1233,9 @@ public class JaxRsRouter extends Restlet {
             return null;
         Class<? extends Object> entityClass = entity.getClass();
         MessageBodyWriterSet mbws = this.messageBodyWriters.subSet(entityClass);
-        Set<MediaType> possMediaTypes;
+        List<MediaType> possMediaTypes;
         if (responseMediaType != null)
-            possMediaTypes = Collections.singleton(responseMediaType);
+            possMediaTypes = Collections.singletonList(responseMediaType);
         else
             possMediaTypes = determineMediaType16(resourceMethod, mbws,
                     accMediaTypes, restletResponse);
@@ -1275,13 +1272,13 @@ public class JaxRsRouter extends Restlet {
      * @return
      * @throws RequestHandledException
      */
-    private Set<MediaType> determineMediaType16(ResourceMethod resourceMethod,
+    private List<MediaType> determineMediaType16(ResourceMethod resourceMethod,
             MessageBodyWriterSet mbwsForEntityClass,
             SortedMetadata<MediaType> accMediaTypes, Response restletResponse)
             throws RequestHandledException {
         // 1. Gather the set of producible media types P:
         // (a) + (b)
-        Collection<MediaType> p = resourceMethod.getProducedMimes();
+        List<MediaType> p = resourceMethod.getProducedMimes();
         // 1. (c)
         if (p.isEmpty()) {
             p = new ArrayList<MediaType>();
@@ -1290,17 +1287,14 @@ public class JaxRsRouter extends Restlet {
         }
         // 2.
         if (p.isEmpty())
-            return Collections.singleton(MediaType.ALL);
+            return Collections.singletonList(MediaType.ALL);
         // 3. Obtain the acceptable media types A. If A = {}, set A = {'*/*'}
         if (accMediaTypes.isEmpty())
             accMediaTypes = SortedMetadata.getMediaTypeAll();
         // 4. Sort P and A: a is already sorted.
-        Comparator<MediaType> comp = Util.MEDIA_TYPE_COMP;
-        p = Util.createTreeSet(p, comp);
-        if(p.size() > 1)
-            "".toString();
+        p = Util.sortByConcreteness(p);
         // 5.
-        Set<MediaType> m = new HashSet<MediaType>();
+        List<MediaType> m = new ArrayList<MediaType>();
         for (MediaType prod : p)
             for (MediaType acc : accMediaTypes)
                 if (Util.isCompatible(prod, acc))
@@ -1323,7 +1317,7 @@ public class JaxRsRouter extends Restlet {
      * @return the determined {@link MediaType}
      * @throws RequestHandledException
      */
-    private MediaType determineMediaType79(Set<MediaType> m,
+    private MediaType determineMediaType79(List<MediaType> m,
             Response restletResponse) throws RequestHandledException {
         // 7.
         for (MediaType mediaType : m)
