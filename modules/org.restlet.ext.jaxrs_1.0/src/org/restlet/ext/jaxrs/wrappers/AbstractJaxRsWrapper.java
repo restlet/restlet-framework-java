@@ -275,10 +275,12 @@ public abstract class AbstractJaxRsWrapper {
                 // authenticated.
             }
             if (annotationType.equals(MatrixParam.class)) {
+                // TODO @Encoded
                 // TODO MatrixParameter
                 throw new NotYetImplementedException();
             }
             if (annotationType.equals(QueryParam.class)) {
+                // TODO @Encoded
                 String queryParamValue = restletRequest.getResourceRef()
                         .getQueryAsForm().getFirstValue(
                                 ((QueryParam) annotation).value());

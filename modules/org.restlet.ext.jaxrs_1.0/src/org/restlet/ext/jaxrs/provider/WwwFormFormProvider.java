@@ -43,8 +43,6 @@ import org.restlet.resource.Representation;
 @ProduceMime("application/x-www-form-urlencoded")
 public class WwwFormFormProvider extends AbstractProvider<Form> {
 
-    // TODO JSR311: wozu ist @Provider da?
-    
     /**
      * 
      */

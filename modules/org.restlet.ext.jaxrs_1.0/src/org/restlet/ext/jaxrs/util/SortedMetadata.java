@@ -6,12 +6,16 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
+import org.restlet.data.Preference;
 
 /**
- * TODO javadoc SortedMetadata
+ * SortedMetadata contains given Metadata, sorted by it's quality, Metadata with
+ * the highest quality first.
  * 
  * @author Stephan Koops
  * @param <T>
@@ -21,10 +25,30 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
     private List<Collection<T>> metadatas;
 
     /**
-     * 
+     * Creates a new SortedMetadata from the given Metadata.
+     * @param preferences
+     */
+    @SuppressWarnings("unchecked")
+    public SortedMetadata(Collection<Preference<T>> preferences) {
+        SortedMap<Float, Collection<T>> map = new TreeMap<Float, Collection<T>>(
+                Collections.reverseOrder());
+        for (Preference<T> preference : preferences) {
+            Float quality = preference.getQuality();
+            Collection<T> metadatas = map.get(quality);
+            if (metadatas == null) {
+                metadatas = new ArrayList<T>(2);
+                map.put(quality, metadatas);
+            }
+            metadatas.add(preference.getMetadata());
+        }
+        this.metadatas = new ArrayList<Collection<T>>(map.values());
+    }
+
+    /**
+     * Creates a new SortedMetadata from the sorted Metadata.
      * @param metadatas
      */
-    public SortedMetadata(List<Collection<T>> metadatas) {
+    private SortedMetadata(List<Collection<T>> metadatas) {
         this.metadatas = metadatas;
     }
 
@@ -128,10 +152,9 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
         return new SortedMetadata<MediaType>(Collections.singletonList(Util
                 .createColl(mediaType)));
     }
-    
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return this.metadatas.toString();
     }
 }

@@ -24,7 +24,6 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,7 +45,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.restlet.data.Form;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -885,33 +881,6 @@ public class Util {
             if (specificness(mediaType) < 0)
                 newList.add(mediaType);
         return newList;
-    }
-
-    /**
-     * Sorts the Metadata by it's quality into the Collections. The list is
-     * ordered by the qualities, most wanted Metadata at first.
-     * 
-     * @param preferences
-     * 
-     * @return Returns an unmodifiable List of Collections of Metadata
-     */
-    @SuppressWarnings("unchecked")
-    public static SortedMetadata<? extends Metadata> sortMetadataList(
-            Collection<Preference<? extends Metadata>> preferences) {
-        SortedMap<Float, Collection<Metadata>> map = new TreeMap<Float, Collection<Metadata>>(
-                Collections.reverseOrder());
-        for (Preference<? extends Metadata> preference : preferences) {
-            Float quality = preference.getQuality();
-            Collection<Metadata> metadatas = map.get(quality);
-            if (metadatas == null) {
-                metadatas = new ArrayList<Metadata>(2);
-                map.put(quality, metadatas);
-            }
-            metadatas.add(preference.getMetadata());
-        }
-        List arrayList = new ArrayList<Collection<? extends Metadata>>(map
-                .values());
-        return new SortedMetadata<Metadata>(arrayList);
     }
 
     /**

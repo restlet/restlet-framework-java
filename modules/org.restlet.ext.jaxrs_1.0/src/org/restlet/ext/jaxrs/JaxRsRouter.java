@@ -42,6 +42,7 @@ import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Preference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -467,10 +468,10 @@ public class JaxRsRouter extends Restlet {
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
-        @SuppressWarnings("unchecked")
-        SortedMetadata<MediaType> accMediaTypes = (SortedMetadata<MediaType>) Util
-                .sortMetadataList((Collection) request.getClientInfo()
-                        .getAcceptedMediaTypes());
+        List<Preference<MediaType>> acceptedMediaTypes = request.getClientInfo()
+                .getAcceptedMediaTypes();
+        SortedMetadata<MediaType> accMediaTypes = new SortedMetadata<MediaType>(
+                acceptedMediaTypes);
         try {
             try {
                 ResObjAndMeth resObjAndMeth;
@@ -1120,8 +1121,7 @@ public class JaxRsRouter extends Restlet {
      * @param restletResponse
      *                The restlet response
      * @param accMediaTypes
-     *                the accepted MediaType, see
-     *                {@link Util#sortMetadataList(Collection)}.
+     *                the accepted MediaType, see {@link SortedMetadata}.
      * @param resourceMethod
      *                The invokes method.
      * @throws RequestHandledException
@@ -1182,8 +1182,12 @@ public class JaxRsRouter extends Restlet {
             if (result instanceof javax.ws.rs.core.Response) {
                 jaxRsRespToRestletResp((javax.ws.rs.core.Response) result,
                         restletResponse, resourceMethod, accMediaTypes);
-                // TODO addMediaType etc.
                 // } else if(result instanceof URI) { // perhaps 201 or 303
+            } else if (result instanceof javax.ws.rs.core.Response.ResponseBuilder) {
+                javax.ws.rs.core.Response response = ((javax.ws.rs.core.Response.ResponseBuilder) result)
+                        .build();
+                jaxRsRespToRestletResp(response, restletResponse,
+                        resourceMethod, accMediaTypes);
             } else {
                 Representation entity = convertToRepresentation(result,
                         resourceMethod, accMediaTypes, restletResponse, null);
@@ -1265,7 +1269,7 @@ public class JaxRsRouter extends Restlet {
      *                {@link MessageBodyWriter}s, that support the entity
      *                class.
      * @param accMediaTypes
-     *                see {@link Util#sortMetadataList(Collection)}
+     *                see {@link SortedMetadata}
      * @param restletResponse
      *                The Restlet {@link Response}; needed for a not acceptable
      *                return.

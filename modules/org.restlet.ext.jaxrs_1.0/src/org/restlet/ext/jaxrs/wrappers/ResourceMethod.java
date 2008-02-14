@@ -21,7 +21,6 @@ package org.restlet.ext.jaxrs.wrappers;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -155,7 +154,7 @@ public class ResourceMethod extends AbstractMethodWrapper {
      * 
      * @param accMediaTypess
      *                The Media Types the client would accept, ordered by
-     *                quality. See {@link Util#sortMetadataList(Collection)}
+     *                quality. See {@link SortedMetadata}
      * @return Returns true, if the give MediaType is supported by the method,
      *         or no MediaType is given for the method, otherweise false.
      */
