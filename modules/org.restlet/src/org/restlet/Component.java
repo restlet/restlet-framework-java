@@ -18,7 +18,6 @@
 
 package org.restlet;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -422,17 +422,18 @@ public class Component extends Restlet {
     /**
      * Parse a configuration file and update the component's configuration.
      * 
-     * @param xmlConfigPath
-     *                the path to the xml config file.
+     * @param xmlConfigReference
+     *                the reference to the xml config file.
      */
-    public synchronized void parse(String xmlConfigPath) {
+    public Component(Reference xmlConfigReference) {
+        this();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(false);
         dbf.setValidating(false);
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Document document = db.parse(new FileInputStream(new File(
-                    xmlConfigPath)));
+            Document document = db.parse(new FileInputStream(
+                    new LocalReference(xmlConfigReference).getFile()));
 
             // Look for clients
             NodeList clientNodes = document.getElementsByTagName("client");
