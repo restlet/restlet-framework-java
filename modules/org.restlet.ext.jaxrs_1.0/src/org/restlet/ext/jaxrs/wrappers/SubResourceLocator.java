@@ -23,10 +23,10 @@ import java.lang.reflect.Method;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateRessourceException;
@@ -62,13 +62,10 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * 
      * @param resourceObject
      *                the wrapped resource object.
-     * @param allTemplParamsEnc
-     *                Contains all Parameters, that are read from the called
-     *                URI.
-     * @param restletRequest
-     *                the Restlet request
-     * @param restletResponse
-     *                the Restlet response
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
      * @param jaxRsRouter
      * @return Returns the wrapped sub resource object.
      * @throws InvocationTargetException
@@ -77,24 +74,22 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @throws RequestHandledException
      * @throws WebApplicationException
      * @throws IllegalOrNoAnnotationException
-     * @throws InstantiateRessourceException 
-     * @throws InstantiateParameterException 
+     * @throws InstantiateRessourceException
+     * @throws InstantiateParameterException
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
-            MultivaluedMap<String, String> allTemplParamsEnc,
-            Request restletRequest, Response restletResponse,
-            HiddenJaxRsRouter jaxRsRouter)
+            CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
             throws InvocationTargetException, IllegalOrNoAnnotationException,
             WebApplicationException, RequestHandledException,
-            NoMessageBodyReadersException, InstantiateRessourceException, InstantiateParameterException {
+            NoMessageBodyReadersException, InstantiateRessourceException,
+            InstantiateParameterException {
         Object[] args;
         Class<?>[] parameterTypes = this.javaMethod.getParameterTypes();
         if (parameterTypes.length == 0)
             args = new Object[0];
         else
             args = getParameterValues(javaMethod.getParameterAnnotations(),
-                    parameterTypes, restletRequest, restletResponse,
-                    allTemplParamsEnc, jaxRsRouter);
+                    parameterTypes, callContext, jaxRsRouter);
         Object subResourceObject;
         try {
             subResourceObject = javaMethod.invoke(resourceObject

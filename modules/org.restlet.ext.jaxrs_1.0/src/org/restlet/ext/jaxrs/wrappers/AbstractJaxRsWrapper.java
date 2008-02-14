@@ -37,17 +37,13 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.core.HttpContextImpl;
-import org.restlet.ext.jaxrs.core.UnmodifiableMultivaluedMap;
+import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.resource.Representation;
@@ -112,11 +108,10 @@ public abstract class AbstractJaxRsWrapper {
             return getParamValueForPrimitive(paramClass, paramValue,
                     jaxRsRouter);
         try {
-            Constructor<?> constructor = paramClass
-                    .getConstructor(String.class);
-            return constructor.newInstance(paramValue);
+            Constructor<?> constr = paramClass.getConstructor(String.class);
+            return constr.newInstance(paramValue);
         } catch (Exception e) {
-            // try valueOf(String)
+            // try valueOf(String) as next step
         }
         Method valueOf;
         try {
@@ -223,18 +218,13 @@ public abstract class AbstractJaxRsWrapper {
      *                annotations on the parameters
      * @param paramClass
      *                the wished type
-     * @param restletRequest
-     *                the Restlet request
-     * @param restletResponse
-     *                the Restlet response
-     * @param context
-     *                an already created HttpContextImpl and returned or null
-     * @param allTemplParamsEnc
-     *                Contains all Parameters, that are read from the called
-     *                URI.
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
+     * @param jaxRsRouter
      * @param indexForExcMessages
      *                the index of the parameter, for exception messages.
-     * @param jaxRsRouter
      * @return the parameter value
      * @throws IllegalOrNoAnnotationException
      *                 Thrown, when no valid annotation was found. For
@@ -244,48 +234,43 @@ public abstract class AbstractJaxRsWrapper {
      * @throws WebApplicationException
      */
     private static Object getParameterValue(Annotation[] paramAnnotations,
-            Class<?> paramClass, Request restletRequest,
-            Response restletResponse, HttpContextImpl context,
-            MultivaluedMap<String, String> allTemplParamsEnc,
-            int indexForExcMessages, HiddenJaxRsRouter jaxRsRouter)
+            Class<?> paramClass, CallContext callContext,
+            HiddenJaxRsRouter jaxRsRouter, int indexForExcMessages)
             throws IllegalOrNoAnnotationException,
             InstantiateParameterException, WebApplicationException {
         for (Annotation annotation : paramAnnotations) {
             Class<? extends Annotation> annotationType = annotation
                     .annotationType();
             if (annotationType.equals(HeaderParam.class)) {
-                String headerParamValue = Util
-                        .getHttpHeaders(restletRequest)
-                        .getFirstValue(((HeaderParam) annotation).value(), true);
+                String headerParamValue = Util.getHttpHeaders(
+                        callContext.getRequest()).getFirstValue(
+                        ((HeaderParam) annotation).value(), true);
                 return convertParamValueFromParam(paramClass, headerParamValue,
                         jaxRsRouter);
             }
             if (annotationType.equals(PathParam.class)) {
-                String pathParamValue = allTemplParamsEnc
-                        .getFirst(((PathParam) annotation).value());
-                // TODO PathParam: @Encode verwenden
+                String pathParamValue = callContext
+                        .getLastTemplParamEnc((PathParam) annotation);
+                // FIXME @Encode in PathParam verwenden
                 return convertParamValueFromParam(paramClass, pathParamValue,
                         jaxRsRouter);
             }
             if (annotationType.equals(Context.class)) {
-                if (context != null)
-                    return context;
-                return new HttpContextImpl(restletRequest,
-                        new UnmodifiableMultivaluedMap<String, String>(
-                                allTemplParamsEnc, false), restletResponse,
-                        jaxRsRouter.getAuthenticator());
+                return callContext;
                 // TODO Jerome: I need to know if the restlet Request was
                 // authenticated.
             }
             if (annotationType.equals(MatrixParam.class)) {
-                // TODO @Encoded
-                // TODO MatrixParameter
-                throw new NotYetImplementedException();
+                String pathParamValue = callContext
+                        .getLastMatrixParamEnc((MatrixParam) annotation);
+                // FIXME @Encode in MatrixParam verwenden
+                return convertParamValueFromParam(paramClass, pathParamValue,
+                        jaxRsRouter);
             }
             if (annotationType.equals(QueryParam.class)) {
-                // TODO @Encoded
-                String queryParamValue = restletRequest.getResourceRef()
-                        .getQueryAsForm().getFirstValue(
+                // FIXME @Encoded: Form ist automatisch decodiert
+                String queryParamValue = callContext.getRequest()
+                        .getResourceRef().getQueryAsForm().getFirstValue(
                                 ((QueryParam) annotation).value());
                 return convertParamValueFromParam(paramClass, queryParamValue,
                         jaxRsRouter);
@@ -304,13 +289,10 @@ public abstract class AbstractJaxRsWrapper {
      *                constructor.
      * @param parameterTypes
      *                the array of types for the method or constructor.
-     * @param restletRequest
-     *                the Restlet request
-     * @param restletResponse
-     *                the Restlet response
-     * @param allTemplParamsEnc
-     *                Contains all Parameters, that are read from the called
-     *                URI.
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
      * @param authenticator
      *                Authenticator for roles, see
      *                {@link SecurityContext#isUserInRole(String)}
@@ -326,9 +308,7 @@ public abstract class AbstractJaxRsWrapper {
      */
     protected static Object[] getParameterValues(
             Annotation[][] parameterAnnotationss, Class<?>[] parameterTypes,
-            Request restletRequest, Response restletResponse,
-            MultivaluedMap<String, String> allTemplParamsEnc,
-            HiddenJaxRsRouter jaxRsRouter)
+            CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
             throws IllegalOrNoAnnotationException,
             InstantiateParameterException, RequestHandledException,
             NoMessageBodyReadersException, WebApplicationException {
@@ -337,38 +317,34 @@ public abstract class AbstractJaxRsWrapper {
             return new Object[0];
         Object[] args = new Object[paramNo];
         boolean annotRequired = false;
-        HttpContextImpl httpContext = null; // cached
         for (int i = 0; i < args.length; i++) {
             Class<?> paramType = parameterTypes[i];
             Object arg;
             try {
                 arg = getParameterValue(parameterAnnotationss[i], paramType,
-                        restletRequest, restletResponse, httpContext,
-                        allTemplParamsEnc, i, jaxRsRouter);
-                if (httpContext == null && arg instanceof HttpContextImpl)
-                    httpContext = (HttpContextImpl) arg;
+                        callContext, jaxRsRouter, i);
             } catch (IllegalOrNoAnnotationException ionae) {
                 if (annotRequired)
                     throw ionae;
                 annotRequired = true;
-                MessageBodyReaderSet mbrs = jaxRsRouter.getMessageBodyReaders();
-                if (mbrs == null) {
-                    throw new NoMessageBodyReadersException();
-                }
-                Representation entity = restletRequest.getEntity();
+                Representation entity = callContext.getRequest().getEntity();
                 if (entity == null) {
                     arg = null;
                 } else {
                     MediaType mediaType = entity.getMediaType();
+                    MessageBodyReaderSet mbrs = jaxRsRouter
+                            .getMessageBodyReaders();
+                    if (mbrs == null)
+                        throw new NoMessageBodyReadersException();
                     MessageBodyReader mbr = mbrs.getBest(mediaType, paramType);
                     if (mbr == null) {
                         // TODO JSR311: what, if no MessageBodyReader?
-                        restletResponse
-                                .setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+                        callContext.getResponse().setStatus(
+                                Status.CLIENT_ERROR_NOT_ACCEPTABLE);
                         throw new RequestHandledException();
                     }
                     MultivaluedMap<String, String> httpHeaders = Util
-                            .getJaxRsHttpHeaders(restletRequest);
+                            .getJaxRsHttpHeaders(callContext.getRequest());
                     try {
                         javax.ws.rs.core.MediaType jaxRsMediaType = Converter
                                 .toJaxRsMediaType(mediaType, entity

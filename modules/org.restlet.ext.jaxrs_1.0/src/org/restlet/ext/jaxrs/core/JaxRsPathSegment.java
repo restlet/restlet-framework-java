@@ -194,8 +194,10 @@ public class JaxRsPathSegment implements PathSegment {
             MultivaluedMap<String, String> matrixParameters) {
         this.path = path;
         this.unmodifiable = unmodifiable;
-        if(unmodifiable && !(matrixParameters instanceof UnmodifiableMultivaluedMap))
-            this.matrixParameters = new UnmodifiableMultivaluedMap<String, String>(matrixParameters, false);
+        if (unmodifiable
+                && !(matrixParameters instanceof UnmodifiableMultivaluedMap))
+            this.matrixParameters = UnmodifiableMultivaluedMap.get(matrixParameters,
+                    false);
         this.matrixParameters = matrixParameters;
         this.matrParamEncoded = null;
         // the other instance variables will not be used, so forget them
@@ -262,7 +264,7 @@ public class JaxRsPathSegment implements PathSegment {
      *                new matrix parameters
      */
     public void setMatrixParameters(MultivaluedMap<String, String> matrixParams) {
-        if(unmodifiable)
+        if (unmodifiable)
             throw new IllegalStateException("This instance is not modifiable");
         this.matrixParameters = matrixParams;
     }

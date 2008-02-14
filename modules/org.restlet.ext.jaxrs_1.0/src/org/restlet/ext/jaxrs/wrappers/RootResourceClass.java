@@ -29,12 +29,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
@@ -129,12 +128,10 @@ public class RootResourceClass extends ResourceClass {
     /**
      * Creates an instance of the root resource class.
      * 
-     * @param allTemplParamsEnc
-     *                all template parameters, encoded
-     * @param restletRequ
-     *                Th restlet request
-     * @param restletResponse
-     *                The Restlet response.
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
      * @param jaxRsRouter
      * @return
      * @throws InstantiateParameterException
@@ -143,15 +140,14 @@ public class RootResourceClass extends ResourceClass {
      * @throws InstantiateRootRessourceException
      * @throws IllegalOrNoAnnotationException
      */
-    public ResourceObject createInstance(
-            MultivaluedMap<String, String> allTemplParamsEnc,
-            Request restletRequ, Response restletResponse,
-            HiddenJaxRsRouter jaxRsRouter) throws InstantiateParameterException,
+    public ResourceObject createInstance(CallContext callContext,
+            HiddenJaxRsRouter jaxRsRouter)
+            throws InstantiateParameterException,
             IllegalOrNoAnnotationException, InstantiateRootRessourceException,
             RequestHandledException, InvocationTargetException {
         Constructor<?> constructor = this.constructor;
-        Object newInstance = createInstance(constructor, allTemplParamsEnc,
-                restletRequ, restletResponse, jaxRsRouter);
+        Object newInstance = createInstance(constructor, callContext,
+                jaxRsRouter);
         return new ResourceObject(newInstance, this);
     }
 
@@ -160,12 +156,10 @@ public class RootResourceClass extends ResourceClass {
      * 
      * @param constructor
      *                the constructor to create an instance with.
-     * @param allTemplParamsEnc
-     *                all template parameters, encoded
-     * @param restletRequ
-     *                The restlet request
-     * @param restletResponse
-     *                The Restlet response.
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
      * @param jaxRsRouter
      * @return
      * @throws IllegalOrNoAnnotationException
@@ -176,11 +170,10 @@ public class RootResourceClass extends ResourceClass {
      * @throws InvocationTargetException
      */
     public static Object createInstance(Constructor<?> constructor,
-            MultivaluedMap<String, String> allTemplParamsEnc,
-            Request restletRequ, Response restletResponse,
-            HiddenJaxRsRouter jaxRsRouter) throws IllegalOrNoAnnotationException,
-            RequestHandledException, InstantiateParameterException,
-            InstantiateRootRessourceException, InvocationTargetException {
+            CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
+            throws IllegalOrNoAnnotationException, RequestHandledException,
+            InstantiateParameterException, InstantiateRootRessourceException,
+            InvocationTargetException {
         Object[] args;
         if (constructor.getParameterTypes().length == 0) {
             args = new Object[0];
@@ -188,8 +181,7 @@ public class RootResourceClass extends ResourceClass {
             try {
                 args = getParameterValues(
                         constructor.getParameterAnnotations(), constructor
-                                .getParameterTypes(), restletRequ,
-                        restletResponse, allTemplParamsEnc, jaxRsRouter);
+                                .getParameterTypes(), callContext, jaxRsRouter);
             } catch (NoMessageBodyReadersException e) {
                 throw new IllegalOrNoAnnotationException(
                         "the root resource class constructor ("

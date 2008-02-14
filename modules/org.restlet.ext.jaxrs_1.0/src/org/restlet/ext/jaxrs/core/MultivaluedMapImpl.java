@@ -18,12 +18,14 @@
 
 package org.restlet.ext.jaxrs.core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
+
+import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * Implementation of the JAX-RS interface {@link MultivaluedMap}
@@ -52,8 +54,10 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements
      *                cloned.
      */
     public MultivaluedMapImpl(MultivaluedMap<K, V> old) {
-        for (Map.Entry<K, List<V>> entry : old.entrySet())
-            this.put(entry.getKey(), new ArrayList<V>(entry.getValue()));
+        for (Map.Entry<K, List<V>> entry : old.entrySet()) {
+            List<V> value = entry.getValue();
+            this.put(entry.getKey(), new LinkedList<V>(value));
+        }
     }
 
     /**
@@ -68,7 +72,7 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements
     public void add(K key, V value) {
         List<V> list = this.get(key);
         if (list == null) {
-            list = new ArrayList<V>(1);
+            list = new LinkedList<V>();
             this.put(key, list);
         }
         list.add(value);
@@ -97,6 +101,21 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements
         List<V> list = this.get(key);
         if (list == null || list.isEmpty())
             return null;
+        return Util.getFirstElement(list);
+    }
+
+    /**
+     * A shortcut to get the last value of the supplied key.
+     * 
+     * @param key
+     *                the key
+     * @return the last value for the specified key or null if the key is not
+     *         in the map.
+     */
+    public V getLast(K key) {
+        List<V> list = this.get(key);
+        if (list == null || list.isEmpty())
+            return null;
         return list.get(0);
     }
 
@@ -111,7 +130,7 @@ public class MultivaluedMapImpl<K, V> extends HashMap<K, List<V>> implements
      * @see MultivaluedMap#putSingle(Object, Object)
      */
     public void putSingle(K key, V value) {
-        List<V> list = new ArrayList<V>(1);
+        List<V> list = new LinkedList<V>();
         list.add(value);
         this.put(key, list);
     }

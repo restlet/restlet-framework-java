@@ -49,31 +49,38 @@ public class JaxRsUriInfo implements UriInfo {
 
     private static Logger logger = Logger.getLogger("JaxRsUriInfo.unexpected");
 
+    private String baseUri;
+
+    private boolean readOnly = false;
+
     protected Reference reference;
 
-    private UnmodifiableMultivaluedMap<String, String> queryParametersDecoded;
+    private List<PathSegment> pathSegmentsDecoded = null;
 
-    private UnmodifiableMultivaluedMap<String, String> queryParametersEncoded;
+    protected List<PathSegment> pathSegmentsEncoded = null;
 
-    protected UnmodifiableMultivaluedMap<String, String> templateParametersDecoded;
+    private MultivaluedMap<String, String> queryParametersDecoded;
+
+    private MultivaluedMap<String, String> queryParametersEncoded;
+
+    private MultivaluedMap<String, String> templateParametersDecoded;
 
     /** is null, if no templateParameters given on creation */
-    protected UnmodifiableMultivaluedMap<String, String> templateParametersEncoded;
+    private MultivaluedMap<String, String> templateParametersEncoded;
 
     /**
-     * Creates a new UriInfo.
+     * Creates a new UriInfo. When using this constructor, the
+     * templateParameters are not available.
      * 
      * @param reference
      *                The Restlet reference that will be wrapped. Must not be
-     *                null.
-     * @param templateParametersEncoded
-     *                The encoded parameters of the path. If null, than the
-     *                templateParameters are not available.
+     *                null and must have a base reference, see
+     *                {@link Reference#getBaseRef()}.
+     * 
+     * @see #JaxRsUriInfo(Reference, MultivaluedMap)
      */
-    public JaxRsUriInfo(Reference reference,
-            UnmodifiableMultivaluedMap<String, String> templateParametersEncoded) {
-        this(reference);
-        this.templateParametersEncoded = templateParametersEncoded;
+    public JaxRsUriInfo(Reference reference) {
+        this(reference, true);
     }
 
     /**
@@ -82,94 +89,44 @@ public class JaxRsUriInfo implements UriInfo {
      * 
      * @param reference
      *                The Restlet reference that will be wrapped. Must not be
-     *                null.
+     *                null and must have a base reference, see
+     *                {@link Reference#getBaseRef()}.
+     * @param readOnly
      * 
      * @see #JaxRsUriInfo(Reference, MultivaluedMap)
      */
-    public JaxRsUriInfo(Reference reference) {
+    protected JaxRsUriInfo(Reference reference, boolean readOnly) {
         if (reference == null)
             throw new IllegalArgumentException("The reference must not be null");
         if (reference.getBaseRef() == null)
             throw new IllegalArgumentException(
                     "The reference must contains a baseRef");
         this.reference = reference;
+        this.readOnly = readOnly;
     }
 
     /**
-     * Get the path of the current request relative to the base URI as a string.
-     * All sequences of escaped octets are decoded, equivalent to
-     * <code>getPath(true)</code>.
+     * Checks, if this object is changeable. If not, a
+     * {@link IllegalStateException} is thrown.
      * 
-     * @return the relative URI path.
-     * @see UriInfo#getPath()
+     * @throws IllegalStateException
      */
-    public String getPath() {
-        return getPath(true);
+    protected void checkChangeable() throws IllegalStateException {
+        if (!isChangeable())
+            throw new IllegalStateException(
+                    "The CallContext is no longer changeable");
     }
 
     /**
-     * Get the path of the current request relative to the base URI as a string.
+     * Checks, if this object is readable. If not, a
+     * {@link IllegalStateException} is thrown.
      * 
-     * @param decode
-     *                controls whether sequences of escaped octets are decoded
-     *                (true) or not (false).
-     * @return the relative URI path.
-     * @see UriInfo#getPath(boolean)
+     * @throws IllegalStateException
      */
-    public String getPath(boolean decode) {
-        String path = this.reference.getRelativeRef().toString(true, true);
-        if (!decode)
-            return path;
-        return Reference.decode(path);
-    }
-
-    /**
-     * Get the path of the current request relative to the base URI as a list of
-     * {@link PathSegment}. This method is useful when the path needs to be
-     * parsed, particularly when matrix parameters may be present in the path.
-     * All sequences of escaped octets are decoded, equivalent to
-     * <code>getPathSegments(true)</code>.
-     * 
-     * @return an unmodifiable list of {@link PathSegment}. The matrix
-     *         parameter map of each path segment is also unmodifiable.
-     * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
-     * @see PathSegment
-     * @see UriInfo#getPathSegments()
-     */
-    public List<PathSegment> getPathSegments() {
-        return getPathSegments(true);
-    }
-
-    private List<PathSegment> pathSegmentsEncoded = null;
-
-    private List<PathSegment> pathSegmentsDecoded = null;
-
-    /**
-     * Get the path of the current request relative to the base URI as a list of
-     * {@link PathSegment}. This method is useful when the path needs to be
-     * parsed, particularly when matrix parameters may be present in the path.
-     * 
-     * @param decode
-     *                controls whether sequences of escaped octets are decoded
-     *                (true) or not (false).
-     * @return an unmodifiable list of {@link PathSegment}. The matrix
-     *         parameter map of each path segment is also unmodifiable.
-     * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
-     * @see PathSegment
-     * @see UriInfo#getPathSegments(boolean)
-     */
-    public List<PathSegment> getPathSegments(boolean decode) {
-        if (decode) {
-            if (this.pathSegmentsDecoded == null)
-                this.pathSegmentsDecoded = createPathSegments(decode);
-            return pathSegmentsDecoded;
-        } else {
-            if (this.pathSegmentsEncoded == null)
-                this.pathSegmentsEncoded = createPathSegments(decode);
-            return pathSegmentsEncoded;
-        }
+    protected void checkReadable() throws IllegalStateException {
+        if (!isReadable())
+            throw new IllegalStateException(
+                    "The CallContext is not readable yet");
     }
 
     private List<PathSegment> createPathSegments(boolean decode) {
@@ -178,30 +135,26 @@ public class JaxRsUriInfo implements UriInfo {
                 .size());
         int l = segments.size();
         for (int i = 0; i < l; i++)
-            pathSegments.add(new JaxRsPathSegment(segments.get(i), true, decode,
-                    false, false, i));
+            pathSegments.add(new JaxRsPathSegment(segments.get(i), true,
+                    decode, false, false, i));
         return Collections.unmodifiableList(pathSegments);
     }
 
-    /**
-     * @see UriInfo#getRequestUri()
-     */
-    public URI getRequestUri() {
-        try {
-            return new URI(reference.toString(true, true));
-        } catch (URISyntaxException e) {
-            throw Util.handleException(e, logger, "Could not create URI");
-        }
-    }
-
-    /**
-     * Get the absolute request URI in the form of a UriBuilder.
-     * 
-     * @return a UriBuilder initialized with the absolute request URI.
-     * @see UriInfo#getRequestUriBuilder()
-     */
-    public UriBuilder getRequestUriBuilder() {
-        return UriBuilder.fromUri(getRequestUri());
+    @Override
+    public boolean equals(Object anotherObject) {
+        if (this == anotherObject)
+            return true;
+        if (!(anotherObject instanceof UriInfo))
+            return false;
+        UriInfo other = (UriInfo) anotherObject;
+        if (!this.getBaseUri().equals(other.getBaseUri()))
+            return false;
+        if (!this.getPathSegments().equals(other.getPathSegments()))
+            return false;
+        if (!Util.equals(this.getTemplateParameters(), other
+                .getTemplateParameters()))
+            return false;
+        return true;
     }
 
     /**
@@ -255,7 +208,17 @@ public class JaxRsUriInfo implements UriInfo {
         }
     }
 
-    private String baseUri;
+    /**
+     * Get the absolute path of the request in the form of a UriBuilder. This
+     * includes everything preceding the path (host, port etc) but excludes
+     * query parameters and fragment.
+     * 
+     * @return a UriBuilder initialized with the absolute path of the request.
+     * @see UriInfo#getAbsolutePathBuilder()
+     */
+    public UriBuilder getBaseUriBuilder() {
+        return UriBuilder.fromPath(getBaseUriStr());
+    }
 
     private String getBaseUriStr() {
         if (this.baseUri == null) {
@@ -267,15 +230,76 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
-     * Get the absolute path of the request in the form of a UriBuilder. This
-     * includes everything preceding the path (host, port etc) but excludes
-     * query parameters and fragment.
+     * Get the path of the current request relative to the base URI as a string.
+     * All sequences of escaped octets are decoded, equivalent to
+     * <code>getPath(true)</code>.
      * 
-     * @return a UriBuilder initialized with the absolute path of the request.
-     * @see UriInfo#getAbsolutePathBuilder()
+     * @return the relative URI path.
+     * @see UriInfo#getPath()
      */
-    public UriBuilder getBaseUriBuilder() {
-        return UriBuilder.fromPath(getBaseUriStr());
+    public String getPath() {
+        return getPath(true);
+    }
+
+    /**
+     * Get the path of the current request relative to the base URI as a string.
+     * 
+     * @param decode
+     *                controls whether sequences of escaped octets are decoded
+     *                (true) or not (false).
+     * @return the relative URI path.
+     * @see UriInfo#getPath(boolean)
+     */
+    public String getPath(boolean decode) {
+        String path = this.reference.getRelativeRef().toString(true, true);
+        if (!decode)
+            return path;
+        return Reference.decode(path);
+    }
+
+    /**
+     * Get the path of the current request relative to the base URI as a list of
+     * {@link PathSegment}. This method is useful when the path needs to be
+     * parsed, particularly when matrix parameters may be present in the path.
+     * All sequences of escaped octets are decoded, equivalent to
+     * <code>getPathSegments(true)</code>.
+     * 
+     * @return an unmodifiable list of {@link PathSegment}. The matrix
+     *         parameter map of each path segment is also unmodifiable.
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see PathSegment
+     * @see UriInfo#getPathSegments()
+     */
+    public List<PathSegment> getPathSegments() {
+        return getPathSegments(true);
+    }
+
+    /**
+     * Get the path of the current request relative to the base URI as a list of
+     * {@link PathSegment}. This method is useful when the path needs to be
+     * parsed, particularly when matrix parameters may be present in the path.
+     * 
+     * @param decode
+     *                controls whether sequences of escaped octets are decoded
+     *                (true) or not (false).
+     * @return an unmodifiable list of {@link PathSegment}. The matrix
+     *         parameter map of each path segment is also unmodifiable.
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see PathSegment
+     * @see UriInfo#getPathSegments(boolean)
+     */
+    public List<PathSegment> getPathSegments(boolean decode) {
+        if (decode) {
+            if (this.pathSegmentsDecoded == null)
+                this.pathSegmentsDecoded = createPathSegments(decode);
+            return pathSegmentsDecoded;
+        } else {
+            if (this.pathSegmentsEncoded == null)
+                this.pathSegmentsEncoded = createPathSegments(decode);
+            return pathSegmentsEncoded;
+        }
     }
 
     /**
@@ -306,10 +330,33 @@ public class JaxRsUriInfo implements UriInfo {
             return getQueryParameters();
         if (queryParametersEncoded == null) {
             Form queryForm = new Form(reference.getQuery(), null);
-            // TODO Create patch for the engine that no decoding is wished. (Email 2008-02-06)
-            queryParametersEncoded = UnmodifiableMultivaluedMap.getFromForm(queryForm, false);
+            // TODO Create patch for the engine that no decoding is wished.
+            // (Email 2008-02-06)
+            queryParametersEncoded = UnmodifiableMultivaluedMap.getFromForm(
+                    queryForm, false);
         }
         return queryParametersEncoded;
+    }
+
+    /**
+     * @see UriInfo#getRequestUri()
+     */
+    public URI getRequestUri() {
+        try {
+            return new URI(reference.toString(true, true));
+        } catch (URISyntaxException e) {
+            throw Util.handleException(e, logger, "Could not create URI");
+        }
+    }
+
+    /**
+     * Get the absolute request URI in the form of a UriBuilder.
+     * 
+     * @return a UriBuilder initialized with the absolute request URI.
+     * @see UriInfo#getRequestUriBuilder()
+     */
+    public UriBuilder getRequestUriBuilder() {
+        return UriBuilder.fromUri(getRequestUri());
     }
 
     /**
@@ -324,12 +371,13 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getTemplateParameters()
      */
     public MultivaluedMap<String, String> getTemplateParameters() {
+        checkReadable();
         if (this.templateParametersDecoded == null) {
             if (this.templateParametersEncoded == null)
                 return null;
-            MultivaluedMap<String, String> templParamsDec = new MultivaluedMapImpl<String, String>();
-            for (Map.Entry<String, List<String>> entryEnc : this.templateParametersEncoded
-                    .entrySet()) {
+            MultivaluedMapImpl<String, String> templParamsDec = new MultivaluedMapImpl<String, String>();
+            for (Map.Entry<String, List<String>> entryEnc : this
+                    .templateParametersEncoded.entrySet()) {
                 String keyDec = Reference.decode(entryEnc.getKey());
                 List<String> valuesEnc = entryEnc.getValue();
                 List<String> valuesDec = new ArrayList<String>(valuesEnc.size());
@@ -337,7 +385,8 @@ public class JaxRsUriInfo implements UriInfo {
                     valuesDec.add(Reference.decode(valueEnc));
                 templParamsDec.put(keyDec, valuesDec);
             }
-            this.templateParametersDecoded = new UnmodifiableMultivaluedMap<String, String>(templParamsDec, false);
+            this.templateParametersDecoded = UnmodifiableMultivaluedMap.get(
+                    templParamsDec, false);
         }
         return this.templateParametersDecoded;
     }
@@ -355,23 +404,31 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getTemplateParameters(boolean)
      */
     public MultivaluedMap<String, String> getTemplateParameters(boolean decode) {
-        if (decode)
+        checkReadable();
+        if (decode) {
             return getTemplateParameters();
-        else
-            return this.templateParametersEncoded;
+        } else {
+            return UnmodifiableMultivaluedMap
+                    .get(interalGetTemplateParametersEncoded());
+        }
     }
 
-    @Override
-    public boolean equals(Object anotherObject) {
-        if (this == anotherObject)
-            return true;
-        if (!(anotherObject instanceof UriInfo))
-            return false;
-        UriInfo other = (UriInfo) anotherObject;
-        return this.getBaseUri().equals(other.getBaseUri())
-                && this.getPathSegments().equals(other.getPathSegments())
-                && Util.equals(this.getTemplateParameters(), other
-                        .getTemplateParameters());
+    /**
+     * @param templateParametersEncoded
+     *                the templateParametersEncoded to set
+     */
+    protected void setTemplateParametersEncoded(
+            MultivaluedMap<String, String> templateParametersEncoded) {
+        this.templateParametersEncoded = templateParametersEncoded;
+    }
+
+    /**
+     * @return the templateParametersEncoded
+     */
+    protected MultivaluedMap<String, String> interalGetTemplateParametersEncoded() {
+        if (templateParametersEncoded == null)
+            this.templateParametersEncoded = new MultivaluedMapImpl<String, String>();
+        return templateParametersEncoded;
     }
 
     @Override
@@ -379,5 +436,22 @@ public class JaxRsUriInfo implements UriInfo {
         return this.getBaseUriStr().hashCode()
                 ^ this.getPathSegments().hashCode()
                 ^ this.getTemplateParameters().hashCode();
+    }
+
+    protected boolean isChangeable() {
+        return !this.readOnly;
+    }
+
+    protected boolean isReadable() {
+        // FIXME source sortieren
+        return this.readOnly;
+    }
+
+    /**
+     * Sets the Context readonly. Write is now allowed. FIXME vielleicht lesen
+     * nur erlauben, wenn readonly.
+     */
+    public void setReadOnly() {
+        this.readOnly = true;
     }
 }

@@ -495,9 +495,28 @@ public class Util {
         if (coll.isEmpty())
             throw new IndexOutOfBoundsException(
                     "The Collection is empty; you can't get the first element of it.");
+        if (coll instanceof LinkedList)
+            return ((LinkedList<A>) coll).getFirst();
         if (coll instanceof List)
             return ((List<A>) coll).get(0);
         return coll.iterator().next();
+    }
+
+    /**
+     * @param list
+     * @param <A>
+     * @return Returns the first Element of the collection
+     * @throws IndexOutOfBoundsException
+     *                 If the list is empty
+     */
+    public static <A> A getFirstElement(List<A> list)
+            throws IndexOutOfBoundsException {
+        if (list.isEmpty())
+            throw new IndexOutOfBoundsException(
+                    "The Collection is empty; you can't get the first element of it.");
+        if (list instanceof LinkedList)
+            return ((LinkedList<A>) list).getFirst();
+        return list.get(0);
     }
 
     /**

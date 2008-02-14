@@ -26,11 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.MatrixParam;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -61,7 +64,7 @@ import org.restlet.util.Series;
  * @author Stephan Koops
  * 
  */
-public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
+public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
         HttpHeaders, SecurityContext {
 
     // TODO throw IllegalStateException if called outside the scope of a request
@@ -84,7 +87,7 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
     private UnmodifiableMultivaluedMap<String, String> requestHeaders;
 
     private org.restlet.data.Response response;
-
+    
     /**
      * 
      * @param request
@@ -96,15 +99,10 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
      * @param authenticator
      *                The authenticator. Must not be null.
      */
-    public HttpContextImpl(org.restlet.data.Request request,
-            UnmodifiableMultivaluedMap<String, String> templateParametersEncoded,
+    public CallContext(org.restlet.data.Request request,
             org.restlet.data.Response response, Authenticator authenticator) {
-        super((request == null) ? null : request.getResourceRef(),
-                templateParametersEncoded);
+        super((request == null) ? null : request.getResourceRef(), false);
 
-        if (templateParametersEncoded == null)
-            throw new IllegalArgumentException(
-                    "The templateParameter must not be null");
         if (response == null)
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
@@ -478,5 +476,56 @@ public class HttpContextImpl extends JaxRsUriInfo implements UriInfo, Request,
         if (bestRestlVar.getMediaType() != null)
             dimensions.add(Dimension.MEDIA_TYPE);
         return bestVariant;
+    }
+
+    /**
+     * Returns the Restlet {@link org.restlet.data.Request}
+     * @return the Restlet {@link org.restlet.data.Request}
+     */
+    public org.restlet.data.Request getRequest() {
+        return request;
+    }
+
+    /**
+     * Returns the Restlet {@link org.restlet.data.Response}
+     * @return the Restlet {@link org.restlet.data.Response}
+     */
+    public org.restlet.data.Response getResponse() {
+        return response;
+    }
+
+    /**
+     * @param annotation
+     * @return
+     */
+    public String getLastTemplParamEnc(PathParam annotation) {
+        String key = annotation.value();
+        return Util.getLastElement(interalGetTemplateParametersEncoded().get(key));
+    }
+
+    /**
+     * @param key
+     * @param value
+     */
+    public void addTemplParamsEnc(String key, String value) {
+        checkChangeable();
+        interalGetTemplateParametersEncoded().add(key, value);
+    }
+
+    /**
+     * @param matrixParamAnnot
+     * @return
+     */
+    public String getLastMatrixParamEnc(MatrixParam matrixParamAnnot) {
+        // TODO TESTEN @MarixParam
+        String mpName = matrixParamAnnot.value();
+        for(int i = pathSegmentsEncoded.size()-1; i>= 0; i--)
+        {
+            PathSegment pathSegment = pathSegmentsEncoded.get(i);
+            List<String> mpValues = pathSegment.getMatrixParameters().get(mpName);
+            if(!mpValues.isEmpty())
+                return Util.getLastElement(mpValues);
+        }
+        return null;
     }
 }

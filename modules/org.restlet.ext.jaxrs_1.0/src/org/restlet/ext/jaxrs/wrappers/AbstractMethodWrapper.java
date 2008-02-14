@@ -24,10 +24,8 @@ import java.lang.reflect.Method;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MultivaluedMap;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
@@ -74,14 +72,11 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * response.
      * 
      * @param resourceObject
-     * @param allTemplParamsEnc
-     *                Contains all Parameters, that are read from the called
-     *                URI.
-     * @param restletRequest
-     *                the Restlet request
-     * @param restletResponse
-     *                the Restlet response
      * @param jaxRsRouter
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
      * @return
      * @throws MethodInvokeException
      * @throws InvocationTargetException
@@ -92,9 +87,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @throws IllegalOrNoAnnotationException
      */
     public Object invoke(ResourceObject resourceObject,
-            MultivaluedMap<String, String> allTemplParamsEnc,
-            Request restletRequest, Response restletResponse,
-            HiddenJaxRsRouter jaxRsRouter)
+            CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
             throws MethodInvokeException, InvocationTargetException,
             IllegalOrNoAnnotationException, WebApplicationException,
             RequestHandledException, NoMessageBodyReadersException,
@@ -103,8 +96,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
                 .getParameterAnnotations();
         Class<?>[] parameterTypes = javaMethod.getParameterTypes();
         Object[] args = getParameterValues(parameterAnnotationss,
-                parameterTypes, restletRequest, restletResponse,
-                allTemplParamsEnc, jaxRsRouter);
+                parameterTypes, callContext, jaxRsRouter);
         try {
             return this.javaMethod.invoke(resourceObject.getResourceObject(),
                     args);
