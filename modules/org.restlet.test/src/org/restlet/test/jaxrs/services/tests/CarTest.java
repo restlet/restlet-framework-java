@@ -39,7 +39,8 @@ public class CarTest extends JaxRsTestCase {
     public void testDelete() throws Exception {
         if (ONLY_ONE_CAR || ONLY_OFFERS)
             return;
-        Response response = accessServer(Method.DELETE, CarListResource.class, null, null);
+        Response response = accessServer(Method.DELETE, CarListResource.class,
+                null, null);
         assertTrue(response.getStatus().isClientError());
         assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, response
                 .getStatus());
@@ -53,9 +54,7 @@ public class CarTest extends JaxRsTestCase {
 
         Response response = get(carNumber);
         Representation entity = response.getEntity();
-        if (response.getStatus().isError())
-            System.out.println(entity != null ? entity.getText()
-                    : "[no entity]");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(CarResource.createTextRepr(carNumber), entity.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
@@ -63,9 +62,7 @@ public class CarTest extends JaxRsTestCase {
         carNumber = "5%20%2B7";
         response = get(carNumber);
         entity = response.getEntity();
-        if (response.getStatus().isError())
-            System.out.println(entity != null ? entity.getText()
-                    : "[no entity]");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(CarResource.createTextRepr(carNumber), entity.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
@@ -85,9 +82,7 @@ public class CarTest extends JaxRsTestCase {
             return;
         Response response = get("offers");
         Representation representation = response.getEntity();
-        if (response.getStatus().isError())
-            System.out.println(representation != null ? representation
-                    .getText() : "[no representation]");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(CarListResource.OFFERS, representation.getText());
         MediaType actualMediaType = representation.getMediaType();

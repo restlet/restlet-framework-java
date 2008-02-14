@@ -105,7 +105,8 @@ public class JaxRsUriInfoTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getRequestUriBuilder()}.
      */
     public void testEqualsObject() {
-        assertTrue(URI_INFO_3.equals(URI_INFO_4));
+        assertTrue("URI_INFO_3 and URI_INFO_4 must be equals", URI_INFO_3
+                .equals(URI_INFO_4));
     }
 
     /**
