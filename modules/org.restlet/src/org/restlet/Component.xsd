@@ -70,21 +70,15 @@
 	</complexType>
 
 	<complexType name="RouterType">
-		<complexContent>
-			<extension base="anyType">
-				<sequence>
-					<element name="attach"></element>
-				</sequence>
+		<sequence>
+			<element name="attach"></element>
+		</sequence>
 
-				<attribute name="defaultMatchingMode" type="int"
-					use="optional" />
-				<attribute name="maxAttempts" type="int" use="optional" />
-				<attribute name="requiredScore" type="float"
-					use="optional" />
-				<attribute name="retryDelay" type="long" use="optional" />
-				<attribute name="routingMode" type="int" use="optional" />
-			</extension>
-		</complexContent>
+		<attribute name="defaultMatchingMode" type="int" use="optional" />
+		<attribute name="maxAttempts" type="int" use="optional" />
+		<attribute name="requiredScore" type="float" use="optional" />
+		<attribute name="retryDelay" type="long" use="optional" />
+		<attribute name="routingMode" type="int" use="optional" />
 	</complexType>
 
 	<complexType name="ServerType">
