@@ -30,6 +30,15 @@
 
 	<element name="component" type="tns:ComponentType" />
 
+	<complexType name="AttachType">
+		<attribute name="uriPattern" type="string" use="optional" />
+		<attribute name="targetClass" type="string" use="optional" />
+		<attribute name="targetDescriptor" type="string" use="optional" />
+		<attribute name="default" type="boolean" use="optional" />
+		<attribute name="matchingMode" type="int" use="optional" />
+		<attribute name="defaultVariableType" type="int" use="optional" />
+	</complexType>
+
 	<complexType name="ClientType">
 		<complexContent>
 			<extension base="tns:ConnectorType" />
@@ -71,7 +80,8 @@
 
 	<complexType name="RouterType">
 		<sequence>
-			<element name="attach"></element>
+			<element name="attach" type="tns:AttachType" minOccurs="1"
+				maxOccurs="unbounded" />
 		</sequence>
 
 		<attribute name="defaultMatchingMode" type="int" use="optional" />
