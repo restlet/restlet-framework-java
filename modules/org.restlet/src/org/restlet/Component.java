@@ -18,9 +18,17 @@
 
 package org.restlet;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.LogService;
@@ -29,6 +37,9 @@ import org.restlet.util.ClientList;
 import org.restlet.util.Engine;
 import org.restlet.util.Helper;
 import org.restlet.util.ServerList;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Restlet managing a set of Connectors, VirtualHosts and Applications.
@@ -408,4 +419,329 @@ public class Component extends Restlet {
         getHelper().update();
     }
 
+    /**
+     * Parse a configuration file and update the component's configuration.
+     * 
+     * @param xmlConfigPath
+     *                the path to the xml config file.
+     */
+    public synchronized void parse(String xmlConfigPath) {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(false);
+        dbf.setValidating(false);
+        try {
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document document = db.parse(new FileInputStream(new File(
+                    xmlConfigPath)));
+
+            // Look for clients
+            NodeList clientNodes = document.getElementsByTagName("client");
+            for (int i = 0; i < clientNodes.getLength(); i++) {
+                Node clientNode = clientNodes.item(i);
+                Node item = clientNode.getAttributes().getNamedItem("protocol");
+                Client client = null;
+                if (item == null) {
+                    item = clientNode.getAttributes().getNamedItem("protocols");
+                    if (item != null) {
+                        String[] protocols = item.getNodeValue().split(" ");
+                        List<Protocol> protocolsList = new ArrayList<Protocol>();
+                        for (int j = 0; j < protocols.length; j++) {
+                            protocolsList.add(getProtocol(protocols[j]));
+                        }
+                        client = new Client(getContext(), protocolsList);
+                    }
+                } else {
+                    client = new Client(getContext(), getProtocol(item
+                            .getNodeValue()));
+                }
+                if (client != null) {
+                    this.getClients().add(client);
+                }
+            }
+            // Look for servers
+            NodeList serverNodes = document.getElementsByTagName("server");
+            for (int i = 0; i < serverNodes.getLength(); i++) {
+                Node serverNode = serverNodes.item(i);
+                Node node = serverNode.getAttributes().getNamedItem("protocol");
+                Node portNode = serverNode.getAttributes().getNamedItem("port");
+                Server server = null;
+                if (node == null) {
+                    node = serverNode.getAttributes().getNamedItem("protocols");
+                    if (node != null) {
+                        String[] protocols = node.getNodeValue().split(" ");
+                        List<Protocol> protocolsList = new ArrayList<Protocol>();
+                        for (int j = 0; j < protocols.length; j++) {
+                            protocolsList.add(getProtocol(protocols[j]));
+                        }
+                        int port = getInt(portNode, Protocol.UNKNOWN_PORT);
+                        if (port == Protocol.UNKNOWN_PORT) {
+                            getLogger()
+                                    .warning(
+                                            "Please specify a host when defining a list of protocols.");
+                        } else {
+                            server = new Server(getContext(), protocolsList,
+                                    getInt(portNode, Protocol.UNKNOWN_PORT),
+                                    this.getServers().getTarget());
+                        }
+                    }
+                } else {
+                    Protocol protocol = getProtocol(node.getNodeValue());
+                    server = new Server(getContext(), protocol, getInt(
+                            portNode, protocol.getDefaultPort()), this
+                            .getServers().getTarget());
+                }
+                if (server != null) {
+                    this.getServers().add(server);
+                }
+                // Look for default host
+                NodeList defaultHostNodes = document
+                        .getElementsByTagName("defaultHost");
+                if (defaultHostNodes.getLength() > 0) {
+                    parseHost(this.getDefaultHost(), defaultHostNodes.item(0));
+                }
+                // Look for other virtual hosts
+                NodeList hostNodes = document.getElementsByTagName("host");
+                for (int j = 0; j < hostNodes.getLength(); j++) {
+                    VirtualHost host = new VirtualHost();
+                    parseHost(host, hostNodes.item(j));
+                }
+            }
+            // Look for internal router
+            NodeList internalRouterNodes = document
+                    .getElementsByTagName("internalRouter");
+            if (internalRouterNodes.getLength() > 0) {
+                Node node = internalRouterNodes.item(0);
+                Node item = node.getAttributes().getNamedItem(
+                        "defaultMatchingMode");
+                if (item != null) {
+                    this.getInternalRouter().setDefaultMatchingMode(
+                            getInt(item, getInternalRouter()
+                                    .getDefaultMatchingMode()));
+                }
+                item = node.getAttributes().getNamedItem("maxAttempts");
+                if (item != null) {
+                    this.getInternalRouter().setMaxAttempts(
+                            getInt(item, this.getInternalRouter()
+                                    .getMaxAttempts()));
+                }
+                item = node.getAttributes().getNamedItem("routingMode");
+                if (item != null) {
+                    this.getInternalRouter().setRoutingMode(
+                            getInt(item, this.getInternalRouter()
+                                    .getRoutingMode()));
+                }
+                item = node.getAttributes().getNamedItem("requiredScore");
+                if (item != null) {
+                    this.getInternalRouter().setRequiredScore(
+                            getFloat(item, this.getInternalRouter()
+                                    .getRequiredScore()));
+                }
+                item = node.getAttributes().getNamedItem("retryDelay");
+                if (item != null) {
+                    this.getInternalRouter().setRetryDelay(
+                            getLong(item, this.getInternalRouter()
+                                    .getRetryDelay()));
+                }
+            }
+
+            // Look for logService
+            NodeList logServiceNodes = document
+                    .getElementsByTagName("logService");
+            if (logServiceNodes.getLength() > 0) {
+                Node node = logServiceNodes.item(0);
+                Node item = node.getAttributes().getNamedItem("logFormat");
+                if (item != null) {
+                    this.getLogService().setLogFormat(item.getNodeValue());
+                }
+                item = node.getAttributes().getNamedItem("loggerName");
+                if (item != null) {
+                    this.getLogService().setLoggerName(item.getNodeValue());
+                }
+                item = node.getAttributes().getNamedItem("enabled");
+                if (item != null) {
+                    this.getLogService().setEnabled(getBoolean(item, true));
+                }
+                item = node.getAttributes().getNamedItem("identityCheck");
+                if (item != null) {
+                    this.getLogService().setIdentityCheck(
+                            getBoolean(item, true));
+                }
+            }
+
+            // Look for statusService
+            NodeList statusServiceNodes = document
+                    .getElementsByTagName("statusService");
+            if (statusServiceNodes.getLength() > 0) {
+                Node node = statusServiceNodes.item(0);
+                Node item = node.getAttributes().getNamedItem("contactEmail");
+                if (item != null) {
+                    this.getStatusService()
+                            .setContactEmail(item.getNodeValue());
+                }
+                item = node.getAttributes().getNamedItem("enabled");
+                if (item != null) {
+                    this.getStatusService().setEnabled(getBoolean(item, true));
+                }
+                item = node.getAttributes().getNamedItem("homeRef");
+                if (item != null) {
+                    this.getStatusService().setHomeRef(
+                            new Reference(item.getNodeValue()));
+                }
+                item = node.getAttributes().getNamedItem("overwrite");
+                if (item != null) {
+                    this.getStatusService()
+                            .setOverwrite(getBoolean(item, true));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("pb " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses a port node and returns the port value.
+     * 
+     * @param portNode
+     *                the node to parse.
+     * @param defaultPort
+     *                the default value;
+     * @return the port number.
+     */
+    private boolean getBoolean(Node node, boolean defaultValue) {
+        boolean value = defaultValue;
+        if (node != null) {
+            try {
+                value = Boolean.parseBoolean(node.getNodeValue());
+            } catch (Exception e) {
+                value = defaultValue;
+            }
+        }
+        return value;
+    }
+
+    /**
+     * Parses a node and returns the int value.
+     * 
+     * @param node
+     *                the node to parse.
+     * @param defaultValue
+     *                the default value;
+     * @return the int value of the node.
+     */
+    private int getInt(Node node, int defaultValue) {
+        int value = defaultValue;
+        if (node != null) {
+            try {
+                value = Integer.parseInt(node.getNodeValue());
+            } catch (Exception e) {
+                value = defaultValue;
+            }
+        }
+        return value;
+    }
+
+    /**
+     * Parses a node and returns the long value.
+     * 
+     * @param node
+     *                the node to parse.
+     * @param defaultValue
+     *                the default value;
+     * @return the long value of the node.
+     */
+    private long getLong(Node node, long defaultValue) {
+        long value = defaultValue;
+        if (node != null) {
+            try {
+                value = Long.parseLong(node.getNodeValue());
+            } catch (Exception e) {
+                value = defaultValue;
+            }
+        }
+        return value;
+    }
+
+    /**
+     * Parses a node and returns the float value.
+     * 
+     * @param node
+     *                the node to parse.
+     * @param defaultValue
+     *                the default value;
+     * @return the float value of the node.
+     */
+    private float getFloat(Node node, float defaultValue) {
+        float value = defaultValue;
+        if (node != null) {
+            try {
+                value = Float.parseFloat(node.getNodeValue());
+            } catch (Exception e) {
+                value = defaultValue;
+            }
+        }
+        return value;
+    }
+
+    /**
+     * Returns a protocol by its scheme. If the latter is unknown, instantiate a
+     * new protocol object.
+     * 
+     * @param scheme
+     *                the scheme of the desired protocol.
+     * @return a known protocol or a new instance.
+     */
+    private Protocol getProtocol(String scheme) {
+        Protocol protocol = Protocol.valueOf(scheme);
+        if (protocol == null) {
+            protocol = new Protocol(scheme);
+        }
+        return protocol;
+    }
+
+    /**
+     * Parse the attributes of a DOM node and update the given host.
+     * 
+     * @param host
+     *                the host to update.
+     * @param hostNode
+     *                the DOM node.
+     */
+    private void parseHost(VirtualHost host, Node hostNode) {
+        Node item = hostNode.getAttributes().getNamedItem("hostDomain");
+        if (item != null && item.getNodeValue() != null) {
+            host.setHostDomain(item.getNodeValue());
+        }
+        item = hostNode.getAttributes().getNamedItem("hostPort");
+        if (item != null && item.getNodeValue() != null) {
+            host.setHostPort(item.getNodeValue());
+        }
+        item = hostNode.getAttributes().getNamedItem("hostScheme");
+        if (item != null && item.getNodeValue() != null) {
+            host.setHostScheme(item.getNodeValue());
+        }
+        item = hostNode.getAttributes().getNamedItem("name");
+        if (item != null && item.getNodeValue() != null) {
+            host.setName(item.getNodeValue());
+        }
+        item = hostNode.getAttributes().getNamedItem("resourceDomain");
+        if (item != null && item.getNodeValue() != null) {
+            host.setResourceDomain(item.getNodeValue());
+        }
+        item = hostNode.getAttributes().getNamedItem("resourcePort");
+        if (item != null && item.getNodeValue() != null) {
+            host.setResourcePort(item.getNodeValue());
+        }
+        item = hostNode.getAttributes().getNamedItem("resourceScheme");
+        if (item != null && item.getNodeValue() != null) {
+            host.setResourceScheme(item.getNodeValue());
+        }
+        item = hostNode.getAttributes().getNamedItem("serverAddress");
+        if (item != null && item.getNodeValue() != null) {
+            host.setServerAddress(item.getNodeValue());
+        }
+        item = hostNode.getAttributes().getNamedItem("serverPort");
+        if (item != null && item.getNodeValue() != null) {
+            host.setServerPort(item.getNodeValue());
+        }
+    }
 }
