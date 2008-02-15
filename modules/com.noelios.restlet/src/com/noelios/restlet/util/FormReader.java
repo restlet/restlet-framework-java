@@ -46,7 +46,10 @@ public class FormReader {
     /** The logger to use. */
     private Logger logger;
 
-    /** The encoding to use. */
+    /** Indicates if the parameters should be decoded. */
+    private boolean decode;
+
+    /** The encoding to use, decoding is enabled, see {@link #decode}. */
     private CharacterSet characterSet;
 
     /**
@@ -57,9 +60,12 @@ public class FormReader {
      *                The logger.
      * @param representation
      *                The web form content.
+     * @throws IOException
+     *                 if the stream of the representation could not be opened.
      */
     public FormReader(Logger logger, Representation representation)
             throws IOException {
+        this.decode = true;
         this.logger = logger;
         this.stream = representation.getStream();
         if (representation.getCharacterSet() != null) {
@@ -77,12 +83,28 @@ public class FormReader {
      * @param query
      *                The query string.
      * @param characterSet
-     *                The supported character encoding.
+     *                The supported character encoding. Set to null to leave the
+     *                data encoded.
      */
     public FormReader(Logger logger, String query, CharacterSet characterSet) {
+        this.decode = true;
         this.logger = logger;
         this.stream = new ByteArrayInputStream(query.getBytes());
         this.characterSet = characterSet;
+    }
+
+    /**
+     * Constructor. Will leave the parsed data encoded.
+     * 
+     * @param logger
+     *                The logger.
+     * @param query
+     *                The query string.
+     */
+    public FormReader(Logger logger, String query) {
+        this.decode = false;
+        this.logger = logger;
+        this.stream = new ByteArrayInputStream(query.getBytes());
     }
 
     /**
@@ -92,6 +114,8 @@ public class FormReader {
      * @param name
      *                The parameter name to match.
      * @return The parameter value or list of values.
+     * @throws IOException
+     *                 If the parameters could not be read.
      */
     @SuppressWarnings("unchecked")
     public Object readParameter(String name) throws IOException {
@@ -166,6 +190,8 @@ public class FormReader {
      * 
      * @param parameters
      *                The parameters map controlling the reading.
+     * @throws IOException
+     *                 If the parameters could not be read.
      */
     @SuppressWarnings("unchecked")
     public void readParameters(Map<String, Object> parameters)
@@ -215,6 +241,8 @@ public class FormReader {
      * Reads the next parameter available or null.
      * 
      * @return The next parameter available or null.
+     * @throws IOException
+     *                 If the next parameter could not be read.
      */
     public Parameter readNextParameter() throws IOException {
         Parameter result = null;
@@ -241,7 +269,7 @@ public class FormReader {
                     } else if ((nextChar == '&') || (nextChar == -1)) {
                         if (nameBuffer.length() > 0) {
                             result = FormUtils.create(nameBuffer, null,
-                                    characterSet);
+                                    this.decode, characterSet);
                         } else if (nextChar == -1) {
                             // Do nothing return null preference
                         } else {
@@ -255,10 +283,10 @@ public class FormReader {
                     if ((nextChar == '&') || (nextChar == -1)) {
                         if (valueBuffer.length() > 0) {
                             result = FormUtils.create(nameBuffer, valueBuffer,
-                                    characterSet);
+                                    this.decode, characterSet);
                         } else {
                             result = FormUtils.create(nameBuffer, null,
-                                    characterSet);
+                                    this.decode, characterSet);
                         }
                     } else {
                         valueBuffer.append((char) nextChar);
@@ -277,6 +305,8 @@ public class FormReader {
      * Reads all the parameters.
      * 
      * @return The form read.
+     * @throws IOException
+     *                 If the parameters could not be read.
      */
     public Form read() throws IOException {
         Form result = new Form();
@@ -337,5 +367,4 @@ public class FormReader {
             this.logger = Logger.getLogger(FormReader.class.getCanonicalName());
         return this.logger;
     }
-
 }

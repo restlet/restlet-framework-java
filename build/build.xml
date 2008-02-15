@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
-<!-- ========================================================
-     Restlet build file  -  Copyright 2005-2008 Jerome LOUVEL
-     ======================================================== -->
+<!-- =============================================================
+     Restlet build script - Copyright 2005-2008 Noelios Consulting
+     ============================================================= -->
 
 <project name="Restlet" default="rebuild">
    <!-- ============================ -->
@@ -149,10 +149,9 @@
       <pathelement path="${classes}/${mod-simple-id}" />
       <pathelement path="${mod}/${mod-simple-id}/src" />
 
-    <path refid="mod-grizzly-path" />
-    <pathelement path="${classes}/${mod-grizzly-id}" />
-    <pathelement path="${mod}/${mod-grizzly-id}/src" />
-
+      <path refid="mod-grizzly-path" />
+      <pathelement path="${classes}/${mod-grizzly-id}" />
+      <pathelement path="${mod}/${mod-grizzly-id}/src" />
    </path>
 
    <path id="mod-atom-path">

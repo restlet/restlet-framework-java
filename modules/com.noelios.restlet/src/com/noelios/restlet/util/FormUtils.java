@@ -46,10 +46,20 @@ public class FormUtils {
      *                Query string.
      * @param characterSet
      *                The supported character encoding.
+     * @param decode
+     *                Indicates if the query parameters should be decoded using
+     *                the given character set.
      */
     public static void parseQuery(Logger logger, Form form, String query,
-            CharacterSet characterSet) {
-        FormReader fr = new FormReader(logger, query, characterSet);
+            CharacterSet characterSet, boolean decode) {
+        FormReader fr = null;
+
+        if (decode) {
+            fr = new FormReader(logger, query, characterSet);
+        } else {
+            fr = new FormReader(logger, query);
+        }
+
         fr.addParameters(form);
     }
 
@@ -97,6 +107,8 @@ public class FormUtils {
      *                The parameters map controlling the reading.
      * @param characterSet
      *                The supported character encoding.
+     * @throws IOException
+     *                 If the parameters could not be read.
      */
     public static void getParameters(Logger logger, String query,
             Map<String, Object> parameters, CharacterSet characterSet)
@@ -115,6 +127,8 @@ public class FormUtils {
      *                The web form representation.
      * @param parameters
      *                The parameters map controlling the reading.
+     * @throws IOException
+     *                 If the parameters could not be read.
      */
     public static void getParameters(Logger logger, Representation post,
             Map<String, Object> parameters) throws IOException {
@@ -182,6 +196,8 @@ public class FormUtils {
      * @param characterSet
      *                The supported character encoding.
      * @return The parameter value or list of values.
+     * @throws IOException
+     *                 If the parameters could not be read.
      */
     public static Object getParameter(Logger logger, String query, String name,
             CharacterSet characterSet) throws IOException {
@@ -199,6 +215,8 @@ public class FormUtils {
      * @param name
      *                The parameter name to match.
      * @return The parameter value or list of values.
+     * @throws IOException
+     *                 If the parameters could not be read.
      */
     public static Object getParameter(Logger logger, Representation form,
             String name) throws IOException {
@@ -217,25 +235,34 @@ public class FormUtils {
      *                The parameter name buffer.
      * @param value
      *                The parameter value buffer (can be null).
+     * @param decode
+     *                If true, the name and values are decoded with the given
+     *                {@link CharacterSet}, if false, than nothing is decoded.
      * @param characterSet
      *                The supported character encoding.
      * @return The created parameter.
      */
     public static Parameter create(CharSequence name, CharSequence value,
-            CharacterSet characterSet) {
+            boolean decode, CharacterSet characterSet) {
         Parameter result = null;
 
         if (name != null) {
+            String nameStr;
+            if (decode)
+                nameStr = Reference.decode(name.toString(), characterSet);
+            else
+                nameStr = name.toString();
             if (value != null) {
-                result = new Parameter(Reference.decode(name.toString(),
-                        characterSet), Reference.decode(value.toString(),
-                        characterSet));
+                String valueStr;
+                if (decode)
+                    valueStr = Reference.decode(value.toString(), characterSet);
+                else
+                    valueStr = value.toString();
+                result = new Parameter(nameStr, valueStr);
             } else {
-                result = new Parameter(Reference.decode(name.toString(),
-                        characterSet), null);
+                result = new Parameter(nameStr, null);
             }
         }
-
         return result;
     }
 }

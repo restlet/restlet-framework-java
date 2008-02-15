@@ -86,7 +86,8 @@ public class Converter {
      *                A MediaType, perhaps with parameters.
      * @return Creates a MediaType without any parameters.
      */
-    public static org.restlet.data.MediaType getMediaTypeWithoutParams(org.restlet.data.MediaType mediaType) {
+    public static org.restlet.data.MediaType getMediaTypeWithoutParams(
+            org.restlet.data.MediaType mediaType) {
         if (mediaType == null)
             return null;
         Series<Parameter> parameters = mediaType.getParameters();
@@ -318,17 +319,17 @@ public class Converter {
 
     /**
      * Copies the data in the {@link MultivaluedMap} to the {@link Form}.
+     * 
      * @param mmap
      * @return the converted Http headers or null, if null was given.
      */
     public static Form toForm(MultivaluedMap<String, String> mmap) {
-        if(mmap == null)
+        if (mmap == null)
             return null;
         Form form = new Form();
-        for(Map.Entry<String, List<String>> entry : mmap.entrySet())
-        {
+        for (Map.Entry<String, List<String>> entry : mmap.entrySet()) {
             String name = entry.getKey();
-            for(String value : entry.getValue())
+            for (String value : entry.getValue())
                 form.add(name, value);
         }
         return form;
@@ -336,15 +337,14 @@ public class Converter {
 
     /**
      * Converts the given query String to a Form, but do not decode the data.
+     * 
      * @param queryString
      * @param logger
      * @return
      */
     public static Form toFormEncoded(String queryString, Logger logger) {
         Form form = new Form();
-        Engine.getInstance().parse(logger, form, queryString, null);
-        // TODO wait for patch: (Email 2008-02-06)
-        // Engine.getInstance().parseLeaveEncoded(logger, form, queryString);
+        Engine.getInstance().parse(logger, form, queryString, null, false);
         return form;
     }
 }

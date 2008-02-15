@@ -86,7 +86,8 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(Logger logger, String queryString, CharacterSet characterSet) {
-        Engine.getInstance().parse(logger, this, queryString, characterSet);
+        Engine.getInstance().parse(logger, this, queryString, characterSet,
+                true);
     }
 
     /**

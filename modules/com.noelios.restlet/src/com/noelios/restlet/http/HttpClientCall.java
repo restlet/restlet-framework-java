@@ -147,24 +147,24 @@ public abstract class HttpClientCall extends HttpCall {
             }
         }
 
-//        if (!getMethod().equals(Method.HEAD.getName())
-//                && !response.getStatus().isInformational()
-//                && !response.getStatus()
-//                        .equals(Status.REDIRECTION_NOT_MODIFIED)
-//                && !response.getStatus().equals(Status.SUCCESS_NO_CONTENT)
-//                && !response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)
-//                && !response.getStatus().equals(Status.SUCCESS_PARTIAL_CONTENT)) {
-            InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
-            ReadableByteChannel channel = getResponseEntityChannel(size);
+        // if (!getMethod().equals(Method.HEAD.getName())
+        // && !response.getStatus().isInformational()
+        // && !response.getStatus()
+        // .equals(Status.REDIRECTION_NOT_MODIFIED)
+        // && !response.getStatus().equals(Status.SUCCESS_NO_CONTENT)
+        // && !response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)
+        // && !response.getStatus().equals(Status.SUCCESS_PARTIAL_CONTENT)) {
+        InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
+        ReadableByteChannel channel = getResponseEntityChannel(size);
 
-            if (stream != null) {
-                result = new InputRepresentation(stream, null);
-            } else if (channel != null) {
-                result = new ReadableRepresentation(channel, null);
-                // } else {
-                // result = new EmptyRepresentation();
-            }
-//        }
+        if (stream != null) {
+            result = new InputRepresentation(stream, null);
+        } else if (channel != null) {
+            result = new ReadableRepresentation(channel, null);
+            // } else {
+            // result = new EmptyRepresentation();
+        }
+        // }
 
         result = copyResponseEntityHeaders(responseHeaders, result);
         if (result != null) {
@@ -187,7 +187,7 @@ public abstract class HttpClientCall extends HttpCall {
      * 
      * @param responseHeaders
      *                The headers to copy.
-     * @param result
+     * @param representation
      *                The Representation to update.
      * @return a representation with the entity headers of the response or null
      *         if no representation has been provided and the response has not
@@ -204,6 +204,7 @@ public abstract class HttpClientCall extends HttpCall {
         Representation result = (representation == null) ? Representation
                 .createEmpty() : representation;
         boolean entityHeaderFound = false;
+
         for (Parameter header : responseHeaders) {
             if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_TYPE)) {

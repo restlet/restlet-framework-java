@@ -411,9 +411,12 @@ public abstract class Engine {
      *                Query string.
      * @param characterSet
      *                The supported character encoding.
+     * @param decode
+     *                Indicates if the query parameters should be decoded using
+     *                the given character set.
      */
     public abstract void parse(Logger logger, Form form, String queryString,
-            CharacterSet characterSet);
+            CharacterSet characterSet, boolean decode);
 
     /**
      * Parses the given Content Type.
