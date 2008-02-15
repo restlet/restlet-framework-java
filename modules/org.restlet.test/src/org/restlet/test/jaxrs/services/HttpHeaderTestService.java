@@ -108,5 +108,25 @@ public class HttpHeaderTestService {
         MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
         String headerValue = requestHeaders.getFirst(headername);
         return headerValue;
-    } 
+    }
+    
+    /**
+     * @param hostLower
+     * @param hostUpper
+     * @param hostMixed
+     * @return returns internal server error if the host variables does not have
+     *         all the same value.
+     */
+    @GET
+    @Path("header2")
+    @ProduceMime("text/plain")
+    public Object getHeader2(@HeaderParam("host") String hostLower,
+                             @HeaderParam("HOST") String hostUpper, 
+                             @HeaderParam("Host") String hostMixed)
+    {
+        if(hostLower.equals(hostUpper) && hostLower.equals(hostMixed))
+            return hostMixed;
+        String hosts = "mixed: "+hostMixed+"\nupper: "+hostUpper+"\n lower: "+hostLower;
+        return Response.serverError().entity(hosts).build();
+    }
 }

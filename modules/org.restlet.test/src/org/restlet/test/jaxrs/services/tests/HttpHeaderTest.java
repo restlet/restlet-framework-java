@@ -132,4 +132,9 @@ public class HttpHeaderTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc", response.getEntity().getText());
     }
+
+    public void testHttpHeadersCaseInsensitive() {
+        Response response = get("header2");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    }
 }
