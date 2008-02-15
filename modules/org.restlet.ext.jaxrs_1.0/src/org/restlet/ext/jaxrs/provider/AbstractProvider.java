@@ -77,8 +77,8 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
             outputStream.write(bytes, 0, noBytes);
     }
 
-    // TODO JSR311: Jersey schliesst den InputStream, wenn er fertig ist. Wenn
-    // das Pflicht ist, dann bitte in das javadoc aufnehmen.
+    // REQUESTED JSR311: Jersey schliesst den InputStream, wenn er fertig ist.
+    // Wenn das Pflicht ist, dann bitte in das javadoc aufnehmen.
 
     protected void copyAndCloseStream(InputStream inputStream,
             OutputStream outputStream) throws IOException {

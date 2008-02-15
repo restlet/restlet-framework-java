@@ -293,9 +293,6 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder encode(boolean enable) {
-        // gefragt: JSR311 perhaps getEncode(), to set it for one method and set
-        // it
-        // back to the old value.
         this.encode = enable;
         return this;
     }
@@ -711,9 +708,7 @@ public class JaxRsUriBuilder extends UriBuilder {
             throws IllegalArgumentException {
         if (query == null)
             this.query = null;
-        // gefragt: JSR311: how encode the query? ignore "?" and "=", other
-        // chars?
-        // LATER check query parameters for validity
+        // LATER check query parameters for validity. ignore "?" and "="
         this.query = query;
         return this;
     }

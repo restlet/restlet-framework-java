@@ -93,7 +93,7 @@ public class MessageBodyReaderSet extends LifoSet<MessageBodyReader> {
     }
 
     /**
-     * Returns the first {@link MessageBodyReader} in this Set.
+     * Returns the best {@link MessageBodyReader} in this Set.
      * 
      * @param mediaType
      *                The {@link MediaType}, that should be supported.

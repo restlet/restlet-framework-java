@@ -324,7 +324,8 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     }
 
     /**
-     * Set a strong entity tag on the ResponseBuilder.
+     * Set a strong entity tag on the ResponseBuilder. This is a shortcut for
+     * <code>tag(new EntityTag(<i>value</i>))</code>.
      * 
      * @param tag
      *                the string content of a strong entity tag. The JAX-RS
@@ -335,7 +336,6 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder tag(String tag) {
-        // gefragt: JSR311: should the runtime reject a weak entity tag?
         if (tag == null)
             getMetadata().remove(HttpHeaders.ETAG);
         else
@@ -420,16 +420,16 @@ public class ResponseBuilderImpl extends ResponseBuilder {
                 charsets.add(charset);
         }
         Set<Dimension> dimensions = new HashSet<Dimension>();
-        if(encodings.size() > 1)
+        if (encodings.size() > 1)
             dimensions.add(Dimension.ENCODING);
-        if(languages.size() > 1)
+        if (languages.size() > 1)
             dimensions.add(Dimension.LANGUAGE);
-        if(mediaTypes.size() > 1)
+        if (mediaTypes.size() > 1)
             dimensions.add(Dimension.MEDIA_TYPE);
-        if(charsets.size() > 1)
+        if (charsets.size() > 1)
             dimensions.add(Dimension.CHARACTER_SET);
         String vary = Engine.getInstance().formatDimensions(dimensions);
-        if(vary != null)
+        if (vary != null)
             this.getMetadata().putSingle(HttpHeaders.VARY, vary);
         return this;
     }

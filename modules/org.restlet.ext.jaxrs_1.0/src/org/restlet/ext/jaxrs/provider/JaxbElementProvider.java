@@ -39,7 +39,7 @@ import javax.xml.bind.Marshaller;
 @Provider
 public class JaxbElementProvider implements MessageBodyWriter<JAXBElement<?>> {
 
-    // TODO JSR311: JAXBElement-MessageBodyReader: dont know how to implement. 
+    // REQUESTED JSR311: JAXBElement-MessageBodyReader: dont know how to implement. 
 
     private Logger logger = Logger.getLogger(JaxbElementProvider.class
             .getName());
@@ -78,6 +78,14 @@ public class JaxbElementProvider implements MessageBodyWriter<JAXBElement<?>> {
         }
     }
 
+    /**
+     * only for test in {@link #main(String[])}
+     * @param string
+     */
+    void x(JAXBElement<String> string){
+        string.toString();
+    }
+    
     /**
      * @see org.restlet.ext.jaxrs.provider.AbstractProvider#writeTo(java.lang.Object,
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,

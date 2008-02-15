@@ -38,9 +38,9 @@ import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 @ConsumeMime("text/*")
 public class StringProvider extends AbstractProvider<CharSequence> {
 
-    // TODO JSR311: why @Provider? Jersey Providers are also not annotated.
+    // REQUESTED JSR311: why @Provider? Jersey Providers are also not annotated.
     // . . . . . . . (check before email)
-    // TODO JSR311: statt javax.transform.Source javax.xml.transform.Source?
+    // REQUESTED JSR311: javax.transform.Source statt javax.xml.transform.Source
     // TODO wie soll man application/*+xml feststellen?
 
     /**
