@@ -33,6 +33,7 @@ import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.util.Engine;
 
 import com.noelios.restlet.application.ApplicationContext;
 import com.noelios.restlet.component.ComponentContext;
@@ -164,18 +165,8 @@ public class ServerServlet extends HttpServlet {
         // Load the application class using the given class name
         if (applicationClassName != null) {
             try {
-                // According to
-                // http://www.caucho.com/resin-3.0/webapp/faq.xtp#Class.forName()-doesn't-seem-to-work-right
-                // this approach may need to used when loading classes.
-                Class<?> targetClass;
-                ClassLoader loader = Thread.currentThread()
-                        .getContextClassLoader();
-
-                if (loader != null)
-                    targetClass = Class.forName(applicationClassName, false,
-                            loader);
-                else
-                    targetClass = Class.forName(applicationClassName);
+                Class<?> targetClass = Engine
+                        .classForName(applicationClassName);
 
                 try {
                     // Create a new instance of the application class by

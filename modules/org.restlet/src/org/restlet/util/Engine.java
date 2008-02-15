@@ -84,6 +84,29 @@ public abstract class Engine {
             + '.' + RELEASE_NUMBER;
 
     /**
+     * Returns the class object for the given name using the context class
+     * loader first, or the classloader of the current class.
+     * 
+     * @param classname
+     *                The class name to lookup.
+     * @return The class object.
+     * @throws ClassNotFoundException
+     */
+    public static Class<?> classForName(String classname)
+            throws ClassNotFoundException {
+        Class<?> result = null;
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+        if (loader != null) {
+            result = Class.forName(classname, false, loader);
+        } else {
+            result = Class.forName(classname);
+        }
+
+        return result;
+    }
+
+    /**
      * Returns a class loader to use when creating instantiating implementation
      * classes. By default, it reused the classloader of this Engine's class.
      * 
@@ -365,18 +388,6 @@ public abstract class Engine {
             List<Variant> variants, Language defaultLanguage);
 
     /**
-     * Returns the MD5 digest of the target string. Target is decoded to bytes
-     * using the US-ASCII charset. The returned hexidecimal String always
-     * contains 32 lowercase alphanumeric characters. For example, if target is
-     * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
-     * 
-     * @param target
-     *                The string to encode.
-     * @return The MD5 digest of the target string.
-     */
-    public abstract String toMd5(String target);
-
-    /**
      * Parses a representation into a form.
      * 
      * @param logger
@@ -438,4 +449,15 @@ public abstract class Engine {
     public abstract CookieSetting parseCookieSetting(String cookieSetting)
             throws IllegalArgumentException;
 
+    /**
+     * Returns the MD5 digest of the target string. Target is decoded to bytes
+     * using the US-ASCII charset. The returned hexidecimal String always
+     * contains 32 lowercase alphanumeric characters. For example, if target is
+     * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
+     * 
+     * @param target
+     *                The string to encode.
+     * @return The MD5 digest of the target string.
+     */
+    public abstract String toMd5(String target);
 }
