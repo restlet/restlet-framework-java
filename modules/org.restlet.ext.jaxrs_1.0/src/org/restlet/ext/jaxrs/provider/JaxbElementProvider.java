@@ -24,8 +24,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
@@ -109,8 +111,8 @@ public class JaxbElementProvider implements MessageBodyWriter<JAXBElement<?>> {
         // LATER perhaps caching the JAXBContext
         try {
             return JAXBContext.newInstance(clazz);
-        } catch (JAXBException e) {
-            throw e;
+        } catch (LinkageError e) {
+            throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
         }
     }
 }

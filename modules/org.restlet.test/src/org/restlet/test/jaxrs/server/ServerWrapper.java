@@ -19,10 +19,14 @@ package org.restlet.test.jaxrs.server;
 
 import java.util.Collection;
 
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+
 import org.restlet.Component;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.test.jaxrs.services.tests.JaxRsTestCase;
 
 /**
@@ -69,4 +73,16 @@ public interface ServerWrapper {
      * @return
      */
     public int getPort();
+    
+    /**
+     * Adds a {@link MessageBodyWriter} to the {@link JaxRsRouter}
+     * @param mbwClass
+     */
+    public void addMessageBodyWriter(Class<? extends MessageBodyWriter<?>> mbwClass);
+    
+    /**
+     * Adds a {@link MessageBodyReader} to the {@link JaxRsRouter}
+     * @param mbrClass
+     */
+    public void addMessageBodyReader(Class<? extends MessageBodyReader<?>> mbrClass);
 }

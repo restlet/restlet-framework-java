@@ -31,6 +31,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(DeterminingMediaTypeTest.class);
         mySuite.addTestSuite(HttpHeaderTest.class);
         mySuite.addTestSuite(MatrixParamTest.class);
+        mySuite.addTestSuite(OwnProviderTest.class);
         mySuite.addTestSuite(PathParamTest.class);
         mySuite.addTestSuite(PathParamTest2.class);
         mySuite.addTestSuite(ProviderTest.class);

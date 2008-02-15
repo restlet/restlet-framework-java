@@ -53,6 +53,7 @@ import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.util.Converter;
+import org.restlet.ext.jaxrs.util.SortedMetadata;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.resource.Representation;
 import org.restlet.util.Series;
@@ -74,6 +75,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
 
     private List<MediaType> acceptedMediaTypes;
 
+    private SortedMetadata<org.restlet.data.MediaType> accMediaTypes;
+
     private Authenticator authenticator;
 
     private Map<String, Cookie> cookies;
@@ -87,7 +90,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
     private UnmodifiableMultivaluedMap<String, String> requestHeaders;
 
     private org.restlet.data.Response response;
-    
+
     /**
      * 
      * @param request
@@ -115,6 +118,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
         this.request = request;
         this.response = response;
         this.authenticator = authenticator;
+        this.accMediaTypes = new SortedMetadata<org.restlet.data.MediaType>(
+                request.getClientInfo().getAcceptedMediaTypes());
     }
 
     // HttpHeaders methods
@@ -283,8 +288,12 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
     }
 
     /**
+     * For use from JAX-RS interface.
+     * 
      * @see HttpHeaders#getAcceptableMediaTypes()
+     * @see
      */
+    @Deprecated
     public List<MediaType> getAcceptableMediaTypes() {
         if (this.acceptedMediaTypes == null) {
             List<Preference<org.restlet.data.MediaType>> restletAccMediaTypes = request
@@ -293,9 +302,20 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
                     restletAccMediaTypes.size());
             for (Preference<org.restlet.data.MediaType> mediaTypePref : restletAccMediaTypes)
                 accMediaTypes.add(createJaxRsMediaType(mediaTypePref));
-            this.acceptedMediaTypes = Collections.unmodifiableList(accMediaTypes);
+            this.acceptedMediaTypes = Collections
+                    .unmodifiableList(accMediaTypes);
         }
         return this.acceptedMediaTypes;
+    }
+
+    /**
+     * Returns the accepted media types as Restlet
+     * {@link org.restlet.data.MediaType}s.
+     * 
+     * @return the accepted {@link org.restlet.data.MediaType}s.
+     */
+    public SortedMetadata<org.restlet.data.MediaType> getAccMediaTypes() {
+        return this.accMediaTypes;
     }
 
     /**
@@ -351,13 +371,12 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @see HttpHeaders#getLanguage()
      */
     public String getLanguage() {
-        if(this.language == null)
-        {
+        if (this.language == null) {
             Representation entity = request.getEntity();
-            if(entity == null)
+            if (entity == null)
                 return null;
             List<Language> languages = entity.getLanguages();
-            if(languages.isEmpty())
+            if (languages.isEmpty())
                 return null;
             this.language = Util.getFirstElement(languages).getName();
         }
@@ -480,6 +499,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
 
     /**
      * Returns the Restlet {@link org.restlet.data.Request}
+     * 
      * @return the Restlet {@link org.restlet.data.Request}
      */
     public org.restlet.data.Request getRequest() {
@@ -488,6 +508,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
 
     /**
      * Returns the Restlet {@link org.restlet.data.Response}
+     * 
      * @return the Restlet {@link org.restlet.data.Response}
      */
     public org.restlet.data.Response getResponse() {
@@ -500,7 +521,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      */
     public String getLastTemplParamEnc(PathParam annotation) {
         String key = annotation.value();
-        return Util.getLastElement(interalGetTemplateParametersEncoded().get(key));
+        return Util.getLastElement(interalGetTemplateParametersEncoded().get(
+                key));
     }
 
     /**
@@ -519,11 +541,11 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
     public String getLastMatrixParamEnc(MatrixParam matrixParamAnnot) {
         String mpName = matrixParamAnnot.value();
         List<PathSegment> pathSegments = getPathSegments(false);
-        for(int i = pathSegments.size()-1; i>= 0; i--)
-        {
+        for (int i = pathSegments.size() - 1; i >= 0; i--) {
             PathSegment pathSegment = pathSegments.get(i);
-            List<String> mpValues = pathSegment.getMatrixParameters().get(mpName);
-            if(mpValues != null && !mpValues.isEmpty())
+            List<String> mpValues = pathSegment.getMatrixParameters().get(
+                    mpName);
+            if (mpValues != null && !mpValues.isEmpty())
                 return Util.getLastElement(mpValues);
         }
         return null;

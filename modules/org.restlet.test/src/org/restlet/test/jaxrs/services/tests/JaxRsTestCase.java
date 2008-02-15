@@ -459,11 +459,6 @@ public abstract class JaxRsTestCase extends TestCase {
         super.setUp();
         if (shouldStartServerInSetUp()) {
             startServer();
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
         }
     }
 

@@ -22,8 +22,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -98,6 +100,10 @@ public class JaxbProvider extends AbstractProvider<Object> {
 
     private JAXBContext getJaxbContext(Class<?> clazz) throws JAXBException {
         // LATER perhaps caching the JAXBContext
-        return JAXBContext.newInstance(clazz);
-    }
+        try {
+            return JAXBContext.newInstance(clazz);
+        } catch (NoClassDefFoundError e) {
+            throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
+        }
+   }
 }

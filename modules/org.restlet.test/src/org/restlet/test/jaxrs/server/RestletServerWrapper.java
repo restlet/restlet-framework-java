@@ -20,6 +20,9 @@ package org.restlet.test.jaxrs.server;
 
 import java.util.Collection;
 
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
@@ -45,6 +48,8 @@ public class RestletServerWrapper implements ServerWrapper {
     private Authenticator authenticator;
 
     private Component component;
+    
+    private JaxRsRouter jaxRsRouter;
 
     public RestletServerWrapper() {
         this.authenticator = AllowAllAuthenticator.getInstance();
@@ -92,13 +97,14 @@ public class RestletServerWrapper implements ServerWrapper {
         Application application = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
-                JaxRsGuard router = JaxRsRouter.getGuarded(getContext(),
+                JaxRsGuard guard = JaxRsRouter.getGuarded(getContext(),
                         authenticator, false, false, challengeScheme, "");
+                jaxRsRouter = guard.getNext();
                 Collection<Class<?>> rrcs = rootResourceClasses;
                 for (Class<?> cl : rrcs) {
-                    router.attach(cl);
+                    jaxRsRouter.attach(cl);
                 }
-                return router;
+                return guard;
             }
         };
 
@@ -140,5 +146,15 @@ public class RestletServerWrapper implements ServerWrapper {
                 return port;
         }
         throw new IllegalStateException("Sorry, the port is not available");
+    }
+    
+    public void addMessageBodyWriter(Class<? extends MessageBodyWriter<?>> mbwClass)
+    {
+        jaxRsRouter.addMessageBodyWriter(mbwClass);
+    }
+    
+    public void addMessageBodyReader(Class<? extends MessageBodyReader<?>> mbrClass)
+    {
+        jaxRsRouter.addMessageBodyReader(mbrClass);
     }
 }

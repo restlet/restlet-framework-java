@@ -53,6 +53,7 @@ import org.restlet.ext.jaxrs.core.UnmodifiableMultivaluedMap;
 import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Engine;
+import org.restlet.util.Series;
 
 /**
  * This class contains utility methods.
@@ -233,6 +234,28 @@ public class Util {
                 throw new IllegalArgumentException(message);
             }
         }
+    }
+
+    /**
+     * Copies the headers of the given {@link Response} into the given
+     * {@link Series}.
+     * 
+     * @param restletResponse
+     *                The response to update. Should contain a
+     *                {@link Representation} to copy the representation headers
+     *                from it.
+     * @param logger
+     *                The logger to use.
+     * @return The copied headers.
+     */
+    public static Series<Parameter> copyResponseHeaders(
+            Response restletResponse, Logger logger) {
+        Series<Parameter> headers = new Form();
+        Engine engine = Engine.getInstance();
+        if(true) // TODO waiting for engine fix: copyResponseHeaders.
+       	    throw new UnsupportedOperationException("Waiting for enfine fix");
+        // engine.copyResponseHeaders(restletResponse, headers, logger);
+        return headers;
     }
 
     /**
@@ -830,11 +853,12 @@ public class Util {
     }
 
     /**
-     * Returns the most concrete {@link MediaType} of the given MediaTypes. See
-     * JSR-311 specification, section 2.6. 'Determining the MediaType of
-     * Responses', part 5.
+     * Returns one of the most specific {@link MediaType}s of the given
+     * MediaTypes. See JSR-311 specification, section 2.6. 'Determining the
+     * MediaType of Responses', part 5.
      * 
      * @param mediaTypes
+     *                an array of {@link org.restlet.data.MediaType}s.
      * @return the most concrete {@link MediaType}.
      * @throws IllegalArgumentException
      *                 if the array is null or empty.
