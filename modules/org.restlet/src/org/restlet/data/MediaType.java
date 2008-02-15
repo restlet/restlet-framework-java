@@ -190,6 +190,9 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_HTML = register("text/html",
             "HTML document");
 
+    public static final MediaType TEXT_JAVASCRIPT = register("text/javascript",
+            "Javascript document");
+
     public static final MediaType TEXT_PLAIN = register("text/plain",
             "Plain text");
 

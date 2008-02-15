@@ -89,6 +89,7 @@ Changes log
     * WadlApplication instances can be modified to add filters in front of the root router
     * WADL description documents can be retrieved via HTTP or other protocols
     * Only the necessary client connectors are automatically created
+ - Added TEXT_JAVASCRIPT media type constant. Suggested by Evgeny Shepelyuk.
  
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.
