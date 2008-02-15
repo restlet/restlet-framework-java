@@ -39,8 +39,6 @@ public class PathRegExp {
 
     private static final String VARNAME_FUER_REST = "restlet.jaxrs.rest";
 
-    // TODO javax.annotation.Resource as specified in JSR 250 beachten !!!
-
     private Template template;
 
     private String pathPattern;

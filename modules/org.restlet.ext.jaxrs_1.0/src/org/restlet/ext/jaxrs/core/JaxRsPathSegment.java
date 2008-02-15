@@ -26,6 +26,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 
 import org.restlet.data.Reference;
+import org.restlet.ext.jaxrs.util.EncodeOrCheck;
 import org.restlet.ext.jaxrs.util.Util;
 
 /**
@@ -55,39 +56,39 @@ public class JaxRsPathSegment implements PathSegment {
             String matrParamString, boolean decode,
             boolean encodeAndCheckWhenNotDecode) {
         MultivaluedMapImpl<String, String> matrixParameters = new MultivaluedMapImpl<String, String>();
-        if (matrParamString != null) {
-            String[] paramsEncSpl = matrParamString.split(";");
-            for (int i = 0; i < paramsEncSpl.length; i++) {
-                String matrParamEnc = paramsEncSpl[i];
-                int posEquSign = matrParamEnc.indexOf('=');
-                String keyEnc;
-                String valueEnc;
-                if (posEquSign <= 0) {
-                    keyEnc = matrParamEnc;
-                    valueEnc = null;
-                } else {
-                    keyEnc = matrParamEnc.substring(0, posEquSign);
-                    valueEnc = matrParamEnc.substring(posEquSign + 1);
-                }
-                if (keyEnc.length() == 0 && valueEnc == null)
-                    continue;
-                String key;
-                String value;
-                if (decode) {
-                    key = Reference.decode(keyEnc);
-                    value = Reference.decode(valueEnc);
-                } else if (encodeAndCheckWhenNotDecode) {
-                    key = Util.encode(keyEnc, true, true, i,
-                            " matrix parameter key");
-                    value = Util.encode(valueEnc, true, true,
-                            i, " matrix parameter value");
-                } else {
-
-                    key = keyEnc;
-                    value = valueEnc;
-                }
-                matrixParameters.add(key, value);
+        if (matrParamString == null)
+            return matrixParameters;
+        String[] paramsEncSpl = matrParamString.split(";");
+        for (int i = 0; i < paramsEncSpl.length; i++) {
+            String matrParamEnc = paramsEncSpl[i];
+            int posEquSign = matrParamEnc.indexOf('=');
+            String nameEnc;
+            String valueEnc;
+            if (posEquSign <= 0) {
+                nameEnc = matrParamEnc;
+                valueEnc = null;
+            } else {
+                nameEnc = matrParamEnc.substring(0, posEquSign);
+                valueEnc = matrParamEnc.substring(posEquSign + 1);
             }
+            if (nameEnc.length() == 0 && valueEnc == null)
+                continue;
+            String name;
+            String value;
+            if (decode) {
+                name = Reference.decode(nameEnc);
+                value = Reference.decode(valueEnc);
+            } else if (encodeAndCheckWhenNotDecode) {
+                name = EncodeOrCheck.nameOrValue(nameEnc, true, i,
+                        " matrix parameter name");
+                value = EncodeOrCheck.nameOrValue(valueEnc, true, i,
+                        " matrix parameter value");
+            } else {
+
+                name = nameEnc;
+                value = valueEnc;
+            }
+            matrixParameters.add(name, value);
         }
         return matrixParameters;
     }
@@ -132,9 +133,9 @@ public class JaxRsPathSegment implements PathSegment {
      *                If the user adds more than one path segment with one call,
      *                you can give the index for an error message here. Set -1,
      *                if none. See
-     *                {@link Util#checkForInvalidUriChars(String, int, String)}
+     *                {@link EncodeOrCheck#checkForInvalidUriChars(String, int, String)}
      * @throws IllegalArgumentException
-     *                 if decode and encode is both true
+     *                 the segment is null, if decode and encode is both true
      */
     public JaxRsPathSegment(String segment, boolean unmodifiable,
             boolean decode, boolean encode, boolean checkForInvalidChars,
@@ -165,10 +166,10 @@ public class JaxRsPathSegment implements PathSegment {
         if (decode) {
             this.path = Reference.decode(path);
         } else if (encode) {
-            this.path = Util.encodeNotBraces(path, true);
+            this.path = EncodeOrCheck.encodeNotBraces(path, true).toString();
         } else {
             if (checkForInvalidChars)
-                Util.checkForInvalidUriChars(path, indexForErrMess,
+                EncodeOrCheck.checkForInvalidUriChars(path, indexForErrMess,
                         "new path segment");
             this.path = path;
         }
@@ -196,8 +197,8 @@ public class JaxRsPathSegment implements PathSegment {
         this.unmodifiable = unmodifiable;
         if (unmodifiable
                 && !(matrixParameters instanceof UnmodifiableMultivaluedMap))
-            this.matrixParameters = UnmodifiableMultivaluedMap.get(matrixParameters,
-                    false);
+            this.matrixParameters = UnmodifiableMultivaluedMap.get(
+                    matrixParameters, false);
         this.matrixParameters = matrixParameters;
         this.matrParamEncoded = null;
         // the other instance variables will not be used, so forget them

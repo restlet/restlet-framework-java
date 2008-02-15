@@ -158,53 +158,6 @@ public class Util {
     }
 
     /**
-     * Checks, if the string contains characters that are reserved in URIs.
-     * 
-     * @see <a href="http://tools.ietf.org/html/rfc3986#section-2.2">RFC 3986,
-     *      Section 2.2</a>
-     * @param uriPart
-     * @param indexForErrMessage
-     * @param errMessName
-     * @throws IllegalArgumentException
-     */
-    public static void checkForInvalidUriChars(String uriPart,
-            int indexForErrMessage, String errMessName)
-            throws IllegalArgumentException {
-        // LATER Characters in variables should not be checked.
-        int l = uriPart.length();
-        for (int i = 0; i < l; i++) {
-            char c = uriPart.charAt(i);
-            switch (c) {
-            case ':':
-            case '/':
-            case '?':
-            case '#':
-            case '[':
-            case ']':
-            case '@':
-            case '!':
-            case '$':
-            case '&':
-            case '\'':
-            case '(':
-            case ')':
-            case '*':
-            case '+':
-            case ',':
-            case ';':
-            case '=':
-                throw throwIllegalArgExc(indexForErrMessage, errMessName,
-                        uriPart, " contains at least one reservec character: "
-                                + c + ". They must be encoded.");
-            }
-            if (c == ' ' || c < 32 || c >= 127)
-                throw throwIllegalArgExc(indexForErrMessage, errMessName,
-                        uriPart, " contains at least one illegal character: "
-                                + c + ". They must be encoded.");
-        }
-    }
-
-    /**
      * Checks, if the String is a valid URI scheme
      * 
      * @param scheme
@@ -234,28 +187,6 @@ public class Util {
                 throw new IllegalArgumentException(message);
             }
         }
-    }
-
-    /**
-     * Copies the headers of the given {@link Response} into the given
-     * {@link Series}.
-     * 
-     * @param restletResponse
-     *                The response to update. Should contain a
-     *                {@link Representation} to copy the representation headers
-     *                from it.
-     * @param logger
-     *                The logger to use.
-     * @return The copied headers.
-     */
-    public static Series<Parameter> copyResponseHeaders(
-            Response restletResponse, Logger logger) {
-        Series<Parameter> headers = new Form();
-        Engine engine = Engine.getInstance();
-        if(true) // TODO waiting for engine fix: copyResponseHeaders.
-       	    throw new UnsupportedOperationException("Waiting for enfine fix");
-        // engine.copyResponseHeaders(restletResponse, headers, logger);
-        return headers;
     }
 
     /**
@@ -292,6 +223,28 @@ public class Util {
         }
         Engine.getInstance().copyResponseHeaders(headers, restletResponse,
                 logger);
+    }
+
+    /**
+     * Copies the headers of the given {@link Response} into the given
+     * {@link Series}.
+     * 
+     * @param restletResponse
+     *                The response to update. Should contain a
+     *                {@link Representation} to copy the representation headers
+     *                from it.
+     * @param logger
+     *                The logger to use.
+     * @return The copied headers.
+     */
+    public static Series<Parameter> copyResponseHeaders(
+            Response restletResponse, Logger logger) {
+        Series<Parameter> headers = new Form();
+        Engine engine = Engine.getInstance();
+        if (true) // TODO waiting for engine fix: copyResponseHeaders.
+            throw new UnsupportedOperationException("Waiting for enfine fix");
+        // engine.copyResponseHeaders(restletResponse, headers, logger);
+        return headers;
     }
 
     /**
@@ -421,64 +374,6 @@ public class Util {
         Collection<A> coll2 = new TreeSet<A>(comparator);
         coll2.addAll(collection);
         return coll2;
-    }
-
-    /**
-     * Encodes the given string, if encoding is enabled. If encoding is
-     * disabled, the methods checks the validaty of the containing characters.
-     * 
-     * @param uriPart
-     *                the string to encode or check. Must not be null; result
-     *                are not defined.
-     * @param encode
-     *                see {@link #encode}
-     * @param encodeSlash
-     *                if encode is true: if encodeSlash is true, than slashes
-     *                are also converted, otherwise not. if encode is false,
-     *                this is ignored.
-     * @param indexForErrMessage
-     *                index in an array or list if necessary. If not necessary,
-     *                set it lower than zero.
-     * @param errMessName
-     *                The name for the message
-     * @return
-     * @throws IllegalArgumentException
-     *                 if the char is invalid.
-     */
-    public static String encode(String uriPart, boolean encode,
-            boolean encodeSlash, int indexForErrMessage, String errMessName)
-            throws IllegalArgumentException {
-        if (uriPart == null)
-            throw throwIllegalArgExc(indexForErrMessage, errMessName, uriPart,
-                    " must not be null");
-        if (encode)
-            return encodeNotBraces(uriPart, encodeSlash);
-        else
-            checkForInvalidUriChars(uriPart, indexForErrMessage, errMessName);
-        return uriPart;
-    }
-
-    /**
-     * This methods encodes the given String, but doesn't encode braces.
-     * 
-     * @param uriPart
-     *                the String to encode
-     * @param encodeSlash
-     *                if encodeSlash is true, than slashes are also converted,
-     *                otherwise not.
-     * @return the encoded String
-     */
-    public static String encodeNotBraces(String uriPart, boolean encodeSlash) {
-        StringBuilder stb = new StringBuilder();
-        int l = uriPart.length();
-        for (int i = 0; i < l; i++) {
-            char c = uriPart.charAt(i);
-            if (c == '{' || c == '}' || (!encodeSlash && c == '/'))
-                stb.append(c);
-            else
-                stb.append(Reference.encode(uriPart.substring(i, i + 1)));
-        }
-        return stb.toString();
     }
 
     /**
@@ -781,8 +676,8 @@ public class Util {
      * @return
      */
     public static boolean isCompatible(org.restlet.data.MediaType mediaType1,
-    // TODO Jerome: move to Restlet API?
             org.restlet.data.MediaType mediaType2) {
+        // TODO Jerome: move to Restlet API?
         return mediaType1.includes(mediaType2)
                 || mediaType2.includes(mediaType1);
     }
@@ -950,31 +845,16 @@ public class Util {
     }
 
     /**
+     * Returns the given object as String. If null was given, null is returned.
      * 
-     * @param index
-     *                index, starting with zero.
-     * @param errMessName
-     *                the name of the string with illegal characters
-     * @param illegalString
-     *                the illegal String
-     * @param messageEnd
-     * @return
+     * @param object
+     *                the object to convert to String.
+     * @return the object as String, or null, if null was given
+     * @see Object#toString()
      */
-    private static IllegalArgumentException throwIllegalArgExc(int index,
-            String errMessName, String illegalString, String messageEnd) {
-        StringBuilder stb = new StringBuilder();
-        stb.append("The ");
-        if (index >= 0) {
-            stb.append(index);
-            stb.append(". ");
-        }
-        stb.append(errMessName);
-        stb.append(" (");
-        stb.append(illegalString);
-        stb.append(")");
-        stb.append(messageEnd);
-        if (index >= 0)
-            stb.append(" (index starting with 0)");
-        throw new IllegalArgumentException(stb.toString());
+    public static String toString(Object object) {
+        if (object == null)
+            return null;
+        return object.toString();
     }
 }

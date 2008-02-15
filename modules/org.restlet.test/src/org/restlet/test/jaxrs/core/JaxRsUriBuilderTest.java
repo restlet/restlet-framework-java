@@ -77,28 +77,6 @@ public class JaxRsUriBuilderTest extends TestCase {
     private UriBuilder uriBuilderWithVars;
 
     /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#encode(boolean)}.
-     */
-    public void testEncode() throws Exception {
-        UriBuilder uriBuilder = RuntimeDelegate.getInstance()
-                .createUriBuilder();
-        uriBuilder.encode(false);
-        uriBuilder.host("www.xyz.de");
-        uriBuilder.scheme("http");
-        uriBuilder.path("path1", "path2");
-        try {
-            uriBuilder.path("hh:ho");
-            fail("must fail, because of invalid character");
-        } catch (IllegalArgumentException e) {
-            // wonderful
-        }
-        uriBuilder.encode(true);
-        uriBuilder.path("hh:ho");
-        assertEqualsURI("http://www.xyz.de/path1/path2/hh%3Aho", uriBuilder);
-    }
-
-    /**
      * Note, that the actual value is at the beginning, because of the
      * expectedPathSegents must be the last parameter.
      * 
@@ -110,6 +88,7 @@ public class JaxRsUriBuilderTest extends TestCase {
      * @param expectedQuery
      * @param expectedPathSegments
      */
+    @SuppressWarnings("deprecation")
     private void assertEqualUriBuilder(UriBuilder actualUriBuilder,
             String expectedScheme, String expectedUserInfo,
             String expectedHost, int expectedPort, String expectedQuery,
@@ -247,6 +226,28 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
+     * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#encode(boolean)}.
+     */
+    public void testEncode() throws Exception {
+        UriBuilder uriBuilder = RuntimeDelegate.getInstance()
+                .createUriBuilder();
+        uriBuilder.encode(false);
+        uriBuilder.host("www.xyz.de");
+        uriBuilder.scheme("http");
+        uriBuilder.path("path1", "path2");
+        try {
+            uriBuilder.path("hh:ho");
+            fail("must fail, because of invalid character");
+        } catch (IllegalArgumentException e) {
+            // wonderful
+        }
+        uriBuilder.encode(true);
+        uriBuilder.path("hh:ho");
+        assertEqualsURI("http://www.xyz.de/path1/path2/hh%3Aho", uriBuilder);
+    }
+
+    /**
+     * Test method for
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#fragment(java.lang.String)}.
      */
     public void testFragment() throws Exception {
@@ -298,6 +299,17 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
+     * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#path(java.lang.Class, java.lang.String)}.
+     */
+    public void testPathClassString() throws Exception {
+        uriBuilder1.replacePath((String[]) null);
+        uriBuilder1.path(CarListResource.class, "getOffers");
+        assertEqualsURI("http://localhost/" + CarListResource.PATH + "/"
+                + CarListResource.OFFERS_PATH, uriBuilder1);
+    }
+
+    /**
+     * Test method for
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#path(java.lang.reflect.Method[])}.
      */
     public void testPathMethodArray() throws Exception {
@@ -309,17 +321,6 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder1.path(findCar, engine);
         assertEqualsURI("http://localhost/" + CarListResource.PATH
                 + "/5/engine", uriBuilder1.build("5"));
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#path(java.lang.Class, java.lang.String)}.
-     */
-    public void testPathClassString() throws Exception {
-        uriBuilder1.replacePath((String[]) null);
-        uriBuilder1.path(CarListResource.class, "getOffers");
-        assertEqualsURI("http://localhost/" + CarListResource.PATH + "/"
-                + CarListResource.OFFERS_PATH, uriBuilder1);
     }
 
     /**

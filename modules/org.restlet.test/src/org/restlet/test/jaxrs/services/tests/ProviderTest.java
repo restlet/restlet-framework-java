@@ -153,6 +153,7 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testJaxbPost() throws Exception {
+        fail("test blocks; I think it's a connector problem");
         postAndCheck("jaxb");
     }
 

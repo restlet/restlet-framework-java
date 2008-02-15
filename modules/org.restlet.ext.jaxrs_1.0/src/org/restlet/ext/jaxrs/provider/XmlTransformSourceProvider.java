@@ -11,13 +11,14 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 
+// TODO JSR311: where get the XSLT to convert the javax.xml.transform.Source to
+// an OutputStream?
+
 /**
  * 
  * @author Stephan Koops
  */
 public class XmlTransformSourceProvider extends AbstractProvider<Source> {
-
-    // TODO JSR311: wie geht man mit javax.xml.transform.Source um?
 
     @Override
     public long getSize(Source object) {
@@ -26,7 +27,7 @@ public class XmlTransformSourceProvider extends AbstractProvider<Source> {
 
     @Override
     protected boolean isReadableAndWriteable(Class<?> type) {
-        // TODO XmlTransformSourceProvider.isReadableAndWriteable(Class)
+        // return Source.class.isAssignableFrom(type);
         return false;
     }
 

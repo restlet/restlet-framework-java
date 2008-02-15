@@ -25,6 +25,7 @@ import junit.framework.TestSuite;
 import org.restlet.test.jaxrs.core.JaxRsPathSegmentTest;
 import org.restlet.test.jaxrs.core.JaxRsUriBuilderTest;
 import org.restlet.test.jaxrs.core.JaxRsUriInfoTest;
+import org.restlet.test.jaxrs.util.EncodeOrCheckTests;
 import org.restlet.test.jaxrs.util.RemainingPathTests;
 import org.restlet.test.jaxrs.util.UtilTests;
 
@@ -32,13 +33,17 @@ public class AllClassTests extends TestCase {
     public static Test suite() {
         TestSuite mySuite = new TestSuite();
         mySuite.setName("All class tests");
-        mySuite.addTestSuite(JaxRsPathSegmentTest.class);
+        // package .
         mySuite.addTestSuite(JaxRsRouterTest.class);
+        mySuite.addTestSuite(RootResourceClassTest.class);
+        mySuite.addTestSuite(PathRegExpTests.class);
+        // package .core.
+        mySuite.addTestSuite(JaxRsPathSegmentTest.class);
         mySuite.addTestSuite(JaxRsUriInfoTest.class);
         mySuite.addTestSuite(JaxRsUriBuilderTest.class);
-        mySuite.addTestSuite(PathRegExpTests.class);
+        // package .util.
+        mySuite.addTestSuite(EncodeOrCheckTests.class);
         mySuite.addTestSuite(RemainingPathTests.class);
-        mySuite.addTestSuite(RootResourceClassTest.class);
         mySuite.addTestSuite(UtilTests.class);
         return mySuite;
     }

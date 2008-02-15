@@ -32,6 +32,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
 
 import org.restlet.data.Reference;
+import org.restlet.ext.jaxrs.util.EncodeOrCheck;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.wrappers.AbstractJaxRsWrapper;
 import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
@@ -40,10 +41,23 @@ import org.restlet.util.Resolver;
 import org.restlet.util.Template;
 
 /**
+ * Implementation of interface {@link UriBuilder}.
+ * 
  * @author Stephan Koops
  * @see UriBuilder
  */
 public class JaxRsUriBuilder extends UriBuilder {
+
+    /**
+     * This resolver is used, if no variable is allowed in the template. It
+     * throws an {@link UriBuilderException}, if a variable is requested.
+     */
+    private static final Resolver NO_VAR_RESOLVER = new Resolver() {
+        public String resolve(String variableName) {
+            throw new UriBuilderException(
+                    "The UriBuilder must not contain any template parameter");
+        }
+    };
 
     private class IteratorVariableResolver implements Resolver {
         private int i = 0;
@@ -72,23 +86,39 @@ public class JaxRsUriBuilder extends UriBuilder {
 
     private boolean encode = true;
 
-    private String fragment;
+    /**
+     * {@link String} or {@link StringBuilder}. fleible to avoid
+     * unnecessary converting.
+     */
+    private CharSequence fragment;
 
-    private String host;
+    /**
+     * {@link String} or {@link StringBuilder}. fleible to avoid
+     * unnecessary converting.
+     */
+    private CharSequence host;
 
     private LinkedList<JaxRsPathSegment> pathSegments = new LinkedList<JaxRsPathSegment>();
 
     private int port = -1;
 
     /**
-     * String or StringBuilder. May be this or that to advoid unnecessary
-     * converting.
+     * {@link String} or {@link StringBuilder}. fleible to avoid
+     * unnecessary converting.
      */
     private CharSequence query;
 
-    private String scheme;
+    /**
+     * {@link String} or {@link StringBuilder}. fleible to avoid
+     * unnecessary converting.
+     */
+    private CharSequence scheme;
 
-    private String userInfo;
+    /**
+     * {@link String} or {@link StringBuilder}. fleible to avoid
+     * unnecessary converting.
+     */
+    private CharSequence userInfo;
 
     /**
      * Creates a JaxRsUriBuilder
@@ -97,21 +127,8 @@ public class JaxRsUriBuilder extends UriBuilder {
     }
 
     /**
-     * Adds the path of the
-     * 
-     * @Path to the path.
-     * @param path
-     * @throws IllegalArgumentException
-     */
-    private void addPathSegments(Path path) throws IllegalArgumentException {
-        if (path == null)
-            throw new IllegalArgumentException(
-                    "The given class is no root resource class, because it is not annotated with @Path");
-        addPathSegments(AbstractJaxRsWrapper.getPathTemplate(path));
-    }
-
-    /**
-     * Adds the given path to the current path.
+     * Adds the given path to the current path. This method should only be
+     * called once.
      * 
      * @param path
      *                may contain "/". The path will be splitted there,
@@ -126,22 +143,25 @@ public class JaxRsUriBuilder extends UriBuilder {
     }
 
     /**
-     * Adds the given path segments to the path of the UriBuilder.
+     * Adds the given path segments to the path of the UriBuilder. Call only
+     * once internal !!
      * 
      * @param segments
      *                must not be null. The strings are not splitted at '/'.
      * @throws NullPointerException
      *                 if segments is null
+     * @throws IllegalArgumentException
+     *                 if at least one of the segments is invalid.
      */
-    private void addPathSegments(String[] segments) {
-        // first check all predonditions
+    private void addPathSegments(String[] segments)
+            throws IllegalArgumentException {
+        // first check preconditions
         List<JaxRsPathSegment> pathSegments = new ArrayList<JaxRsPathSegment>(
                 segments.length);
         int l = segments.length;
         for (int i = 0; i < l; i++)
             pathSegments.add(new JaxRsPathSegment(segments[i], false, false,
                     encode, true, i));
-
         // than add
         for (JaxRsPathSegment pathSegment : pathSegments)
             this.pathSegments.add(pathSegment);
@@ -163,12 +183,7 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public URI build() throws UriBuilderException {
         Template template = new Template(toStringWithCheck(true));
-        return buildUri(template.format(new Resolver() {
-            public String resolve(String variableName) {
-                throw new UriBuilderException(
-                        "The UriBuilder must not contain any template parameter");
-            }
-        }));
+        return buildUri(template.format(NO_VAR_RESOLVER));
     }
 
     /**
@@ -271,10 +286,10 @@ public class JaxRsUriBuilder extends UriBuilder {
         for (JaxRsPathSegment pathSegment : pathSegments)
             uriBuilder.pathSegments.add(pathSegment.clone());
         if (this.query != null) {
-            uriBuilder.query = this.query; // copy this.query to new query,
-            // because typically the clone will
-            // be changed and not the orignal.
+            uriBuilder.query = this.query;
             this.query = this.query.toString();
+            // copy this.query to new query, because typically the clone will
+            // be changed and not the orignal.
         }
         return uriBuilder;
     }
@@ -310,8 +325,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder fragment(String fragment) throws IllegalArgumentException {
-        this.fragment = Util.encode(fragment, this.encode, true,
-                Integer.MIN_VALUE, "fragment");
+        this.fragment = EncodeOrCheck.fragment(fragment, this.encode);
         return this;
     }
 
@@ -320,8 +334,9 @@ public class JaxRsUriBuilder extends UriBuilder {
      * 
      * @return the fragment
      */
+    @Deprecated
     public String getFragment() {
-        return fragment;
+        return Util.toString(fragment);
     }
 
     /**
@@ -329,8 +344,9 @@ public class JaxRsUriBuilder extends UriBuilder {
      * 
      * @return the host
      */
+    @Deprecated
     public String getHost() {
-        return host;
+        return Util.toString(host);
     }
 
     /**
@@ -356,8 +372,9 @@ public class JaxRsUriBuilder extends UriBuilder {
      * 
      * @return the query
      */
-    public CharSequence getQuery() {
-        return query;
+    @Deprecated
+    public String getQuery() {
+        return Util.toString(query);
     }
 
     /**
@@ -365,8 +382,9 @@ public class JaxRsUriBuilder extends UriBuilder {
      * 
      * @return the scheme
      */
+    @Deprecated
     public String getScheme() {
-        return scheme;
+        return Util.toString(scheme);
     }
 
     /**
@@ -374,8 +392,9 @@ public class JaxRsUriBuilder extends UriBuilder {
      * 
      * @return the userInfo
      */
+    @Deprecated
     public String getUserInfo() {
-        return userInfo;
+        return Util.toString(userInfo);
     }
 
     /**
@@ -430,10 +449,8 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder matrixParam(String name, String value)
             throws IllegalArgumentException {
-        name = Util.encode(name, this.encode, true,
-                Integer.MIN_VALUE, "matrix parameter name");
-        value = Util.encode(value, this.encode, true,
-                Integer.MIN_VALUE, "matrix parameter value");
+        name = EncodeOrCheck.nameOrValue(name, encode, "matrix parameter name");
+        value = EncodeOrCheck.nameOrValue(value, encode, "matrix parameter value");
         this.pathSegments.getLast().getMatrixParameters().add(name, value);
         return this;
     }
@@ -538,7 +555,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder path(Method... methods) throws IllegalArgumentException {
-        List<Path> paths = new ArrayList<Path>(methods.length);
+        List<String> pathTemplates = new ArrayList<String>(methods.length);
         for (Method method : methods) {
             if (method == null)
                 throw new IllegalArgumentException(
@@ -548,10 +565,12 @@ public class JaxRsUriBuilder extends UriBuilder {
                 throw new IllegalArgumentException("The method "
                         + method.getName()
                         + " does not have an annotation @Path");
-            paths.add(path);
+            String pathTemplate = AbstractJaxRsWrapper.getPathTemplate(path);
+            pathTemplates.add(pathTemplate);
         }
-        for (Path path : paths)
-            addPathSegments(path);
+        for (String pathTemplate : pathTemplates) {
+            addPathSegments(pathTemplate); // LATER call only once !
+        }
         return this;
     }
 
@@ -613,10 +632,8 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder queryParam(String name, String value)
             throws IllegalArgumentException {
-        name = Util.encode(name, this.encode, true,
-                Integer.MIN_VALUE, "query parameter name");
-        value = Util.encode(value, this.encode, true,
-                Integer.MIN_VALUE, "query parameter value");
+        name = EncodeOrCheck.nameOrValue(name, encode, "query parameter name");
+        value = EncodeOrCheck.nameOrValue(value, encode, "query parameter value");
         StringBuilder query;
         if (this.query == null) {
             query = new StringBuilder();
@@ -685,7 +702,7 @@ public class JaxRsUriBuilder extends UriBuilder {
         this.pathSegments.clear();
         if (path != null && path.length != 0)
             for (String segment : path)
-                addPathSegments(segment);
+                addPathSegments(segment); // LATER call only once.
         return this;
     }
 
@@ -708,8 +725,8 @@ public class JaxRsUriBuilder extends UriBuilder {
             throws IllegalArgumentException {
         if (query == null)
             this.query = null;
-        // LATER check query parameters for validity. ignore "?" and "="
-        this.query = query;
+        else
+            this.query = EncodeOrCheck.fullQuery(query, this.encode);
         return this;
     }
 
@@ -757,9 +774,8 @@ public class JaxRsUriBuilder extends UriBuilder {
         this.port = reference.getHostPort();
         String path = reference.getPath();
         this.pathSegments.clear();
-        if (path != null) {
+        if (path != null)
             this.addPathSegments(path);
-        }
         this.query = reference.getQuery();
         this.fragment = reference.getFragment();
         return this;
@@ -894,22 +910,17 @@ public class JaxRsUriBuilder extends UriBuilder {
     /**
      * Set the URI user-info.
      * 
-     * @param ui
+     * @param userInfo
      *                the URI user-info, may contain URI template parameters
      * @return the updated UriBuilder
      * @throws IllegalArgumentException
-     *                 if automatic encoding is disabled and ui contains illegal
-     *                 characters, or if ui is null
+     *                 if automatic encoding is disabled and the userInfo
+     *                 contains illegal characters, or if the userInfo is null.
      * @see javax.ws.rs.core.UriBuilder#userInfo(java.lang.String)
      */
     @Override
-    public UriBuilder userInfo(String ui) throws IllegalArgumentException {
-        // gefragt: JSR311: UriBuilder.userInfo: can the userinfo contain a
-        // password? This is deprecated (RFC3986, section 3.2.1) and more
-        // complicated to encode, because of the ":" is allowed one times.
-        // TODO one ":" is allowed.
-        this.userInfo = Util.encode(ui, this.encode, true,
-                Integer.MIN_VALUE, "userInfo");
+    public UriBuilder userInfo(String userInfo) throws IllegalArgumentException {
+        this.userInfo = EncodeOrCheck.userInfo(userInfo, this.encode);
         return this;
     }
 }

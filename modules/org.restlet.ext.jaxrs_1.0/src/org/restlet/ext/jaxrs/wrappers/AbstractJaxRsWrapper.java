@@ -50,6 +50,7 @@ import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
 import org.restlet.ext.jaxrs.util.Converter;
+import org.restlet.ext.jaxrs.util.EncodeOrCheck;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.resource.Representation;
 import org.restlet.util.Series;
@@ -216,8 +217,8 @@ public abstract class AbstractJaxRsWrapper {
     public static String getPathTemplate(Path path) {
         String pathTemplate = path.value();
         if (path.encode())
-            return Util.encodeNotBraces(pathTemplate, false);
-        Util.checkForInvalidUriChars(pathTemplate, -1, "path template");
+            return EncodeOrCheck.encodeNotBraces(pathTemplate, false).toString();
+        EncodeOrCheck.checkForInvalidUriChars(pathTemplate, -1, "path template");
         return pathTemplate;
     }
 
