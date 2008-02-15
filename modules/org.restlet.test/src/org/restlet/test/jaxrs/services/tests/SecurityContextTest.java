@@ -32,6 +32,8 @@ import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.AllowAllAuthenticator;
 import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.ForbidAllAuthenticator;
+import org.restlet.test.jaxrs.server.RestletServerWrapper;
+import org.restlet.test.jaxrs.server.ServerWrapper;
 import org.restlet.test.jaxrs.services.SecurityContextService;
 
 /**

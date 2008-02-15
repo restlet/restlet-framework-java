@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.test.jaxrs.services.tests;
+package org.restlet.test.jaxrs.server;
 
 import java.util.Collection;
 
@@ -23,6 +23,7 @@ import org.restlet.Component;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.test.jaxrs.services.tests.JaxRsTestCase;
 
 /**
  * This interface wraps a server for the tests. The default implementation is
@@ -31,8 +32,7 @@ import org.restlet.data.Protocol;
  * 
  * @see JaxRsTestCase#setServerWrapper(ServerWrapper)
  * 
- * @author Stephan
- * 
+ * @author Stephan Koops
  */
 public interface ServerWrapper {
     /**
@@ -43,7 +43,6 @@ public interface ServerWrapper {
      * @param rootResourceClasses
      * @param protocol
      *                the protocol to use
-     * @param port
      * @param challengeScheme
      *                The challenge scheme for authentification
      * @param contextParameter
@@ -53,7 +52,7 @@ public interface ServerWrapper {
      * @throws Exception
      */
     public void startServer(final Collection<Class<?>> rootResourceClasses,
-            Protocol protocol, int port, ChallengeScheme challengeScheme,
+            Protocol protocol, ChallengeScheme challengeScheme,
             Parameter contextParameter) throws Exception;
 
     /**
@@ -65,5 +64,9 @@ public interface ServerWrapper {
      */
     public void stopServer() throws Exception;
 
+    /**
+     * Returns the port the server is running on.
+     * @return
+     */
     public int getPort();
 }

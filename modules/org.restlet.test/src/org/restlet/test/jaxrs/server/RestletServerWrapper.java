@@ -16,13 +16,14 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.test.jaxrs.services.tests;
+package org.restlet.test.jaxrs.server;
 
 import java.util.Collection;
 
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
+import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -30,14 +31,14 @@ import org.restlet.ext.jaxrs.AllowAllAuthenticator;
 import org.restlet.ext.jaxrs.Authenticator;
 import org.restlet.ext.jaxrs.JaxRsGuard;
 import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
  * for a given class and access the server for a given sub pass relativ to the
  * pass of the root resource class.
  * 
- * @author Stephan
- * 
+ * @author Stephan Koops
  */
 public class RestletServerWrapper implements ServerWrapper {
 
@@ -75,18 +76,17 @@ public class RestletServerWrapper implements ServerWrapper {
      * will do this on every test start up.
      * 
      * @param rootResourceClasses
-     * @param port
      * @return Returns the started component. Should be stopped with
      *         {@link #stopServer(Component)}
      * @throws Exception
      */
     public void startServer(final Collection<Class<?>> rootResourceClasses,
-            Protocol protocol, int port, final ChallengeScheme challengeScheme,
+            Protocol protocol, final ChallengeScheme challengeScheme,
             Parameter contextParameter) throws Exception {
         Component comp = new Component();
         if (contextParameter != null)
             comp.getContext().getParameters().add(contextParameter);
-        comp.getServers().add(protocol, port);
+        comp.getServers().add(protocol, 0);
 
         // Create an application
         Application application = new Application(comp.getContext()) {
@@ -106,6 +106,7 @@ public class RestletServerWrapper implements ServerWrapper {
         comp.getDefaultHost().attach(application);
         comp.start();
         this.component = comp;
+        System.out.println("listening on port " + getPort());
     }
 
     /**
@@ -121,6 +122,23 @@ public class RestletServerWrapper implements ServerWrapper {
     }
 
     public int getPort() {
-        return this.component.getServers().iterator().next().getPort();
+        Server server = Util.getOnlyElement(this.component.getServers());
+        int port = server.getPort();
+        if (port > 0)
+            return port;
+        port = server.getEphemeralPort();
+        if (port > 0)
+            return port;
+        for (int i = 0; i < 100; i++) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                // 
+            }
+            port = server.getEphemeralPort();
+            if (port > 0)
+                return port;
+        }
+        throw new IllegalStateException("Sorry, the port is not available");
     }
 }

@@ -38,6 +38,7 @@ public class MultipleResourcesTest extends JaxRsTestCase {
 
     public void testCar() throws Exception {
         CarTest carTest = new CarTest();
+        carTest.setServerWrapper(this.getServerWrapper());
         carTest.testGetPlainText();
         carTest.testGetHtmlText();
         carTest.testDelete();
@@ -47,6 +48,7 @@ public class MultipleResourcesTest extends JaxRsTestCase {
 
     public void testSimpleTrain() throws Exception {
         SimpleTrainTest simpleTrainTest = new SimpleTrainTest();
+        simpleTrainTest.setServerWrapper(this.getServerWrapper());
         simpleTrainTest.testGetPlainText();
         simpleTrainTest.testGetHtmlText();
         simpleTrainTest.testGetTextAll();

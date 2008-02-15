@@ -49,6 +49,9 @@ import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.resource.Representation;
+import org.restlet.test.jaxrs.server.RestletServerWrapperFactory;
+import org.restlet.test.jaxrs.server.ServerWrapper;
+import org.restlet.test.jaxrs.server.ServerWrapperFactory;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
@@ -60,96 +63,11 @@ import org.restlet.resource.Representation;
  */
 public abstract class JaxRsTestCase extends TestCase {
 
-    public static final int PORT = 8181;
-
     /**
-     * ServerWrapper to use.
+     * ServerWrapperFactory to use.
      */
-    private static ServerWrapper serverWrapper = new RestletServerWrapper();
+    private static ServerWrapperFactory serverWrapperFactory = new RestletServerWrapperFactory();
 
-    /**
-     * @param httpMethod
-     * @param klasse
-     * @param mediaTypePrefs
-     *                Collection with Preference&lt;MediaType&gt; and/or
-     *                MediaType.
-     * @return
-     * @throws IllegalArgumentException
-     *                 If an element in the mediaTypes is neither a
-     *                 Preference&lt;MediaType&gt; or a MediaType object.
-     */
-    @SuppressWarnings("unchecked")
-    public static Response accessServer(Method httpMethod, Class<?> klasse,
-            Collection mediaTypes) throws IllegalArgumentException {
-        return accessServer(httpMethod, klasse, null, mediaTypes, null);
-    }
-
-    /**
-     * @param httpMethod
-     * @param klasse
-     * @param subPath
-     * @param accMediaTypes
-     * @param challengeResponse
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static Response accessServer(Method httpMethod, Class<?> klasse,
-            String subPath, Collection accMediaTypes,
-            ChallengeResponse challengeResponse) {
-        Reference reference = createReference(klasse, subPath);
-        return accessServer(httpMethod, reference, accMediaTypes,
-                challengeResponse, null);
-    }
-
-    /**
-     * @param httpMethod
-     * @param klasse
-     * @param subPath
-     * @param conditions
-     * @return
-     */
-    public static Response accessServer(Method httpMethod, Class<?> klasse,
-            String subPath, Conditions conditions, ClientInfo clientInfo) {
-        Reference reference = createReference(klasse, subPath);
-        Client client = createClient();
-        Request request = new Request(httpMethod, reference);
-        if (conditions != null)
-            request.setConditions(conditions);
-        if (clientInfo != null)
-            request.setClientInfo(clientInfo);
-        Response response = client.handle(request);
-        return response;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Response accessServer(Method httpMethod, Class<?> klasse,
-            String subPath, MediaType accMediaType) {
-        Collection<MediaType> mediaTypes = null;
-        if (accMediaType != null)
-            mediaTypes = Collections.singleton(accMediaType);
-        return accessServer(httpMethod, klasse, subPath, mediaTypes, null);
-    }
-
-    /**
-     * @param httpMethod
-     * @param reference
-     * @param accMediaTypes
-     * @param challengeResponse
-     * @param entity
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static Response accessServer(Method httpMethod, Reference reference,
-            Collection accMediaTypes, ChallengeResponse challengeResponse,
-            Representation entity) {
-        Client client = createClient();
-        Request request = new Request(httpMethod, reference);
-        addAcceptedMediaTypes(request, accMediaTypes);
-        request.setChallengeResponse(challengeResponse);
-        request.setEntity(entity);
-        Response response = client.handle(request);
-        return response;
-    }
 
     /**
      * @param request
@@ -212,47 +130,8 @@ public abstract class JaxRsTestCase extends TestCase {
                 mediaTypeQuality));
     }
 
-    /**
-     * Creates an reference that access the localhost with the JaxRsTester
-     * protocol and the JaxRsTester Port. It uses the path of the given
-     * jaxRsClass
-     * 
-     * @param jaxRsClass
-     * @param subPath
-     *                darf null sein
-     * @return
-     */
-    public static Reference createReference(Class<?> jaxRsClass, String subPath) {
-        Reference reference = new Reference();
-        reference.setProtocol(Protocol.HTTP);
-        reference.setAuthority("localhost");
-        reference.setHostPort(PORT);
-        String path = ResourceClass.getPathTemplate(jaxRsClass);
-        if (path == null)
-            throw new RuntimeException("no @Path available on " + jaxRsClass);
-        if (!path.startsWith("/"))
-            path = "/" + path;
-        if (subPath != null) {
-            if (subPath.startsWith(";"))
-                path += subPath;
-            else if (subPath.length() > 0)
-                path += "/" + subPath;
-        }
-        reference.setPath(path);
-        return reference;
-    }
-
-    /**
-     * @param subPath
-     * @return
-     */
-    protected Request createGetRequest(String subPath) {
-        Reference reference = createReference(getRootResourceClass(), subPath);
-        return new Request(Method.GET, reference);
-    }
-
-    public static ServerWrapper getServerWrapper() {
-        return serverWrapper;
+    public static ServerWrapperFactory getServerWrapperFactory() {
+        return serverWrapperFactory;
     }
 
     /**
@@ -287,11 +166,11 @@ public abstract class JaxRsTestCase extends TestCase {
      * 
      * @param newServerWrapper
      */
-    public static void setServerWrapper(ServerWrapper newServerWrapper) {
-        if (newServerWrapper == null)
+    public static void setServerWrapperFactory(ServerWrapperFactory swf) {
+        if (swf == null)
             throw new IllegalArgumentException(
-                    "null is an illegal ServerWrapper");
-        serverWrapper = newServerWrapper;
+                    "null is an illegal ServerWrapperFactory");
+        serverWrapperFactory = swf;
     }
 
     /**
@@ -313,6 +192,95 @@ public abstract class JaxRsTestCase extends TestCase {
                 e.printStackTrace(System.out);
             }
         }
+    }
+
+    /**
+     * ServerWrapper to use.
+     */
+    private ServerWrapper serverWrapper = serverWrapperFactory.createServerWrapper();
+
+    /**
+     * @param httpMethod
+     * @param klasse
+     * @param mediaTypePrefs
+     *                Collection with Preference&lt;MediaType&gt; and/or
+     *                MediaType.
+     * @return
+     * @throws IllegalArgumentException
+     *                 If an element in the mediaTypes is neither a
+     *                 Preference&lt;MediaType&gt; or a MediaType object.
+     */
+    @SuppressWarnings("unchecked")
+    public Response accessServer(Method httpMethod, Class<?> klasse,
+            Collection mediaTypes) throws IllegalArgumentException {
+        return accessServer(httpMethod, klasse, null, mediaTypes, null);
+    }
+
+    /**
+     * @param httpMethod
+     * @param klasse
+     * @param subPath
+     * @param accMediaTypes
+     * @param challengeResponse
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public Response accessServer(Method httpMethod, Class<?> klasse,
+            String subPath, Collection accMediaTypes,
+            ChallengeResponse challengeResponse) {
+        Reference reference = createReference(klasse, subPath);
+        return accessServer(httpMethod, reference, accMediaTypes,
+                challengeResponse, null);
+    }
+
+    /**
+     * @param httpMethod
+     * @param klasse
+     * @param subPath
+     * @param conditions
+     * @return
+     */
+    public Response accessServer(Method httpMethod, Class<?> klasse,
+            String subPath, Conditions conditions, ClientInfo clientInfo) {
+        Reference reference = createReference(klasse, subPath);
+        Client client = createClient();
+        Request request = new Request(httpMethod, reference);
+        if (conditions != null)
+            request.setConditions(conditions);
+        if (clientInfo != null)
+            request.setClientInfo(clientInfo);
+        Response response = client.handle(request);
+        return response;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Response accessServer(Method httpMethod, Class<?> klasse,
+            String subPath, MediaType accMediaType) {
+        Collection<MediaType> mediaTypes = null;
+        if (accMediaType != null)
+            mediaTypes = Collections.singleton(accMediaType);
+        return accessServer(httpMethod, klasse, subPath, mediaTypes, null);
+    }
+
+    /**
+     * @param httpMethod
+     * @param reference
+     * @param accMediaTypes
+     * @param challengeResponse
+     * @param entity
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public Response accessServer(Method httpMethod, Reference reference,
+            Collection accMediaTypes, ChallengeResponse challengeResponse,
+            Representation entity) {
+        Client client = createClient();
+        Request request = new Request(httpMethod, reference);
+        addAcceptedMediaTypes(request, accMediaTypes);
+        request.setChallengeResponse(challengeResponse);
+        request.setEntity(entity);
+        Response response = client.handle(request);
+        return response;
     }
 
     /**
@@ -341,6 +309,45 @@ public abstract class JaxRsTestCase extends TestCase {
                 allowedMethods.size());
     }
 
+    /**
+     * @param subPath
+     * @return
+     */
+    protected Request createGetRequest(String subPath) {
+        Reference reference = createReference(getRootResourceClass(), subPath);
+        return new Request(Method.GET, reference);
+    }
+
+    /**
+     * Creates an reference that access the localhost with the JaxRsTester
+     * protocol and the JaxRsTester Port. It uses the path of the given
+     * jaxRsClass
+     * 
+     * @param jaxRsClass
+     * @param subPath
+     *                darf null sein
+     * @return
+     */
+    public Reference createReference(Class<?> jaxRsClass, String subPath) {
+        Reference reference = new Reference();
+        reference.setProtocol(Protocol.HTTP);
+        reference.setAuthority("localhost");
+        reference.setHostPort(serverWrapper.getPort());
+        String path = ResourceClass.getPathTemplate(jaxRsClass);
+        if (path == null)
+            throw new RuntimeException("no @Path available on " + jaxRsClass);
+        if (!path.startsWith("/"))
+            path = "/" + path;
+        if (subPath != null) {
+            if (subPath.startsWith(";"))
+                path += subPath;
+            else if (subPath.length() > 0)
+                path += "/" + subPath;
+        }
+        reference.setPath(path);
+        return reference;
+    }
+
     public Response get() {
         return accessServer(Method.GET, getRootResourceClass(), null, null);
     }
@@ -359,14 +366,14 @@ public abstract class JaxRsTestCase extends TestCase {
                 cr);
     }
 
-    public Response get(String subPath, Conditions conditions) {
-        return accessServer(Method.GET, getRootResourceClass(), subPath,
-                conditions, null);
-    }
-
     public Response get(String subPath, ClientInfo clientInfo) {
         return accessServer(Method.GET, getRootResourceClass(), subPath, null,
                 clientInfo);
+    }
+
+    public Response get(String subPath, Conditions conditions) {
+        return accessServer(Method.GET, getRootResourceClass(), subPath,
+                conditions, null);
     }
 
     public Response get(String subPath, MediaType accMediaType) {
@@ -391,6 +398,10 @@ public abstract class JaxRsTestCase extends TestCase {
         return (Collection) Collections.singleton(getRootResourceClass());
     }
 
+    public ServerWrapper getServerWrapper() {
+        return serverWrapper;
+    }
+
     public Response head(String subPath, MediaType accMediaType) {
         return accessServer(Method.HEAD, getRootResourceClass(), subPath,
                 accMediaType);
@@ -408,6 +419,14 @@ public abstract class JaxRsTestCase extends TestCase {
                 null);
     }
 
+    public Response post(Representation entity) {
+        return post(null, entity, null, null);
+    }
+
+    public Response post(String subPath, Representation entity) {
+        return post(subPath, entity, null, null);
+    }
+
     public Response post(String subPath, Representation entity,
             ChallengeResponse cr) {
         return accessServer(Method.POST, createReference(
@@ -420,14 +439,6 @@ public abstract class JaxRsTestCase extends TestCase {
         return accessServer(Method.POST, createReference(
                 getRootResourceClass(), subPath), accMediaTypes,
                 challengeResponse, entity);
-    }
-
-    public Response post(String subPath, Representation entity) {
-        return post(subPath, entity, null, null);
-    }
-
-    public Response post(Representation entity) {
-        return post(null, entity, null, null);
     }
 
     public Response put(String subPath, Conditions conditions) {
@@ -461,8 +472,8 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     protected void startServer() throws Exception {
         final ChallengeScheme challengeScheme = ChallengeScheme.HTTP_BASIC;
-        startServer(getRootResourceColl(), Protocol.HTTP, PORT,
-                challengeScheme, null);
+        startServer(getRootResourceColl(), Protocol.HTTP, challengeScheme,
+                null);
     }
 
     /**
@@ -470,27 +481,25 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     protected void startServer(ChallengeScheme challengeScheme)
             throws Exception {
-        startServer(getRootResourceColl(), Protocol.HTTP, PORT,
-                challengeScheme, null);
+        startServer(getRootResourceColl(), Protocol.HTTP, challengeScheme,
+                null);
     }
 
     /**
      * @param rootResourceClasses
      * @param protocol
-     * @param port
      * @param challengeScheme
      * @param contextParameter
      * @throws Exception
      */
     private void startServer(final Collection<Class<?>> rootResourceClasses,
-            Protocol protocol, int port, final ChallengeScheme challengeScheme,
-            Parameter contextParameter) throws Exception {
+            Protocol protocol, final ChallengeScheme challengeScheme, Parameter contextParameter) throws Exception {
         try {
-            serverWrapper.startServer(rootResourceClasses, protocol, port,
-                    challengeScheme, contextParameter);
+            serverWrapper.startServer(rootResourceClasses, protocol, challengeScheme,
+                    contextParameter);
         } catch (Exception e) {
             try {
-                serverWrapper.stopServer();
+                stopServer();
             } catch (Exception e1) {
                 // ignore exception, throw before catched Exception later
             }
@@ -509,5 +518,9 @@ public abstract class JaxRsTestCase extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         stopServer();
+    }
+
+    public void setServerWrapper(ServerWrapper serverWrapper) {
+        this.serverWrapper = serverWrapper;
     }
 }
