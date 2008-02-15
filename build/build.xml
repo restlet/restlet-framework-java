@@ -372,6 +372,14 @@
    <!-- ===  Ant Tasks  === -->
    <!-- =================== -->
 
+   <!-- ANTLR 3.0 -->
+   <taskdef name="antlr3" classname="org.apache.tools.ant.antlr.ANTLR3">
+      <classpath>
+         <pathelement location="tools/antlr/org.apache.tools.antlr.jar" />
+         <pathelement location="tools/antlr/org.antlr.jar" />
+      </classpath>
+   </taskdef>
+
    <!-- Retrotranslator 1.2.0 -->
    <taskdef name="retrotranslator" classname="net.sf.retrotranslator.transformer.RetrotranslatorTask">
       <classpath>
