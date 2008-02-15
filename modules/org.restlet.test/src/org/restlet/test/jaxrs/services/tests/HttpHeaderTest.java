@@ -137,4 +137,19 @@ public class HttpHeaderTest extends JaxRsTestCase {
         Response response = get("header2");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
+
+    public void testWithDefault() throws Exception {
+        Request request = createGetRequest("headerWithDefault");
+        Util.getHttpHeaders(request).add(
+                HttpHeaderTestService.TEST_HEADER_NAME, "abc");
+        Client client = createClient();
+        Response response = client.handle(request);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("abc", response.getEntity().getText());
+
+        request = createGetRequest("headerWithDefault");
+        response = client.handle(request);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("default", response.getEntity().getText());
+    }
 }

@@ -17,6 +17,7 @@
  */
 package org.restlet.test.jaxrs.services;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
@@ -62,5 +63,26 @@ public class MatrixParamTestService {
     String firstname, @MatrixParam("lastname")
     String lastname) {
         return firstname + " " + lastname;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("withDefault")
+    @Encoded
+    public String withDefault(@MatrixParam("mp") @DefaultValue("default")
+    String mp) {
+        return withoutDefault(mp);
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("withoutDefault")
+    @Encoded
+    public String withoutDefault(@MatrixParam("mp") String mp) {
+        if(mp == null)
+            return "[null]";
+        if(mp.equals(""))
+            return "[empty]";
+        return mp;
     }
 }

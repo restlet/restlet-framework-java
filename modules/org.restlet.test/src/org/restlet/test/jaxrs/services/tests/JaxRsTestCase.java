@@ -36,6 +36,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
+import org.restlet.data.Cookie;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
@@ -67,7 +68,6 @@ public abstract class JaxRsTestCase extends TestCase {
      * ServerWrapperFactory to use.
      */
     private static ServerWrapperFactory serverWrapperFactory = new RestletServerWrapperFactory();
-
 
     /**
      * @param request
@@ -197,7 +197,8 @@ public abstract class JaxRsTestCase extends TestCase {
     /**
      * ServerWrapper to use.
      */
-    private ServerWrapper serverWrapper = serverWrapperFactory.createServerWrapper();
+    private ServerWrapper serverWrapper = serverWrapperFactory
+            .createServerWrapper();
 
     /**
      * @param httpMethod
@@ -230,7 +231,7 @@ public abstract class JaxRsTestCase extends TestCase {
             ChallengeResponse challengeResponse) {
         Reference reference = createReference(klasse, subPath);
         return accessServer(httpMethod, reference, accMediaTypes,
-                challengeResponse, null);
+                challengeResponse, null, null);
     }
 
     /**
@@ -262,23 +263,21 @@ public abstract class JaxRsTestCase extends TestCase {
         return accessServer(httpMethod, klasse, subPath, mediaTypes, null);
     }
 
-    /**
-     * @param httpMethod
-     * @param reference
-     * @param accMediaTypes
-     * @param challengeResponse
-     * @param entity
-     * @return
-     */
+    protected Response accessServer(Method httpMethod, Reference reference) {
+        return accessServer(httpMethod, reference, null, null, null, null);
+    }
+
     @SuppressWarnings("unchecked")
-    public Response accessServer(Method httpMethod, Reference reference,
+    private Response accessServer(Method httpMethod, Reference reference,
             Collection accMediaTypes, ChallengeResponse challengeResponse,
-            Representation entity) {
+            Representation entity, Cookie cookie) {
         Client client = createClient();
         Request request = new Request(httpMethod, reference);
         addAcceptedMediaTypes(request, accMediaTypes);
         request.setChallengeResponse(challengeResponse);
         request.setEntity(entity);
+        if (cookie != null)
+            request.getCookies().add(cookie);
         Response response = client.handle(request);
         return response;
     }
@@ -352,6 +351,10 @@ public abstract class JaxRsTestCase extends TestCase {
         return accessServer(Method.GET, getRootResourceClass(), null, null);
     }
 
+    public Response get(Cookie cookie) {
+        return get(null, cookie);
+    }
+
     public Response get(MediaType accMediaType) {
         return accessServer(Method.GET, getRootResourceClass(), null,
                 accMediaType);
@@ -374,6 +377,11 @@ public abstract class JaxRsTestCase extends TestCase {
     public Response get(String subPath, Conditions conditions) {
         return accessServer(Method.GET, getRootResourceClass(), subPath,
                 conditions, null);
+    }
+
+    public Response get(String subPath, Cookie cookie) {
+        return accessServer(Method.GET, createReference(getRootResourceClass(),
+                subPath), null, null, null, cookie);
     }
 
     public Response get(String subPath, MediaType accMediaType) {
@@ -430,7 +438,7 @@ public abstract class JaxRsTestCase extends TestCase {
     public Response post(String subPath, Representation entity,
             ChallengeResponse cr) {
         return accessServer(Method.POST, createReference(
-                getRootResourceClass(), subPath), null, cr, entity);
+                getRootResourceClass(), subPath), null, cr, entity, null);
     }
 
     @SuppressWarnings("unchecked")
@@ -438,7 +446,7 @@ public abstract class JaxRsTestCase extends TestCase {
             Collection accMediaTypes, ChallengeResponse challengeResponse) {
         return accessServer(Method.POST, createReference(
                 getRootResourceClass(), subPath), accMediaTypes,
-                challengeResponse, entity);
+                challengeResponse, entity, null);
     }
 
     public Response put(String subPath, Conditions conditions) {
@@ -472,8 +480,7 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     protected void startServer() throws Exception {
         final ChallengeScheme challengeScheme = ChallengeScheme.HTTP_BASIC;
-        startServer(getRootResourceColl(), Protocol.HTTP, challengeScheme,
-                null);
+        startServer(getRootResourceColl(), Protocol.HTTP, challengeScheme, null);
     }
 
     /**
@@ -481,8 +488,7 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     protected void startServer(ChallengeScheme challengeScheme)
             throws Exception {
-        startServer(getRootResourceColl(), Protocol.HTTP, challengeScheme,
-                null);
+        startServer(getRootResourceColl(), Protocol.HTTP, challengeScheme, null);
     }
 
     /**
@@ -493,10 +499,11 @@ public abstract class JaxRsTestCase extends TestCase {
      * @throws Exception
      */
     private void startServer(final Collection<Class<?>> rootResourceClasses,
-            Protocol protocol, final ChallengeScheme challengeScheme, Parameter contextParameter) throws Exception {
+            Protocol protocol, final ChallengeScheme challengeScheme,
+            Parameter contextParameter) throws Exception {
         try {
-            serverWrapper.startServer(rootResourceClasses, protocol, challengeScheme,
-                    contextParameter);
+            serverWrapper.startServer(rootResourceClasses, protocol,
+                    challengeScheme, contextParameter);
         } catch (Exception e) {
             try {
                 stopServer();

@@ -50,15 +50,13 @@ public class PathParamTest extends JaxRsTestCase {
     }
 
     public void testGet1() throws IOException {
-        Response response = accessServer(Method.GET, createReference("4711"),
-                null, null, null);
+        Response response = accessServer(Method.GET, createReference("4711"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("4711", response.getEntity().getText());
     }
 
     public void testGet2() throws IOException {
-        Response response = accessServer(Method.GET,
-                createReference("4711/abc/677/def"), null, null, null);
+        Response response = accessServer(Method.GET, createReference("4711/abc/677/def"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("4711\n677", response.getEntity().getText());
     }

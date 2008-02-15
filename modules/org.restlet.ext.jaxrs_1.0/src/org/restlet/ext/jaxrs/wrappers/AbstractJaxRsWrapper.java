@@ -26,6 +26,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
@@ -36,6 +38,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 
+import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -49,6 +52,7 @@ import org.restlet.ext.jaxrs.impl.PathRegExp;
 import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.resource.Representation;
+import org.restlet.util.Series;
 
 /**
  * An abstract wrapper class. contains some useful static methods.
@@ -75,15 +79,14 @@ public abstract class AbstractJaxRsWrapper {
         String pathTemplate = getPathTemplate(template);
         if (ensureStartSlash)
             pathTemplate = Util.ensureStartSlash(pathTemplate);
-        // TESTEN Path.encode auch bearbeiten
         return new PathRegExp(pathTemplate, template.limited());
     }
 
     @SuppressWarnings("unchecked")
     private static Collection<Class<? extends Annotation>> createValidAnnotations() {
         return Arrays.asList(Context.class, HeaderParam.class,
-                MatrixParam.class, QueryParam.class, PathParam.class);
-        // TODO @CookieParam
+                MatrixParam.class, QueryParam.class, PathParam.class,
+                CookieParam.class);
     }
 
     /**
@@ -93,6 +96,8 @@ public abstract class AbstractJaxRsWrapper {
      * @param paramClass
      *                the type of the parameter to convert to
      * @param paramValue
+     * @param defaultValue
+     *                see {@link DefaultValue}
      * @param leaveEncoded
      *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
      *                and {@link PathParam}s encoded. Must be FALSE for
@@ -107,11 +112,13 @@ public abstract class AbstractJaxRsWrapper {
      * @see HeaderParam
      */
     private static Object convertParamValueFromParam(Class<?> paramClass,
-            String paramValue, boolean leaveEncoded,
+            String paramValue, String defaultValue, boolean leaveEncoded,
             HiddenJaxRsRouter jaxRsRouter)
             throws InstantiateParameterException, WebApplicationException {
-        if(!leaveEncoded && paramValue != null)
+        if (!leaveEncoded && paramValue != null)
             paramValue = Reference.decode(paramValue);
+        else if(paramValue == null)
+            paramValue = defaultValue;
         if (paramClass.equals(String.class)) // optimization
             return paramValue;
         if (paramClass.isPrimitive())
@@ -251,6 +258,13 @@ public abstract class AbstractJaxRsWrapper {
             HiddenJaxRsRouter jaxRsRouter, boolean leaveEncoded,
             int indexForExcMessages) throws IllegalOrNoAnnotationException,
             InstantiateParameterException, WebApplicationException {
+        String defaultValue = null;
+        for (Annotation annotation : paramAnnotations) {
+            if (annotation.annotationType().equals(DefaultValue.class)) {
+                defaultValue = ((DefaultValue) annotation).value();
+                break;
+            }
+        }
         for (Annotation annotation : paramAnnotations) {
             Class<? extends Annotation> annotationType = annotation
                     .annotationType();
@@ -258,37 +272,41 @@ public abstract class AbstractJaxRsWrapper {
                 return callContext;
             }
             if (annotationType.equals(HeaderParam.class)) {
-                // TODO @DefaultValue
                 String headerParamValue = Util.getHttpHeaders(
                         callContext.getRequest()).getFirstValue(
                         ((HeaderParam) annotation).value(), true);
                 return convertParamValueFromParam(paramClass, headerParamValue,
-                        false, jaxRsRouter);
+                        defaultValue, false, jaxRsRouter);
             }
             if (annotationType.equals(PathParam.class)) {
-                // TODO @DefaultValue
                 String pathParamValue = callContext
                         .getLastTemplParamEnc((PathParam) annotation);
                 return convertParamValueFromParam(paramClass, pathParamValue,
-                        leaveEncoded, jaxRsRouter);
+                        defaultValue, leaveEncoded, jaxRsRouter);
             }
             if (annotationType.equals(MatrixParam.class)) {
-                // TODO @DefaultValue
-                String pathParamValue = callContext
+                String matrixParamValue = callContext
                         .getLastMatrixParamEnc((MatrixParam) annotation);
-                return convertParamValueFromParam(paramClass, pathParamValue,
-                        leaveEncoded, jaxRsRouter);
+                return convertParamValueFromParam(paramClass, matrixParamValue,
+                        defaultValue, leaveEncoded, jaxRsRouter);
             }
             if (annotationType.equals(QueryParam.class)) {
-                // TODO @DefaultValue
                 Form form = Converter.toFormEncoded(callContext.getRequest()
                         .getResourceRef().getQuery(), jaxRsRouter.getLogger());
-                String queryParamValue = form.getFirstValue(
-                                ((QueryParam) annotation).value());
+                String queryParamValue = form
+                        .getFirstValue(((QueryParam) annotation).value());
                 return convertParamValueFromParam(paramClass, queryParamValue,
-                        true, jaxRsRouter); // leaveEncoded = true -> not change
+                        defaultValue, true, jaxRsRouter); // leaveEncoded =
+                                                            // true -> not
+                                                            // change
             }
-            // TODO @CookieParam
+            if (annotationType.equals(CookieParam.class)) {
+                Series<Cookie> cookies = callContext.getRequest().getCookies();
+                String cookieName = ((CookieParam) annotation).value();
+                String cookieValue = cookies.getFirstValue(cookieName);
+                return convertParamValueFromParam(paramClass, cookieValue,
+                        defaultValue, leaveEncoded, jaxRsRouter);
+            }
         }
         throw new IllegalOrNoAnnotationException("The " + indexForExcMessages
                 + ". parameter requires one of the following annotations: "

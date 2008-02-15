@@ -77,4 +77,33 @@ public class MatrixParamTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("George U. Bush", response.getEntity().getText());
     }
+
+    public void testWithDefault() throws IOException {
+        Response response = get("withDefault;mp=abcde");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("abcde", response.getEntity().getText());
+
+        response = get("withDefault;mp=");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[empty]", response.getEntity().getText());
+
+        response = get("withDefault");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("default", response.getEntity().getText());
+}
+
+
+    public void testWithoutDefault() throws IOException {
+        Response response = get("withoutDefault;mp=abcde");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("abcde", response.getEntity().getText());
+
+        response = get("withoutDefault;mp=");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[empty]", response.getEntity().getText());
+
+        response = get("withoutDefault");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[null]", response.getEntity().getText());
+}
 }

@@ -21,6 +21,7 @@ package org.restlet.test.jaxrs.services;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -45,8 +46,6 @@ public class HttpHeaderTestService {
     
     public static final String TEST_HEADER_NAME = "testHeader";
     
-    // TESTEN: @Context Http-Headers soll Case-insensitiv sein
-
     /**
      * @return
      */
@@ -128,5 +127,13 @@ public class HttpHeaderTestService {
             return hostMixed;
         String hosts = "mixed: "+hostMixed+"\nupper: "+hostUpper+"\n lower: "+hostLower;
         return Response.serverError().entity(hosts).build();
+    }
+
+    @GET
+    @Path("headerWithDefault")
+    @ProduceMime("text/plain")
+    public String getHeaderWithDefault(@HeaderParam(TEST_HEADER_NAME) @DefaultValue("default") String testHeader)
+    {
+        return testHeader;
     }
 }

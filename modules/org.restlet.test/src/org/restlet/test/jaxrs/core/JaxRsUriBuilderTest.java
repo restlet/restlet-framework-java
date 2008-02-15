@@ -294,7 +294,6 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder1.replacePath((String[]) null);
         uriBuilder1.path(SimpleTrain.class);
         assertEqualsURI("http://localhost" + SimpleTrain.PATH, uriBuilder1);
-        // TESTEN check @Path.encode is correct evaluated
     }
 
     /**
