@@ -48,6 +48,11 @@ import org.restlet.util.Template;
  */
 public class JaxRsUriBuilder extends UriBuilder {
 
+    // TODO JSR311: What about a method parent() which removes the last path
+    // element? So the application developer must not think if the class is a
+    // direct subclass of the root resource class or if there are other sub
+    // resource classes between them.
+
     /**
      * This resolver is used, if no variable is allowed in the template. It
      * throws an {@link UriBuilderException}, if a variable is requested.
@@ -87,14 +92,14 @@ public class JaxRsUriBuilder extends UriBuilder {
     private boolean encode = true;
 
     /**
-     * {@link String} or {@link StringBuilder}. fleible to avoid
-     * unnecessary converting.
+     * {@link String} or {@link StringBuilder}. fleible to avoid unnecessary
+     * converting.
      */
     private CharSequence fragment;
 
     /**
-     * {@link String} or {@link StringBuilder}. fleible to avoid
-     * unnecessary converting.
+     * {@link String} or {@link StringBuilder}. fleible to avoid unnecessary
+     * converting.
      */
     private CharSequence host;
 
@@ -103,20 +108,20 @@ public class JaxRsUriBuilder extends UriBuilder {
     private int port = -1;
 
     /**
-     * {@link String} or {@link StringBuilder}. fleible to avoid
-     * unnecessary converting.
+     * {@link String} or {@link StringBuilder}. fleible to avoid unnecessary
+     * converting.
      */
     private CharSequence query;
 
     /**
-     * {@link String} or {@link StringBuilder}. fleible to avoid
-     * unnecessary converting.
+     * {@link String} or {@link StringBuilder}. fleible to avoid unnecessary
+     * converting.
      */
     private CharSequence scheme;
 
     /**
-     * {@link String} or {@link StringBuilder}. fleible to avoid
-     * unnecessary converting.
+     * {@link String} or {@link StringBuilder}. fleible to avoid unnecessary
+     * converting.
      */
     private CharSequence userInfo;
 
@@ -450,7 +455,8 @@ public class JaxRsUriBuilder extends UriBuilder {
     public UriBuilder matrixParam(String name, String value)
             throws IllegalArgumentException {
         name = EncodeOrCheck.nameOrValue(name, encode, "matrix parameter name");
-        value = EncodeOrCheck.nameOrValue(value, encode, "matrix parameter value");
+        value = EncodeOrCheck.nameOrValue(value, encode,
+                "matrix parameter value");
         this.pathSegments.getLast().getMatrixParameters().add(name, value);
         return this;
     }
@@ -633,7 +639,8 @@ public class JaxRsUriBuilder extends UriBuilder {
     public UriBuilder queryParam(String name, String value)
             throws IllegalArgumentException {
         name = EncodeOrCheck.nameOrValue(name, encode, "query parameter name");
-        value = EncodeOrCheck.nameOrValue(value, encode, "query parameter value");
+        value = EncodeOrCheck.nameOrValue(value, encode,
+                "query parameter value");
         StringBuilder query;
         if (this.query == null) {
             query = new StringBuilder();

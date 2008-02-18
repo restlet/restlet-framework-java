@@ -9,7 +9,8 @@ Require-Bundle: org.restlet,
  javax.activation,
  javax.mail,
  javax.xml.bind,
- javax.xml.stream
+ javax.xml.stream,
+ com.noelios.restlet.ext.grizzly
 Export-Package: org.restlet.ext.jaxrs;uses:="org.restlet.data,org.restlet.ext.jaxrs.wrappers,org.restlet",
  org.restlet.ext.jaxrs.core;uses:="org.restlet.data,javax.ws.rs.core",
  org.restlet.ext.jaxrs.exceptions,

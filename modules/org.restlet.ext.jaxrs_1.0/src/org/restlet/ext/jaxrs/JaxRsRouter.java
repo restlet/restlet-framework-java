@@ -34,6 +34,7 @@ import java.util.logging.Level;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.Provider;
 
@@ -132,6 +133,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         guard.setNext(new JaxRsRouter(context, authenticator,
                 loadAllRootResourceClasses, loadAllProviders));
         return guard;
+        // LATER make some resources accessable guarded and other not.
     }
 
     /**
@@ -241,9 +243,11 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
     private Restlet errorRestletMultipleRootResourceClasses = DEFAULT_MULTIPLE_ROOT_RESOURCE_CLASSES;
 
     /**
-     * Creates a new JaxRsRouter with the given Context
+     * Creates a new JaxRsRouter with the given Context.
      * 
      * @param context
+     *                the context from the parent, see
+     *                {@link Restlet#Restlet(Context)}
      * @param authenticator
      *                The Authenticator, must not be null. If you don't need the
      *                authentification, you can use the
@@ -251,10 +255,15 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      *                {@link AllowAllAuthenticator} or the
      *                {@link ThrowExcAuthenticator}.
      * @param loadAllRootResourceClasses
-     *                if true, all accessible root resource classes are loaded.
+     *                If true, all accessible root resource classes are loaded.
+     *                This feature is not ready implemented and tested. See also
+     *                {@link #attach(Class)}
      * @param loadAllProviders
-     *                if true, all accessible providers are loaded.
-     * @see Restlet#Restlet(Context)
+     *                If true, all accessible providers are loaded. This feature
+     *                is not ready implemented and tested. See also
+     *                {@link #addMessageBodyReader(Class)},
+     *                {@link #addMessageBodyWriter(Class)} and
+     *                {@link #addProvidersFromPackage(ClassLoader, boolean, String...)}
      */
     public JaxRsRouter(Context context, Authenticator authenticator,
             boolean loadAllRootResourceClasses, boolean loadAllProviders) {
@@ -264,6 +273,43 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         if (loadAllRootResourceClasses || loadAllProviders)
             JaxRsClassesLoader.loadFromClasspath(this,
                     loadAllRootResourceClasses, loadAllProviders);
+    }
+
+    /**
+     * Creates a new JaxRsRouter with the given Context. Only the default
+     * providers are loaded by default.
+     * 
+     * @param context
+     *                the context from the parent, see
+     *                {@link Restlet#Restlet(Context)}
+     * @param authenticator
+     *                The Authenticator, must not be null. If you don't need the
+     *                authentification, you can use the
+     *                {@link ForbidAllAuthenticator}, the
+     *                {@link AllowAllAuthenticator} or the
+     *                {@link ThrowExcAuthenticator}.
+     * @see #JaxRsRouter(Context, Authenticator, boolean, boolean)
+     */
+    public JaxRsRouter(Context context, Authenticator authenticator) {
+        this(context, authenticator, false, false);
+    }
+
+    /**
+     * Creates a new JaxRsRouter with the given Context. Only the default
+     * providers are loaded by default. If a resource class wants to check if a
+     * user has a role, the request is returned with HTTP status 500 (Internal
+     * Server Error).
+     * 
+     * @see SecurityContext#isUserInRole(String)
+     * 
+     * @param context
+     *                the context from the parent, see
+     *                {@link Restlet#Restlet(Context)}
+     * @see #JaxRsRouter(Context, Authenticator, boolean, boolean)
+     * @see #JaxRsRouter(Context, Authenticator)
+     */
+    public JaxRsRouter(Context context) {
+        this(context, ThrowExcAuthenticator.getInstance(), false, false);
     }
 
     private void loadDefaultProviders() throws WrappedClassLoadException,
@@ -407,9 +453,12 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
     }
 
     /**
-     * Not yet implemented.
+     * Loads all providers from in given package, accessable from a given class
+     * loader.
      * 
      * @param classLoader
+     *                The {@link ClassLoader}, which could access the
+     *                providers. See {@link Class#getClassLoader()}.
      * @param throwOnExc
      * @param packageName
      * @throws WrappedLoadException
@@ -1216,7 +1265,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         } catch (InstantiateParameterException e) {
             throw new WebApplicationException(e, 404);
         } catch (InvocationTargetException ite) {
-            // TODO wenn RuntimeException, dann weitergeben.
+            // LATER if RuntimeException, then propagate and not handle here?
             throw handleInvokeException(ite, resourceMethod, callContext,
                     "invoke", "Exception in resource method");
         } catch (RequestHandledException e) {
@@ -1322,7 +1371,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                     .getResponse());
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
                 callContext.getResponse(), jaxRsRespHeaders, getLogger());
-        // TESTEN Response Headers for MessageBodyWriter nicht mehr null
+        // TESTEN Response Headers for MessageBodyWriter is not null yet
         return new JaxRsOutputRepresentation(entity, mediaType, mbw,
                 httpResponseHeaders);
     }
