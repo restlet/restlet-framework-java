@@ -57,6 +57,10 @@ public class JaxbProvider extends AbstractProvider<Object> {
      */
     @Override
     protected boolean isReadableAndWriteable(Class<?> type) {
+        // if(type.isArray())
+        //    type = type.getComponentType();
+        // if(Collection.class.isAssignableFrom(type))
+        //    return true;
         return type.isAnnotationPresent(XmlRootElement.class);
     }
 

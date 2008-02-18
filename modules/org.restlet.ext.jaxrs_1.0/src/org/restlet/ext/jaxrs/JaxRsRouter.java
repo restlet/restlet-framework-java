@@ -675,8 +675,8 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         } catch (WebApplicationException e) {
             throw e;
         } catch (Exception e) {
-            throw handleCreateException(e, callContext, "createInstance", null,
-                    "Could not create new instance of root resource class");
+            throw handleExecption(e, null, callContext,
+            "Could not create new instance of root resource class");
         }
         // Part 2
         for (;;) // (j)
@@ -728,9 +728,8 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             } catch (InstantiateParameterException e) {
                 throw new WebApplicationException(e, 404);
             } catch (Exception e) {
-                throw handleCreateException(e, callContext,
-                        "createSubResource", subResourceLocator,
-                        "Could not create new instance of root resource class");
+                throw handleExecption(e, subResourceLocator, callContext,
+                "Could not create new instance of root resource class");
             }
             // (j) Go to step 2a (repeat for)
         }
@@ -1161,9 +1160,11 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
     }
 
     /**
-     * Handles the given Exception.
+     * Handles the given Exception, catched by an invoke of a resource method or
+     * a creation if a sub resource object.
      * 
      * @param exception
+     * @param resourceMethod
      * @param callContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
@@ -1173,50 +1174,19 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      * @throws RequestHandledException
      *                 throws this message to exit the method and indicate, that
      *                 the request was handled.
+     * @throws RequestHandledException
      */
-    private RequestHandledException handleInvokeException(Exception exception,
-            ResourceMethod resourceMethod, CallContext callContext,
-            String methodName, String logMessage)
-            throws RequestHandledException {
-        if (exception.getCause() instanceof WebApplicationException) {
-            WebApplicationException webAppExc = (WebApplicationException) exception
-                    .getCause();
-            handleWebAppExc(webAppExc, callContext, resourceMethod);
+    private RequestHandledException handleExecption(Throwable exception,
+            AbstractMethodWrapper resourceMethod, CallContext callContext,
+            String logMessage) throws RequestHandledException {
+        if (exception instanceof InvocationTargetException)
+            exception = exception.getCause();
+        if (exception instanceof WebApplicationException) {
+            WebApplicationException webAppExc = (WebApplicationException) exception;
+            throw handleWebAppExc(webAppExc, callContext, resourceMethod);
         }
         callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-        getLogger().logp(Level.WARNING, this.getClass().getName(), methodName,
-                logMessage, exception.getCause());
-        exception.printStackTrace();
-        throw new RequestHandledException();
-    }
-
-    /**
-     * Handles the given Exception.
-     * 
-     * @param exception
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * @param methodName
-     * @param resourceMethod
-     * @param logMessage
-     * @param resourceMethod
-     *                The invokes method.
-     * @throws RequestHandledException
-     *                 throws this message to exit the method and indicate, that
-     *                 the request was handled.
-     */
-    private RequestHandledException handleCreateException(Exception exception,
-            CallContext callContext, String methodName,
-            AbstractMethodWrapper resourceMethod, String logMessage)
-            throws RequestHandledException {
-        if (exception instanceof WebApplicationException)
-            throw handleWebAppExc((WebApplicationException) exception,
-                    callContext, resourceMethod);
-        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-        getLogger().logp(Level.WARNING, this.getClass().getName(), methodName,
-                logMessage, exception.getCause());
+        getLogger().log(Level.WARNING, logMessage, exception.getCause());
         exception.printStackTrace();
         throw new RequestHandledException();
     }
@@ -1266,13 +1236,13 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             throw new WebApplicationException(e, 404);
         } catch (InvocationTargetException ite) {
             // LATER if RuntimeException, then propagate and not handle here?
-            throw handleInvokeException(ite, resourceMethod, callContext,
-                    "invoke", "Exception in resource method");
+            throw handleExecption(ite, resourceMethod, callContext,
+            "Exception in resource method");
         } catch (RequestHandledException e) {
             throw e;
         } catch (Exception e) {
-            throw handleInvokeException(e, resourceMethod, callContext,
-                    "invoke", "Can not invoke the resource method");
+            throw handleExecption(e, resourceMethod, callContext,
+            "Can not invoke the resource method");
         }
         Response restletResponse = callContext.getResponse();
         if (result == null) { // no representation

@@ -20,6 +20,7 @@ package org.restlet.ext.jaxrs.examples;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.GET;
@@ -27,6 +28,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -57,6 +59,8 @@ public class PersonsRootResource {
     @Path("{personId}")
     public PersonResource onePerson(@PathParam("personId")
     int personId) {
+        if(!dbPersonExists(personId))
+            throw new WebApplicationException(404);
         return new PersonResource(personId);
     }
 
@@ -68,9 +72,11 @@ public class PersonsRootResource {
      */
     @GET
     @ProduceMime( { "application/xml", "text/xml" })
-    public Collection<Person> getXmlList() {
+    public Person[] getXmlList() {
+        // TODO getXmlList() can not serialize a Person list / person array.
         // for a good REST style links to the sub resources should be added.
-        return dbGetAllPersons();
+        List<Person> allPersons = dbGetAllPersons();
+        return allPersons.toArray(new Person[allPersons.size()]);
     }
 
     /**
@@ -161,11 +167,21 @@ public class PersonsRootResource {
         return newId;
     }
 
-    private Collection<Person> dbGetAllPersons() {
-        Collection<Person> persons = new ArrayList<Person>();
+    private List<Person> dbGetAllPersons() {
+        List<Person> persons = new ArrayList<Person>();
         persons.add(new Person(1, "George U.", "Buch"));
         persons.add(new Person(2, "Gordon", "Brown"));
         persons.add(new Person(3, "Angela", "Merkel"));
         return persons;
+    }
+    
+    /**
+     * Checks, if the person exists in the database.
+     * @param personId
+     * @return
+     */
+    private boolean dbPersonExists(int personId)
+    {
+        return personId > 0 && personId < 10;
     }
 }
