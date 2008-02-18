@@ -173,7 +173,7 @@ public abstract class HttpClientCall extends HttpCall {
             if (size == Representation.UNKNOWN_SIZE) {
                 getLogger()
                         .info(
-                                "The length of the message body is unknown. The entity must be handled carefully");
+                                "The length of the message body is unknown. The entity must be handled carefully, and may be consumed entirely in order to surely release the connection.");
             }
         }
         // }
