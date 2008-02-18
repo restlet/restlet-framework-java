@@ -1,4 +1,4 @@
-	
+   
 ===========
 Changes log  
 ===========
@@ -98,7 +98,15 @@ Changes log
  - Added Engine.formatCookie(), formatCookieSetting() and equivalent parse*() methods. Contributed by Stephan
    Koops for the JAX-RS implementation.
  - Deprecated Status.isInfo(), replaced by isInformational() to follow HTTP naming.
-
+ - Updated HTTP server connectors behaviour in the purpose to avoid the sending of entity when the entity is 
+   empty, when the status explicitely forbids the sending of entity (e.g. 1xx, etc), or when the method must 
+   not send entity (e.g. HEAD).
+ - Updated HTTP client connectors behaviour in the purpose to close aggressively the connection in several 
+   identified cases when the status explicitely forbids the sending of entity (e.g. 1xx, etc), when the 
+   method must not send entity (e.g. HEAD), or when the Content-Length header's value is 0.
+ - Ensure that the headers of the response's entity will be retrieved even if no message body has been 
+   sent (in this case, an empty representation is created).
+   
 1.1 Milestone 1 (2007-12-24)
 [Bugs fixed]
  - Overridden the StringRepresentation#setCharacterSet method, in order to refresh the 
