@@ -19,6 +19,13 @@ package org.restlet.test.jaxrs.services;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * This class is used as data object in the resource classes
+ * {@link OwnProviderTestService} and {@link ProviderTestService}. It can be
+ * serialized by the {@link CrazyTypeProvider}.
+ * 
+ * @author Stephan Koops
+ */
 @XmlRootElement
 public class Person {
     private String firstname;

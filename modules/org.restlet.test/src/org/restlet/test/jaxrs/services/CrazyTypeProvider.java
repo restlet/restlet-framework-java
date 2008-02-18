@@ -55,13 +55,10 @@ public class CrazyTypeProvider implements MessageBodyWriter<Person> {
     public void writeTo(Person person, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        Object host = httpHeaders.getFirst("Host");
-        entityStream.write("This is crazy, ".getBytes());
         entityStream.write(person.getFirstname().getBytes());
         entityStream.write(' ');
         entityStream.write(person.getLastname().getBytes());
-        entityStream.write(", means ".getBytes());
-        entityStream.write(host.toString().getBytes());
-        entityStream.write('.');
+        entityStream.write(" is crazy.".getBytes());
+        // TESTEN request somethin from the headers.
     }
 }
