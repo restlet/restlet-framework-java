@@ -46,6 +46,25 @@ import com.noelios.restlet.util.HeaderReader;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class HttpServerCall extends HttpCall {
+    /**
+     * Format {@code fileName} as a Content-Disposition header value
+     * 
+     * @param fileName
+     *                Filename to format
+     * @return {@code fileName} formatted
+     */
+    public static String formatContentDisposition(String fileName) {
+        StringBuilder b = new StringBuilder("attachment; filename=\"");
+
+        if (fileName != null) {
+            b.append(fileName);
+        }
+
+        b.append('"');
+
+        return b.toString();
+    }
+
     /** Indicates if the "host" header was already parsed. */
     private boolean hostParsed;
 
@@ -74,25 +93,6 @@ public abstract class HttpServerCall extends HttpCall {
      */
     public HttpServerCall(Server server) {
         this(server.getLogger(), server.getAddress(), server.getPort());
-    }
-
-    /**
-     * Format {@code fileName} as a Content-Disposition header value
-     * 
-     * @param fileName
-     *                Filename to format
-     * @return {@code fileName} formatted
-     */
-    public String formatContentDisposition(String fileName) {
-        StringBuilder b = new StringBuilder("attachment; filename=\"");
-
-        if (fileName != null) {
-            b.append(fileName);
-        }
-
-        b.append('"');
-
-        return b.toString();
     }
 
     /**
@@ -344,6 +344,8 @@ public abstract class HttpServerCall extends HttpCall {
      * 
      * @param response
      *                The high-level response.
+     * @throws IOException
+     *                 if the Response could not be written to the network.
      */
     public void sendResponse(Response response) throws IOException {
         if (response != null) {

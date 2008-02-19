@@ -55,6 +55,7 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 import org.restlet.util.Helper;
+import org.restlet.util.Series;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.component.ComponentHelper;
@@ -214,6 +215,16 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
+     * Copies the given header parameters into teh given {@link Response}.
+     * 
+     * @param headers
+     *                The headers to copy.
+     * @param response
+     *                The response to update. Must contain a
+     *                {@link Representation} to copy the representation headers
+     *                in it.
+     * @param logger
+     *                The logger to use.
      * @see org.restlet.util.Engine#copyResponseHeaders(java.lang.Iterable,
      *      org.restlet.data.Response, java.util.logging.Logger)
      */
@@ -224,6 +235,28 @@ public class Engine extends org.restlet.util.Engine {
                 response, logger);
         HttpClientCall.copyResponseEntityHeaders(responseHeaders, response
                 .getEntity());
+    }
+
+    /**
+     * Copies the headers of the given {@link Response} into the given
+     * {@link Series}.
+     * 
+     * @param response
+     *                The response to update. Should contain a
+     *                {@link Representation} to copy the representation headers
+     *                from it.
+     * @param headers
+     *                The Series to copy the headers in.
+     * @param logger
+     *                The logger to use.
+     * @see org.restlet.util.Engine#copyResponseHeaders(Response, Series,
+     *      Logger)
+     */
+    @Override
+    public void copyResponseHeaders(Response response,
+            Series<Parameter> headers, Logger logger) {
+        HttpServerConverter.addResponseHeaders(response, headers);
+        HttpServerConverter.addEntityHeaders(response.getEntity(), headers);
     }
 
     @Override
@@ -816,11 +849,6 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     @Override
-    public String toMd5(String target) {
-        return AuthenticationUtils.toMd5(target);
-    }
-
-    @Override
     public void parse(Logger logger, Form form, Representation webForm) {
         if (webForm != null) {
             FormUtils.parsePost(logger, form, webForm);
@@ -831,7 +859,8 @@ public class Engine extends org.restlet.util.Engine {
     public void parse(Logger logger, Form form, String queryString,
             CharacterSet characterSet, boolean decode) {
         if ((queryString != null) && !queryString.equals("")) {
-            FormUtils.parseQuery(logger, form, queryString, characterSet, decode);
+            FormUtils.parseQuery(logger, form, queryString, characterSet,
+                    decode);
         }
     }
 
@@ -915,6 +944,11 @@ public class Engine extends org.restlet.util.Engine {
         for (ConnectorHelper helper : helpers) {
             registerServerHelper(helper);
         }
+    }
+
+    @Override
+    public String toMd5(String target) {
+        return AuthenticationUtils.toMd5(target);
     }
 
 }

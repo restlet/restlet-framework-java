@@ -270,18 +270,35 @@ public abstract class Engine {
     public abstract void challenge(Response response, boolean stale, Guard guard);
 
     /**
-     * Copies headers into a response.
+     * Copies the given header parameters into teh given {@link Response}.
      * 
      * @param headers
      *                The headers to copy.
      * @param response
-     *                The response to update. Must contain a Representation to
-     *                copy the representation headers in it.
+     *                The response to update. Must contain a
+     *                {@link Representation} to copy the representation headers
+     *                in it.
      * @param logger
      *                The logger to use.
      */
     public abstract void copyResponseHeaders(Iterable<Parameter> headers,
             Response response, Logger logger);
+
+    /**
+     * Copies the headers of the given {@link Response} into the given
+     * {@link Series}.
+     * 
+     * @param response
+     *                The response to update. Should contain a
+     *                {@link Representation} to copy the representation headers
+     *                from it.
+     * @param headers
+     *                The Series to copy the headers in.
+     * @param logger
+     *                The logger to use.
+     */
+    public abstract void copyResponseHeaders(Response response,
+            Series<Parameter> headers, Logger logger);
 
     /**
      * Creates a directory resource.

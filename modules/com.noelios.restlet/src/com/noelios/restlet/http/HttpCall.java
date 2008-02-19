@@ -38,6 +38,40 @@ import org.restlet.util.Series;
  */
 public class HttpCall {
 
+    /**
+     * Formats a date as a header string.
+     * 
+     * @param date
+     *                The date to format.
+     * @param cookie
+     *                Indicates if the date should be in the cookie format.
+     * @return The formatted date.
+     */
+    public static String formatDate(Date date, boolean cookie) {
+        if (cookie) {
+            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
+        } else {
+            return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
+        }
+    }
+
+    /**
+     * Parses a date string.
+     * 
+     * @param date
+     *                The date string to parse.
+     * @param cookie
+     *                Indicates if the date is in the cookie format.
+     * @return The parsed date.
+     */
+    public static Date parseDate(String date, boolean cookie) {
+        if (cookie) {
+            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
+        } else {
+            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
+        }
+    }
+
     /** The client IP address. */
     private String clientAddress;
 
@@ -105,23 +139,6 @@ public class HttpCall {
         this.serverPort = -1;
         this.statusCode = 200;
         this.version = null;
-    }
-
-    /**
-     * Formats a date as a header string.
-     * 
-     * @param date
-     *                The date to format.
-     * @param cookie
-     *                Indicates if the date should be in the cookie format.
-     * @return The formatted date.
-     */
-    public String formatDate(Date date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
-        } else {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
-        }
     }
 
     /**
@@ -335,23 +352,6 @@ public class HttpCall {
         }
 
         return result;
-    }
-
-    /**
-     * Parses a date string.
-     * 
-     * @param date
-     *                The date string to parse.
-     * @param cookie
-     *                Indicates if the date is in the cookie format.
-     * @return The parsed date.
-     */
-    public static Date parseDate(String date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
-        } else {
-            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
-        }
     }
 
     /**
