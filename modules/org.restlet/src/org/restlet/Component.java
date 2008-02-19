@@ -40,6 +40,8 @@ import org.restlet.util.ClientList;
 import org.restlet.util.Engine;
 import org.restlet.util.Helper;
 import org.restlet.util.ServerList;
+import org.restlet.util.Template;
+import org.restlet.util.Variable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -187,7 +189,7 @@ public class Component extends Restlet {
                         if (port == Protocol.UNKNOWN_PORT) {
                             getLogger()
                                     .warning(
-                                            "Please specify a host when defining a list of protocols.");
+                                            "Please specify a port when defining a list of protocols.");
                         } else {
                             server = new Server(getContext(), protocolsList,
                                     getInt(portNode, Protocol.UNKNOWN_PORT),
@@ -219,6 +221,7 @@ public class Component extends Restlet {
                 for (int j = 0; j < hostNodes.getLength(); j++) {
                     VirtualHost host = new VirtualHost();
                     parseHost(host, hostNodes.item(j));
+                    this.getHosts().add(host);
                 }
             }
 
@@ -230,7 +233,6 @@ public class Component extends Restlet {
                 Node node = internalRouterNodes.item(0);
                 Node item = node.getAttributes().getNamedItem(
                         "defaultMatchingMode");
-
                 if (item != null) {
                     this.getInternalRouter().setDefaultMatchingMode(
                             getInt(item, getInternalRouter()
@@ -238,7 +240,6 @@ public class Component extends Restlet {
                 }
 
                 item = node.getAttributes().getNamedItem("maxAttempts");
-
                 if (item != null) {
                     this.getInternalRouter().setMaxAttempts(
                             getInt(item, this.getInternalRouter()
@@ -246,7 +247,6 @@ public class Component extends Restlet {
                 }
 
                 item = node.getAttributes().getNamedItem("routingMode");
-
                 if (item != null) {
                     this.getInternalRouter().setRoutingMode(
                             getInt(item, this.getInternalRouter()
@@ -254,7 +254,6 @@ public class Component extends Restlet {
                 }
 
                 item = node.getAttributes().getNamedItem("requiredScore");
-
                 if (item != null) {
                     this.getInternalRouter().setRequiredScore(
                             getFloat(item, this.getInternalRouter()
@@ -262,12 +261,14 @@ public class Component extends Restlet {
                 }
 
                 item = node.getAttributes().getNamedItem("retryDelay");
-
                 if (item != null) {
                     this.getInternalRouter().setRetryDelay(
                             getLong(item, this.getInternalRouter()
                                     .getRetryDelay()));
                 }
+
+                // Loops the list of "attach" instructions
+                setAttach(getInternalRouter(), node);
             }
 
             // Look for logService
@@ -341,23 +342,79 @@ public class Component extends Restlet {
         }
     }
 
+    private void setAttach(Router router, Node node) {
+        NodeList childNodes = node.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node childNode = childNodes.item(i);
+            if ("attach".equals(childNode.getNodeName())) {
+                String uriPattern = null;
+                Node item = childNode.getAttributes()
+                        .getNamedItem("uriPattern");
+                if (item != null) {
+                    uriPattern = item.getNodeValue();
+                } else {
+                    uriPattern = "";
+                }
+
+                String targetClass = null;
+                item = childNode.getAttributes().getNamedItem("targetClass");
+                if (item != null) {
+                    targetClass = item.getNodeValue();
+                }
+
+                item = childNode.getAttributes().getNamedItem("default");
+                boolean bDefault = getBoolean(item, false);
+                Route route = attach(router, targetClass, uriPattern, bDefault);
+                if (route != null) {
+                    Template template = route.getTemplate();
+                    item = childNode.getAttributes().getNamedItem(
+                            "matchingMode");
+                    template.setMatchingMode(getInt(item,
+                            Template.MODE_STARTS_WITH));
+                    item = childNode.getAttributes().getNamedItem(
+                            "defaultVariableType");
+                    template.getDefaultVariable().setType(
+                            getInt(item, Variable.TYPE_URI_SEGMENT));
+                }
+                item = childNode.getAttributes().getNamedItem(
+                "targetDescriptor"); // String
+
+            }
+        }
+    }
+
+    /**
+     * Creates a new route on a router according to a target class name and a
+     * URI pattern.
+     * 
+     * @param router
+     *                the router.
+     * @param targetClassName
+     *                the target class name.
+     * @param uriPattern
+     *                the URI pattern.
+     * @param defaultRoute
+     *                Is this route the default one?
+     * @return the created route, or null.
+     */
     @SuppressWarnings("unchecked")
-    private void attach(Router router, String targetClassName, String uriPattern) {
+    private Route attach(Router router, String targetClassName,
+            String uriPattern, boolean defaultRoute) {
+        Route route = null;
         // Load the application class using the given class name
         if (targetClassName != null) {
             try {
                 Class<?> targetClass = Engine.classForName(targetClassName);
 
                 // First check if we have a Resource class that should be
-                // attached
-                // directly to the router.
+                // attached directly to the router.
                 if (Resource.class.isAssignableFrom(targetClass)) {
                     Class<? extends Resource> resourceClass = (Class<? extends Resource>) targetClass;
 
-                    if (uriPattern != null) {
-                        router.attach(uriPattern, resourceClass);
+                    if (uriPattern != null && !defaultRoute) {
+                        route = router.attach(uriPattern, resourceClass);
                     } else {
-                        router.attachDefault(resourceClass);
+                        route = router.attachDefault(resourceClass);
                     }
                 } else {
                     Restlet target = null;
@@ -385,10 +442,10 @@ public class Component extends Restlet {
                     }
 
                     if (target != null) {
-                        if (uriPattern != null) {
-                            router.attach(uriPattern, target);
+                        if (uriPattern != null && !defaultRoute) {
+                            route = router.attach(uriPattern, target);
                         } else {
-                            router.attachDefault(target);
+                            route = router.attachDefault(target);
                         }
                     }
                 }
@@ -424,6 +481,7 @@ public class Component extends Restlet {
                                         + targetClassName, e);
             }
         }
+        return route;
     }
 
     /**
@@ -674,6 +732,8 @@ public class Component extends Restlet {
         if (item != null && item.getNodeValue() != null) {
             host.setServerPort(item.getNodeValue());
         }
+        // Loops the list of "attach" instructions
+        setAttach(host, hostNode);
     }
 
     /**
