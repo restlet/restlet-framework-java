@@ -40,72 +40,23 @@ public abstract class BaseConnectorsTestCase extends TestCase {
 
     private Component component;
 
-    // protected String uri;
+    private boolean enableApacheClient = true;
 
-    @Override
-    public void setUp() {
-    }
+    private boolean enableGrizzlyServer = true;
 
-    public void testDefaultAndDefault() throws Exception {
-        runTest(new StreamServerHelper(null), new StreamClientHelper(null));
-    }
+    private boolean enableInternalClient = true;
 
-    public void testDefaultAndHttpClient() throws Exception {
-        runTest(new StreamServerHelper(null),
-        new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
-    }
+    private boolean enableInternalServer = true;
 
-    public void testDefaultAndJdkNet() throws Exception {
-        runTest(new StreamServerHelper(null),
-        new com.noelios.restlet.ext.net.HttpClientHelper(null));
-    }
+    private boolean enableJdkNetClient = true;
 
-    public void testGrizzlyAndDefault() throws Exception {
-        runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-        new StreamClientHelper(null));
-    }
+    private boolean enableJettyServer = true;
 
-    public void testGrizzlyAndHttpClient() throws Exception {
-        // runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-        // new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
-    }
+    private boolean enableSimpleServer = true;
 
-    public void testGrizzlyAndJdkNet() throws Exception {
-        // runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-        // new com.noelios.restlet.ext.net.HttpClientHelper(null));
-    }
+    protected abstract void call(String uri) throws Exception;
 
-    public void testJettyAndDefault() throws Exception {
-         runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
-         new StreamClientHelper(null));
-    }
-
-    public void testJettyAndHttpClient() throws Exception {
-         runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
-         new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
-    }
-
-    public void testJettyAndJdkNet() throws Exception {
-         runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
-         new com.noelios.restlet.ext.net.HttpClientHelper(null));
-    }
-
-    public void testSimpleAndDefault() throws Exception {
-        // Simple also does not shutdown cleanly, we need to increment
-        // run on a different port each time.
-         runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
-                new StreamClientHelper(null));
-    }
-
-    public void testSimpleAndHttpClient() throws Exception {
-         runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
-         new com.noelios.restlet.ext.httpclient.HttpClientHelper(null));
-    }
-
-    public void testSimpleAndJdkNet() throws Exception {
-         runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
-                new com.noelios.restlet.ext.net.HttpClientHelper(null));
-    }
+    protected abstract Application createApplication(Component component);
 
     // Helper methods
     private void runTest(ConnectorHelper server, ConnectorHelper client)
@@ -121,6 +72,10 @@ public abstract class BaseConnectorsTestCase extends TestCase {
         } finally {
             stop();
         }
+    }
+
+    @Override
+    public void setUp() {
     }
 
     private String start() throws Exception {
@@ -140,7 +95,93 @@ public abstract class BaseConnectorsTestCase extends TestCase {
         }
     }
 
-    protected abstract Application createApplication(Component component);
+    public void testGrizzlyAndApache() throws Exception {
+        if (enableGrizzlyServer && enableApacheClient) {
+            // runTest(new
+            // com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+            // new com.noelios.restlet.ext.httpclient.HttpClientHelper(
+            // null));
+        }
+    }
 
-    protected abstract void call(String uri) throws Exception;
+    public void testGrizzlyAndInternal() throws Exception {
+        if (enableGrizzlyServer && enableInternalClient) {
+            // runTest(new
+            // com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+            // new StreamClientHelper(null));
+        }
+    }
+
+    public void testGrizzlyAndJdkNet() throws Exception {
+        if (enableGrizzlyServer && enableJdkNetClient) {
+            // runTest(new
+            // com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+            // new com.noelios.restlet.ext.net.HttpClientHelper(null));
+        }
+    }
+
+    public void testInternalAndApache() throws Exception {
+        if (enableInternalServer && enableApacheClient) {
+            runTest(new StreamServerHelper(null),
+                    new com.noelios.restlet.ext.httpclient.HttpClientHelper(
+                            null));
+        }
+    }
+
+    public void testInternalAndInternal() throws Exception {
+        if (enableInternalServer && enableInternalClient) {
+            runTest(new StreamServerHelper(null), new StreamClientHelper(null));
+        }
+    }
+
+    public void testInternalAndJdkNet() throws Exception {
+        if (enableInternalServer && enableJdkNetClient) {
+            runTest(new StreamServerHelper(null),
+                    new com.noelios.restlet.ext.net.HttpClientHelper(null));
+        }
+    }
+
+    public void testJettyAndApache() throws Exception {
+        if (enableJettyServer && enableApacheClient) {
+            runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
+                    new com.noelios.restlet.ext.httpclient.HttpClientHelper(
+                            null));
+        }
+    }
+
+    public void testJettyAndInternal() throws Exception {
+        if (enableJettyServer && enableInternalClient) {
+            runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
+                    new StreamClientHelper(null));
+        }
+    }
+
+    public void testJettyAndJdkNet() throws Exception {
+        if (enableJettyServer && enableJdkNetClient) {
+            runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
+                    new com.noelios.restlet.ext.net.HttpClientHelper(null));
+        }
+    }
+
+    public void testSimpleAndApache() throws Exception {
+        if (enableSimpleServer && enableApacheClient) {
+            runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
+                    new com.noelios.restlet.ext.httpclient.HttpClientHelper(
+                            null));
+        }
+    }
+
+    public void testSimpleAndInternal() throws Exception {
+        if (enableSimpleServer && enableInternalClient) {
+            runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
+                    new StreamClientHelper(null));
+        }
+    }
+
+    public void testSimpleAndJdkNet() throws Exception {
+        if (enableSimpleServer && enableJdkNetClient) {
+            runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
+                    new com.noelios.restlet.ext.net.HttpClientHelper(null));
+        }
+    }
 }
