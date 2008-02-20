@@ -31,6 +31,7 @@ import javax.ws.rs.ProduceMime;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.SortedMetadata;
 
 /**
@@ -165,9 +166,11 @@ public class ResourceMethod extends AbstractMethodWrapper implements
         List<MediaType> prodMimes = getProducedMimes();
         if (prodMimes.isEmpty())
             return true;
+        if(true)
+            throw new NotYetImplementedException("sorry, check in to early");  // WAITFORPATCH 
         for (MediaType producedMediaType : prodMimes) {
             for (MediaType accMediaType : accMediaTypess)
-                if (accMediaType.isCompatibleTo(producedMediaType))
+                // if (accMediaType.isCompatibleTo(producedMediaType)) WAITFORPATCH
                     return true;
         }
         return false;
