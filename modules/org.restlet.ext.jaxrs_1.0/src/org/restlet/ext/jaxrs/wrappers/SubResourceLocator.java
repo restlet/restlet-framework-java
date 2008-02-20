@@ -41,7 +41,7 @@ import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
  * 
  */
 public class SubResourceLocator extends AbstractMethodWrapper implements
-        SubResourceMethodOrLocator {
+        ResourceMethodOrLocator {
     /**
      * Creates a new wrapper for the given sub resource locator.
      * 

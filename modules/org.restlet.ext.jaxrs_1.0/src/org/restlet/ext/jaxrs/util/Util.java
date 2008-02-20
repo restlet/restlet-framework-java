@@ -240,10 +240,8 @@ public class Util {
     public static Series<Parameter> copyResponseHeaders(
             Response restletResponse, Logger logger) {
         Series<Parameter> headers = new Form();
-        // Engine engine = Engine.getInstance();
-        if (true) // TODO waiting for engine fix: copyResponseHeaders.
-            throw new UnsupportedOperationException("Waiting for enfine fix");
-        // engine.copyResponseHeaders(restletResponse, headers, logger);
+        Engine engine = Engine.getInstance();
+        engine.copyResponseHeaders(restletResponse, headers, logger);
         return headers;
     }
 
@@ -669,36 +667,6 @@ public class Util {
     }
 
     /**
-     * Checks if the {@link org.restlet.data.MediaType}s are compatible.
-     * 
-     * @param mediaType1
-     * @param mediaType2
-     * @return
-     */
-    public static boolean isCompatible(org.restlet.data.MediaType mediaType1,
-            org.restlet.data.MediaType mediaType2) {
-        // TODO Jerome: move to Restlet API?
-        return mediaType1.includes(mediaType2)
-                || mediaType2.includes(mediaType1);
-    }
-
-    /**
-     * Checks, if the given MediaType is concrete
-     * 
-     * @param mediaType
-     * @return
-     * @see #specificness(org.restlet.data.MediaType)
-     */
-    public static boolean isConcrete(org.restlet.data.MediaType mediaType) {
-        // TODO Jerome: move to Restlet API?
-        if (mediaType.getSubType().equals("*"))
-            return false;
-        if (mediaType.getMainType().equals("*"))
-            return false;
-        return true;
-    }
-
-    /**
      * Checks, if the list is empty.
      * 
      * @param list
@@ -745,43 +713,6 @@ public class Util {
      */
     public static boolean isNotEmpty(List<?> list) {
         return (list != null && !list.isEmpty());
-    }
-
-    /**
-     * Returns one of the most specific {@link MediaType}s of the given
-     * MediaTypes. See JSR-311 specification, section 2.6. 'Determining the
-     * MediaType of Responses', part 5.
-     * 
-     * @param mediaTypes
-     *                an array of {@link org.restlet.data.MediaType}s.
-     * @return the most concrete {@link MediaType}.
-     * @throws IllegalArgumentException
-     *                 if the array is null or empty.
-     */
-    public static org.restlet.data.MediaType mostSpecific(
-            org.restlet.data.MediaType... mediaTypes)
-            throws IllegalArgumentException {
-        // TODO Jerome: move to Restlet-API? static MediaType.mostSpecific(...)
-        if (mediaTypes == null || mediaTypes.length == 0)
-            throw new IllegalArgumentException(
-                    "You must give at least one MediaType");
-        if (mediaTypes.length == 1)
-            return mediaTypes[0];
-        org.restlet.data.MediaType mostSpecific = mediaTypes[0];
-        for (int i = 1; i < mediaTypes.length; i++) {
-            org.restlet.data.MediaType mediaType = mediaTypes[i];
-            if (mediaType.getMainType().equals("*"))
-                continue;
-            if (mostSpecific.getMainType().equals("*")) {
-                mostSpecific = mediaType;
-                continue;
-            }
-            if (mostSpecific.getSubType().equals("*")) {
-                mostSpecific = mediaType;
-                continue;
-            }
-        }
-        return mostSpecific;
     }
 
     /**

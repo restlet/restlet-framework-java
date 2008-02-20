@@ -96,7 +96,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     private Collection<SubResourceMethod> subResourceMethods;
 
-    private Collection<SubResourceMethodOrLocator> subResourceMethodsAndLocators;
+    private Collection<ResourceMethodOrLocator> subResourceMethodsAndLocators;
 
     boolean leaveEncoded;
 
@@ -217,7 +217,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     /**
      * @return Returns the sub resource locatores and sub resource methods.
      */
-    public final Collection<SubResourceMethodOrLocator> getSubResourceMethodsAndLocators() {
+    public final Collection<ResourceMethodOrLocator> getSubResourceMethodsAndLocators() {
         if (this.subResourceMethodsAndLocators == null)
             internalSetSubResourceMethodsAndLocators();
         return this.subResourceMethodsAndLocators;
@@ -237,7 +237,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     }
 
     private void internalSetSubResourceMethodsAndLocators() {
-        Collection<SubResourceMethodOrLocator> srmls = new ArrayList<SubResourceMethodOrLocator>();
+        Collection<ResourceMethodOrLocator> srmls = new ArrayList<ResourceMethodOrLocator>();
         Collection<SubResourceMethod> srms = new ArrayList<SubResourceMethod>();
         Collection<SubResourceLocator> srls = new ArrayList<SubResourceLocator>();
         java.lang.reflect.Method[] classMethods = jaxRsClass.getMethods();

@@ -35,8 +35,7 @@ import javax.ws.rs.Path;
  * @author Stephan Koops
  * 
  */
-public class SubResourceMethod extends ResourceMethod implements
-        SubResourceMethodOrLocator {
+public class SubResourceMethod extends ResourceMethod {
 
     /**
      * Creates a new Wrapper for a SubResourceMethod

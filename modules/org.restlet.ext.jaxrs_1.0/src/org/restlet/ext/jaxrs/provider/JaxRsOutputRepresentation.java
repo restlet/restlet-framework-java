@@ -24,7 +24,6 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.util.Converter;
-import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriter;
 import org.restlet.resource.OutputRepresentation;
 
@@ -48,7 +47,8 @@ public class JaxRsOutputRepresentation extends OutputRepresentation {
      * @param object
      *                the object to serialize
      * @param mediaType
-     *                the MediaType of the object
+     *                the MediaType of the object. Must be concrete, see
+     *                {@link MediaType#isConcrete()}.
      * @param mbw
      *                the MessageBodyWriter which will serialize the object.
      * @param httpHeaders
@@ -57,8 +57,8 @@ public class JaxRsOutputRepresentation extends OutputRepresentation {
     public JaxRsOutputRepresentation(Object object, MediaType mediaType,
             MessageBodyWriter mbw, MultivaluedMap<String, Object> httpHeaders) {
         super(mediaType, mbw.getSize(object));
-        if(!Util.isConcrete(mediaType))
-            throw new IllegalArgumentException(mediaType+" is not concrete");
+        if (!mediaType.isConcrete())
+            throw new IllegalArgumentException(mediaType + " is not concrete");
         this.mbw = mbw;
         this.httpHeaders = httpHeaders;
         this.object = object;

@@ -37,16 +37,34 @@ public class EncodeOrCheck {
     private static final char[] HEX_DIGITS = { '0', '1', '2', '3', '4', '5',
             '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
+    /**
+     * the unreserved characters in URIs
+     */
     public static final String UNRESERVED = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-._~";
 
+    /**
+     * the gen-delimiter characters in URIs
+     */
     public static final String GEN_DELIMITERS = ":/?#[]@";
 
+    /**
+     * the sub-delimiter characters in URIs
+     */
     public static final String SUB_DELIMITERS = "!$&'()*+,;=";
 
+    /**
+     * the additional allowed characters for template parameters in URIs.
+     */
     public static final String TEMPL_PARAMS = "{}";
 
+    /**
+     * the reserved characters in URIs
+     */
     public static final String RESERVED = GEN_DELIMITERS + SUB_DELIMITERS;
 
+    /**
+     * the characters forbidden in a fragment.
+     */
     public static final String FRAGMENT_FORBIDDEN;
     static {
         StringBuilder stb = new StringBuilder();

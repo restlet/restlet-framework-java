@@ -26,7 +26,6 @@ import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
-import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * Class to wrap a {@link javax.ws.rs.ext.MessageBodyWriter}
@@ -106,7 +105,7 @@ public class MessageBodyReader {
      */
     public boolean supports(MediaType mediaType) {
         for (MediaType cm : getConsumedMimes()) {
-            if (Util.isCompatible(cm, mediaType))
+            if (cm.isCompatibleTo(mediaType))
                 return true;
         }
         return false;

@@ -32,7 +32,6 @@ import javax.ws.rs.ProduceMime;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.util.SortedMetadata;
-import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * A method of a resource class annotated with a request method designator that
@@ -41,7 +40,8 @@ import org.restlet.ext.jaxrs.util.Util;
  * @author Stephan Koops
  * 
  */
-public class ResourceMethod extends AbstractMethodWrapper {
+public class ResourceMethod extends AbstractMethodWrapper implements
+        ResourceMethodOrLocator {
 
     /**
      * Converts the given mimes to a List of MediaTypes. Will never returns
@@ -167,7 +167,7 @@ public class ResourceMethod extends AbstractMethodWrapper {
             return true;
         for (MediaType producedMediaType : prodMimes) {
             for (MediaType accMediaType : accMediaTypess)
-                if (Util.isCompatible(accMediaType, producedMediaType))
+                if (accMediaType.isCompatibleTo(producedMediaType))
                     return true;
         }
         return false;

@@ -21,12 +21,12 @@ package org.restlet.ext.jaxrs.wrappers;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
 
 /**
- * This interface describes a sub resource locator or a sub resource method. See
- * section 1.5 and 2.3.1 of JSR-311-Spec
+ * This interface describes a resource method, a sub resource method or a sub
+ * resource locator. See section 1.5 and 2.3.1 of JSR-311-Spec
  * 
  * @author Stephan Koops
  */
-public interface SubResourceMethodOrLocator {
+public interface ResourceMethodOrLocator {
 
     /**
      * @return Returns the Regular Expression of the path.

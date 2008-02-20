@@ -74,19 +74,27 @@ import org.restlet.ext.jaxrs.wrappers.MessageBodyWriter;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriterSet;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.ext.jaxrs.wrappers.ResourceMethod;
+import org.restlet.ext.jaxrs.wrappers.ResourceMethodOrLocator;
 import org.restlet.ext.jaxrs.wrappers.ResourceObject;
 import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
 import org.restlet.ext.jaxrs.wrappers.SubResourceLocator;
 import org.restlet.ext.jaxrs.wrappers.SubResourceMethod;
-import org.restlet.ext.jaxrs.wrappers.SubResourceMethodOrLocator;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
 /**
+ * <p>
  * The router choose the JAX-RS resource class and method to use for a request.
  * This class has methods {@link #attach(Class)} and {@link #detach(Class)} like
  * the Restlet {@link Router}. The variable names in this class are often the
- * same as in the JAX-RS-Definition.<br />
+ * same as in the JAX-RS-Definition.
+ * </p>
+ * <p>
+ * This class is a subclass of {@link JaxRsRouterHelpMethods}. The methods to
+ * handle exceptions while identifying the method that should handle the request
+ * and in other situations are moved to that super class. So this class contains
+ * only the real logic code and is more well arranged.
+ * </p>
  * 
  * LATER The class JaxRsRouter is not thread save while attach or detach
  * classes.
@@ -97,7 +105,8 @@ import org.restlet.resource.StringRepresentation;
  * 
  * @author Stephan Koops
  */
-public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
+public class JaxRsRouter extends JaxRsRouterHelpMethods implements
+        HiddenJaxRsRouter {
 
     /**
      * Creates a guarded JaxRsRouter. The credentials and the roles are checked
@@ -150,97 +159,6 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
     private MessageBodyReaderSet messageBodyReaders = new MessageBodyReaderSet();
 
     private MessageBodyWriterSet messageBodyWriters = new MessageBodyWriterSet();
-
-    /**
-     * The default Restlet used when a root resource can not be found.
-     * 
-     * @see #errorRestletRootResourceNotFound
-     */
-    public static final ReturnStatusRestlet DEFAULT_ROOT_RESOURCE_NOT_FOUND_RESTLET = new ReturnStatusRestlet(
-            new Status(Status.CLIENT_ERROR_NOT_FOUND,
-                    "Root resource class not found"));
-
-    /**
-     * The default Restlet used when a (sub) resource can not be found.
-     * 
-     * @see #errorRestletResourceNotFound
-     */
-    public static final ReturnStatusRestlet DEFAULT_RESOURCE_NOT_FOUND_RESTLET = new ReturnStatusRestlet(
-            new Status(Status.CLIENT_ERROR_NOT_FOUND,
-                    "Resource class not found"));
-
-    /**
-     * The default Restlet used when a (sub) resource method can not be found.
-     * 
-     * @see #errorRestletResourceMethodNotFound
-     */
-    public static final ReturnStatusRestlet DEFAULT_RESOURCE_METHOD_NOT_FOUND_RESTLET = new ReturnStatusRestlet(
-            new Status(Status.CLIENT_ERROR_NOT_FOUND,
-                    "Resource method not found or it is not public"));
-
-    /**
-     * The default Restlet used when multiple possible resource methods was
-     * found.
-     * 
-     * @see #errorRestletMultipleResourceMethods
-     */
-    public static final ReturnStatusRestlet DEFAULT_MULTIPLE_RESOURCE_METHODS = new ReturnStatusRestlet(
-            new Status(Status.SERVER_ERROR_INTERNAL,
-                    "Multiple possible resource methods found"));
-
-    /**
-     * The default Restlet used when multiple root resource were found.
-     * 
-     * @see #errorRestletMultipleRootResourceClasses
-     */
-    public static final ReturnStatusRestlet DEFAULT_MULTIPLE_ROOT_RESOURCE_CLASSES = new ReturnStatusRestlet(
-            new Status(Status.SERVER_ERROR_INTERNAL,
-                    "Multiple possible root resource classes found"));
-
-    /**
-     * The default Restlet used when the method is not allwed on the resource.
-     * 
-     * @see #errorRestletMethodNotAllowed
-     */
-    public static final ReturnStatusRestlet DEFAULT_METHOD_NOT_ALLOWED_RESTLET = new ReturnStatusRestlet(
-            Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-
-    /**
-     * The default Restlet used when the media type is not supported
-     * 
-     * @see #errorRestletUnsupportedMediaType
-     */
-    public static final ReturnStatusRestlet DEFAULT_UNSUPPORTED_MEDIA_TYPE_RESTLET = new ReturnStatusRestlet(
-            Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
-
-    /**
-     * The default Restlet used when the request is not acceptable.
-     * 
-     * @see #errorRestletRootResourceNotFound
-     */
-    public static final ReturnStatusRestlet DEFAULT_NOT_ACCEPTABLE_RESTLET = new ReturnStatusRestlet(
-            Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-
-    /**
-     * This Restlet will be used to handle the request if no root resource class
-     * can be found.
-     */
-    private Restlet errorRestletRootResourceNotFound = DEFAULT_ROOT_RESOURCE_NOT_FOUND_RESTLET;
-
-    private Restlet errorRestletResourceNotFound = DEFAULT_RESOURCE_NOT_FOUND_RESTLET;
-
-    /** When no Method for the give path is found */
-    private Restlet errorRestletResourceMethodNotFound = DEFAULT_RESOURCE_METHOD_NOT_FOUND_RESTLET;
-
-    private Restlet errorRestletMethodNotAllowed = DEFAULT_METHOD_NOT_ALLOWED_RESTLET;
-
-    private Restlet errorRestletUnsupportedMediaType = DEFAULT_UNSUPPORTED_MEDIA_TYPE_RESTLET;
-
-    private Restlet errorRestletNotAcceptable = DEFAULT_NOT_ACCEPTABLE_RESTLET;
-
-    private Restlet errorRestletMultipleResourceMethods = DEFAULT_MULTIPLE_RESOURCE_METHODS;
-
-    private Restlet errorRestletMultipleRootResourceClasses = DEFAULT_MULTIPLE_ROOT_RESOURCE_CLASSES;
 
     /**
      * Creates a new JaxRsRouter with the given Context.
@@ -617,9 +535,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         }
         // (d)
         if (eAndCs.isEmpty())
-            throw new CouldNotFindMethodException(
-                    errorRestletRootResourceNotFound,
-                    "No root resource class found for realtiv path " + u);
+            throwRootResourceNotFound(u);
         // (e) and (f)
         RootResourceClass tClass = getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eAndCs);
         // (f)
@@ -676,7 +592,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             throw e;
         } catch (Exception e) {
             throw handleExecption(e, null, callContext,
-            "Could not create new instance of root resource class");
+                    "Could not create new instance of root resource class");
         }
         // Part 2
         for (;;) // (j)
@@ -686,10 +602,10 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                 return new ResObjAndRemPath(o, u);
             }
             // (b) Set C = class ofO,E = {}
-            Collection<SubResourceMethodOrLocator> eWithMethod = new ArrayList<SubResourceMethodOrLocator>();
+            Collection<ResourceMethodOrLocator> eWithMethod = new ArrayList<ResourceMethodOrLocator>();
             // (c) and (d) Filter E: remove members do not match U or final
             // match not empty
-            for (SubResourceMethodOrLocator methodOrLocator : resClass
+            for (ResourceMethodOrLocator methodOrLocator : resClass
                     .getSubResourceMethodsAndLocators()) {
                 MatchingResult matchResult = methodOrLocator.getPathRegExp()
                         .match(u);
@@ -701,14 +617,9 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             }
             // (e) If E is empty -> HTTP 404
             if (eWithMethod.isEmpty())
-                throw new CouldNotFindMethodException(
-                        errorRestletResourceNotFound,
-                        "The resource class "
-                                + o.getResourceClass().getName()
-                                + " could not find a resource object to handle the request for remaining path "
-                                + u);
+                throwResourceNotFound(o, u);
             // (f) and (g) sort E, use first member of E
-            SubResourceMethodOrLocator firstMeth = getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eWithMethod);
+            ResourceMethodOrLocator firstMeth = getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eWithMethod);
 
             rMatch = firstMeth.getPathRegExp();
             MatchingResult matchingResult = rMatch.match(u);
@@ -729,7 +640,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                 throw new WebApplicationException(e, 404);
             } catch (Exception e) {
                 throw handleExecption(e, subResourceLocator, callContext,
-                "Could not create new instance of root resource class");
+                        "Could not create new instance of root resource class");
             }
             // (j) Go to step 2a (repeat for)
         }
@@ -765,10 +676,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         Collection<ResourceMethod> resourceMethods = resourceClass
                 .getMethodsForPath(u);
         if (resourceMethods.isEmpty())
-            throw new CouldNotFindMethodException(
-                    errorRestletResourceMethodNotFound,
-                    "there is no method on class " + resourceClass.getName()
-                            + " for remaining path " + u);
+            throwResourceMethodNotFound(resourceClass, u);
         // (a) 2: remove methods not support the given method
         boolean alsoGet = httpMethod.equals(Method.HEAD);
         removeNotSupportedHttpMethod(resourceMethods, httpMethod, alsoGet);
@@ -779,11 +687,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                         allowedMethods);
                 throw new RequestHandledException();
             }
-            throw new CouldNotFindMethodException(errorRestletMethodNotAllowed,
-                    "there is no method supporting the http method "
-                            + httpMethod + " on class "
-                            + resourceClass.getName() + " and remaining path "
-                            + u);
+            throwMethodNotAllowed(httpMethod, resourceClass, u);
         }
         // (a) 3
         if (givenMediaType != null) {
@@ -794,13 +698,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                     methodIter.remove();
             }
             if (resourceMethods.isEmpty())
-                throw new CouldNotFindMethodException(
-                        errorRestletUnsupportedMediaType,
-                        "there is no java method on class "
-                                + resourceClass.getName()
-                                + " supporting the http method " + httpMethod
-                                + " and remaining path " + u
-                                + " and the given media types");
+                throwUnsupportedMediaType(httpMethod, resourceClass, u);
         }
         // (a) 4
         SortedMetadata<MediaType> accMediaTypes = callContext
@@ -812,13 +710,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                 methodIter.remove();
         }
         if (resourceMethods.isEmpty()) {
-            // LATER return MediaTypes are supported.
-            throw new CouldNotFindMethodException(errorRestletNotAcceptable,
-                    "there is no java method on class "
-                            + resourceClass.getName()
-                            + " supporting the http method " + httpMethod
-                            + " and remaining path " + u
-                            + " and the given and accepted media types");
+            throwNoResourceMethodForAccMediaTypes(httpMethod, resourceClass, u);
         }
         // (b) and (c)
         ResourceMethod bestResourceMethod = getBestMethod(resourceMethods,
@@ -917,19 +809,12 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                                     // TODO JSR311: it is not an internal
                                     // server error in
                                     // SimpleTrainTest.testGetTextAll()
-                                    throwMultipleResourceMethods("Multiple java methods found on "
-                                            + currentMethod.getResourceClass()
-                                                    .getName()
-                                            + ": "
-                                            + bestMethod.getName()
-                                            + " and "
-                                            + currentMethod.getName());
+                                    throwMultipleResourceMethods(bestMethod,
+                                            currentMethod);
                                 }
                             } else {
-                                throwMultipleResourceMethods("Multiple java methods found for this request: "
-                                        + bestMethod.getName()
-                                        + " and "
-                                        + currentMethod.getName());
+                                throwMultipleResourceMethods(bestMethod,
+                                        currentMethod);
                             }
                         }
                     }
@@ -939,17 +824,6 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                 return bestMethod;
         }
         throw new WebApplicationException(500);
-    }
-
-    /**
-     * @throws CouldNotFindMethodException
-     *                 you can throw the result, if the compiler want to get
-     *                 sure, that you leave the calling method.
-     */
-    private CouldNotFindMethodException throwMultipleResourceMethods(
-            String message) throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(
-                this.errorRestletMultipleResourceMethods, message);
     }
 
     /**
@@ -1062,18 +936,18 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      * @return null, if the Map is null or empty
      * @throws CouldNotFindMethodException
      */
-    private SubResourceMethodOrLocator getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
-            Collection<SubResourceMethodOrLocator> eWithMethod)
+    private ResourceMethodOrLocator getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
+            Collection<ResourceMethodOrLocator> eWithMethod)
             throws CouldNotFindMethodException {
         if (eWithMethod == null || eWithMethod.isEmpty())
             return null;
-        Iterator<SubResourceMethodOrLocator> srmlIter = eWithMethod.iterator();
-        SubResourceMethodOrLocator bestSrml = srmlIter.next();
+        Iterator<ResourceMethodOrLocator> srmlIter = eWithMethod.iterator();
+        ResourceMethodOrLocator bestSrml = srmlIter.next();
         if (eWithMethod.size() == 1)
             return bestSrml;
         int bestSrmlChars = Integer.MIN_VALUE;
         int bestSrmlNoCaptGroups = Integer.MIN_VALUE;
-        for (SubResourceMethodOrLocator srml : eWithMethod) {
+        for (ResourceMethodOrLocator srml : eWithMethod) {
             int srmlNoLitChars = srml.getPathRegExp().getNumberOfLiteralChars();
             int srmlNoCaptGroups = srml.getPathRegExp()
                     .getNumberOfCapturingGroups();
@@ -1096,11 +970,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                         // perhaps for different HTTP methods
                         continue;
                     }
-                    String message = "There are multiple methods on the Resource class ("
-                            + bestSrml.getResourceClass().getName()
-                            + "), that could handle the request: "
-                            + bestSrml.getName() + " and " + srml.getName();
-                    throwMultipleResourceMethods(message);
+                    throwMultipleResourceMethods(bestSrml, srml);
                 }
             }
         }
@@ -1146,13 +1016,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                 }
                 if (rrcNoCaptGroups == bestRrcNoCaptGroups) {
                     // TODO JSR311: What happens, if both are equals?
-                    String message = "there are multiple ressources for the same path: "
-                            + bestRrc.getPathRegExp()
-                            + " and "
-                            + rrc.getPathRegExp() + " (and perhaps more)";
-                    throw new CouldNotFindMethodException(
-                            this.errorRestletMultipleRootResourceClasses,
-                            message);
+                    throwMultipleRootResourceClasses(bestRrc, rrc);
                 }
             }
         }
@@ -1237,12 +1101,12 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         } catch (InvocationTargetException ite) {
             // LATER if RuntimeException, then propagate and not handle here?
             throw handleExecption(ite, resourceMethod, callContext,
-            "Exception in resource method");
+                    "Exception in resource method");
         } catch (RequestHandledException e) {
             throw e;
         } catch (Exception e) {
             throw handleExecption(e, resourceMethod, callContext,
-            "Can not invoke the resource method");
+                    "Can not invoke the resource method");
         }
         Response restletResponse = callContext.getResponse();
         if (result == null) { // no representation
@@ -1324,8 +1188,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
             possMediaTypes = Collections.singletonList(responseMediaType);
         else if (resourceMethod instanceof ResourceMethod)
             possMediaTypes = determineMediaType16(
-                    (ResourceMethod) resourceMethod, mbws, accMediaTypes,
-                    callContext.getResponse());
+                    (ResourceMethod) resourceMethod, mbws, callContext);
         else
             possMediaTypes = Collections.singletonList(MediaType.TEXT_PLAIN);
         mbws = mbws.subSet(possMediaTypes);
@@ -1337,8 +1200,7 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         if (responseMediaType != null)
             mediaType = responseMediaType;
         else
-            mediaType = determineMediaType79(possMediaTypes, callContext
-                    .getResponse());
+            mediaType = determineMediaType79(possMediaTypes, callContext);
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
                 callContext.getResponse(), jaxRsRespHeaders, getLogger());
         // TESTEN Response Headers for MessageBodyWriter is not null yet
@@ -1364,9 +1226,10 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      * @throws RequestHandledException
      */
     private List<MediaType> determineMediaType16(ResourceMethod resourceMethod,
-            MessageBodyWriterSet mbwsForEntityClass,
-            SortedMetadata<MediaType> accMediaTypes, Response restletResponse)
+            MessageBodyWriterSet mbwsForEntityClass, CallContext callContext)
             throws RequestHandledException {
+        SortedMetadata<MediaType> accMediaTypes = callContext
+                .getAccMediaTypes();
         // 1. Gather the set of producible media types P:
         // (a) + (b)
         List<MediaType> p = resourceMethod.getProducedMimes();
@@ -1388,11 +1251,12 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
         List<MediaType> m = new ArrayList<MediaType>();
         for (MediaType prod : p)
             for (MediaType acc : accMediaTypes)
-                if (Util.isCompatible(prod, acc))
-                    m.add(Util.mostSpecific(prod, acc));
+                if (prod.isCompatibleTo(acc))
+                    m.add(MediaType.getMostSpecific(prod, acc));
         // 6.
         if (m.isEmpty())
-            throw throwNotAcceptable(restletResponse);
+            throwNotAcceptableWhileDetermineMediaType(callContext.getRequest(),
+                    callContext.getResponse());
         return m;
     }
 
@@ -1409,237 +1273,17 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
      * @throws RequestHandledException
      */
     private MediaType determineMediaType79(List<MediaType> m,
-            Response restletResponse) throws RequestHandledException {
+            CallContext callContext) throws RequestHandledException {
         // 7.
         for (MediaType mediaType : m)
-            if (Util.isConcrete(mediaType))
+            if (mediaType.isConcrete())
                 return mediaType;
         // 8.
         if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))
             return MediaType.APPLICATION_OCTET_STREAM;
         // 9.
-        throw throwNotAcceptable(restletResponse);
-    }
-
-    private RequestHandledException throwNotAcceptable(Response restletResponse)
-            throws RequestHandledException {
-        restletResponse.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-        throw new RequestHandledException();
-    }
-
-    /**
-     * Restlet, is used on HTTP-Error 404, when no Root Resource class could be
-     * found.
-     * 
-     * @param rootResourceNotFoundRestlet
-     *                The Restlet to use when no root resource class could be
-     *                found. This Restlet must return status 404.
-     * @throws IllegalArgumentException
-     *                 If the Restlet is null.
-     */
-    public void setErrorRestletRootResourceNotFound(
-            Restlet rootResourceNotFoundRestlet)
-            throws IllegalArgumentException {
-        if (rootResourceNotFoundRestlet == null)
-            throw new IllegalArgumentException(
-                    "The Error Restlet must not be null");
-        this.errorRestletRootResourceNotFound = rootResourceNotFoundRestlet;
-    }
-
-    /**
-     * @return Returns the Restlet, that is actually if no Root Resource class
-     *         could be found.
-     */
-    public Restlet getErrorRestletRootResourceNotFound() {
-        return this.errorRestletRootResourceNotFound;
-    }
-
-    /**
-     * Restlet, is used on HTTP-Error 404, when no Resource class could be
-     * found.
-     * 
-     * @param resourceNotFoundRestlet
-     *                The Restlet to use when no resource class could be found.
-     *                This Restlet must return status 404.
-     * @throws IllegalArgumentException
-     *                 If the Restlet is null.
-     */
-    public void setErrorRestletResourceNotFound(Restlet resourceNotFoundRestlet)
-            throws IllegalArgumentException {
-        if (resourceNotFoundRestlet == null)
-            throw new IllegalArgumentException(
-                    "The Error Restlet must not be null");
-        this.errorRestletResourceNotFound = resourceNotFoundRestlet;
-    }
-
-    /**
-     * @return Returns the Restlet, that is actually if no resource class could
-     *         be found.
-     */
-    public Restlet getErrorRestletResourceNotFound() {
-        return this.errorRestletResourceNotFound;
-    }
-
-    /**
-     * Sets the Restlet that handles the request if no Resource class could be
-     * found.
-     * 
-     * @param resourceMethodNotFoundRestlet
-     *                The Restlet to use when no resource class could be found.
-     *                This Restlet must return status 404.
-     * @throws IllegalArgumentException
-     *                 If the given Restlet is null.
-     * @see #DEFAULT_RESOURCE_METHOD_NOT_FOUND_RESTLET
-     */
-    public void setErrorRestletResourceMethodNotFound(
-            Restlet resourceMethodNotFoundRestlet)
-            throws IllegalArgumentException {
-        if (resourceMethodNotFoundRestlet == null)
-            throw new IllegalArgumentException(
-                    "The Error Restlet must not be null");
-        this.errorRestletResourceMethodNotFound = resourceMethodNotFoundRestlet;
-    }
-
-    /**
-     * @return Returns the Restlet, is used on HTTP-Error 404, when no Resource
-     *         class could be found.
-     */
-    public Restlet getErrorRestletResourceMethodNotFound() {
-        return this.errorRestletResourceMethodNotFound;
-    }
-
-    /**
-     * @return Returns the Restlet, that is actually if no resource method could
-     *         be found.
-     */
-    public Restlet getErrorRestletMethodNotAllowed() {
-        return errorRestletMethodNotAllowed;
-    }
-
-    /**
-     * Set the Restlet to be used if the method is not allowed for the resource.
-     * It must return status 405.
-     * 
-     * @param errorRestletMethodNotAllowed
-     *                The Restlet to use.
-     * @throws IllegalArgumentException
-     *                 If the given restlet is null.
-     */
-    public void setErrorRestletMethodNotAllowed(
-            Restlet errorRestletMethodNotAllowed)
-            throws IllegalArgumentException {
-        if (errorRestletMethodNotAllowed == null)
-            throw new IllegalArgumentException(
-                    "The Error Restlet must not be null");
-        this.errorRestletMethodNotAllowed = errorRestletMethodNotAllowed;
-    }
-
-    /**
-     * @return Returns the Restlet that handles the request, if the method is
-     *         not allowed on the resource.
-     */
-    public Restlet getErrorRestletUnsupportedMediaType() {
-        return errorRestletUnsupportedMediaType;
-    }
-
-    /**
-     * Sets the Restlet that handles the request if the given media type is not
-     * supported.
-     * 
-     * @param errorRestletUnsupportedMediaType
-     *                The Restlet to use.
-     * @throws IllegalArgumentException
-     *                 If the given restlet is null.
-     */
-    public void setErrorRestletUnsupportedMediaType(
-            Restlet errorRestletUnsupportedMediaType)
-            throws IllegalArgumentException {
-        if (errorRestletUnsupportedMediaType == null)
-            throw new IllegalArgumentException(
-                    "The Error Restlet must not be null");
-        this.errorRestletUnsupportedMediaType = errorRestletUnsupportedMediaType;
-    }
-
-    /**
-     * @return Returns the Restlet that hanndles the request if the accepted
-     *         media type is not supported.
-     */
-    public Restlet getErrorRestletNotAcceptable() {
-        return errorRestletNotAcceptable;
-    }
-
-    /**
-     * Sets the Restlet that should handle the request, if the accpeted media
-     * type is not supported. Must return status 406.
-     * 
-     * @param errorRestletNotAcceptable
-     *                The Restlet to use
-     * @throws IllegalArgumentException
-     *                 If the given restlet is null.
-     */
-    public void setErrorRestletNotAcceptable(Restlet errorRestletNotAcceptable)
-            throws IllegalArgumentException {
-        if (errorRestletNotAcceptable == null)
-            throw new IllegalArgumentException(
-                    "The Error Restlet must not be null");
-        this.errorRestletNotAcceptable = errorRestletNotAcceptable;
-    }
-
-    /**
-     * @return Returns the Restlet that handles the request if multiple resource
-     *         methods for a request were found.
-     */
-    public Restlet getErrorRestletMultipleResourceMethods() {
-        return errorRestletMultipleResourceMethods;
-    }
-
-    /**
-     * 
-     * @param errorRestletMultipleResourceMethods
-     * @throws IllegalArgumentException
-     *                 If the given restlet is null.
-     */
-    public void setErrorRestletMultipleResourceMethods(
-            Restlet errorRestletMultipleResourceMethods)
-            throws IllegalArgumentException {
-        if (errorRestletMultipleResourceMethods == null)
-            throw new IllegalArgumentException(
-                    "The Error Restlet must not be null");
-        this.errorRestletMultipleResourceMethods = errorRestletMultipleResourceMethods;
-    }
-
-    /**
-     * @return Returns the request if multiple root resource classes were found.
-     */
-    public Restlet getErrorRestletMultipleRootResourceClasses() {
-        return errorRestletMultipleRootResourceClasses;
-    }
-
-    /**
-     * 
-     * @param errorRestletMultipleRootResourceClasses
-     * @throws IllegalArgumentException
-     *                 If the given restlet is null.
-     */
-    public void setErrorRestletMultipleRootResourceClasses(
-            Restlet errorRestletMultipleRootResourceClasses)
-            throws IllegalArgumentException {
-        if (errorRestletMultipleRootResourceClasses == null)
-            throw new IllegalArgumentException(
-                    "The Error Restlet must not be null");
-        this.errorRestletMultipleRootResourceClasses = errorRestletMultipleRootResourceClasses;
-    }
-
-    /**
-     * Returns a set with the attached root resource classes.
-     * 
-     * @return
-     */
-    public Set<Class<?>> getRootResourceClasses() {
-        Set<Class<?>> rrcs = new HashSet<Class<?>>();
-        for (RootResourceClass rootResourceClass : this.rootResourceClasses)
-            rrcs.add(rootResourceClass.getJaxRsClass());
-        return Collections.unmodifiableSet(rrcs);
+        throw throwNotAcceptableWhileDetermineMediaType(callContext
+                .getRequest(), callContext.getResponse());
     }
 
     /**
@@ -1698,43 +1342,6 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
     }
 
     /**
-     * This exception is thrown, when the algorithm "Matching Requests to
-     * Resource Methods" in Section 2.5 of JSR-311-Spec could not find a method.
-     * 
-     * @author Stephan Koops
-     */
-    private class CouldNotFindMethodException extends Exception {
-        private static final long serialVersionUID = -8436314060905405146L;
-
-        private Restlet errorRestlet;
-
-        CouldNotFindMethodException(Restlet errorRestlet, String message) {
-            super(message);
-            this.errorRestlet = errorRestlet;
-        }
-    }
-
-    /**
-     * Instances of this class have a given status they return, when
-     * {@link Restlet#handle(Request, Response)} is called.
-     * 
-     * @author Stephan Koops
-     */
-    private static class ReturnStatusRestlet extends Restlet {
-        private Status status;
-
-        ReturnStatusRestlet(Status status) {
-            this.status = status;
-        }
-
-        @Override
-        public void handle(Request request, Response response) {
-            super.handle(request, response);
-            response.setStatus(status);
-        }
-    }
-
-    /**
      * @return the authenticator
      */
     public Authenticator getAuthenticator() {
@@ -1753,6 +1360,18 @@ public class JaxRsRouter extends Restlet implements HiddenJaxRsRouter {
                             + " or the "
                             + ForbidAllAuthenticator.class.getName());
         this.authenticator = authenticator;
+    }
+
+    /**
+     * Returns a set with the attached root resource classes.
+     * 
+     * @return
+     */
+    public Set<Class<?>> getRootResourceClasses() {
+        Set<Class<?>> rrcs = new HashSet<Class<?>>();
+        for (RootResourceClass rootResourceClass : this.rootResourceClasses)
+            rrcs.add(rootResourceClass.getJaxRsClass());
+        return Collections.unmodifiableSet(rrcs);
     }
 
     /**
