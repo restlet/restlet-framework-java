@@ -20,6 +20,8 @@ package org.restlet.ext.jaxrs;
 import java.security.Principal;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.ws.rs.core.ApplicationConfig;
+
 import org.restlet.Context;
 import org.restlet.Guard;
 import org.restlet.data.ChallengeResponse;
@@ -116,23 +118,13 @@ public class JaxRsGuard extends org.restlet.Guard {
     /**
      * Attatches the given root resource class
      * 
-     * @param jaxRsClass
-     *                The root resource class
+     * @param appConfig
+     *                Contains the classes to load as root resource classes and
+     *                as providers.
      * @see #attach(Class)
      */
-    public void attach(Class<?> jaxRsClass) {
-        getNext().attach(jaxRsClass);
-    }
-
-    /**
-     * Detaches the JAX-RS root resource class from this router.
-     * 
-     * @param jaxRsClass
-     *                The JAX-RS root resource class to detach.
-     * @see #attach(Class)
-     */
-    public void detach(Class<?> jaxRsClass) {
-        getNext().detach(jaxRsClass);
+    public void attach(ApplicationConfig appConfig) {
+        getNext().attach(appConfig);
     }
 
     @Override

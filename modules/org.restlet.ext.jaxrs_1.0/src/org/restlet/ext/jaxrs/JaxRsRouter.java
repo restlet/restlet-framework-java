@@ -18,7 +18,6 @@
 
 package org.restlet.ext.jaxrs;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -33,10 +32,10 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.ext.Provider;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
@@ -115,15 +114,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * 
      * @param context
      *                the context from the parent
+     * @param appConfig
+     *                Contains the classes to load as root resource classes and
+     *                as providers.
      * @param authenticator
      *                the Authenticator which checks the credentials and the
      *                roles. Must not be null; see {@link AllowAllAuthenticator},
      *                {@link ForbidAllAuthenticator} or
      *                {@link ThrowExcAuthenticator}.
-     * @param loadAllRootResourceClasses
-     *                if true, all accessible root resource classes are loaded.
-     * @param loadAllProviders
-     *                if true, all accessible providers are loaded.
      * @param challangeScheme
      *                the {@link ChallengeScheme}
      * @param realmName
@@ -135,13 +133,11 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * @see JaxRsGuard#getNext()
      */
     public static JaxRsGuard getGuarded(Context context,
-            Authenticator authenticator, boolean loadAllRootResourceClasses,
-            boolean loadAllProviders, ChallengeScheme challangeScheme,
-            String realmName) {
+            ApplicationConfig appConfig, Authenticator authenticator,
+            ChallengeScheme challangeScheme, String realmName) {
         JaxRsGuard guard = new JaxRsGuard(context, challangeScheme, realmName,
                 authenticator);
-        guard.setNext(new JaxRsRouter(context, authenticator,
-                loadAllRootResourceClasses, loadAllProviders));
+        guard.setNext(new JaxRsRouter(context, appConfig, authenticator));
         return guard;
         // LATER make some resources accessable guarded and other not.
     }
@@ -167,50 +163,24 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * @param context
      *                the context from the parent, see
      *                {@link Restlet#Restlet(Context)}
+     * @param appConfig
+     *                Contains the classes to load as root resource classes and
+     *                as providers.
      * @param authenticator
      *                The Authenticator, must not be null. If you don't need the
      *                authentification, you can use the
      *                {@link ForbidAllAuthenticator}, the
      *                {@link AllowAllAuthenticator} or the
      *                {@link ThrowExcAuthenticator}.
-     * @param loadAllRootResourceClasses
-     *                If true, all accessible root resource classes are loaded.
-     *                This feature is not ready implemented and tested. See also
-     *                {@link #attach(Class)}
-     * @param loadAllProviders
-     *                If true, all accessible providers are loaded. This feature
-     *                is not ready implemented and tested. See also
-     *                {@link #addMessageBodyReader(Class)},
-     *                {@link #addMessageBodyWriter(Class)} and
-     *                {@link #addProvidersFromPackage(ClassLoader, boolean, String...)}
+     * @throws IllegalArgumentException
+     *                 if the given {@link Authenticator} ist null.
      */
-    public JaxRsRouter(Context context, Authenticator authenticator,
-            boolean loadAllRootResourceClasses, boolean loadAllProviders) {
+    public JaxRsRouter(Context context, ApplicationConfig appConfig,
+            Authenticator authenticator) throws IllegalArgumentException {
         super(context);
-        this.setAuthenticator(authenticator);
         this.loadDefaultProviders();
-        if (loadAllRootResourceClasses || loadAllProviders)
-            JaxRsClassesLoader.loadFromClasspath(this,
-                    loadAllRootResourceClasses, loadAllProviders);
-    }
-
-    /**
-     * Creates a new JaxRsRouter with the given Context. Only the default
-     * providers are loaded by default.
-     * 
-     * @param context
-     *                the context from the parent, see
-     *                {@link Restlet#Restlet(Context)}
-     * @param authenticator
-     *                The Authenticator, must not be null. If you don't need the
-     *                authentification, you can use the
-     *                {@link ForbidAllAuthenticator}, the
-     *                {@link AllowAllAuthenticator} or the
-     *                {@link ThrowExcAuthenticator}.
-     * @see #JaxRsRouter(Context, Authenticator, boolean, boolean)
-     */
-    public JaxRsRouter(Context context, Authenticator authenticator) {
-        this(context, authenticator, false, false);
+        this.attach(appConfig);
+        this.setAuthenticator(authenticator);
     }
 
     /**
@@ -224,29 +194,50 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * @param context
      *                the context from the parent, see
      *                {@link Restlet#Restlet(Context)}
-     * @see #JaxRsRouter(Context, Authenticator, boolean, boolean)
-     * @see #JaxRsRouter(Context, Authenticator)
+     * @param appConfig
+     *                Contains the classes to load as root resource classes and
+     *                as providers.
+     * @see #JaxRsRouter(Context, ApplicationConfig, Authenticator)
      */
-    public JaxRsRouter(Context context) {
-        this(context, ThrowExcAuthenticator.getInstance(), false, false);
+    public JaxRsRouter(Context context, ApplicationConfig appConfig) {
+        this(context, appConfig, ThrowExcAuthenticator.getInstance());
+    }
+
+    /**
+     * @param appConfig
+     *                Contains the classes to load as root resource classes and
+     *                as providers.
+     */
+    public void attach(ApplicationConfig appConfig) {
+        List<Class<?>> rrcs = appConfig.getResourceClasses();
+        List<Class<?>> providerClasses = appConfig.getProviderClasses();
+        JaxRsClassesLoader.addRrcsToRouter(rrcs, this);
+        JaxRsClassesLoader.addProvidersToRouter(providerClasses, this);
+        this.addExtensionMappings(appConfig.getExtensionMappings());
+    }
+
+    @SuppressWarnings("all")
+    private void addExtensionMappings(
+            Map<String, javax.ws.rs.core.MediaType> extensionMappings) {
+        // TODO Auto-generated method stub
     }
 
     private void loadDefaultProviders() throws WrappedClassLoadException,
             WrappedLoadException {
         ClassLoader classLoader = this.getClass().getClassLoader();
-        JaxRsClassesLoader.loadFromPackage(classLoader, true, this, false,
-                true, StringProvider.class.getPackage().getName());
+        JaxRsClassesLoader.loadProvidersFromPackage(classLoader, true, this, StringProvider.class.getPackage().getName());
     }
 
     /**
-     * Will use the given JAX-RS root resource class.
+     * Will use the given JAX-RS root resource class. But it's better to use the
+     * method {@link #attach(ApplicationConfig)}.
      * 
      * @param rootResourceClass
      *                the JAX-RS root resource class to add.
      * @throws IllegalArgumentException
-     * @see #detach(Class)
-     * @see #getRootResourceClasses()
+     * @see {@link #attach(ApplicationConfig)}
      */
+    @Deprecated
     public void attach(Class<?> rootResourceClass)
             throws IllegalArgumentException {
         RootResourceClass newRrc = new RootResourceClass(rootResourceClass);
@@ -263,74 +254,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     /**
-     * If the automatic loading of the {@link Provider}s doesn't work, you can
-     * use this method to load the providers as described in
-     * {@link JaxRsClassesLoader}.
-     * 
-     * @param classLoader
-     *                The class loader that reaches the files
-     *                META-INF/services/javax.ws.rs.ext.MessageBodyWriter and
-     *                META-INF/services/javax.ws.rs.ext.MessageBodyWriter with a
-     *                list of the providers.
-     * @param throwOnException
-     * @throws IllegalArgumentException
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @see #loadProvidersLogExc(Class)
-     */
-    public void loadProviders(ClassLoader classLoader, boolean throwOnException)
-            throws IllegalArgumentException, IOException,
-            ClassNotFoundException {
-        JaxRsClassesLoader.loadProvidersFromFile(classLoader, throwOnException,
-                this);
-    }
-
-    /**
-     * If the automatic loading of the {@link Provider}s doesn't work, you can
-     * use this method to load the providers as described in
-     * {@link JaxRsClassesLoader}. Occurred Exceptions were logged.
-     * 
-     * @param classLoader
-     *                The class loader that reaches the files
-     *                META-INF/services/javax.ws.rs.ext.MessageBodyWriter and
-     *                META-INF/services/javax.ws.rs.ext.MessageBodyWriter with a
-     *                list of the providers.
-     * @see #loadProviders(Class, boolean)
-     */
-    public void loadProvidersLogExc(ClassLoader classLoader) {
-        try {
-            JaxRsClassesLoader.loadProvidersFromFile(classLoader, false, this);
-        } catch (IOException e) {
-            getLogger().log(Level.WARNING, "Could not load providers", e);
-        } catch (ClassNotFoundException e) {
-            getLogger().log(Level.WARNING, "Could not load providers", e);
-        }
-    }
-
-    /**
-     * Detaches the JAX-RS root resource class from this router.
-     * 
-     * @param rootResourceClass
-     *                The JAX-RS root resource class to detach.
-     * @return true, if the given root resource class was in the set and is
-     *         removed, or false, if not.
-     * @see #attach(Class)
-     */
-    public boolean detach(Class<?> rootResourceClass) {
-        if (rootResourceClass == null)
-            return false;
-        Iterator<RootResourceClass> rrcIter = rootResourceClasses.iterator();
-        while (rrcIter.hasNext()) {
-            RootResourceClass rrc = rrcIter.next();
-            if (rrc.getJaxRsClass().equals(rootResourceClass)) {
-                rrcIter.remove();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Adds a {@link javax.ws.rs.ext.MessageBodyReader} class to this
      * JaxRsRouter. Typically you don't need this method, because it is done on
      * construction time or by {@link #addProvidersFromPackage(String...)}.
@@ -342,7 +265,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      *                 if the MessageBodyReader could not be added to the
      *                 JaxRsRouter.
      */
-    public void addMessageBodyReader(Class<?> messageBodyReaderClass)
+    void addMessageBodyReader(Class<?> messageBodyReaderClass)
             throws JaxRsRuntimeException {
         Constructor<?> constructor = RootResourceClass
                 .findJaxRsConstructor(messageBodyReaderClass);
@@ -386,11 +309,11 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * @throws WrappedClassLoadException
      *                 If a class could not be loaded and throwOnExc is true.
      */
-    public void addProvidersFromPackage(ClassLoader classLoader,
+    void addProvidersFromPackage(ClassLoader classLoader,
             boolean throwOnExc, String... packageName)
             throws WrappedClassLoadException, WrappedLoadException {
-        JaxRsClassesLoader.loadFromPackage(classLoader, throwOnExc, this,
-                false, true, packageName);
+        JaxRsClassesLoader.loadProvidersFromPackage(classLoader, throwOnExc, this,
+                packageName);
     }
 
     /**
@@ -404,7 +327,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * @throws IllegalArgumentException
      *                 If no instance of the provider could created.
      */
-    public void addMessageBodyWriter(Class<?> messageBodyWriterClass)
+    void addMessageBodyWriter(Class<?> messageBodyWriterClass)
             throws IllegalArgumentException {
         Constructor<?> constructor = RootResourceClass
                 .findJaxRsConstructor(messageBodyWriterClass);
