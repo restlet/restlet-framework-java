@@ -75,9 +75,8 @@ public class GuardedExample {
             public Restlet createRoot() {
                 Authenticator authenticator = new ExampleAuthenticator();
                 JaxRsGuard jaxRsRestlet = JaxRsRouter.getGuarded(getContext(),
-                        authenticator, false, false,
+                        new ExampleAppConfig(), authenticator,
                         ChallengeScheme.HTTP_BASIC, "persons");
-                jaxRsRestlet.attach(PersonsRootResource.class);
                 return jaxRsRestlet;
             }
         };

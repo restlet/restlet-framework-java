@@ -45,10 +45,7 @@ public class ExampleServer {
         Application application = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
-                JaxRsRouter router = new JaxRsRouter(getContext());
-                router.attach(EasyRootResource.class);
-                router.attach(PersonsRootResource.class);
-                return router;
+                return new JaxRsRouter(getContext(), new ExampleAppConfig());
             }
         };
 

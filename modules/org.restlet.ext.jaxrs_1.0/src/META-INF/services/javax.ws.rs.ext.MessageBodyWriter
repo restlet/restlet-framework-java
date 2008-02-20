@@ -1,3 +1,0 @@
-# auskommentiert, weil test
-org.restlet.ext.jaxrs.provider.StringProvider
-org.restlet.ext.jaxrs.provider.ByteArrayProvider
