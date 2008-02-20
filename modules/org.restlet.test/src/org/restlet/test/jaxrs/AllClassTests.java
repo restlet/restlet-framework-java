@@ -27,7 +27,6 @@ import org.restlet.test.jaxrs.core.JaxRsUriBuilderTest;
 import org.restlet.test.jaxrs.core.JaxRsUriInfoTest;
 import org.restlet.test.jaxrs.util.EncodeOrCheckTests;
 import org.restlet.test.jaxrs.util.RemainingPathTests;
-import org.restlet.test.jaxrs.util.UtilTests;
 
 public class AllClassTests extends TestCase {
     public static Test suite() {
@@ -44,7 +43,6 @@ public class AllClassTests extends TestCase {
         // package .util.
         mySuite.addTestSuite(EncodeOrCheckTests.class);
         mySuite.addTestSuite(RemainingPathTests.class);
-        mySuite.addTestSuite(UtilTests.class);
         return mySuite;
     }
 }
