@@ -68,6 +68,38 @@ public class MediaTypeTestCase extends RestletTestCase {
     }
 
     /**
+     * Test inclusion.
+     */
+    public void testIncludes() throws Exception {
+        MediaType mt1 = MediaType.APPLICATION_ALL;
+        MediaType mt2 = MediaType.APPLICATION_XML;
+        assertTrue(mt1.includes(mt1));
+        assertTrue(mt2.includes(mt2));
+        assertTrue(mt1.includes(mt2));
+        assertFalse(mt2.includes(mt1));
+    }
+
+    public void testMostSpecificMediaType() {
+        assertEquals(MediaType.TEXT_ALL, MediaType.getMostSpecific(
+                MediaType.ALL, MediaType.TEXT_ALL));
+        assertEquals(MediaType.TEXT_ALL, MediaType.getMostSpecific(
+                MediaType.TEXT_ALL, MediaType.ALL));
+
+        assertEquals(MediaType.TEXT_PLAIN, MediaType.getMostSpecific(
+                MediaType.ALL, MediaType.TEXT_ALL, MediaType.TEXT_PLAIN));
+        assertEquals(MediaType.TEXT_PLAIN, MediaType.getMostSpecific(
+                MediaType.ALL, MediaType.TEXT_PLAIN, MediaType.TEXT_ALL));
+        assertEquals(MediaType.TEXT_PLAIN, MediaType.getMostSpecific(
+                MediaType.TEXT_ALL, MediaType.ALL, MediaType.TEXT_PLAIN));
+        assertEquals(MediaType.TEXT_PLAIN, MediaType.getMostSpecific(
+                MediaType.TEXT_ALL, MediaType.TEXT_PLAIN, MediaType.ALL));
+        assertEquals(MediaType.TEXT_PLAIN, MediaType.getMostSpecific(
+                MediaType.TEXT_PLAIN, MediaType.ALL, MediaType.TEXT_ALL));
+        assertEquals(MediaType.TEXT_PLAIN, MediaType.getMostSpecific(
+                MediaType.TEXT_PLAIN, MediaType.TEXT_ALL, MediaType.ALL));
+    }
+
+    /**
      * Test references that are unequal.
      */
     public void testUnEquals() throws Exception {
@@ -89,18 +121,6 @@ public class MediaTypeTestCase extends RestletTestCase {
         mt1 = new MediaType("application/1");
         mt2 = MediaType.APPLICATION_ALL;
         assertFalse(mt1.equals(mt2));
-    }
-
-    /**
-     * Test inclusion.
-     */
-    public void testIncludes() throws Exception {
-        MediaType mt1 = MediaType.APPLICATION_ALL;
-        MediaType mt2 = MediaType.APPLICATION_XML;
-        assertTrue(mt1.includes(mt1));
-        assertTrue(mt2.includes(mt2));
-        assertTrue(mt1.includes(mt2));
-        assertFalse(mt2.includes(mt1));
     }
 
     /**

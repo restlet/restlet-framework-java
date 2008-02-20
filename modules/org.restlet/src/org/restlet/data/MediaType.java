@@ -31,22 +31,16 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class MediaType extends Metadata {
-    /**
-     * The known media types registered with {@link #register(String, String)},
-     * retrievable using {@link #valueOf(String)}.
-     */
-    private static Map<String, MediaType> types = new HashMap<String, MediaType>();
-
     public static final MediaType ALL = register("*/*", "All media");
 
     public static final MediaType APPLICATION_ALL = register("application/*",
             "All application documents");
 
-    public static final MediaType APPLICATION_ATOM_XML = register(
-            "application/atom+xml", "Atom syndication documents");
-
     public static final MediaType APPLICATION_ATOM_SERVICE_XML = register(
             "application/atomsvc+xml", "Atom service documents");
+
+    public static final MediaType APPLICATION_ATOM_XML = register(
+            "application/atom+xml", "Atom syndication documents");
 
     public static final MediaType APPLICATION_CAB = register(
             "application/vnd.ms-cab-compressed", "Microsoft Cabinet archive");
@@ -117,15 +111,15 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_TAR = register(
             "application/x-tar", "Tar archive");
 
+    public static final MediaType APPLICATION_W3C_SCHEMA_XML = register(
+            "application/x-xsd+xml", "W3C XML Schema document");
+
     public static final MediaType APPLICATION_WADL_XML = register(
             "application/vnd.sun.wadl+xml",
             "Web Application Description Language document");
 
     public static final MediaType APPLICATION_WORD = register(
             "application/msword", "Microsoft Word document");
-
-    public static final MediaType APPLICATION_W3C_SCHEMA_XML = register(
-            "application/x-xsd+xml", "W3C XML Schema document");
 
     public static final MediaType APPLICATION_WWW_FORM = register(
             "application/x-www-form-urlencoded", "Web form (URL encoded)");
@@ -206,6 +200,12 @@ public final class MediaType extends Metadata {
 
     public static final MediaType TEXT_XML = register("text/xml", "XML text");
 
+    /**
+     * The known media types registered with {@link #register(String, String)},
+     * retrievable using {@link #valueOf(String)}.
+     */
+    private static Map<String, MediaType> types = new HashMap<String, MediaType>();
+
     public static final MediaType VIDEO_ALL = register("video/*", "All videos");
 
     public static final MediaType VIDEO_AVI = register("video/x-msvideo",
@@ -219,6 +219,55 @@ public final class MediaType extends Metadata {
 
     public static final MediaType VIDEO_WMV = register("video/x-ms-wmv",
             "Windows movie");
+
+    /**
+     * Returns the first of the most specific MediaTypes of the given array of
+     * MediaTypes.
+     * <p>
+     * Examples:
+     * <ul>
+     * <li>"text/plain" is more specific than "text/*" or "image/*"</li>
+     * <li>"text/html" is same specific as "application/pdf" or "image/jpg"</li>
+     * <li>"text/*" is same specific than "application/*" or "image/*"</li>
+     * <li>"*<!----->/*" is the must unspecific MediaType</li>
+     * </ul>
+     * 
+     * @param mediaTypes
+     *                An array of media types.
+     * @return The most concrete MediaType.
+     * @throws IllegalArgumentException
+     *                 If the array is null or empty.
+     */
+    public static MediaType getMostSpecific(MediaType... mediaTypes)
+            throws IllegalArgumentException {
+        if (mediaTypes == null || mediaTypes.length == 0)
+            throw new IllegalArgumentException(
+                    "You must give at least one MediaType");
+                    
+        if (mediaTypes.length == 1)
+            return mediaTypes[0];
+            
+        MediaType mostSpecific = mediaTypes[mediaTypes.length - 1];
+        
+        for (int i = mediaTypes.length - 2; i >= 0; i--) {
+            MediaType mediaType = mediaTypes[i];
+            
+            if (mediaType.getMainType().equals("*"))
+                continue;
+            
+            if (mostSpecific.getMainType().equals("*")) {
+                mostSpecific = mediaType;
+                continue;
+            }
+            
+            if (mostSpecific.getSubType().contains("*")) {
+                mostSpecific = mediaType;
+                continue;
+            }
+        }
+        
+        return mostSpecific;
+    }
 
     /**
      * Register a media type as a known type that can later be retrieved using
@@ -430,10 +479,17 @@ public final class MediaType extends Metadata {
      * range of the current one. For example, ALL includes all media types.
      * Parameters are ignored for this comparison. A null media type is
      * considered as included into the current one.
+     * <p>
+     * Examples:
+     * <ul>
+     * <li>TEXT_ALL.includes(TEXT_PLAIN) -> true</li>
+     * <li>TEXT_PLAIN.includes(TEXT_ALL) -> false</li>
+     * </ul>
      * 
      * @param included
      *                The media type to test for inclusion.
      * @return True if the given media type is included in the current one.
+     * @see #isCompatible(MediaType)
      */
     public boolean includes(MediaType included) {
         boolean result = equals(ALL) || included == null || equals(included);
@@ -448,6 +504,35 @@ public final class MediaType extends Metadata {
         return result;
     }
 
+    /**
+     * Checks if this MediaType is compatible with the given media type.
+     * <p>
+     * Examples:
+     * <ul>
+     * <li>TEXT_ALL.isCompatible(TEXT_PLAIN) -> true</li>
+     * <li>TEXT_PLAIN.isCompatible(TEXT_ALL) -> true</li>
+     * <li>TEXT_PLAIN.isCompatible(APPLICATION_ALL) -> false</li>
+     * </ul>
+     * 
+     * @param otherMediaType
+     *                The other media type to compare.
+     * @return True if the media types are compatible.
+     * @see #includes(MediaType)
+     */
+    public boolean isCompatible(MediaType otherMediaType) {
+        return this.includes(otherMediaType) || otherMediaType.includes(this);
+    }
+
+    /**
+     * Checks if the current media type is concrete. A media type is concrete if
+     * neither the main type nor the sub-type are equal to "*".
+     * 
+     * @return True if this media type is concrete.
+     */
+    public boolean isConcrete() {
+        return !this.getName().contains("*");
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -460,7 +545,6 @@ public final class MediaType extends Metadata {
                         param.getValue());
             }
         }
-
         return sb.toString();
     }
 }
