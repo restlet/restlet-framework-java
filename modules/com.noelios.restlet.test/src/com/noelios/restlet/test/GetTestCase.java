@@ -57,7 +57,7 @@ public class GetTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
-    protected void call() throws Exception {
+    protected void call(String uri) throws Exception {
         Request request = new Request(Method.GET, uri);
         Response r = new Client(Protocol.HTTP).handle(request);
 

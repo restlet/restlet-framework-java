@@ -100,9 +100,9 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
-    protected void call() throws Exception {
-        sendPut();
-        sendGet();
+    protected void call(String uri) throws Exception {
+        sendPut(uri);
+        sendGet(uri);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    private void sendPut() throws Exception {
+    private void sendPut(String uri) throws Exception {
         Request request = new Request(Method.PUT, uri, createTestXml());
         Response r = new Client(Protocol.HTTP).handle(request);
 
@@ -132,7 +132,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         assertXML(r.getEntityAsDom());
     }
 
-    private void sendGet() throws Exception {
+    private void sendGet(String uri) throws Exception {
         Request request = new Request(Method.GET, uri);
         Response r = new Client(Protocol.HTTP).handle(request);
         assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r

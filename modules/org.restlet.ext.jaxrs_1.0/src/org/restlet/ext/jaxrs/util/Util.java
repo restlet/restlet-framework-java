@@ -240,7 +240,7 @@ public class Util {
     public static Series<Parameter> copyResponseHeaders(
             Response restletResponse, Logger logger) {
         Series<Parameter> headers = new Form();
-        Engine engine = Engine.getInstance();
+        // Engine engine = Engine.getInstance();
         if (true) // TODO waiting for engine fix: copyResponseHeaders.
             throw new UnsupportedOperationException("Waiting for enfine fix");
         // engine.copyResponseHeaders(restletResponse, headers, logger);

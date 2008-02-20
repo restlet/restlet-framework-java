@@ -66,11 +66,10 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
             @Override
             public void run() {
                 try {
-                    latch.countDown();
-
                     controller.addStateListener(new ControllerStateListener() {
 
                         public void onException(Throwable arg0) {
+                            latch.countDown();
                         }
 
                         public void onReady() {
@@ -79,6 +78,8 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
                                         .getSelectorHandler(Controller.Protocol.TCP);
                                 setEphemeralPort(tsh.getPortLowLevel());
                             }
+
+                            latch.countDown();
                         }
 
                         public void onStarted() {

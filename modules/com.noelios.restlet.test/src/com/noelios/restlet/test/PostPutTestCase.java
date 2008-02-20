@@ -55,13 +55,14 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
-    protected void call() throws Exception {
+    protected void call(String uri) throws Exception {
         Client client = new Client(Protocol.HTTP);
-        testCall(client, Method.POST);
-        testCall(client, Method.PUT);
+        testCall(client, Method.POST, uri);
+        testCall(client, Method.PUT, uri);
     }
 
-    private void testCall(Client client, Method method) throws Exception {
+    private void testCall(Client client, Method method, String uri)
+            throws Exception {
         Form inputForm = new Form();
         inputForm.add("a", "a");
         inputForm.add("b", "b");

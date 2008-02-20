@@ -18,11 +18,6 @@
 
 package com.noelios.restlet.test;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
-
 import junit.framework.TestCase;
 
 import com.noelios.restlet.http.HttpClientCall;
@@ -36,48 +31,14 @@ import com.noelios.restlet.http.HttpServerCall;
 public class HttpCallTestCase extends TestCase {
 
     public void testFormatContentDisposition() {
-        HttpServerCall call = new HttpServerCall(null, null, 0) {
-
-            @Override
-            public ReadableByteChannel getRequestEntityChannel(long size) {
-                return null;
-            }
-
-            @Override
-            public InputStream getRequestEntityStream(long size) {
-                return null;
-            }
-
-            @Override
-            public ReadableByteChannel getRequestHeadChannel() {
-                return null;
-            }
-
-            @Override
-            public InputStream getRequestHeadStream() {
-                return null;
-            }
-
-            @Override
-            public WritableByteChannel getResponseEntityChannel() {
-                return null;
-            }
-
-            @Override
-            public OutputStream getResponseEntityStream() {
-                return null;
-            }
-
-        };
-
-        assertEquals("attachment; filename=\"\"", call
+        assertEquals("attachment; filename=\"\"", HttpServerCall
                 .formatContentDisposition(null));
-        assertEquals("attachment; filename=\"\"", call
+        assertEquals("attachment; filename=\"\"", HttpServerCall
                 .formatContentDisposition(""));
-        assertEquals("attachment; filename=\"test.txt\"", call
+        assertEquals("attachment; filename=\"test.txt\"", HttpServerCall
                 .formatContentDisposition("test.txt"));
-        assertEquals("attachment; filename=\"file with space.txt\"", call
-                .formatContentDisposition("file with space.txt"));
+        assertEquals("attachment; filename=\"file with space.txt\"",
+                HttpServerCall.formatContentDisposition("file with space.txt"));
     }
 
     public void testParseContentDisposition() {

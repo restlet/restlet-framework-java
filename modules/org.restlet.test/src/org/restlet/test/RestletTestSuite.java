@@ -57,10 +57,8 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(TransformerTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
-        
-        // Disabled because some tests not working yet
-        // addTest(AllJaxRsTests.suite());
-        
+
+        addTest(AllJaxRsTests.suite());
         addTest(AllSpringTests.suite());
     }
 
