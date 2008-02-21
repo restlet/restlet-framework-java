@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -612,25 +613,25 @@ public class Template {
     }
 
     /** The default variable to use when no matching variable descriptor exists. */
-    private Variable defaultVariable;
+    private volatile Variable defaultVariable;
 
     /** The logger to use. */
-    private Logger logger;
+    private volatile Logger logger;
 
     /** The matching mode to use when parsing a formatted reference. */
-    private int matchingMode;
+    private volatile int matchingMode;
 
     /** The pattern to use for formatting or parsing. */
-    private String pattern;
+    private volatile String pattern;
 
     /** The internal Regex pattern. */
-    private Pattern regexPattern;
+    private volatile Pattern regexPattern;
 
     /** The sequence of Regex variable names as found in the pattern string. */
-    private List<String> regexVariables;
+    private final List<String> regexVariables;
 
     /** The map of variables associated to the route's template. */
-    private Map<String, Variable> variables;
+    private final Map<String, Variable> variables;
 
     /**
      * Default constructor. Each variable matches any sequence of characters by
@@ -691,9 +692,9 @@ public class Template {
         this.defaultVariable = new Variable(defaultType, defaultDefaultValue,
                 defaultRequired, defaultFixed);
         this.matchingMode = matchingMode;
-        this.variables = null;
+        this.variables = new ConcurrentHashMap<String, Variable>();
         this.regexPattern = null;
-        this.regexVariables = null;
+        this.regexVariables = new CopyOnWriteArrayList<String>();
     }
 
     /**
@@ -758,7 +759,7 @@ public class Template {
      * @param required
      *                Indicates if the group is required.
      */
-    private void appendClass(StringBuilder pattern, String content,
+    private static void appendClass(StringBuilder pattern, String content,
             boolean required) {
 
         pattern.append("(");
@@ -791,7 +792,7 @@ public class Template {
      * @param required
      *                Indicates if the group is required.
      */
-    private void appendGroup(StringBuilder pattern, String content,
+    private static void appendGroup(StringBuilder pattern, String content,
             boolean required) {
         pattern.append("((?:").append(content).append(')');
 
@@ -928,7 +929,8 @@ public class Template {
      *                The reference to use as a model.
      * @return The content corresponding to a reference property.
      */
-    private String getReferenceContent(String partName, Reference reference) {
+    private static String getReferenceContent(String partName,
+            Reference reference) {
         String result = null;
 
         if (reference != null) {
@@ -966,67 +968,79 @@ public class Template {
      */
     private Pattern getRegexPattern() {
         if (this.regexPattern == null) {
-            StringBuilder patternBuffer = new StringBuilder();
-            StringBuilder varBuffer = null;
-            char next;
-            boolean inVariable = false;
-            for (int i = 0; i < getPattern().length(); i++) {
-                next = getPattern().charAt(i);
+            synchronized (this) {
+                if (this.regexPattern == null) {
+                    StringBuilder patternBuffer = new StringBuilder();
+                    StringBuilder varBuffer = null;
+                    char next;
+                    boolean inVariable = false;
+                    for (int i = 0; i < getPattern().length(); i++) {
+                        next = getPattern().charAt(i);
 
-                if (inVariable) {
-                    if (isUnreserved(next)) {
-                        // Append to the variable name
-                        varBuffer.append(next);
-                    } else if (next == '}') {
-                        // End of variable detected
-                        if (varBuffer.length() == 0) {
-                            getLogger().warning(
-                                    "Empty pattern variables are not allowed : "
-                                            + this.regexPattern);
-                        } else {
-                            String varName = varBuffer.toString();
-                            int varIndex = getRegexVariables().indexOf(varName);
+                        if (inVariable) {
+                            if (isUnreserved(next)) {
+                                // Append to the variable name
+                                varBuffer.append(next);
+                            } else if (next == '}') {
+                                // End of variable detected
+                                if (varBuffer.length() == 0) {
+                                    getLogger().warning(
+                                            "Empty pattern variables are not allowed : "
+                                                    + this.regexPattern);
+                                } else {
+                                    String varName = varBuffer.toString();
+                                    int varIndex = getRegexVariables().indexOf(
+                                            varName);
 
-                            if (varIndex != -1) {
-                                // The variable is used several times in the
-                                // pattern, ensure that this constraint is
-                                // enforced when parsing.
-                                patternBuffer.append("\\" + (varIndex + 1));
+                                    if (varIndex != -1) {
+                                        // The variable is used several times in
+                                        // the
+                                        // pattern, ensure that this constraint
+                                        // is
+                                        // enforced when parsing.
+                                        patternBuffer.append("\\"
+                                                + (varIndex + 1));
+                                    } else {
+                                        // New variable detected. Insert a
+                                        // capturing
+                                        // group.
+                                        getRegexVariables().add(varName);
+                                        Variable var = getVariables().get(
+                                                varName);
+                                        if (var == null)
+                                            var = getDefaultVariable();
+                                        patternBuffer
+                                                .append(getVariableRegex(var));
+                                    }
+
+                                    // Reset the variable name buffer
+                                    varBuffer = new StringBuilder();
+                                }
+                                inVariable = false;
+
                             } else {
-                                // New variable detected. Insert a capturing
-                                // group.
-                                getRegexVariables().add(varName);
-                                Variable var = getVariables().get(varName);
-                                if (var == null)
-                                    var = getDefaultVariable();
-                                patternBuffer.append(getVariableRegex(var));
+                                getLogger().warning(
+                                        "An invalid character was detected inside a pattern variable : "
+                                                + this.regexPattern);
                             }
-
-                            // Reset the variable name buffer
-                            varBuffer = new StringBuilder();
+                        } else {
+                            if (next == '{') {
+                                inVariable = true;
+                                varBuffer = new StringBuilder();
+                            } else if (next == '}') {
+                                getLogger().warning(
+                                        "An invalid character was detected inside a pattern variable : "
+                                                + this.regexPattern);
+                            } else {
+                                patternBuffer.append(quote(next));
+                            }
                         }
-                        inVariable = false;
+                    }
 
-                    } else {
-                        getLogger().warning(
-                                "An invalid character was detected inside a pattern variable : "
-                                        + this.regexPattern);
-                    }
-                } else {
-                    if (next == '{') {
-                        inVariable = true;
-                        varBuffer = new StringBuilder();
-                    } else if (next == '}') {
-                        getLogger().warning(
-                                "An invalid character was detected inside a pattern variable : "
-                                        + this.regexPattern);
-                    } else {
-                        patternBuffer.append(quote(next));
-                    }
+                    this.regexPattern = Pattern.compile(patternBuffer
+                            .toString());
                 }
             }
-
-            this.regexPattern = Pattern.compile(patternBuffer.toString());
         }
 
         return this.regexPattern;
@@ -1040,8 +1054,6 @@ public class Template {
      *         string.
      */
     private List<String> getRegexVariables() {
-        if (this.regexVariables == null)
-            this.regexVariables = new ArrayList<String>();
         return this.regexVariables;
     }
 
@@ -1055,8 +1067,10 @@ public class Template {
         StringBuilder varBuffer = null;
         char next;
         boolean inVariable = false;
-        for (int i = 0; i < getPattern().length(); i++) {
-            next = getPattern().charAt(i);
+        String pattern = getPattern();
+
+        for (int i = 0; i < pattern.length(); i++) {
+            next = pattern.charAt(i);
 
             if (inVariable) {
                 if (isUnreserved(next)) {
@@ -1074,8 +1088,8 @@ public class Template {
                         // Reset the variable name buffer
                         varBuffer = new StringBuilder();
                     }
-                    inVariable = false;
 
+                    inVariable = false;
                 } else {
                     getLogger().warning(
                             "An invalid character was detected inside a pattern variable : "
@@ -1103,7 +1117,7 @@ public class Template {
      *                The variable.
      * @return The Regex pattern string corresponding to a variable.
      */
-    private String getVariableRegex(Variable variable) {
+    private static String getVariableRegex(Variable variable) {
         String result = null;
 
         if (variable.isFixed()) {
@@ -1186,8 +1200,6 @@ public class Template {
      * @return The modifiable map of variables.
      */
     public Map<String, Variable> getVariables() {
-        if (this.variables == null)
-            this.variables = new TreeMap<String, Variable>();
         return this.variables;
     }
 
@@ -1378,8 +1390,9 @@ public class Template {
      * @param variables
      *                The modifiable map of variables.
      */
-    public void setVariables(Map<String, Variable> variables) {
-        this.variables = variables;
+    public synchronized void setVariables(Map<String, Variable> variables) {
+        this.variables.clear();
+        this.variables.putAll(variables);
     }
 
 }
