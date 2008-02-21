@@ -12,6 +12,7 @@ Changes log
  - Fixed NPE in the WAR client of the Servlet extension. Reported by Jason Terhune.
  - Caught exception with Simple connector when flushing a closed stream. Now it is logged at
    a lower priority. Reported by Todd Nguyen. 
+ - Fixed synchronization issue in Template class. Reported by Paulo Silveira.
 
 [Enhancements]
  - Lowered the logging level for some Simple IO exceptions.
