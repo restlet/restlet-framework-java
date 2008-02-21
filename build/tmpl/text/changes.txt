@@ -28,7 +28,8 @@ Changes log
  - Fixed NPE in the WAR client of the Servlet extension. Reported by Jason Terhune.
  - Caught exception with Simple connector when flushing a closed stream. Now it is logged at
    a lower priority. Reported by Todd Nguyen. 
- 
+ - Fixed NPE in the MediaTypes class. Reported and contributed by Marc Portier.
+  
 [Enhancements] 
  - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 
    Angelocola based on David Koelle's original idea. Optimized implementation contributed by Rob 
