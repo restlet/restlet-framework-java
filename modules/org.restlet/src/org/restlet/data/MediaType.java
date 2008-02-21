@@ -31,6 +31,13 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class MediaType extends Metadata {
+
+    /**
+     * The known media types registered with {@link #register(String, String)},
+     * retrievable using {@link #valueOf(String)}.
+     */
+    private static Map<String, MediaType> types = new HashMap<String, MediaType>();
+
     public static final MediaType ALL = register("*/*", "All media");
 
     public static final MediaType APPLICATION_ALL = register("application/*",
@@ -199,12 +206,6 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_VCARD = register("text/x-vcard", "vCard");
 
     public static final MediaType TEXT_XML = register("text/xml", "XML text");
-
-    /**
-     * The known media types registered with {@link #register(String, String)},
-     * retrievable using {@link #valueOf(String)}.
-     */
-    private static Map<String, MediaType> types = new HashMap<String, MediaType>();
 
     public static final MediaType VIDEO_ALL = register("video/*", "All videos");
 
