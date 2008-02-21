@@ -418,7 +418,7 @@ public class Component extends Restlet {
             try {
                 Class<?> targetClass = Engine.classForName(targetClassName);
 
-                // First check if we have a Resource class that should be
+                // First, check if we have a Resource class that should be
                 // attached directly to the router.
                 if (Resource.class.isAssignableFrom(targetClass)) {
                     Class<? extends Resource> resourceClass = (Class<? extends Resource>) targetClass;
