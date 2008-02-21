@@ -48,7 +48,7 @@ import org.restlet.util.Template;
  */
 public class JaxRsUriBuilder extends UriBuilder {
 
-    // TODO JSR311: What about a method parent() which removes the last path
+    // REQUESTED JSR311: What about a method parent() which removes the last path
     // element? So the application developer must not think if the class is a
     // direct subclass of the root resource class or if there are other sub
     // resource classes between them.

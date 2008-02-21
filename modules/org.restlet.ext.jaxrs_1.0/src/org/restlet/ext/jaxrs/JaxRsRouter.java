@@ -215,16 +215,25 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         this.addExtensionMappings(appConfig.getExtensionMappings());
     }
 
+    /**
+     * @see ApplicationConfig#getExtensionMappings()
+     * @param extensionMappings
+     */
     @SuppressWarnings("all")
     private void addExtensionMappings(
             Map<String, javax.ws.rs.core.MediaType> extensionMappings) {
-        // TODO Auto-generated method stub
+        // REQUESTED JSR311: extensionMappings:
+        // * priority, if method return @ProducesMime and extensionMapping
+        // doesn't match?
+        // * Map<String, List<MediaType>> statt Map? z.B. für xml.
+        // TODO JaxRsRouter.extensionMappings.
     }
 
     private void loadDefaultProviders() throws WrappedClassLoadException,
             WrappedLoadException {
         ClassLoader classLoader = this.getClass().getClassLoader();
-        JaxRsClassesLoader.loadProvidersFromPackage(classLoader, true, this, StringProvider.class.getPackage().getName());
+        JaxRsClassesLoader.loadProvidersFromPackage(classLoader, true, this,
+                StringProvider.class.getPackage().getName());
     }
 
     /**
@@ -291,28 +300,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         }
         this.messageBodyReaders.add(new MessageBodyReader(
                 (javax.ws.rs.ext.MessageBodyReader<?>) provider));
-    }
-
-    /**
-     * Loads all providers from in given package, accessable from a given class
-     * loader.
-     * 
-     * @param classLoader
-     *                The {@link ClassLoader}, which could access the
-     *                providers. See {@link Class#getClassLoader()}.
-     * @param throwOnExc
-     * @param packageName
-     * @throws WrappedLoadException
-     *                 if a package could not be loaded, independent of
-     *                 throwOnExc.
-     * @throws WrappedClassLoadException
-     *                 If a class could not be loaded and throwOnExc is true.
-     */
-    void addProvidersFromPackage(ClassLoader classLoader,
-            boolean throwOnExc, String... packageName)
-            throws WrappedClassLoadException, WrappedLoadException {
-        JaxRsClassesLoader.loadProvidersFromPackage(classLoader, throwOnExc, this,
-                packageName);
     }
 
     /**
