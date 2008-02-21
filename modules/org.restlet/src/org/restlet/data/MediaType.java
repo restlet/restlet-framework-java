@@ -36,7 +36,7 @@ public final class MediaType extends Metadata {
      * The known media types registered with {@link #register(String, String)},
      * retrievable using {@link #valueOf(String)}.
      */
-    private static Map<String, MediaType> types = new HashMap<String, MediaType>();
+    private static Map<String, MediaType> types = null;
 
     public static final MediaType ALL = register("*/*", "All media");
 
@@ -244,29 +244,29 @@ public final class MediaType extends Metadata {
         if (mediaTypes == null || mediaTypes.length == 0)
             throw new IllegalArgumentException(
                     "You must give at least one MediaType");
-                    
+
         if (mediaTypes.length == 1)
             return mediaTypes[0];
-            
+
         MediaType mostSpecific = mediaTypes[mediaTypes.length - 1];
-        
+
         for (int i = mediaTypes.length - 2; i >= 0; i--) {
             MediaType mediaType = mediaTypes[i];
-            
+
             if (mediaType.getMainType().equals("*"))
                 continue;
-            
+
             if (mostSpecific.getMainType().equals("*")) {
                 mostSpecific = mediaType;
                 continue;
             }
-            
+
             if (mostSpecific.getSubType().contains("*")) {
                 mostSpecific = mediaType;
                 continue;
             }
         }
-        
+
         return mostSpecific;
     }
 
@@ -281,15 +281,15 @@ public final class MediaType extends Metadata {
      *                The description.
      * @return The registered media type
      */
-    public static MediaType register(String name, String description) {
-        synchronized (types) {
-            if (!types.containsKey(name)) {
-                MediaType type = new MediaType(name, description);
-                types.put(name, type);
-            }
+    public static synchronized MediaType register(String name,
+            String description) {
 
-            return types.get(name);
+        if (!getTypes().containsKey(name)) {
+            MediaType type = new MediaType(name, description);
+            getTypes().put(name, type);
         }
+
+        return getTypes().get(name);
     }
 
     /**
@@ -304,7 +304,7 @@ public final class MediaType extends Metadata {
         MediaType result = null;
 
         if (name != null) {
-            result = types.get(name);
+            result = getTypes().get(name);
             if (result == null) {
                 result = new MediaType(name);
             }
@@ -547,5 +547,17 @@ public final class MediaType extends Metadata {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * Returns the known media types map.
+     * 
+     * @return the known media types map.
+     */
+    private static Map<String, MediaType> getTypes() {
+        if (types == null) {
+            types = new HashMap<String, MediaType>();
+        }
+        return types;
     }
 }
