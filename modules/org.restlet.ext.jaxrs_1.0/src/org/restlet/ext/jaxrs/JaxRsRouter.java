@@ -142,11 +142,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     /**
-     * This set must only changed by adding or removing a root resource class to
-     * this JaxRsRouter.
-     * 
-     * @see #attach(Class)
-     * @see #detach(Class)
+     * This set must only changed by adding a root resource class to this
+     * JaxRsRouter.
      */
     private Set<RootResourceClass> rootResourceClasses = new HashSet<RootResourceClass>();
 
