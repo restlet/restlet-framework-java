@@ -60,7 +60,6 @@ import org.restlet.ext.jaxrs.impl.PathRegExp;
 import org.restlet.ext.jaxrs.impl.WrappedRequestForHttpHeaders;
 import org.restlet.ext.jaxrs.provider.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.provider.StringProvider;
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.RemainingPath;
 import org.restlet.ext.jaxrs.util.SortedMetadata;
 import org.restlet.ext.jaxrs.util.Util;
@@ -209,8 +208,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      *                as providers.
      */
     public void attach(ApplicationConfig appConfig) {
-        List<Class<?>> rrcs = appConfig.getResourceClasses();
-        List<Class<?>> providerClasses = appConfig.getProviderClasses();
+        Collection<Class<?>> rrcs = appConfig.getResourceClasses();
+        Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
         JaxRsClassesLoader.addRrcsToRouter(rrcs, this);
         JaxRsClassesLoader.addProvidersToRouter(providerClasses, this);
         this.addExtensionMappings(appConfig.getExtensionMappings());
@@ -1173,12 +1172,10 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         p = Util.sortByConcreteness(p);
         // 5.
         List<MediaType> m = new ArrayList<MediaType>();
-        if(true)
-            throw new NotYetImplementedException("sorry I've check in to early"); // WAITFORPATCH 
-        //for (MediaType prod : p)
-        //    for (MediaType acc : accMediaTypes)
-        //        if (prod.isCompatibleTo(acc))
-        //            m.add(MediaType.getMostSpecific(prod, acc));
+        for (MediaType prod : p)
+            for (MediaType acc : accMediaTypes)
+                if (prod.isCompatible(acc))
+                    m.add(MediaType.getMostSpecific(prod, acc));
         // 6.
         if (m.isEmpty())
             throwNotAcceptableWhileDetermineMediaType(callContext.getRequest(),
@@ -1200,11 +1197,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      */
     private MediaType determineMediaType79(List<MediaType> m,
             CallContext callContext) throws RequestHandledException {
-        if(true)
-            throw new NotYetImplementedException("sorry I've check in to early"); // WAITFORPATCH 
         // 7.
         for (MediaType mediaType : m)
-        //    if (mediaType.isConcrete())
+            if (mediaType.isConcrete())
                 return mediaType;
         // 8.
         if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))

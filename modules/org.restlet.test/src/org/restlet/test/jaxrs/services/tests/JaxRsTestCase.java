@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.ApplicationConfig;
 
 import junit.framework.TestCase;
 
@@ -144,7 +145,8 @@ public abstract class JaxRsTestCase extends TestCase {
     public static void runServerUntilKeyPressed(JaxRsTestCase jaxRsTestCase)
             throws Exception {
         jaxRsTestCase.startServer();
-        Collection<Class<?>> rrcs = jaxRsTestCase.getRootResourceColl();
+        ApplicationConfig appConfig = jaxRsTestCase.getAppConfig();
+        Collection<Class<?>> rrcs = appConfig.getResourceClasses();
         System.out
                 .println("the root resource classes are available under the following pathes:");
         for (Class<?> rrc : rrcs) {
@@ -395,15 +397,7 @@ public abstract class JaxRsTestCase extends TestCase {
 
     protected Class<?> getRootResourceClass() {
         throw new UnsupportedOperationException(
-                "You must implement the methods getRootResourceClass() or createRootResourceColl(). If you only implemented createRootResourceColl(), you can't use this method");
-    }
-
-    /**
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    protected Collection<Class<?>> getRootResourceColl() {
-        return (Collection) Collections.singleton(getRootResourceClass());
+                "You must implement the methods getRootResourceClass() or getAppConfig(). If you only implemented getAppConfig(), you can't use this method");
     }
 
     public ServerWrapper getServerWrapper() {
@@ -474,8 +468,7 @@ public abstract class JaxRsTestCase extends TestCase {
      * @throws Exception
      */
     protected void startServer() throws Exception {
-        final ChallengeScheme challengeScheme = ChallengeScheme.HTTP_BASIC;
-        startServer(getRootResourceColl(), Protocol.HTTP, challengeScheme, null);
+        startServer(ChallengeScheme.HTTP_BASIC);
     }
 
     /**
@@ -483,7 +476,21 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     protected void startServer(ChallengeScheme challengeScheme)
             throws Exception {
-        startServer(getRootResourceColl(), Protocol.HTTP, challengeScheme, null);
+        ApplicationConfig appConfig = getAppConfig();
+        startServer(appConfig, Protocol.HTTP, challengeScheme, null);
+    }
+
+    /**
+     * @return
+     */
+    protected ApplicationConfig getAppConfig() {
+        ApplicationConfig appConfig = new ApplicationConfig(){
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getResourceClasses() {
+                return (Set) Collections.singleton(getRootResourceClass());
+            }};
+        return appConfig;
     }
 
     /**
@@ -493,11 +500,11 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param contextParameter
      * @throws Exception
      */
-    private void startServer(final Collection<Class<?>> rootResourceClasses,
+    private void startServer(ApplicationConfig appConfig,
             Protocol protocol, final ChallengeScheme challengeScheme,
             Parameter contextParameter) throws Exception {
         try {
-            serverWrapper.startServer(rootResourceClasses, protocol,
+            serverWrapper.startServer(appConfig, protocol,
                     challengeScheme, contextParameter);
         } catch (Exception e) {
             try {

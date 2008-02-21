@@ -17,17 +17,24 @@
  */
 package org.restlet.test.jaxrs;
 
+import java.util.List;
+import java.util.Set;
+
+import javax.ws.rs.core.ApplicationConfig;
+
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.AllowAllAuthenticator;
 import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.test.jaxrs.services.DoublePath1;
 import org.restlet.test.jaxrs.services.DoublePath2;
 import org.restlet.test.jaxrs.services.SimpleTrain;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
 import org.restlet.test.jaxrs.services.path.IllegalPathService2;
 
+@SuppressWarnings("all")
 public class JaxRsRouterTest extends TestCase {
 
     @Override
@@ -41,16 +48,26 @@ public class JaxRsRouterTest extends TestCase {
     }
 
     public void testAttachDouble() throws Exception {
-        JaxRsRouter router = new JaxRsRouter(null, AllowAllAuthenticator
-                .getInstance(), false, false);
-        router.attach(DoublePath1.class);
-        router.attach(DoublePath1.class);
+        ApplicationConfig appConfig = new ApplicationConfig() {
+            @Override
+            public Set<Class<?>> getResourceClasses() {
+                return (Set) Util.createSet(DoublePath1.class,
+                        DoublePath1.class);
+            }
+        };
+        // must create without Exception
+        new JaxRsRouter(null, appConfig, AllowAllAuthenticator.getInstance());
     }
 
     public void testAttachSamePathDouble() throws Exception {
-        JaxRsRouter router = new JaxRsRouter(null, AllowAllAuthenticator
-                .getInstance(), false, false);
-        router.attach(DoublePath1.class);
+        ApplicationConfig appConfig = new ApplicationConfig() {
+            @Override
+            public Set<Class<?>> getResourceClasses() {
+                return (Set) Util.createSet(DoublePath1.class);
+            }
+        };
+        JaxRsRouter router = new JaxRsRouter(null, appConfig,
+                AllowAllAuthenticator.getInstance());
         try {
             router.attach(DoublePath2.class);
             fail("Attach two root resource classes with the same @Path must raise an Excption");
@@ -60,15 +77,21 @@ public class JaxRsRouterTest extends TestCase {
     }
 
     public void testEncodePath() {
-        JaxRsRouter router = new JaxRsRouter(null, AllowAllAuthenticator
-                .getInstance(), false, false);
-        router.attach(SimpleTrain.class);
+        ApplicationConfig appConfig = new ApplicationConfig() {
+            @Override
+            public Set<Class<?>> getResourceClasses() {
+                return (Set) Util.createSet(SimpleTrain.class);
+            }
+        };
+        JaxRsRouter router = new JaxRsRouter(null, appConfig,
+                AllowAllAuthenticator.getInstance());
         try {
             router.attach(IllegalPathService1.class);
             fail("must not pass");
         } catch (AssertionFailedError e) {
             // wonderful
         }
+        // LATER must this not fail?
         router.attach(IllegalPathService2.class);
     }
 }

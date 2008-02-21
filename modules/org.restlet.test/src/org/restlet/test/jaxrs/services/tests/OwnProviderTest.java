@@ -18,11 +18,14 @@
 
 package org.restlet.test.jaxrs.services.tests;
 
-import java.util.Date;
+import java.util.Set;
+
+import javax.ws.rs.core.ApplicationConfig;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.test.jaxrs.services.CrazyTypeProvider;
 import org.restlet.test.jaxrs.services.OwnProviderTestService;
 
@@ -37,18 +40,23 @@ public class OwnProviderTest extends JaxRsTestCase {
     }
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        super.getServerWrapper().addMessageBodyWriter(CrazyTypeProvider.class);
+    @SuppressWarnings("unchecked")
+    protected ApplicationConfig getAppConfig() {
+        return new ApplicationConfig() {
+            @Override
+            public Set<Class<?>> getResourceClasses() {
+                return (Set)Util.createSet(getRootResourceClass());
+            }
+
+            @Override
+            public Set<Class<?>> getProviderClasses() {
+                return (Set) Util.createSet(CrazyTypeProvider.class);
+            }
+        };
     }
 
     @SuppressWarnings("deprecation")
     public void test1() throws Exception {
-        if (System.currentTimeMillis() < new Date(108, 1, 20).getTime()) // ignore
-                                                                            // test
-                                                                            // before
-                                                                            // 2008-02-20
-            fail("This test is waiting for an engine patch");
         Response response = get();
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         MediaType respMediaType = response.getEntity().getMediaType();

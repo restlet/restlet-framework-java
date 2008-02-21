@@ -18,7 +18,9 @@
 
 package org.restlet.test.jaxrs.services.tests;
 
-import java.util.Collection;
+import java.util.Set;
+
+import javax.ws.rs.core.ApplicationConfig;
 
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.test.jaxrs.services.SimpleTrain;
@@ -26,9 +28,14 @@ import org.restlet.test.jaxrs.services.car.CarListResource;
 
 public class MultipleResourcesTest extends JaxRsTestCase {
     @Override
-    @SuppressWarnings("unchecked")
-    protected Collection<Class<?>> getRootResourceColl() {
-        return Util.createColl(SimpleTrain.class, CarListResource.class);
+    protected ApplicationConfig getAppConfig() {
+        return new ApplicationConfig() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getResourceClasses() {
+                return Util.createSet(SimpleTrain.class, CarListResource.class);
+            }
+        };
     }
 
     @Override

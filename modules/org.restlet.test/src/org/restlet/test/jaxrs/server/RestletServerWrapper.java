@@ -18,10 +18,7 @@
 
 package org.restlet.test.jaxrs.server;
 
-import java.util.Collection;
-
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.core.ApplicationConfig;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -48,8 +45,6 @@ public class RestletServerWrapper implements ServerWrapper {
     private Authenticator authenticator;
 
     private Component component;
-    
-    private JaxRsRouter jaxRsRouter;
 
     public RestletServerWrapper() {
         this.authenticator = AllowAllAuthenticator.getInstance();
@@ -80,12 +75,12 @@ public class RestletServerWrapper implements ServerWrapper {
      * given Collection of root resource classes. The method {@link #setUp()}
      * will do this on every test start up.
      * 
-     * @param rootResourceClasses
+     * @param appConfig
      * @return Returns the started component. Should be stopped with
      *         {@link #stopServer(Component)}
      * @throws Exception
      */
-    public void startServer(final Collection<Class<?>> rootResourceClasses,
+    public void startServer(final ApplicationConfig appConfig,
             Protocol protocol, final ChallengeScheme challengeScheme,
             Parameter contextParameter) throws Exception {
         Component comp = new Component();
@@ -98,12 +93,7 @@ public class RestletServerWrapper implements ServerWrapper {
             @Override
             public Restlet createRoot() {
                 JaxRsGuard guard = JaxRsRouter.getGuarded(getContext(),
-                        authenticator, false, false, challengeScheme, "");
-                jaxRsRouter = guard.getNext();
-                Collection<Class<?>> rrcs = rootResourceClasses;
-                for (Class<?> cl : rrcs) {
-                    jaxRsRouter.attach(cl);
-                }
+                        appConfig, authenticator, challengeScheme, "");
                 return guard;
             }
         };
@@ -146,15 +136,5 @@ public class RestletServerWrapper implements ServerWrapper {
                 return port;
         }
         throw new IllegalStateException("Sorry, the port is not available");
-    }
-    
-    public void addMessageBodyWriter(Class<? extends MessageBodyWriter<?>> mbwClass)
-    {
-        jaxRsRouter.addMessageBodyWriter(mbwClass);
-    }
-    
-    public void addMessageBodyReader(Class<? extends MessageBodyReader<?>> mbrClass)
-    {
-        jaxRsRouter.addMessageBodyReader(mbrClass);
     }
 }

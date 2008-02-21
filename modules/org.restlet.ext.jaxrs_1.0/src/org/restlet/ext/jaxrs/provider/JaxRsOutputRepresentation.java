@@ -57,8 +57,8 @@ public class JaxRsOutputRepresentation extends OutputRepresentation {
     public JaxRsOutputRepresentation(Object object, MediaType mediaType,
             MessageBodyWriter mbw, MultivaluedMap<String, Object> httpHeaders) {
         super(mediaType, mbw.getSize(object));
-        // WAITFORPATCH if (!mediaType.isConcrete())
-        //    throw new IllegalArgumentException(mediaType + " is not concrete");
+        if (!mediaType.isConcrete())
+            throw new IllegalArgumentException(mediaType + " is not concrete");
         this.mbw = mbw;
         this.httpHeaders = httpHeaders;
         this.object = object;

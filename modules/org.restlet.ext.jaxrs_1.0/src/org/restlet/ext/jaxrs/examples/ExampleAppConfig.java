@@ -17,7 +17,7 @@
  */
 package org.restlet.ext.jaxrs.examples;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
 
@@ -40,8 +40,8 @@ public class ExampleAppConfig extends ApplicationConfig {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public List<Class<?>> getResourceClasses() {
-        return Util.createList(EasyRootResource.class,
+    public Set<Class<?>> getResourceClasses() {
+        return Util.createSet(EasyRootResource.class,
                 PersonsRootResource.class);
     }
 }

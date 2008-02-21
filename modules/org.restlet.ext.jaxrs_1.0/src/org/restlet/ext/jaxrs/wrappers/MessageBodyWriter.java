@@ -26,7 +26,6 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 
 /**
  * Class to wrap a {@link javax.ws.rs.ext.MessageBodyWriter}
@@ -93,11 +92,9 @@ public class MessageBodyWriter {
      *         supported, otherwise false.
      */
     public boolean supportAtLeastOne(Iterable<MediaType> mediaTypes) {
-        if(true)
-            throw new NotYetImplementedException("sorry, check in to early");  // WAITFORPATCH 
         for (MediaType produced : getProducedMimes()) {
             for (MediaType requested : mediaTypes)
-                // if (requested.isCompatibleTo(produced)) // WAITFORPATCH
+                if (requested.isCompatible(produced))
                     return true;
         }
         return false;
