@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
@@ -118,7 +119,7 @@ public abstract class AbstractJaxRsWrapper {
             throws InstantiateParameterException, WebApplicationException {
         if (!leaveEncoded && paramValue != null)
             paramValue = Reference.decode(paramValue);
-        else if(paramValue == null)
+        else if (paramValue == null)
             paramValue = defaultValue;
         if (paramClass.equals(String.class)) // optimization
             return paramValue;
@@ -217,8 +218,10 @@ public abstract class AbstractJaxRsWrapper {
     public static String getPathTemplate(Path path) {
         String pathTemplate = path.value();
         if (path.encode())
-            return EncodeOrCheck.encodeNotBraces(pathTemplate, false).toString();
-        EncodeOrCheck.checkForInvalidUriChars(pathTemplate, -1, "path template");
+            return EncodeOrCheck.encodeNotBraces(pathTemplate, false)
+                    .toString();
+        EncodeOrCheck
+                .checkForInvalidUriChars(pathTemplate, -1, "path template");
         return pathTemplate;
     }
 
@@ -292,21 +295,23 @@ public abstract class AbstractJaxRsWrapper {
                         defaultValue, leaveEncoded, jaxRsRouter);
             }
             if (annotationType.equals(QueryParam.class)) {
-                Form form = Converter.toFormEncoded(callContext.getRequest()
-                        .getResourceRef().getQuery(), jaxRsRouter.getLogger());
-                String queryParamValue = form
-                        .getFirstValue(((QueryParam) annotation).value());
+                Logger logger = jaxRsRouter.getLogger();
+                String queryString = callContext.getRequest().getResourceRef()
+                        .getQuery();
+                Form form = Converter.toFormEncoded(queryString, logger);
+                String paramName = ((QueryParam) annotation).value();
+                String queryParamValue = form.getFirstValue(paramName);
                 return convertParamValueFromParam(paramClass, queryParamValue,
-                        defaultValue, true, jaxRsRouter); // leaveEncoded =
-                                                            // true -> not
-                                                            // change
+                        defaultValue, true, jaxRsRouter);
+                // leaveEncoded = true -> not change
             }
             if (annotationType.equals(CookieParam.class)) {
                 Series<Cookie> cookies = callContext.getRequest().getCookies();
                 String cookieName = ((CookieParam) annotation).value();
                 String cookieValue = cookies.getFirstValue(cookieName);
                 return convertParamValueFromParam(paramClass, cookieValue,
-                        defaultValue, leaveEncoded, jaxRsRouter);
+                        defaultValue, true, jaxRsRouter);
+                // leaveEncoded = true -> not change
             }
         }
         throw new IllegalOrNoAnnotationException("The " + indexForExcMessages
@@ -364,40 +369,59 @@ public abstract class AbstractJaxRsWrapper {
                 if (annotRequired)
                     throw ionae;
                 annotRequired = true;
-                Representation entity = callContext.getRequest().getEntity();
-                if (entity == null) {
-                    arg = null;
-                } else {
-                    MediaType mediaType = entity.getMediaType();
-                    MessageBodyReaderSet mbrs = jaxRsRouter
-                            .getMessageBodyReaders();
-                    if (mbrs == null)
-                        throw new NoMessageBodyReadersException();
-                    MessageBodyReader mbr = mbrs.getBest(mediaType, paramType);
-                    if (mbr == null) {
-                        // TODO JSR311: what, if no MessageBodyReader?
-                        callContext.getResponse().setStatus(
-                                Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-                        throw new RequestHandledException();
-                    }
-                    MultivaluedMap<String, String> httpHeaders = Util
-                            .getJaxRsHttpHeaders(callContext.getRequest());
-                    try {
-                        javax.ws.rs.core.MediaType jaxRsMediaType = Converter
-                                .toJaxRsMediaType(mediaType, entity
-                                        .getCharacterSet());
-                        arg = mbr.readFrom(paramType, jaxRsMediaType,
-                                httpHeaders, entity.getStream());
-                    } catch (IOException e) {
-                        throw new InstantiateParameterException(
-                                "Can not instatiate parameter of type "
-                                        + paramType.getName(), e);
-                    }
-                }
+                arg = convertRepresentation(callContext, paramType, jaxRsRouter);
             }
             args[i] = arg;
         }
         return args;
+    }
+
+    /**
+     * Converts the Restlet request {@link Representation} to the type requested
+     * by the resource method.
+     * 
+     * @param callContext
+     *                the call context, containing the entity.
+     * @param paramType
+     *                the type to convert to.
+     * @param jaxRsRouter
+     * @return
+     * @throws NoMessageBodyReadersException
+     * @throws RequestHandledException
+     * @throws InstantiateParameterException
+     */
+    private static Object convertRepresentation(CallContext callContext,
+            Class<?> paramType, HiddenJaxRsRouter jaxRsRouter)
+            throws NoMessageBodyReadersException, RequestHandledException,
+            InstantiateParameterException {
+        Representation entity = callContext.getRequest().getEntity();
+        if (entity == null)
+            return null;
+        if (Representation.class.isAssignableFrom(paramType))
+            return entity; // TESTEN geht das mit Representaton als
+        MediaType mediaType = entity.getMediaType();
+        MessageBodyReaderSet mbrs = jaxRsRouter.getMessageBodyReaders();
+        if (mbrs == null)
+            throw new NoMessageBodyReadersException();
+        MessageBodyReader mbr = mbrs.getBest(mediaType, paramType);
+        if (mbr == null) {
+            // TODO JSR311: what, if no MessageBodyReader?
+            callContext.getResponse().setStatus(
+                    Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+            throw new RequestHandledException();
+        }
+        MultivaluedMap<String, String> httpHeaders = Util
+                .getJaxRsHttpHeaders(callContext.getRequest());
+        try {
+            javax.ws.rs.core.MediaType jaxRsMediaType = Converter
+                    .toJaxRsMediaType(mediaType, entity.getCharacterSet());
+            return mbr.readFrom(paramType, jaxRsMediaType, httpHeaders, entity
+                    .getStream());
+        } catch (IOException e) {
+            throw new InstantiateParameterException(
+                    "Can not instatiate parameter of type "
+                            + paramType.getName(), e);
+        }
     }
 
     /**

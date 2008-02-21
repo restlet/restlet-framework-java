@@ -536,14 +536,14 @@ public class Util {
      */
     public static MultivaluedMap<String, String> getJaxRsHttpHeaders(
             Request request) {
+        Map<String, Object> attrsOfRequ = request.getAttributes();
         @SuppressWarnings("unchecked")
-        MultivaluedMap<String, String> headers = (MultivaluedMap) request
-                .getAttributes().get(ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS);
+        MultivaluedMap<String, String> headers = (MultivaluedMap) attrsOfRequ
+                .get(ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS);
         if (headers == null) {
             headers = UnmodifiableMultivaluedMap.getFromForm(
                     getHttpHeaders(request), false);
-            request.getAttributes().put(ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS,
-                    headers);
+            attrsOfRequ.put(ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS, headers);
         }
         return headers;
     }
