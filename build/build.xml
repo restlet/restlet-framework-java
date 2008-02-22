@@ -95,7 +95,7 @@
       <path refid="mod-jibx-path" />
       <pathelement path="${classes}/${mod-jibx-id}" />
       <pathelement path="${mod}/${mod-jibx-id}/src" />
-   	
+
       <path refid="mod-spring-api-path" />
       <pathelement path="${classes}/${mod-spring-api-id}" />
       <pathelement path="${mod}/${mod-spring-api-id}/src" />
@@ -115,7 +115,7 @@
       <fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-lang-id}" includes="*.jar" />
-            
+
       <!-- retrotranslator 1.2 -->
       <pathelement location="tools/retrotranslator/backport-util-concurrent-3.0.jar" />
       <pathelement location="tools/retrotranslator/retrotranslator-runtime-1.2.jar" />
@@ -224,7 +224,7 @@
       <pathelement path="${classes}/${mod-ri-id}" />
       <fileset dir="${lib}/${lib-jaxrs-id}" includes="*.jar" />
    </path>
-	
+   
    <path id="mod-jdbc-path">
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
@@ -316,7 +316,7 @@
       <pathelement path="${classes}/${mod-javamail-id}" />
       <pathelement path="${classes}/${mod-jaxb-id}" />
       <pathelement path="${classes}/${mod-jaxrs-id}" />
-	  <pathelement path="${classes}/${mod-jdbc-id}" />
+      <pathelement path="${classes}/${mod-jdbc-id}" />
       <pathelement path="${classes}/${mod-jetty-id}" />
       <pathelement path="${classes}/${mod-jibx-id}" />
       <pathelement path="${classes}/${mod-jmx-id}" />
@@ -331,7 +331,7 @@
       <path refid="mod-fileupload-path" />
       <path refid="mod-freemarker-path" />
       <path refid="mod-grizzly-path" />
- 	  <path refid="mod-gwt-path" />
+      <path refid="mod-gwt-path" />
       <path refid="mod-httpclient-path" />
       <path refid="mod-javamail-path" />
       <path refid="mod-jaxb-path" />
@@ -681,7 +681,7 @@
          <jar jarfile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-maven}-sources.jar" filesetmanifest="merge">
             <fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*" />
          </jar>
-     
+
          <copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-maven}.pom" overwrite="true" />
          <checksum file="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-maven}.jar"/>
          <checksum file="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-maven}.jar" algorithm="SHA" fileext=".sha1"/>
@@ -699,7 +699,7 @@
    <!-- GENERAL targets -->
    <target name="build" depends="generate, verify, integrate, stage, package" description="Full build." />
    <target name="rebuild" depends="clean, generate, verify, integrate, stage, package" description="Full build from scratch." />
-   
+
    <target name="init" description="Initialize some properties.">
       <!-- Create the time stamp -->
       <tstamp>
@@ -823,7 +823,8 @@
    <target name="generate" depends="generate-classes, generate-backport, generate-templates, generate-javadocs" description="Generate files." />
       
    <target name="generate-templates" depends="init" description="Generate template-based files.">
-      <!-- Generate the Changes file -->
+
+        <!-- Generate the Changes file -->
       <copy file="${tmpl}/text/changes.txt" todir="${docs}" overwrite="true" />
       <replace file="${docs}/changes.txt" token="@release-date@" value="${release-date}" />
       <replace file="${docs}/changes.txt" token="@version-full@" value="${version-full}" />
@@ -906,7 +907,7 @@
       <compileModule name="httpclient" />
       <compileModule name="javamail" />
       <compileModule name="jaxb" />
-   	  <compileModule name="jaxrs" />
+      <compileModule name="jaxrs" />
       <compileModule name="jdbc" />
       <compileModule name="jetty" />
       <compileModule name="jibx" />
@@ -938,7 +939,7 @@
       <backportModule name="httpclient" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="javamail" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jaxb" failonwarning="@{backport-failonwarning}"/>
-   	  <backportModule name="jaxrs" failonwarning="@{backport-failonwarning}"/>
+      <backportModule name="jaxrs" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jdbc" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jetty" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jibx" failonwarning="@{backport-failonwarning}"/>
@@ -1081,7 +1082,7 @@
          <link href="http://java.sun.com/products/javamail/javadocs/" />
          <link href="https://jaxb.dev.java.net/nonav/2.1.3/docs/api/" />
          <link href="http://jetty.mortbay.org/apidocs/" />
-      	 <link href="http://jibx.sourceforge.net/api/" />
+         <link href="http://jibx.sourceforge.net/api/" />
          <link href="http://static.springframework.org/spring/docs/2.0.x/api/" />
          <link href="http://www.json.org/javadoc/" />
          <link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
@@ -1128,7 +1129,7 @@
       <findbugsModule name="httpclient" />
       <findbugsModule name="javamail" />
       <findbugsModule name="jaxb" />
-   	  <findbugsModule name="jaxrs" />
+      <findbugsModule name="jaxrs" />
       <findbugsModule name="jdbc" />
       <findbugsModule name="jetty" />
       <findbugsModule name="jibx" />
@@ -1157,7 +1158,7 @@
       <checkstyleModule name="httpclient" />
       <checkstyleModule name="javamail" />
       <checkstyleModule name="jaxb" />
-   	  <checkstyleModule name="jaxrs" />
+      <checkstyleModule name="jaxrs" />
       <checkstyleModule name="jdbc" />
       <checkstyleModule name="jetty" />
       <checkstyleModule name="jibx" />
@@ -1256,7 +1257,7 @@
       <stageModule name="fileupload" />
       <stageModule name="freemarker" />
       <stageModule name="grizzly" />
-   	  <stageModule name="gwt" />
+      <stageModule name="gwt" />
       <stageModule name="httpclient" />
       <stageModule name="javamail" />
       <stageModule name="jaxb" />
@@ -1292,7 +1293,7 @@
       <maven2Module name="example" />
       <maven2Module name="fileupload" />
       <maven2Module name="freemarker" />
-   	  <maven2Module name="gwt" />
+      <maven2Module name="gwt" />
       <maven2Module name="httpclient" />
       <maven2Module name="javamail" />
       <maven2Module name="jaxb" />
