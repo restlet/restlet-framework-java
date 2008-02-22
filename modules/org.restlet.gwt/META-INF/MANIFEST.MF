@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet API
+Bundle-SymbolicName: org.restlet.gwt
+Bundle-Version: 1.1
+Bundle-Vendor: Noelios Consulting
+Export-Package: org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
