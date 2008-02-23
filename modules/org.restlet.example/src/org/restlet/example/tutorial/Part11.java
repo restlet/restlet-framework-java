@@ -20,6 +20,7 @@ package org.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Guard;
 import org.restlet.Restlet;
@@ -36,7 +37,15 @@ import static org.restlet.example.tutorial.Constants.*;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part11 {
+public class Part11 extends Application {
+
+    /**
+     * Run the example as a standalone component.
+     * 
+     * @param args
+     *                The optional arguments.
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         // Create a component
         Component component = new Component();
@@ -44,70 +53,80 @@ public class Part11 {
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        Application application = new Application(component.getContext()) {
-            @Override
-            public Restlet createRoot() {
-                // Create a root router
-                Router router = new Router(getContext());
-
-                // Attach a guard to secure access to the directory
-                Guard guard = new Guard(getContext(),
-                        ChallengeScheme.HTTP_BASIC, "Restlet tutorial");
-                guard.getSecrets().put("scott", "tiger".toCharArray());
-                router.attach("/docs/", guard);
-
-                // Create a directory able to expose a hierarchy of files
-                Directory directory = new Directory(getContext(), ROOT_URI);
-                guard.setNext(directory);
-
-                // Create the account handler
-                Restlet account = new Restlet() {
-                    @Override
-                    public void handle(Request request, Response response) {
-                        // Print the requested URI path
-                        String message = "Account of user \""
-                                + request.getAttributes().get("user") + "\"";
-                        response.setEntity(message, MediaType.TEXT_PLAIN);
-                    }
-                };
-
-                // Create the orders handler
-                Restlet orders = new Restlet(getContext()) {
-                    @Override
-                    public void handle(Request request, Response response) {
-                        // Print the user name of the requested orders
-                        String message = "Orders of user \""
-                                + request.getAttributes().get("user") + "\"";
-                        response.setEntity(message, MediaType.TEXT_PLAIN);
-                    }
-                };
-
-                // Create the order handler
-                Restlet order = new Restlet(getContext()) {
-                    @Override
-                    public void handle(Request request, Response response) {
-                        // Print the user name of the requested orders
-                        String message = "Order \""
-                                + request.getAttributes().get("order")
-                                + "\" for user \""
-                                + request.getAttributes().get("user") + "\"";
-                        response.setEntity(message, MediaType.TEXT_PLAIN);
-                    }
-                };
-
-                // Attach the handlers to the root router
-                router.attach("/users/{user}", account);
-                router.attach("/users/{user}/orders", orders);
-                router.attach("/users/{user}/orders/{order}", order);
-
-                // Return the root router
-                return router;
-            }
-        };
+        Application application = new Part11(component.getContext());
 
         // Attach the application to the component and start it
         component.getDefaultHost().attach(application);
         component.start();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param parentContext
+     *                The component's context.
+     */
+    public Part11(Context parentContext) {
+        super(parentContext);
+    }
+
+    @Override
+    public Restlet createRoot() {
+        // Create a root router
+        Router router = new Router(getContext());
+
+        // Attach a guard to secure access to the directory
+        Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
+                "Restlet tutorial");
+        guard.getSecrets().put("scott", "tiger".toCharArray());
+        router.attach("/docs/", guard);
+
+        // Create a directory able to expose a hierarchy of files
+        Directory directory = new Directory(getContext(), ROOT_URI);
+        guard.setNext(directory);
+
+        // Create the account handler
+        Restlet account = new Restlet() {
+            @Override
+            public void handle(Request request, Response response) {
+                // Print the requested URI path
+                String message = "Account of user \""
+                        + request.getAttributes().get("user") + "\"";
+                response.setEntity(message, MediaType.TEXT_PLAIN);
+            }
+        };
+
+        // Create the orders handler
+        Restlet orders = new Restlet(getContext()) {
+            @Override
+            public void handle(Request request, Response response) {
+                // Print the user name of the requested orders
+                String message = "Orders of user \""
+                        + request.getAttributes().get("user") + "\"";
+                response.setEntity(message, MediaType.TEXT_PLAIN);
+            }
+        };
+
+        // Create the order handler
+        Restlet order = new Restlet(getContext()) {
+            @Override
+            public void handle(Request request, Response response) {
+                // Print the user name of the requested orders
+                String message = "Order \""
+                        + request.getAttributes().get("order")
+                        + "\" for user \""
+                        + request.getAttributes().get("user") + "\"";
+                response.setEntity(message, MediaType.TEXT_PLAIN);
+            }
+        };
+
+        // Attach the handlers to the root router
+        router.attach("/users/{user}", account);
+        router.attach("/users/{user}/orders", orders);
+        router.attach("/users/{user}/orders/{order}", order);
+
+        // Return the root router
+        return router;
     }
 
 }

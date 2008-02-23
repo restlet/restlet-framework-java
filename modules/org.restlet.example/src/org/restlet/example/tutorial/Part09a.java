@@ -18,21 +18,31 @@
 
 package org.restlet.example.tutorial;
 
+import static org.restlet.example.tutorial.Constants.ROOT_URI;
+
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import static org.restlet.example.tutorial.Constants.*;
 
 /**
  * Guard access to a Restlet.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part09a {
+public class Part09a extends Application {
+
+    /**
+     * Run the example as a standalone component.
+     * 
+     * @param args
+     *                The optional arguments.
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         // Create a component
         Component component = new Component();
@@ -40,24 +50,34 @@ public class Part09a {
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        Application application = new Application(component.getContext()) {
-            @Override
-            public Restlet createRoot() {
-                // Create a Guard
-                Guard guard = new Guard(getContext(),
-                        ChallengeScheme.HTTP_BASIC, "Tutorial");
-                guard.getSecrets().put("scott", "tiger".toCharArray());
-
-                // Create a Directory able to return a deep hierarchy of files
-                Directory directory = new Directory(getContext(), ROOT_URI);
-                guard.setNext(directory);
-                return guard;
-            }
-        };
+        Application application = new Part09a(component.getContext());
 
         // Attach the application to the component and start it
-        component.getDefaultHost().attach("", application);
+        component.getDefaultHost().attachDefault(application);
         component.start();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param parentContext
+     *                The component's context.
+     */
+    public Part09a(Context parentContext) {
+        super(parentContext);
+    }
+
+    @Override
+    public Restlet createRoot() {
+        // Create a Guard
+        Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
+                "Tutorial");
+        guard.getSecrets().put("scott", "tiger".toCharArray());
+
+        // Create a Directory able to return a deep hierarchy of files
+        Directory directory = new Directory(getContext(), ROOT_URI);
+        guard.setNext(directory);
+        return guard;
     }
 
 }

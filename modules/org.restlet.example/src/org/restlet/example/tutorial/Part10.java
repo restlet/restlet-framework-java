@@ -20,9 +20,11 @@ package org.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Redirector;
 import org.restlet.Restlet;
 import org.restlet.Route;
+import org.restlet.Router;
 import org.restlet.data.Protocol;
 
 /**
@@ -30,25 +32,50 @@ import org.restlet.data.Protocol;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part10 {
+public class Part10 extends Application {
+
+    /**
+     * Run the example as a standalone component.
+     * 
+     * @param args
+     *                The optional arguments.
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         // Create a component
         Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
 
         // Create an application
-        Application application = new Application(component.getContext()) {
-            @Override
-            public Restlet createRoot() {
-                // Create a Redirector to Google search service
-                String target = "http://www.google.com/search?q=site:mysite.org+{keywords}";
-                return new Redirector(getContext(), target,
-                        Redirector.MODE_CLIENT_TEMPORARY);
-            }
-        };
+        Application application = new Part10(component.getContext());
 
-        // Attach the application to the component's default host
-        Route route = component.getDefaultHost().attach("/search", application);
+        // Attach the application to the component and start it
+        component.getDefaultHost().attachDefault(application);
+        component.start();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param parentContext
+     *                The component's context.
+     */
+    public Part10(Context parentContext) {
+        super(parentContext);
+    }
+
+    @Override
+    public Restlet createRoot() {
+        // Create a root router
+        Router router = new Router(getContext());
+
+        // Create a Redirector to Google search service
+        String target = "http://www.google.com/search?q=site:mysite.org+{keywords}";
+        Redirector redirector = new Redirector(getContext(), target,
+                Redirector.MODE_CLIENT_TEMPORARY);
+
+        // Attach the redirector to the router
+        Route route = router.attach("/search", redirector);
 
         // While routing requests to the application, extract a query parameter
         // For instance :
@@ -57,8 +84,8 @@ public class Part10 {
         // http://www.google.com/search?q=site:mysite.org+myKeyword1%20myKeyword2
         route.extractQuery("keywords", "kwd", true);
 
-        // Start the component
-        component.start();
+        // Return the root router
+        return router;
     }
 
 }

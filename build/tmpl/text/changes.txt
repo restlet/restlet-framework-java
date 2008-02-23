@@ -108,6 +108,8 @@ Changes log
    method must not send entity (e.g. HEAD), or when the Content-Length header's value is 0.
  - Ensure that the headers of the response's entity will be retrieved even if no message body has been 
    sent (in this case, an empty representation is created).
+ - Tutorial examples based on applications are now runnable with the Servlet adapter. 
+   Suggested by Marcelo Ochoa.
    
 1.1 Milestone 1 (2007-12-24)
 [Bugs fixed]

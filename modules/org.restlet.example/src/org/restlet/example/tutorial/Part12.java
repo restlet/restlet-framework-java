@@ -20,6 +20,7 @@ package org.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.Protocol;
@@ -29,33 +30,50 @@ import org.restlet.data.Protocol;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Part12 {
+public class Part12 extends Application {
+
+    /**
+     * Run the example as a standalone component.
+     * 
+     * @param args
+     *                The optional arguments.
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         // Create a component
         Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
 
         // Create an application
-        Application application = new Application(component.getContext()) {
-            @Override
-            public Restlet createRoot() {
-                // Create a router
-                Router router = new Router(getContext());
-
-                // Attach the resources to the router
-                router.attach("/users/{user}", UserResource.class);
-                router.attach("/users/{user}/orders", OrdersResource.class);
-                router.attach("/users/{user}/orders/{order}",
-                        OrderResource.class);
-
-                // Return the root router
-                return router;
-            }
-        };
+        Application application = new Part12(component.getContext());
 
         // Attach the application to the component and start it
-        component.getDefaultHost().attach("", application);
+        component.getDefaultHost().attachDefault(application);
         component.start();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param parentContext
+     *                The component's context.
+     */
+    public Part12(Context parentContext) {
+        super(parentContext);
+    }
+
+    @Override
+    public Restlet createRoot() {
+        // Create a router
+        Router router = new Router(getContext());
+
+        // Attach the resources to the router
+        router.attach("/users/{user}", UserResource.class);
+        router.attach("/users/{user}/orders", OrdersResource.class);
+        router.attach("/users/{user}/orders/{order}", OrderResource.class);
+
+        // Return the root router
+        return router;
     }
 
 }
