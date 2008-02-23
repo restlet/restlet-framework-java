@@ -110,6 +110,8 @@ Changes log
    sent (in this case, an empty representation is created).
  - Tutorial examples based on applications are now runnable with the Servlet adapter. 
    Suggested by Marcelo Ochoa.
+ - Removed unecessary 'synchronized' keyword on Application.createRoot() and added one to the
+   setRoot() method. Reported by Tim Peierls.
    
 1.1 Milestone 1 (2007-12-24)
 [Bugs fixed]

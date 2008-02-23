@@ -157,7 +157,7 @@ public class Application extends Restlet {
      * 
      * @return The root Restlet.
      */
-    public synchronized Restlet createRoot() {
+    public Restlet createRoot() {
         return null;
     }
 
@@ -400,7 +400,7 @@ public class Application extends Restlet {
      * @param root
      *                The root Restlet.
      */
-    public void setRoot(Restlet root) {
+    public synchronized void setRoot(Restlet root) {
         this.root = root;
     }
 
