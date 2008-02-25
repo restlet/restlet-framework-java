@@ -18,34 +18,35 @@
 
 package com.noelios.restlet.ext.spring;
 
-import com.noelios.restlet.ext.servlet.ServletConverter;
-import org.restlet.Restlet;
-import org.springframework.beans.BeansException;
-import org.springframework.web.servlet.FrameworkServlet;
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.logging.Logger;
+
+import org.restlet.Restlet;
+import org.springframework.beans.BeansException;
+import org.springframework.web.servlet.FrameworkServlet;
+
+import com.noelios.restlet.ext.servlet.ServletConverter;
 
 /**
- * A servlet which provides automatic restlet integration with an existing
- * {@link org.springframework.web.context.WebApplicationContext}. Use is
+ * A Servlet which provides an automatic Restlet integration with an existing
+ * {@link org.springframework.web.context.WebApplicationContext}. The usage is
  * similar to Spring's {@link org.springframework.web.servlet.DispatcherServlet}.
- * In web.xml, declare the servlet and map its root URL:
+ * In the web.xml file, declare the Servlet and map its root URL like this:
  * 
  * <pre>
- *  &lt;servlet&gt;
- *  &lt;servlet-name&gt;api&lt;/servlet-name&gt;
- *  &lt;servlet-class&gt;com.noelios.restlet.ext.spring.RestletFrameworkServlet&lt;/servlet-class&gt;
- *  &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
- *  &lt;/servlet&gt;
+ * &lt;servlet&gt;
+ *    &lt;servlet-name&gt;api&lt;/servlet-name&gt;
+ *    &lt;servlet-class&gt;com.noelios.restlet.ext.spring.RestletFrameworkServlet&lt;/servlet-class&gt;
+ *    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+ * &lt;/servlet&gt;
  * 
- *  &lt;servlet-mapping&gt;
- *  &lt;servlet-name&gt;api&lt;/servlet-name&gt;
- *  &lt;url-pattern&gt;/api/v1/*&lt;/url-pattern&gt;
- *  &lt;/servlet-mapping&gt;
+ * &lt;servlet-mapping&gt;
+ *    &lt;servlet-name&gt;api&lt;/servlet-name&gt;
+ *    &lt;url-pattern&gt;/api/v1/*&lt;/url-pattern&gt;
+ * &lt;/servlet-mapping&gt;
  * </pre>
  * 
  * <p>
@@ -56,42 +57,44 @@ import java.util.logging.Logger;
  * <p>
  * All requests to this servlet will be delegated to a single top-level restlet
  * loaded from the Spring application context. By default, this servlet looks
- * for a bean named "router". You can override that by passing in the
+ * for a bean named "root". You can override that by passing in the
  * <code>targetRestletBeanName</code> parameter. For example:
  * 
  * <pre>
- *  &lt;servlet&gt;
- *  &lt;servlet-name&gt;api&lt;/servlet-name&gt;
- *  &lt;servlet-class&gt;com.noelios.restlet.ext.spring.RestletFrameworkServlet&lt;/servlet-class&gt;
- *  &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
- *  &lt;init-param&gt;
- *  &lt;param-name&gt;targetRestletBeanName&lt;/param-name&gt;
- *  &lt;param-value&gt;guard&lt;/param-value&gt;
- *  &lt;/init-param&gt;
- *  &lt;/servlet&gt;
+ * &lt;servlet&gt;
+ *    &lt;servlet-name&gt;api&lt;/servlet-name&gt;
+ *    &lt;servlet-class&gt;com.noelios.restlet.ext.spring.RestletFrameworkServlet&lt;/servlet-class&gt;
+ *    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+ *    &lt;init-param&gt;
+ *       &lt;param-name&gt;targetRestletBeanName&lt;/param-name&gt;
+ *       &lt;param-value&gt;guard&lt;/param-value&gt;
+ *    &lt;/init-param&gt;
+ * &lt;/servlet&gt;
  * </pre>
  * 
  * @author Rhett Sutphin
  */
 public class RestletFrameworkServlet extends FrameworkServlet {
-    private static final String DEFAULT_TARGET_RESTLET_BEAN_NAME = "router";
+    /** The default bean name for the target Restlet. */
+    private static final String DEFAULT_TARGET_RESTLET_BEAN_NAME = "root";
 
     private static final long serialVersionUID = 1L;
 
+    /** The converter of Servlet calls into Restlet equivalents. */
     private ServletConverter converter;
 
-    protected final Logger log = Logger.getLogger(getClass().getName());
-
-    private String targetRestletBeanName = DEFAULT_TARGET_RESTLET_BEAN_NAME;
+    /** The bean name of the target Restlet. */
+    private String targetRestletBeanName;
 
     @Override
     protected void doService(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
-        converter.service(request, response);
+        this.converter.service(request, response);
+        this.targetRestletBeanName = DEFAULT_TARGET_RESTLET_BEAN_NAME;
     }
 
     /**
-     * Returns the target Restlet from the Web application context.
+     * Returns the target Restlet from Spring's Web application context.
      * 
      * @return The target Restlet.
      */
@@ -101,20 +104,20 @@ public class RestletFrameworkServlet extends FrameworkServlet {
     }
 
     /**
-     * Returns the bean name of the target Restlet.
+     * Returns the bean name of the target Restlet. Returns "root" by default.
      * 
      * @return The bean name.
      */
     public String getTargetRestletBeanName() {
-        return targetRestletBeanName;
+        return this.targetRestletBeanName;
     }
 
     @Override
     protected void initFrameworkServlet() throws ServletException,
             BeansException {
         super.initFrameworkServlet();
-        converter = new ServletConverter(getServletContext());
-        converter.setTarget(getTargetRestlet());
+        this.converter = new ServletConverter(getServletContext());
+        this.converter.setTarget(getTargetRestlet());
     }
 
     /**

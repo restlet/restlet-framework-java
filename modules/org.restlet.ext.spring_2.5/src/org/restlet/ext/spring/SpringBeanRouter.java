@@ -37,43 +37,55 @@ import org.springframework.beans.factory.BeanFactory;
  * Example:
  * 
  * <pre>
- *  &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
- *  xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
- *  xsi:schemaLocation=&quot;
- *  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
- *  &quot;&gt;
+ * &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd&quot; &gt;
+ *    &lt;!-- Singleton instance of this class --&gt;
+ *    &lt;bean name=&quot;router&quot; class=&quot;org.restlet.ext.spring.BeanNameRouter&quot;/&gt;
  * 
- *  &lt;!-- a singleton instance of this class --&gt;
- *  &lt;bean name=&quot;router&quot; class=&quot;org.restlet.ext.spring.BeanNameRouter&quot;/&gt;
+ *    &lt;!-- Prototype beans for the resources --&gt;
+ *    &lt;bean name=&quot;/studies&quot; id=&quot;studiesResource&quot; autowire=&quot;byName&quot; scope=&quot;prototype&quot; class=&quot;edu.northwestern.myapp.StudiesResource&quot; &gt;
+ *       &lt;property name=&quot;studyDao&quot; ref=&quot;studyDao&quot;/&gt;
+ *    &lt;/bean&gt;
  * 
- *  &lt;!-- prototype beans for the resources --&gt;
- * 
- *  &lt;bean name=&quot;/studies&quot;
- *  id=&quot;studiesResource&quot; autowire=&quot;byName&quot; scope=&quot;prototype&quot;
- *  class=&quot;edu.northwestern.myapp.StudiesResource&quot;
- *  &gt;
- *  &lt;property name=&quot;studyDao&quot; ref=&quot;studyDao&quot;/&gt;
- *  &lt;/bean&gt;
- * 
- *  &lt;bean name=&quot;/studies/{study-identifier}/template&quot;
- *  id=&quot;templateResource&quot; autowire=&quot;byName&quot; scope=&quot;prototype&quot;
- *  class=&quot;edu.northwestern.myapp.TemplateResource&quot;
- *  /&gt;
- *  &lt;/beans&gt;
+ *    &lt;bean name=&quot;/studies/{study-identifier}/template&quot; id=&quot;templateResource&quot; autowire=&quot;byName&quot; scope=&quot;prototype&quot; class=&quot;edu.northwestern.myapp.TemplateResource&quot; /&gt;
+ * &lt;/beans&gt;
  * </pre>
  * 
- * This will route two resources -- <code>/studies</code> and
- * <code>/studies/{study-identifier}/template</code>.
+ * This will route two resources: <code>"/studies"</code> and
+ * <code>"/studies/{study-identifier}/template"</code> to the corresponding
+ * Resource subclass.
  * 
  * @author Rhett Sutphin
  */
-public class SpringBeanRouter extends Router implements BeanFactoryPostProcessor {
+public class SpringBeanRouter extends Router implements
+        BeanFactoryPostProcessor {
+
+    /**
+     * Creates an instance of {@link SpringBeanFinder}. This can be overriden
+     * if necessary.
+     * 
+     * @param beanFactory
+     *                The Spring bean factory.
+     * @param beanName
+     *                The bean name.
+     */
+    protected Finder createFinder(BeanFactory beanFactory, String beanName) {
+        return new SpringBeanFinder(beanFactory, beanName);
+    }
+
+    /**
+     * Modify the application context by looking up the name of all beans of
+     * type Resource, calling the
+     * {@link #resolveUri(String, ConfigurableListableBeanFactory)} method for
+     * each of them. If an URI is found, a finder is created for the bean name
+     * using the {@link #createFinder(BeanFactory, String)} method.
+     */
     public void postProcessBeanFactory(ConfigurableListableBeanFactory factory)
             throws BeansException {
         String[] names = factory
                 .getBeanNamesForType(Resource.class, true, true);
+
         for (String name : names) {
-            String uri = resolveUrl(name, factory);
+            String uri = resolveUri(name, factory);
             if (uri != null) {
                 attach(uri, createFinder(factory, name));
             }
@@ -81,24 +93,17 @@ public class SpringBeanRouter extends Router implements BeanFactoryPostProcessor
     }
 
     /**
-     * Override this to change the type of Finder created for each resource
-     * bean. Default is {@link SpringBeanFinder}.
-     */
-    protected Finder createFinder(BeanFactory factory, String beanName) {
-        return new SpringBeanFinder(factory, beanName);
-    }
-
-    /**
      * Uses this first alias for this bean that starts with '/'. This mimics the
      * behavior of
      * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}.
      */
-    private String resolveUrl(String resourceName,
+    protected String resolveUri(String resourceName,
             ConfigurableListableBeanFactory factory) {
         for (String alias : factory.getAliases(resourceName)) {
             if (alias.startsWith("/"))
                 return alias;
         }
+
         return null;
     }
 }

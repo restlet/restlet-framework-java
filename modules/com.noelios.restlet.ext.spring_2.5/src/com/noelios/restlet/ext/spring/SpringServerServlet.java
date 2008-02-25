@@ -33,14 +33,15 @@ import com.noelios.restlet.ext.servlet.ServletWarClient;
 
 /**
  * This class is similar to the ServerServlet, but instead of creating the used
- * Restlet-Application and Restlet-Component, it lookups them up from the
+ * Restlet Application and Restlet Component, it lookups them up from the
  * SpringContext which is found in the ServletContext.
+ * 
+ * If the Application or Component beans can't be found, the default behavior of
+ * the parent class is used.
  * 
  * @author Florian Schwarz
  */
 public class SpringServerServlet extends ServerServlet {
-
-    private static final long serialVersionUID = 110030403435929871L;
 
     /**
      * Name of the Servlet parameter containing a bean-id of the application to
@@ -54,8 +55,10 @@ public class SpringServerServlet extends ServerServlet {
      */
     public static final String Component_BEAN_PARAM_NAME = "org.restlet.component";
 
+    private static final long serialVersionUID = 110030403435929871L;
+
     /**
-     * Lookups the single Restlet-Application used by this Servlet from the
+     * Lookups the single Restlet Application used by this Servlet from the
      * SpringContext inside the ServletContext. The bean name looked up is
      * {@link #APPLICATION_BEAN_PARAM_NAME}.
      * 
@@ -114,8 +117,8 @@ public class SpringServerServlet extends ServerServlet {
     }
 
     /**
-     * Lookups the single RestletComponent used by this Servlet from the
-     * SpringContext inside the ServletContext. The bean name looked up is
+     * Lookups the single Restlet Component used by this Servlet from Spring's
+     * Context available inside the ServletContext. The bean name looked up is
      * {@link #Component_BEAN_PARAM_NAME}.
      * 
      * @return The Restlet-Component to use.
@@ -123,7 +126,6 @@ public class SpringServerServlet extends ServerServlet {
     @Override
     public Component createComponent() {
         Component component = null;
-
         String componentBeanName = getInitParameter(Component_BEAN_PARAM_NAME,
                 null);
         component = (Component) getWebApplicationContext().getBean(
@@ -145,7 +147,6 @@ public class SpringServerServlet extends ServerServlet {
      * @return The Spring WebApplicationContext.
      */
     public WebApplicationContext getWebApplicationContext() {
-
         return WebApplicationContextUtils
                 .getRequiredWebApplicationContext(getServletContext());
     }

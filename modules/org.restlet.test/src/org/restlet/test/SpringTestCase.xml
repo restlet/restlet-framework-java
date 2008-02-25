@@ -5,6 +5,11 @@
 
 	<bean id="component"
 		class="org.restlet.ext.spring.SpringComponent">
+		<property name="clientsList">
+			<list>
+				<value>file</value>
+			</list>
+		</property>
 		<property name="server" ref="server" />
 		<property name="defaultTarget" ref="application" />
 		<property name="hosts">

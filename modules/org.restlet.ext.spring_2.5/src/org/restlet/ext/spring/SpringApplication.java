@@ -36,6 +36,11 @@ import org.restlet.Component;
  * &lt;/bean&gt;
  * </pre>
  * 
+ * Note that the constructor taking a Component is private because it shouldn't
+ * be extended to remove the separation between an Application and its parent
+ * Component. The application is only allowed to access to the Component's
+ * context.
+ * 
  * @see <a href="http://www.springframework.org/">Spring home page</a>
  * @author Jerome Louvel (contact@noelios.com)</a>
  */
@@ -48,7 +53,7 @@ public class SpringApplication extends Application {
      * @param component
      *                The parent component.
      */
-    public SpringApplication(Component component) {
+    private SpringApplication(Component component) {
         super(component.getContext());
     }
 

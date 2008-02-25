@@ -30,17 +30,32 @@ import org.restlet.data.Protocol;
  * Component that is easily configurable from Spring. Here is a usage example:
  * 
  * <pre>
- * &lt;bean id=&quot;component&quot; class=&quot;org.restlet.ext.spring.SpringComponent&quot;&gt;
- *     &lt;property name=&quot;server&quot; ref=&quot;server&quot; /&gt;
- *     &lt;property name=&quot;defaultTarget&quot; ref=&quot;application&quot; /&gt;
+ * &lt;bean id=&quot;component&quot;
+ *         class=&quot;org.restlet.ext.spring.SpringComponent&quot;&gt;
+ *         &lt;property name=&quot;clientsList&quot;&gt;
+ *                 &lt;list&gt;
+ *                         &lt;value&gt;file&lt;/value&gt;
+ *                 &lt;/list&gt;
+ *         &lt;/property&gt;
+ *         &lt;property name=&quot;server&quot; ref=&quot;server&quot; /&gt;
+ *         &lt;property name=&quot;defaultTarget&quot; ref=&quot;application&quot; /&gt;
+ *         &lt;property name=&quot;hosts&quot;&gt;
+ *                 &lt;list&gt;
+ *                         &lt;ref bean=&quot;virtualHost&quot; /&gt;
+ *                 &lt;/list&gt;
+ *         &lt;/property&gt;
  * &lt;/bean&gt;
  * 
  * &lt;bean id=&quot;server&quot; class=&quot;org.restlet.ext.spring.SpringServer&quot;&gt;
- *     &lt;constructor-arg value=&quot;http&quot; /&gt;
- *     &lt;constructor-arg value=&quot;8182&quot; /&gt;
+ *         &lt;constructor-arg value=&quot;http&quot; /&gt;
+ *         &lt;constructor-arg value=&quot;8182&quot; /&gt;
+ *         &lt;property name=&quot;parameters&quot;&gt;
+ *                 &lt;props&gt;
+ *                         &lt;prop key=&quot;key1&quot;&gt;value1&lt;/prop&gt;
+ *                         &lt;prop key=&quot;key2&quot;&gt;value2&lt;/prop&gt;
+ *                 &lt;/props&gt;
+ *         &lt;/property&gt;
  * &lt;/bean&gt;
- * 
- * ...
  * </pre>
  * 
  * @see <a href="http://www.springframework.org/">Spring home page</a>
@@ -49,13 +64,26 @@ import org.restlet.data.Protocol;
 public class SpringComponent extends org.restlet.Component {
 
     /**
+     * Adds a client to the list of connectors. The value can be either a
+     * protocol name, a Protocol instance or a Client instance.
+     * 
+     * @param clientInfo
+     *                The client info.
+     */
+    public void setClient(Object clientInfo) {
+        List<Object> clients = new ArrayList<Object>();
+        clients.add(clientInfo);
+        setClientsList(clients);
+    }
+
+    /**
      * Sets the list of clients, either as protocol names, Protocol instances or
      * Client instances.
      * 
      * @param clients
      *                The list of clients.
      */
-    public void setClients(List<Object> clients) {
+    public synchronized void setClientsList(List<Object> clients) {
         for (Object client : clients) {
             if (client instanceof String) {
                 getClients().add(Protocol.valueOf((String) client));
@@ -71,14 +99,27 @@ public class SpringComponent extends org.restlet.Component {
         }
     }
 
+    /**
+     * Attaches a target Restlet to the default host.
+     * 
+     * @param target
+     *                The target Restlet.
+     */
     public void setDefaultTarget(Restlet target) {
         getDefaultHost().attach(target);
     }
 
+    /**
+     * Adds a server to the list of connectors. The value can be either a
+     * protocol name, a Protocol instance or a Server instance.
+     * 
+     * @param serverInfo
+     *                The server info.
+     */
     public void setServer(Object serverInfo) {
         List<Object> servers = new ArrayList<Object>();
         servers.add(serverInfo);
-        setServers(servers);
+        setServersList(servers);
     }
 
     /**
@@ -88,7 +129,7 @@ public class SpringComponent extends org.restlet.Component {
      * @param serversInfo
      *                The list of servers.
      */
-    public void setServers(List<Object> serversInfo) {
+    public void setServersList(List<Object> serversInfo) {
         for (Object serverInfo : serversInfo) {
             if (serverInfo instanceof String) {
                 getServers().add(Protocol.valueOf((String) serverInfo));

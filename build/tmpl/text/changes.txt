@@ -29,7 +29,8 @@ Changes log
  - Caught exception with Simple connector when flushing a closed stream. Now it is logged at
    a lower priority. Reported by Todd Nguyen. 
  - Fixed NPE in the MediaTypes class. Reported and contributed by Marc Portier.
-  
+ - Fixed bug in SpringComponent preventing setting of clients. Reported by Garriot Zhang.
+
 [Enhancements] 
  - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 
    Angelocola based on David Koelle's original idea. Optimized implementation contributed by Rob 
@@ -62,7 +63,8 @@ Changes log
  - Added format(Object) and resolve(Object,String) methods to Template to allow for custom variable resolution.
    Enhancement suggested by Stephan Koops.
  - Added new Spring NRE extension containing a SpringServerServlet facilitating the Servlet + Spring + Restlet
-   trio integration. Contributed by Florian Schwarz. Also new classes where contributed by Rhett Sutphin.
+   trio integration. Contributed by Florian Schwarz. Also new classes where contributed by Rhett Sutphin
+   that give even more integration option (RestletFrameworkServlet, SpringBeanFinder and SpringBeanRouter).
  - Added "defaultMatchingMode" property on Router. Suggested by William Pietri.
  - Added "throwable" property to the Status class, respecting the immutability. Suggested by Paul J. Lucas.
  - Added "getEphemeralPort()" method on Server to get the local port actually used by the system when the
