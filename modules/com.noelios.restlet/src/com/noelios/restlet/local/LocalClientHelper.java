@@ -131,10 +131,14 @@ public class LocalClientHelper extends ClientHelper {
                 }
             }
 
-            // If no language is defines, take the default language
+            // If no language is defined, take the default one
             if (variant.getLanguages().isEmpty()) {
                 variant.getLanguages()
                         .add(metadataService.getDefaultLanguage());
+            }
+            // If no media type is defined, take the default one
+            if (variant.getMediaType() == null) {
+                variant.setMediaType(metadataService.getDefaultMediaType());
             }
         }
     }
