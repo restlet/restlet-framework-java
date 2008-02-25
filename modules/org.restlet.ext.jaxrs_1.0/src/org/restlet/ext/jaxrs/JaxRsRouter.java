@@ -59,13 +59,20 @@ import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.impl.MatchingResult;
 import org.restlet.ext.jaxrs.impl.PathRegExp;
 import org.restlet.ext.jaxrs.impl.WrappedRequestForHttpHeaders;
+import org.restlet.ext.jaxrs.provider.ByteArrayProvider;
+import org.restlet.ext.jaxrs.provider.DataSourceProvider;
+import org.restlet.ext.jaxrs.provider.FileProvider;
+import org.restlet.ext.jaxrs.provider.InputStreamProvider;
 import org.restlet.ext.jaxrs.provider.JaxRsOutputRepresentation;
+import org.restlet.ext.jaxrs.provider.JaxbElementProvider;
+import org.restlet.ext.jaxrs.provider.JaxbProvider;
 import org.restlet.ext.jaxrs.provider.StringProvider;
+import org.restlet.ext.jaxrs.provider.WwwFormFormProvider;
+import org.restlet.ext.jaxrs.provider.WwwFormMmapProvider;
+import org.restlet.ext.jaxrs.provider.XmlTransformSourceProvider;
 import org.restlet.ext.jaxrs.util.RemainingPath;
 import org.restlet.ext.jaxrs.util.SortedMetadata;
 import org.restlet.ext.jaxrs.util.Util;
-import org.restlet.ext.jaxrs.util.WrappedClassLoadException;
-import org.restlet.ext.jaxrs.util.WrappedLoadException;
 import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.wrappers.HiddenJaxRsRouter;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyReader;
@@ -193,11 +200,17 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         // TODO JaxRsRouter.extensionMappings.
     }
 
-    private void loadDefaultProviders() throws WrappedClassLoadException,
-            WrappedLoadException {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        JaxRsClassesLoader.loadProvidersFromPackage(classLoader, true, this,
-                StringProvider.class.getPackage().getName());
+    private void loadDefaultProviders() {
+        JaxRsClassesLoader.addProviderToRouter(ByteArrayProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(DataSourceProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(FileProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(InputStreamProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(JaxbElementProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(JaxbProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(StringProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(WwwFormFormProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(WwwFormMmapProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(XmlTransformSourceProvider.class, this);
     }
 
     /**

@@ -24,7 +24,6 @@ package org.restlet.ext.jaxrs.exceptions;
  * must not be possible. Will be removed later.
  * 
  * @author Stephan Koops
- * 
  */
 public class ImplementationException extends JaxRsRuntimeException  {
 

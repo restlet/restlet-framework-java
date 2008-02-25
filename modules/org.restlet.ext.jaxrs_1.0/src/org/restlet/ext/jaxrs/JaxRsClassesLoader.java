@@ -1,9 +1,7 @@
 package org.restlet.ext.jaxrs;
 
-import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.logging.Level;
 
 import javax.ws.rs.Path;
@@ -13,9 +11,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
-import org.restlet.ext.jaxrs.util.PackageIterator;
-import org.restlet.ext.jaxrs.util.WrappedClassLoadException;
-import org.restlet.ext.jaxrs.util.WrappedLoadException;
 
 /**
  * This class loads the root resource classes and the {@link Provider}s. If the
@@ -132,38 +127,5 @@ class JaxRsClassesLoader {
             // TODO warn
         }
 
-    }
-
-    /**
-     * Load the classes in the package with the given name.
-     * 
-     * @param classLoader
-     * @param throwOnExc
-     * @param jaxRsRouter
-     * @param packageNames
-     *                The packages to load
-     * @throws WrappedLoadException
-     *                 if the package could not be loaded, independent of
-     *                 throwOnExc
-     * @throws WrappedClassLoadException
-     *                 if throwOnExc is true and a class could not be loaded.
-     */
-    static void loadProvidersFromPackage(ClassLoader classLoader,
-            boolean throwOnExc, JaxRsRouter jaxRsRouter, String... packageNames)
-            throws WrappedLoadException, WrappedClassLoadException {
-        for (String packageName : packageNames) {
-            Iterator<Class<?>> classIter;
-            try {
-                classIter = new PackageIterator(classLoader, packageName,
-                        throwOnExc, jaxRsRouter.getLogger(), Level.WARNING);
-            } catch (IOException e) {
-                throw new WrappedLoadException(
-                        "Could not load the package data", e);
-            }
-            while (classIter.hasNext()) {
-                Class<?> clazz = classIter.next();
-                addProviderToRouter(clazz, jaxRsRouter);
-            }
-        }
     }
 }
