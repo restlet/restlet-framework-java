@@ -50,7 +50,7 @@ public class GuardedExample {
      */
     public static void main(String[] args) throws Exception {
         Component comp = new Component();
-        comp.getServers().add(Protocol.HTTP, 8182);
+        Server server = comp.getServers().add(Protocol.HTTP, 8182);
 
         // Create an application
         Application application = new Application(comp.getContext()) {
@@ -73,7 +73,6 @@ public class GuardedExample {
         comp.getDefaultHost().attach(application);
         comp.start();
 
-        Server server = comp.getServers().get(0);
         System.out.println("Server stated on port " + server.getPort());
         System.out.println("Press key to stop server");
         System.in.read();
