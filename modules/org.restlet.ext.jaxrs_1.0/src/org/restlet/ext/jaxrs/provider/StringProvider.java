@@ -20,6 +20,8 @@ package org.restlet.ext.jaxrs.provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
@@ -63,7 +65,7 @@ public class StringProvider extends AbstractProvider<CharSequence> {
      * @see javax.ws.rs.ext.MessageBodyReader#isReadable(Class)
      */
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type) {
+    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
         return CharSequence.class.isAssignableFrom(type);
     }
 
@@ -73,7 +75,9 @@ public class StringProvider extends AbstractProvider<CharSequence> {
      *      java.io.OutputStream)
      */
     @Override
-    public void writeTo(CharSequence cs, MediaType mediaType,
+    public void writeTo(CharSequence cs, Type genericType,
+            Annotation[] annotations,
+            MediaType mediaType, 
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         byte[] array = cs.toString().getBytes();
@@ -81,8 +85,8 @@ public class StringProvider extends AbstractProvider<CharSequence> {
     }
 
     @Override
-    public CharSequence readFrom(Class<CharSequence> type, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public CharSequence readFrom(Class<CharSequence> type, Type genericType,
+            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         throw new NotYetImplementedException();
     }

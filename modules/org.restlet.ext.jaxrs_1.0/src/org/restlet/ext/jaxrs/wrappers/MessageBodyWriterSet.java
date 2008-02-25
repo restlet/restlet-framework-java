@@ -17,6 +17,8 @@
  */
 package org.restlet.ext.jaxrs.wrappers;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -65,13 +67,18 @@ public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter> {
      * given entityClass.
      * 
      * @param entityClass
+     * @param genericType
+     * @param annotations
      * @return
+     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
+     *      Annotation[])
      */
-    public MessageBodyWriterSet subSet(Class<?> entityClass) {
+    public MessageBodyWriterSet subSet(Class<?> entityClass, Type genericType,
+            Annotation[] annotations) {
         // LATER optimization: may be cached for speed.
         List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
         for (MessageBodyWriter mbw : this) {
-            if (mbw.isWriteable(entityClass))
+            if (mbw.isWriteable(entityClass, genericType, annotations))
                 mbws.add(mbw);
         }
         return new MessageBodyWriterSet(mbws, true);

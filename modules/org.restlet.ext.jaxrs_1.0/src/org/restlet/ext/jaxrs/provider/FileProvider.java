@@ -23,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -45,7 +47,7 @@ public class FileProvider extends AbstractProvider<File> {
     }
 
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type) {
+    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
         return File.class.isAssignableFrom(type);
     }
 
@@ -55,8 +57,8 @@ public class FileProvider extends AbstractProvider<File> {
      *      java.io.InputStream)
      */
     @Override
-    public File readFrom(Class<File> type, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public File readFrom(Class<File> type, Type genericType,
+            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         try {
             File file = File.createTempFile("FileProvider", ".tmp");
@@ -68,7 +70,9 @@ public class FileProvider extends AbstractProvider<File> {
     }
 
     @Override
-    public void writeTo(File file, MediaType mediaType,
+    public void writeTo(File file, Type genericType,
+            Annotation[] annotations,
+            MediaType mediaType, 
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         InputStream inputStream = new FileInputStream(file);

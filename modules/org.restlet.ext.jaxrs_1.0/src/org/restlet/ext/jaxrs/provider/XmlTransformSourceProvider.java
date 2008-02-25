@@ -3,6 +3,8 @@ package org.restlet.ext.jaxrs.provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -26,25 +28,27 @@ public class XmlTransformSourceProvider extends AbstractProvider<Source> {
     }
 
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type) {
+    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
         // return Source.class.isAssignableFrom(type);
         return false;
     }
 
     /**
      * @see org.restlet.ext.jaxrs.provider.AbstractProvider#readFrom(java.lang.Class,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.InputStream)
+     *      Type, javax.ws.rs.core.MediaType,
+     *      Annotation[], javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
      */
     @Override
-    public Source readFrom(Class<Source> type, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public Source readFrom(Class<Source> type, Type genericType,
+            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return new StreamSource(entityStream);
     }
 
     @Override
-    public void writeTo(Source source, MediaType mediaType,
+    public void writeTo(Source source, Type genericType,
+            Annotation[] annotations,
+            MediaType mediaType, 
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         // StreamResult streamResult = new StreamResult(entityStream);

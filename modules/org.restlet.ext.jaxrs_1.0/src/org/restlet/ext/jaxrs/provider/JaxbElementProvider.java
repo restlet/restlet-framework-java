@@ -18,7 +18,9 @@
 package org.restlet.ext.jaxrs.provider;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -28,20 +30,22 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
+
 /**
  * @author Stephan Koops
  */
 @Provider
-public class JaxbElementProvider implements MessageBodyWriter<JAXBElement<?>> {
+public class JaxbElementProvider extends AbstractProvider<JAXBElement<?>> {
 
-    // REQUESTED JSR311: JAXBElement-MessageBodyReader: dont know how to implement. 
+    // REQUESTED JSR311: JAXBElement-MessageBodyReader: dont know how to
+    // implement.
 
     private Logger logger = Logger.getLogger(JaxbElementProvider.class
             .getName());
@@ -49,14 +53,18 @@ public class JaxbElementProvider implements MessageBodyWriter<JAXBElement<?>> {
     /**
      * @see org.restlet.ext.jaxrs.provider.AbstractProvider#getSize(java.lang.Object)
      */
+    @Override
     public long getSize(JAXBElement<?> object) {
         return -1;
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#isReadableAndWriteable(java.lang.Class)
+     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#isReadableAndWriteable(java.lang.Class,
+     *      Type, Annotation[])
      */
-    public boolean isWriteable(Class<?> type) {
+    @Override
+    public boolean isReadableAndWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
         return JAXBElement.class.isAssignableFrom(type);
     }
 
@@ -82,18 +90,20 @@ public class JaxbElementProvider implements MessageBodyWriter<JAXBElement<?>> {
 
     /**
      * only for test in {@link #main(String[])}
+     * 
      * @param string
      */
-    void x(JAXBElement<String> string){
+    void x(JAXBElement<String> string) {
         string.toString();
     }
-    
+
     /**
-     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#writeTo(java.lang.Object,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.OutputStream)
+     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#writeTo(Object,
+     *      Type, Annotation[], MediaType, MultivaluedMap, OutputStream)
      */
-    public void writeTo(JAXBElement<?> jaxbElement, MediaType mediaType,
+    @Override
+    public void writeTo(JAXBElement<?> jaxbElement, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpResponseHeaders,
             OutputStream entityStream) throws IOException {
         try {
@@ -112,7 +122,17 @@ public class JaxbElementProvider implements MessageBodyWriter<JAXBElement<?>> {
         try {
             return JAXBContext.newInstance(clazz);
         } catch (LinkageError e) {
-            throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
+            throw new WebApplicationException(Response.serverError().entity(
+                    e.getMessage()).build());
         }
+    }
+
+    @Override
+    public JAXBElement<?> readFrom(Class<JAXBElement<?>> type,
+            Type genericType, MediaType mediaType, Annotation[] annotations,
+            MultivaluedMap<String, String> httpResponseHeaders,
+            InputStream entityStream) throws IOException {
+        // TODO JaxBElementProvider.readFrom
+        throw new NotYetImplementedException();
     }
 }

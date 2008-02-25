@@ -19,6 +19,8 @@ package org.restlet.ext.jaxrs.provider;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -38,6 +40,10 @@ public class JaxRsOutputRepresentation extends OutputRepresentation {
     private MessageBodyWriter mbw;
 
     private Object object;
+    
+    private Type genericType;
+    
+    private Annotation[] annotations;
 
     private MultivaluedMap<String, Object> httpHeaders;
 
@@ -46,19 +52,23 @@ public class JaxRsOutputRepresentation extends OutputRepresentation {
      * 
      * @param object
      *                the object to serialize
+     * @param genericType TODO
      * @param mediaType
      *                the MediaType of the object. Must be concrete, see
      *                {@link MediaType#isConcrete()}.
+     * @param annotations TODO
      * @param mbw
      *                the MessageBodyWriter which will serialize the object.
      * @param httpHeaders
      *                the mutable Map of HTTP response headers.
      */
-    public JaxRsOutputRepresentation(Object object, MediaType mediaType,
-            MessageBodyWriter mbw, MultivaluedMap<String, Object> httpHeaders) {
+    public JaxRsOutputRepresentation(Object object, Type genericType,
+            MediaType mediaType, Annotation[] annotations, MessageBodyWriter mbw, MultivaluedMap<String, Object> httpHeaders) {
         super(mediaType, mbw.getSize(object));
         if (!mediaType.isConcrete())
             throw new IllegalArgumentException(mediaType + " is not concrete");
+        this.genericType = genericType;
+        this.annotations = annotations;
         this.mbw = mbw;
         this.httpHeaders = httpHeaders;
         this.object = object;
@@ -69,7 +79,7 @@ public class JaxRsOutputRepresentation extends OutputRepresentation {
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        this.mbw.writeTo(object, Converter.toJaxRsMediaType(getMediaType(),
-                null), httpHeaders, outputStream);
+        this.mbw.writeTo(object, genericType, annotations, Converter.toJaxRsMediaType(getMediaType(),
+                        null), httpHeaders, outputStream);
     }
 }

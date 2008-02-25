@@ -21,6 +21,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -52,7 +54,7 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class)
      */
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type) {
+    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
         return byte[].class.isAssignableFrom(type);
     }
 
@@ -62,15 +64,17 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
      *      java.io.OutputStream)
      */
     @Override
-    public void writeTo(byte[] data, MediaType mediaType,
+    public void writeTo(byte[] data, Type genericType,
+            Annotation[] annotations,
+            MediaType mediaType, 
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         entityStream.write(data);
     }
 
     @Override
-    public byte[] readFrom(Class<byte[]> type, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public byte[] readFrom(Class<byte[]> type, Type genericType,
+            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         copyAndCloseStream(entityStream, baos);

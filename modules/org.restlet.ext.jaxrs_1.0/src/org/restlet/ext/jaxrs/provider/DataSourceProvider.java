@@ -20,6 +20,8 @@ package org.restlet.ext.jaxrs.provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.activation.DataSource;
 import javax.mail.util.ByteArrayDataSource;
@@ -40,19 +42,21 @@ public class DataSourceProvider extends AbstractProvider<DataSource> {
     }
 
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type) {
+    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
         return DataSource.class.isAssignableFrom(type);
     }
 
     @Override
-    public DataSource readFrom(Class<DataSource> type, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public DataSource readFrom(Class<DataSource> type, Type genericType,
+            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return new ByteArrayDataSource(entityStream, mediaType.toString());
     }
 
     @Override
-    public void writeTo(DataSource dataSource, MediaType mediaType,
+    public void writeTo(DataSource dataSource, Type genericType,
+            Annotation[] annotations,
+            MediaType mediaType, 
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         InputStream inputStream = dataSource.getInputStream();

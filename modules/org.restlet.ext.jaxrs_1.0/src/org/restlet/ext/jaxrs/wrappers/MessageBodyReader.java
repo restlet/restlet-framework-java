@@ -19,6 +19,8 @@ package org.restlet.ext.jaxrs.wrappers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,27 +58,39 @@ public class MessageBodyReader {
     /**
      * 
      * @param type
+     * @param genericType
+     * @param annotations
      * @return
-     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(Class)
+     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(Class, Type,
+     *      Annotation[])
      */
-    public boolean isReadable(Class<?> type) {
-        return reader.isReadable(type);
+    public boolean isReadable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
+        return reader.isReadable(type, genericType, annotations);
     }
 
     /**
      * 
      * @param type
+     * @param genericType
+     *                TODO
      * @param mediaType
+     * @param annotations
+     *                TODO
      * @param httpHeaders
      * @param entityStream
      * @return
      * @throws IOException
-     * @see {@link javax.ws.rs.ext.MessageBodyReader#readFrom(Class, javax.ws.rs.core.MediaType, MultivaluedMap, InputStream)}
+     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(Class, Type,
+     *      javax.ws.rs.core.MediaType, Annotation[], MultivaluedMap,
+     *      InputStream)
      */
-    public Object readFrom(Class type, javax.ws.rs.core.MediaType mediaType,
+    public Object readFrom(Class type, Type genericType,
+            javax.ws.rs.core.MediaType mediaType, Annotation[] annotations,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return this.reader.readFrom(type, mediaType, httpHeaders, entityStream);
+        return this.reader.readFrom(type, genericType, mediaType, annotations,
+                httpHeaders, entityStream);
     }
 
     /**

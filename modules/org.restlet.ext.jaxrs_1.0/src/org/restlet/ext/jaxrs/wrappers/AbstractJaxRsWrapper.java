@@ -23,6 +23,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -262,6 +263,7 @@ public abstract class AbstractJaxRsWrapper {
             HiddenJaxRsRouter jaxRsRouter, boolean leaveEncoded,
             int indexForExcMessages) throws IllegalOrNoAnnotationException,
             InstantiateParameterException, WebApplicationException {
+        // TODO @Encode may be placed on Type, constructor, method or parameter
         String defaultValue = null;
         for (Annotation annotation : paramAnnotations) {
             if (annotation.annotationType().equals(DefaultValue.class)) {
@@ -321,12 +323,13 @@ public abstract class AbstractJaxRsWrapper {
 
     /**
      * Returns the parameter value array for a JAX-RS method or constructor.
-     * 
-     * @param parameterAnnotationss
+     * @param paramTypes
+     *                the array of types for the method or constructor.
+     * @param paramGenericTypes
+     *                TODO
+     * @param paramAnnotationss
      *                the array of arrays of annotations for the method or
      *                constructor.
-     * @param parameterTypes
-     *                the array of types for the method or constructor.
      * @param leaveEncoded
      *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
      *                and {@link PathParam}s encoded.
@@ -339,6 +342,7 @@ public abstract class AbstractJaxRsWrapper {
      *                {@link SecurityContext#isUserInRole(String)}
      * @param mbrs
      *                The Set of {@link MessageBodyReader}s.
+     * 
      * @return the parameter array
      * @throws IllegalOrNoAnnotationException
      * @throws InstantiateParameterException
@@ -348,28 +352,30 @@ public abstract class AbstractJaxRsWrapper {
      * @throws WebApplicationException
      */
     protected static Object[] getParameterValues(
-            Annotation[][] parameterAnnotationss, Class<?>[] parameterTypes,
-            boolean leaveEncoded, CallContext callContext,
-            HiddenJaxRsRouter jaxRsRouter)
+            Class<?>[] paramTypes, Type[] paramGenericTypes,
+            Annotation[][] paramAnnotationss, boolean leaveEncoded,
+            CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
             throws IllegalOrNoAnnotationException,
             InstantiateParameterException, RequestHandledException,
             NoMessageBodyReadersException, WebApplicationException {
-        int paramNo = parameterTypes.length;
+        int paramNo = paramTypes.length;
         if (paramNo == 0)
             return new Object[0];
         Object[] args = new Object[paramNo];
         boolean annotRequired = false;
         for (int i = 0; i < args.length; i++) {
-            Class<?> paramType = parameterTypes[i];
+            Class<?> paramType = paramTypes[i];
             Object arg;
+            Annotation[] paramAnnotations = paramAnnotationss[i];
             try {
-                arg = getParameterValue(parameterAnnotationss[i], paramType,
+                arg = getParameterValue(paramAnnotations, paramType,
                         callContext, jaxRsRouter, leaveEncoded, i);
             } catch (IllegalOrNoAnnotationException ionae) {
                 if (annotRequired)
                     throw ionae;
                 annotRequired = true;
-                arg = convertRepresentation(callContext, paramType, jaxRsRouter);
+                arg = convertRepresentation(callContext, paramType,
+                        paramGenericTypes[i], paramAnnotations, jaxRsRouter);
             }
             args[i] = arg;
         }
@@ -384,6 +390,10 @@ public abstract class AbstractJaxRsWrapper {
      *                the call context, containing the entity.
      * @param paramType
      *                the type to convert to.
+     * @param genericType
+     *                TODO
+     * @param annotations
+     *                TODO
      * @param jaxRsRouter
      * @return
      * @throws NoMessageBodyReadersException
@@ -391,7 +401,8 @@ public abstract class AbstractJaxRsWrapper {
      * @throws InstantiateParameterException
      */
     private static Object convertRepresentation(CallContext callContext,
-            Class<?> paramType, HiddenJaxRsRouter jaxRsRouter)
+            Class<?> paramType, Type genericType, Annotation[] annotations,
+            HiddenJaxRsRouter jaxRsRouter)
             throws NoMessageBodyReadersException, RequestHandledException,
             InstantiateParameterException {
         Representation entity = callContext.getRequest().getEntity();
@@ -403,7 +414,8 @@ public abstract class AbstractJaxRsWrapper {
         MessageBodyReaderSet mbrs = jaxRsRouter.getMessageBodyReaders();
         if (mbrs == null)
             throw new NoMessageBodyReadersException();
-        MessageBodyReader mbr = mbrs.getBest(mediaType, paramType);
+        MessageBodyReader mbr = mbrs.getBest(mediaType, paramType, genericType,
+                annotations);
         if (mbr == null) {
             // TODO JSR311: what, if no MessageBodyReader?
             callContext.getResponse().setStatus(
@@ -415,8 +427,8 @@ public abstract class AbstractJaxRsWrapper {
         try {
             javax.ws.rs.core.MediaType jaxRsMediaType = Converter
                     .toJaxRsMediaType(mediaType, entity.getCharacterSet());
-            return mbr.readFrom(paramType, jaxRsMediaType, httpHeaders, entity
-                    .getStream());
+            return mbr.readFrom(paramType, genericType, jaxRsMediaType,
+                    annotations, httpHeaders, entity.getStream());
         } catch (IOException e) {
             throw new InstantiateParameterException(
                     "Can not instatiate parameter of type "

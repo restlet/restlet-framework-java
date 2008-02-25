@@ -19,6 +19,8 @@ package org.restlet.ext.jaxrs.wrappers;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
@@ -75,11 +77,14 @@ public class MessageBodyWriter {
      * Checks, if the given class is supported by this MessageBodyWriter
      * 
      * @param type
+     * @param genericType
+     * @param annotations
      * @return
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class)
      */
-    public boolean isWriteable(Class<?> type) {
-        return writer.isWriteable(type);
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
+        return writer.isWriteable(type, genericType, annotations);
     }
 
     /**
@@ -123,6 +128,10 @@ public class MessageBodyWriter {
      * 
      * @param t
      *                the type to write.
+     * @param genericType
+     *                TODO
+     * @param annotations
+     *                TODO
      * @param mediaType
      *                the media type of the HTTP entity.
      * @param httpHeaders
@@ -131,11 +140,16 @@ public class MessageBodyWriter {
      *                the {@link OutputStream} for the HTTP entity.
      * @throws java.io.IOException
      *                 if an IO error arises
+     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Type,
+     *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
+     *      OutputStream)
      */
-    public void writeTo(Object t, javax.ws.rs.core.MediaType mediaType,
+    public void writeTo(Object t, Type genericType, Annotation[] annotations,
+            javax.ws.rs.core.MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        writer.writeTo(t, mediaType, httpHeaders, entityStream);
+        writer.writeTo(t, genericType, annotations, mediaType, httpHeaders,
+                entityStream);
     }
 
     @Override

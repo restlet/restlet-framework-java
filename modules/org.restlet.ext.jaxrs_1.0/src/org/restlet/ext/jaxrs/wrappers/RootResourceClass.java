@@ -173,7 +173,8 @@ public class RootResourceClass extends ResourceClass {
      * @throws InvocationTargetException
      */
     public static Object createInstance(Constructor<?> constructor,
-            boolean leaveEncoded, CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
+            boolean leaveEncoded, CallContext callContext,
+            HiddenJaxRsRouter jaxRsRouter)
             throws IllegalOrNoAnnotationException, RequestHandledException,
             InstantiateParameterException, InstantiateRootRessourceException,
             InvocationTargetException {
@@ -183,8 +184,10 @@ public class RootResourceClass extends ResourceClass {
         } else {
             try {
                 args = getParameterValues(
-                        constructor.getParameterAnnotations(), constructor
-                                .getParameterTypes(), leaveEncoded, callContext, jaxRsRouter);
+                        constructor
+                                .getParameterTypes(), constructor
+                        .getGenericParameterTypes(), constructor.getParameterAnnotations(), leaveEncoded,
+                        callContext, jaxRsRouter);
             } catch (NoMessageBodyReadersException e) {
                 throw new IllegalOrNoAnnotationException(
                         "the root resource class constructor ("

@@ -20,6 +20,8 @@ package org.restlet.ext.jaxrs.provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
@@ -53,10 +55,10 @@ public class JaxbProvider extends AbstractProvider<Object> {
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#isReadableAndWriteable(java.lang.Class)
+     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#isReadableAndWriteable(java.lang.Class, Type, Annotation[])
      */
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type) {
+    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
         // if(type.isArray())
         //    type = type.getComponentType();
         // if(Collection.class.isAssignableFrom(type))
@@ -66,12 +68,12 @@ public class JaxbProvider extends AbstractProvider<Object> {
 
     /**
      * @see org.restlet.ext.jaxrs.provider.AbstractProvider#readFrom(java.lang.Class,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.InputStream)
+     *      Type, javax.ws.rs.core.MediaType,
+     *      Annotation[], javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
      */
     @Override
-    public Object readFrom(Class<Object> type, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public Object readFrom(Class<Object> type, Type genericType,
+            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         try {
             JAXBContext jaxbContext = getJaxbContext(type);
@@ -85,11 +87,13 @@ public class JaxbProvider extends AbstractProvider<Object> {
 
     /**
      * @see org.restlet.ext.jaxrs.provider.AbstractProvider#writeTo(java.lang.Object,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.OutputStream)
+     *      Type, Annotation[],
+     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
      */
     @Override
-    public void writeTo(Object object, MediaType mediaType,
+    public void writeTo(Object object, Type genericType,
+            Annotation[] annotations,
+            MediaType mediaType, 
             MultivaluedMap<String, Object> httpResponseHeaders,
             OutputStream entityStream) throws IOException {
         try {

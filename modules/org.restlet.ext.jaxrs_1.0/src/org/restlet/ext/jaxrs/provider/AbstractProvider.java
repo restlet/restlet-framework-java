@@ -20,6 +20,8 @@ package org.restlet.ext.jaxrs.provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,14 +54,14 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
      */
     public abstract long getSize(T object);
 
-    protected abstract boolean isReadableAndWriteable(Class<?> type);
+    protected abstract boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations);
 
-    public final boolean isWriteable(Class<?> type) {
-        return isReadableAndWriteable(type);
+    public final boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
+        return isReadableAndWriteable(type, genericType, annotations);
     }
 
-    public final boolean isReadable(Class<?> type) {
-        return isReadableAndWriteable(type);
+    public final boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations) {
+        return isReadableAndWriteable(type, genericType, annotations);
     }
 
     /**
@@ -90,28 +92,33 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
     }
 
     /**
+     * @param genericType TODO
+     * @param annotations TODO
      * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
      *      java.io.OutputStream)
      */
-    public abstract void writeTo(T t, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException;
+    public abstract void writeTo(T t, Type genericType,
+            Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException;
 
     /**
+     * @param genericType TODO
+     * @param annotations TODO
      * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
      *      java.io.InputStream)
      */
-    public abstract T readFrom(Class<T> type, MediaType mediaType,
-            MultivaluedMap<String, String> httpResponseHeaders,
-            InputStream entityStream) throws IOException;
+    public abstract T readFrom(Class<T> type, Type genericType,
+            MediaType mediaType,
+            Annotation[] annotations, MultivaluedMap<String, String> httpResponseHeaders, InputStream entityStream) throws IOException;
 
     /**
      * Logs the problem and throws an IOException.
+     * 
      * @param logger
      * @param message
-     * @param exc 
+     * @param exc
      * @throws IOException
      */
     protected static IOException logAndIOExc(Logger logger, String message,

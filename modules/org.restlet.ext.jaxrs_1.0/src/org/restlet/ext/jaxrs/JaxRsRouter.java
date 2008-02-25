@@ -18,8 +18,10 @@
 
 package org.restlet.ext.jaxrs;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -975,9 +977,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      *                 throws this message to exit the method and indicate, that
      *                 the request was handled.
      */
-    private RequestHandledException handleWebAppExc(
-            WebApplicationException webAppExc, CallContext callContext,
-            AbstractMethodWrapper resourceMethod)
+    RequestHandledException handleWebAppExc(WebApplicationException webAppExc,
+            CallContext callContext, AbstractMethodWrapper resourceMethod)
             throws RequestHandledException {
         // the message of the Exception is not used in the
         // WebApplicationException
@@ -1087,9 +1088,12 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         if (entity == null)
             return null;
         Class<? extends Object> entityClass = entity.getClass();
+        Type genericReturnType = resourceMethod.getGenericReturnType();
+        Annotation[] methodAnnotations = resourceMethod.getAnnotations();
+        MessageBodyWriterSet mbws = this.messageBodyWriters.subSet(entityClass,
+                genericReturnType, methodAnnotations);
         SortedMetadata<MediaType> accMediaTypes = callContext
                 .getAccMediaTypes();
-        MessageBodyWriterSet mbws = this.messageBodyWriters.subSet(entityClass);
         List<MediaType> possMediaTypes;
         if (responseMediaType != null)
             possMediaTypes = Collections.singletonList(responseMediaType);
@@ -1111,8 +1115,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
                 callContext.getResponse(), jaxRsRespHeaders, getLogger());
         // TESTEN Response Headers for MessageBodyWriter is not null yet
-        return new JaxRsOutputRepresentation(entity, mediaType, mbw,
-                httpResponseHeaders);
+        return new JaxRsOutputRepresentation(entity, genericReturnType,
+                mediaType, methodAnnotations, mbw, httpResponseHeaders);
     }
 
     /**

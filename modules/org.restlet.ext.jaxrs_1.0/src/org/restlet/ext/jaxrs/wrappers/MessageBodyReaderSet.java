@@ -17,6 +17,8 @@
  */
 package org.restlet.ext.jaxrs.wrappers;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -66,10 +68,10 @@ public class MessageBodyReaderSet extends LifoSet<MessageBodyReader> {
      * @param entityClass
      * @return
      */
-    private MessageBodyReaderSet subSet(Class<?> entityClass) {
+    private MessageBodyReaderSet subSet(Class<?> entityClass, Type genericType, Annotation[] annotations) {
         List<MessageBodyReader> mbws = new ArrayList<MessageBodyReader>();
         for (MessageBodyReader mbw : this) {
-            if (mbw.isReadable(entityClass))
+            if (mbw.isReadable(entityClass, genericType, annotations))
                 mbws.add(mbw);
         }
         return new MessageBodyReaderSet(mbws, true);
@@ -98,13 +100,15 @@ public class MessageBodyReaderSet extends LifoSet<MessageBodyReader> {
      * @param mediaType
      *                The {@link MediaType}, that should be supported.
      * @param paramType
+     * @param genericType 
+     * @param annotations 
      * 
      * @return The first {@link MessageBodyReader} of this Set. Returns null, if
      *         this Set is empty.
      */
-    public MessageBodyReader getBest(MediaType mediaType, Class<?> paramType) {
+    public MessageBodyReader getBest(MediaType mediaType, Class<?> paramType, Type genericType, Annotation[] annotations) {
         // LATER optimization: may be cached for speed.
-        MessageBodyReaderSet mbrs = this.subSet(mediaType).subSet(paramType);
+        MessageBodyReaderSet mbrs = this.subSet(mediaType).subSet(paramType, genericType, annotations);
         if (mbrs.isEmpty())
             return null;
         return mbrs.iterator().next();

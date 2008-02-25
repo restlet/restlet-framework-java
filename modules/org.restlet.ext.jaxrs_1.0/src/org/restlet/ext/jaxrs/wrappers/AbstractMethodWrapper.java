@@ -21,11 +21,14 @@ package org.restlet.ext.jaxrs.wrappers;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
@@ -59,7 +62,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
     }
 
     boolean leaveEncoded;
-    
+
     Method javaMethod;
 
     ResourceClass resourceClass;
@@ -69,9 +72,9 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         super(path);
         this.javaMethod = javaMethod;
         this.resourceClass = resourceClass;
-        if(javaMethod.isAnnotationPresent(Encoded.class))
+        if (javaMethod.isAnnotationPresent(Encoded.class))
             leaveEncoded = true;
-        else if(javaMethod.getClass().isAnnotationPresent(Encoded.class))
+        else if (javaMethod.getClass().isAnnotationPresent(Encoded.class))
             leaveEncoded = true;
         else
             leaveEncoded = false;
@@ -104,9 +107,10 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             InstantiateParameterException {
         Annotation[][] parameterAnnotationss = javaMethod
                 .getParameterAnnotations();
-        Class<?>[] parameterTypes = javaMethod.getParameterTypes();
-        Object[] args = getParameterValues(parameterAnnotationss,
-                parameterTypes, leaveEncoded, callContext, jaxRsRouter);
+        Class<?>[] paramTypes = javaMethod.getParameterTypes();
+        Type[] paramGenericTypes = javaMethod.getGenericParameterTypes();
+        Object[] args = getParameterValues(paramTypes, paramGenericTypes,
+                parameterAnnotationss, leaveEncoded, callContext, jaxRsRouter);
         try {
             return this.javaMethod.invoke(resourceObject.getResourceObject(),
                     args);
@@ -142,5 +146,23 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         Util.append(stb, paramTypes);
         stb.append(')');
         return stb.toString();
+    }
+
+    /**
+     * Returns the generic return type of the wrapped method.
+     * 
+     * @return the generic return type of the wrapped method.
+     */
+    public Type getGenericReturnType() {
+        return javaMethod.getGenericReturnType();
+    }
+
+    /**
+     * Returns the array of
+     * 
+     * @return
+     */
+    public Annotation[] getAnnotations() {
+        return javaMethod.getAnnotations();
     }
 }

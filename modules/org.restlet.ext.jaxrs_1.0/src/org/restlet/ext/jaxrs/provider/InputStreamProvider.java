@@ -20,6 +20,8 @@ package org.restlet.ext.jaxrs.provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -42,7 +44,7 @@ public class InputStreamProvider extends AbstractProvider<InputStream> {
     }
 
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type) {
+    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
         return InputStream.class.isAssignableFrom(type);
     }
 
@@ -52,14 +54,16 @@ public class InputStreamProvider extends AbstractProvider<InputStream> {
      *      java.io.InputStream)
      */
     @Override
-    public InputStream readFrom(Class<InputStream> type, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public InputStream readFrom(Class<InputStream> type, Type genericType,
+            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return entityStream;
     }
 
     @Override
-    public void writeTo(InputStream inputStream, MediaType mediaType,
+    public void writeTo(InputStream inputStream, Type genericType,
+            Annotation[] annotations,
+            MediaType mediaType, 
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
             copyAndCloseStream(inputStream, entityStream);
