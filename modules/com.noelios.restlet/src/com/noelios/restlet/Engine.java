@@ -217,7 +217,7 @@ public class Engine extends org.restlet.util.Engine {
     /**
      * Copies the given header parameters into teh given {@link Response}.
      * 
-     * @param headers
+     * @param responseHeaders
      *                The headers to copy.
      * @param response
      *                The response to update. Must contain a
