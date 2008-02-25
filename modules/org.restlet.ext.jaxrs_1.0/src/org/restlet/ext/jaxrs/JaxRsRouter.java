@@ -81,7 +81,6 @@ import org.restlet.ext.jaxrs.wrappers.ResourceMethodOrLocator;
 import org.restlet.ext.jaxrs.wrappers.ResourceObject;
 import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
 import org.restlet.ext.jaxrs.wrappers.SubResourceLocator;
-import org.restlet.ext.jaxrs.wrappers.SubResourceMethod;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
@@ -457,7 +456,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             addMrVarsToMap(matchingResult, callContext);
 
             // (h) When Method is resource method
-            if (firstMeth instanceof SubResourceMethod)
+            if (firstMeth instanceof ResourceMethod)
                 return new ResObjAndRemPath(o, u);
             // (g) and (i)
             u = matchingResult.getFinalCapturingGroup();
@@ -762,7 +761,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * 2007-12-07, Section 2.5, Part 2f+2g
      * 
      * @param eWithMethod
-     *                Collection of SubResourceMethods and SubResourceLocators
+     *                Collection of Sub-ResourceMethods and SubResourceLocators
      * @return null, if the Map is null or empty
      * @throws CouldNotFindMethodException
      */

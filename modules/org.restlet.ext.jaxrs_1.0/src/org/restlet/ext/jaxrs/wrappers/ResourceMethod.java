@@ -34,11 +34,10 @@ import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.util.SortedMetadata;
 
 /**
- * A method of a resource class annotated with a request method designator that
- * is used to handle requests on the corresponding resource, see section 2.2.
+ * This class wraps JAX-RS resource methods and sub resource methods.<br/> It
+ * does not wrap sub resource locators; see {@link SubResourceLocator}
  * 
  * @author Stephan Koops
- * 
  */
 public class ResourceMethod extends AbstractMethodWrapper implements
         ResourceMethodOrLocator {

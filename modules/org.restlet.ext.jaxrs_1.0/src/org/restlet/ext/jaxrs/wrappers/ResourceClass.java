@@ -94,7 +94,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     private Collection<SubResourceLocator> subResourceLocators;
 
-    private Collection<SubResourceMethod> subResourceMethods;
+    private Collection<ResourceMethod> subResourceMethods;
 
     private Collection<ResourceMethodOrLocator> subResourceMethodsAndLocators;
 
@@ -181,9 +181,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         // LATER results may be chached, if any method is returned.
         // The 404 case will be called rarely and produce a lot of cached data.
         List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
-        Iterable<SubResourceMethod> subResourceMethods = this
+        Iterable<ResourceMethod> subResourceMethods = this
                 .getSubResourceMethods();
-        for (SubResourceMethod method : subResourceMethods) {
+        for (ResourceMethod method : subResourceMethods) {
             PathRegExp methodPath = method.getPathRegExp();
             if (remainingPath.isEmptyOrSlash()) {
                 if (methodPath.isEmptyOrSlash())
@@ -208,7 +208,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     /**
      * @return Return the sub resource methods of the given class.
      */
-    public final Iterable<SubResourceMethod> getSubResourceMethods() {
+    public final Iterable<ResourceMethod> getSubResourceMethods() {
         if (this.subResourceMethods == null)
             internalSetSubResourceMethodsAndLocators();
         return this.subResourceMethods;
@@ -238,8 +238,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     private void internalSetSubResourceMethodsAndLocators() {
         Collection<ResourceMethodOrLocator> srmls = new ArrayList<ResourceMethodOrLocator>();
-        Collection<SubResourceMethod> srms = new ArrayList<SubResourceMethod>();
-        Collection<SubResourceLocator> srls = new ArrayList<SubResourceLocator>();
+        Collection<ResourceMethod> subRsesMeths = new ArrayList<ResourceMethod>();
+        Collection<SubResourceLocator> subResLocs = new ArrayList<SubResourceLocator>();
         java.lang.reflect.Method[] classMethods = jaxRsClass.getMethods();
         // LATER An implementation SHOULD warn users if a 6 non-public method
         // carries a method designator or @Path annotation.
@@ -250,21 +250,21 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             org.restlet.data.Method httpMethod = ResourceMethod
                     .getHttpMethod(javaMethod);
             if (httpMethod != null) {
-                SubResourceMethod srm = new SubResourceMethod(javaMethod, path,
-                        this, httpMethod);
-                srms.add(srm);
-                srmls.add(srm);
+                ResourceMethod subResMeth = new ResourceMethod(javaMethod,
+                        path, this, httpMethod);
+                subRsesMeths.add(subResMeth);
+                srmls.add(subResMeth);
             } else {
                 if (path != null) {
-                    SubResourceLocator srl = new SubResourceLocator(javaMethod,
-                            path, this);
-                    srls.add(srl);
-                    srmls.add(srl);
+                    SubResourceLocator subResLoc = new SubResourceLocator(
+                            javaMethod, path, this);
+                    subResLocs.add(subResLoc);
+                    srmls.add(subResLoc);
                 }
             }
         }
-        this.subResourceLocators = srls;
-        this.subResourceMethods = srms;
+        this.subResourceLocators = subResLocs;
+        this.subResourceMethods = subRsesMeths;
         this.subResourceMethodsAndLocators = srmls;
     }
 
