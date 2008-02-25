@@ -18,11 +18,14 @@
 
 package org.restlet;
 
+import java.io.Serializable;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -37,6 +40,69 @@ import org.restlet.util.Engine;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Guard extends Filter {
+    /**
+     * Implementation of the Principal interface.
+     * 
+     * @author Stephan Koops
+     */
+    private class PrincipalImpl implements Principal, Serializable {
+
+        private static final long serialVersionUID = -1842197948591956691L;
+
+        /** The name of the Principal. */
+        private String name;
+
+        /**
+         * Constructor for deserialization.
+         */
+        @SuppressWarnings("unused")
+        private PrincipalImpl() {
+        }
+
+        /**
+         * Creates a new Principal with the given name
+         * 
+         * @param name
+         *                The name of the Principal; must not be null.
+         */
+        public PrincipalImpl(String name) {
+            if (name == null) {
+                throw new IllegalArgumentException("The name must not be null");
+            }
+
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object another) {
+            if (another == this)
+                return true;
+            if (!(another instanceof Principal))
+                return false;
+            Principal otherPrinc = (Principal) another;
+            return getName().equals(otherPrinc.getName());
+        }
+
+        /**
+         * Returns the name of this principal.
+         * 
+         * @return the name of this principal.
+         */
+        public String getName() {
+            return this.name;
+        }
+
+        @Override
+        public int hashCode() {
+            return this.name.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return getName();
+        }
+    }
+
     /** Indicates that an authentication response is considered invalid. */
     public static final int AUTHENTICATION_INVALID = -1;
 
@@ -51,6 +117,26 @@ public class Guard extends Filter {
 
     /** Default lifespan for generated nonces (5 minutes). */
     public static final long DEFAULT_NONCE_LIFESPAN_MILLIS = 5 * 60 * 1000L;
+
+    /**
+     * Name of the request attribute containing the Principal instance.
+     * 
+     * @see Principal
+     */
+    private static final String NAME_ATTRIBUTE_PRINCIPAL = "java.security.Principal";
+
+    /**
+     * Gets the logged in user.
+     * 
+     * @param request
+     *                The Restlet {@link Request}
+     * @return The {@link Principal} of the logged in user.
+     * @see #setPrincipal(Principal, Request)
+     */
+    public static Principal getPrincipal(Request request) {
+        return (Principal) request.getAttributes()
+                .get(NAME_ATTRIBUTE_PRINCIPAL);
+    }
 
     /** The URIs that define the HTTP DIGEST authentication protection domains. */
     private Collection<String> domainUris = Collections.singleton("/");
@@ -120,9 +206,10 @@ public class Guard extends Filter {
     }
 
     /**
-     * Accepts the call. By default, it is invoked it the request is
-     * authenticated and authorized, and asks the attached Restlet to handle the
-     * call.
+     * Accepts the call. By default, it is invoked if the request is
+     * authenticated and authorized. The default behavior is to add a Principal
+     * to Request attributes by calling {@link #setPrincipal(Request)} and to
+     * ask to the attached Restlet to handle the call.
      * 
      * @param request
      *                The request to accept.
@@ -130,6 +217,8 @@ public class Guard extends Filter {
      *                The response to accept.
      */
     public void accept(Request request, Response response) {
+        setPrincipal(request);
+
         // Invoke the attached Restlet
         super.doHandle(request, response);
     }
@@ -159,6 +248,7 @@ public class Guard extends Filter {
      *                The request to authorize.
      * @return True if the request is authorized.
      */
+    @SuppressWarnings("unused")
     public boolean authorize(Request request) {
         // Authorize everything by default
         return true;
@@ -196,12 +286,15 @@ public class Guard extends Filter {
      * this returns true given the correct login/password couple as verified via
      * the findSecret() method.
      * 
+     * @param request
+     *                The Request
      * @param identifier
      *                the identifier
      * @param secret
      *                the identifier's secret
      * @return true if the secret is valid for the given identifier
      */
+    @SuppressWarnings("unused")
     public boolean checkSecret(Request request, String identifier, char[] secret) {
         return checkSecret(identifier, secret);
     }
@@ -392,6 +485,36 @@ public class Guard extends Filter {
      */
     public void setNonceLifespan(long lifespan) {
         this.nonceLifespan = lifespan;
+    }
+
+    /**
+     * Sets a {@link Principal} in in the given request. It actually creates a
+     * new instance based on the challenge responses's identifier then adds it
+     * to the request's attributes map.
+     * 
+     * You can later retrieve the Principal using the
+     * {@link Guard#getPrincipal(Request)} static method.
+     * 
+     * @param request
+     *                The request to update.
+     */
+    protected void setPrincipal(Request request) {
+        Principal principal = null;
+        ChallengeResponse challengeResponse = request.getChallengeResponse();
+
+        if (challengeResponse != null) {
+            String credentials = challengeResponse.getIdentifier();
+
+            if (credentials != null) {
+                principal = new PrincipalImpl(credentials);
+            }
+        }
+
+        if (principal != null) {
+            request.getAttributes().put(NAME_ATTRIBUTE_PRINCIPAL, principal);
+        } else {
+            request.getAttributes().remove(NAME_ATTRIBUTE_PRINCIPAL);
+        }
     }
 
     /**
