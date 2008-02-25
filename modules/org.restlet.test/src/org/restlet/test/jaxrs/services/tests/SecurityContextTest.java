@@ -29,9 +29,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.AllowAllAuthenticator;
-import org.restlet.ext.jaxrs.Authenticator;
-import org.restlet.ext.jaxrs.ForbidAllAuthenticator;
+import org.restlet.ext.jaxrs.AllowAllAccess;
+import org.restlet.ext.jaxrs.AccessControl;
+import org.restlet.ext.jaxrs.ForbidAllAccess;
 import org.restlet.test.jaxrs.server.RestletServerWrapper;
 import org.restlet.test.jaxrs.server.ServerWrapper;
 import org.restlet.test.jaxrs.services.SecurityContextService;
@@ -51,14 +51,14 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     /**
-     * @param authenticator
+     * @param accessControl
      * @return true, if it could be set, or false if not.
      */
-    private boolean setAuthroizator(Authenticator authenticator) {
+    private boolean setAccessControl(AccessControl accessControl) {
         ServerWrapper serverWrapper = getServerWrapper();
         if (serverWrapper instanceof RestletServerWrapper) {
             RestletServerWrapper restletServerWrapper = ((RestletServerWrapper) serverWrapper);
-            restletServerWrapper.setAuthorizator(authenticator);
+            restletServerWrapper.setAccessControl(accessControl);
             return true;
         }
         return false;
@@ -70,11 +70,11 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     /**
-     * @param authenticator
+     * @param accessControl
      * @throws Exception
      */
-    private boolean startServer(Authenticator authenticator) throws Exception {
-        if (!setAuthroizator(authenticator))
+    private boolean startServer(AccessControl accessControl) throws Exception {
+        if (!setAccessControl(accessControl))
             return false;
         startServer();
         return true;
@@ -86,7 +86,7 @@ public class SecurityContextTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void test2() throws Exception {
-        if (!startServer(new Authenticator() {
+        if (!startServer(new AccessControl() {
             public boolean isUserInRole(Principal principal, String role) {
                 return false;
             }
@@ -130,7 +130,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testAuthenticationSchemeBasic() throws Exception {
-        if (!startServer(AllowAllAuthenticator.getInstance()))
+        if (!startServer(AllowAllAccess.getInstance()))
             return;
         ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
@@ -142,7 +142,7 @@ public class SecurityContextTest extends JaxRsTestCase {
 
     // TODO waiting for Digest Auth is running
     public void _testAuthenticationSchemeDigest() throws Exception {
-        if (!setAuthroizator(AllowAllAuthenticator.getInstance()))
+        if (!setAccessControl(AllowAllAccess.getInstance()))
             return;
         startServer(ChallengeScheme.HTTP_DIGEST);
         ChallengeResponse cr = new ChallengeResponse(
@@ -154,7 +154,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testForbidAll() throws Exception {
-        if (!startServer(ForbidAllAuthenticator.getInstance()))
+        if (!startServer(ForbidAllAccess.getInstance()))
             return;
         Response response = get();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
@@ -167,11 +167,11 @@ public class SecurityContextTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void testNoRoles() throws Exception {
-        Authenticator exampleAuthorizator = new Authenticator() {
+        AccessControl exampleAuthorizator = new AccessControl() {
             /**
              * @return true, if the role name and the username starts with the
              *         same char.
-             * @see Authenticator#isUserInRole(String)
+             * @see AccessControl#isUserInRole(String)
              */
             public boolean isUserInRole(Principal principal, String role) {
                 if (principal == null)
@@ -226,7 +226,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testUserPrincipalAuth() throws Exception {
-        if (!startServer(AllowAllAuthenticator.getInstance()))
+        if (!startServer(AllowAllAccess.getInstance()))
             return;
         Response response = getAuth("userPrincipal", "alice", "alicesSecret");
         assertEquals(Status.SUCCESS_OK, response.getStatus());

@@ -24,30 +24,31 @@ package org.restlet.ext.jaxrs;
 import java.security.Principal;
 
 /**
- * @see Authenticator
- * @see ForbidAllAuthenticator
- * @see ThrowExcAuthenticator
+ * An AccessControl that forbid every what it is requested.
+ * @see AccessControl
+ * @see AllowAllAccess
+ * @see ThrowExcAccessControl
  * @author Stephan Koops
  */
-public class AllowAllAuthenticator implements Authenticator {
-    
-    private static AllowAllAuthenticator instance;
+public class ForbidAllAccess implements AccessControl {
+
+    private static ForbidAllAccess instance;
     
     /**
-     * Returns an instance of the AllowAllAuthenticator
+     * Returns an instance of the AllowAllAccess
      * @return the singelton instance.
      */
-    public static AllowAllAuthenticator getInstance()
+    public static ForbidAllAccess getInstance()
     {
         if(instance == null)
-            instance = new AllowAllAuthenticator();
+            instance = new ForbidAllAccess();
         return instance;
     }
     
     /**
-     * @see org.restlet.ext.jaxrs.Authenticator#isUserInRole(Principal, java.lang.String)
+     * @see org.restlet.ext.jaxrs.AccessControl#isUserInRole(Principal, java.lang.String)
      */
     public boolean isUserInRole(Principal principal, String role) {
-        return true;
+        return false;
     }
 }

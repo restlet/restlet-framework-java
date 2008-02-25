@@ -338,7 +338,7 @@ public abstract class AbstractJaxRsWrapper {
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
      * @param authenticator
-     *                Authenticator for roles, see
+     *                AccessControl for roles, see
      *                {@link SecurityContext#isUserInRole(String)}
      * @param mbrs
      *                The Set of {@link MessageBodyReader}s.

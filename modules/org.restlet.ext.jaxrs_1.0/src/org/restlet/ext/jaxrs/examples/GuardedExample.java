@@ -11,7 +11,7 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.Authenticator;
+import org.restlet.ext.jaxrs.AccessControl;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 
 /**
@@ -23,13 +23,13 @@ import org.restlet.ext.jaxrs.JaxRsRouter;
 public class GuardedExample {
 
     /**
-     * an example {@link Authenticator}
+     * an example {@link AccessControl}
      * 
      * @author Stephan Koops
      */
-    private static final class ExampleAuthenticator implements Authenticator {
+    private static final class ExampleAccessControl implements AccessControl {
         /**
-         * @see org.restlet.ext.jaxrs.Authenticator#isUserInRole(java.security.Principal,
+         * @see org.restlet.ext.jaxrs.AccessControl#isUserInRole(java.security.Principal,
          *      java.lang.String)
          * @see SecurityContext#isUserInRole(String)
          */
@@ -56,14 +56,14 @@ public class GuardedExample {
         Application application = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
-                Authenticator authenticator = new ExampleAuthenticator();
+                AccessControl accessControl = new ExampleAccessControl();
                 Guard guard = new Guard(getContext(),
                         ChallengeScheme.HTTP_BASIC, "persons");
                 guard.getSecrets().put("admin", "adminPW".toCharArray());
                 guard.getSecrets().put("alice", "alicesSecret".toCharArray());
                 guard.getSecrets().put("bob", "bobsSecret".toCharArray());
                 JaxRsRouter router = new JaxRsRouter(getContext(),
-                        new ExampleAppConfig(), authenticator);
+                        new ExampleAppConfig(), accessControl);
                 guard.setNext(router);
                 return guard;
             }

@@ -114,7 +114,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      */
     private Set<RootResourceClass> rootResourceClasses = new HashSet<RootResourceClass>();
 
-    private Authenticator authenticator;
+    private AccessControl accessControl;
 
     private MessageBodyReaderSet messageBodyReaders = new MessageBodyReaderSet();
 
@@ -129,21 +129,21 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * @param appConfig
      *                Contains the classes to load as root resource classes and
      *                as providers.
-     * @param authenticator
-     *                The Authenticator, must not be null. If you don't need the
+     * @param accessControl
+     *                The AccessControl, must not be null. If you don't need the
      *                authentification, you can use the
-     *                {@link ForbidAllAuthenticator}, the
-     *                {@link AllowAllAuthenticator} or the
-     *                {@link ThrowExcAuthenticator}.
+     *                {@link ForbidAllAccess}, the
+     *                {@link AllowAllAccess} or the
+     *                {@link ThrowExcAccessControl}.
      * @throws IllegalArgumentException
-     *                 if the given {@link Authenticator} ist null.
+     *                 if the given {@link AccessControl} ist null.
      */
     public JaxRsRouter(Context context, ApplicationConfig appConfig,
-            Authenticator authenticator) throws IllegalArgumentException {
+            AccessControl accessControl) throws IllegalArgumentException {
         super(context);
         this.loadDefaultProviders();
         this.attach(appConfig);
-        this.setAuthenticator(authenticator);
+        this.setAccessControl(accessControl);
     }
 
     /**
@@ -160,10 +160,10 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * @param appConfig
      *                Contains the classes to load as root resource classes and
      *                as providers.
-     * @see #JaxRsRouter(Context, ApplicationConfig, Authenticator)
+     * @see #JaxRsRouter(Context, ApplicationConfig, AccessControl)
      */
     public JaxRsRouter(Context context, ApplicationConfig appConfig) {
-        this(context, appConfig, ThrowExcAuthenticator.getInstance());
+        this(context, appConfig, ThrowExcAccessControl.getInstance());
     }
 
     /**
@@ -319,7 +319,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         super.handle(request, response);
         try {
             CallContext callContext = new CallContext(request, response,
-                    this.authenticator);
+                    this.accessControl);
             try {
                 ResObjAndMeth resObjAndMeth;
                 try {
@@ -1218,24 +1218,24 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     /**
-     * @return the authenticator
+     * @return the accessControl
      */
-    public Authenticator getAuthenticator() {
-        return authenticator;
+    public AccessControl getAccessControl() {
+        return accessControl;
     }
 
     /**
-     * @param authenticator
-     *                the authenticator to set
+     * @param accessControl
+     *                the accessControl to set
      */
-    public void setAuthenticator(Authenticator authenticator) {
-        if (authenticator == null)
+    public void setAccessControl(AccessControl accessControl) {
+        if (accessControl == null)
             throw new IllegalArgumentException(
-                    "The authenticator must nit be null. You can use the "
-                            + AllowAllAuthenticator.class.getName()
+                    "The accessControl must nit be null. You can use the "
+                            + AllowAllAccess.class.getName()
                             + " or the "
-                            + ForbidAllAuthenticator.class.getName());
-        this.authenticator = authenticator;
+                            + ForbidAllAccess.class.getName());
+        this.accessControl = accessControl;
     }
 
     /**

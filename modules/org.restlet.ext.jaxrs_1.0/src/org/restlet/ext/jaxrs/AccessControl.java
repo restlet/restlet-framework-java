@@ -27,12 +27,12 @@ import javax.ws.rs.core.SecurityContext;
  * Interface to check user access.
  * 
  * @author Stephan Koops
- * @see ForbidAllAuthenticator
- * @see AllowAllAuthenticator
- * @see ThrowExcAuthenticator
+ * @see ForbidAllAccess
+ * @see AllowAllAccess
+ * @see ThrowExcAccessControl
  * @see SecurityContext
  */
-public interface Authenticator {
+public interface AccessControl {
 
     /**
      * <p>

@@ -24,31 +24,31 @@ import javax.ws.rs.WebApplicationException;
 import org.restlet.data.Status;
 
 /**
- * An {@link Authenticator} that throws an WebApplicationExeption with status
+ * An {@link AccessControl} that throws an WebApplicationExeption with status
  * 500 (Internal Server Error) for every call on it.
  * 
- * @see Authenticator
- * @see AllowAllAuthenticator
- * @see ForbidAllAuthenticator
+ * @see AccessControl
+ * @see AllowAllAccess
+ * @see ForbidAllAccess
  * @author Stephan Koops
  */
-public class ThrowExcAuthenticator implements Authenticator {
+public class ThrowExcAccessControl implements AccessControl {
 
-    private static ThrowExcAuthenticator instance;
+    private static ThrowExcAccessControl instance;
 
     /**
-     * Returns an instance of the ThrowExcAuthenticator
+     * Returns an instance of the ThrowExcAccessControl
      * 
      * @return the singelton instance.
      */
-    public static ThrowExcAuthenticator getInstance() {
+    public static ThrowExcAccessControl getInstance() {
         if (instance == null)
-            instance = new ThrowExcAuthenticator();
+            instance = new ThrowExcAccessControl();
         return instance;
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.Authenticator#isUserInRole(Principal,
+     * @see org.restlet.ext.jaxrs.AccessControl#isUserInRole(Principal,
      *      java.lang.String)
      */
     public boolean isUserInRole(Principal principal, String role) {

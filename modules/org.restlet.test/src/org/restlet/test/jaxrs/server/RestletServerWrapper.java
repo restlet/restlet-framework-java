@@ -28,8 +28,8 @@ import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.AllowAllAuthenticator;
-import org.restlet.ext.jaxrs.Authenticator;
+import org.restlet.ext.jaxrs.AllowAllAccess;
+import org.restlet.ext.jaxrs.AccessControl;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.util.Util;
 
@@ -42,7 +42,7 @@ import org.restlet.ext.jaxrs.util.Util;
  */
 public class RestletServerWrapper implements ServerWrapper {
 
-    private Authenticator authenticator;
+    private AccessControl accessControl;
 
     private Component component;
 
@@ -50,21 +50,21 @@ public class RestletServerWrapper implements ServerWrapper {
     }
 
     /**
-     * @return the authenticator
+     * @return the accessControl
      */
-    public Authenticator getAuthorizator() {
-        return authenticator;
+    public AccessControl getAccessControl() {
+        return accessControl;
     }
 
     /**
-     * @param authenticator
-     *                the authenticator to set. May be null to not require
+     * @param accessControl
+     *                the accessControl to set. May be null to not require
      *                authentication.
      * @throws IllegalArgumentException
      */
-    public void setAuthorizator(Authenticator authenticator)
+    public void setAccessControl(AccessControl accessControl)
             throws IllegalArgumentException {
-        this.authenticator = authenticator;
+        this.accessControl = accessControl;
     }
 
     /**
@@ -89,16 +89,16 @@ public class RestletServerWrapper implements ServerWrapper {
         Application application = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
-                if (authenticator == null) {
+                if (accessControl == null) {
                     return new JaxRsRouter(getContext(), appConfig,
-                            AllowAllAuthenticator.getInstance());
+                            AllowAllAccess.getInstance());
                 }
                 Guard guard = new Guard(getContext(), challengeScheme, "");
                 guard.getSecrets().put("admin", "adminPW".toCharArray());
                 guard.getSecrets().put("alice", "alicesSecret".toCharArray());
                 guard.getSecrets().put("bob", "bobsSecret".toCharArray());
                 JaxRsRouter router = new JaxRsRouter(getContext(), appConfig,
-                        authenticator);
+                        accessControl);
                 guard.setNext(router);
                 return guard;
             }
