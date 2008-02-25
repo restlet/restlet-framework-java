@@ -54,13 +54,16 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
      */
     public abstract long getSize(T object);
 
-    protected abstract boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations);
+    protected abstract boolean isReadableAndWriteable(Class<?> type,
+            Type genericType, Annotation[] annotations);
 
-    public final boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
+    public final boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
         return isReadableAndWriteable(type, genericType, annotations);
     }
 
-    public final boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations) {
+    public final boolean isReadable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
         return isReadableAndWriteable(type, genericType, annotations);
     }
 
@@ -92,26 +95,32 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
     }
 
     /**
-     * @param genericType TODO
-     * @param annotations TODO
+     * @param genericType
+     *                The generic {@link Type} to convert to.
+     * @param annotations
+     *                the annotations of the artefact to convert to
      * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
      *      java.io.OutputStream)
      */
     public abstract void writeTo(T t, Type genericType,
-            Annotation[] annotations,
-            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException;
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException;
 
     /**
-     * @param genericType TODO
-     * @param annotations TODO
+     * @param genericType
+     *                The generic {@link Type} to convert to.
+     * @param annotations
+     *                the annotations of the artefact to convert to
      * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
      *      java.io.InputStream)
      */
     public abstract T readFrom(Class<T> type, Type genericType,
-            MediaType mediaType,
-            Annotation[] annotations, MultivaluedMap<String, String> httpResponseHeaders, InputStream entityStream) throws IOException;
+            MediaType mediaType, Annotation[] annotations,
+            MultivaluedMap<String, String> httpResponseHeaders,
+            InputStream entityStream) throws IOException;
 
     /**
      * Logs the problem and throws an IOException.

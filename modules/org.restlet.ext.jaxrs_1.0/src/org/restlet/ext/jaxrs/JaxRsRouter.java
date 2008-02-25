@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.ApplicationConfig;
@@ -235,8 +234,12 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                 XmlTransformSourceProvider.class, this);
     }
 
+    // methods for creation ready
+    // now methods for the daily work
+
     /**
      * Adds the provider object to this JaxRsRouter.
+     * 
      * @param provider
      */
     void addProvider(Object provider) {
@@ -853,62 +856,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     /**
-     * Handles the given Exception, catched by an invoke of a resource method or
-     * a creation if a sub resource object.
-     * 
-     * @param exception
-     * @param resourceMethod
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * @param methodName
-     * @param logMessage
-     * @throws RequestHandledException
-     *                 throws this message to exit the method and indicate, that
-     *                 the request was handled.
-     * @throws RequestHandledException
-     */
-    private RequestHandledException handleExecption(Throwable exception,
-            AbstractMethodWrapper resourceMethod, CallContext callContext,
-            String logMessage) throws RequestHandledException {
-        if (exception instanceof InvocationTargetException)
-            exception = exception.getCause();
-        if (exception instanceof WebApplicationException) {
-            WebApplicationException webAppExc = (WebApplicationException) exception;
-            throw handleWebAppExc(webAppExc, callContext, resourceMethod);
-        }
-        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-        getLogger().log(Level.WARNING, logMessage, exception.getCause());
-        exception.printStackTrace();
-        throw new RequestHandledException();
-    }
-
-    /**
-     * Handles the given {@link WebApplicationException}.
-     * 
-     * @param webAppExc
-     *                The {@link WebApplicationException} to handle
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * @throws RequestHandledException
-     *                 throws this message to exit the method and indicate, that
-     *                 the request was handled.
-     */
-    RequestHandledException handleWebAppExc(WebApplicationException webAppExc,
-            CallContext callContext, AbstractMethodWrapper resourceMethod)
-            throws RequestHandledException {
-        // the message of the Exception is not used in the
-        // WebApplicationException
-        jaxRsRespToRestletResp(webAppExc.getResponse(), callContext,
-                resourceMethod);
-        // MediaType rausfinden
-        throw new RequestHandledException();
-    }
-
-    /**
      * @param resourceMethod
      * @param resourceObject
      * @param callContext
@@ -962,9 +909,17 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         }
     }
 
-    private void jaxRsRespToRestletResp(
-            javax.ws.rs.core.Response jaxRsResponse, CallContext callContext,
-            AbstractMethodWrapper resourceMethod)
+    /**
+     * Converts the given JAX-RS {@link javax.ws.rs.core.Response} to a Restlet
+     * {@link Response}.
+     * 
+     * @see org.restlet.ext.jaxrs.JaxRsRouterHelpMethods#jaxRsRespToRestletResp(javax.ws.rs.core.Response,
+     *      org.restlet.ext.jaxrs.core.CallContext,
+     *      org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper)
+     */
+    @Override
+    void jaxRsRespToRestletResp(javax.ws.rs.core.Response jaxRsResponse,
+            CallContext callContext, AbstractMethodWrapper resourceMethod)
             throws RequestHandledException {
         Response restletResponse = callContext.getResponse();
         restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));

@@ -73,10 +73,10 @@ public class MessageBodyReader {
      * 
      * @param type
      * @param genericType
-     *                TODO
+     *                The generic {@link Type} to convert to.
      * @param mediaType
      * @param annotations
-     *                TODO
+     *                the annotations of the artefact to convert to
      * @param httpHeaders
      * @param entityStream
      * @return

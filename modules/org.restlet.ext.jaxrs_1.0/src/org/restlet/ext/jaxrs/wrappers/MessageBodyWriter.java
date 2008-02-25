@@ -129,9 +129,9 @@ public class MessageBodyWriter {
      * @param t
      *                the type to write.
      * @param genericType
-     *                TODO
+     *                The generic {@link Type} to convert to.
      * @param annotations
-     *                TODO
+     *                the annotations of the artefact to convert to
      * @param mediaType
      *                the media type of the HTTP entity.
      * @param httpHeaders

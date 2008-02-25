@@ -17,6 +17,11 @@
  */
 package org.restlet.ext.jaxrs;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+
+import javax.ws.rs.WebApplicationException;
+
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Language;
@@ -24,8 +29,10 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.util.RemainingPath;
+import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.ext.jaxrs.wrappers.ResourceMethodOrLocator;
 import org.restlet.ext.jaxrs.wrappers.ResourceObject;
@@ -250,6 +257,71 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
     public Restlet getErrorRestletUnsupportedMediaType() {
         return errorRestletUnsupportedMediaType;
     }
+
+    /**
+     * Handles the given Exception, catched by an invoke of a resource method or
+     * a creation if a sub resource object.
+     * 
+     * @param exception
+     * @param resourceMethod
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
+     * @param methodName
+     * @param logMessage
+     * @throws RequestHandledException
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
+     * @throws RequestHandledException
+     */
+    RequestHandledException handleExecption(Throwable exception,
+            AbstractMethodWrapper resourceMethod, CallContext callContext,
+            String logMessage) throws RequestHandledException {
+        if (exception instanceof InvocationTargetException)
+            exception = exception.getCause();
+        if (exception instanceof WebApplicationException) {
+            WebApplicationException webAppExc = (WebApplicationException) exception;
+            throw handleWebAppExc(webAppExc, callContext, resourceMethod);
+        }
+        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+        getLogger().log(Level.WARNING, logMessage, exception.getCause());
+        exception.printStackTrace();
+        throw new RequestHandledException();
+    }
+
+    /**
+     * Handles the given {@link WebApplicationException}.
+     * 
+     * @param webAppExc
+     *                The {@link WebApplicationException} to handle
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
+     * @throws RequestHandledException
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
+     */
+    RequestHandledException handleWebAppExc(WebApplicationException webAppExc,
+            CallContext callContext, AbstractMethodWrapper resourceMethod)
+            throws RequestHandledException {
+        // the message of the Exception is not used in the
+        // WebApplicationException
+        jaxRsRespToRestletResp(webAppExc.getResponse(), callContext,
+                resourceMethod);
+        // LATER MediaType rausfinden
+        throw new RequestHandledException();
+    }
+
+    /**
+     * Converts the given JAX-RS {@link javax.ws.rs.core.Response} to a Restlet
+     * {@link Response}.
+     */
+    abstract void jaxRsRespToRestletResp(
+            javax.ws.rs.core.Response jaxRsResponse, CallContext callContext,
+            AbstractMethodWrapper resourceMethod)
+            throws RequestHandledException;
 
     /**
      * Set the Restlet to handle the request if the method is not allowed for

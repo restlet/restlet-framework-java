@@ -326,7 +326,7 @@ public abstract class AbstractJaxRsWrapper {
      * @param paramTypes
      *                the array of types for the method or constructor.
      * @param paramGenericTypes
-     *                TODO
+     *                The generic {@link Type} to convert to.
      * @param paramAnnotationss
      *                the array of arrays of annotations for the method or
      *                constructor.
@@ -391,9 +391,9 @@ public abstract class AbstractJaxRsWrapper {
      * @param paramType
      *                the type to convert to.
      * @param genericType
-     *                TODO
+     *                The generic {@link Type} to convert to.
      * @param annotations
-     *                TODO
+     *                the annotations of the artefact to convert to
      * @param jaxRsRouter
      * @return
      * @throws NoMessageBodyReadersException
