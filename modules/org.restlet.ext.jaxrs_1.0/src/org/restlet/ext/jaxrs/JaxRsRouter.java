@@ -19,7 +19,6 @@
 package org.restlet.ext.jaxrs;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
@@ -50,11 +50,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.core.HttpHeaders;
-import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
-import org.restlet.ext.jaxrs.exceptions.InstantiateRootRessourceException;
-import org.restlet.ext.jaxrs.exceptions.JaxRsException;
-import org.restlet.ext.jaxrs.exceptions.JaxRsRuntimeException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.provider.ByteArrayProvider;
 import org.restlet.ext.jaxrs.provider.DataSourceProvider;
@@ -127,6 +123,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
 
     private MessageBodyWriterSet messageBodyWriters = new MessageBodyWriterSet();
 
+    private Set<ContextResolver<?>> contextResolvers = new HashSet<ContextResolver<?>>();
+
     /**
      * Creates a new JaxRsRouter with the given Context.
      * 
@@ -138,9 +136,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      *                as providers.
      * @param accessControl
      *                The AccessControl, must not be null. If you don't need the
-     *                authentification, you can use the
-     *                {@link ForbidAllAccess}, the
-     *                {@link AllowAllAccess} or the
+     *                authentification, you can use the {@link ForbidAllAccess},
+     *                the {@link AllowAllAccess} or the
      *                {@link ThrowExcAccessControl}.
      * @throws IllegalArgumentException
      *                 if the given {@link AccessControl} ist null.
@@ -187,35 +184,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     /**
-     * @see ApplicationConfig#getExtensionMappings()
-     * @param extensionMappings
-     */
-    @SuppressWarnings("all")
-    private void addExtensionMappings(
-            Map<String, javax.ws.rs.core.MediaType> extensionMappings) {
-        // REQUESTED JSR311: extensionMappings:
-        // * priority, if method return @ProducesMime and extensionMapping
-        // doesn't match?
-        // * Map<String, List<MediaType>> statt Map? z.B. für xml.
-        // TODO JaxRsRouter.extensionMappings.
-    }
-
-    private void loadDefaultProviders() {
-        JaxRsClassesLoader.addProviderToRouter(ByteArrayProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(DataSourceProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(FileProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(InputStreamProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(JaxbElementProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(JaxbProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(StringProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(WwwFormFormProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(WwwFormMmapProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(XmlTransformSourceProvider.class, this);
-    }
-
-    /**
-     * Will use the given JAX-RS root resource class. But it's better to use the
-     * method {@link #attach(ApplicationConfig)}.
+     * Will use the given JAX-RS root resource class. Intended for internal use
+     * only. Use the method {@link #attach(ApplicationConfig)}.
      * 
      * @param rootResourceClass
      *                the JAX-RS root resource class to add.
@@ -239,84 +209,57 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     /**
-     * Adds a {@link javax.ws.rs.ext.MessageBodyReader} class to this
-     * JaxRsRouter. Typically you don't need this method, because it is done on
-     * construction time or by {@link #addProvidersFromPackage(String...)}.
-     * 
-     * @param messageBodyReaderClass
-     *                The {@link javax.ws.rs.ext.MessageBodyReader} class to add
-     *                to the JaxRsRouter.
-     * @throws JaxRsRuntimeException
-     *                 if the MessageBodyReader could not be added to the
-     *                 JaxRsRouter.
+     * @see ApplicationConfig#getExtensionMappings()
+     * @param extensionMappings
      */
-    void addMessageBodyReader(Class<?> messageBodyReaderClass)
-            throws JaxRsRuntimeException {
-        Constructor<?> constructor = RootResourceClass
-                .findJaxRsConstructor(messageBodyReaderClass);
-        Object provider;
-        try {
-            provider = RootResourceClass.createInstance(constructor, false,
-                    null, this);
-        } catch (InstantiateParameterException e) {
-            // should be not possible here
-            throw new JaxRsRuntimeException(
-                    "Could not instantiate the root resource class", e);
-        } catch (JaxRsException e) {
-            String message = "MessageBodyReader could not be instantiated";
-            if (e.getMessage() != null)
-                message += ": " + e.getMessage();
-            throw new JaxRsRuntimeException(message, e);
-        } catch (RequestHandledException e) {
-            throw new JaxRsRuntimeException(
-                    "MessageBodyReader could not be instantiated");
-        } catch (InvocationTargetException e) {
-            throw new JaxRsRuntimeException(
-                    "The MessageBodyReader constructor throwed an Exception", e
-                            .getCause());
-        }
-        this.messageBodyReaders.add(new MessageBodyReader(
-                (javax.ws.rs.ext.MessageBodyReader<?>) provider));
+    @SuppressWarnings("all")
+    private void addExtensionMappings(
+            Map<String, javax.ws.rs.core.MediaType> extensionMappings) {
+        // REQUESTED JSR311: extensionMappings:
+        // * priority, if method return @ProducesMime and extensionMapping
+        // doesn't match?
+        // * Map<String, List<MediaType>> statt Map? z.B. für xml.
+        // TODO JaxRsRouter.extensionMappings.
+    }
+
+    private void loadDefaultProviders() {
+        JaxRsClassesLoader.addProviderToRouter(ByteArrayProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(DataSourceProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(FileProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(InputStreamProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(JaxbElementProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(JaxbProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(StringProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(WwwFormFormProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(WwwFormMmapProvider.class, this);
+        JaxRsClassesLoader.addProviderToRouter(
+                XmlTransformSourceProvider.class, this);
     }
 
     /**
-     * Adds a {@link javax.ws.rs.ext.MessageBodyWriter} class to this
-     * JaxRsRouter. Typically you don't need this method, because it is done on
-     * construction time or by {@link #addProvidersFromPackage(String...)}.
-     * 
-     * @param messageBodyWriterClass
-     *                The {@link javax.ws.rs.ext.MessageBodyWriter} class to add
-     *                to the JaxRsRouter.
-     * @throws IllegalArgumentException
-     *                 If no instance of the provider could created.
+     * Adds the provider object to this JaxRsRouter.
+     * @param provider
      */
-    void addMessageBodyWriter(Class<?> messageBodyWriterClass)
-            throws IllegalArgumentException {
-        Constructor<?> constructor = RootResourceClass
-                .findJaxRsConstructor(messageBodyWriterClass);
-        Object provider;
-        try {
-            provider = RootResourceClass.createInstance(constructor, false,
-                    null, this);
-        } catch (InstantiateParameterException e) {
-            // should be not possible here
-            throw new JaxRsRuntimeException(
-                    "Could not instantiate the MessageBodyWriter", e);
-        } catch (IllegalOrNoAnnotationException e) {
-            throw new JaxRsRuntimeException(
-                    "Could not instantiate the MessageBodyWriter", e);
-        } catch (InstantiateRootRessourceException e) {
-            throw new JaxRsRuntimeException(
-                    "Could not instantiate the MessageBodyWriter", e);
-        } catch (RequestHandledException e) {
-            throw new JaxRsRuntimeException(
-                    "Could not instantiate the MessageBodyWriter", e);
-        } catch (InvocationTargetException e) {
-            throw new JaxRsRuntimeException(
-                    "Could not instantiate the MessageBodyWriter", e.getCause());
+    void addProvider(Object provider) {
+        boolean added = false;
+        if (provider instanceof javax.ws.rs.ext.MessageBodyWriter) {
+            this.messageBodyWriters.add(new MessageBodyWriter(
+                    (javax.ws.rs.ext.MessageBodyWriter<?>) provider));
+            added = true;
         }
-        this.messageBodyWriters.add(new MessageBodyWriter(
-                (javax.ws.rs.ext.MessageBodyWriter<?>) provider));
+        if (provider instanceof javax.ws.rs.ext.MessageBodyReader) {
+            this.messageBodyReaders.add(new MessageBodyReader(
+                    (javax.ws.rs.ext.MessageBodyReader<?>) provider));
+            added = true;
+        }
+        if (provider instanceof javax.ws.rs.ext.ContextResolver) {
+            this.contextResolvers
+                    .add((javax.ws.rs.ext.ContextResolver<?>) provider);
+            added = true;
+        }
+        if (!added) {
+            // TODO warn
+        }
     }
 
     /**
@@ -1245,8 +1188,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         if (accessControl == null)
             throw new IllegalArgumentException(
                     "The accessControl must nit be null. You can use the "
-                            + AllowAllAccess.class.getName()
-                            + " or the "
+                            + AllowAllAccess.class.getName() + " or the "
                             + ForbidAllAccess.class.getName());
         this.accessControl = accessControl;
     }

@@ -30,7 +30,7 @@ import javax.ws.rs.WebApplicationException;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.core.CallContext;
-import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
@@ -97,12 +97,12 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @throws NoMessageBodyReadersException
      * @throws RequestHandledException
      * @throws WebApplicationException
-     * @throws IllegalOrNoAnnotationException
+     * @throws MissingAnnotationException
      */
     public Object invoke(ResourceObject resourceObject,
             CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
             throws MethodInvokeException, InvocationTargetException,
-            IllegalOrNoAnnotationException, WebApplicationException,
+            MissingAnnotationException, WebApplicationException,
             RequestHandledException, NoMessageBodyReadersException,
             InstantiateParameterException {
         Annotation[][] parameterAnnotationss = javaMethod

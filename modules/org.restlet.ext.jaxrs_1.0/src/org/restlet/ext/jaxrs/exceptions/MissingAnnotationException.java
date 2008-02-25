@@ -19,12 +19,12 @@
 package org.restlet.ext.jaxrs.exceptions;
 
 /**
- * This exception is thrown, if a parameter does contains
+ * This exception is thrown, if an annotation is missing.
  * 
- * @author Stephan
+ * @author Stephan Koops
  * 
  */
-public class IllegalOrNoAnnotationException extends JaxRsException {
+public class MissingAnnotationException extends JaxRsException {
     /**
      * 
      */
@@ -34,7 +34,7 @@ public class IllegalOrNoAnnotationException extends JaxRsException {
      * 
      * @param s
      */
-    public IllegalOrNoAnnotationException(String s) {
+    public MissingAnnotationException(String s) {
         super(s);
     }
 
@@ -42,7 +42,7 @@ public class IllegalOrNoAnnotationException extends JaxRsException {
      * 
      * @param cause
      */
-    public IllegalOrNoAnnotationException(Throwable cause) {
+    public MissingAnnotationException(Throwable cause) {
         super(cause);
     }
 
@@ -51,7 +51,7 @@ public class IllegalOrNoAnnotationException extends JaxRsException {
      * @param message
      * @param cause
      */
-    public IllegalOrNoAnnotationException(String message, Throwable cause) {
+    public MissingAnnotationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

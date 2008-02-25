@@ -559,4 +559,12 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
         }
         return null;
     }
+
+    /**
+     * Sets the Context to be read only. As from now changes are not allowed.
+     */
+    @Override
+    public void setReadOnly() {
+        super.setReadOnly();
+    }
 }

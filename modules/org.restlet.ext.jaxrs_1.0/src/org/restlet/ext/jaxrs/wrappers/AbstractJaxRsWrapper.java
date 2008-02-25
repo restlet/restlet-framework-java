@@ -46,7 +46,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.CallContext;
-import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
@@ -251,7 +251,7 @@ public abstract class AbstractJaxRsWrapper {
      * @param indexForExcMessages
      *                the index of the parameter, for exception messages.
      * @return the parameter value
-     * @throws IllegalOrNoAnnotationException
+     * @throws MissingAnnotationException
      *                 Thrown, when no valid annotation was found. For
      *                 (Sub)ResourceMethods this is one times allowed; than the
      *                 given request entity should taken as parameter.
@@ -261,7 +261,7 @@ public abstract class AbstractJaxRsWrapper {
     private static Object getParameterValue(Annotation[] paramAnnotations,
             Class<?> paramClass, CallContext callContext,
             HiddenJaxRsRouter jaxRsRouter, boolean leaveEncoded,
-            int indexForExcMessages) throws IllegalOrNoAnnotationException,
+            int indexForExcMessages) throws MissingAnnotationException,
             InstantiateParameterException, WebApplicationException {
         // TODO @Encode may be placed on Type, constructor, method or parameter
         String defaultValue = null;
@@ -316,7 +316,7 @@ public abstract class AbstractJaxRsWrapper {
                 // leaveEncoded = true -> not change
             }
         }
-        throw new IllegalOrNoAnnotationException("The " + indexForExcMessages
+        throw new MissingAnnotationException("The " + indexForExcMessages
                 + ". parameter requires one of the following annotations: "
                 + VALID_ANNOTATIONS);
     }
@@ -344,7 +344,7 @@ public abstract class AbstractJaxRsWrapper {
      *                The Set of {@link MessageBodyReader}s.
      * 
      * @return the parameter array
-     * @throws IllegalOrNoAnnotationException
+     * @throws MissingAnnotationException
      * @throws InstantiateParameterException
      * @throws RequestHandledException
      * @throws NoMessageBodyReadersException
@@ -355,7 +355,7 @@ public abstract class AbstractJaxRsWrapper {
             Class<?>[] paramTypes, Type[] paramGenericTypes,
             Annotation[][] paramAnnotationss, boolean leaveEncoded,
             CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
-            throws IllegalOrNoAnnotationException,
+            throws MissingAnnotationException,
             InstantiateParameterException, RequestHandledException,
             NoMessageBodyReadersException, WebApplicationException {
         int paramNo = paramTypes.length;
@@ -370,7 +370,7 @@ public abstract class AbstractJaxRsWrapper {
             try {
                 arg = getParameterValue(paramAnnotations, paramType,
                         callContext, jaxRsRouter, leaveEncoded, i);
-            } catch (IllegalOrNoAnnotationException ionae) {
+            } catch (MissingAnnotationException ionae) {
                 if (annotRequired)
                     throw ionae;
                 annotRequired = true;

@@ -34,7 +34,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.core.CallContext;
-import org.restlet.ext.jaxrs.exceptions.IllegalOrNoAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateRootRessourceException;
@@ -64,7 +64,7 @@ public class RootResourceClass extends ResourceClass {
      */
     public RootResourceClass(Class<?> jaxRsClass) {
         super(jaxRsClass, true);
-        constructor = findJaxRsConstructor();
+        constructor = findJaxRsConstructor(getJaxRsClass());
     }
 
     /**
@@ -138,12 +138,12 @@ public class RootResourceClass extends ResourceClass {
      * @throws InvocationTargetException
      * @throws RequestHandledException
      * @throws InstantiateRootRessourceException
-     * @throws IllegalOrNoAnnotationException
+     * @throws MissingAnnotationException
      */
     public ResourceObject createInstance(CallContext callContext,
             HiddenJaxRsRouter jaxRsRouter)
             throws InstantiateParameterException,
-            IllegalOrNoAnnotationException, InstantiateRootRessourceException,
+            MissingAnnotationException, InstantiateRootRessourceException,
             RequestHandledException, InvocationTargetException {
         Constructor<?> constructor = this.constructor;
         Object newInstance = createInstance(constructor, leaveEncoded,
@@ -165,7 +165,7 @@ public class RootResourceClass extends ResourceClass {
      *                Restlet {@link Response}.
      * @param jaxRsRouter
      * @return
-     * @throws IllegalOrNoAnnotationException
+     * @throws MissingAnnotationException
      * @throws RequestHandledException
      * @throws InstantiateParameterException
      * @throws InstantiateRootRessourceException
@@ -175,7 +175,7 @@ public class RootResourceClass extends ResourceClass {
     public static Object createInstance(Constructor<?> constructor,
             boolean leaveEncoded, CallContext callContext,
             HiddenJaxRsRouter jaxRsRouter)
-            throws IllegalOrNoAnnotationException, RequestHandledException,
+            throws MissingAnnotationException, RequestHandledException,
             InstantiateParameterException, InstantiateRootRessourceException,
             InvocationTargetException {
         Object[] args;
@@ -189,7 +189,7 @@ public class RootResourceClass extends ResourceClass {
                         .getGenericParameterTypes(), constructor.getParameterAnnotations(), leaveEncoded,
                         callContext, jaxRsRouter);
             } catch (NoMessageBodyReadersException e) {
-                throw new IllegalOrNoAnnotationException(
+                throw new MissingAnnotationException(
                         "the root resource class constructor ("
                                 + constructor
                                 + ") must have annotations on any parameters. (normally this excpetion could not occur)");
@@ -220,14 +220,6 @@ public class RootResourceClass extends ResourceClass {
             return false;
         RootResourceClass otherRootResourceClass = (RootResourceClass) anotherObject;
         return this.jaxRsClass.equals(otherRootResourceClass.jaxRsClass);
-    }
-
-    /**
-     * @return Returns the constructor to use for the given root resource class
-     *         (See JSR-311-Spec, section 2.3)
-     */
-    private Constructor<?> findJaxRsConstructor() {
-        return findJaxRsConstructor(getJaxRsClass());
     }
 
     /**

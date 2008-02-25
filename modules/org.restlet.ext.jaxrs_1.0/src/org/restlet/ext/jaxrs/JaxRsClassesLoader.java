@@ -1,16 +1,18 @@
 package org.restlet.ext.jaxrs;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
-import java.util.logging.Level;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateRootRessourceException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
 
 /**
  * This class loads the root resource classes and the {@link Provider}s. If the
@@ -57,35 +59,35 @@ class JaxRsClassesLoader {
             return;
             // TODO warn
         }
-        boolean added = false;
-        if (MessageBodyReader.class.isAssignableFrom(clazz)) {
-            if (!clazz.isAnnotationPresent(Provider.class)) {
-                String msg = "The class "
-                        + clazz.getName()
-                        + " implements the MessageBodyReader, but is not annotated with @Provider. Will although use it as MessageBodyReader.";
-                jaxRsRouter.getLogger().log(Level.INFO, msg);
-            }
-            jaxRsRouter.addMessageBodyReader(clazz);
-            added = true;
+        Constructor<?> constructor = RootResourceClass
+                .findJaxRsConstructor(clazz);
+        Object provider;
+        try {
+            provider = RootResourceClass.createInstance(constructor, false,
+                    null, jaxRsRouter);
+        } catch (InstantiateParameterException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the MessageBodyWriter, class "
+                            + clazz.getName(), e);
+        } catch (MissingAnnotationException e) {
+            throw new IllegalArgumentException(
+                    "Could not instantiate the MessageBodyWriter, class "
+                            + clazz.getName(), e);
+        } catch (InstantiateRootRessourceException e) {
+            throw new IllegalArgumentException(
+                    "Could not instantiate the MessageBodyWriter, class "
+                            + clazz.getName(), e);
+        } catch (RequestHandledException e) {
+            throw new IllegalArgumentException(
+                    "Could not instantiate the MessageBodyWriter, class "
+                            + clazz.getName(), e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalArgumentException(
+                    "Could not instantiate the MessageBodyWriter, class "
+                            + clazz.getName(), e.getCause());
         }
-        if (MessageBodyWriter.class.isAssignableFrom(clazz)) {
-            if (!clazz.isAnnotationPresent(Provider.class)) {
-                String msg = "The class "
-                        + clazz.getName()
-                        + " implements the MessageBodyWriter, but is not annotated with @Provider. Will although use it as MessageBodyWriter.";
-                jaxRsRouter.getLogger().log(Level.INFO, msg);
-            }
-            jaxRsRouter.addMessageBodyWriter(clazz);
-            added = true;
-        }
-        if (ContextResolver.class.isAssignableFrom(clazz)) {
-            // TODO do anything with the contextResolver
-            throw new NotYetImplementedException(
-                    "ContextResolver are not supported yet");
-        }
-        if (!added) {
-            // TODO warn
-        }
+        jaxRsRouter.addProvider(provider);
     }
 
     /**
@@ -99,7 +101,7 @@ class JaxRsClassesLoader {
      */
     static void addRrcsToRouter(Collection<Class<?>> classes,
             JaxRsRouter jaxRsRouter) {
-        if(classes == null)
+        if (classes == null)
             return;
         for (Class<?> clazz : classes)
             addRrcToRouter(clazz, jaxRsRouter);

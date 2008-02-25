@@ -52,10 +52,6 @@ public class JaxRsUriInfo implements UriInfo {
 
     private String baseUri;
 
-    protected Reference reference;
-
-    private boolean readOnly = false;
-
     private List<PathSegment> pathSegmentsDecoded = null;
 
     private List<PathSegment> pathSegmentsEncoded = null;
@@ -63,6 +59,10 @@ public class JaxRsUriInfo implements UriInfo {
     private MultivaluedMap<String, String> queryParametersDecoded;
 
     private MultivaluedMap<String, String> queryParametersEncoded;
+
+    private boolean readOnly = false;
+
+    protected Reference reference;
 
     private MultivaluedMap<String, String> templateParametersDecoded;
 
@@ -318,7 +318,8 @@ public class JaxRsUriInfo implements UriInfo {
         if (decode)
             return getQueryParameters();
         if (queryParametersEncoded == null) {
-            Form queryForm = Converter.toFormEncoded(reference.getQuery(), logger);
+            Form queryForm = Converter.toFormEncoded(reference.getQuery(),
+                    logger);
             queryParametersEncoded = UnmodifiableMultivaluedMap.getFromForm(
                     queryForm, false);
         }
@@ -422,9 +423,10 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
-     * Sets the Context readonly. Write is now allowed.
+     * Sets this JaxRsUriInfo to be read only. This is the default. This method
+     * is intended to be used by {@link CallContext#setReadOnly()}.
      */
-    public void setReadOnly() {
+    protected void setReadOnly() {
         this.readOnly = true;
     }
 
