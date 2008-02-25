@@ -36,42 +36,10 @@ public interface Authenticator {
 
     /**
      * <p>
-     * Checks, if the combination of the given identifier and it's secrets is
-     * valid.
-     * </p>
-     * <p>
-     * This method is used by the {@link JaxRsGuard} to checks the credentials.
-     * The {@link SecurityContext} does not use this method.
-     * </p>
-     * 
-     * @param identifier
-     *                The identifier of the request. If a request contains no
-     *                credentials, this method is called with identifier = null
-     *                and secrets = null.
-     * @param secret
-     *                The password of the request. If a request contains no
-     *                credentials, this method is called with identifier = null
-     *                and secrets = null.
-     * @return true, if the credentials are valid, or false if not.
-     * @throws WebApplicationException
-     *                 The developer may handle exceptions by throw a
-     *                 {@link WebApplicationException}. If this method must not
-     *                 be used in a concrete implementation, it could also throw
-     *                 an {@link WebApplicationException}, e.g. Status 500
-     *                 (Internal Server Error)
-     * @see org.restlet.Guard#checkSecret(org.restlet.data.Request, String,
-     *      char[])
-     */
-    public boolean checkSecret(String identifier, char[] secret)
-            throws WebApplicationException;
-
-    /**
-     * <p>
      * Checks, if the user is in the given role, or false if not.
      * </p>
      * <p>
-     * This method is used by the {@link SecurityContext}. The
-     * {@link JaxRsGuard} does not use this method.
+     * This method is used by the {@link SecurityContext}.
      * </p>
      * 
      * @param principal

@@ -55,12 +55,4 @@ public class ThrowExcAuthenticator implements Authenticator {
         throw new WebApplicationException(Status.SERVER_ERROR_INTERNAL
                 .getCode());
     }
-
-    /**
-     * @see org.restlet.ext.jaxrs.Authenticator#checkSecret(String, char[])
-     */
-    public boolean checkSecret(String identifier, char[] secret) {
-        throw new WebApplicationException(Status.SERVER_ERROR_INTERNAL
-                .getCode());
-    }
 }

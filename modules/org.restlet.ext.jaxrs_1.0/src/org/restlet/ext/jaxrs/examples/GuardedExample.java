@@ -12,7 +12,6 @@ import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.Authenticator;
-import org.restlet.ext.jaxrs.JaxRsGuard;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 
 /**
@@ -29,22 +28,6 @@ public class GuardedExample {
      * @author Stephan Koops
      */
     private static final class ExampleAuthenticator implements Authenticator {
-        /**
-         * Checks the password for a given user name. Must work for the given
-         * {@link ChallengeScheme}.
-         * 
-         * @see org.restlet.ext.jaxrs.Authenticator#checkSecret(java.lang.String,
-         *      char[])
-         * @see Guard#checkSecret(org.restlet.data.Request, String, char[])
-         */
-        public boolean checkSecret(String identifier, char[] secret) {
-            // access database or whatever
-            // here an example:
-            if (secret[0] == '1')
-                return true;
-            return false;
-        }
-
         /**
          * @see org.restlet.ext.jaxrs.Authenticator#isUserInRole(java.security.Principal,
          *      java.lang.String)
@@ -74,10 +57,15 @@ public class GuardedExample {
             @Override
             public Restlet createRoot() {
                 Authenticator authenticator = new ExampleAuthenticator();
-                JaxRsGuard jaxRsRestlet = JaxRsRouter.getGuarded(getContext(),
-                        new ExampleAppConfig(), authenticator,
+                Guard guard = new Guard(getContext(),
                         ChallengeScheme.HTTP_BASIC, "persons");
-                return jaxRsRestlet;
+                guard.getSecrets().put("admin", "adminPW".toCharArray());
+                guard.getSecrets().put("alice", "alicesSecret".toCharArray());
+                guard.getSecrets().put("bob", "bobsSecret".toCharArray());
+                JaxRsRouter router = new JaxRsRouter(getContext(),
+                        new ExampleAppConfig(), authenticator);
+                guard.setNext(router);
+                return guard;
             }
         };
 

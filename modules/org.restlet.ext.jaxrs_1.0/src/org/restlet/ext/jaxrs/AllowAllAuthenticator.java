@@ -50,11 +50,4 @@ public class AllowAllAuthenticator implements Authenticator {
     public boolean isUserInRole(Principal principal, String role) {
         return true;
     }
-
-    /**
-     * @see org.restlet.ext.jaxrs.Authenticator#checkSecret(String, char[])
-     */
-    public boolean checkSecret(String identifier, char[] secret) {
-        return true;
-    }
 }

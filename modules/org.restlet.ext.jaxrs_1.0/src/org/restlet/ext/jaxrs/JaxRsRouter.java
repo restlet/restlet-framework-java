@@ -42,7 +42,6 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -108,40 +107,6 @@ import org.restlet.resource.StringRepresentation;
  */
 public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         HiddenJaxRsRouter {
-
-    /**
-     * Creates a guarded JaxRsRouter. The credentials and the roles are checked
-     * by the Authenticator.
-     * 
-     * @param context
-     *                the context from the parent
-     * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers.
-     * @param authenticator
-     *                the Authenticator which checks the credentials and the
-     *                roles. Must not be null; see {@link AllowAllAuthenticator},
-     *                {@link ForbidAllAuthenticator} or
-     *                {@link ThrowExcAuthenticator}.
-     * @param challangeScheme
-     *                the {@link ChallengeScheme}
-     * @param realmName
-     *                the name of the realm, presented to the client while
-     *                requesting the credentials.S
-     * @return Returns the Guard. you can attach root resource classes directly.
-     *         If you want to set other properties in the {@link JaxRsRouter},
-     *         use the method {@link JaxRsGuard#getNext()}.
-     * @see JaxRsGuard#getNext()
-     */
-    public static JaxRsGuard getGuarded(Context context,
-            ApplicationConfig appConfig, Authenticator authenticator,
-            ChallengeScheme challangeScheme, String realmName) {
-        JaxRsGuard guard = new JaxRsGuard(context, challangeScheme, realmName,
-                authenticator);
-        guard.setNext(new JaxRsRouter(context, appConfig, authenticator));
-        return guard;
-        // LATER make some resources accessable guarded and other not.
-    }
 
     /**
      * This set must only changed by adding a root resource class to this

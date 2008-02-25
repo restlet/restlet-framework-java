@@ -391,6 +391,11 @@ public abstract class JaxRsTestCase extends TestCase {
                 accMediaType);
     }
 
+    public Response getAuth(String subPath, String username, String pw) {
+        return get(subPath, new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
+                username, pw));
+    }
+
     public int getPort() {
         return serverWrapper.getPort();
     }
@@ -484,12 +489,13 @@ public abstract class JaxRsTestCase extends TestCase {
      * @return
      */
     protected ApplicationConfig getAppConfig() {
-        ApplicationConfig appConfig = new ApplicationConfig(){
+        ApplicationConfig appConfig = new ApplicationConfig() {
             @Override
             @SuppressWarnings("unchecked")
             public Set<Class<?>> getResourceClasses() {
                 return (Set) Collections.singleton(getRootResourceClass());
-            }};
+            }
+        };
         return appConfig;
     }
 
@@ -500,12 +506,12 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param contextParameter
      * @throws Exception
      */
-    private void startServer(ApplicationConfig appConfig,
-            Protocol protocol, final ChallengeScheme challengeScheme,
-            Parameter contextParameter) throws Exception {
+    private void startServer(ApplicationConfig appConfig, Protocol protocol,
+            final ChallengeScheme challengeScheme, Parameter contextParameter)
+            throws Exception {
         try {
-            serverWrapper.startServer(appConfig, protocol,
-                    challengeScheme, contextParameter);
+            serverWrapper.startServer(appConfig, protocol, challengeScheme,
+                    contextParameter);
         } catch (Exception e) {
             try {
                 stopServer();

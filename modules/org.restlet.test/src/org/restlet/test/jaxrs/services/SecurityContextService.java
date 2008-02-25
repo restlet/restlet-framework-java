@@ -50,7 +50,7 @@ public class SecurityContextService {
     public Response post(@Context
     SecurityContext securityContext, MultivaluedMap<String, String> entity, @Context
     UriInfo uriInfo) {
-        if (!securityContext.isUserInRole("fat"))
+        if (!securityContext.isUserInRole("bat"))
             throw new WebApplicationException(403);
         entity.toString(); // typically the entity will be stored in the DB.
         String id = "4711";

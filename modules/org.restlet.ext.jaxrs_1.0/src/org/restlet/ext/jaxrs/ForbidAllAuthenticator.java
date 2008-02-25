@@ -51,11 +51,4 @@ public class ForbidAllAuthenticator implements Authenticator {
     public boolean isUserInRole(Principal principal, String role) {
         return false;
     }
-
-    /**
-     * @see org.restlet.ext.jaxrs.Authenticator#checkSecret(String, char[])
-     */
-    public boolean checkSecret(String identifier, char[] secret) {
-        return false;
-    }
 }

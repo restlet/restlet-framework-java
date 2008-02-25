@@ -41,6 +41,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.restlet.Guard;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Conditions;
@@ -331,7 +332,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @see SecurityContext#getAuthenticationScheme()
      */
     public String getAuthenticationScheme() {
-        Principal principal = Util.getPrincipal(request);
+        Principal principal = Guard.getPrincipal(request);
         if (principal == null)
             return null;
         ChallengeResponse challengeResponse = request.getChallengeResponse();
@@ -412,7 +413,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @see SecurityContext#getUserPrincipal()
      */
     public Principal getUserPrincipal() {
-        return Util.getPrincipal(request);
+        return Guard.getPrincipal(request);
     }
 
     /**
@@ -440,7 +441,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @see SecurityContext#isUserInRole(String)
      */
     public boolean isUserInRole(String role) {
-        Principal principal = Util.getPrincipal(request);
+        Principal principal = Guard.getPrincipal(request);
         return authenticator.isUserInRole(principal, role);
     }
 

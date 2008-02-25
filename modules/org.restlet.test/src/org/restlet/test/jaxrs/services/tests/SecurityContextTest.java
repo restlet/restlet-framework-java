@@ -87,30 +87,35 @@ public class SecurityContextTest extends JaxRsTestCase {
      */
     public void test2() throws Exception {
         if (!startServer(new Authenticator() {
-            public boolean checkSecret(String identifier, char[] secret) {
-                return true;
-            }
-
             public boolean isUserInRole(Principal principal, String role) {
                 return false;
             }
         }))
             return;
         Response response = get();
+        assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+
+        response = getAuth(null, "ydfsdf", "ydf");
+        assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+
+        response = getAuth(null, "admin", "adminPW");
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
 
-        response = post(new Form().getWebRepresentation());
+        response = post(null, new Form().getWebRepresentation(),
+                new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "alice",
+                        "alicesSecret"));
         sysOutEntityIfError(response);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
 
-        response = post(new Form("abc=def").getWebRepresentation());
+        response = post(null, new Form("abc=def").getWebRepresentation(),
+                new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "bob",
+                        "bobsSecret"));
         sysOutEntityIfError(response);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
 
     public void testAllowAll() throws Exception {
-        if (!startServer(AllowAllAuthenticator.getInstance()))
-            return;
+        startServer(); // no authorization
         Response response = get();
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
@@ -128,7 +133,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         if (!startServer(AllowAllAuthenticator.getInstance()))
             return;
         ChallengeResponse cr = new ChallengeResponse(
-                ChallengeScheme.HTTP_BASIC, "u", "p");
+                ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
         Response response = get("authenticationScheme", cr);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
@@ -164,16 +169,6 @@ public class SecurityContextTest extends JaxRsTestCase {
     public void testNoRoles() throws Exception {
         Authenticator exampleAuthorizator = new Authenticator() {
             /**
-             * @returns true, if the first char of the password is 'a'
-             * @see Authenticator#checkSecret(String, char[])
-             */
-            public boolean checkSecret(String identifier, char[] secret) {
-                if (secret[0] == 'a')
-                    return true;
-                return false;
-            }
-
-            /**
              * @return true, if the role name and the username starts with the
              *         same char.
              * @see Authenticator#isUserInRole(String)
@@ -190,24 +185,21 @@ public class SecurityContextTest extends JaxRsTestCase {
         };
         if (!startServer(exampleAuthorizator))
             return;
-        ChallengeResponse cr = new ChallengeResponse(
-                ChallengeScheme.HTTP_BASIC, "fsdf", "xyz");
-        Response response = get(null, cr);
+        Response response = getAuth(null, "fsdf", "xyz");
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
-        cr = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "fsdf", "baj");
-        response = get(null, cr);
+        response = getAuth(null, "fsdf", "baj");
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
-        cr = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "fsdf", "abj");
-        response = get(null, cr);
+        response = getAuth(null, "alice", "alicesSecret");
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
 
-        cr = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "bsdf", "abaj");
-        response = get(null, cr);
+        response = getAuth(null, "bob", "bobsSecret");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
-        cr = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "fsdf", "axa2");
+        ChallengeResponse cr;
+        cr = new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "bob",
+                "bobsSecret");
         response = post(null, new Form("abc=def").getWebRepresentation(), cr);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
@@ -220,30 +212,30 @@ public class SecurityContextTest extends JaxRsTestCase {
     // hope that Restlet Request.isConfidential(); works right with HTTPS
 
     public void testSecure() throws Exception {
-        if (!startServer(AllowAllAuthenticator.getInstance()))
-            return;
+        startServer();
         Response response = get("secure");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
-    public void testUserPrincipal() throws Exception {
-        if (!startServer(AllowAllAuthenticator.getInstance()))
-            return;
+    public void testUserPrincipalNotAuth() throws Exception {
+        startServer();
         Response response = get("userPrincipal");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
         assertEquals("-", entity);
+    }
 
-        response = get("userPrincipal", new ChallengeResponse(
-                ChallengeScheme.HTTP_BASIC, "abc", "def"));
+    public void testUserPrincipalAuth() throws Exception {
+        if (!startServer(AllowAllAuthenticator.getInstance()))
+            return;
+        Response response = getAuth("userPrincipal", "alice", "alicesSecret");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        String entity = response.getEntity().getText();
+        assertEquals("alice", entity);
+
+        response = getAuth("userPrincipal", "bob", "bobsSecret");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         entity = response.getEntity().getText();
-        assertEquals("abc", entity);
-
-        response = get("userPrincipal", new ChallengeResponse(
-                ChallengeScheme.HTTP_BASIC, "asdfsdfbc", "def"));
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        entity = response.getEntity().getText();
-        assertEquals("asdfsdfbc", entity);
+        assertEquals("bob", entity);
     }
 }

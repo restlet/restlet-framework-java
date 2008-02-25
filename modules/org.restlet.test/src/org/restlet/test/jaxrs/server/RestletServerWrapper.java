@@ -22,6 +22,7 @@ import javax.ws.rs.core.ApplicationConfig;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
@@ -29,7 +30,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.AllowAllAuthenticator;
 import org.restlet.ext.jaxrs.Authenticator;
-import org.restlet.ext.jaxrs.JaxRsGuard;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.util.Util;
 
@@ -47,7 +47,6 @@ public class RestletServerWrapper implements ServerWrapper {
     private Component component;
 
     public RestletServerWrapper() {
-        this.authenticator = AllowAllAuthenticator.getInstance();
     }
 
     /**
@@ -59,14 +58,12 @@ public class RestletServerWrapper implements ServerWrapper {
 
     /**
      * @param authenticator
-     *                the authenticator to set. Must not be null
+     *                the authenticator to set. May be null to not require
+     *                authentication.
      * @throws IllegalArgumentException
      */
     public void setAuthorizator(Authenticator authenticator)
             throws IllegalArgumentException {
-        if (authenticator == null)
-            throw new IllegalArgumentException(
-                    "The authenticator must not be null");
         this.authenticator = authenticator;
     }
 
@@ -92,8 +89,17 @@ public class RestletServerWrapper implements ServerWrapper {
         Application application = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
-                JaxRsGuard guard = JaxRsRouter.getGuarded(getContext(),
-                        appConfig, authenticator, challengeScheme, "");
+                if (authenticator == null) {
+                    return new JaxRsRouter(getContext(), appConfig,
+                            AllowAllAuthenticator.getInstance());
+                }
+                Guard guard = new Guard(getContext(), challengeScheme, "");
+                guard.getSecrets().put("admin", "adminPW".toCharArray());
+                guard.getSecrets().put("alice", "alicesSecret".toCharArray());
+                guard.getSecrets().put("bob", "bobsSecret".toCharArray());
+                JaxRsRouter router = new JaxRsRouter(getContext(), appConfig,
+                        authenticator);
+                guard.setNext(router);
                 return guard;
             }
         };

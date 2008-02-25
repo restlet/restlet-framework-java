@@ -21,7 +21,6 @@ package org.restlet.ext.jaxrs.util;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -61,13 +60,6 @@ import org.restlet.util.Series;
  * @author Stephan Koops
  */
 public class Util {
-
-    /**
-     * Name of the Header Principal in the request attributes.
-     * 
-     * @see Principal
-     */
-    public static final String JAVA_SECURITY_HEADER = "java.security.Principal";
 
     /**
      * This comparator sorts the concrete MediaTypes to the beginning and the
@@ -633,18 +625,6 @@ public class Util {
     }
 
     /**
-     * Gets the logged in user.
-     * 
-     * @param request
-     *                The Restlet {@link Request}
-     * @return The {@link Principal} of the logged in user.
-     * @see #setPrincipal(Principal, Request)
-     */
-    public static Principal getPrincipal(Request request) {
-        return (Principal) request.getAttributes().get(JAVA_SECURITY_HEADER);
-    }
-
-    /**
      * This method throws an {@link WebApplicationException} for Exceptions
      * where is no planned handling. Logs the exception (warn {@link Level}).
      * 
@@ -713,19 +693,6 @@ public class Util {
      */
     public static boolean isNotEmpty(List<?> list) {
         return (list != null && !list.isEmpty());
-    }
-
-    /**
-     * Sets the logged in user.
-     * 
-     * @param principal
-     *                The Principal of the logged in user.
-     * @param request
-     *                The Restlet request
-     * @see #getPrincipal(Request)
-     */
-    public static void setPrincipal(Principal principal, Request request) {
-        request.getAttributes().put(JAVA_SECURITY_HEADER, principal);
     }
 
     /**

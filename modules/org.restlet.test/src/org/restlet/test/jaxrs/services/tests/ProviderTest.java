@@ -69,6 +69,7 @@ public class ProviderTest extends JaxRsTestCase {
      * @param subPath
      * @throws IOException
      */
+    @SuppressWarnings("unused")
     private void postAndCheck(String subPath) throws Exception {
         Representation send = new DomRepresentation(
                 new StringRepresentation(
