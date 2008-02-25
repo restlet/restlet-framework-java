@@ -131,7 +131,7 @@ public class Guard extends Filter {
      * @param request
      *                The Restlet {@link Request}
      * @return The {@link Principal} of the logged in user.
-     * @see #setPrincipal(Principal, Request)
+     * @see #setPrincipal(Request)
      */
     public static Principal getPrincipal(Request request) {
         return (Principal) request.getAttributes()
