@@ -136,6 +136,7 @@ public class LocalClientHelper extends ClientHelper {
                 variant.getLanguages()
                         .add(metadataService.getDefaultLanguage());
             }
+            
             // If no media type is defined, take the default one
             if (variant.getMediaType() == null) {
                 variant.setMediaType(metadataService.getDefaultMediaType());
