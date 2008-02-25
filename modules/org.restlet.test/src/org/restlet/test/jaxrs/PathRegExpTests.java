@@ -20,8 +20,8 @@ package org.restlet.test.jaxrs;
 
 import junit.framework.TestCase;
 
-import org.restlet.ext.jaxrs.impl.MatchingResult;
-import org.restlet.ext.jaxrs.impl.PathRegExp;
+import org.restlet.ext.jaxrs.util.MatchingResult;
+import org.restlet.ext.jaxrs.util.PathRegExp;
 import org.restlet.ext.jaxrs.util.RemainingPath;
 
 /**
@@ -66,7 +66,7 @@ public class PathRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.impl.PathRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchO1() {
         MatchingResult matchingResult = regExpOneSegment1.match(VALID_PATH_1);
@@ -84,7 +84,7 @@ public class PathRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.impl.PathRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchM1() {
         MatchingResult matchingResult = regExpMultipleSegments1
@@ -103,7 +103,7 @@ public class PathRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.impl.PathRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchO21() {
         MatchingResult matchingResult = regExpOneSegment2.match(VALID_PATH_1);
@@ -120,7 +120,7 @@ public class PathRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.impl.PathRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchM2() {
         MatchingResult matchingResult = regExpMultipleSegments2
@@ -138,7 +138,7 @@ public class PathRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.impl.PathRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchM3() {
         final String rest = "/jkgjg";
@@ -147,7 +147,7 @@ public class PathRegExpTests extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.impl.PathRegExp#match(java.lang.String)}.
+     * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchM4() {
         final String rest = "/qarear/iuguz/izu/";

@@ -31,7 +31,7 @@ import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
 
 import org.restlet.data.Method;
-import org.restlet.ext.jaxrs.impl.PathRegExp;
+import org.restlet.ext.jaxrs.util.PathRegExp;
 import org.restlet.ext.jaxrs.util.RemainingPath;
 
 /**

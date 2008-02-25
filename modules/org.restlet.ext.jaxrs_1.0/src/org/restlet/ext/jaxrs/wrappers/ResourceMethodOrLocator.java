@@ -18,7 +18,7 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
-import org.restlet.ext.jaxrs.impl.PathRegExp;
+import org.restlet.ext.jaxrs.util.PathRegExp;
 
 /**
  * This interface describes a resource method, a sub resource method or a sub

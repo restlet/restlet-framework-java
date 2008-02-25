@@ -16,13 +16,12 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.ext.jaxrs.impl;
+package org.restlet.ext.jaxrs.util;
 
 import java.util.Map;
 
 import javax.ws.rs.Path;
 
-import org.restlet.ext.jaxrs.util.RemainingPath;
 
 /**
  * Wraps a result of a matching of a concrete path against a path pattern.

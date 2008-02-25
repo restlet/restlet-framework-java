@@ -1,4 +1,4 @@
-package org.restlet.ext.jaxrs.impl;
+package org.restlet.ext.jaxrs.util;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +12,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import org.restlet.data.Parameter;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
-import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.util.Series;
 
 /**
