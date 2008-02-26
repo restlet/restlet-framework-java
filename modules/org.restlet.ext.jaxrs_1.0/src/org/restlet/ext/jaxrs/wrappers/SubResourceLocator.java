@@ -104,6 +104,11 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             throw new InstantiateRessourceException(javaMethod.getReturnType(),
                     e);
         }
+        if(subResourceObject == null)
+        {
+            // TESTEN what happens, if sub resource is null? Status 500?
+            // TODO JSR311: what happens, if sub resource is null? Status 500?
+        }
         return new ResourceObject(subResourceObject);
     }
 }

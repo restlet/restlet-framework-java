@@ -245,6 +245,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         // carries a method designator or @Path annotation.
         // TESTEN what happens with non-public annotated methods.
         // @see classMethods = jaxRsClass.getDeclaredMethods();
+        // TODO also check for implemented interfaces or super classes, see
+        // section 2."Annotation Inheritance"
         for (java.lang.reflect.Method javaMethod : classMethods) {
             Path path = javaMethod.getAnnotation(Path.class);
             org.restlet.data.Method httpMethod = ResourceMethod
