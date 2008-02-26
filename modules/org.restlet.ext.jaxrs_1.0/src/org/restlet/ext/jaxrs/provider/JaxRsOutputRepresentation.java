@@ -34,12 +34,13 @@ import org.restlet.resource.OutputRepresentation;
  * {@link javax.ws.rs.ext.MessageBodyWriter}.
  * 
  * @author Stephan Koops
+ * @param <T> 
  */
-public class JaxRsOutputRepresentation extends OutputRepresentation {
+public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
 
-    private MessageBodyWriter mbw;
+    private MessageBodyWriter<T> mbw;
 
-    private Object object;
+    private T object;
 
     private Type genericType;
 
@@ -65,9 +66,9 @@ public class JaxRsOutputRepresentation extends OutputRepresentation {
      * @param httpHeaders
      *                the mutable Map of HTTP response headers.
      */
-    public JaxRsOutputRepresentation(Object object, Type genericType,
+    public JaxRsOutputRepresentation(T object, Type genericType,
             MediaType mediaType, Annotation[] annotations,
-            MessageBodyWriter mbw, MultivaluedMap<String, Object> httpHeaders) {
+            MessageBodyWriter<T> mbw, MultivaluedMap<String, Object> httpHeaders) {
         super(mediaType, mbw.getSize(object));
         if (!mediaType.isConcrete())
             throw new IllegalArgumentException(mediaType + " is not concrete");

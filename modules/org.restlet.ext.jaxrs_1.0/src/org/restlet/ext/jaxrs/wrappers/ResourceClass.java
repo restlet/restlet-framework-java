@@ -18,6 +18,7 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,11 +30,14 @@ import java.util.Set;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 
 import org.restlet.data.Method;
 import org.restlet.ext.jaxrs.core.CallContext;
+import org.restlet.ext.jaxrs.exceptions.InjectException;
 import org.restlet.ext.jaxrs.util.PathRegExp;
 import org.restlet.ext.jaxrs.util.RemainingPath;
+import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * Instances represents a root resource class.
@@ -42,9 +46,10 @@ import org.restlet.ext.jaxrs.util.RemainingPath;
  * resource, see chapter 2 of JSR-311-Spec.
  * 
  * @author Stephan Koops
- * 
  */
 public class ResourceClass extends AbstractJaxRsWrapper {
+
+    // LATER cache ResourceClasses
 
     /**
      * @param jaxRsClass
@@ -93,13 +98,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     protected Class<?> jaxRsClass;
 
+    boolean leaveEncoded;
+
     private Collection<SubResourceLocator> subResourceLocators;
 
     private Collection<ResourceMethod> subResourceMethods;
 
     private Collection<ResourceMethodOrLocator> subResourceMethodsAndLocators;
-
-    boolean leaveEncoded;
 
     /**
      * Creates a new root resource class wrapper. Will not set the path, because
@@ -198,6 +203,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     }
 
     /**
+     * @return returns the name of the wrapped class
+     */
+    public String getName() {
+        return this.jaxRsClass.getName();
+    }
+
+    /**
      * @return Returns the sub resource locators of the given class.
      */
     public final Iterable<SubResourceLocator> getSubResourceLocators() {
@@ -237,6 +249,54 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         return !this.getSubResourceMethodsAndLocators().isEmpty();
     }
 
+    /**
+     * Injects all the supported dependencies into the the given resource object
+     * of this class.
+     * 
+     * @param resourceObject
+     * @param callContext
+     *                The CallContext to get the dependencies from.
+     * @throws InjectException
+     *                 if the injection was not possible. See
+     *                 {@link InjectException#getCause()} for the reason.
+     */
+    void injectDependencies(ResourceObject resourceObject,
+            CallContext callContext) throws InjectException {
+        for(Field contextField : getInjectContextFields())
+        {
+            Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
+            Util.inject(jaxRsResObj, contextField, callContext);
+        }
+    }
+
+    private Field[] getInjectContextFields() {
+        if (this.injectContextFields == null)
+            initInjectFields();
+        return this.injectContextFields;
+    }
+
+    /**
+     * @throws SecurityException
+     */
+    private void initInjectFields() throws SecurityException {
+        List<Field> icf = new ArrayList<Field>();
+        for(Field field : this.jaxRsClass.getFields())
+        {
+            if(field.isAnnotationPresent(Context.class))
+                icf.add(field);
+        }
+        this.injectContextFields = icf.toArray(EMPTY_FIELD_ARRAY);
+    }
+
+    private static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
+
+    /**
+     * This array contains the fields in this class in which are annotated to
+     * inject an {@link CallContext}. Array is round about 10 times faster than
+     * the list
+     */
+    private Field[] injectContextFields;
+
     private void internalSetSubResourceMethodsAndLocators() {
         Collection<ResourceMethodOrLocator> srmls = new ArrayList<ResourceMethodOrLocator>();
         Collection<ResourceMethod> subRsesMeths = new ArrayList<ResourceMethod>();
@@ -274,25 +334,5 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[" + this.jaxRsClass + "]";
-    }
-
-    /**
-     * @return returns the name of the wrapped class
-     */
-    public String getName() {
-        return this.jaxRsClass.getName();
-    }
-
-    /**
-     * Injects all the supported dependencies into the the given resource object
-     * of this class.
-     * 
-     * @param resourceObject
-     * @param callContext
-     *                The CallContext to get the dependencies from.
-     */
-    void injectDependencies(ResourceObject resourceObject,
-            CallContext callContext) {
-        // TODO injection is required. See @Path and spec section 4.
     }
 }

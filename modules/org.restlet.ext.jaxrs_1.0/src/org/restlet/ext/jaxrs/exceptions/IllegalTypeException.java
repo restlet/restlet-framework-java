@@ -22,7 +22,7 @@ package org.restlet.ext.jaxrs.exceptions;
  * This kind of exception is thrown, when an annotated constructor or method
  * parameter has an illegal type.
  * 
- * @author Stephan
+ * @author Stephan Koops
  * 
  */
 public class IllegalTypeException extends JaxRsException {

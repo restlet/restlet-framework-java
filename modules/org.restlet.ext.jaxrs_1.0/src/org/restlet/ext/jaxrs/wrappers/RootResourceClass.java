@@ -34,6 +34,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.core.CallContext;
+import org.restlet.ext.jaxrs.exceptions.InjectException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
@@ -149,7 +150,11 @@ public class RootResourceClass extends ResourceClass {
         Object instance = createInstance(constructor, leaveEncoded,
                 callContext, jaxRsRouter);
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
-        rootResourceObject.injectDependencies(callContext);
+        try {
+            rootResourceObject.injectDependencies(callContext);
+        } catch (InjectException e) {
+            throw new InstantiateRootRessourceException(e);
+        }
         return rootResourceObject;
     }
 

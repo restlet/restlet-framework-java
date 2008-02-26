@@ -112,8 +112,8 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         Object[] args = getParameterValues(paramTypes, paramGenericTypes,
                 parameterAnnotationss, leaveEncoded, callContext, jaxRsRouter);
         try {
-            return this.javaMethod.invoke(resourceObject.getResourceObject(),
-                    args);
+            Object jaxRsResourceObj = resourceObject.getJaxRsResourceObject();
+            return this.javaMethod.invoke(jaxRsResourceObj, args);
         } catch (IllegalArgumentException e) {
             throw new MethodInvokeException("Could not invoke " + javaMethod, e);
         } catch (IllegalAccessException e) {

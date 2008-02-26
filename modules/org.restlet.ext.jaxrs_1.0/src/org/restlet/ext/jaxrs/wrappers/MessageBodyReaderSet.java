@@ -31,7 +31,7 @@ import org.restlet.ext.jaxrs.util.LifoSet;
  * 
  * @author Stephan Koops
  */
-public class MessageBodyReaderSet extends LifoSet<MessageBodyReader> {
+public class MessageBodyReaderSet extends LifoSet<MessageBodyReader<?>> {
 
     /**
      * Creates a new MessageBodyReaderSet
@@ -42,19 +42,19 @@ public class MessageBodyReaderSet extends LifoSet<MessageBodyReader> {
     /**
      * @param c
      */
-    public MessageBodyReaderSet(Collection<MessageBodyReader> c) {
+    public MessageBodyReaderSet(Collection<MessageBodyReader<?>> c) {
         super(c);
     }
 
     /**
      * @see LifoSet#LifoSet(List, boolean)
      */
-    private MessageBodyReaderSet(List<MessageBodyReader> c, boolean useGivenList) {
+    private MessageBodyReaderSet(List<MessageBodyReader<?>> c, boolean useGivenList) {
         super(c, useGivenList);
     }
 
     @Override
-    public boolean add(MessageBodyReader mbr) {
+    public boolean add(MessageBodyReader<?> mbr) {
         if (mbr == null)
             throw new IllegalArgumentException(
                     "The MessageBodyReader to add must not be null");
@@ -68,8 +68,10 @@ public class MessageBodyReaderSet extends LifoSet<MessageBodyReader> {
      * @param entityClass
      * @return
      */
-    private MessageBodyReaderSet subSet(Class<?> entityClass, Type genericType, Annotation[] annotations) {
-        List<MessageBodyReader> mbws = new ArrayList<MessageBodyReader>();
+    @SuppressWarnings("unchecked")
+    private MessageBodyReaderSet subSet(Class<?> entityClass, Type genericType,
+            Annotation[] annotations) {
+        List<MessageBodyReader<?>> mbws = new ArrayList<MessageBodyReader<?>>();
         for (MessageBodyReader mbw : this) {
             if (mbw.isReadable(entityClass, genericType, annotations))
                 mbws.add(mbw);
@@ -85,8 +87,9 @@ public class MessageBodyReaderSet extends LifoSet<MessageBodyReader> {
      *                The {@link MediaType}, that should be supported.
      * @return Collection of {@link MessageBodyReader}s
      */
+    @SuppressWarnings("unchecked")
     private MessageBodyReaderSet subSet(MediaType mediaType) {
-        List<MessageBodyReader> mbrs = new ArrayList<MessageBodyReader>();
+        List<MessageBodyReader<?>> mbrs = new ArrayList<MessageBodyReader<?>>();
         for (MessageBodyReader mbr : this) {
             if (mbr.supports(mediaType))
                 mbrs.add(mbr);
@@ -100,15 +103,17 @@ public class MessageBodyReaderSet extends LifoSet<MessageBodyReader> {
      * @param mediaType
      *                The {@link MediaType}, that should be supported.
      * @param paramType
-     * @param genericType 
-     * @param annotations 
+     * @param genericType
+     * @param annotations
      * 
      * @return The first {@link MessageBodyReader} of this Set. Returns null, if
      *         this Set is empty.
      */
-    public MessageBodyReader getBest(MediaType mediaType, Class<?> paramType, Type genericType, Annotation[] annotations) {
+    public MessageBodyReader<?> getBest(MediaType mediaType,
+            Class<?> paramType, Type genericType, Annotation[] annotations) {
         // LATER optimization: may be cached for speed.
-        MessageBodyReaderSet mbrs = this.subSet(mediaType).subSet(paramType, genericType, annotations);
+        MessageBodyReaderSet mbrs = this.subSet(mediaType).subSet(paramType,
+                genericType, annotations);
         if (mbrs.isEmpty())
             return null;
         return mbrs.iterator().next();

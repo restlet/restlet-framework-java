@@ -15,17 +15,26 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+
 package org.restlet.ext.jaxrs.exceptions;
 
+import javax.ws.rs.core.Context;
+
 /**
- * A RequestHandledException is thrown when an this request is already handled,
- * for example because of an handled exception resulting in an error while
- * method invocation. The Exception or whatever was handled and the necessary
- * data in {@link org.restlet.data.Response} were set, so that the JaxRsRouter
- * must not do anything. <br/> This Exception only indicates this.
+ * This kind of exception is thrown, when the object could not be injected in a
+ * field annotated with {@link Context} (or perhaps other annotations).
  * 
  * @author Stephan Koops
  */
-public class RequestHandledException extends Exception {
-    private static final long serialVersionUID = 2765454873472711005L;
+public class InjectException extends JaxRsException {
+    private static final long serialVersionUID = 6796414811480666857L;
+
+    /**
+     * 
+     * @param message
+     * @param cause
+     */
+    public InjectException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

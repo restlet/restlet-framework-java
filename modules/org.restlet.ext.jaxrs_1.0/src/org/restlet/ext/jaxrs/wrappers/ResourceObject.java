@@ -19,6 +19,7 @@
 package org.restlet.ext.jaxrs.wrappers;
 
 import org.restlet.ext.jaxrs.core.CallContext;
+import org.restlet.ext.jaxrs.exceptions.InjectException;
 
 /**
  * Represents a resource Object
@@ -29,45 +30,52 @@ import org.restlet.ext.jaxrs.core.CallContext;
 public class ResourceObject {
     private ResourceClass resourceClass;
 
-    private Object resourceObject;
+    private Object jaxRsResourceObject;
 
     /**
      * Creates a new wrapper for a resource object
      * 
-     * @param resourceObject
+     * @param jaxRsResourceObject
      *                the resource object
      */
-    public ResourceObject(Object resourceObject) {
-        this(resourceObject, new ResourceClass(resourceObject.getClass()));
+    public ResourceObject(Object jaxRsResourceObject) {
+        this(jaxRsResourceObject, new ResourceClass(jaxRsResourceObject.getClass()));
     }
 
     /**
      * Creates a new wrapper for a resource object
      * 
-     * @param resourceObject
+     * @param jaxRsResourceObject
      *                the resource object
      * @param resourceClass
      *                the wrapped resource class
      * @param logger
      *                The logger to log unexpected Exceptions.
      */
-    public ResourceObject(Object resourceObject, ResourceClass resourceClass) {
-        if (resourceObject instanceof ResourceObject)
+    public ResourceObject(Object jaxRsResourceObject, ResourceClass resourceClass) {
+        if(jaxRsResourceObject == null)
+            throw new IllegalArgumentException("The JAX-RS resource object must not be null");
+        if(resourceClass == null)
+            throw new IllegalArgumentException("The ResourceClass must not be null");
+        if (jaxRsResourceObject instanceof ResourceObject)
             throw new IllegalArgumentException(
                     "The given resource class object should not be an instance of the wrapping class ResourceObject");
-        this.resourceObject = resourceObject;
+        this.jaxRsResourceObject = jaxRsResourceObject;
         this.resourceClass = resourceClass;
     }
 
     /**
-     * @return Returns the wrapped resource class.
+     * @return Returns the wrapped resource class. Returns never null.
      */
     public ResourceClass getResourceClass() {
         return resourceClass;
     }
 
-    Object getResourceObject() {
-        return resourceObject;
+    /**
+     * @return Returns the wrapped JAX-RS resource object. Returns never null.
+     */
+    Object getJaxRsResourceObject() {
+        return jaxRsResourceObject;
     }
 
     /**
@@ -75,8 +83,11 @@ public class ResourceObject {
      * 
      * @param callContext
      *                The CallContext to get the dependencies from.
+     * @throws InjectException
+     *                 if the injection was not possible. See
+     *                 {@link InjectException#getCause()} for the reason.
      */
-    public void injectDependencies(CallContext callContext) {
+    public void injectDependencies(CallContext callContext) throws InjectException {
         this.getResourceClass().injectDependencies(this, callContext);
     }
 }

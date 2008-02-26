@@ -21,39 +21,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.List;
 
-import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
 
 /**
- * Class to wrap a {@link javax.ws.rs.ext.MessageBodyWriter}
+ * Interface to access a wrapped a {@link javax.ws.rs.ext.MessageBodyWriter}
  * 
  * @author Stephan Koops
+ * @param <T> 
  */
-@SuppressWarnings("unchecked")
-public class MessageBodyWriter {
-
-    private List<org.restlet.data.MediaType> producedMimes;
-
-    private javax.ws.rs.ext.MessageBodyWriter writer;
-
-    /**
-     * Construct a wrapper or a {@link javax.ws.rs.ext.MessageBodyWriter}
-     * 
-     * @param writer
-     *                the JAX-RS {@link javax.ws.rs.ext.MessageBodyWriter} to
-     *                wrap.
-     */
-    public MessageBodyWriter(javax.ws.rs.ext.MessageBodyWriter<?> writer) {
-        if (writer == null)
-            throw new IllegalArgumentException(
-                    "The MessageBodyWriter must not be null");
-        this.writer = writer;
-    }
+public interface MessageBodyWriter<T> {
 
     /**
      * Returns the list of produced {@link MediaType}s of the wrapped
@@ -61,20 +41,10 @@ public class MessageBodyWriter {
      * 
      * @return List of produced {@link MediaType}s.
      */
-    public List<MediaType> getProducedMimes() {
-        if (producedMimes == null) {
-            ProduceMime pm = writer.getClass().getAnnotation(ProduceMime.class);
-            if (pm != null)
-                this.producedMimes = ResourceMethod.convertToMediaTypes(pm
-                        .value());
-            else
-                this.producedMimes = Collections.singletonList(MediaType.ALL);
-        }
-        return producedMimes;
-    }
+    public List<MediaType> getProducedMimes();
 
     /**
-     * Checks, if the given class is supported by this MessageBodyWriter
+     * Checks, if the given class could be written by this MessageBodyWriter.
      * 
      * @param type
      * @param genericType
@@ -82,10 +52,8 @@ public class MessageBodyWriter {
      * @return
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class)
      */
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return writer.isWriteable(type, genericType, annotations);
-    }
+    public boolean isWriteable(Class<T> type, Type genericType,
+            Annotation[] annotations);
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
@@ -96,14 +64,7 @@ public class MessageBodyWriter {
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
-    public boolean supportAtLeastOne(Iterable<MediaType> mediaTypes) {
-        for (MediaType produced : getProducedMimes()) {
-            for (MediaType requested : mediaTypes)
-                if (requested.isCompatible(produced))
-                    return true;
-        }
-        return false;
-    }
+    public boolean supportAtLeastOne(Iterable<MediaType> mediaTypes);
 
     /**
      * Called before <code>writeTo</code> to ascertain the length in bytes of
@@ -115,9 +76,7 @@ public class MessageBodyWriter {
      * @return length in bytes or -1 if the length cannot be determined in
      *         advance
      */
-    public long getSize(Object t) {
-        return writer.getSize(t);
-    }
+    public long getSize(T t);
 
     /**
      * Write a type to an HTTP response. The response header map is mutable but
@@ -144,31 +103,8 @@ public class MessageBodyWriter {
      *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
      *      OutputStream)
      */
-    public void writeTo(Object t, Type genericType, Annotation[] annotations,
+    public void writeTo(T t, Type genericType, Annotation[] annotations,
             javax.ws.rs.core.MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
-        writer.writeTo(t, genericType, annotations, mediaType, httpHeaders,
-                entityStream);
-    }
-
-    @Override
-    public String toString() {
-        return "MessageBodyWriter:" + writer.getClass().getName();
-    }
-
-    @Override
-    public boolean equals(Object otherMbw) {
-        if (this == otherMbw)
-            return true;
-        if (!(otherMbw instanceof MessageBodyWriter))
-            return false;
-        return this.writer.getClass().equals(
-                ((MessageBodyWriter) otherMbw).writer.getClass());
-    }
-
-    @Override
-    public int hashCode() {
-        return writer.hashCode();
-    }
+            OutputStream entityStream) throws IOException;
 }

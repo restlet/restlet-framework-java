@@ -95,21 +95,18 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         Object subResObj;
         try {
             subResObj = javaMethod.invoke(resourceObject
-                    .getResourceObject(), args);
+                    .getJaxRsResourceObject(), args);
         } catch (IllegalArgumentException e) {
-            throw new InstantiateRessourceException(javaMethod.getReturnType(),
-                    e);
+            Class<?> returnType = javaMethod.getReturnType();
+            throw new InstantiateRessourceException(returnType, e);
         } catch (IllegalAccessException e) {
-            throw new InstantiateRessourceException(javaMethod.getReturnType(),
-                    e);
+            Class<?> returnType = javaMethod.getReturnType();
+            throw new InstantiateRessourceException(returnType, e);
         }
-        if(subResObj == null)
-        {
+        if (subResObj == null) {
             // TESTEN what happens, if sub resource is null? Status 500?
             // TODO JSR311: what happens, if sub resource is null? Status 500?
         }
-        ResourceObject subResourceObject = new ResourceObject(subResObj);
-        subResourceObject.injectDependencies(callContext);
-        return subResourceObject;
+        return new ResourceObject(subResObj);
     }
 }

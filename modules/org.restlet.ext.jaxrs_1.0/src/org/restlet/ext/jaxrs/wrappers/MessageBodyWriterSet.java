@@ -32,7 +32,7 @@ import org.restlet.ext.jaxrs.util.SortedMetadata;
  * 
  * @author Stephan Koops
  */
-public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter> {
+public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter<?>> {
 
     /**
      * Creates a new MessageBodyWriterSet
@@ -43,19 +43,19 @@ public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter> {
     /**
      * @param c
      */
-    public MessageBodyWriterSet(Collection<MessageBodyWriter> c) {
+    public MessageBodyWriterSet(Collection<MessageBodyWriter<?>> c) {
         super(c);
     }
 
     /**
      * @see LifoSet#LifoSet(List, boolean)
      */
-    private MessageBodyWriterSet(List<MessageBodyWriter> c, boolean useGivenList) {
+    private MessageBodyWriterSet(List<MessageBodyWriter<?>> c, boolean useGivenList) {
         super(c, useGivenList);
     }
 
     @Override
-    public boolean add(MessageBodyWriter mbr) {
+    public boolean add(MessageBodyWriter<?> mbr) {
         if (mbr == null)
             throw new IllegalArgumentException(
                     "The MessageBodyReader to add must not be null");
@@ -73,10 +73,11 @@ public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter> {
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
      *      Annotation[])
      */
+    @SuppressWarnings("unchecked")
     public MessageBodyWriterSet subSet(Class<?> entityClass, Type genericType,
             Annotation[] annotations) {
         // LATER optimization: may be cached for speed.
-        List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
+        List<MessageBodyWriter<?>> mbws = new ArrayList<MessageBodyWriter<?>>();
         for (MessageBodyWriter mbw : this) {
             if (mbw.isWriteable(entityClass, genericType, annotations))
                 mbws.add(mbw);
@@ -93,8 +94,8 @@ public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter> {
      * @return Collection of {@link MessageBodyWriter}s
      */
     public MessageBodyWriterSet subSet(Collection<MediaType> mediaTypes) {
-        List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
-        for (MessageBodyWriter mbw : this) {
+        List<MessageBodyWriter<?>> mbws = new ArrayList<MessageBodyWriter<?>>();
+        for (MessageBodyWriter<?> mbw : this) {
             if (mbw.supportAtLeastOne(mediaTypes))
                 mbws.add(mbw);
         }
@@ -110,9 +111,9 @@ public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter> {
      *         Returns null, if no adequate {@link MessageBodyWriter} could be
      *         found in this set.
      */
-    public MessageBodyWriter getBest(SortedMetadata<MediaType> accMediaTypes) {
+    public MessageBodyWriter<?> getBest(SortedMetadata<MediaType> accMediaTypes) {
         for (Iterable<MediaType> amts : accMediaTypes.listOfColls())
-            for (MessageBodyWriter mbw : this)
+            for (MessageBodyWriter<?> mbw : this)
                 if (mbw.supportAtLeastOne(amts))
                     return mbw;
         return null;

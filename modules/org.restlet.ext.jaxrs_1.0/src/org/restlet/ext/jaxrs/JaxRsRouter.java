@@ -70,10 +70,10 @@ import org.restlet.ext.jaxrs.util.WrappedRequestForHttpHeaders;
 import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.wrappers.ContextResolver;
 import org.restlet.ext.jaxrs.wrappers.HiddenJaxRsRouter;
-import org.restlet.ext.jaxrs.wrappers.MessageBodyReader;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyReaderSet;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriter;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyWriterSet;
+import org.restlet.ext.jaxrs.wrappers.Provider;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.ext.jaxrs.wrappers.ResourceMethod;
 import org.restlet.ext.jaxrs.wrappers.ResourceMethodOrLocator;
@@ -121,7 +121,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
 
     private MessageBodyWriterSet messageBodyWriters = new MessageBodyWriterSet();
 
-    private Set<ContextResolver> contextResolvers = new HashSet<ContextResolver>();
+    private Set<ContextResolver<?>> contextResolvers = new HashSet<ContextResolver<?>>();
 
     /**
      * Creates a new JaxRsRouter with the given Context.
@@ -234,35 +234,29 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                 XmlTransformSourceProvider.class, this);
     }
 
-    // methods for creation ready
-    // now methods for the daily work
-
     /**
      * Adds the provider object to this JaxRsRouter.
      * 
-     * @param provider
+     * @param jaxRsProvider
+     *                the JAX-RS provider. Must implement at least one of the
+     *                interfaces {@link javax.ws.rs.ext.MessageBodyWriter},
+     *                {@link javax.ws.rs.ext.MessageBodyReader} or
+     *                {@link javax.ws.rs.ext.ContextResolver}.
+     * @throws IllegalArgumentException
+     *                 if the provider is not a valid provider.
      */
-    void addProvider(Object provider) {
-        boolean added = false;
-        if (provider instanceof javax.ws.rs.ext.MessageBodyWriter) {
-            this.messageBodyWriters.add(new MessageBodyWriter(
-                    (javax.ws.rs.ext.MessageBodyWriter<?>) provider));
-            added = true;
-        }
-        if (provider instanceof javax.ws.rs.ext.MessageBodyReader) {
-            this.messageBodyReaders.add(new MessageBodyReader(
-                    (javax.ws.rs.ext.MessageBodyReader<?>) provider));
-            added = true;
-        }
-        if (provider instanceof javax.ws.rs.ext.ContextResolver) {
-            this.contextResolvers.add(new ContextResolver(
-                    (javax.ws.rs.ext.ContextResolver<?>) provider));
-            added = true;
-        }
-        if (!added) {
-            // TODO warn
-        }
+    void addProvider(Object jaxRsProvider) throws IllegalArgumentException {
+        Provider<?> provider = new Provider<Object>(jaxRsProvider);
+        if (provider.isWriter())
+            this.messageBodyWriters.add(provider);
+        if (provider.isReader())
+            this.messageBodyReaders.add(provider);
+        if (provider.isContextResolver())
+            this.contextResolvers.add(provider);
     }
+
+    // methods for creation ready
+    // now methods for the daily work
 
     /**
      * Handles a call by invoking the next Restlet if it is available.
@@ -953,6 +947,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * @return
      * @throws RequestHandledException
      */
+    @SuppressWarnings("unchecked")
     private Representation convertToRepresentation(Object entity,
             AbstractMethodWrapper resourceMethod, CallContext callContext,
             MediaType responseMediaType,
@@ -978,7 +973,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         else
             possMediaTypes = Collections.singletonList(MediaType.TEXT_PLAIN);
         mbws = mbws.subSet(possMediaTypes);
-        MessageBodyWriter mbw = mbws.getBest(accMediaTypes);
+        MessageBodyWriter<?> mbw = mbws.getBest(accMediaTypes);
         if (mbw == null)
             throw handleWebAppExc(new WebApplicationException(406),
                     callContext, resourceMethod);
@@ -1022,7 +1017,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         // 1. (c)
         if (p.isEmpty()) {
             p = new ArrayList<MediaType>();
-            for (MessageBodyWriter messageBodyWriter : mbwsForEntityClass)
+            for (MessageBodyWriter<?> messageBodyWriter : mbwsForEntityClass)
                 p.addAll(messageBodyWriter.getProducedMimes());
         }
         // 2.

@@ -21,10 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.List;
 
-import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
@@ -33,29 +31,13 @@ import org.restlet.data.MediaType;
  * Class to wrap a {@link javax.ws.rs.ext.MessageBodyWriter}
  * 
  * @author Stephan Koops
+ * @param <T> 
  */
 @SuppressWarnings("unchecked")
-public class MessageBodyReader {
-
-    private javax.ws.rs.ext.MessageBodyReader reader;
-
-    private List<org.restlet.data.MediaType> consumedMimes;
+public interface MessageBodyReader<T> {
 
     /**
-     * Construct a wrapper or a {@link javax.ws.rs.ext.MessageBodyReader}
-     * 
-     * @param reader
-     *                the JAX-RS {@link javax.ws.rs.ext.MessageBodyReader} to
-     *                wrap.
-     */
-    public MessageBodyReader(javax.ws.rs.ext.MessageBodyReader<?> reader) {
-        if (reader == null)
-            throw new IllegalArgumentException(
-                    "The MessageBodyReader must not be null");
-        this.reader = reader;
-    }
-
-    /**
+     * Checks, if this MessageBodyReader could read the given type.
      * 
      * @param type
      * @param genericType
@@ -64,12 +46,11 @@ public class MessageBodyReader {
      * @see javax.ws.rs.ext.MessageBodyReader#isReadable(Class, Type,
      *      Annotation[])
      */
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return reader.isReadable(type, genericType, annotations);
-    }
+    public boolean isReadable(Class<T> type, Type genericType,
+            Annotation[] annotations);
 
     /**
+     * Reads an object of the given type from the given entityStream.
      * 
      * @param type
      * @param genericType
@@ -85,13 +66,10 @@ public class MessageBodyReader {
      *      javax.ws.rs.core.MediaType, Annotation[], MultivaluedMap,
      *      InputStream)
      */
-    public Object readFrom(Class type, Type genericType,
+    public T readFrom(Class<T> type, Type genericType,
             javax.ws.rs.core.MediaType mediaType, Annotation[] annotations,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException {
-        return this.reader.readFrom(type, genericType, mediaType, annotations,
-                httpHeaders, entityStream);
-    }
+            throws IOException;
 
     /**
      * Returns the list of produced {@link MediaType}s of the wrapped
@@ -99,17 +77,7 @@ public class MessageBodyReader {
      * 
      * @return List of produced {@link MediaType}s.
      */
-    public List<MediaType> getConsumedMimes() {
-        if (consumedMimes == null) {
-            ConsumeMime pm = reader.getClass().getAnnotation(ConsumeMime.class);
-            if (pm != null)
-                this.consumedMimes = ResourceMethod.convertToMediaTypes(pm
-                        .value());
-            else
-                this.consumedMimes = Collections.singletonList(MediaType.ALL);
-        }
-        return consumedMimes;
-    }
+    public List<MediaType> getConsumedMimes();
 
     /**
      * Checks, if this MessageBodyReader supports the given MediaType.
@@ -117,30 +85,5 @@ public class MessageBodyReader {
      * @param mediaType
      * @return
      */
-    public boolean supports(MediaType mediaType) {
-        for (MediaType cm : getConsumedMimes()) {
-            if (cm.isCompatible(mediaType))
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return this.reader.getClass().getName();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof MessageBodyReader))
-            return false;
-        return this.reader.equals(((MessageBodyReader) o).reader);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.reader.hashCode();
-    }
+    public boolean supports(MediaType mediaType);
 }

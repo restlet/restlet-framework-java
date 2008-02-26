@@ -41,7 +41,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -53,6 +52,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.UnmodifiableMultivaluedMap;
+import org.restlet.ext.jaxrs.exceptions.InjectException;
 import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Engine;
@@ -651,43 +651,43 @@ public class Util {
     }
 
     /**
-     * Inject objects for {@link Context} and others parameters into the given
-     * object.
-     * 
-     * @param resource
-     */
-    public static void injectFields(Object resource) {
-        Field[] fields = resource.getClass().getFields();
-        // TODO inject
-    }
-
-    /**
      * Inject the given toInject into the given field in the given resource (or
      * whatever)
      * 
      * @param resource
-     *                the concrete Object to inject the other object in
+     *                the concrete Object to inject the other object in. If the
+     *                field is static, thsi object may be null.
      * @param field
      *                the field to inject the third parameter in.
      * @param toInject
      *                the object to inject in the first parameter object.
-     * @throws IllegalAccessException
+     * @throws InjectException
+     *                 if the injection was not possible. See
+     *                 {@link InjectException#getCause()} for the reason.
      */
-    private static void inject(final Object resource, final Field field,
-            final Object toInject) throws IllegalAccessException {
-        IllegalAccessException iae = AccessController
-                .doPrivileged(new PrivilegedAction<IllegalAccessException>() {
-                    public IllegalAccessException run() {
-                        try {
-                            field.set(resource, toInject);
-                            return null;
-                        } catch (IllegalAccessException e) {
-                            return e;
+    public static void inject(final Object resource, final Field field,
+            final Object toInject) throws InjectException {
+        // TESTEN check, if injection of dependencies is working
+        try {
+            IllegalAccessException iae = AccessController
+                    .doPrivileged(new PrivilegedAction<IllegalAccessException>() {
+                        public IllegalAccessException run() {
+                            try {
+                                field.set(resource, toInject);
+                                return null;
+                            } catch (IllegalAccessException e) {
+                                return e;
+                            }
                         }
-                    }
-                });
-        if (iae != null)
-            throw iae;
+                    });
+            if (iae != null)
+                throw new InjectException("Could not inject the " + toInject
+                        + " into field " + field + " of object " + resource,
+                        iae);
+        } catch (RuntimeException e) {
+            throw new InjectException("Could not inject the " + toInject
+                    + " into field " + field + " of object " + resource, e);
+        }
     }
 
     /**

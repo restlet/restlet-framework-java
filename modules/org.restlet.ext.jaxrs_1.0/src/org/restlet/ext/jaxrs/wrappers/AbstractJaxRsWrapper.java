@@ -323,6 +323,7 @@ public abstract class AbstractJaxRsWrapper {
 
     /**
      * Returns the parameter value array for a JAX-RS method or constructor.
+     * 
      * @param paramTypes
      *                the array of types for the method or constructor.
      * @param paramGenericTypes
@@ -351,11 +352,10 @@ public abstract class AbstractJaxRsWrapper {
      * @throws
      * @throws WebApplicationException
      */
-    protected static Object[] getParameterValues(
-            Class<?>[] paramTypes, Type[] paramGenericTypes,
-            Annotation[][] paramAnnotationss, boolean leaveEncoded,
-            CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
-            throws MissingAnnotationException,
+    protected static Object[] getParameterValues(Class<?>[] paramTypes,
+            Type[] paramGenericTypes, Annotation[][] paramAnnotationss,
+            boolean leaveEncoded, CallContext callContext,
+            HiddenJaxRsRouter jaxRsRouter) throws MissingAnnotationException,
             InstantiateParameterException, RequestHandledException,
             NoMessageBodyReadersException, WebApplicationException {
         int paramNo = paramTypes.length;
@@ -400,6 +400,7 @@ public abstract class AbstractJaxRsWrapper {
      * @throws RequestHandledException
      * @throws InstantiateParameterException
      */
+   @SuppressWarnings("unchecked")
     private static Object convertRepresentation(CallContext callContext,
             Class<?> paramType, Type genericType, Annotation[] annotations,
             HiddenJaxRsRouter jaxRsRouter)
@@ -414,8 +415,8 @@ public abstract class AbstractJaxRsWrapper {
         MessageBodyReaderSet mbrs = jaxRsRouter.getMessageBodyReaders();
         if (mbrs == null)
             throw new NoMessageBodyReadersException();
-        MessageBodyReader mbr = mbrs.getBest(mediaType, paramType, genericType,
-                annotations);
+        MessageBodyReader<?> mbr = mbrs.getBest(mediaType, paramType,
+                genericType, annotations);
         if (mbr == null) {
             // REQUESTED JSR311: what, if no MessageBodyReader?
             callContext.getResponse().setStatus(
@@ -427,7 +428,7 @@ public abstract class AbstractJaxRsWrapper {
         try {
             javax.ws.rs.core.MediaType jaxRsMediaType = Converter
                     .toJaxRsMediaType(mediaType, entity.getCharacterSet());
-            return mbr.readFrom(paramType, genericType, jaxRsMediaType,
+            return mbr.readFrom((Class) paramType, genericType, jaxRsMediaType,
                     annotations, httpHeaders, entity.getStream());
         } catch (IOException e) {
             throw new InstantiateParameterException(
