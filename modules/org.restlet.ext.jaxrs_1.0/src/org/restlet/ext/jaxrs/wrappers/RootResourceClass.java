@@ -142,14 +142,15 @@ public class RootResourceClass extends ResourceClass {
      */
     public ResourceObject createInstance(CallContext callContext,
             HiddenJaxRsRouter jaxRsRouter)
-            throws InstantiateParameterException,
-            MissingAnnotationException, InstantiateRootRessourceException,
-            RequestHandledException, InvocationTargetException {
+            throws InstantiateParameterException, MissingAnnotationException,
+            InstantiateRootRessourceException, RequestHandledException,
+            InvocationTargetException {
         Constructor<?> constructor = this.constructor;
-        Object newInstance = createInstance(constructor, leaveEncoded,
+        Object instance = createInstance(constructor, leaveEncoded,
                 callContext, jaxRsRouter);
-        // TODO injection is required. See @Path and spec section 4.
-        return new ResourceObject(newInstance, this);
+        ResourceObject rootResourceObject = new ResourceObject(instance, this);
+        rootResourceObject.injectDependencies(callContext);
+        return rootResourceObject;
     }
 
     /**
@@ -175,19 +176,17 @@ public class RootResourceClass extends ResourceClass {
      */
     public static Object createInstance(Constructor<?> constructor,
             boolean leaveEncoded, CallContext callContext,
-            HiddenJaxRsRouter jaxRsRouter)
-            throws MissingAnnotationException, RequestHandledException,
-            InstantiateParameterException, InstantiateRootRessourceException,
-            InvocationTargetException {
+            HiddenJaxRsRouter jaxRsRouter) throws MissingAnnotationException,
+            RequestHandledException, InstantiateParameterException,
+            InstantiateRootRessourceException, InvocationTargetException {
         Object[] args;
         if (constructor.getParameterTypes().length == 0) {
             args = new Object[0];
         } else {
             try {
-                args = getParameterValues(
-                        constructor
-                                .getParameterTypes(), constructor
-                        .getGenericParameterTypes(), constructor.getParameterAnnotations(), leaveEncoded,
+                args = getParameterValues(constructor.getParameterTypes(),
+                        constructor.getGenericParameterTypes(), constructor
+                                .getParameterAnnotations(), leaveEncoded,
                         callContext, jaxRsRouter);
             } catch (NoMessageBodyReadersException e) {
                 throw new MissingAnnotationException(

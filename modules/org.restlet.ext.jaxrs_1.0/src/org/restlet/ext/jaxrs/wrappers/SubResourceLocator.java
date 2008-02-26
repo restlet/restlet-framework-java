@@ -92,11 +92,10 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
                     .getGenericParameterTypes(), javaMethod
                     .getParameterAnnotations(), leaveEncoded, callContext,
                     jaxRsRouter);
-        Object subResourceObject;
+        Object subResObj;
         try {
-            subResourceObject = javaMethod.invoke(resourceObject
+            subResObj = javaMethod.invoke(resourceObject
                     .getResourceObject(), args);
-            // TODO subResourceObject.injectContextAndSoOn()
         } catch (IllegalArgumentException e) {
             throw new InstantiateRessourceException(javaMethod.getReturnType(),
                     e);
@@ -104,11 +103,13 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             throw new InstantiateRessourceException(javaMethod.getReturnType(),
                     e);
         }
-        if(subResourceObject == null)
+        if(subResObj == null)
         {
             // TESTEN what happens, if sub resource is null? Status 500?
             // TODO JSR311: what happens, if sub resource is null? Status 500?
         }
-        return new ResourceObject(subResourceObject);
+        ResourceObject subResourceObject = new ResourceObject(subResObj);
+        subResourceObject.injectDependencies(callContext);
+        return subResourceObject;
     }
 }

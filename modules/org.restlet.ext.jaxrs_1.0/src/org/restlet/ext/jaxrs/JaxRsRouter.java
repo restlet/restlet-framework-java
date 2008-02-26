@@ -36,7 +36,6 @@ import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
@@ -69,6 +68,7 @@ import org.restlet.ext.jaxrs.util.SortedMetadata;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.util.WrappedRequestForHttpHeaders;
 import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
+import org.restlet.ext.jaxrs.wrappers.ContextResolver;
 import org.restlet.ext.jaxrs.wrappers.HiddenJaxRsRouter;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyReader;
 import org.restlet.ext.jaxrs.wrappers.MessageBodyReaderSet;
@@ -121,7 +121,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
 
     private MessageBodyWriterSet messageBodyWriters = new MessageBodyWriterSet();
 
-    private Set<ContextResolver<?>> contextResolvers = new HashSet<ContextResolver<?>>();
+    private Set<ContextResolver> contextResolvers = new HashSet<ContextResolver>();
 
     /**
      * Creates a new JaxRsRouter with the given Context.
@@ -255,8 +255,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             added = true;
         }
         if (provider instanceof javax.ws.rs.ext.ContextResolver) {
-            this.contextResolvers
-                    .add((javax.ws.rs.ext.ContextResolver<?>) provider);
+            this.contextResolvers.add(new ContextResolver(
+                    (javax.ws.rs.ext.ContextResolver<?>) provider));
             added = true;
         }
         if (!added) {

@@ -19,8 +19,11 @@
 package org.restlet.ext.jaxrs.util;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -38,6 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -644,6 +648,46 @@ public class Util {
         logger.log(Level.WARNING, logMessage, e);
         throw new WebApplicationException(e, Status.SERVER_ERROR_INTERNAL
                 .getCode());
+    }
+
+    /**
+     * Inject objects for {@link Context} and others parameters into the given
+     * object.
+     * 
+     * @param resource
+     */
+    public static void injectFields(Object resource) {
+        Field[] fields = resource.getClass().getFields();
+        // TODO inject
+    }
+
+    /**
+     * Inject the given toInject into the given field in the given resource (or
+     * whatever)
+     * 
+     * @param resource
+     *                the concrete Object to inject the other object in
+     * @param field
+     *                the field to inject the third parameter in.
+     * @param toInject
+     *                the object to inject in the first parameter object.
+     * @throws IllegalAccessException
+     */
+    private static void inject(final Object resource, final Field field,
+            final Object toInject) throws IllegalAccessException {
+        IllegalAccessException iae = AccessController
+                .doPrivileged(new PrivilegedAction<IllegalAccessException>() {
+                    public IllegalAccessException run() {
+                        try {
+                            field.set(resource, toInject);
+                            return null;
+                        } catch (IllegalAccessException e) {
+                            return e;
+                        }
+                    }
+                });
+        if (iae != null)
+            throw iae;
     }
 
     /**

@@ -18,6 +18,7 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
+import org.restlet.ext.jaxrs.core.CallContext;
 
 /**
  * Represents a resource Object
@@ -67,5 +68,15 @@ public class ResourceObject {
 
     Object getResourceObject() {
         return resourceObject;
+    }
+
+    /**
+     * Injects all the supported dependencies into the this resource object.
+     * 
+     * @param callContext
+     *                The CallContext to get the dependencies from.
+     */
+    public void injectDependencies(CallContext callContext) {
+        this.getResourceClass().injectDependencies(this, callContext);
     }
 }

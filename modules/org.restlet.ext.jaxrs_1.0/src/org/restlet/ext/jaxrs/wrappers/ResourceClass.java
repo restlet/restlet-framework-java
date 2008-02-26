@@ -31,6 +31,7 @@ import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
 
 import org.restlet.data.Method;
+import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.util.PathRegExp;
 import org.restlet.ext.jaxrs.util.RemainingPath;
 
@@ -280,5 +281,18 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     public String getName() {
         return this.jaxRsClass.getName();
+    }
+
+    /**
+     * Injects all the supported dependencies into the the given resource object
+     * of this class.
+     * 
+     * @param resourceObject
+     * @param callContext
+     *                The CallContext to get the dependencies from.
+     */
+    void injectDependencies(ResourceObject resourceObject,
+            CallContext callContext) {
+        // TODO injection is required. See @Path and spec section 4.
     }
 }
