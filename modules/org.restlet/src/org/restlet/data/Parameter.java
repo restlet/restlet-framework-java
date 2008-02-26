@@ -78,19 +78,17 @@ public class Parameter implements Comparable<Parameter> {
             if (obj instanceof Parameter) {
                 Parameter that = (Parameter) obj;
 
-                if (!(this.name == null)) // compare names taking care of
-                // nulls
-                {
+                if (this.name != null) {
+                    // compare names taking care of nulls
                     result = (this.name.equals(that.name));
                 } else {
                     result = (that.name == null);
                 }
 
-                if (result) // if names are equal test the values
-                {
-                    if (!(this.value == null)) // compare values taking care of
-                    // nulls
-                    {
+                if (result) {
+                    // if names are equal test the values
+                    if (this.value != null) {
+                        // compare values taking care of nulls
                         result = (this.value.equals(that.value));
                     } else {
                         result = (that.value == null);

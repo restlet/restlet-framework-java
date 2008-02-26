@@ -108,14 +108,15 @@ public class LocalClientHelper extends ClientHelper {
                 current = metadataService.getMetadata(tokens[j]);
                 if (current != null) {
                     // Metadata extension detected
-                    if (current instanceof MediaType)
+                    if (current instanceof MediaType) {
                         variant.setMediaType((MediaType) current);
-                    if (current instanceof CharacterSet)
+                    } else if (current instanceof CharacterSet) {
                         variant.setCharacterSet((CharacterSet) current);
-                    if (current instanceof Encoding)
+                    } else if (current instanceof Encoding) {
                         variant.getEncodings().add((Encoding) current);
-                    if (current instanceof Language)
+                    } else if (current instanceof Language) {
                         variant.getLanguages().add((Language) current);
+                    }
                 }
 
                 int dashIndex = tokens[j].indexOf('-');
@@ -136,7 +137,7 @@ public class LocalClientHelper extends ClientHelper {
                 variant.getLanguages()
                         .add(metadataService.getDefaultLanguage());
             }
-            
+
             // If no media type is defined, take the default one
             if (variant.getMediaType() == null) {
                 variant.setMediaType(metadataService.getDefaultMediaType());
