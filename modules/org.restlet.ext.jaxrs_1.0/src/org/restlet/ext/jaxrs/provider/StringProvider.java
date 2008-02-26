@@ -42,7 +42,6 @@ public class StringProvider extends AbstractProvider<CharSequence> {
 
     // REQUESTED JSR311: why @Provider? Jersey Providers are also not annotated.
     // . . . . . . . (check before email)
-    // REQUESTED JSR311: javax.transform.Source statt javax.xml.transform.Source
     // TODO wie soll man application/*+xml feststellen?
 
     /**

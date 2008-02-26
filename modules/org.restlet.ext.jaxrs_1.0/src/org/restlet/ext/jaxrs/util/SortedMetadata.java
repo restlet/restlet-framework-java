@@ -30,7 +30,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
      */
     @SuppressWarnings("unchecked")
     public SortedMetadata(Collection<Preference<T>> preferences) {
-        // TODO JSR311: prefare HTML to others?
+        // TODO Filter to prefare HTML before XML?
         SortedMap<Float, Collection<T>> map = new TreeMap<Float, Collection<T>>(
                 Collections.reverseOrder());
         for (Preference<T> preference : preferences) {

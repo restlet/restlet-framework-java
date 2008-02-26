@@ -59,11 +59,11 @@ class JaxRsClassesLoader {
             return;
             // TODO warn
         }
-        Constructor<?> constructor = RootResourceClass
+        Constructor<?> providerConstructor = RootResourceClass
                 .findJaxRsConstructor(clazz);
         Object provider;
         try {
-            provider = RootResourceClass.createInstance(constructor, false,
+            provider = RootResourceClass.createInstance(providerConstructor, false,
                     null, jaxRsRouter);
         } catch (InstantiateParameterException e) {
             // should be not possible here

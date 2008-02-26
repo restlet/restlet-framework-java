@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Provider
 public class JaxbProvider extends AbstractProvider<Object> {
 
-    // TODO JSR311: JAXB-Version nicht festgelet.
+    // REQUESTED JSR311: JAXB-Version nicht festgelet.
 
     private Logger logger = Logger.getLogger(JaxbProvider.class.getName());
 

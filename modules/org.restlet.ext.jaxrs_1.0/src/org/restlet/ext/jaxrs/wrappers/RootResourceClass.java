@@ -148,6 +148,7 @@ public class RootResourceClass extends ResourceClass {
         Constructor<?> constructor = this.constructor;
         Object newInstance = createInstance(constructor, leaveEncoded,
                 callContext, jaxRsRouter);
+        // TODO injection is required. See @Path and spec section 4.
         return new ResourceObject(newInstance, this);
     }
 

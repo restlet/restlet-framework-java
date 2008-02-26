@@ -417,7 +417,7 @@ public abstract class AbstractJaxRsWrapper {
         MessageBodyReader mbr = mbrs.getBest(mediaType, paramType, genericType,
                 annotations);
         if (mbr == null) {
-            // TODO JSR311: what, if no MessageBodyReader?
+            // REQUESTED JSR311: what, if no MessageBodyReader?
             callContext.getResponse().setStatus(
                     Status.CLIENT_ERROR_NOT_ACCEPTABLE);
             throw new RequestHandledException();

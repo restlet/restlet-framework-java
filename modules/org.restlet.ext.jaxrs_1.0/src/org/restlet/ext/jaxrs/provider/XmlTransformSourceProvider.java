@@ -13,8 +13,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 
-// TODO JSR311: where get the XSLT to convert the javax.xml.transform.Source to
-// an OutputStream?
+// REQUESTED JSR311: where get the XSLT to convert a javax.xml.transform.Source
+// to an OutputStream?
 
 /**
  * 
@@ -28,32 +28,33 @@ public class XmlTransformSourceProvider extends AbstractProvider<Source> {
     }
 
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
+    protected boolean isReadableAndWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
         // return Source.class.isAssignableFrom(type);
         return false;
     }
 
     /**
      * @see org.restlet.ext.jaxrs.provider.AbstractProvider#readFrom(java.lang.Class,
-     *      Type, javax.ws.rs.core.MediaType,
-     *      Annotation[], javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
+     *      Type, javax.ws.rs.core.MediaType, Annotation[],
+     *      javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
      */
     @Override
     public Source readFrom(Class<Source> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            MediaType mediaType, Annotation[] annotations,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return new StreamSource(entityStream);
     }
 
     @Override
     public void writeTo(Source source, Type genericType,
-            Annotation[] annotations,
-            MediaType mediaType, 
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         // StreamResult streamResult = new StreamResult(entityStream);
         // TransformerFactory transformerFactory = TransformerFactory
-        //         .newInstance();
+        // .newInstance();
         // Source xsltSource = null;
         // Transformer trans = transformerFactory.newTransformer(xsltSource);
         // trans.transform(source, streamResult);

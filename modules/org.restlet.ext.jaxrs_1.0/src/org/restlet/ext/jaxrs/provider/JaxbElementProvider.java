@@ -44,9 +44,6 @@ import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 @Provider
 public class JaxbElementProvider extends AbstractProvider<JAXBElement<?>> {
 
-    // REQUESTED JSR311: JAXBElement-MessageBodyReader: dont know how to
-    // implement.
-
     private Logger logger = Logger.getLogger(JaxbElementProvider.class
             .getName());
 
