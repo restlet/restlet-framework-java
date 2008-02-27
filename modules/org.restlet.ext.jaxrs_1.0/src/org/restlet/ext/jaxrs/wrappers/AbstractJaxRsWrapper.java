@@ -44,10 +44,12 @@ import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.CallContext;
-import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.util.Converter;
@@ -109,23 +111,23 @@ public abstract class AbstractJaxRsWrapper {
         try {
             valueOf = paramClass.getMethod("valueOf", String.class);
         } catch (SecurityException e) {
-            throw new InstantiateParameterException("Could not convert "
-                    + paramValue + " to a " + paramClass.getName(), e);
+            throw InstantiateParameterException.object(paramClass, paramValue,
+                    e);
         } catch (NoSuchMethodException e) {
-            throw new InstantiateParameterException("Could not convert "
-                    + paramValue + " to a " + paramClass.getName(), e);
+            throw InstantiateParameterException.object(paramClass, paramValue,
+                    e);
         }
         try {
             return valueOf.invoke(null, paramValue);
         } catch (IllegalArgumentException e) {
-            throw new InstantiateParameterException("Could not convert "
-                    + paramValue + " to a " + paramClass.getName(), e);
+            throw InstantiateParameterException.object(paramClass, paramValue,
+                    e);
         } catch (IllegalAccessException e) {
-            throw new InstantiateParameterException("Could not convert "
-                    + paramValue + " to a " + paramClass.getName(), e);
+            throw InstantiateParameterException.object(paramClass, paramValue,
+                    e);
         } catch (InvocationTargetException e) {
-            throw new InstantiateParameterException("Could not convert "
-                    + paramValue + " to a " + paramClass.getName(), e);
+            throw InstantiateParameterException.object(paramClass, paramValue,
+                    e);
         }
     }
 
@@ -175,8 +177,12 @@ public abstract class AbstractJaxRsWrapper {
         Representation entity = callContext.getRequest().getEntity();
         if (entity == null)
             return null;
-        if (Representation.class.isAssignableFrom(paramType))
-            return entity; // TESTEN geht das mit Representaton als
+        if (Representation.class.isAssignableFrom(paramType)) {
+            Object repr = createConcreteRepresentationInstance(paramType,
+                    entity, jaxRsRouter.getLogger());
+            if (repr != null)
+                return repr;
+        }
         MediaType mediaType = entity.getMediaType();
         MessageBodyReaderSet mbrs = jaxRsRouter.getMessageBodyReaders();
         if (mbrs == null)
@@ -197,9 +203,35 @@ public abstract class AbstractJaxRsWrapper {
             return mbr.readFrom((Class) paramType, genericType, jaxRsMediaType,
                     annotations, httpHeaders, entity.getStream());
         } catch (IOException e) {
-            throw new InstantiateParameterException(
-                    "Can not instatiate parameter of type "
-                            + paramType.getName(), e);
+            throw InstantiateParameterException.object(paramType,
+                    "the message body", e);
+        }
+    }
+
+    /**
+     * @param entity
+     * @return the created representation, or null, if it coud not be converted.
+     * @throws InstantiateParameterException
+     */
+    private static Object createConcreteRepresentationInstance(
+            Class<?> paramType, Representation entity, Logger logger)
+            throws InstantiateParameterException {
+        if (paramType.equals(Representation.class))
+            return entity;
+        Constructor<?> constr;
+        try {
+            constr = paramType.getConstructor(Representation.class);
+        } catch (SecurityException e) {
+            logger.warning("The constructor "+paramType+"(Representation) is not accessable.");
+            return null;
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+        try {
+            return constr.newInstance(entity);
+        } catch (Exception e) {
+            throw InstantiateParameterException.object(paramType,
+                    "the message body", e);
         }
     }
 
@@ -247,8 +279,9 @@ public abstract class AbstractJaxRsWrapper {
      * @throws WebApplicationException
      */
     static Object getHeaderParamValue(Class<?> paramClass,
-            HeaderParam annotation, DefaultValue defaultValue, CallContext callContext)
-            throws InstantiateParameterException, WebApplicationException {
+            HeaderParam annotation, DefaultValue defaultValue,
+            CallContext callContext) throws InstantiateParameterException,
+            WebApplicationException {
         String headerParamValue = Util.getHttpHeaders(callContext.getRequest())
                 .getFirstValue(annotation.value(), true);
         return convertParamValueFromParam(paramClass, headerParamValue,
@@ -267,9 +300,9 @@ public abstract class AbstractJaxRsWrapper {
      * @throws WebApplicationException
      */
     static Object getMatrixParamValue(Class<?> paramClass,
-            MatrixParam matrixParam, boolean leaveEncoded, DefaultValue defaultValue,
-            CallContext callContext) throws InstantiateParameterException,
-            WebApplicationException {
+            MatrixParam matrixParam, boolean leaveEncoded,
+            DefaultValue defaultValue, CallContext callContext)
+            throws InstantiateParameterException, WebApplicationException {
         String matrixParamValue = callContext
                 .getLastMatrixParamEnc(matrixParam);
         return convertParamValueFromParam(paramClass, matrixParamValue,
@@ -469,8 +502,8 @@ public abstract class AbstractJaxRsWrapper {
      * @throws InstantiateParameterException
      * @throws WebApplicationException
      */
-    static Object getPathParamValue(Class<?> paramClass,
-            PathParam pathParam, boolean leaveEncoded, DefaultValue defaultValue,
+    static Object getPathParamValue(Class<?> paramClass, PathParam pathParam,
+            boolean leaveEncoded, DefaultValue defaultValue,
             CallContext callContext) throws InstantiateParameterException,
             WebApplicationException {
         String pathParamValue = callContext.getLastTemplParamEnc(pathParam);

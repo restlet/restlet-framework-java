@@ -30,7 +30,7 @@ public class InstantiateParameterException extends JaxRsException {
      * 
      * @param message
      */
-    public InstantiateParameterException(String message) {
+    private InstantiateParameterException(String message) {
         super(message);
     }
 
@@ -38,7 +38,7 @@ public class InstantiateParameterException extends JaxRsException {
      * 
      * @param cause
      */
-    public InstantiateParameterException(Throwable cause) {
+    private InstantiateParameterException(Throwable cause) {
         super(cause);
     }
 
@@ -47,7 +47,7 @@ public class InstantiateParameterException extends JaxRsException {
      * @param message
      * @param cause
      */
-    public InstantiateParameterException(String message, Throwable cause) {
+    private InstantiateParameterException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -55,17 +55,34 @@ public class InstantiateParameterException extends JaxRsException {
      * Throws a message, that the given String value could not be converted to a
      * primitive.
      * 
-     * @param type
+     * @param paramType
      * @param unparseableValue
      * @param cause
      * @return
      * @throws InstantiateParameterException
      */
-    public static InstantiateParameterException primitive(Class<?> type,
+    public static InstantiateParameterException primitive(Class<?> paramType,
             String unparseableValue, Throwable cause)
             throws InstantiateParameterException {
         throw new InstantiateParameterException(
                 "Could not convert the String \"" + unparseableValue
-                        + "\" to a " + type, cause);
+                        + "\" to a " + paramType, cause);
+    }
+
+    /**
+     * Throws a message, that the given String value could not be converted to a
+     * primitive.
+     * 
+     * @param paramType
+     * @param unparseableValue
+     * @param cause
+     * @return
+     * @throws InstantiateParameterException
+     */
+    public static InstantiateParameterException object(Class<?> paramType,
+            Object unparseableValue, Throwable cause)
+            throws InstantiateParameterException {
+        throw new InstantiateParameterException("Could not convert "
+                + unparseableValue + " to a " + paramType.getName(), cause);
     }
 }

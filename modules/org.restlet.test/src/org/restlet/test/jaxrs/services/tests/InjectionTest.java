@@ -27,11 +27,9 @@ import org.restlet.test.jaxrs.services.InjectionTestService;
  */
 public class InjectionTest extends JaxRsTestCase {
 
-    private static final Class<?> SERVICE_CLASS = InjectionTestService.class;
-
     @Override
     protected Class<?> getRootResourceClass() {
-        return SERVICE_CLASS;
+        return InjectionTestService.class;
     }
 
     public void testGet1() {

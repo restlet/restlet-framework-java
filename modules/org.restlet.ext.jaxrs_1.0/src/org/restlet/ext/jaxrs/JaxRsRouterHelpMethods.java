@@ -511,6 +511,7 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
         String message = "Multiple java methods found on "
                 + currentMethod.getResourceClass().getName() + ": "
                 + bestMethod.getName() + " and " + currentMethod.getName();
+        // TODO log exception, bei allen Methoden.
         throw new CouldNotFindMethodException(
                 this.errorRestletMultipleResourceMethods, message);
     }

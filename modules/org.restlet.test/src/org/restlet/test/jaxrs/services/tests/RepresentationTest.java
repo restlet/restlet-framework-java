@@ -20,42 +20,46 @@ package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
 
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.PathParamTestService;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
+import org.restlet.test.jaxrs.services.RepresentationTestService;
 
 /**
  * @author Stephan Koops
  */
-public class PathParamTest extends JaxRsTestCase {
+public class RepresentationTest extends JaxRsTestCase {
 
     @Override
     protected Class<?> getRootResourceClass() {
-        return PathParamTestService.class;
+        return RepresentationTestService.class;
     }
 
-    /**
-     * 
-     * @param subPath
-     *                without beginning '/'
-     * @return
-     */
-    private Reference createReference(String subPath) {
-        return new Reference("http://localhost:" + super.getPort()
-                + "/pathParamTest/" + subPath);
-    }
-
-    public void testGet1() throws IOException {
-        Response response = accessServer(Method.GET, createReference("4711"));
+    public void test1Get() {
+        Response response = get("repr");
+        super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("4711", response.getEntity().getText());
     }
 
-    public void testGet2() throws IOException {
-        Response response = accessServer(Method.GET, createReference("4711/abc/677/def"));
+    public void test1Post() throws IOException {
+        Response response = post("repr", new StringRepresentation("abcde"));
+        super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("4711\n677", response.getEntity().getText());
+        assertEquals("abcde", response.getEntity().getText());
+    }
+
+    public void testStringGet() {
+        Response response = get("reprString");
+        super.sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    }
+
+    public void test2Post() throws Exception {
+        Representation repr = new StringRepresentation("abcde");
+        Response response = post("reprDecode", repr);
+        super.sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("abcde", response.getEntity().getText());
     }
 }

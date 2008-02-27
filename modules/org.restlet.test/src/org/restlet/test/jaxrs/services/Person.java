@@ -17,6 +17,8 @@
  */
 package org.restlet.test.jaxrs.services;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -27,7 +29,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Stephan Koops
  */
 @XmlRootElement
-public class Person {
+public class Person implements Serializable {
+
+    private static final long serialVersionUID = 7691750693436200351L;
+
     private String firstname;
 
     private String lastname;
