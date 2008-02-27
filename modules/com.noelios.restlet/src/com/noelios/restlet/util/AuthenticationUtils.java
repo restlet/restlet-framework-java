@@ -18,31 +18,27 @@
 
 package com.noelios.restlet.util;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.security.auth.login.CredentialException;
 
 import org.restlet.Guard;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.util.Engine;
 import org.restlet.util.Series;
+
+import com.noelios.restlet.Engine;
+import com.noelios.restlet.authentication.AuthenticationHelper;
 
 /**
  * Authentication utilities.
  * 
- * @author Ray Waldin (ray@waldin.net)
  * @author Jerome Louvel (contact@noelios.com)
+ * @author Ray Waldin (ray@waldin.net)
  */
 public class AuthenticationUtils {
 
@@ -53,140 +49,16 @@ public class AuthenticationUtils {
      * quoted and unquoted values as RFC2617 isn't consistent in this respect.
      * Pattern is immutable and thread-safe so reuse one static instance.
      */
-    private static final Pattern directivesPattern = Pattern
+    private static final Pattern PATTERN_RFC_2617 = Pattern
             .compile("([^=]+)=\"?([^\",]+)(?:\"\\s*)?,?\\s*");
 
     /**
-     * General regex pattern to extract comma separated name-value components.
-     * This pattern captures one name and value per match(), and is repeatedly
-     * applied to the input string to extract all components. Must handle both
-     * quoted and unquoted values as RFC2617 isn't consistent in this respect.
-     * Pattern is immutable and thread-safe so reuse one static instance.
-     */
-    private static final char[] HEXDIGITS = "0123456789abcdef".toCharArray();
-
-    /**
-     * Parsed the parameters of a credientials string and updates the series of
-     * parameters.
+     * Indicates if any of the objects is null.
      * 
-     * @param credentials
-     *                The credentials string to parse.
-     * @param parameters
-     *                The series to update.
+     * @param objects
+     *                The objects to test.
+     * @return True if any of the objects is null.
      */
-    public static void parseParameters(String credentials,
-            Series<Parameter> parameters) {
-        Matcher matcher = directivesPattern.matcher(credentials);
-
-        while (matcher.find() && matcher.groupCount() == 2) {
-            parameters.add(matcher.group(1), matcher.group(2));
-        }
-    }
-
-    /**
-     * Returns the MD5 digest of target string. Target is decoded to bytes using
-     * the named charset. The returned hexidecimal String always contains 32
-     * lowercase alphanumeric characters. For example, if target is
-     * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
-     * 
-     * @param target
-     *                The string to encode.
-     * @param charsetName
-     *                The character set.
-     * @return The MD5 digest of the target string.
-     * 
-     * @throws UnsupportedEncodingException
-     */
-    public static String toMd5(String target, String charsetName)
-            throws UnsupportedEncodingException {
-        try {
-            byte[] md5 = MessageDigest.getInstance("MD5").digest(
-                    target.getBytes(charsetName));
-            char[] md5Chars = new char[32];
-            int i = 0;
-            for (byte b : md5) {
-                md5Chars[i++] = HEXDIGITS[(b >> 4) & 0xF];
-                md5Chars[i++] = HEXDIGITS[b & 0xF];
-            }
-            return new String(md5Chars);
-        } catch (NoSuchAlgorithmException nsae) {
-            throw new RuntimeException(
-                    "No MD5 algorithm, unable to compute MD5");
-        }
-    }
-
-    /**
-     * Returns the MD5 digest of the target string. Target is decoded to bytes
-     * using the US-ASCII charset. The returned hexidecimal String always
-     * contains 32 lowercase alphanumeric characters. For example, if target is
-     * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
-     * 
-     * @param target
-     *                The string to encode.
-     * @return The MD5 digest of the target string.
-     */
-    public static String toMd5(String target) {
-        try {
-            return toMd5(target, "US-ASCII");
-        } catch (UnsupportedEncodingException uee) {
-            // unlikely, US-ASCII comes with every JVM
-            throw new RuntimeException(
-                    "US-ASCII is an unsupported encoding, unable to compute MD5");
-        }
-    }
-
-    /**
-     * generates a nonce as recommended in section 3.2.1 of RFC-2617, but
-     * without the ETag field. The format is: <code><pre>
-     * Base64.encodeBytes(currentTimeMS + &quot;:&quot;
-     *         + md5String(currentTimeMS + &quot;:&quot; + secretKey))
-     * </pre></code>
-     * 
-     * @param secretKey
-     *                a secret value known only to the creator of the nonce.
-     *                It's inserted into the nonce, and can be used later to
-     *                validate the nonce.
-     */
-    public static String makeNonce(String secretKey) {
-        long currentTimeMS = System.currentTimeMillis();
-        return Base64.encode((currentTimeMS + ":" + toMd5(currentTimeMS + ":"
-                + secretKey)).getBytes(), true);
-    }
-
-    /**
-     * checks whether the specified nonce is valid with respect to the specified
-     * secretKey, and further confirms that the nonce was generated less than
-     * lifespanMillis milliseconds ago
-     * 
-     * @param nonce
-     * @param secretKey
-     *                the same secret value that was inserted into the nonce
-     *                when it was generated
-     * @param lifespanMS
-     *                nonce lifespace in milliseconds
-     * @return true if the nonce was generated less than lifespanMS milliseconds
-     *         ago, false otherwise
-     * @throws CredentialException
-     *                 if the nonce does not match the specified secretKey, or
-     *                 if it can't be parsed
-     */
-    public static boolean isNonceValid(String nonce, String secretKey,
-            long lifespanMS) throws CredentialException {
-        try {
-            String decodedNonce = new String(Base64.decode(nonce));
-            long nonceTimeMS = Long.parseLong(decodedNonce.substring(0,
-                    decodedNonce.indexOf(':')));
-            if (decodedNonce.equals(nonceTimeMS + ":"
-                    + toMd5(nonceTimeMS + ":" + secretKey))) {
-                // valid wrt secretKey, now check lifespan
-                return lifespanMS > (System.currentTimeMillis() - nonceTimeMS);
-            }
-        } catch (Exception e) {
-            throw new CredentialException("error parsing nonce: " + e);
-        }
-        throw new CredentialException("nonce does not match secretKey");
-    }
-
     public static boolean anyNull(Object... objects) {
         for (Object o : objects) {
             if (o == null) {
@@ -197,7 +69,7 @@ public class AuthenticationUtils {
     }
 
     /**
-     * Indicates if the call is properly authenticated. By default, this
+     * Indicates if the request is properly authenticated. By default, this
      * delegates credential checking to checkSecret().
      * 
      * @param request
@@ -218,79 +90,15 @@ public class AuthenticationUtils {
 
             if (cr != null) {
                 if (guard.getScheme().equals(cr.getScheme())) {
-                    if (guard.getScheme().equals(ChallengeScheme.HTTP_BASIC)) {
-                        // The challenge schemes are compatible
-                        String identifier = request.getChallengeResponse()
-                                .getIdentifier();
-                        char[] secret = request.getChallengeResponse()
-                                .getSecret();
+                    AuthenticationHelper helper = Engine.getInstance()
+                            .findHelper(cr.getScheme(), false, true);
 
-                        // Check the credentials
-                        if ((identifier != null) && (secret != null)) {
-                            result = guard.checkSecret(request, identifier,
-                                    secret) ? Guard.AUTHENTICATION_VALID
-                                    : Guard.AUTHENTICATION_INVALID;
-                        }
-                    } else if (guard.getScheme().equals(
-                            ChallengeScheme.HTTP_DIGEST)) {
-                        Series<Parameter> credentials = cr.getParameters();
-                        String username = credentials.getFirstValue("username");
-                        String nonce = credentials.getFirstValue("nonce");
-                        String response = credentials.getFirstValue("response");
-                        String uri = credentials.getFirstValue("uri");
-                        String qop = credentials.getFirstValue("qop");
-                        String nc = credentials.getFirstValue("nc");
-                        String cnonce = credentials.getFirstValue("cnonce");
-
-                        try {
-                            if (!isNonceValid(nonce, guard.getServerKey(),
-                                    guard.getNonceLifespan())) {
-                                // Nonce expired, send challenge request with
-                                // stale=true
-                                return Guard.AUTHENTICATION_STALE;
-                            }
-                        } catch (CredentialException ce) {
-                            // Invalid nonce, probably doesn't match serverKey
-                            return Guard.AUTHENTICATION_INVALID;
-                        }
-
-                        if (!AuthenticationUtils.anyNull(username, nonce,
-                                response, uri)) {
-                            Reference resourceRef = request.getResourceRef();
-                            String requestUri = resourceRef.getPath();
-                            if (resourceRef.getQuery() != null
-                                    && uri.indexOf('?') > -1) {
-                                // IE neglects to include the query string, so
-                                // the workaround is to leave it off
-                                // unless both the calculated uri and the
-                                // specified uri contain a query string
-                                requestUri += "?" + resourceRef.getQuery();
-                            }
-                            if (uri.equals(requestUri)) {
-                                String a1 = getHashedSecret(username, guard);
-                                String a2 = Engine.getInstance().toMd5(
-                                        request.getMethod() + ":" + requestUri);
-
-                                StringBuffer expectedResponse = new StringBuffer(
-                                        a1).append(':').append(nonce);
-                                if (!AuthenticationUtils.anyNull(qop, cnonce,
-                                        nc)) {
-                                    expectedResponse.append(':').append(nc)
-                                            .append(':').append(cnonce).append(
-                                                    ':').append(qop);
-                                }
-                                expectedResponse.append(':').append(a2);
-
-                                if (response.equals(Engine.getInstance().toMd5(
-                                        expectedResponse.toString()))) {
-                                    return Guard.AUTHENTICATION_VALID;
-                                }
-                            }
-
-                            return Guard.AUTHENTICATION_INVALID;
-                        }
-
-                        return Guard.AUTHENTICATION_MISSING;
+                    if (helper != null) {
+                        helper.authenticate(cr, request, guard);
+                    } else {
+                        throw new IllegalArgumentException("Challenge scheme "
+                                + guard.getScheme()
+                                + " not supported by the Restlet engine.");
                     }
                 } else {
                     // The challenge schemes are incompatible, we need to
@@ -305,23 +113,6 @@ public class AuthenticationUtils {
     }
 
     /**
-     * Return the hashed secret.
-     * 
-     * @param identifier
-     *                The user identifier to hash.
-     * @param guard
-     *                The associated guard to callback.
-     * 
-     * @return a hash of the username, realm, and password, specified as A1 in
-     *         section 3.2.2.2 of RFC2617
-     */
-    private static String getHashedSecret(String identifier, Guard guard) {
-        return Engine.getInstance().toMd5(
-                identifier + ":" + guard.getRealm() + ":"
-                        + new String(guard.findSecret(identifier)));
-    }
-
-    /**
      * Challenges the client by adding a challenge request to the response and
      * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
      * 
@@ -333,36 +124,168 @@ public class AuthenticationUtils {
      *                The associated guard to callback.
      */
     public static void challenge(Response response, boolean stale, Guard guard) {
-        response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-        response.setChallengeRequest(new ChallengeRequest(guard.getScheme(),
-                guard.getRealm()));
+        AuthenticationHelper helper = Engine.getInstance().findHelper(
+                guard.getScheme(), false, true);
 
-        if (guard.getScheme().equals(ChallengeScheme.HTTP_DIGEST)) {
-            if (stale) {
-                // Stale nonce, repeat auth request with fresh nonce
-                response.getAttributes().put("stale", "true");
-            }
+        if (helper != null) {
+            helper.challenge(response, stale, guard);
+        } else {
+            throw new IllegalArgumentException("Challenge scheme "
+                    + guard.getScheme()
+                    + " not supported by the Restlet engine.");
+        }
+    }
 
-            Series<Parameter> parameters = response.getChallengeRequest()
-                    .getParameters();
-            StringBuffer domain = new StringBuffer();
+    /**
+     * Formats a challenge request as a HTTP header value.
+     * 
+     * @param request
+     *                The challenge request to format.
+     * @return The authenticate header value.
+     */
+    public static String format(ChallengeRequest request) {
+        String result = null;
+        AuthenticationHelper helper = Engine.getInstance().findHelper(
+                request.getScheme(), false, true);
 
-            for (String baseUri : guard.getDomainUris()) {
-                domain.append(baseUri).append(' ');
-            }
+        if (helper != null) {
+            result = helper.format(request);
+        } else {
+            throw new IllegalArgumentException("Challenge scheme "
+                    + request.getScheme()
+                    + " not supported by the Restlet engine.");
+        }
 
-            if (domain.length() > 0) {
-                domain.delete(domain.length() - 1, domain.length());
-                parameters.add("domain", domain.toString());
-            }
+        return result;
+    }
 
-            parameters.add("nonce", makeNonce(guard.getServerKey()));
+    /**
+     * Formats a challenge response as raw credentials.
+     * 
+     * @param challenge
+     *                The challenge response to format.
+     * @param request
+     *                The parent request.
+     * @param httpHeaders
+     *                The current request HTTP headers.
+     * @return The authorization header value.
+     */
+    @SuppressWarnings("deprecation")
+    public static String format(ChallengeResponse challenge, Request request,
+            Series<Parameter> httpHeaders) {
+        String result = null;
+        AuthenticationHelper helper = Engine.getInstance().findHelper(
+                challenge.getScheme(), false, true);
 
-            if (response.getAttributes().containsKey("stale")) {
-                // indicate stale nonce was found in challenge response
-                parameters.add("stale", "true");
+        if (helper != null) {
+            result = helper.format(challenge, request, httpHeaders);
+        } else {
+            throw new IllegalArgumentException("Challenge scheme "
+                    + challenge.getScheme()
+                    + " not supported by the Restlet engine.");
+        }
+
+        return result;
+    }
+
+    /**
+     * Parsed the parameters of a credientials string and updates the series of
+     * parameters.
+     * 
+     * @param paramString
+     *                The parameters string to parse.
+     * @param parameters
+     *                The series to update.
+     */
+    public static void parseParameters(String paramString,
+            Series<Parameter> parameters) {
+        Matcher matcher = PATTERN_RFC_2617.matcher(paramString);
+
+        while (matcher.find() && matcher.groupCount() == 2) {
+            parameters.add(matcher.group(1), matcher.group(2));
+        }
+    }
+
+    /**
+     * Parses an authenticate header into a challenge request.
+     * 
+     * @param header
+     *                The HTTP header value to parse.
+     * @return The parsed challenge request.
+     */
+    public static ChallengeRequest parseRequest(String header) {
+        ChallengeRequest result = null;
+
+        if (header != null) {
+            int space = header.indexOf(' ');
+
+            if (space != -1) {
+                String scheme = header.substring(0, space);
+                result = new ChallengeRequest(new ChallengeScheme("HTTP_"
+                        + scheme, scheme), null);
+
+                String rest = header.substring(space + 1);
+                parseParameters(rest, result.getParameters());
+                
+                result.setRealm(result.getParameters().getFirstValue("realm"));
             }
         }
+
+        // Give a chance to the authentication helper to do further parsing
+        AuthenticationHelper helper = Engine.getInstance().findHelper(
+                result.getScheme(), false, true);
+
+        if (helper != null) {
+            helper.parseRequest(result, header);
+        } else {
+            throw new IllegalArgumentException("Challenge scheme "
+                    + result.getScheme()
+                    + " not supported by the Restlet engine.");
+        }
+
+        return result;
+    }
+
+    /**
+     * Parses an authorization header into a challenge response.
+     * 
+     * @param request
+     *                The request.
+     * @param logger
+     *                The logger to use.
+     * @param header
+     *                The header value to parse.
+     * @return The parsed challenge response.
+     */
+    public static ChallengeResponse parseResponse(Request request,
+            Logger logger, String header) {
+        ChallengeResponse result = null;
+
+        if (header != null) {
+            int space = header.indexOf(' ');
+
+            if (space != -1) {
+                String scheme = header.substring(0, space);
+                String credentials = header.substring(space + 1);
+                result = new ChallengeResponse(new ChallengeScheme("HTTP_"
+                        + scheme, scheme), credentials);
+
+                // Give a chance to the authentication helper to do further
+                // parsing
+                AuthenticationHelper helper = Engine.getInstance().findHelper(
+                        result.getScheme(), false, true);
+
+                if (helper != null) {
+                    helper.parseResponse(result, request, logger, header);
+                } else {
+                    throw new IllegalArgumentException("Challenge scheme "
+                            + result.getScheme()
+                            + " not supported by the Restlet engine.");
+                }
+            }
+        }
+
+        return result;
     }
 
 }

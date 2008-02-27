@@ -18,16 +18,19 @@
 
 package com.noelios.restlet.test;
 
+import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeResponse;
+
 import junit.framework.TestCase;
 
-import com.noelios.restlet.util.SecurityUtils;
+import com.noelios.restlet.util.AuthenticationUtils;
 
 /**
  * Unit tests for the SecurityData related classes.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class SecurityTestCase extends TestCase {
+public class AuthenticationTestCase extends TestCase {
     /**
      * Tests the cookies parsing.
      */
@@ -35,22 +38,27 @@ public class SecurityTestCase extends TestCase {
         String authenticate1 = "Basic realm=\"Restlet tutorial\"";
         String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 
-        assertEquals(authorization1, SecurityUtils.format(SecurityUtils
-                .parseResponse(null, null, authorization1), null, null));
-        assertEquals(authenticate1, SecurityUtils.format(SecurityUtils
-                .parseRequest(authenticate1)));
+        assertEquals(authorization1, AuthenticationUtils.format(
+                AuthenticationUtils.parseResponse(null, null, authorization1),
+                null, null));
+        assertEquals(authenticate1, AuthenticationUtils
+                .format(AuthenticationUtils.parseRequest(authenticate1)));
     }
 
     /**
      * Tests the cookies parsing with Digest authentication.
      */
     public void testParsingDigest() {
-        String authenticate1 = "Digest realm=\"realm\", domain=\"/protected/ /alsoProtected/\", qop=\"auth\", algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
         String authorization1 = "Digest cnonce=\"MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==\",qop=auth,uri=\"/protected/asdass\",username=\"admin\",nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\",response=\"a891ebedebb2046b83a9b7540f4e9554\",nc=00000001";
+        String authenticate1 = "Digest realm=\"realm\", domain=\"/protected/ /alsoProtected/\", qop=\"auth\", algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
 
-        assertEquals(authorization1, SecurityUtils.format(SecurityUtils
-                .parseResponse(null, null, authorization1), null, null));
-        assertEquals(authenticate1, SecurityUtils.format(SecurityUtils
-                .parseRequest(authenticate1)));
+        ChallengeResponse cres = AuthenticationUtils.parseResponse(null, null,
+                authorization1);
+        cres.setCredentials(null);
+        assertEquals(authorization1, AuthenticationUtils.format(cres, null,
+                null));
+
+        ChallengeRequest creq = AuthenticationUtils.parseRequest(authenticate1);
+        assertEquals(authenticate1, AuthenticationUtils.format(creq));
     }
 }

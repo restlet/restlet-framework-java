@@ -38,6 +38,7 @@ import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Guard;
 import org.restlet.Server;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Cookie;
@@ -58,6 +59,11 @@ import org.restlet.util.Helper;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.application.ApplicationHelper;
+import com.noelios.restlet.authentication.AuthenticationHelper;
+import com.noelios.restlet.authentication.HttpAmazonS3Helper;
+import com.noelios.restlet.authentication.HttpBasicHelper;
+import com.noelios.restlet.authentication.HttpDigestHelper;
+import com.noelios.restlet.authentication.SmtpPlainHelper;
 import com.noelios.restlet.component.ComponentHelper;
 import com.noelios.restlet.http.ContentType;
 import com.noelios.restlet.http.HttpClientCall;
@@ -65,11 +71,15 @@ import com.noelios.restlet.http.HttpClientConverter;
 import com.noelios.restlet.http.HttpServerConverter;
 import com.noelios.restlet.http.StreamClientHelper;
 import com.noelios.restlet.http.StreamServerHelper;
+import com.noelios.restlet.local.ClapClientHelper;
 import com.noelios.restlet.local.DirectoryResource;
+import com.noelios.restlet.local.FileClientHelper;
+import com.noelios.restlet.local.WarClientHelper;
 import com.noelios.restlet.util.AuthenticationUtils;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.FormUtils;
+import com.noelios.restlet.util.SecurityUtils;
 
 /**
  * Restlet factory supported by the engine.
@@ -88,6 +98,15 @@ public class Engine extends org.restlet.util.Engine {
     /** Complete version header. */
     public static final String VERSION_HEADER = "Noelios-Restlet-Engine/"
             + VERSION;
+
+    /**
+     * Returns the registered Noelios Restlet engine.
+     * 
+     * @return The registered Noelios Restlet engine.
+     */
+    public static Engine getInstance() {
+        return (Engine) org.restlet.util.Engine.getInstance();
+    }
 
     /**
      * Parses the "java.version" system property and returns the first digit of
@@ -176,6 +195,9 @@ public class Engine extends org.restlet.util.Engine {
         return result;
     }
 
+    /** List of available authentication helpers. */
+    private volatile List<AuthenticationHelper> registeredAuthentications;
+
     /** List of available client connectors. */
     private volatile List<ConnectorHelper> registeredClients;
 
@@ -192,15 +214,17 @@ public class Engine extends org.restlet.util.Engine {
     /**
      * Constructor.
      * 
-     * @param discoverConnectors
-     *                True if connectors should be automatically discovered.
+     * @param discoverHelpers
+     *                True if helpers should be automatically discovered.
      */
-    public Engine(boolean discoverConnectors) {
+    public Engine(boolean discoverHelpers) {
         this.registeredClients = new CopyOnWriteArrayList<ConnectorHelper>();
         this.registeredServers = new CopyOnWriteArrayList<ConnectorHelper>();
+        this.registeredAuthentications = new CopyOnWriteArrayList<AuthenticationHelper>();
 
-        if (discoverConnectors) {
+        if (discoverHelpers) {
             discoverConnectors();
+            discoverAuthentications();
         }
     }
 
@@ -364,13 +388,29 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
+     * Discovers the authentication helpers and register the default helpers.
+     */
+    private void discoverAuthentications() {
+        // Find the factory class name
+        ClassLoader classLoader = org.restlet.util.Engine.getClassLoader();
+
+        discoverHelpers(classLoader,
+                "META-INF/services/com.noelios.restlet.AuthenticationHelper",
+                getRegisteredAuthentications(), null);
+
+        // Register the default helpers that will be used if no
+        // other helper has been found
+        registerDefaultAuthentications();
+    }
+
+    /**
      * Discovers client connectors in the classpath.
      * 
      * @param classLoader
      *                Classloader to search.
      */
     private void discoverClientConnectors(ClassLoader classLoader) {
-        discoverConnectors(classLoader,
+        discoverHelpers(classLoader,
                 "META-INF/services/com.noelios.restlet.ClientHelper",
                 getRegisteredClients(), Client.class);
     }
@@ -395,21 +435,21 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
-     * Looks for connector helpers in the classpath and add them to
-     * {@code connectors}.
+     * Looks for pluggable helpers in the classpath and add them to the current
+     * list.
      * 
      * @param classLoader
      *                Classloader to search.
      * @param descriptor
      *                The descriptor location to parse.
-     * @param connectors
-     *                The list of connectors to update.
+     * @param helpers
+     *                The list of helpers to update.
      * @param constructorClass
      *                The constructor parameter class to look for.
      */
     @SuppressWarnings("unchecked")
-    private void discoverConnectors(ClassLoader classLoader, String descriptor,
-            List<ConnectorHelper> connectors, Class<?> constructorClass) {
+    private void discoverHelpers(ClassLoader classLoader, String descriptor,
+            List helpers, Class constructorClass) {
         try {
             for (Enumeration<URL> configUrls = classLoader
                     .getResources(descriptor); configUrls.hasMoreElements();) {
@@ -427,11 +467,15 @@ public class Engine extends org.restlet.util.Engine {
                         if ((provider != null) && (!provider.equals(""))) {
                             // Instantiate the factory
                             try {
-                                Class<? extends ConnectorHelper> providerClass = (Class<? extends ConnectorHelper>) Class
-                                        .forName(provider);
-                                connectors.add(providerClass.getConstructor(
-                                        constructorClass).newInstance(
-                                        constructorClass.cast(null)));
+                                Class providerClass = Class.forName(provider);
+
+                                if (constructorClass == null) {
+                                    helpers.add(providerClass.newInstance());
+                                } else {
+                                    helpers.add(providerClass.getConstructor(
+                                            constructorClass).newInstance(
+                                            constructorClass.cast(null)));
+                                }
                             } catch (Exception e) {
                                 logger.log(Level.SEVERE,
                                         "Unable to register the connector "
@@ -463,9 +507,39 @@ public class Engine extends org.restlet.util.Engine {
      *                Classloader to search.
      */
     private void discoverServerConnectors(ClassLoader classLoader) {
-        discoverConnectors(classLoader,
+        discoverHelpers(classLoader,
                 "META-INF/services/com.noelios.restlet.ServerHelper",
                 getRegisteredServers(), Server.class);
+    }
+
+    /**
+     * Finds the authentication helper supporting the given scheme.
+     * 
+     * @param challengeScheme
+     *                The challenge scheme to match.
+     * @param clientSide
+     *                Indicates if client side support is required.
+     * @param serverSide
+     *                Indicates if server side support is required.
+     * @return The authentication helper or null.
+     */
+    public AuthenticationHelper findHelper(ChallengeScheme challengeScheme,
+            boolean clientSide, boolean serverSide) {
+        AuthenticationHelper result = null;
+        List<AuthenticationHelper> helpers = getRegisteredAuthentications();
+        AuthenticationHelper current;
+
+        for (int i = 0; (result == null) && (i < helpers.size()); i++) {
+            current = helpers.get(i);
+
+            if (current.getChallengeScheme().equals(challengeScheme)
+                    && ((clientSide && current.isClientSide()) || !clientSide)
+                    && ((serverSide && current.isServerSide()) || !serverSide)) {
+                result = helpers.get(i);
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -696,6 +770,15 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
+     * Returns the list of available authentication helpers.
+     * 
+     * @return The list of available authentication helpers.
+     */
+    public List<AuthenticationHelper> getRegisteredAuthentications() {
+        return this.registeredAuthentications;
+    }
+
+    /**
      * Returns the list of available client connectors.
      * 
      * @return The list of available client connectors.
@@ -899,26 +982,51 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
-     * Register a client helper
+     * Registers an authentication helper.
      * 
      * @param helper
+     *                The authentication helper to register.
+     */
+    public void registerAuthentication(AuthenticationHelper helper) {
+        getRegisteredAuthentications().add(helper);
+    }
+
+    /**
+     * Registers a client helper.
+     * 
+     * @param helper
+     *                The client helper to register.
      */
     public void registerClientHelper(ConnectorHelper helper) {
         getRegisteredClients().add(helper);
     }
 
     /**
-     * Register the default client and server connectors
+     * Registers the default authentication helpers.
      */
-    private void registerDefaultConnectors() {
-        getRegisteredClients().add(new StreamClientHelper(null));
-        getRegisteredServers().add(new StreamServerHelper(null));
+    private void registerDefaultAuthentications() {
+        registerAuthentication(new HttpAmazonS3Helper());
+        registerAuthentication(new HttpBasicHelper());
+        registerAuthentication(new HttpDigestHelper());
+        registerAuthentication(new SmtpPlainHelper());
     }
 
     /**
-     * Register a server helper
+     * Registers the default client and server connectors.
+     */
+    private void registerDefaultConnectors() {
+        registerClientHelper(new StreamClientHelper(null));
+        registerClientHelper(new ClapClientHelper(null));
+        registerClientHelper(new FileClientHelper(null));
+        registerClientHelper(new WarClientHelper(null));
+        registerServerHelper(new StreamServerHelper(null));
+    }
+
+    /**
+     * Registers a server helper.
      * 
      * @param helper
+     *                The server helper to register.
      */
     public void registerServerHelper(ConnectorHelper helper) {
         getRegisteredServers().add(helper);
@@ -948,7 +1056,7 @@ public class Engine extends org.restlet.util.Engine {
 
     @Override
     public String toMd5(String target) {
-        return AuthenticationUtils.toMd5(target);
+        return SecurityUtils.toMd5(target);
     }
 
 }

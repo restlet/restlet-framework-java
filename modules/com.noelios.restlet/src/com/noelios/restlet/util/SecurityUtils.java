@@ -20,30 +20,11 @@ package com.noelios.restlet.util;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
-import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Form;
-import org.restlet.data.Method;
-import org.restlet.data.Parameter;
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.util.DateUtils;
-import org.restlet.util.Series;
-
-import com.noelios.restlet.Engine;
-import com.noelios.restlet.http.HttpConstants;
 
 /**
  * Security data manipulation utilities.
@@ -52,350 +33,30 @@ import com.noelios.restlet.http.HttpConstants;
  */
 public class SecurityUtils {
     /**
-     * Formats a challenge request as a HTTP header value.
-     * 
-     * @param request
-     *                The challenge request to format.
-     * @return The authenticate header value.
+     * General regex pattern to extract comma separated name-value components.
+     * This pattern captures one name and value per match(), and is repeatedly
+     * applied to the input string to extract all components. Must handle both
+     * quoted and unquoted values as RFC2617 isn't consistent in this respect.
+     * Pattern is immutable and thread-safe so reuse one static instance.
      */
-    public static String format(ChallengeRequest request) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(request.getScheme().getTechnicalName());
-
-        if (request.getRealm() != null) {
-            sb.append(" realm=\"").append(request.getRealm()).append('"');
-        }
-
-        if (request.getScheme().equals(ChallengeScheme.HTTP_DIGEST)) {
-            Series<Parameter> parameters = request.getParameters();
-            sb.append(", domain=\"").append(parameters.getFirstValue("domain"))
-                    .append('"');
-            sb.append(", qop=\"auth\"");
-            sb.append(", algorithm=MD5"); // leave this value unquoted as per
-            // RFC-2617
-            sb.append(", nonce=\"").append(parameters.getFirstValue("nonce"))
-                    .append('"');
-
-            if (parameters.getFirst("stale") != null) {
-                sb.append(", stale=\"true\"");
-            }
-        }
-        return sb.toString();
-    }
+    private static final char[] HEXDIGITS = "0123456789abcdef".toCharArray();
 
     /**
-     * Formats a challenge response as raw credentials.
+     * Generates a nonce as recommended in section 3.2.1 of RFC-2617, but
+     * without the ETag field. The format is: <code><pre>
+     * Base64.encodeBytes(currentTimeMS + &quot;:&quot;
+     *         + md5String(currentTimeMS + &quot;:&quot; + secretKey))
+     * </pre></code>
      * 
-     * @param challenge
-     *                The challenge response to format.
-     * @param request
-     *                The parent request.
-     * @param httpHeaders
-     *                The current request HTTP headers.
-     * @return The authorization header value.
+     * @param secretKey
+     *                a secret value known only to the creator of the nonce.
+     *                It's inserted into the nonce, and can be used later to
+     *                validate the nonce.
      */
-    @SuppressWarnings("deprecation")
-    public static String format(ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(challenge.getScheme().getTechnicalName()).append(' ');
-
-        if (challenge.getCredentials() != null) {
-            sb.append(challenge.getCredentials());
-        } else if (challenge.getScheme().equals(ChallengeScheme.HTTP_AWS)
-                || challenge.getScheme().equals(ChallengeScheme.HTTP_AWS_S3)) {
-            // Setup the method name
-            String methodName = request.getMethod().getName();
-
-            // Setup the Date header
-            String date = "";
-
-            if (httpHeaders.getFirstValue("X-Amz-Date", true) == null) {
-                // X-Amz-Date header didn't override the standard Date header
-                date = httpHeaders.getFirstValue(HttpConstants.HEADER_DATE,
-                        true);
-                if (date == null) {
-                    // Add a fresh Date header
-                    date = DateUtils.format(new Date(),
-                            DateUtils.FORMAT_RFC_1123.get(0));
-                    httpHeaders.add(HttpConstants.HEADER_DATE, date);
-                }
-            }
-
-            // Setup the ContentType header
-            String contentMd5 = httpHeaders.getFirstValue(
-                    HttpConstants.HEADER_CONTENT_MD5, true);
-            if (contentMd5 == null)
-                contentMd5 = "";
-
-            // Setup the ContentType header
-            String contentType = httpHeaders.getFirstValue(
-                    HttpConstants.HEADER_CONTENT_TYPE, true);
-            if (contentType == null) {
-                boolean applyPatch = false;
-
-                // This patch seems to apply to Sun JVM only.
-                String jvmVendor = System.getProperty("java.vm.vendor");
-                if (jvmVendor != null
-                        && (jvmVendor.toLowerCase()).startsWith("sun")) {
-                    int majorVersionNumber = Engine.getJavaMajorVersion();
-                    int minorVersionNumber = Engine.getJavaMinorVersion();
-
-                    if (majorVersionNumber == 1) {
-                        if (minorVersionNumber < 5) {
-                            applyPatch = true;
-                        } else if (minorVersionNumber == 5) {
-                            // Sun fixed the bug in update 10
-                            applyPatch = (Engine.getJavaUpdateVersion() < 10);
-                        }
-                    }
-                }
-
-                if (applyPatch && !request.getMethod().equals(Method.PUT)) {
-                    contentType = "application/x-www-form-urlencoded";
-                } else {
-                    contentType = "";
-                }
-            }
-
-            // Setup the canonicalized AmzHeaders
-            String canonicalizedAmzHeaders = getCanonicalizedAmzHeaders(httpHeaders);
-
-            // Setup the canonicalized resource name
-            String canonicalizedResource = getCanonicalizedResourceName(request
-                    .getResourceRef());
-
-            // Setup the message part
-            StringBuilder rest = new StringBuilder();
-            rest.append(methodName).append('\n').append(contentMd5)
-                    .append('\n').append(contentType).append('\n').append(date)
-                    .append('\n').append(canonicalizedAmzHeaders).append(
-                            canonicalizedResource);
-
-            // Append the AWS credentials
-            sb.append(challenge.getIdentifier()).append(':').append(
-                    Base64.encode(toHMac(rest.toString(), new String(challenge
-                            .getSecret())), false));
-        } else if (challenge.getScheme().equals(ChallengeScheme.HTTP_BASIC)) {
-            try {
-                String credentials = challenge.getIdentifier() + ':'
-                        + new String(challenge.getSecret());
-                sb
-                        .append(Base64.encode(credentials.getBytes("US-ASCII"),
-                                false));
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(
-                        "Unsupported encoding, unable to encode credentials");
-            }
-        } else if (challenge.getScheme().equals(ChallengeScheme.HTTP_DIGEST)) {
-            Series<Parameter> params = challenge.getParameters();
-
-            for (Parameter param : params) {
-                sb.append(param.getName()).append('=');
-
-                if (param.getName().equals("qop")
-                        || param.getName().equals("algorithm")
-                        || param.getName().equals("nc")) {
-                    // These values are left unquoted as per RC2617
-                    sb.append(param.getValue()).append(",");
-                } else {
-                    sb.append('"').append(param.getValue()).append('"').append(
-                            ",");
-                }
-            }
-
-            if (!params.isEmpty()) {
-                sb.deleteCharAt(sb.length() - 1);
-            }
-        } else if (challenge.getScheme().equals(ChallengeScheme.SMTP_PLAIN)) {
-            try {
-                String credentials = "^@" + challenge.getIdentifier() + "^@"
-                        + new String(challenge.getSecret());
-                sb
-                        .append(Base64.encode(credentials.getBytes("US-ASCII"),
-                                false));
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(
-                        "Unsupported encoding, unable to encode credentials");
-            }
-        } else {
-            throw new IllegalArgumentException(
-                    "Challenge scheme not supported by this implementation, or credentials not set for custom schemes.");
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Returns the canonicalized AMZ headers.
-     * 
-     * @param requestHeaders
-     *                The list of request headers.
-     * @return The canonicalized AMZ headers.
-     */
-    private static String getCanonicalizedAmzHeaders(
-            Series<Parameter> requestHeaders) {
-        // Filter out all the AMZ headers required for AWS authentication
-        SortedMap<String, String> amzHeaders = new TreeMap<String, String>();
-        String headerName;
-        for (Parameter param : requestHeaders) {
-            headerName = param.getName().toLowerCase();
-            if (headerName.startsWith("x-amz-")) {
-                if (!amzHeaders.containsKey(headerName)) {
-                    amzHeaders.put(headerName, requestHeaders
-                            .getValues(headerName));
-                }
-            }
-        }
-
-        // Concatenate all AMZ headers
-        StringBuilder sb = new StringBuilder();
-        for (Entry<String, String> entry : amzHeaders.entrySet()) {
-            sb.append(entry.getKey()).append(':').append(entry.getValue())
-                    .append("\n");
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Returns the canonicalized resource name.
-     * 
-     * @param resourceRef
-     *                The resource reference.
-     * @return The canonicalized resource name.
-     */
-    private static String getCanonicalizedResourceName(Reference resourceRef) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(resourceRef.getPath());
-
-        Form query = resourceRef.getQueryAsForm();
-        if (query.getFirst("acl", true) != null) {
-            sb.append("?acl");
-        } else if (query.getFirst("torrent", true) != null) {
-            sb.append("?torrent");
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * Parses an authenticate header into a challenge request.
-     * 
-     * @param header
-     *                The HTTP header value to parse.
-     * @return The parsed challenge request.
-     */
-    public static ChallengeRequest parseRequest(String header) {
-        ChallengeRequest result = null;
-
-        if (header != null) {
-            int space = header.indexOf(' ');
-
-            if (space != -1) {
-                String scheme = header.substring(0, space);
-                String realm = header.substring(space + 1);
-                int equals = realm.indexOf('=');
-                String realmValue = realm.substring(equals + 2,
-                        realm.length() - 1);
-                result = new ChallengeRequest(new ChallengeScheme("HTTP_"
-                        + scheme, scheme), realmValue);
-
-                if (result.getScheme().equals(ChallengeScheme.HTTP_DIGEST)) {
-                    Series<Parameter> components = new Form();
-                    AuthenticationUtils.parseParameters(realm, components);
-
-                    for (Parameter param : components) {
-                        result.getParameters().add(param.getName(),
-                                param.getValue());
-                    }
-
-                    result.setRealm(components.getFirstValue("realm"));
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Parses an authorization header into a challenge response.
-     * 
-     * @param request
-     *                The request.
-     * @param logger
-     *                The logger to use.
-     * @param header
-     *                The header value to parse.
-     * @return The parsed challenge response.
-     */
-    public static ChallengeResponse parseResponse(Request request,
-            Logger logger, String header) {
-        ChallengeResponse result = null;
-
-        if (header != null) {
-            int space = header.indexOf(' ');
-
-            if (space != -1) {
-                String scheme = header.substring(0, space);
-                String credentials = header.substring(space + 1);
-                result = new ChallengeResponse(new ChallengeScheme("HTTP_"
-                        + scheme, scheme), credentials);
-
-                if (result.getScheme().equals(ChallengeScheme.HTTP_BASIC)) {
-                    try {
-                        byte[] credentialsEncoded = Base64.decode(result
-                                .getCredentials());
-                        if (credentialsEncoded == null) {
-                            logger.warning("Cannot decode credentials: "
-                                    + result.getCredentials());
-                            return null;
-                        }
-
-                        credentials = new String(credentialsEncoded, "US-ASCII");
-                        int separator = credentials.indexOf(':');
-
-                        if (separator == -1) {
-                            // Log the blocking
-                            logger
-                                    .warning("Invalid credentials given by client with IP: "
-                                            + ((request != null) ? request
-                                                    .getClientInfo()
-                                                    .getAddress() : "?"));
-                        } else {
-                            result.setIdentifier(credentials.substring(0,
-                                    separator));
-                            result.setSecret(credentials
-                                    .substring(separator + 1));
-
-                            // Log the authentication result
-                            if (logger != null) {
-                                logger
-                                        .info("Basic HTTP authentication succeeded: identifier="
-                                                + result.getIdentifier() + ".");
-                            }
-                        }
-                    } catch (UnsupportedEncodingException e) {
-                        logger.log(Level.WARNING, "Unsupported encoding error",
-                                e);
-                    }
-                } else if (result.getScheme().equals(
-                        ChallengeScheme.HTTP_DIGEST)) {
-                    AuthenticationUtils.parseParameters(credentials, result
-                            .getParameters());
-                } else {
-                    // Authentication impossible, scheme not supported
-                    logger
-                            .log(
-                                    Level.FINE,
-                                    "Authentication impossible: scheme not supported: "
-                                            + result.getScheme().getName()
-                                            + ". Please override the Guard.authenticate method.");
-                }
-            }
-        }
-
-        return result;
+    public static String makeNonce(String secretKey) {
+        long currentTimeMS = System.currentTimeMillis();
+        return Base64.encode((currentTimeMS + ":" + toMd5(currentTimeMS + ":"
+                + secretKey)).getBytes(), true);
     }
 
     /**
@@ -433,4 +94,57 @@ public class SecurityUtils {
 
         return result;
     }
+
+    /**
+     * Returns the MD5 digest of the target string. Target is decoded to bytes
+     * using the US-ASCII charset. The returned hexidecimal String always
+     * contains 32 lowercase alphanumeric characters. For example, if target is
+     * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
+     * 
+     * @param target
+     *                The string to encode.
+     * @return The MD5 digest of the target string.
+     */
+    public static String toMd5(String target) {
+        try {
+            return toMd5(target, "US-ASCII");
+        } catch (UnsupportedEncodingException uee) {
+            // Unlikely, US-ASCII comes with every JVM
+            throw new RuntimeException(
+                    "US-ASCII is an unsupported encoding, unable to compute MD5");
+        }
+    }
+
+    /**
+     * Returns the MD5 digest of target string. Target is decoded to bytes using
+     * the named charset. The returned hexidecimal String always contains 32
+     * lowercase alphanumeric characters. For example, if target is
+     * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
+     * 
+     * @param target
+     *                The string to encode.
+     * @param charsetName
+     *                The character set.
+     * @return The MD5 digest of the target string.
+     * 
+     * @throws UnsupportedEncodingException
+     */
+    public static String toMd5(String target, String charsetName)
+            throws UnsupportedEncodingException {
+        try {
+            byte[] md5 = MessageDigest.getInstance("MD5").digest(
+                    target.getBytes(charsetName));
+            char[] md5Chars = new char[32];
+            int i = 0;
+            for (byte b : md5) {
+                md5Chars[i++] = HEXDIGITS[(b >> 4) & 0xF];
+                md5Chars[i++] = HEXDIGITS[b & 0xF];
+            }
+            return new String(md5Chars);
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new RuntimeException(
+                    "No MD5 algorithm, unable to compute MD5");
+        }
+    }
+
 }

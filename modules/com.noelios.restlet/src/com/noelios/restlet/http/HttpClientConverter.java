@@ -40,11 +40,11 @@ import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.Engine;
+import com.noelios.restlet.util.AuthenticationUtils;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.HeaderReader;
 import com.noelios.restlet.util.PreferenceUtils;
-import com.noelios.restlet.util.SecurityUtils;
 
 /**
  * Converter of high-level uniform calls into low-level HTTP client calls.
@@ -347,7 +347,7 @@ public class HttpClientConverter extends HttpConverter {
                     .getChallengeResponse();
             if (challengeResponse != null) {
                 requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
-                        SecurityUtils.format(challengeResponse, request,
+                        AuthenticationUtils.format(challengeResponse, request,
                                 requestHeaders));
             }
         }
@@ -416,8 +416,8 @@ public class HttpClientConverter extends HttpConverter {
                 }
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_WWW_AUTHENTICATE)) {
-                ChallengeRequest request = SecurityUtils.parseRequest(header
-                        .getValue());
+                ChallengeRequest request = AuthenticationUtils
+                        .parseRequest(header.getValue());
                 response.setChallengeRequest(request);
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_SERVER)) {

@@ -36,10 +36,10 @@ import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 
+import com.noelios.restlet.util.AuthenticationUtils;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.HeaderReader;
 import com.noelios.restlet.util.PreferenceUtils;
-import com.noelios.restlet.util.SecurityUtils;
 
 /**
  * Request wrapper for server HTTP calls.
@@ -229,12 +229,12 @@ public class HttpRequest extends Request {
             for (Parameter header : getHttpCall().getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_IF_MODIFIED_SINCE)) {
-                    ifModifiedSince = HttpCall.parseDate(header
-                            .getValue(), false);
+                    ifModifiedSince = HttpCall.parseDate(header.getValue(),
+                            false);
                 } else if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_IF_UNMODIFIED_SINCE)) {
-                    ifUnmodifiedSince = HttpCall.parseDate(header
-                            .getValue(), false);
+                    ifUnmodifiedSince = HttpCall.parseDate(header.getValue(),
+                            false);
                 }
             }
 
@@ -403,8 +403,8 @@ public class HttpRequest extends Request {
                     HttpConstants.HEADER_AUTHORIZATION);
 
             // Set the challenge response
-            result = SecurityUtils.parseResponse(this,
-                    this.context.getLogger(), authorization);
+            result = AuthenticationUtils.parseResponse(this, this.context
+                    .getLogger(), authorization);
             setChallengeResponse(result);
             this.securityAdded = true;
         }

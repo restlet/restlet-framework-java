@@ -40,8 +40,8 @@ import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
+import com.noelios.restlet.util.AuthenticationUtils;
 import com.noelios.restlet.util.CookieUtils;
-import com.noelios.restlet.util.SecurityUtils;
 
 /**
  * Converter of low-level HTTP server calls into high-level uniform calls.
@@ -107,9 +107,10 @@ public class HttpServerConverter extends HttpConverter {
             }
 
             if (entity.getModificationDate() != null) {
-                responseHeaders.add(HttpConstants.HEADER_LAST_MODIFIED,
-                        HttpCall.formatDate(entity.getModificationDate(),
-                                false));
+                responseHeaders
+                        .add(HttpConstants.HEADER_LAST_MODIFIED,
+                                HttpCall.formatDate(entity
+                                        .getModificationDate(), false));
             }
 
             if (entity.getTag() != null) {
@@ -182,7 +183,7 @@ public class HttpServerConverter extends HttpConverter {
         // Set the security data
         if (response.getChallengeRequest() != null) {
             responseHeaders.add(HttpConstants.HEADER_WWW_AUTHENTICATE,
-                    SecurityUtils.format(response.getChallengeRequest()));
+                    AuthenticationUtils.format(response.getChallengeRequest()));
         }
 
         // Send the Vary header only to none-MSIE user agents as MSIE seems
