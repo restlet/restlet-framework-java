@@ -80,6 +80,7 @@ import org.restlet.ext.jaxrs.wrappers.ResourceMethodOrLocator;
 import org.restlet.ext.jaxrs.wrappers.ResourceObject;
 import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
 import org.restlet.ext.jaxrs.wrappers.SubResourceLocator;
+import org.restlet.ext.jaxrs.wrappers.WrapperFactory;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
@@ -122,13 +123,15 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     private MessageBodyWriterSet messageBodyWriters = new MessageBodyWriterSet();
 
     private Set<ContextResolver<?>> contextResolvers = new HashSet<ContextResolver<?>>();
+    
+    private WrapperFactory wrapperFactory;
 
     /**
      * Creates a new JaxRsRouter with the given Context.
      * 
      * @param context
      *                the context from the parent, see
-     *                {@link Restlet#Restlet(Context)}
+     *                {@link Restlet#Restlet(Context)}.
      * @param appConfig
      *                Contains the classes to load as root resource classes and
      *                as providers.
@@ -143,6 +146,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     public JaxRsRouter(Context context, ApplicationConfig appConfig,
             AccessControl accessControl) throws IllegalArgumentException {
         super(context);
+        this.wrapperFactory = new WrapperFactory(getContext().getLogger());
         this.loadDefaultProviders();
         this.attach(appConfig);
         this.setAccessControl(accessControl);
@@ -193,7 +197,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     @Deprecated
     public void attach(Class<?> rootResourceClass)
             throws IllegalArgumentException {
-        RootResourceClass newRrc = new RootResourceClass(rootResourceClass);
+        RootResourceClass newRrc = wrapperFactory.getRootResourceClass(rootResourceClass);
         PathRegExp uriTempl = newRrc.getPathRegExp();
         for (RootResourceClass rrc : this.rootResourceClasses) {
             if (rrc.getJaxRsClass().equals(rootResourceClass))
@@ -934,7 +938,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * @param entity
      *                the entity to convert.
      * @param resourceMethod
-     *                The {@link ResourceMethod} created the entity.
+     *                The {@link ResourceMethod} created the entity. Could be
+     *                null, if an exception is handled, e.g. a
+     *                {@link WebApplicationException}.
      * @param callContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
@@ -958,8 +964,12 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         if (entity == null)
             return null;
         Class<? extends Object> entityClass = entity.getClass();
-        Type genericReturnType = resourceMethod.getGenericReturnType();
-        Annotation[] methodAnnotations = resourceMethod.getAnnotations();
+        Type genericReturnType = null;
+        Annotation[] methodAnnotations = null;
+        if (resourceMethod != null) { // is default
+            genericReturnType = resourceMethod.getGenericReturnType();
+            methodAnnotations = resourceMethod.getAnnotations();
+        }
         MessageBodyWriterSet mbws = this.messageBodyWriters.subSet(entityClass,
                 genericReturnType, methodAnnotations);
         SortedMetadata<MediaType> accMediaTypes = callContext
@@ -984,7 +994,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             mediaType = determineMediaType79(possMediaTypes, callContext);
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
                 callContext.getResponse(), jaxRsRespHeaders, getLogger());
-        // TESTEN Response Headers for MessageBodyWriter is not null yet
         return new JaxRsOutputRepresentation(entity, genericReturnType,
                 mediaType, methodAnnotations, mbw, httpResponseHeaders);
     }
@@ -1172,5 +1181,15 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     @Deprecated
     public MessageBodyWriterSet getMessageBodyWriters() {
         return this.messageBodyWriters;
+    }
+
+    /**
+     * for internal use only
+     * 
+     * @see org.restlet.ext.jaxrs.wrappers.HiddenJaxRsRouter#getWrapperFactory()
+     */
+    @Deprecated
+    public WrapperFactory getWrapperFactory() {
+        return wrapperFactory;
     }
 }

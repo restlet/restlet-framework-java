@@ -41,4 +41,10 @@ public interface HiddenJaxRsRouter {
      * @return the {@link MessageBodyWriterSet} from the {@link JaxRsRouter}.
      */
     public MessageBodyWriterSet getMessageBodyWriters();
+    
+    /**
+     * Returns the {@link WrapperFactory} for this JaxRsRouter.
+     * @return the {@link WrapperFactory} for this JaxRsRouter.
+     */
+    public WrapperFactory getWrapperFactory();
 }

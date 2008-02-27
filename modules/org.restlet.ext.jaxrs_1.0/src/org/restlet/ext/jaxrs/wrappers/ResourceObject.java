@@ -40,24 +40,12 @@ public class ResourceObject {
      * 
      * @param jaxRsResourceObject
      *                the resource object
-     */
-    public ResourceObject(Object jaxRsResourceObject) {
-        this(jaxRsResourceObject, new ResourceClass(jaxRsResourceObject
-                .getClass()));
-    }
-
-    /**
-     * Creates a new wrapper for a resource object
-     * 
-     * @param jaxRsResourceObject
-     *                the resource object
      * @param resourceClass
      *                the wrapped resource class
      * @param logger
      *                The logger to log unexpected Exceptions.
      */
-    public ResourceObject(Object jaxRsResourceObject,
-            ResourceClass resourceClass) {
+    ResourceObject(Object jaxRsResourceObject, ResourceClass resourceClass) {
         if (jaxRsResourceObject == null)
             throw new IllegalArgumentException(
                     "The JAX-RS resource object must not be null");

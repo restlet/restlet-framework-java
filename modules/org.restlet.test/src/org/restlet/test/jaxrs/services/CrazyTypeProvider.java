@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
 
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
@@ -55,13 +56,32 @@ public class CrazyTypeProvider implements MessageBodyWriter<Person> {
      * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Type,
      *      Annotation[], MediaType, MultivaluedMap, OutputStream)
      */
-    public void writeTo(Person person, Type genericType, Annotation[] annotations,
-            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+    public void writeTo(Person person, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> responseHeaders,
             OutputStream entityStream) throws IOException {
         entityStream.write(person.getFirstname().getBytes());
         entityStream.write(' ');
         entityStream.write(person.getLastname().getBytes());
         entityStream.write(" is crazy.".getBytes());
-        // TESTEN request somethin from the headers.
+        Object h1v = responseHeaders.getFirst("h1");
+        if (h1v != null) {
+            entityStream.write("\nHeader value for name h1 is ".getBytes());
+            entityStream.write(h1v.toString().getBytes());
+        } else {
+            entityStream.write("\nNo header value for name h1".getBytes());
+        }
+        Object contentType = responseHeaders.getFirst("Content-Type");
+        if (contentType != null) {
+            entityStream.write("\ncontentType is ".getBytes());
+            entityStream.write(contentType.toString().getBytes());
+        } else {
+            entityStream.write("\nNo contentType!".getBytes());
+        }
+        List<Object> contentTypes = responseHeaders.get("Content-Type");
+        for(Object ct : contentTypes) {
+            entityStream.write("\ncontentType List contains ".getBytes());
+            entityStream.write(ct.toString().getBytes());
+        }
     }
 }

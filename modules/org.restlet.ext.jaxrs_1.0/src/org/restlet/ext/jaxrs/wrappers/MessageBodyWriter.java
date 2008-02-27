@@ -83,8 +83,6 @@ public interface MessageBodyWriter<T> {
      * any changes must be made before writing to the output stream since the
      * headers will be flushed prior to writing the response body.
      * 
-     * REQUESTED JSR311: MessageBodyWriter: the response headers MAY BE mutable?
-     * 
      * @param t
      *                the type to write.
      * @param genericType

@@ -15,24 +15,28 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.test.jaxrs.services;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
-import javax.ws.rs.core.Response;
+package org.restlet.test.jaxrs.services.tests;
+
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.test.jaxrs.services.InjectionTestService;
 
 /**
- * @see CrazyTypeProvider
  * @author Stephan Koops
  */
-@Path("ownProviderTest")
-public class OwnProviderTestService {
+public class InjectionTest extends JaxRsTestCase {
 
-    @GET
-    @ProduceMime("application/crazyType")
-    public Response get() {
-        Person person = new Person("abc", "def");
-        return Response.ok(person).header("h1", "h1v").build();
+    private static final Class<?> SERVICE_CLASS = InjectionTestService.class;
+
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return SERVICE_CLASS;
+    }
+
+    public void testGet1() {
+        Response response = get();
+        super.sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 }

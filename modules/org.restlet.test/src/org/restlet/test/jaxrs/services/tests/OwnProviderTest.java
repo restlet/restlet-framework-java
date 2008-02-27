@@ -30,6 +30,7 @@ import org.restlet.test.jaxrs.services.CrazyTypeProvider;
 import org.restlet.test.jaxrs.services.OwnProviderTestService;
 
 /**
+ * @see CrazyTypeProvider
  * @author Stephan Koops
  */
 public class OwnProviderTest extends JaxRsTestCase {
@@ -45,7 +46,7 @@ public class OwnProviderTest extends JaxRsTestCase {
         return new ApplicationConfig() {
             @Override
             public Set<Class<?>> getResourceClasses() {
-                return (Set)Util.createSet(getRootResourceClass());
+                return (Set) Util.createSet(getRootResourceClass());
             }
 
             @Override
@@ -58,8 +59,12 @@ public class OwnProviderTest extends JaxRsTestCase {
     @SuppressWarnings("deprecation")
     public void test1() throws Exception {
         Response response = get();
+        super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         MediaType respMediaType = response.getEntity().getMediaType();
         assertEquals(new MediaType("application/crazyType"), respMediaType);
+        String actualEntity = response.getEntity().getText();
+        String expectedEntity = "abc def is crazy.\nHeader value for name h1 is h1v\ncontentType is application/crazyType\ncontentType List contains application/crazyType";
+        assertEquals(expectedEntity, actualEntity);
     }
 }

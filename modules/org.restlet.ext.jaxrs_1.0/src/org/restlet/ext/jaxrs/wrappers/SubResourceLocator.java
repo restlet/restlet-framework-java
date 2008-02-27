@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -104,9 +105,14 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             throw new InstantiateRessourceException(returnType, e);
         }
         if (subResObj == null) {
-            // TESTEN what happens, if sub resource is null? Status 500?
-            // TODO JSR311: what happens, if sub resource is null? Status 500?
+            jaxRsRouter.getLogger().warning("");
+            ResponseBuilder rb = javax.ws.rs.core.Response.serverError();
+            rb.entity("The sub resource object is null. That is not allowed");
+            throw new WebApplicationException(rb.build());
         }
-        return new ResourceObject(subResObj);
+        WrapperFactory wrapperFactory = jaxRsRouter.getWrapperFactory();
+        ResourceClass resourceClass = wrapperFactory.getResourceClass(subResObj
+                .getClass());
+        return new ResourceObject(subResObj, resourceClass);
     }
 }

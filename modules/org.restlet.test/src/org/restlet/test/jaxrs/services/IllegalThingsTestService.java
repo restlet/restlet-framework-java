@@ -15,24 +15,46 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+
 package org.restlet.test.jaxrs.services;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
-import javax.ws.rs.core.Response;
 
 /**
- * @see CrazyTypeProvider
+ * This class contains only data for one media type
+ * 
  * @author Stephan Koops
+ * 
  */
-@Path("ownProviderTest")
-public class OwnProviderTestService {
+@Path("/illegalThingsInternal")
+public class IllegalThingsTestService {
+
+    /**
+     * This sub resource locator returns null; that is not allowed
+     * 
+     * @return
+     */
+    @Path("nullSubResource")
+    public Object getPlainText() {
+        return null;
+    }
 
     @GET
-    @ProduceMime("application/crazyType")
-    public Response get() {
-        Person person = new Person("abc", "def");
-        return Response.ok(person).header("h1", "h1v").build();
+    @Path("protected")
+    protected String getProtected() {
+        return "this method is protected. Is there a warning?";
+    }
+
+    @GET
+    @Path("package")
+    String getPackageVisible() {
+        return "this method is package visible. Is there a warning?";
+    }
+
+    @GET
+    @Path("private")
+    String getPrivateVisible() {
+        return "this method is private visible. Is there a warning?";
     }
 }

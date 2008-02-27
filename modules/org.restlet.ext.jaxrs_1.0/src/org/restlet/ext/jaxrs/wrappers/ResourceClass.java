@@ -19,6 +19,7 @@
 package org.restlet.ext.jaxrs.wrappers;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -120,10 +121,15 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * it is not available for a normal resource class.
      * 
      * @param jaxRsClass
+     * @param logger
+     *                The logger to log warnings, if the class is not valid.
+     * @see WrapperFactory#getResourceClass(Class)
      */
-    public ResourceClass(Class<?> jaxRsClass) {
-        this(jaxRsClass, null);
+    ResourceClass(Class<?> jaxRsClass, Logger logger) {
+        this(jaxRsClass, null, logger);
     }
+
+    // LATER chaching, not new for every resource class creation
 
     /**
      * Creates a new root resource class wrapper.
@@ -132,16 +138,17 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param requirePath
      *                the subclass RootResourceClass must give true here, other
      *                classes must give false
+     * @see WrapperFactory#getResourceClass(Class)
      */
-    protected ResourceClass(Class<?> jaxRsClass, boolean requirePath) {
-        this(jaxRsClass, getPathAnnotation(jaxRsClass, requirePath));
+    ResourceClass(Class<?> jaxRsClass, boolean requirePath, Logger logger) {
+        this(jaxRsClass, getPathAnnotation(jaxRsClass, requirePath), logger);
     }
 
-    private ResourceClass(Class<?> jaxRsClass, Path path) {
+    private ResourceClass(Class<?> jaxRsClass, Path path, Logger logger) {
         super(path);
         this.jaxRsClass = jaxRsClass;
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
-        internalSetSubResourceMethodsAndLocators();
+        internalSetSubResourceMethodsAndLocators(logger);
         initInjectFields();
     }
 
@@ -272,11 +279,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     void injectDependencies(ResourceObject resourceObject,
             CallContext callContext) throws InjectException,
             InstantiateParameterException, WebApplicationException {
-        // TESTEN check, if injection of dependencies is working
         Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
         for (Field contextField : this.injectFieldsContext) {
             Util.inject(jaxRsResObj, contextField, callContext);
         }
+        if (true)
+            return;
+        // not supported, because @*Param are only allowed for parameters.
         for (Field cpf : this.injectFieldsCookieParam) {
             CookieParam headerParam = cpf.getAnnotation(CookieParam.class);
             DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
@@ -417,15 +426,12 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     private static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
 
-    private void internalSetSubResourceMethodsAndLocators() {
+    private void internalSetSubResourceMethodsAndLocators(Logger logger) {
         Collection<ResourceMethodOrLocator> srmls = new ArrayList<ResourceMethodOrLocator>();
         Collection<ResourceMethod> subRsesMeths = new ArrayList<ResourceMethod>();
         Collection<SubResourceLocator> subResLocs = new ArrayList<SubResourceLocator>();
-        java.lang.reflect.Method[] classMethods = jaxRsClass.getMethods();
-        // LATER An implementation SHOULD warn users if a 6 non-public method
-        // carries a method designator or @Path annotation.
-        // TESTEN what happens with non-public annotated methods.
-        // @see classMethods = jaxRsClass.getDeclaredMethods();
+        java.lang.reflect.Method[] classMethods = jaxRsClass
+                .getDeclaredMethods();
         // TODO also check for implemented interfaces or super classes, see
         // section 2."Annotation Inheritance"
         for (java.lang.reflect.Method javaMethod : classMethods) {
@@ -433,12 +439,16 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             org.restlet.data.Method httpMethod = ResourceMethod
                     .getHttpMethod(javaMethod);
             if (httpMethod != null) {
+                if (checkResMethodNotPublic(javaMethod, logger))
+                    continue;
                 ResourceMethod subResMeth = new ResourceMethod(javaMethod,
                         path, this, httpMethod);
                 subRsesMeths.add(subResMeth);
                 srmls.add(subResMeth);
             } else {
                 if (path != null) {
+                    if (checkResMethodNotPublic(javaMethod, logger))
+                        continue;
                     SubResourceLocator subResLoc = new SubResourceLocator(
                             javaMethod, path, this);
                     subResLocs.add(subResLoc);
@@ -449,6 +459,23 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         this.subResourceLocators = subResLocs;
         this.subResourceMethods = subRsesMeths;
         this.subResourceMethodsAndLocators = srmls;
+    }
+
+    /**
+     * Checks, if the method is public or not. If not, a warning is logged, and
+     * true is returned.
+     * 
+     * @param javaMethod
+     * @param logger
+     *                The Logger to log the warning
+     * @return true, if the method is not public, false if it is public.
+     */
+    private boolean checkResMethodNotPublic(
+            java.lang.reflect.Method javaMethod, Logger logger) {
+        if (Modifier.isPublic(javaMethod.getModifiers()))
+            return false;
+        logger.warning("The method " + javaMethod + " must be public");
+        return true;
     }
 
     @Override

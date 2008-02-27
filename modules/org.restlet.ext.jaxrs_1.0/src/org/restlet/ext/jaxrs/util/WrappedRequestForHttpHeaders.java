@@ -85,7 +85,7 @@ public class WrappedRequestForHttpHeaders implements
         }
         Series<Parameter> headers = getHeaders();
         if (headers != null)
-            return headers.getFirst(headerName);
+            return headers.getFirst(headerName).getValue();
         return null;
     }
 
@@ -146,9 +146,10 @@ public class WrappedRequestForHttpHeaders implements
                 String value = p.getValue();
                 List<Object> values = jaxRsRespHeaders.get(name);
                 boolean contained = false;
-                for (Object v : values) {
-                    if (v != null && v.toString().equals(value))
-                        contained = true;
+                if (values != null) {
+                    for (Object v : values)
+                        if (v != null && v.toString().equals(value))
+                            contained = true;
                 }
                 if (!contained)
                     jaxRsRespHeaders.add(name, value);

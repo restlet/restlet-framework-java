@@ -17,10 +17,13 @@
  */
 package org.restlet.test.jaxrs;
 
+import java.util.logging.Logger;
+
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
+import org.restlet.ext.jaxrs.wrappers.WrapperFactory;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
 import org.restlet.test.jaxrs.services.path.IllegalPathService2;
 
@@ -37,13 +40,16 @@ public class RootResourceClassTest extends TestCase {
     }
 
     public void testEncodePath() {
+        WrapperFactory wrapperFactory = new WrapperFactory(Logger
+                .getAnonymousLogger());
         try {
-            new RootResourceClass(IllegalPathService1.class);
+            wrapperFactory.getRootResourceClass(IllegalPathService1.class);
             fail("must not pass");
         } catch (AssertionFailedError e) {
             // wonderful
         }
-        RootResourceClass rrc = new RootResourceClass(IllegalPathService2.class);
+        RootResourceClass rrc = wrapperFactory
+                .getRootResourceClass(IllegalPathService2.class);
         assertEquals("/afsdf%3Ause", rrc.getPathRegExp().getPathPattern());
     }
 }

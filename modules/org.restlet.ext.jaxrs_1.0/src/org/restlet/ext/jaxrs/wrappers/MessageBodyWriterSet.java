@@ -67,8 +67,8 @@ public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter<?>> {
      * given entityClass.
      * 
      * @param entityClass
-     * @param genericType
-     * @param annotations
+     * @param genericType may be null
+     * @param annotations may be null
      * @return
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
      *      Annotation[])
@@ -79,8 +79,18 @@ public class MessageBodyWriterSet extends LifoSet<MessageBodyWriter<?>> {
         // LATER optimization: may be cached for speed.
         List<MessageBodyWriter<?>> mbws = new ArrayList<MessageBodyWriter<?>>();
         for (MessageBodyWriter mbw : this) {
-            if (mbw.isWriteable(entityClass, genericType, annotations))
-                mbws.add(mbw);
+            try {
+                if (mbw.isWriteable(entityClass, genericType, annotations))
+                    mbws.add(mbw);
+            } catch (NullPointerException e) {
+                if(genericType != null && annotations != null)
+                    throw e;
+                // otherwise it's interpreted as not writable
+            } catch (IllegalArgumentException e) {
+                if(genericType != null && annotations != null)
+                    throw e;
+                // otherwise it's interpreted as not writable
+            }
         }
         return new MessageBodyWriterSet(mbws, true);
     }

@@ -21,6 +21,7 @@ package org.restlet.ext.jaxrs.wrappers;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Logger;
 
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
@@ -62,9 +63,10 @@ public class RootResourceClass extends ResourceClass {
      * 
      * @param jaxRsClass
      *                the root resource class to wrap
+     * @see WrapperFactory#getRootResourceClass(Class)
      */
-    public RootResourceClass(Class<?> jaxRsClass) {
-        super(jaxRsClass, true);
+    RootResourceClass(Class<?> jaxRsClass, Logger logger) {
+        super(jaxRsClass, true, logger);
         constructor = findJaxRsConstructor(getJaxRsClass());
     }
 

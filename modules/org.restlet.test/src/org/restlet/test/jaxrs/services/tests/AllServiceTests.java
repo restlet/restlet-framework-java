@@ -29,7 +29,10 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(CarTest.class);
         mySuite.addTestSuite(CookieParamTest.class);
         mySuite.addTestSuite(DeterminingMediaTypeTest.class);
+        mySuite.addTestSuite(HeadOptionsTest.class);
         mySuite.addTestSuite(HttpHeaderTest.class);
+        mySuite.addTestSuite(IllegalThingsTest.class);
+        mySuite.addTestSuite(InjectionTest.class);
         mySuite.addTestSuite(MatrixParamTest.class);
         mySuite.addTestSuite(OwnProviderTest.class);
         mySuite.addTestSuite(PathParamTest.class);

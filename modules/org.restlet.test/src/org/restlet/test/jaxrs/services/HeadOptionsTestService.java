@@ -19,6 +19,8 @@
 package org.restlet.test.jaxrs.services;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
@@ -28,18 +30,59 @@ import javax.ws.rs.ProduceMime;
  * @author Stephan Koops
  * 
  */
-@Path("/ho%20use")
-public class SimpleHouse {
-    /** Text of the Plain-Text-Representation. */
-    public static final String RERP_PLAIN_TEXT = "  /\\ \n /  \\ \n |  | \n +--+ \n \n This is a simple text house";
+@Path("/headOptionsTest")
+public class HeadOptionsTestService {
 
-    /**
-     * 
-     * @return
-     */
     @GET
+    public void get() {
+        // do nothing
+    }
+
+    @HEAD
+    @Path("headTest1")
+    @ProduceMime("text/html")
+    public String headTest1() {
+        return null;
+    }
+
+    @GET
+    @Path("headTest1")
+    @ProduceMime("text/html")
+    public String getTest1() {
+        return "4711";
+    }
+
+    @GET
+    @Path("headTest1")
     @ProduceMime("text/plain")
-    public String getPlainText() {
-        return RERP_PLAIN_TEXT;
+    public String getTest1a() {
+        return "4711";
+    }
+
+    @POST
+    @Path("headTest1")
+    public void post() {
+        // do nothing yet
+    }
+
+    @HEAD
+    @Path("headTest2")
+    @ProduceMime("text/html")
+    public String headTest2() {
+        return "4711";
+    }
+
+    @GET
+    @Path("headTest2")
+    @ProduceMime("text/html")
+    public String getTest2() {
+        return "4711";
+    }
+
+    @GET
+    @Path("headTest2")
+    @ProduceMime("text/plain")
+    public String getTest2plain() {
+        return "4711";
     }
 }
