@@ -7,4 +7,7 @@ Bundle-Vendor: Noelios Consulting
 Export-Package: org.restlet.example
 Require-Bundle: com.db4o,
  com.noelios.restlet,
- org.restlet.ext.json
+ org.restlet.ext.json,
+ org.restlet.ext.jaxrs,
+ javax.ws.rs,
+ javax.xml.bind

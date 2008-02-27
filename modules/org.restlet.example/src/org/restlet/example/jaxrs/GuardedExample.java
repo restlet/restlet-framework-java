@@ -1,4 +1,4 @@
-package org.restlet.ext.jaxrs.examples;
+package org.restlet.example.jaxrs;
 
 import java.security.Principal;
 
