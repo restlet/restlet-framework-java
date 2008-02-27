@@ -27,14 +27,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 
 import org.restlet.data.Method;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.InjectException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.util.PathRegExp;
 import org.restlet.ext.jaxrs.util.RemainingPath;
 import org.restlet.ext.jaxrs.util.Util;
@@ -113,9 +122,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param jaxRsClass
      */
     public ResourceClass(Class<?> jaxRsClass) {
-        super(null);
-        this.jaxRsClass = jaxRsClass;
-        this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
+        this(jaxRsClass, null);
     }
 
     /**
@@ -127,9 +134,15 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      *                classes must give false
      */
     protected ResourceClass(Class<?> jaxRsClass, boolean requirePath) {
-        super(getPathAnnotation(jaxRsClass, requirePath));
+        this(jaxRsClass, getPathAnnotation(jaxRsClass, requirePath));
+    }
+
+    private ResourceClass(Class<?> jaxRsClass, Path path) {
+        super(path);
         this.jaxRsClass = jaxRsClass;
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
+        internalSetSubResourceMethodsAndLocators();
+        initInjectFields();
     }
 
     @Override
@@ -213,8 +226,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @return Returns the sub resource locators of the given class.
      */
     public final Iterable<SubResourceLocator> getSubResourceLocators() {
-        if (this.subResourceLocators == null)
-            internalSetSubResourceMethodsAndLocators();
         return subResourceLocators;
     }
 
@@ -222,8 +233,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @return Return the sub resource methods of the given class.
      */
     public final Iterable<ResourceMethod> getSubResourceMethods() {
-        if (this.subResourceMethods == null)
-            internalSetSubResourceMethodsAndLocators();
         return this.subResourceMethods;
     }
 
@@ -231,8 +240,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @return Returns the sub resource locatores and sub resource methods.
      */
     public final Collection<ResourceMethodOrLocator> getSubResourceMethodsAndLocators() {
-        if (this.subResourceMethodsAndLocators == null)
-            internalSetSubResourceMethodsAndLocators();
         return this.subResourceMethodsAndLocators;
     }
 
@@ -259,43 +266,156 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @throws InjectException
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
+     * @throws WebApplicationException
+     * @throws InstantiateParameterException
      */
     void injectDependencies(ResourceObject resourceObject,
-            CallContext callContext) throws InjectException {
-        for(Field contextField : getInjectContextFields())
-        {
-            Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
+            CallContext callContext) throws InjectException,
+            InstantiateParameterException, WebApplicationException {
+        // TESTEN check, if injection of dependencies is working
+        Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
+        for (Field contextField : this.injectFieldsContext) {
             Util.inject(jaxRsResObj, contextField, callContext);
+        }
+        for (Field cpf : this.injectFieldsCookieParam) {
+            CookieParam headerParam = cpf.getAnnotation(CookieParam.class);
+            DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = cpf.getDeclaringClass();
+            Object value = getCookieParamValue(convTo, headerParam,
+                    defaultValue, callContext);
+            Util.inject(jaxRsResObj, cpf, value);
+        }
+        for (Field hpf : this.injectFieldsHeaderParam) {
+            HeaderParam headerParam = hpf.getAnnotation(HeaderParam.class);
+            DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = hpf.getDeclaringClass();
+            Object value = getHeaderParamValue(convTo, headerParam,
+                    defaultValue, callContext);
+            Util.inject(jaxRsResObj, hpf, value);
+        }
+        for (Field hpf : this.injectFieldsMatrixParam) {
+            MatrixParam headerParam = hpf.getAnnotation(MatrixParam.class);
+            DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = hpf.getDeclaringClass();
+            Object value = getMatrixParamValue(convTo, headerParam,
+                    leaveEncoded, defaultValue, callContext);
+            Util.inject(jaxRsResObj, hpf, value);
+        }
+        for (Field hpf : this.injectFieldsPathParam) {
+            PathParam headerParam = hpf.getAnnotation(PathParam.class);
+            DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = hpf.getDeclaringClass();
+            Object value = getPathParamValue(convTo, headerParam, leaveEncoded,
+                    defaultValue, callContext);
+            Util.inject(jaxRsResObj, hpf, value);
+        }
+        for (Field hpf : this.injectFieldsQueryParam) {
+            QueryParam headerParam = hpf.getAnnotation(QueryParam.class);
+            DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = hpf.getDeclaringClass();
+            Object value = getQueryParamValue(convTo, headerParam,
+                    defaultValue, callContext, Logger.getAnonymousLogger());
+            Util.inject(jaxRsResObj, hpf, value);
         }
     }
 
-    private Field[] getInjectContextFields() {
-        if (this.injectContextFields == null)
-            initInjectFields();
-        return this.injectContextFields;
-    }
+    /**
+     * <p>
+     * This array contains the fields in this class in which are annotated to
+     * inject an {@link CallContext}. Array is round about 10 times faster than
+     * the list.
+     * </p>
+     * <p>
+     * Must bei initiated with the other fields starting with initFields.
+     * </p>
+     */
+    private Field[] injectFieldsContext;
 
     /**
+     * <p>
+     * Fields of the wrapped JAX-RS resource class to inject a header parameter.
+     * </p>
+     * <p>
+     * Must bei initiated with the other fields starting with initFields.
+     * </p>
+     */
+    private Field[] injectFieldsHeaderParam;
+
+    /**
+     * <p>
+     * Fields of the wrapped JAX-RS resource class to inject a query parameter.
+     * </p>
+     * <p>
+     * Must bei initiated with the other fields starting with initFields.
+     * </p>
+     */
+    private Field[] injectFieldsQueryParam;
+
+    /**
+     * <p>
+     * Fields of the wrapped JAX-RS resource class to inject a matrix parameter.
+     * </p>
+     * <p>
+     * Must bei initiated with the other fields starting with initFields.
+     * </p>
+     */
+    private Field[] injectFieldsMatrixParam;
+
+    /**
+     * <p>
+     * Fields of the wrapped JAX-RS resource class to inject a cookie parameter.
+     * </p>
+     * <p>
+     * Must bei initiated with the other fields starting with initFields.
+     * </p>
+     */
+    private Field[] injectFieldsCookieParam;
+
+    /**
+     * <p>
+     * Fields of the wrapped JAX-RS resource class to inject a path parameter.
+     * </p>
+     * <p>
+     * Must bei initiated with the other fields starting with initFields.
+     * </p>
+     */
+    private Field[] injectFieldsPathParam;
+
+    /**
+     * initiates the fields to cache thie fields that needs injection.
+     * 
      * @throws SecurityException
      */
     private void initInjectFields() throws SecurityException {
-        List<Field> icf = new ArrayList<Field>();
-        for(Field field : this.jaxRsClass.getFields())
-        {
-            if(field.isAnnotationPresent(Context.class))
-                icf.add(field);
+        List<Field> ifcx = new ArrayList<Field>();
+        List<Field> ifcp = new ArrayList<Field>();
+        List<Field> ifhp = new ArrayList<Field>();
+        List<Field> ifmp = new ArrayList<Field>();
+        List<Field> ifpp = new ArrayList<Field>();
+        List<Field> ifqp = new ArrayList<Field>();
+        for (Field field : this.jaxRsClass.getFields()) {
+            if (field.isAnnotationPresent(Context.class))
+                ifcx.add(field);
+            if (field.isAnnotationPresent(CookieParam.class))
+                ifcp.add(field);
+            if (field.isAnnotationPresent(HeaderParam.class))
+                ifhp.add(field);
+            if (field.isAnnotationPresent(MatrixParam.class))
+                ifmp.add(field);
+            if (field.isAnnotationPresent(PathParam.class))
+                ifpp.add(field);
+            if (field.isAnnotationPresent(QueryParam.class))
+                ifqp.add(field);
         }
-        this.injectContextFields = icf.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsContext = ifcx.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsCookieParam = ifcp.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsHeaderParam = ifhp.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsMatrixParam = ifmp.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsPathParam = ifpp.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsQueryParam = ifqp.toArray(EMPTY_FIELD_ARRAY);
     }
 
     private static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
-
-    /**
-     * This array contains the fields in this class in which are annotated to
-     * inject an {@link CallContext}. Array is round about 10 times faster than
-     * the list
-     */
-    private Field[] injectContextFields;
 
     private void internalSetSubResourceMethodsAndLocators() {
         Collection<ResourceMethodOrLocator> srmls = new ArrayList<ResourceMethodOrLocator>();

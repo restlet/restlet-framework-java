@@ -67,32 +67,6 @@ public abstract class AbstractJaxRsWrapper {
     private static final Collection<Class<? extends Annotation>> VALID_ANNOTATIONS = createValidAnnotations();
 
     /**
-     * Implementation of function R(A) in JSR-311-Spec, Revision 151, Version
-     * 2007-12-07, Section 2.5.1 Converting URI Templates to Regular Expressions
-     * 
-     * @param ensureStartSlash
-     * @param path
-     * 
-     * @return
-     */
-    private static PathRegExp convertPathToRegularExpression(Path template,
-            boolean ensureStartSlash) {
-        if (template == null)
-            return new PathRegExp("", true);
-        String pathTemplate = getPathTemplate(template);
-        if (ensureStartSlash)
-            pathTemplate = Util.ensureStartSlash(pathTemplate);
-        return new PathRegExp(pathTemplate, template.limited());
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Collection<Class<? extends Annotation>> createValidAnnotations() {
-        return Arrays.asList(Context.class, HeaderParam.class,
-                MatrixParam.class, QueryParam.class, PathParam.class,
-                CookieParam.class);
-    }
-
-    /**
      * Converts the given paramValue (found in the path, query, matrix or
      * header) into the given paramClass.
      * 
@@ -115,18 +89,16 @@ public abstract class AbstractJaxRsWrapper {
      * @see HeaderParam
      */
     private static Object convertParamValueFromParam(Class<?> paramClass,
-            String paramValue, String defaultValue, boolean leaveEncoded,
-            HiddenJaxRsRouter jaxRsRouter)
+            String paramValue, DefaultValue defaultValue, boolean leaveEncoded)
             throws InstantiateParameterException, WebApplicationException {
         if (!leaveEncoded && paramValue != null)
             paramValue = Reference.decode(paramValue);
-        else if (paramValue == null)
-            paramValue = defaultValue;
+        else if (paramValue == null && defaultValue != null)
+            paramValue = defaultValue.value();
         if (paramClass.equals(String.class)) // optimization
             return paramValue;
         if (paramClass.isPrimitive())
-            return getParamValueForPrimitive(paramClass, paramValue,
-                    jaxRsRouter);
+            return getParamValueForPrimitive(paramClass, paramValue);
         try {
             Constructor<?> constr = paramClass.getConstructor(String.class);
             return constr.newInstance(paramValue);
@@ -158,78 +130,150 @@ public abstract class AbstractJaxRsWrapper {
     }
 
     /**
-     * @param paramClass
-     * @param paramValue
-     * @param jaxRsRouter
-     * @throws WebApplicationException
-     * @throws InstantiateParameterException
+     * Implementation of function R(A) in JSR-311-Spec, Revision 151, Version
+     * 2007-12-07, Section 2.5.1 Converting URI Templates to Regular Expressions
+     * 
+     * @param ensureStartSlash
+     * @param path
+     * 
+     * @return
      */
-    private static Object getParamValueForPrimitive(Class<?> paramClass,
-            String paramValue, HiddenJaxRsRouter jaxRsRouter)
-            throws WebApplicationException, InstantiateParameterException {
-        try {
-            if (paramClass == Integer.TYPE)
-                return new Integer(paramValue);
-            if (paramClass == Double.TYPE)
-                return new Double(paramValue);
-            if (paramClass == Float.TYPE)
-                return new Float(paramValue);
-            if (paramClass == Byte.TYPE)
-                return new Byte(paramValue);
-            if (paramClass == Long.TYPE)
-                return new Long(paramValue);
-            if (paramClass == Short.TYPE)
-                return new Short(paramValue);
-            if (paramClass == Character.TYPE) {
-                if (paramValue.length() == 1)
-                    return paramValue.charAt(0);
-                throw InstantiateParameterException.primitive(paramClass,
-                        paramValue, null);
-            }
-            if (paramClass == Boolean.TYPE) {
-                if (paramValue.equalsIgnoreCase("true"))
-                    return Boolean.TRUE;
-                if (paramValue.equalsIgnoreCase("false"))
-                    return Boolean.FALSE;
-                throw InstantiateParameterException.primitive(paramClass,
-                        paramValue, null);
-            }
-        } catch (IllegalArgumentException e) {
-            throw InstantiateParameterException.primitive(paramClass,
-                    paramValue, e);
-        }
-        if (paramClass == Void.TYPE) {
-            String message = "a method return parameter type was void, but this could not be here";
-            jaxRsRouter.getLogger().warning(message);
-            throw new WebApplicationException(500);
-        }
-        throw new WebApplicationException(500);
+    private static PathRegExp convertPathToRegularExpression(Path template,
+            boolean ensureStartSlash) {
+        if (template == null)
+            return new PathRegExp("", true);
+        String pathTemplate = getPathTemplate(template);
+        if (ensureStartSlash)
+            pathTemplate = Util.ensureStartSlash(pathTemplate);
+        return new PathRegExp(pathTemplate, template.limited());
     }
 
     /**
-     * Returns the path from the annotation. It will be encoded if necessary. If
-     * it should not be encoded, this method checks, if all characters are
-     * valid.
+     * Converts the Restlet request {@link Representation} to the type requested
+     * by the resource method.
      * 
-     * @param path
-     *                The {@link Path} annotation. Must not be null.
-     * @return the encoded path template
-     * @see Path#encode()
+     * @param callContext
+     *                the call context, containing the entity.
+     * @param paramType
+     *                the type to convert to.
+     * @param genericType
+     *                The generic {@link Type} to convert to.
+     * @param annotations
+     *                the annotations of the artefact to convert to
+     * @param jaxRsRouter
+     * @return
+     * @throws NoMessageBodyReadersException
+     * @throws RequestHandledException
+     * @throws InstantiateParameterException
      */
-    public static String getPathTemplate(Path path) {
-        String pathTemplate = path.value();
-        if (path.encode())
-            return EncodeOrCheck.encodeNotBraces(pathTemplate, false)
-                    .toString();
-        EncodeOrCheck
-                .checkForInvalidUriChars(pathTemplate, -1, "path template");
-        return pathTemplate;
+    @SuppressWarnings("unchecked")
+    private static Object convertRepresentation(CallContext callContext,
+            Class<?> paramType, Type genericType, Annotation[] annotations,
+            HiddenJaxRsRouter jaxRsRouter)
+            throws NoMessageBodyReadersException, RequestHandledException,
+            InstantiateParameterException {
+        Representation entity = callContext.getRequest().getEntity();
+        if (entity == null)
+            return null;
+        if (Representation.class.isAssignableFrom(paramType))
+            return entity; // TESTEN geht das mit Representaton als
+        MediaType mediaType = entity.getMediaType();
+        MessageBodyReaderSet mbrs = jaxRsRouter.getMessageBodyReaders();
+        if (mbrs == null)
+            throw new NoMessageBodyReadersException();
+        MessageBodyReader<?> mbr = mbrs.getBest(mediaType, paramType,
+                genericType, annotations);
+        if (mbr == null) {
+            // REQUESTED JSR311: what, if no MessageBodyReader?
+            callContext.getResponse().setStatus(
+                    Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+            throw new RequestHandledException();
+        }
+        MultivaluedMap<String, String> httpHeaders = Util
+                .getJaxRsHttpHeaders(callContext.getRequest());
+        try {
+            javax.ws.rs.core.MediaType jaxRsMediaType = Converter
+                    .toJaxRsMediaType(mediaType, entity.getCharacterSet());
+            return mbr.readFrom((Class) paramType, genericType, jaxRsMediaType,
+                    annotations, httpHeaders, entity.getStream());
+        } catch (IOException e) {
+            throw new InstantiateParameterException(
+                    "Can not instatiate parameter of type "
+                            + paramType.getName(), e);
+        }
     }
 
-    private PathRegExp pathRegExp;
+    @SuppressWarnings("unchecked")
+    private static Collection<Class<? extends Annotation>> createValidAnnotations() {
+        return Arrays.asList(Context.class, HeaderParam.class,
+                MatrixParam.class, QueryParam.class, PathParam.class,
+                CookieParam.class);
+    }
 
-    AbstractJaxRsWrapper(Path path) {
-        this.pathRegExp = convertPathToRegularExpression(path, true);
+    /**
+     * @param paramClass
+     *                the class to convert to
+     * @param cookieParam
+     *                the {@link CookieParam} annotation
+     * @param defaultValue
+     *                the default value
+     * @param callContext
+     *                the {@link CallContext}
+     * @param jaxRsRouter
+     * @return the cookie parameter, converted to type paramClass
+     * @throws InstantiateParameterException
+     * @throws WebApplicationException
+     */
+    static Object getCookieParamValue(Class<?> paramClass,
+            CookieParam cookieParam, DefaultValue defaultValue,
+            CallContext callContext) throws InstantiateParameterException,
+            WebApplicationException {
+        Series<Cookie> cookies = callContext.getRequest().getCookies();
+        String cookieName = cookieParam.value();
+        String cookieValue = cookies.getFirstValue(cookieName);
+        return convertParamValueFromParam(paramClass, cookieValue,
+                defaultValue, true);
+        // leaveEncoded = true -> not change
+    }
+
+    /**
+     * @param paramClass
+     * @param annotation
+     * @param defaultValue
+     * @param callContext
+     * @param jaxRsRouter
+     * @return
+     * @throws InstantiateParameterException
+     * @throws WebApplicationException
+     */
+    static Object getHeaderParamValue(Class<?> paramClass,
+            HeaderParam annotation, DefaultValue defaultValue, CallContext callContext)
+            throws InstantiateParameterException, WebApplicationException {
+        String headerParamValue = Util.getHttpHeaders(callContext.getRequest())
+                .getFirstValue(annotation.value(), true);
+        return convertParamValueFromParam(paramClass, headerParamValue,
+                defaultValue, false);
+    }
+
+    /**
+     * @param paramClass
+     * @param matrixParam
+     * @param leaveEncoded
+     * @param defaultValue
+     * @param callContext
+     * @param jaxRsRouter
+     * @return
+     * @throws InstantiateParameterException
+     * @throws WebApplicationException
+     */
+    static Object getMatrixParamValue(Class<?> paramClass,
+            MatrixParam matrixParam, boolean leaveEncoded, DefaultValue defaultValue,
+            CallContext callContext) throws InstantiateParameterException,
+            WebApplicationException {
+        String matrixParamValue = callContext
+                .getLastMatrixParamEnc(matrixParam);
+        return convertParamValueFromParam(paramClass, matrixParamValue,
+                defaultValue, leaveEncoded);
     }
 
     /**
@@ -264,10 +308,10 @@ public abstract class AbstractJaxRsWrapper {
             int indexForExcMessages) throws MissingAnnotationException,
             InstantiateParameterException, WebApplicationException {
         // TODO @Encode may be placed on Type, constructor, method or parameter
-        String defaultValue = null;
+        DefaultValue defaultValue = null;
         for (Annotation annotation : paramAnnotations) {
             if (annotation.annotationType().equals(DefaultValue.class)) {
-                defaultValue = ((DefaultValue) annotation).value();
+                defaultValue = (DefaultValue) annotation;
                 break;
             }
         }
@@ -278,42 +322,26 @@ public abstract class AbstractJaxRsWrapper {
                 return callContext;
             }
             if (annotationType.equals(HeaderParam.class)) {
-                String headerParamValue = Util.getHttpHeaders(
-                        callContext.getRequest()).getFirstValue(
-                        ((HeaderParam) annotation).value(), true);
-                return convertParamValueFromParam(paramClass, headerParamValue,
-                        defaultValue, false, jaxRsRouter);
+                return getHeaderParamValue(paramClass,
+                        (HeaderParam) annotation, defaultValue, callContext);
             }
             if (annotationType.equals(PathParam.class)) {
-                String pathParamValue = callContext
-                        .getLastTemplParamEnc((PathParam) annotation);
-                return convertParamValueFromParam(paramClass, pathParamValue,
-                        defaultValue, leaveEncoded, jaxRsRouter);
+                return getPathParamValue(paramClass, (PathParam) annotation,
+                        leaveEncoded, defaultValue, callContext);
             }
             if (annotationType.equals(MatrixParam.class)) {
-                String matrixParamValue = callContext
-                        .getLastMatrixParamEnc((MatrixParam) annotation);
-                return convertParamValueFromParam(paramClass, matrixParamValue,
-                        defaultValue, leaveEncoded, jaxRsRouter);
+                return getMatrixParamValue(paramClass,
+                        (MatrixParam) annotation, leaveEncoded, defaultValue,
+                        callContext);
             }
             if (annotationType.equals(QueryParam.class)) {
                 Logger logger = jaxRsRouter.getLogger();
-                String queryString = callContext.getRequest().getResourceRef()
-                        .getQuery();
-                Form form = Converter.toFormEncoded(queryString, logger);
-                String paramName = ((QueryParam) annotation).value();
-                String queryParamValue = form.getFirstValue(paramName);
-                return convertParamValueFromParam(paramClass, queryParamValue,
-                        defaultValue, true, jaxRsRouter);
-                // leaveEncoded = true -> not change
+                return getQueryParamValue(paramClass, (QueryParam) annotation,
+                        defaultValue, callContext, logger);
             }
             if (annotationType.equals(CookieParam.class)) {
-                Series<Cookie> cookies = callContext.getRequest().getCookies();
-                String cookieName = ((CookieParam) annotation).value();
-                String cookieValue = cookies.getFirstValue(cookieName);
-                return convertParamValueFromParam(paramClass, cookieValue,
-                        defaultValue, true, jaxRsRouter);
-                // leaveEncoded = true -> not change
+                return getCookieParamValue(paramClass,
+                        (CookieParam) annotation, defaultValue, callContext);
             }
         }
         throw new MissingAnnotationException("The " + indexForExcMessages
@@ -383,58 +411,121 @@ public abstract class AbstractJaxRsWrapper {
     }
 
     /**
-     * Converts the Restlet request {@link Representation} to the type requested
-     * by the resource method.
-     * 
-     * @param callContext
-     *                the call context, containing the entity.
-     * @param paramType
-     *                the type to convert to.
-     * @param genericType
-     *                The generic {@link Type} to convert to.
-     * @param annotations
-     *                the annotations of the artefact to convert to
-     * @param jaxRsRouter
-     * @return
-     * @throws NoMessageBodyReadersException
-     * @throws RequestHandledException
+     * @param paramClass
+     * @param paramValue
+     * @throws WebApplicationException
      * @throws InstantiateParameterException
      */
-   @SuppressWarnings("unchecked")
-    private static Object convertRepresentation(CallContext callContext,
-            Class<?> paramType, Type genericType, Annotation[] annotations,
-            HiddenJaxRsRouter jaxRsRouter)
-            throws NoMessageBodyReadersException, RequestHandledException,
+    private static Object getParamValueForPrimitive(Class<?> paramClass,
+            String paramValue) throws WebApplicationException,
             InstantiateParameterException {
-        Representation entity = callContext.getRequest().getEntity();
-        if (entity == null)
-            return null;
-        if (Representation.class.isAssignableFrom(paramType))
-            return entity; // TESTEN geht das mit Representaton als
-        MediaType mediaType = entity.getMediaType();
-        MessageBodyReaderSet mbrs = jaxRsRouter.getMessageBodyReaders();
-        if (mbrs == null)
-            throw new NoMessageBodyReadersException();
-        MessageBodyReader<?> mbr = mbrs.getBest(mediaType, paramType,
-                genericType, annotations);
-        if (mbr == null) {
-            // REQUESTED JSR311: what, if no MessageBodyReader?
-            callContext.getResponse().setStatus(
-                    Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-            throw new RequestHandledException();
-        }
-        MultivaluedMap<String, String> httpHeaders = Util
-                .getJaxRsHttpHeaders(callContext.getRequest());
         try {
-            javax.ws.rs.core.MediaType jaxRsMediaType = Converter
-                    .toJaxRsMediaType(mediaType, entity.getCharacterSet());
-            return mbr.readFrom((Class) paramType, genericType, jaxRsMediaType,
-                    annotations, httpHeaders, entity.getStream());
-        } catch (IOException e) {
-            throw new InstantiateParameterException(
-                    "Can not instatiate parameter of type "
-                            + paramType.getName(), e);
+            if (paramClass == Integer.TYPE)
+                return new Integer(paramValue);
+            if (paramClass == Double.TYPE)
+                return new Double(paramValue);
+            if (paramClass == Float.TYPE)
+                return new Float(paramValue);
+            if (paramClass == Byte.TYPE)
+                return new Byte(paramValue);
+            if (paramClass == Long.TYPE)
+                return new Long(paramValue);
+            if (paramClass == Short.TYPE)
+                return new Short(paramValue);
+            if (paramClass == Character.TYPE) {
+                if (paramValue.length() == 1)
+                    return paramValue.charAt(0);
+                throw InstantiateParameterException.primitive(paramClass,
+                        paramValue, null);
+            }
+            if (paramClass == Boolean.TYPE) {
+                if (paramValue.equalsIgnoreCase("true"))
+                    return Boolean.TRUE;
+                if (paramValue.equalsIgnoreCase("false"))
+                    return Boolean.FALSE;
+                throw InstantiateParameterException.primitive(paramClass,
+                        paramValue, null);
+            }
+        } catch (IllegalArgumentException e) {
+            throw InstantiateParameterException.primitive(paramClass,
+                    paramValue, e);
         }
+        if (paramClass == Void.TYPE) {
+            String message = "a method return parameter type was void, but this could not be here";
+            Logger.getAnonymousLogger().warning(message);
+            throw new WebApplicationException(500);
+        }
+        throw new WebApplicationException(500);
+    }
+
+    /**
+     * @param paramClass
+     * @param pathParam
+     * @param leaveEncoded
+     * @param defaultValue
+     * @param callContext
+     * @param logger
+     * @return
+     * @throws InstantiateParameterException
+     * @throws WebApplicationException
+     */
+    static Object getPathParamValue(Class<?> paramClass,
+            PathParam pathParam, boolean leaveEncoded, DefaultValue defaultValue,
+            CallContext callContext) throws InstantiateParameterException,
+            WebApplicationException {
+        String pathParamValue = callContext.getLastTemplParamEnc(pathParam);
+        return convertParamValueFromParam(paramClass, pathParamValue,
+                defaultValue, leaveEncoded);
+    }
+
+    /**
+     * Returns the path from the annotation. It will be encoded if necessary. If
+     * it should not be encoded, this method checks, if all characters are
+     * valid.
+     * 
+     * @param path
+     *                The {@link Path} annotation. Must not be null.
+     * @return the encoded path template
+     * @see Path#encode()
+     */
+    public static String getPathTemplate(Path path) {
+        String pathTemplate = path.value();
+        if (path.encode())
+            return EncodeOrCheck.encodeNotBraces(pathTemplate, false)
+                    .toString();
+        EncodeOrCheck
+                .checkForInvalidUriChars(pathTemplate, -1, "path template");
+        return pathTemplate;
+    }
+
+    /**
+     * @param paramClass
+     * @param queryParam
+     * @param defaultValue
+     * @param callContext
+     * @param logger
+     * @return
+     * @throws InstantiateParameterException
+     * @throws WebApplicationException
+     */
+    static Object getQueryParamValue(Class<?> paramClass,
+            QueryParam queryParam, DefaultValue defaultValue,
+            CallContext callContext, Logger logger)
+            throws InstantiateParameterException, WebApplicationException {
+        Reference resourceRef = callContext.getRequest().getResourceRef();
+        String queryString = resourceRef.getQuery();
+        Form form = Converter.toFormEncoded(queryString, logger);
+        String paramName = queryParam.value();
+        String queryParamValue = form.getFirstValue(paramName);
+        return convertParamValueFromParam(paramClass, queryParamValue,
+                defaultValue, true);
+        // leaveEncoded = true -> not change
+    }
+
+    private PathRegExp pathRegExp;
+
+    AbstractJaxRsWrapper(Path path) {
+        this.pathRegExp = convertPathToRegularExpression(path, true);
     }
 
     /**

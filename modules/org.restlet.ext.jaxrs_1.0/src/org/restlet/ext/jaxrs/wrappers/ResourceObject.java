@@ -18,8 +18,11 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
+import javax.ws.rs.WebApplicationException;
+
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.InjectException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 
 /**
  * Represents a resource Object
@@ -39,7 +42,8 @@ public class ResourceObject {
      *                the resource object
      */
     public ResourceObject(Object jaxRsResourceObject) {
-        this(jaxRsResourceObject, new ResourceClass(jaxRsResourceObject.getClass()));
+        this(jaxRsResourceObject, new ResourceClass(jaxRsResourceObject
+                .getClass()));
     }
 
     /**
@@ -52,11 +56,14 @@ public class ResourceObject {
      * @param logger
      *                The logger to log unexpected Exceptions.
      */
-    public ResourceObject(Object jaxRsResourceObject, ResourceClass resourceClass) {
-        if(jaxRsResourceObject == null)
-            throw new IllegalArgumentException("The JAX-RS resource object must not be null");
-        if(resourceClass == null)
-            throw new IllegalArgumentException("The ResourceClass must not be null");
+    public ResourceObject(Object jaxRsResourceObject,
+            ResourceClass resourceClass) {
+        if (jaxRsResourceObject == null)
+            throw new IllegalArgumentException(
+                    "The JAX-RS resource object must not be null");
+        if (resourceClass == null)
+            throw new IllegalArgumentException(
+                    "The ResourceClass must not be null");
         if (jaxRsResourceObject instanceof ResourceObject)
             throw new IllegalArgumentException(
                     "The given resource class object should not be an instance of the wrapping class ResourceObject");
@@ -86,8 +93,12 @@ public class ResourceObject {
      * @throws InjectException
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
+     * @throws WebApplicationException
+     * @throws InstantiateParameterException
      */
-    public void injectDependencies(CallContext callContext) throws InjectException {
+    public void injectDependencies(CallContext callContext)
+            throws InjectException, InstantiateParameterException,
+            WebApplicationException {
         this.getResourceClass().injectDependencies(this, callContext);
     }
 }

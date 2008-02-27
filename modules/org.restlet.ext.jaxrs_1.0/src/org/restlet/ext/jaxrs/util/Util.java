@@ -667,7 +667,6 @@ public class Util {
      */
     public static void inject(final Object resource, final Field field,
             final Object toInject) throws InjectException {
-        // TESTEN check, if injection of dependencies is working
         try {
             IllegalAccessException iae = AccessController
                     .doPrivileged(new PrivilegedAction<IllegalAccessException>() {
