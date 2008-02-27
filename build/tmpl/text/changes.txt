@@ -95,6 +95,7 @@ Changes log
  - Added TEXT_JAVASCRIPT media type constant. Suggested by Evgeny Shepelyuk.
  - Added MediaType.getMostSpecific(), isCompatible() and isConcrete() methods. Contributed by Stephan Koops. 
  - Guard is now setting a Principal instance after authorization. Contributed by Stephan Koops.
+ - Refactored engine to support pluggable authentication.
  
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.

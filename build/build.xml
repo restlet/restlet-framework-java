@@ -162,6 +162,9 @@
    <path id="mod-example-path">
       <path refid="mod-ri-path" />
       <path refid="mod-json-path" />
+      <path refid="mod-jaxrs-path" />
+      <pathelement path="${mod}/${mod-jaxrs-id}/src" />
+      <pathelement path="${classes}/${mod-jaxrs-id}" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <pathelement path="${classes}/${mod-json-id}" />
       <fileset dir="${lib}/${lib-db4o-id}" includes="*.jar" />

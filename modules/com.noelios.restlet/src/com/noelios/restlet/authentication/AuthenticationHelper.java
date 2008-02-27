@@ -182,7 +182,6 @@ public abstract class AuthenticationHelper {
      *                The parent request.
      * @param httpHeaders
      *                The current request HTTP headers.
-     * @return The authorization header value.
      */
     public abstract void formatCredentials(StringBuilder sb,
             ChallengeResponse challenge, Request request,
@@ -220,7 +219,6 @@ public abstract class AuthenticationHelper {
      * 
      * @param header
      *                The HTTP header value to parse.
-     * @return The parsed challenge request.
      */
     public void parseRequest(ChallengeRequest cr, String header) {
     }
@@ -234,7 +232,6 @@ public abstract class AuthenticationHelper {
      *                The logger to use.
      * @param header
      *                The header value to parse.
-     * @return The parsed challenge response.
      */
     public void parseResponse(ChallengeResponse cr, Request request,
             Logger logger, String header) {
