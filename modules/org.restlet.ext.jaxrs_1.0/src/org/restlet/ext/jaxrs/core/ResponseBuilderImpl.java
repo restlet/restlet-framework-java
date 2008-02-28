@@ -150,8 +150,9 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     }
 
     /**
-     * Set the language on the ResponseBuilder. <br/>This method is not required
-     * by the JAX-RS API bu is used from {@link #variant(Variant)}.
+     * Set the language on the ResponseBuilder. <br>
+     * This method is not required by the JAX-RS API bu is used from
+     * {@link #variant(Variant)}.
      * 
      * @param encoding
      *                the encoding of the response entity

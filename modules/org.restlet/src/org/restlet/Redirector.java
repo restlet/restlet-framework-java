@@ -31,36 +31,37 @@ import org.restlet.util.Template;
  * Rewrites URIs then redirects the call or the client to a new destination.
  * 
  * @see org.restlet.util.Template
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part10">Tutorial: URI rewriting
- *      and redirection</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part10">Tutorial:
+ *      URI rewriting and redirection</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Redirector extends Restlet {
     /**
      * In this mode, the client is permanently redirected to the URI generated
-     * from the target URI pattern.<br/> See
-     * org.restlet.data.Status.REDIRECTION_PERMANENT.
+     * from the target URI pattern.<br>
+     * See org.restlet.data.Status.REDIRECTION_PERMANENT.
      */
     public static final int MODE_CLIENT_PERMANENT = 1;
 
     /**
      * In this mode, the client is simply redirected to the URI generated from
-     * the target URI pattern.<br/> See
-     * org.restlet.data.Status.REDIRECTION_FOUND.
+     * the target URI pattern.<br>
+     * See org.restlet.data.Status.REDIRECTION_FOUND.
      */
     public static final int MODE_CLIENT_FOUND = 2;
 
     /**
      * In this mode, the client is simply redirected to the URI generated from
-     * the target URI pattern.<br/> See
-     * org.restlet.data.Status.REDIRECTION_SEE_OTHER.
+     * the target URI pattern.<br>
+     * See org.restlet.data.Status.REDIRECTION_SEE_OTHER.
      */
     public static final int MODE_CLIENT_SEE_OTHER = 3;
 
     /**
      * In this mode, the client is temporarily redirected to the URI generated
-     * from the target URI pattern.<br/> See
-     * org.restlet.data.Status.REDIRECTION_TEMPORARY.
+     * from the target URI pattern.<br>
+     * See org.restlet.data.Status.REDIRECTION_TEMPORARY.
      */
     public static final int MODE_CLIENT_TEMPORARY = 4;
 

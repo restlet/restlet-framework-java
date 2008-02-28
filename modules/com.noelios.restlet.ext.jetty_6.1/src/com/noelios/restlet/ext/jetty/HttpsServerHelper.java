@@ -100,9 +100,9 @@ import org.restlet.data.Protocol;
  * <td>type</td>
  * <td>int</td>
  * <td>2</td>
- * <td>The type of Jetty connector to use.<br/> 1 : Selecting NIO connector
- * (Jetty's SslSelectChannelConnector class).<br/> 2 : Blocking BIO connector
- * (Jetty's SslSocketConnector class).</td>
+ * <td>The type of Jetty connector to use.<br>
+ * 1 : Selecting NIO connector (Jetty's SslSelectChannelConnector class).<br>
+ * 2 : Blocking BIO connector (Jetty's SslSocketConnector class).</td>
  * </tr>
  * </table>
  * 

@@ -26,8 +26,8 @@ import org.restlet.data.Response;
 
 /**
  * Router of calls from Server connectors to Restlets. The attached Restlets are
- * typically Applications.<br/><br/>
- * 
+ * typically Applications.<br>
+ * <br>
  * A virtual host is defined along three properties:
  * <ul>
  * <li>request's {@link Request#getHostRef()}: the URI of the host that

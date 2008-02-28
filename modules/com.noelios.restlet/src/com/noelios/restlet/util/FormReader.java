@@ -53,8 +53,9 @@ public class FormReader {
     private CharacterSet characterSet;
 
     /**
-     * Constructor.<br/>In case the representation does not define a character
-     * set, the UTF-8 character set is used.
+     * Constructor.<br>
+     * In case the representation does not define a character set, the UTF-8
+     * character set is used.
      * 
      * @param logger
      *                The logger.

@@ -59,13 +59,14 @@ public class MetadataService {
 
     /**
      * Adds a common list of associations from extensions to metadata. The list
-     * of languages extensions:<br/>
+     * of languages extensions:<br>
      * <ul>
      * <li>en: English</li>
      * <li>es: Spanish</li>
      * <li>fr: French</li>
      * </ul>
-     * <br/> The list of media type extensions:<br/>
+     * <br>
+     * The list of media type extensions:<br>
      * <ul>
      * <li>css: CSS stylesheet</li>
      * <li>doc: Microsoft Word document</li>

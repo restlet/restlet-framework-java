@@ -37,12 +37,14 @@ import org.restlet.data.Tag;
  * local file or a string. When the representation is obtained via a temporary
  * source like a network socket, its content can only be retrieved once. The
  * "transient" and "available" properties are available to help you figure out
- * those aspects at runtime.<br/><br/> For performance purpose, it is
- * essential that a minimal overhead occurs upon initialization. The main
- * overhead must only occur during invocation of content processing methods
- * (write, getStream, getChannel and toString).<br/><br/> "REST components
- * perform actions on a resource by using a representation to capture the
- * current or intended state of that resource and transferring that
+ * those aspects at runtime.<br>
+ * <br>
+ * For performance purpose, it is essential that a minimal overhead occurs upon
+ * initialization. The main overhead must only occur during invocation of
+ * content processing methods (write, getStream, getChannel and toString).<br>
+ * <br>
+ * "REST components perform actions on a resource by using a representation to
+ * capture the current or intended state of that resource and transferring that
  * representation between components. A representation is a sequence of bytes,
  * plus representation metadata to describe those bytes. Other commonly used but
  * less precise names for a representation include: document, file, and HTTP
@@ -150,8 +152,9 @@ public abstract class Representation extends Variant {
     }
 
     /**
-     * Returns a channel with the representation's content.<br/> If it is
-     * supported by a file, a read-only instance of FileChannel is returned.<br/>
+     * Returns a channel with the representation's content.<br>
+     * If it is supported by a file, a read-only instance of FileChannel is
+     * returned.<br>
      * This method is ensured to return a fresh channel for each invocation
      * unless it is a transient representation, in which case null is returned.
      * 

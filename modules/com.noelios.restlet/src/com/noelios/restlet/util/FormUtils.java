@@ -95,9 +95,9 @@ public class FormUtils {
     }
 
     /**
-     * Reads the parameters whose name is a key in the given map.<br/> If a
-     * matching parameter is found, its value is put in the map.<br/> If
-     * multiple values are found, a list is created and set in the map.
+     * Reads the parameters whose name is a key in the given map.<br>
+     * If a matching parameter is found, its value is put in the map.<br>
+     * If multiple values are found, a list is created and set in the map.
      * 
      * @param logger
      *                The logger.
@@ -117,9 +117,9 @@ public class FormUtils {
     }
 
     /**
-     * Reads the parameters whose name is a key in the given map.<br/> If a
-     * matching parameter is found, its value is put in the map.<br/> If
-     * multiple values are found, a list is created and set in the map.
+     * Reads the parameters whose name is a key in the given map.<br>
+     * If a matching parameter is found, its value is put in the map.<br>
+     * If multiple values are found, a list is created and set in the map.
      * 
      * @param logger
      *                The logger.
@@ -184,8 +184,8 @@ public class FormUtils {
     }
 
     /**
-     * Reads the parameters with the given name.<br/> If multiple values are
-     * found, a list is returned created.
+     * Reads the parameters with the given name.<br>
+     * If multiple values are found, a list is returned created.
      * 
      * @param logger
      *                The logger.
@@ -205,8 +205,8 @@ public class FormUtils {
     }
 
     /**
-     * Reads the parameters with the given name.<br/> If multiple values are
-     * found, a list is returned created.
+     * Reads the parameters with the given name.<br>
+     * If multiple values are found, a list is returned created.
      * 
      * @param logger
      *                The logger.

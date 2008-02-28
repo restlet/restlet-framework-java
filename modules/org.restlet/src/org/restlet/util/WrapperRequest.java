@@ -59,8 +59,8 @@ public class WrapperRequest extends Request {
     /**
      * Returns a modifiable attributes map that can be used by developers to
      * save information relative to the message. This is an easier alternative
-     * to the creation of a wrapper instance around the whole message.<br/>
-     * <br/>
+     * to the creation of a wrapper instance around the whole message.<br>
+     * <br>
      * 
      * In addition, this map is a shared space between the developer and the
      * connectors. In this case, it is used to exchange information that is not
@@ -149,8 +149,8 @@ public class WrapperRequest extends Request {
     }
 
     /**
-     * Returns the entity as a DOM representation.<br/> Note that this triggers
-     * the parsing of the entity into a reusable DOM document stored in memory.<br/>
+     * Returns the entity as a DOM representation.<br> Note that this triggers
+     * the parsing of the entity into a reusable DOM document stored in memory.<br>
      * This method and the related getEntity*() methods can only be invoked
      * once.
      * 
@@ -166,8 +166,8 @@ public class WrapperRequest extends Request {
      * the Application's converter service. If you want to use this method to
      * facilitate the processing of request entities, you need to provide a
      * custom implementation of the ConverterService class, overriding the
-     * toObject(Representation) method. <br/> Note that this triggers the
-     * parsing of the entity.<br/> This method and the related getEntity*()
+     * toObject(Representation) method. <br> Note that this triggers the
+     * parsing of the entity.<br> This method and the related getEntity*()
      * methods can only be invoked once.
      * 
      * @return The entity as a higher-level object.
@@ -183,7 +183,7 @@ public class WrapperRequest extends Request {
     }
 
     /**
-     * Returns the entity as a SAX representation.<br/> Note that this kind of
+     * Returns the entity as a SAX representation.<br> Note that this kind of
      * representation can only be parsed once. If you evaluate an XPath
      * expression, it can also only be done once. If you need to reuse the
      * entity multiple times, consider using the getEntityAsDom() method

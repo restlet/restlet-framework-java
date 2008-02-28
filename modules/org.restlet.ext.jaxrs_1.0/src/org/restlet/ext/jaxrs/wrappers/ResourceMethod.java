@@ -34,8 +34,8 @@ import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.util.SortedMetadata;
 
 /**
- * This class wraps JAX-RS resource methods and sub resource methods.<br/> It
- * does not wrap sub resource locators; see {@link SubResourceLocator}
+ * This class wraps JAX-RS resource methods and sub resource methods.<br>
+ * It does not wrap sub resource locators; see {@link SubResourceLocator}
  * 
  * @author Stephan Koops
  */
@@ -131,8 +131,8 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      *         Method. if the method is not annotated with {@link ProduceMime},
      *         than the {@link ProduceMime} of the Resource class is returned.
      *         If no {@link ProduceMime} can be found, an empty (also
-     *         unmodifiable) List will returned.<br/>This method never returns
-     *         null.
+     *         unmodifiable) List will returned.<br>
+     *         This method never returns null.
      */
     public List<MediaType> getProducedMimes() {
         if (producedMimes == null) {

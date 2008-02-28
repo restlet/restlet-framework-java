@@ -81,8 +81,9 @@ public class HttpServerHelper extends ServerHelper {
     }
 
     /**
-     * Handles the connector call.<br/> The default behavior is to create an
-     * REST call and delegate it to the attached Restlet.
+     * Handles the connector call.<br>
+     * The default behavior is to create an REST call and delegate it to the
+     * attached Restlet.
      * 
      * @param httpCall
      *                The HTTP server call.

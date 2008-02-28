@@ -48,9 +48,11 @@ import org.xml.sax.InputSource;
  * XML representation for SAX events processing. The purpose is to create a
  * streamable content based on a custom Java object model instead of a neutral
  * DOM tree. This domain object can then be directly modified and efficiently
- * serialized at a later time.<br/> Subclasses only need to override the
- * ContentHandler methods required for the reading and also the write(XmlWriter
- * writer) method when serialization is requested.<br/>
+ * serialized at a later time.<br>
+ * <br>
+ * Subclasses only need to override the ContentHandler methods required for the
+ * reading and also the write(XmlWriter writer) method when serialization is
+ * requested.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

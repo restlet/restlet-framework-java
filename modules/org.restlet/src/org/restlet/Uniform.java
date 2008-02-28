@@ -25,15 +25,15 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 
 /**
- * Base class exposing the uniform REST interface.
- * 
+ * Base class exposing the uniform REST interface.<br>
+ * <br>
  * "The central feature that distinguishes the REST architectural style from
  * other network-based styles is its emphasis on a uniform interface between
  * components. By applying the software engineering principle of generality to
  * the component interface, the overall system architecture is simplified and
  * the visibility of interactions is improved. Implementations are decoupled
  * from the services they provide, which encourages independent evolvability."
- * Roy T. Fielding<br/> <br/>
+ * Roy T. Fielding
  * 
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source

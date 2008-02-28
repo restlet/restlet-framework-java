@@ -40,9 +40,8 @@ import com.noelios.restlet.http.HttpServerConverter;
  * your Servlet to delegate all those calls to this class's service() method.
  * Remember to set the target Restlet, for example using a Restlet Router
  * instance. You can get the Restlet context directly on instances of this
- * class, it will be based on the parent Servlet's context for logging purpose.<br/>
- * <br/>
- * 
+ * class, it will be based on the parent Servlet's context for logging purpose.<br>
+ * <br>
  * This class is especially useful when directly integrating Restlets with
  * Spring managed Web applications. Here is a simple usage example:
  * 

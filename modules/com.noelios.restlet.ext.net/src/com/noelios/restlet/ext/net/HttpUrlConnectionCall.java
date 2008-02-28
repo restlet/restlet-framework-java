@@ -223,8 +223,8 @@ public class HttpUrlConnectionCall extends HttpClientCall {
     }
 
     /**
-     * Returns the response address.<br/> Corresponds to the IP address of the
-     * responding server.
+     * Returns the response address.<br>
+     * Corresponds to the IP address of the responding server.
      * 
      * @return The response address.
      */

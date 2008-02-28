@@ -345,8 +345,8 @@ public class HttpUtils {
     }
 
     /**
-     * Indicates if the token is valid.<br/> Only contains valid token
-     * characters.
+     * Indicates if the token is valid.<br>
+     * Only contains valid token characters.
      * 
      * @param token
      *                The token to check

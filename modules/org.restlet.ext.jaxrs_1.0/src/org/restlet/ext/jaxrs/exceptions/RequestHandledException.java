@@ -22,7 +22,8 @@ package org.restlet.ext.jaxrs.exceptions;
  * for example because of an handled exception resulting in an error while
  * method invocation. The Exception or whatever was handled and the necessary
  * data in {@link org.restlet.data.Response} were set, so that the JaxRsRouter
- * must not do anything. <br/> This Exception only indicates this.
+ * must not do anything. <br>
+ * This Exception only indicates this.
  * 
  * @author Stephan Koops
  */

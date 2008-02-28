@@ -59,7 +59,7 @@ public class PersonsRootResource {
     @Path("{personId}")
     public PersonResource onePerson(@PathParam("personId")
     int personId) {
-        if(!dbPersonExists(personId))
+        if (!dbPersonExists(personId))
             throw new WebApplicationException(404);
         return new PersonResource(personId);
     }
@@ -92,7 +92,7 @@ public class PersonsRootResource {
         Collection<Person> persons = dbGetAllPersons();
         StringBuilder html = new StringBuilder();
         html.append("<html><head></head><body>\n");
-        
+
         // persons list
         html.append("<h1>Persons</h1>\n");
         html.append("<ul>\n");
@@ -108,13 +108,13 @@ public class PersonsRootResource {
             html.append("</li>\n");
         }
         html.append("</ul>\n");
-        
+
         // create person form
         URI resourceUri = uriInfo.getAbsolutePath();
-        html.append("<form action=\""+resourceUri+"\" method=\"POST\">");
-        html.append("<input type=\"text\" name=\"firstname\" /><br/>");
-        html.append("<input type=\"text\" name=\"lastname\"  /><br/>");
-        html.append("<input type=\"submit\" /><br/>");
+        html.append("<form action=\"" + resourceUri + "\" method=\"POST\">");
+        html.append("<input type=\"text\" name=\"firstname\" /><br>");
+        html.append("<input type=\"text\" name=\"lastname\"  /><br>");
+        html.append("<input type=\"submit\" /><br>");
         html.append("</form>");
         html.append("</body></html>");
         return html.toString();
@@ -174,14 +174,14 @@ public class PersonsRootResource {
         persons.add(new Person(3, "Angela", "Merkel"));
         return persons;
     }
-    
+
     /**
      * Checks, if the person exists in the database.
+     * 
      * @param personId
      * @return
      */
-    private boolean dbPersonExists(int personId)
-    {
+    private boolean dbPersonExists(int personId) {
         return personId > 0 && personId < 10;
     }
 }

@@ -123,7 +123,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     private MessageBodyWriterSet messageBodyWriters = new MessageBodyWriterSet();
 
     private Set<ContextResolver<?>> contextResolvers = new HashSet<ContextResolver<?>>();
-    
+
     private WrapperFactory wrapperFactory;
 
     /**
@@ -197,7 +197,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     @Deprecated
     public void attach(Class<?> rootResourceClass)
             throws IllegalArgumentException {
-        RootResourceClass newRrc = wrapperFactory.getRootResourceClass(rootResourceClass);
+        RootResourceClass newRrc = wrapperFactory
+                .getRootResourceClass(rootResourceClass);
         PathRegExp uriTempl = newRrc.getPathRegExp();
         for (RootResourceClass rrc : this.rootResourceClasses) {
             if (rrc.getJaxRsClass().equals(rootResourceClass))
@@ -574,8 +575,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * Sorting of media types follows the general rule: x/y < x/* < *<!---->/*,
      * i.e. a method that explicitly lists one of the requested media types is
      * sorted before a method that lists *<!---->/*. Quality parameter values
-     * are also used such that x/y;q=1.0 < x/y;q=0.7. <br/> See JSR-311 Spec,
-     * section 2.5, Part 3b+c. <br/> Never returns null.
+     * are also used such that x/y;q=1.0 < x/y;q=0.7. <br>
+     * See JSR-311 Spec, section 2.5, Part 3b+c. <br>
+     * Never returns null.
      * 
      * @param resourceMethods
      *                the resourceMethods that provide the required mediaType

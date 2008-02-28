@@ -387,8 +387,9 @@ public abstract class Engine {
 
     /**
      * Returns the best variant representation for a given resource according
-     * the the client preferences.<br/>A default language is provided in case
-     * the variants don't match the client preferences.
+     * the the client preferences.<br>
+     * A default language is provided in case the variants don't match the
+     * client preferences.
      * 
      * @param client
      *                The client preferences.

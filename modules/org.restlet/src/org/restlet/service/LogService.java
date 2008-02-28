@@ -24,7 +24,7 @@ package org.restlet.service;
  * <br>
  * The default access log format follows the <a
  * href="http://www.w3.org/TR/WD-logfile.html"> W3C Extended Log File Format</a>
- * with the following fields used: <br/>
+ * with the following fields used: <br>
  * <ol>
  * <li>Date (YYYY-MM-DD)</li>
  * <li>Time (HH:MM:SS)</li>
@@ -48,13 +48,14 @@ package org.restlet.service;
  * If you use <a href="http://www.analog.cx">Analog</a> to generate your log
  * reports, and if you use the default log format, then you can simply specify
  * this string as a value of the LOGFORMAT command:
- * (%Y-%m-%d\t%h:%n:%j\t%S\t%u\t%j\t%j\t%j\t%r\t%q\t%c\t%b\t%j\t%T\t%v\t%B\t%f)<br/>
+ * (%Y-%m-%d\t%h:%n:%j\t%S\t%u\t%j\t%j\t%j\t%r\t%q\t%c\t%b\t%j\t%T\t%v\t%B\t%f)<br>
  * <br>
  * For custom access log format, see the syntax to use and the list of available
  * variable names in {@link org.restlet.util.Template}. <br>
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial: Access
- *      logging</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial:
+ *      Access logging</a>
  * @see <a
  *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
  * @author Jerome Louvel (contact@noelios.com)

@@ -42,8 +42,8 @@ import com.noelios.restlet.http.HttpServerHelper;
 /**
  * Servlet acting like an HTTP server connector. See <a
  * href="/documentation/1.1/faq#02">Developper FAQ #2</a> for details on how to
- * integrate a Restlet application into a servlet container.<br/> Here is a
- * sample configuration for your Restlet webapp:
+ * integrate a Restlet application into a servlet container.<br>
+ * Here is a sample configuration for your Restlet webapp:
  * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;

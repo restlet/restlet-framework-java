@@ -142,8 +142,8 @@ public class HttpCall {
     }
 
     /**
-     * Returns the client address.<br/> Corresponds to the IP address of the
-     * requesting client.
+     * Returns the client address.<br>
+     * Corresponds to the IP address of the requesting client.
      * 
      * @return The client address.
      */
@@ -152,8 +152,8 @@ public class HttpCall {
     }
 
     /**
-     * Returns the client port.<br/> Corresponds to the TCP/IP port of the
-     * requesting client.
+     * Returns the client port.<br>
+     * Corresponds to the TCP/IP port of the requesting client.
      * 
      * @return The client port.
      */
@@ -267,8 +267,8 @@ public class HttpCall {
     }
 
     /**
-     * Returns the response address.<br/> Corresponds to the IP address of the
-     * responding server.
+     * Returns the response address.<br>
+     * Corresponds to the IP address of the responding server.
      * 
      * @return The response address.
      */
@@ -460,8 +460,8 @@ public class HttpCall {
     }
 
     /**
-     * Sets the response address.<br/> Corresponds to the IP address of the
-     * responding server.
+     * Sets the response address.<br>
+     * Corresponds to the IP address of the responding server.
      * 
      * @param responseAddress
      *                The response address.

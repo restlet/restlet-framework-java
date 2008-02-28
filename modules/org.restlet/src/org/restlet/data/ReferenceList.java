@@ -153,7 +153,7 @@ public class ReferenceList extends WrapperList<Reference> {
             Reference parentRef = getIdentifier().getParentRef();
 
             if (!parentRef.equals(getIdentifier())) {
-                sb.append("<a href=\"" + parentRef + "\">..</a><br/>\n");
+                sb.append("<a href=\"" + parentRef + "\">..</a><br>\n");
             }
         } else {
             sb.append("<h2>List of references</h2>\n");
@@ -161,7 +161,7 @@ public class ReferenceList extends WrapperList<Reference> {
 
         for (Reference ref : this) {
             sb.append("<a href=\"" + ref.toString() + "\">"
-                    + ref.getRelativeRef(getIdentifier()) + "</a><br/>\n");
+                    + ref.getRelativeRef(getIdentifier()) + "</a><br>\n");
         }
         sb.append("</body></html>\n");
 

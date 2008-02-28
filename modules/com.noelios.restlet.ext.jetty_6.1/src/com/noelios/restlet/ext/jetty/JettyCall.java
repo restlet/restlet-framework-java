@@ -184,8 +184,8 @@ public class JettyCall extends HttpServerCall {
     }
 
     /**
-     * Returns the response address.<br/> Corresponds to the IP address of the
-     * responding server.
+     * Returns the response address.<br>
+     * Corresponds to the IP address of the responding server.
      * 
      * @return The response address.
      */
@@ -195,9 +195,9 @@ public class JettyCall extends HttpServerCall {
     }
 
     /**
-     * Indicates if the request was made using a confidential mean.<br/>
+     * Indicates if the request was made using a confidential mean.<br>
      * 
-     * @return True if the request was made using a confidential mean.<br/>
+     * @return True if the request was made using a confidential mean.<br>
      */
     @Override
     public boolean isConfidential() {

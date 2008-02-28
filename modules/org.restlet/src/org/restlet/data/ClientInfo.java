@@ -165,8 +165,9 @@ public final class ClientInfo {
     /**
      * Returns the best variant for a given resource according the the client
      * preferences: accepted languages, accepted character sets, accepted media
-     * types and accepted encodings.<br/>A default language is provided in case
-     * the variants don't match the client preferences.
+     * types and accepted encodings.<br>
+     * A default language is provided in case the variants don't match the
+     * client preferences.
      * 
      * @param variants
      *                The list of variants to compare.
@@ -185,8 +186,9 @@ public final class ClientInfo {
 
     /**
      * Returns the best variant for a given resource according the the client
-     * preferences.<br/>A default language is provided in case the resource's
-     * variants don't match the client preferences.
+     * preferences.<br>
+     * A default language is provided in case the resource's variants don't
+     * match the client preferences.
      * 
      * @param resource
      *                The resource for which the best representation needs to be

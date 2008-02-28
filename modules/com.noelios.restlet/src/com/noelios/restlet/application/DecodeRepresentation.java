@@ -38,8 +38,9 @@ import org.restlet.util.WrapperRepresentation;
 
 /**
  * Representation that decodes a wrapped representation if its encoding is
- * supported.<br/>If at least one encoding of the wrapped representation is not
- * supported, then the wrapped representation is not decoded.
+ * supported.<br>
+ * If at least one encoding of the wrapped representation is not supported, then
+ * the wrapped representation is not decoded.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

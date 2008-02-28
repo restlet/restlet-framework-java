@@ -32,13 +32,15 @@ import org.restlet.resource.StringRepresentation;
 /**
  * Filter associating a response entity based on the status. In order to
  * customize the default representation, just subclass this class and override
- * the "getRepresentation" method.<br/> If any exception occurs during the call
- * handling, a "server internal error" status is automatically associated to the
- * call. Of course, you can personalize the representation of this error. Also,
- * if no status is set (null), then the "success ok" status is assumed.<br/>
+ * the "getRepresentation" method.<br>
+ * If any exception occurs during the call handling, a "server internal error"
+ * status is automatically associated to the call. Of course, you can
+ * personalize the representation of this error. Also, if no status is set
+ * (null), then the "success ok" status is assumed.
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part08">Tutorial: Displaying
- *      error pages</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part08">Tutorial:
+ *      Displaying error pages</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StatusFilter extends Filter {
@@ -121,8 +123,9 @@ public class StatusFilter extends Filter {
     }
 
     /**
-     * Returns a representation for the given status.<br/> In order to
-     * customize the default representation, this method can be overriden.
+     * Returns a representation for the given status.<br>
+     * In order to customize the default representation, this method can be
+     * overriden.
      * 
      * @param status
      *                The status to represent.
@@ -150,13 +153,13 @@ public class StatusFilter extends Filter {
         sb.append("</h3>");
         sb.append("<p>You can get technical details <a href=\"");
         sb.append(status.getUri());
-        sb.append("\">here</a>.<br/>\n");
+        sb.append("\">here</a>.<br>\n");
 
         if (email != null) {
             sb
                     .append("For further assistance, you can contact the <a href=\"mailto:");
             sb.append(email);
-            sb.append("\">administrator</a>.<br/>\n");
+            sb.append("\">administrator</a>.<br>\n");
         }
 
         if (homeURI != null) {
@@ -174,7 +177,7 @@ public class StatusFilter extends Filter {
 
     /**
      * Returns a status for a given exception or error. By default it returns an
-     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br/>
+     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
      * In order to customize the default behavior, this method can be overriden.
      * 
      * @param throwable

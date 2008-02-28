@@ -213,10 +213,11 @@ import org.restlet.data.Response;
  * <td>SIP</td>
  * <td>Integer</td>
  * </tr>
- * </table> <br/>
+ * </table> <br>
  * 
  * Below is the list of name sub-parts, for Reference variables, that can
- * replace the asterix in the variable names above:<br/><br/>
+ * replace the asterix in the variable names above:<br>
+ * <br>
  * 
  * <table>
  * <tr>

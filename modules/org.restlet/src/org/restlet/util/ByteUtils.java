@@ -691,9 +691,9 @@ public final class ByteUtils {
     }
 
     /**
-     * Converts an input stream to a string.<br/>As this method uses the
-     * InputstreamReader class, the default character set is used for decoding
-     * the input stream.
+     * Converts an input stream to a string.<br>
+     * As this method uses the InputstreamReader class, the default character
+     * set is used for decoding the input stream.
      * 
      * @see <a
      *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader

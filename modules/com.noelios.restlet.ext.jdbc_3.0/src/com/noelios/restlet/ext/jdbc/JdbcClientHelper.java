@@ -55,30 +55,43 @@ import com.noelios.restlet.ClientHelper;
 import com.noelios.restlet.Engine;
 
 /**
- * Client connector to a JDBC database.<br/> To send a request to the server,
- * create a new instance of a client supporting the JDBC Protocol and invoke the
- * handle() method.<br/> Alternatively, you can create a new Call with the JDBC
- * URI as the resource reference and use an XML request as the entity.<br/><br/>
+ * Client connector to a JDBC database.<br>
+ * To send a request to the server, create a new instance of a client supporting
+ * the JDBC Protocol and invoke the handle() method.<br>
+ * Alternatively, you can create a new Call with the JDBC URI as the resource
+ * reference and use an XML request as the entity.<br>
+ * <br>
  * Database connections are optionally pooled using Apache Commons DBCP. In this
  * case, a different connection pool is created for each unique combination of
- * JDBC URI and connection properties.<br/><br/> Do not forget to register
- * your JDBC drivers before using this client. See <a
+ * JDBC URI and connection properties.<br>
+ * <br>
+ * Do not forget to register your JDBC drivers before using this client. See <a
  * href="http://java.sun.com/j2se/1.5.0/docs/api/java/sql/DriverManager.html">
- * JDBC DriverManager API</a> for details<br/><br/> Sample XML request:<br/><br/>
- * {@code <?xml version="1.0" encoding="ISO-8859-1" ?>}<br/> {@code <request>}<br/>
- * &nbsp;&nbsp;{@code <header>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code <connection>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <usePooling>true</usePooling>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="user">scott</property >}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="password">tiger</property >}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="...">1234</property >}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="...">true</property >}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code </connection>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code <returnGeneratedKeys>true</returnGeneratedKeys>}<br/>
- * &nbsp;&nbsp;{@code </header>}<br/> &nbsp;&nbsp;{@code <body>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>UPDATE myTable SET myField1="value1" </statement>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>SELECT msField1, myField2 FROM myTable</statement>}<br/>
- * &nbsp;&nbsp;{@code </body>}<br/> {@code </request>}<br/><br/>Several SQL
- * Statements can be specified.<br/> A RowSetRepresentation of the last
- * correctly executed SQL request is returned to the Client.</br>
+ * JDBC DriverManager API</a> for details<br>
+ * <br>
+ * Sample XML request:<br>
+ * <br>
+ * {@code <?xml version="1.0" encoding="ISO-8859-1" ?>}<br>
+ * {@code <request>}<br>
+ * &nbsp;&nbsp;{@code <header>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code <connection>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <usePooling>true</usePooling>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="user">scott</property >}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="password">tiger</property >}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="...">1234</property >}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="...">true</property >}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code </connection>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code <returnGeneratedKeys>true</returnGeneratedKeys>}<br>
+ * &nbsp;&nbsp;{@code </header>}<br>
+ * &nbsp;&nbsp;{@code <body>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>UPDATE myTable SET myField1="value1" </statement>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>SELECT msField1, myField2 FROM myTable</statement>}<br>
+ * &nbsp;&nbsp;{@code </body>}<br>
+ * {@code </request>}<br>
+ * <br>
+ * Several SQL Statements can be specified.<br>
+ * A RowSetRepresentation of the last correctly executed SQL request is returned
+ * to the Client.
  * 
  * @see com.noelios.restlet.ext.jdbc.RowSetRepresentation
  * 

@@ -32,9 +32,10 @@ import org.restlet.data.Response;
  * implements the java.util.List interface using the Route class as the generic
  * type. This allows you to use an instance of this class as any other
  * java.util.List, in particular all the helper methods in
- * java.util.Collections.<br/> <br/> Note that structural changes to this list
- * are thread-safe, using an underlying
- * {@link java.util.concurrent.CopyOnWriteArrayList}.
+ * java.util.Collections.<br>
+ * <br>
+ * Note that structural changes to this list are thread-safe, using an
+ * underlying {@link java.util.concurrent.CopyOnWriteArrayList}.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  * @see java.util.Collections

@@ -100,9 +100,10 @@ public final class CookieSetting extends Cookie {
      * @param comment
      *                The cookie's comment.
      * @param maxAge
-     *                Sets the maximum age in seconds.<br/> Use 0 to
-     *                immediately discard an existing cookie.<br/> Use -1 to
-     *                discard the cookie at the end of the session (default).
+     *                Sets the maximum age in seconds.<br>
+     *                Use 0 to immediately discard an existing cookie.<br>
+     *                Use -1 to discard the cookie at the end of the session
+     *                (default).
      * @param secure
      *                Indicates if cookie should only be transmitted by secure
      *                means.
@@ -128,9 +129,10 @@ public final class CookieSetting extends Cookie {
      * @param comment
      *                The cookie's comment.
      * @param maxAge
-     *                Sets the maximum age in seconds.<br/> Use 0 to
-     *                immediately discard an existing cookie.<br/> Use -1 to
-     *                discard the cookie at the end of the session (default).
+     *                Sets the maximum age in seconds.<br>
+     *                Use 0 to immediately discard an existing cookie.<br>
+     *                Use -1 to discard the cookie at the end of the session
+     *                (default).
      * @param secure
      *                Indicates if cookie should only be transmitted by secure
      *                means.
@@ -214,9 +216,9 @@ public final class CookieSetting extends Cookie {
     }
 
     /**
-     * Returns the maximum age in seconds.<br/> Use 0 to immediately discard an
-     * existing cookie.<br/> Use -1 to discard the cookie at the end of the
-     * session (default).
+     * Returns the maximum age in seconds.<br>
+     * Use 0 to immediately discard an existing cookie.<br>
+     * Use -1 to discard the cookie at the end of the session (default).
      * 
      * @return The maximum age in seconds.
      */
@@ -274,9 +276,9 @@ public final class CookieSetting extends Cookie {
     }
 
     /**
-     * Sets the maximum age in seconds.<br/> Use 0 to immediately discard an
-     * existing cookie.<br/> Use -1 to discard the cookie at the end of the
-     * session (default).
+     * Sets the maximum age in seconds.<br>
+     * Use 0 to immediately discard an existing cookie.<br>
+     * Use -1 to discard the cookie at the end of the session (default).
      * 
      * @param maxAge
      *                The maximum age in seconds.

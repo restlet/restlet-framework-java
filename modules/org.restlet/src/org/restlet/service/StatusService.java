@@ -27,19 +27,19 @@ import org.restlet.resource.Representation;
 /**
  * Service to handle error statuses. If an exception is thrown within your
  * application or Restlet code, it will be intercepted by this service if it is
- * enabled.
- * 
+ * enabled.<br>
+ * <br>
  * When an exception or an error is caught, the
  * {@link #getStatus(Throwable, Request, Response)} method is first invoked to
  * obtain the status that you want to set on the response. If this method isn't
  * overridden or returns null, the {@link Status#SERVER_ERROR_INTERNAL} constant
- * will be set by default.
- * 
+ * will be set by default.<br>
+ * <br>
  * Also, when the status of a response returned is an error status (see
  * {@link Status#isError()}, the
  * {@link #getRepresentation(Status, Request, Response)} method is then invoked
- * to give your service a chance to override the default error page.
- * 
+ * to give your service a chance to override the default error page.<br>
+ * <br>
  * If you want to customize the default behavior, you need to create a subclass
  * of StatusService that overrides some or all of the methods mentioned above.
  * Then, just create a instance of your class and set it on your Component or
@@ -93,9 +93,9 @@ public class StatusService {
     }
 
     /**
-     * Returns a representation for the given status.<br/> In order to
-     * customize the default representation, this method can be overriden. It
-     * returns null by default.
+     * Returns a representation for the given status.<br>
+     * In order to customize the default representation, this method can be
+     * overriden. It returns null by default.
      * 
      * @param status
      *                The status to represent.
@@ -112,7 +112,7 @@ public class StatusService {
 
     /**
      * Returns a status for a given exception or error. By default it returns an
-     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br/>
+     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
      * In order to customize the default behavior, this method can be overriden.
      * 
      * @param throwable

@@ -77,8 +77,9 @@ import org.restlet.util.Series;
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source
  *      dissertation</a>
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial: Reaching
- *      target Resources</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial:
+ *      Reaching target Resources</a>
  * @see org.restlet.resource.Representation
  * @see org.restlet.Finder
  * @author Jerome Louvel (contact@noelios.com)
@@ -265,7 +266,8 @@ public class Resource extends Handler {
      * the getVariants() method. The default implementation directly returns the
      * variant in case the variants are already full representations. In all
      * other cases, you will need to override this method in order to provide
-     * your own implementation. <br/><br/>
+     * your own implementation. <br>
+     * <br>
      * 
      * This method is very useful for content negotiation when it is too costly
      * to initilize all the potential representations. It allows a resource to
@@ -408,8 +410,8 @@ public class Resource extends Handler {
                 // Resource not found
                 getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 getLogger()
-                                    .warning(
-                                            "A resource should normally have at least one variant added by calling getVariants().add() in the constructor");
+                        .warning(
+                                "A resource should normally have at least one variant added by calling getVariants().add() in the constructor");
 
             } else if (isNegotiateContent()) {
                 Variant preferredVariant = getPreferredVariant();
@@ -717,7 +719,8 @@ public class Resource extends Handler {
      * the getVariants() method. The default implementation directly returns the
      * variant in case the variants are already full representations. In all
      * other cases, you will need to override this method in order to provide
-     * your own implementation. <br/><br/>
+     * your own implementation. <br>
+     * <br>
      * 
      * This method is very useful for content negotiation when it is too costly
      * to initilize all the potential representations. It allows a resource to

@@ -87,9 +87,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     }
 
     /**
-     * Copies the parameters whose name is a key in the given map.<br/> If a
-     * matching parameter is found, its value is put in the map.<br/> If
-     * multiple values are found, a list is created and set in the map.
+     * Copies the parameters whose name is a key in the given map.<br>
+     * If a matching parameter is found, its value is put in the map.<br>
+     * If multiple values are found, a list is created and set in the map.
      * 
      * @param params
      *                The map controlling the copy.

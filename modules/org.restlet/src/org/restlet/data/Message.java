@@ -73,7 +73,8 @@ public abstract class Message {
      * Returns the modifiable map of attributes that can be used by developers
      * to save information relative to the message. Creates a new instance if no
      * one has been set. This is an easier alternative to the creation of a
-     * wrapper instance around the whole message.<br/> <br/>
+     * wrapper instance around the whole message.<br>
+     * <br>
      * 
      * In addition, this map is a shared space between the developer and the
      * connectors. In this case, it is used to exchange information that is not
@@ -149,11 +150,11 @@ public abstract class Message {
     }
 
     /**
-     * Returns the entity as a DOM representation.<br/> This method can be
-     * called several times and will always return the same representation
-     * instance. Note that if the entity is large this method can result in
-     * important memory consumption. In this case, consider using a SAX
-     * representation.
+     * Returns the entity as a DOM representation.<br>
+     * This method can be called several times and will always return the same
+     * representation instance. Note that if the entity is large this method can
+     * result in important memory consumption. In this case, consider using a
+     * SAX representation.
      * 
      * @return The entity as a DOM representation.
      */
@@ -167,9 +168,10 @@ public abstract class Message {
     }
 
     /**
-     * Returns the entity as a form.<br/> This method can be called several
-     * times and will always return the same form instance. Note that if the
-     * entity is large this method can result in important memory consumption.
+     * Returns the entity as a form.<br>
+     * This method can be called several times and will always return the same
+     * form instance. Note that if the entity is large this method can result in
+     * important memory consumption.
      * 
      * @return The entity as a form.
      */
@@ -186,8 +188,8 @@ public abstract class Message {
      * the Application's converter service. In order to use this method to
      * facilitate the parsing of entities, you need to set an instance of a
      * subclass of ConverterService onto your Restlet Application, overriding
-     * the toObject(Representation) method. <br/> Note that this triggers the
-     * parsing of the entity.
+     * the toObject(Representation) method. <br>
+     * Note that this triggers the parsing of the entity.
      * 
      * @return The entity as a higher-level object.
      * @see org.restlet.service.ConverterService
@@ -202,12 +204,12 @@ public abstract class Message {
     }
 
     /**
-     * Returns the entity as a SAX representation.<br/> This method can be
-     * called several times and will always return the same representation
-     * instance. Note that generally this type of representation can only be
-     * parsed once. If you evaluate an XPath expression, it can also only be
-     * done once. If you need to reuse the entity multiple times, consider using
-     * the getEntityAsDom() method instead.
+     * Returns the entity as a SAX representation.<br>
+     * This method can be called several times and will always return the same
+     * representation instance. Note that generally this type of representation
+     * can only be parsed once. If you evaluate an XPath expression, it can also
+     * only be done once. If you need to reuse the entity multiple times,
+     * consider using the getEntityAsDom() method instead.
      * 
      * @return The entity as a SAX representation.
      */

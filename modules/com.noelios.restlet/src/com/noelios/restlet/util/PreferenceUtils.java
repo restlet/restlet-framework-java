@@ -33,7 +33,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 
 /**
- * Preference manipulation utilities.<br/>
+ * Preference manipulation utilities.<br>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -120,8 +120,8 @@ public class PreferenceUtils {
     }
 
     /**
-     * Formats a quality value.<br/> If the quality is invalid, an
-     * IllegalArgumentException is thrown.
+     * Formats a quality value.<br>
+     * If the quality is invalid, an IllegalArgumentException is thrown.
      * 
      * @param quality
      *                The quality value as a float.
@@ -142,8 +142,8 @@ public class PreferenceUtils {
     }
 
     /**
-     * Parses a quality value.<br/> If the quality is invalid, an
-     * IllegalArgumentException is thrown.
+     * Parses a quality value.<br>
+     * If the quality is invalid, an IllegalArgumentException is thrown.
      * 
      * @param quality
      *                The quality value as a string.

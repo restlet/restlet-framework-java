@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 /**
  * Reference to a Uniform Resource Identifier (URI). Contrary to the
  * java.net.URI class, this interface represents mutable references. It strictly
- * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br/>
+ * conforms to the RFC 3986 specifying URIs and follow its naming conventions.<br>
  * 
  * <pre>
  * URI reference        = absolute-reference | relative-reference
@@ -764,8 +764,9 @@ public class Reference {
     }
 
     /**
-     * Returns the last segment of a hierarchical path.<br/> For example the
-     * "/a/b/c" and "/a/b/c/" paths have the same segments: "a", "b", "c.
+     * Returns the last segment of a hierarchical path.<br>
+     * For example the "/a/b/c" and "/a/b/c/" paths have the same segments: "a",
+     * "b", "c.
      * 
      * @return The last segment of a hierarchical path.
      */
@@ -1200,8 +1201,8 @@ public class Reference {
     }
 
     /**
-     * Returns the list of segments in a hierarchical path.<br/> A new list is
-     * created for each call.
+     * Returns the list of segments in a hierarchical path.<br>
+     * A new list is created for each call.
      * 
      * @return The segments of a hierarchical path.
      */
@@ -2011,8 +2012,8 @@ public class Reference {
     }
 
     /**
-     * Sets the segments of a hierarchical path.<br/> A new absolute path will
-     * replace any existing one.
+     * Sets the segments of a hierarchical path.<br>
+     * A new absolute path will replace any existing one.
      * 
      * @param segments
      *                The segments of the hierarchical path.

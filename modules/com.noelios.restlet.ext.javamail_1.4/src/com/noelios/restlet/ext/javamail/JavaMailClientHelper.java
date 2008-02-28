@@ -55,15 +55,21 @@ import com.noelios.restlet.Engine;
  * Client connector to a mail server. Currently only the SMTP protocol is
  * supported. To send an email, specify a SMTP URI as the ressource reference of
  * the call and use an XML email as the content of the call. An SMTP URI has the
- * following syntax: smtp://host[:port]<br/> <br/> The default port used is 25
- * for SMTP and 465 for SMTPS. Use the Call.getSecurity().setLogin() and
- * setPassword() methods for authentication.<br/> <br/> Sample XML email:<br/>
- * {@code <?xml version="1.0" encoding="ISO-8859-1" ?>}<br/> {@code <email>}<br/>
- * &nbsp;&nbsp;{@code   <head>}<br/> &nbsp;&nbsp;&nbsp;&nbsp;{@code      <subject>Account activation</subject>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <from>support@restlet.org</from>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <to>user@domain.com</to>}<br/>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <cc>log@restlet.org</cc>}<br/>
- * &nbsp;&nbsp;{@code   </head>}<br/> &nbsp;&nbsp;{@code   <body><![CDATA[Your account was sucessfully created!]]></body>}<br/>
+ * following syntax: smtp://host[:port]<br>
+ * <br>
+ * The default port used is 25 for SMTP and 465 for SMTPS. Use the
+ * Call.getSecurity().setLogin() and setPassword() methods for authentication.<br>
+ * <br>
+ * Sample XML email:<br>
+ * {@code <?xml version="1.0" encoding="ISO-8859-1" ?>}<br>
+ * {@code <email>}<br>
+ * &nbsp;&nbsp;{@code   <head>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <subject>Account activation</subject>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <from>support@restlet.org</from>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <to>user@domain.com</to>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <cc>log@restlet.org</cc>}<br>
+ * &nbsp;&nbsp;{@code   </head>}<br>
+ * &nbsp;&nbsp;{@code   <body><![CDATA[Your account was sucessfully created!]]></body>}<br>
  * {@code </email>}
  * 
  * @author Jerome Louvel (contact@noelios.com)

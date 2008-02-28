@@ -64,8 +64,8 @@ public class PersonResource {
         StringBuilder html = new StringBuilder();
         html.append("<html><head>\n</head><body>\n");
         html.append("<h1>Person</h1>");
-        html.append("firstname: " + person.getFirstname() + "<br/>\n");
-        html.append("lastname:  " + person.getLastname() + " <br/>\n");
+        html.append("firstname: " + person.getFirstname() + "<br>\n");
+        html.append("lastname:  " + person.getLastname() + " <br>\n");
         html.append("(ID: " + person.getId() + ")\n");
         html.append("</body></html>");
         return html.toString();
