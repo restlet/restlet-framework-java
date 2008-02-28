@@ -60,7 +60,7 @@ public abstract class Engine {
     public static final String MINOR_NUMBER = "@minor-number@";
 
     /** Release number. */
-    public static final String RELEASE_NUMBER = "@release-number@";
+    public static final String RELEASE_NUMBER = "@release-type@@release-number@";
 
     /** Complete version. */
     public static final String VERSION = MAJOR_NUMBER + '.' + MINOR_NUMBER
