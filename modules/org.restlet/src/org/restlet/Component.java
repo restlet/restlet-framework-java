@@ -57,9 +57,38 @@ import org.w3c.dom.NodeList;
  * that provides a transformation of data via its interface." Roy T. Fielding<br>
  * <br>
  * 
+ * XML configuration is supported via a dedicated constructor. It gives access
+ * to the list of supported client and server connectors and current services.
+ * In addition, you can add and configure virtual hosts (including the default
+ * one). Especially, you can attach applications specified by their class name
+ * or by a file descriptor (at this moment only WADL format for WADLApplication
+ * is supported).<br>
+ * The schema of the configuration file is available here :
+ * 
+ * <br>
+ * Here is a sample of XML configuration file:
+ * <pre>
+ * &lt;?xml version=&quot;1.0&quot;?&gt;
+ * &lt;component xmlns=&quot;http://www.restlet.org/schemas/1.1/Component&quot;
+ *               xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+ *               xsi:schemaLocation=&quot;http://www.restlet.org/schemas/1.1/Component&quot;&gt;
+ *    &lt;client protocol=&quot;FILE&quot; /&gt;
+ *    &lt;client protocols=&quot;HTTP HTTPS&quot; /&gt;
+ *    &lt;server protocols=&quot;HTTP HTTPS&quot; /&gt;
+ * 
+ *    &lt;defaultHost&gt;
+ *       &lt;attach uriPattern=&quot;/abcd/{xyz}&quot; 
+ *                  targetClass=&quot;org.restlet.test.MyApplication&quot; /&gt;
+ *       &lt;attach uriPattern=&quot;/efgh/{xyz}&quot;
+ *                  targetDescriptor=&quot;clap://class/org.restlet.test.MyApplication.wadl&quot; /&gt;
+ *    &lt;/defaultHost&gt;
+ * &lt;/component&gt;
+ * </pre>
+ * 
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
  *      dissertation</a>
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Component extends Restlet {
@@ -121,7 +150,7 @@ public class Component extends Restlet {
      * Parse a configuration file and update the component's configuration.
      * 
      * @param xmlConfigReference
-     *                the reference to the xml config file.
+     *                The reference to the XML config file.
      */
     public Component(Reference xmlConfigReference) {
         this();
