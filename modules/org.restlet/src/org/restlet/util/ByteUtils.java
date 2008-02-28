@@ -66,6 +66,9 @@ public final class ByteUtils {
         /** The selectable channel to read from. */
         private SelectableChannel selectableChannel;
 
+        /** Indicates if further reads can be attempted. */
+        private boolean endReached;
+
         /**
          * Constructor.
          * 
@@ -77,6 +80,7 @@ public final class ByteUtils {
             this.selectableChannel = (SelectableChannel) channel;
             this.bb = ByteBuffer.allocate(8192);
             this.bb.flip();
+            this.endReached = false;
         }
 
         @Override
@@ -90,7 +94,7 @@ public final class ByteUtils {
                 if (bb.hasRemaining()) {
                     // Yes, let's return the next one
                     result = bb.get();
-                } else {
+                } else if (!endReached) {
                     // No, let's try to read more
                     int bytesRead = readChannel();
 
@@ -106,13 +110,17 @@ public final class ByteUtils {
                         }
 
                         bytesRead = readChannel();
+                    } else if (bytesRead == -1) {
+                        endReached = true;
                     }
 
-                    if (bytesRead <= 0) {
+                    if (bb.remaining() == 0) {
                         result = -1;
                     } else {
                         result = bb.get();
                     }
+                } else {
+                    result = -1;
                 }
             } finally {
                 // Workaround for bug #6403933
