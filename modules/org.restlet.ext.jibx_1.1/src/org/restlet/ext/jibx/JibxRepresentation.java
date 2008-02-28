@@ -27,10 +27,11 @@ import org.w3c.dom.Document;
  * XML representations and Java objects with JIBX bindings.
  * 
  * @see <a href="http://jibx.sourceforge.net/">JiBX project</a>
- * 
  * @author Florian Schwarz
+ * @param <T>
+ *                The type to wrap.
  */
-public class JibxRepresentation extends XmlRepresentation {
+public class JibxRepresentation<T> extends XmlRepresentation {
 
     /**
      * Improves performance by caching contexts which are expensive to create.
@@ -79,7 +80,7 @@ public class JibxRepresentation extends XmlRepresentation {
     private String encoding = "UTF-8";
 
     /** The wrapped Java object. */
-    private Object object;
+    private T object;
 
     /** The source XML representation. */
     private Representation xmlRepresentation;
@@ -96,8 +97,7 @@ public class JibxRepresentation extends XmlRepresentation {
      * @param bindingName
      *                The name of the JIBX binding to use.
      */
-    public JibxRepresentation(MediaType mediaType, Object object,
-            String bindingName) {
+    public JibxRepresentation(MediaType mediaType, T object, String bindingName) {
         super(mediaType);
         this.object = object;
         this.bindingClass = object.getClass();
@@ -175,13 +175,15 @@ public class JibxRepresentation extends XmlRepresentation {
      *                 If any error occurs attempting to get the stream of the
      *                 xmlRepresentation.
      */
-    public Object getObject() throws JiBXException, IOException {
+    @SuppressWarnings("unchecked")
+    public T getObject() throws JiBXException, IOException {
         if ((this.object == null) && (this.xmlRepresentation != null)) {
             // Try to unmarshal the wrapped XML representation
             IBindingFactory jibxBFact = JibxRepresentation.getBindingFactory(
                     bindingName, bindingClass);
             IUnmarshallingContext uctx = jibxBFact.createUnmarshallingContext();
-            return uctx.unmarshalDocument(xmlRepresentation.getStream(), null);
+            return (T) uctx.unmarshalDocument(xmlRepresentation.getStream(),
+                    null);
         }
         return this.object;
     }
@@ -196,7 +198,7 @@ public class JibxRepresentation extends XmlRepresentation {
      * @param object
      *                The Java object to set.
      */
-    public void setObject(Object object) {
+    public void setObject(T object) {
         this.object = object;
     }
 
