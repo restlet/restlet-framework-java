@@ -26,7 +26,7 @@ package org.restlet.data;
 public final class Status extends Metadata {
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
-    private static final String BASE_RESTLET = "http://www.restlet.org/docs/api/";
+    private static final String BASE_RESTLET = "http://www.restlet.org/documentation/1.1/api/";
 
     private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 
