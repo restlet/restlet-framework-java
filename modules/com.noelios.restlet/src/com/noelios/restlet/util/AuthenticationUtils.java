@@ -94,7 +94,7 @@ public class AuthenticationUtils {
                             .findHelper(cr.getScheme(), false, true);
 
                     if (helper != null) {
-                        helper.authenticate(cr, request, guard);
+                        result = helper.authenticate(cr, request, guard);
                     } else {
                         throw new IllegalArgumentException("Challenge scheme "
                                 + guard.getScheme()

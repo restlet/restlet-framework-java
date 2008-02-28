@@ -31,6 +31,13 @@ import com.noelios.restlet.util.AuthenticationUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class AuthenticationTestCase extends TestCase {
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        org.restlet.util.Engine.setInstance(null);
+    }
+
     /**
      * Tests the cookies parsing.
      */
