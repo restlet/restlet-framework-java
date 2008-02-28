@@ -51,7 +51,7 @@ import org.restlet.util.Template;
  * patterns. Finally, you can modify the list of routes while handling incoming
  * calls as the delegation code is ensured to be thread-safe.
  * 
- * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Routers and
+ * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part11">Tutorial: Routers and
  *      hierarchical URIs</a>
  * @author Jerome Louvel (contact@noelios.com)
  */

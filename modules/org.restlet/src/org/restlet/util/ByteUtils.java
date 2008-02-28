@@ -793,8 +793,7 @@ public final class ByteUtils {
     }
 
     /**
-     * Writes a readable channel to a writable channel. It assumes that the
-     * readable and writable channels are both in NIO blocking mode.
+     * Writes a readable channel to a writable channel.
      * 
      * @param readableChannel
      *                The readable channel.

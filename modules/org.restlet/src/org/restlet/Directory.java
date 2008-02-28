@@ -55,7 +55,7 @@ import org.restlet.util.Engine;
  * href="http://www.davekoelle.com/alphanum.html">Alphanum Algorithm from David
  * Koelle</a>.
  * 
- * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving
+ * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part06">Tutorial: Serving
  *      static files</a>
  * @author Jerome Louvel (contact@noelios.com)
  */

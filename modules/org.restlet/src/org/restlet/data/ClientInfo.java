@@ -144,7 +144,7 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the agent name (ex: "Noelios Restlet Engine/1.0").
+     * Returns the agent name (ex: "Noelios Restlet Engine/1.1").
      * 
      * @return The agent name.
      */
@@ -272,7 +272,7 @@ public final class ClientInfo {
     }
 
     /**
-     * Sets the agent name (ex: "Noelios Restlet Engine/1.0").
+     * Sets the agent name (ex: "Noelios Restlet Engine/1.1").
      * 
      * @param agent
      *                The agent name.
