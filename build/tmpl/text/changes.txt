@@ -30,6 +30,7 @@ Changes log
    a lower priority. Reported by Todd Nguyen. 
  - Fixed NPE in the MediaTypes class. Reported and contributed by Marc Portier.
  - Fixed bug in SpringComponent preventing setting of clients. Reported by Garriot Zhang.
+ - Fixed several bugs related to Grizzly (chunked encoding not working, restarting NPE, etc.).
 
 [Enhancements] 
  - Added support for Alpha-numerical sorting of index pages in Directory. Suggested by Davide 
@@ -96,6 +97,7 @@ Changes log
  - Added MediaType.getMostSpecific(), isCompatible() and isConcrete() methods. Contributed by Stephan Koops. 
  - Guard is now setting a Principal instance after authorization. Contributed by Stephan Koops.
  - Refactored engine to support pluggable authentication.
+ - Updated Grizzly to version 1.7.2
  
 [Misc]
  - Added Engine.copyResponseHeaders() method. Contributed by Stephan Koops.

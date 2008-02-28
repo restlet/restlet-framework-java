@@ -48,7 +48,7 @@ public abstract class BaseConnectorsTestCase extends TestCase {
 
     private boolean enableInternalServer = true;
 
-    private boolean enableJdkNetClient = true;
+    private boolean enableJdkNetClient = false;
 
     private boolean enableJettyServer = true;
 
@@ -97,26 +97,23 @@ public abstract class BaseConnectorsTestCase extends TestCase {
 
     public void testGrizzlyAndApache() throws Exception {
         if (enableGrizzlyServer && enableApacheClient) {
-            // runTest(new
-            // com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-            // new com.noelios.restlet.ext.httpclient.HttpClientHelper(
-            // null));
+            runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+                    new com.noelios.restlet.ext.httpclient.HttpClientHelper(
+                            null));
         }
     }
 
     public void testGrizzlyAndInternal() throws Exception {
         if (enableGrizzlyServer && enableInternalClient) {
-            // runTest(new
-            // com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-            // new StreamClientHelper(null));
+            runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+                    new StreamClientHelper(null));
         }
     }
 
     public void testGrizzlyAndJdkNet() throws Exception {
         if (enableGrizzlyServer && enableJdkNetClient) {
-            // runTest(new
-            // com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
-            // new com.noelios.restlet.ext.net.HttpClientHelper(null));
+            runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
+                    new com.noelios.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
