@@ -27,7 +27,6 @@ import org.restlet.Server;
 import com.noelios.restlet.http.HttpServerHelper;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.ControllerStateListener;
-import com.sun.grizzly.DefaultPipeline;
 import com.sun.grizzly.TCPSelectorHandler;
 
 /**
@@ -129,8 +128,6 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
             getLogger().info(
                     "Stopping the Grizzly " + getProtocols() + " server");
             this.controller.stop();
-            this.controller.getPipeline().stopPipeline();
-            this.controller.setPipeline(new DefaultPipeline());
         }
     }
 }

@@ -30,10 +30,13 @@ import org.restlet.data.MediaType;
  * Representation based on a serializable Java object.
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @param <T>
+ *                The class to serialize, see {@link Serializable}
  */
-public class ObjectRepresentation extends OutputRepresentation {
+public class ObjectRepresentation<T extends Serializable> extends
+        OutputRepresentation {
     /** The serializable object. */
-    private Object object;
+    private T object;
 
     /**
      * Constructor reading the object from a serialized representation. This
@@ -46,6 +49,7 @@ public class ObjectRepresentation extends OutputRepresentation {
      * @throws ClassNotFoundException
      * @throws IllegalArgumentException
      */
+    @SuppressWarnings("unchecked")
     public ObjectRepresentation(Representation serializedRepresentation)
             throws IOException, ClassNotFoundException,
             IllegalArgumentException {
@@ -54,7 +58,7 @@ public class ObjectRepresentation extends OutputRepresentation {
                 MediaType.APPLICATION_JAVA_OBJECT)) {
             ObjectInputStream ois = new ObjectInputStream(
                     serializedRepresentation.getStream());
-            this.object = ois.readObject();
+            this.object = (T) ois.readObject();
             ois.close();
         } else {
             throw new IllegalArgumentException(
@@ -69,7 +73,7 @@ public class ObjectRepresentation extends OutputRepresentation {
      * @param object
      *                The serializable object.
      */
-    public ObjectRepresentation(Serializable object) {
+    public ObjectRepresentation(T object) {
         super(MediaType.APPLICATION_JAVA_OBJECT);
         this.object = object;
     }
@@ -81,7 +85,7 @@ public class ObjectRepresentation extends OutputRepresentation {
      * @throws IOException
      */
     @SuppressWarnings("unused")
-    public Object getObject() throws IOException {
+    public T getObject() throws IOException {
         return this.object;
     }
 
@@ -91,7 +95,7 @@ public class ObjectRepresentation extends OutputRepresentation {
      * @param object
      *                The represented object.
      */
-    public void setObject(Serializable object) {
+    public void setObject(T object) {
         this.object = object;
     }
 

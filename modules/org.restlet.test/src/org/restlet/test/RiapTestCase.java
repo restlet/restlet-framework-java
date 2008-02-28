@@ -50,12 +50,14 @@ public class RiapTestCase extends TestCase {
 
     private static final String ECHO_TEST_MSG = JUST_SOME_OBJ.toString();
 
+    @SuppressWarnings("unchecked")
     public void testRiap() throws Exception {
         Component comp = new Component();
         Application localOnly = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
                 return new Restlet(getContext()) {
+                    @SuppressWarnings("unchecked")
                     @Override
                     public void handle(Request request, Response response) {
                         final String selfBase = "riap://application";

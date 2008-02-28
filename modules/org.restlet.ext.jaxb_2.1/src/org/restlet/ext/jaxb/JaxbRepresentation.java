@@ -53,8 +53,10 @@ import org.w3c.dom.Document;
  * 
  * @author Overstock.com
  * @author Jerome Louvel (contact@noelios.com)
+ * @param <T>
+ *                The type to wrap.
  */
-public class JaxbRepresentation extends XmlRepresentation {
+public class JaxbRepresentation<T> extends XmlRepresentation {
     /**
      * This is a utility class to assist in marshalling Java content trees into
      * XML. Each {@code marshal} method takes a different target for the XML.
@@ -101,7 +103,7 @@ public class JaxbRepresentation extends XmlRepresentation {
             return m;
         }
 
-        public String getPackage() {
+        String getPackage() {
             return pkg;
         }
 
@@ -195,11 +197,11 @@ public class JaxbRepresentation extends XmlRepresentation {
         private final String pkg;
 
         // This is a factory class.
-        public Unmarshaller(String pkg) {
+        Unmarshaller(String pkg) {
             this.pkg = pkg;
         }
 
-        public String getPackage() {
+        String getPackage() {
             return pkg;
         }
 
@@ -310,7 +312,7 @@ public class JaxbRepresentation extends XmlRepresentation {
     }
 
     /** The wrapped Java object. */
-    private Object object;
+    private T object;
 
     /**
      * The list of Java package names that contain schema derived class and/or
@@ -331,6 +333,17 @@ public class JaxbRepresentation extends XmlRepresentation {
     private boolean formattedOutput;
 
     /**
+     * Creates a JAXB representation from an existing JAXB content tree with
+     * {@link MediaType#APPLICATION_XML}.
+     * 
+     * @param object
+     *                The Java object.
+     */
+    public JaxbRepresentation(T object) {
+        this(MediaType.APPLICATION_XML, object);
+    }
+
+    /**
      * Creates a JAXB representation from an existing JAXB content tree.
      * 
      * @param mediaType
@@ -338,7 +351,7 @@ public class JaxbRepresentation extends XmlRepresentation {
      * @param object
      *                The Java object.
      */
-    public JaxbRepresentation(MediaType mediaType, Object object) {
+    public JaxbRepresentation(MediaType mediaType, T object) {
         super(mediaType);
         this.object = object;
         this.contextPath = (object != null) ? object.getClass().getPackage()
@@ -351,10 +364,10 @@ public class JaxbRepresentation extends XmlRepresentation {
      * Creates a new JAXB representation, converting the input XML into a Java
      * content tree. The XML is validated.
      * 
-     * @param contextPath
-     *                The list of Java package names for JAXB.
      * @param xmlRepresentation
      *                The XML wrapped in a representation.
+     * @param contextPath
+     *                The list of Java package names for JAXB.
      * 
      * @throws JAXBException
      *                 If the incoming XML does not validate against the schema.
@@ -371,10 +384,10 @@ public class JaxbRepresentation extends XmlRepresentation {
      * Creates a new JAXB representation, converting the input XML into a Java
      * content tree. The XML is validated.
      * 
-     * @param contextPath
-     *                The list of Java package names for JAXB.
      * @param xmlRepresentation
      *                The XML wrapped in a representation.
+     * @param contextPath
+     *                The list of Java package names for JAXB.
      * @param validationHandler
      *                A handler for dealing with validation failures.
      * 
@@ -392,6 +405,47 @@ public class JaxbRepresentation extends XmlRepresentation {
         this.validationEventHandler = validationHandler;
         this.xmlRepresentation = xmlRepresentation;
 
+    }
+
+    /**
+     * Creates a new JAXB representation, converting the input XML into a Java
+     * content tree. The XML is validated.
+     * 
+     * @param xmlRepresentation
+     *                The XML wrapped in a representation.
+     * @param type
+     *                The type to convert to.
+     * 
+     * @throws JAXBException
+     *                 If the incoming XML does not validate against the schema.
+     * @throws IOException
+     *                 If unmarshalling XML fails.
+     */
+    @SuppressWarnings("unchecked")
+    public JaxbRepresentation(Representation xmlRepresentation, Class<T> type) {
+        this(xmlRepresentation, type.getPackage().getName(), null);
+    }
+
+    /**
+     * Creates a new JAXB representation, converting the input XML into a Java
+     * content tree. The XML is validated.
+     * 
+     * @param xmlRepresentation
+     *                The XML wrapped in a representation.
+     * @param type
+     *                The type to convert to.
+     * @param validationHandler
+     *                A handler for dealing with validation failures.
+     * 
+     * @throws JAXBException
+     *                 If the incoming XML does not validate against the schema.
+     * @throws IOException
+     *                 If unmarshalling XML fails.
+     */
+    @SuppressWarnings("unchecked")
+    public JaxbRepresentation(Representation xmlRepresentation, Class<T> type,
+            ValidationEventHandler validationHandler) {
+        this(xmlRepresentation, type.getPackage().getName(), validationHandler);
     }
 
     @Override
@@ -458,7 +512,8 @@ public class JaxbRepresentation extends XmlRepresentation {
      * @return The wrapped Java object.
      * @throws IOException
      */
-    public Object getObject() throws IOException {
+    @SuppressWarnings("unchecked")
+    public T getObject() throws IOException {
         if ((this.object == null) && (this.xmlRepresentation != null)) {
             // Try to unmarshal the wrapped XML representation
             Unmarshaller u = new Unmarshaller(this.contextPath);
@@ -474,7 +529,8 @@ public class JaxbRepresentation extends XmlRepresentation {
             }
 
             try {
-                this.object = u.unmarshal(this.xmlRepresentation.getStream());
+                this.object = (T) u.unmarshal(this.xmlRepresentation
+                        .getStream());
             } catch (JAXBException e) {
                 logger.log(Level.WARNING,
                         "Unable to unmarshal the XML representation", e);
@@ -549,7 +605,7 @@ public class JaxbRepresentation extends XmlRepresentation {
      * @param object
      *                The Java object to set.
      */
-    public void setObject(Object object) {
+    public void setObject(T object) {
         this.object = object;
     }
 
