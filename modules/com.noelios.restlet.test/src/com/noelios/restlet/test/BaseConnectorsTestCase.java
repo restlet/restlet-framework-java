@@ -48,7 +48,7 @@ public abstract class BaseConnectorsTestCase extends TestCase {
 
     private boolean enableInternalServer = true;
 
-    private boolean enableJdkNetClient = false;
+    private boolean enableJdkNetClient = true;
 
     private boolean enableJettyServer = true;
 
