@@ -124,6 +124,8 @@ public class RestletServerWrapper implements ServerWrapper {
     }
 
     public int getPort() {
+        if (this.component == null)
+            throw new IllegalStateException("the server is not started yet.");
         Server server = Util.getOnlyElement(this.component.getServers());
         int port = server.getPort();
         if (port > 0)

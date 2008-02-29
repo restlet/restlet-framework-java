@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Encoded;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
@@ -38,7 +39,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.SecurityContext;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
@@ -47,6 +47,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
@@ -222,7 +223,8 @@ public abstract class AbstractJaxRsWrapper {
         try {
             constr = paramType.getConstructor(Representation.class);
         } catch (SecurityException e) {
-            logger.warning("The constructor "+paramType+"(Representation) is not accessable.");
+            logger.warning("The constructor " + paramType
+                    + "(Representation) is not accessable.");
             return null;
         } catch (NoSuchMethodException e) {
             return null;
@@ -336,43 +338,41 @@ public abstract class AbstractJaxRsWrapper {
      * @throws WebApplicationException
      */
     private static Object getParameterValue(Annotation[] paramAnnotations,
-            Class<?> paramClass, CallContext callContext,
-            HiddenJaxRsRouter jaxRsRouter, boolean leaveEncoded,
-            int indexForExcMessages) throws MissingAnnotationException,
-            InstantiateParameterException, WebApplicationException {
-        // TODO @Encode may be placed on Type, constructor, method or parameter
+            Class<?> paramClass, CallContext callContext, Logger logger,
+            boolean leaveEncoded, int indexForExcMessages)
+            throws MissingAnnotationException, InstantiateParameterException,
+            WebApplicationException {
         DefaultValue defaultValue = null;
-        for (Annotation annotation : paramAnnotations) {
-            if (annotation.annotationType().equals(DefaultValue.class)) {
-                defaultValue = (DefaultValue) annotation;
-                break;
-            }
+        for (Annotation annot : paramAnnotations) {
+            Class<? extends Annotation> annotationType = annot.annotationType();
+            if (annotationType.equals(DefaultValue.class))
+                defaultValue = (DefaultValue) annot;
+            else if (!leaveEncoded && annotationType.equals(Encoded.class))
+                leaveEncoded = true;
         }
         for (Annotation annotation : paramAnnotations) {
-            Class<? extends Annotation> annotationType = annotation
-                    .annotationType();
-            if (annotationType.equals(Context.class)) {
+            Class<? extends Annotation> annoType = annotation.annotationType();
+            if (annoType.equals(Context.class)) {
                 return callContext;
             }
-            if (annotationType.equals(HeaderParam.class)) {
+            if (annoType.equals(HeaderParam.class)) {
                 return getHeaderParamValue(paramClass,
                         (HeaderParam) annotation, defaultValue, callContext);
             }
-            if (annotationType.equals(PathParam.class)) {
+            if (annoType.equals(PathParam.class)) {
                 return getPathParamValue(paramClass, (PathParam) annotation,
                         leaveEncoded, defaultValue, callContext);
             }
-            if (annotationType.equals(MatrixParam.class)) {
+            if (annoType.equals(MatrixParam.class)) {
                 return getMatrixParamValue(paramClass,
                         (MatrixParam) annotation, leaveEncoded, defaultValue,
                         callContext);
             }
-            if (annotationType.equals(QueryParam.class)) {
-                Logger logger = jaxRsRouter.getLogger();
+            if (annoType.equals(QueryParam.class)) {
                 return getQueryParamValue(paramClass, (QueryParam) annotation,
                         defaultValue, callContext, logger);
             }
-            if (annotationType.equals(CookieParam.class)) {
+            if (annoType.equals(CookieParam.class)) {
                 return getCookieParamValue(paramClass,
                         (CookieParam) annotation, defaultValue, callContext);
             }
@@ -399,9 +399,8 @@ public abstract class AbstractJaxRsWrapper {
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
-     * @param authenticator
-     *                AccessControl for roles, see
-     *                {@link SecurityContext#isUserInRole(String)}
+     * @param jaxRsRouter
+     *                The {@link JaxRsRouter}. May be null, but should not be.
      * @param mbrs
      *                The Set of {@link MessageBodyReader}s.
      * 
@@ -424,13 +423,15 @@ public abstract class AbstractJaxRsWrapper {
             return new Object[0];
         Object[] args = new Object[paramNo];
         boolean annotRequired = false;
+        Logger logger = jaxRsRouter != null ? jaxRsRouter.getLogger() : Logger
+                .getAnonymousLogger();
         for (int i = 0; i < args.length; i++) {
             Class<?> paramType = paramTypes[i];
             Object arg;
             Annotation[] paramAnnotations = paramAnnotationss[i];
             try {
                 arg = getParameterValue(paramAnnotations, paramType,
-                        callContext, jaxRsRouter, leaveEncoded, i);
+                        callContext, logger, leaveEncoded, i);
             } catch (MissingAnnotationException ionae) {
                 if (annotRequired)
                     throw ionae;

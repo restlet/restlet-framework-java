@@ -32,6 +32,7 @@ import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.AllowAllAccess;
 import org.restlet.ext.jaxrs.AccessControl;
 import org.restlet.ext.jaxrs.ForbidAllAccess;
+import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.server.RestletServerWrapper;
 import org.restlet.test.jaxrs.server.ServerWrapper;
 import org.restlet.test.jaxrs.services.SecurityContextService;
@@ -86,30 +87,39 @@ public class SecurityContextTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void test2() throws Exception {
-        if (!startServer(new AccessControl() {
-            public boolean isUserInRole(Principal principal, String role) {
-                return false;
-            }
-        }))
+        if (!startServer(ForbidAllAccess.getInstance()))
             return;
         Response response = get();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
         response = getAuth(null, "ydfsdf", "ydf");
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+    }
 
-        response = getAuth(null, "admin", "adminPW");
+    public void test3() throws Exception {
+        if (!startServer(ForbidAllAccess.getInstance()))
+            return;
+        Response response = getAuth(null, "admin", "adminPW");
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
+    }
 
-        response = post(null, new Form().getWebRepresentation(),
+    public void test4() throws Exception {
+        if (!startServer(ForbidAllAccess.getInstance()))
+            return;
+        Response response = post(null, new Form().getWebRepresentation(),
                 new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "alice",
                         "alicesSecret"));
         sysOutEntityIfError(response);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
+    }
 
-        response = post(null, new Form("abc=def").getWebRepresentation(),
-                new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "bob",
-                        "bobsSecret"));
+    public void test5() throws Exception {
+        if (!startServer(ForbidAllAccess.getInstance()))
+            return;
+        Representation postEntity = new Form("abc=def").getWebRepresentation();
+        ChallengeResponse cr = new ChallengeResponse(
+                ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
+        Response response = post(null, postEntity, cr);
         sysOutEntityIfError(response);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }

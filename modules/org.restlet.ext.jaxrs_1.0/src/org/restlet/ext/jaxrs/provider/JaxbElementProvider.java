@@ -21,39 +21,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
 
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
+import org.restlet.ext.jaxrs.exceptions.ImplementationException;
 
 /**
  * @author Stephan Koops
  */
 @Provider
-public class JaxbElementProvider extends AbstractProvider<JAXBElement<?>> {
+public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
 
     private Logger logger = Logger.getLogger(JaxbElementProvider.class
             .getName());
-
-    /**
-     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#getSize(java.lang.Object)
-     */
-    @Override
-    public long getSize(JAXBElement<?> object) {
-        return -1;
-    }
 
     /**
      * @see org.restlet.ext.jaxrs.provider.AbstractProvider#isReadableAndWriteable(java.lang.Class,
@@ -62,36 +49,17 @@ public class JaxbElementProvider extends AbstractProvider<JAXBElement<?>> {
     @Override
     public boolean isReadableAndWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
-        return JAXBElement.class.isAssignableFrom(type);
-    }
-
-    /**
-     * Method to show how to get the parameter class of the JAXBElement (for
-     * reading of the concrete type), but it requires to get the generic
-     * parameter types from the method. The interface MessageBodyReader only
-     * supports the Class (JAXBElement) which has no informtaion about it's
-     * concrete parameter.
-     * 
-     * @param args
-     * @throws Exception
-     */
-    public static void main(String[] args) throws Exception {
-        Method m = JaxbElementProvider.class.getMethod("x", JAXBElement.class);
-        Type t = m.getGenericParameterTypes()[0];
-        if (t instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) t;
-            Type atp = pt.getActualTypeArguments()[0];
-            System.out.println(atp);
-        }
-    }
-
-    /**
-     * only for test in {@link #main(String[])}
-     * 
-     * @param string
-     */
-    void x(JAXBElement<String> string) {
-        string.toString();
+        if (!JAXBElement.class.isAssignableFrom(type))
+            return false;
+        if (!(genericType instanceof ParameterizedType))
+            return false;
+        ParameterizedType pt = (ParameterizedType) genericType;
+        Type atp = pt.getActualTypeArguments()[0];
+        if (atp instanceof Class)
+            return true;
+        if (atp instanceof ParameterizedType)
+            return (((ParameterizedType)atp).getRawType() instanceof Class);
+        return false;
     }
 
     /**
@@ -103,33 +71,32 @@ public class JaxbElementProvider extends AbstractProvider<JAXBElement<?>> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpResponseHeaders,
             OutputStream entityStream) throws IOException {
-        try {
-            JAXBContext jaxbContext = getJaxbContext(jaxbElement
-                    .getDeclaredType());
-            Marshaller marshaller = jaxbContext.createMarshaller();
-            marshaller.marshal(jaxbElement.getValue(), entityStream);
-        } catch (JAXBException e) {
-            throw AbstractProvider.logAndIOExc(logger, "Could not marshal the "
-                    + jaxbElement.getDeclaredType().getName(), e);
-        }
-    }
-
-    private JAXBContext getJaxbContext(Class<?> clazz) throws JAXBException {
-        // LATER perhaps caching the JAXBContext
-        try {
-            return JAXBContext.newInstance(clazz);
-        } catch (LinkageError e) {
-            throw new WebApplicationException(Response.serverError().entity(
-                    e.getMessage()).build());
-        }
+        marshal(jaxbElement.getValue(), entityStream);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public JAXBElement<?> readFrom(Class<JAXBElement<?>> type,
             Type genericType, MediaType mediaType, Annotation[] annotations,
             MultivaluedMap<String, String> httpResponseHeaders,
             InputStream entityStream) throws IOException {
-        // TODO JaxBElementProvider.readFrom
-        throw new NotYetImplementedException();
+        ParameterizedType pt = (ParameterizedType) genericType;
+        Type atp = pt.getActualTypeArguments()[0];
+        Class<?> clazz;
+        if (atp instanceof Class)
+            clazz = (Class<?>)atp;
+        else if (atp instanceof ParameterizedType)
+            clazz = (Class<?>)((ParameterizedType)atp).getRawType();
+        else
+            throw new ImplementationException("The JaxbElement provider has gotten a type it could not unmarshal. Perhaps it is not consistent to itself.");
+        QName qName = null; // TODO get QName from anywhere
+        Class<?> declaredType = clazz;
+        Object value = unmarshal(clazz, entityStream);
+        return new JAXBElement(qName, declaredType, value);
+    }
+
+    @Override
+    Logger getLogger() {
+        return this.logger;
     }
 }

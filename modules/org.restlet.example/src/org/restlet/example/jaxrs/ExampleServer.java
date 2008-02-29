@@ -22,13 +22,15 @@ import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.ext.jaxrs.HtmlPreferer;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 
 /**
- * This class contains some example code to show how to use the Restlet JAX-RS
- * extension.
+ * This class shows how to use the Restlet JAX-RS extension without access
+ * control.
  * 
  * @author Stephan Koops
+ * @see GuardedExample
  */
 public class ExampleServer {
 
@@ -45,7 +47,13 @@ public class ExampleServer {
         Application application = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
-                return new JaxRsRouter(getContext(), new ExampleAppConfig());
+                ExampleAppConfig appConfig = new ExampleAppConfig();
+                JaxRsRouter router = new JaxRsRouter(getContext(), appConfig);
+                // some browser request XML with higher quality than HTML.
+                // If you want to change the quality, use this HtmlPreferer
+                // filter. If not, you can directly return the router
+                HtmlPreferer filter = new HtmlPreferer(getContext(), router);
+                return filter;
             }
         };
 
@@ -53,7 +61,7 @@ public class ExampleServer {
         comp.getDefaultHost().attach(application);
         comp.start();
 
-        System.out.println("Server stated on port "+server.getPort());
+        System.out.println("Server stated on port " + server.getPort());
         System.out.println("Press key to stop server");
         System.in.read();
         System.out.println("Stopping server");

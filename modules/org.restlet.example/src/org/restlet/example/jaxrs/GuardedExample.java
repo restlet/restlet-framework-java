@@ -12,18 +12,20 @@ import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.AccessControl;
+import org.restlet.ext.jaxrs.HtmlPreferer;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 
 /**
- * This class contains some example code to show how to use the Restlet JAX-RS
- * extension.
+ * This class shows how to use the Restlet JAX-RS extension with access control.
  * 
  * @author Stephan Koops
+ * @see ExampleServer
  */
 public class GuardedExample {
 
     /**
-     * an example {@link AccessControl}
+     * An example {@link AccessControl}. This example allows anything to user
+     * admin and nothing to anyone else.
      * 
      * @author Stephan Koops
      */
@@ -35,8 +37,7 @@ public class GuardedExample {
          */
         public boolean isUserInRole(Principal principal, String role) {
             // access database or whatever
-            // example: user with name "admin" has all roles, other users have
-            // no roles.
+            // example: user "admin" has all roles, other users have no roles.
             if (principal.getName().equalsIgnoreCase("admin"))
                 return true;
             return false;
@@ -56,16 +57,30 @@ public class GuardedExample {
         Application application = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
+                // create access controller
                 AccessControl accessControl = new ExampleAccessControl();
+                // create JaxRsRouter
+                JaxRsRouter router = new JaxRsRouter(getContext(),
+                        new ExampleAppConfig(), accessControl);
+
+                // create Guard for authentication
                 Guard guard = new Guard(getContext(),
                         ChallengeScheme.HTTP_BASIC, "persons");
+                // set valid users ant it's passwords.
                 guard.getSecrets().put("admin", "adminPW".toCharArray());
                 guard.getSecrets().put("alice", "alicesSecret".toCharArray());
                 guard.getSecrets().put("bob", "bobsSecret".toCharArray());
-                JaxRsRouter router = new JaxRsRouter(getContext(),
-                        new ExampleAppConfig(), accessControl);
+                // attach JaxRsRouter to the Guard
                 guard.setNext(router);
-                return guard;
+
+                // some browser request XML with higher quality than HTML.
+                // If you want to change the quality, use this HtmlPreferer
+                // filter. If not, you can directly return the guard
+                HtmlPreferer filter = new HtmlPreferer(getContext(), guard);
+
+                // return the filter
+                // (or directly the Guard, if you do not need the HtmlPreferer).
+                return filter;
             }
         };
 

@@ -39,7 +39,7 @@ public class RootResourceClassTest extends TestCase {
         super.tearDown();
     }
 
-    public void testEncodePath() {
+    public void testEncodePath() throws Exception {
         WrapperFactory wrapperFactory = new WrapperFactory(Logger
                 .getAnonymousLogger());
         try {

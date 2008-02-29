@@ -18,6 +18,8 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -108,6 +110,10 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     protected Class<?> jaxRsClass;
 
+    /**
+     * is true, if the resource class is annotated with &#64;Path. Is available
+     * after constructor was running.
+     */
     boolean leaveEncoded;
 
     private Collection<SubResourceLocator> subResourceLocators;
@@ -426,6 +432,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     private static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
 
+    private static final String JAX_RS_PACKAGE_PREFIX = "javax.ws.rs";
+
     private void internalSetSubResourceMethodsAndLocators(Logger logger) {
         Collection<ResourceMethodOrLocator> srmls = new ArrayList<ResourceMethodOrLocator>();
         Collection<ResourceMethod> subRsesMeths = new ArrayList<ResourceMethod>();
@@ -435,9 +443,10 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         // TODO also check for implemented interfaces or super classes, see
         // section 2."Annotation Inheritance"
         for (java.lang.reflect.Method javaMethod : classMethods) {
-            Path path = javaMethod.getAnnotation(Path.class);
+            java.lang.reflect.Method annJavaMethod = getAnnotatedJavaMethod(javaMethod);
+            Path path = annJavaMethod.getAnnotation(Path.class);
             org.restlet.data.Method httpMethod = ResourceMethod
-                    .getHttpMethod(javaMethod);
+                    .getHttpMethod(annJavaMethod);
             if (httpMethod != null) {
                 if (checkResMethodNotPublic(javaMethod, logger))
                     continue;
@@ -459,6 +468,31 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         this.subResourceLocators = subResLocs;
         this.subResourceMethods = subRsesMeths;
         this.subResourceMethodsAndLocators = srmls;
+    }
+
+    /**
+     * @param javaMethod
+     * @return
+     */
+    private java.lang.reflect.Method getAnnotatedJavaMethod(
+            java.lang.reflect.Method javaMethod) {
+        boolean useMethod = checkForJaxRsAnnotations(javaMethod);
+        return javaMethod;
+    }
+
+    /**
+     * 
+     * @param javaMethod
+     *                Java method, class or something like that.
+     * @return true, if the given accessible object is annotated with any
+     *         JAX-RS-Annotation.
+     */
+    static boolean checkForJaxRsAnnotations(AccessibleObject javaMethod) {
+        for (Annotation annotation : javaMethod.getAnnotations()) {
+            if(annotation.annotationType().getName().startsWith(JAX_RS_PACKAGE_PREFIX))
+                return true;
+        }
+        return false;
     }
 
     /**

@@ -24,15 +24,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -40,78 +34,48 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  */
 @Provider
-public class JaxbProvider extends AbstractProvider<Object> {
-
-    // REQUESTED JSR311: JAXB-Version nicht festgelet.
+public class JaxbProvider extends AbstractJaxbProvider<Object> {
 
     private Logger logger = Logger.getLogger(JaxbProvider.class.getName());
 
     /**
-     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#getSize(java.lang.Object)
+     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#isReadableAndWriteable(java.lang.Class,
+     *      Type, Annotation[])
      */
     @Override
-    public long getSize(Object object) {
-        return -1;
-    }
-
-    /**
-     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#isReadableAndWriteable(java.lang.Class, Type, Annotation[])
-     */
-    @Override
-    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
-        // if(type.isArray())
-        //    type = type.getComponentType();
-        // if(Collection.class.isAssignableFrom(type))
-        //    return true;
+    protected boolean isReadableAndWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
         return type.isAnnotationPresent(XmlRootElement.class);
     }
 
     /**
      * @see org.restlet.ext.jaxrs.provider.AbstractProvider#readFrom(java.lang.Class,
-     *      Type, javax.ws.rs.core.MediaType,
-     *      Annotation[], javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
+     *      Type, javax.ws.rs.core.MediaType, Annotation[],
+     *      javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
      */
     @Override
     public Object readFrom(Class<Object> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            MediaType mediaType, Annotation[] annotations,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        try {
-            JAXBContext jaxbContext = getJaxbContext(type);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            return unmarshaller.unmarshal(entityStream);
-        } catch (JAXBException e) {
-            String message = "Could not unmarshal to " + type.getName();
-            throw logAndIOExc(logger, message, e);
-        }
+        return unmarshal(type, entityStream);
     }
 
     /**
      * @see org.restlet.ext.jaxrs.provider.AbstractProvider#writeTo(java.lang.Object,
-     *      Type, Annotation[],
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+     *      Type, Annotation[], javax.ws.rs.core.MediaType,
+     *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
      */
     @Override
     public void writeTo(Object object, Type genericType,
-            Annotation[] annotations,
-            MediaType mediaType, 
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpResponseHeaders,
             OutputStream entityStream) throws IOException {
-        try {
-            JAXBContext jaxbContext = getJaxbContext(object.getClass());
-            Marshaller marshaller = jaxbContext.createMarshaller();
-            marshaller.marshal(object, entityStream);
-        } catch (JAXBException e) {
-            throw logAndIOExc(logger, "Could not marshal the "
-                    + object.getClass().getName(), e);
-        }
+        marshal(object, entityStream);
     }
 
-    private JAXBContext getJaxbContext(Class<?> clazz) throws JAXBException {
-        // LATER perhaps caching the JAXBContext
-        try {
-            return JAXBContext.newInstance(clazz);
-        } catch (NoClassDefFoundError e) {
-            throw new WebApplicationException(Response.serverError().entity(e.getMessage()).build());
-        }
-   }
+    @Override
+    Logger getLogger() {
+        return this.logger;
+    }
 }

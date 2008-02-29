@@ -48,7 +48,9 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.core.HttpHeaders;
+import org.restlet.ext.jaxrs.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.provider.ByteArrayProvider;
 import org.restlet.ext.jaxrs.provider.DataSourceProvider;
@@ -87,9 +89,9 @@ import org.restlet.resource.StringRepresentation;
 /**
  * <p>
  * The router choose the JAX-RS resource class and method to use for a request.
- * This class has methods {@link #attach(Class)} and {@link #detach(Class)} like
- * the Restlet {@link Router}. The variable names in this class are often the
- * same as in the JAX-RS-Definition.
+ * This class has methods {@link #addRootResourceClass(Class)} and
+ * {@link #detach(Class)} like the Restlet {@link Router}. The variable names
+ * in this class are often the same as in the JAX-RS-Definition.
  * </p>
  * <p>
  * This class is a subclass of {@link JaxRsRouterHelpMethods}. The methods to
@@ -134,7 +136,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      *                {@link Restlet#Restlet(Context)}.
      * @param appConfig
      *                Contains the classes to load as root resource classes and
-     *                as providers.
+     *                as providers. You could add more {@link ApplicationConfig}s;
+     *                use method {@link #attach(ApplicationConfig)}.
      * @param accessControl
      *                The AccessControl, must not be null. If you don't need the
      *                authentification, you can use the {@link ForbidAllAccess},
@@ -148,17 +151,40 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         super(context);
         this.wrapperFactory = new WrapperFactory(getContext().getLogger());
         this.loadDefaultProviders();
-        this.attach(appConfig);
-        this.setAccessControl(accessControl);
+        if (appConfig != null)
+            this.attach(appConfig);
+        if (accessControl != null)
+            this.setAccessControl(accessControl);
+        else
+            this.setAccessControl(ThrowExcAccessControl.getInstance());
     }
 
     /**
      * Creates a new JaxRsRouter with the given Context. Only the default
      * providers are loaded by default. If a resource class wants to check if a
      * user has a role, the request is returned with HTTP status 500 (Internal
-     * Server Error).
+     * Server Error), see {@link SecurityContext#isUserInRole(String)}.
      * 
-     * @see SecurityContext#isUserInRole(String)
+     * @param context
+     *                the context from the parent, see
+     *                {@link Restlet#Restlet(Context)}
+     * @param appConfig
+     *                Contains the classes to load as root resource classes and
+     *                as providers. You could add more {@link ApplicationConfig}s;
+     *                use method {@link #attach(ApplicationConfig)}.
+     * @see #JaxRsRouter(Context, ApplicationConfig, AccessControl)
+     */
+    public JaxRsRouter(Context context, ApplicationConfig appConfig) {
+        this(context, appConfig, null);
+    }
+
+    /**
+     * Creates a new JaxRsRouter with the given Context. Only the default
+     * providers are loaded by default. No {@link ApplicationConfig} is loaded,
+     * use {@link #attach(ApplicationConfig)} to attach some. If a resource
+     * class later wants to check if a user has a role, the request is returned
+     * with HTTP status 500 (Internal Server Error), see
+     * {@link SecurityContext#isUserInRole(String)}.
      * 
      * @param context
      *                the context from the parent, see
@@ -168,20 +194,46 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      *                as providers.
      * @see #JaxRsRouter(Context, ApplicationConfig, AccessControl)
      */
-    public JaxRsRouter(Context context, ApplicationConfig appConfig) {
-        this(context, appConfig, ThrowExcAccessControl.getInstance());
+    public JaxRsRouter(Context context) {
+        this(context, null, null);
     }
 
     /**
      * @param appConfig
      *                Contains the classes to load as root resource classes and
      *                as providers.
+     * @throws IllegalArgumentException
+     *                 if the provider is not a valid provider, or the
+     *                 constructor throws an {@link InvocationTargetException}.
+     * @throws NullPointerException
+     *                 if the appConfig is null.
      */
-    public void attach(ApplicationConfig appConfig) {
+    public void attach(ApplicationConfig appConfig)
+            throws IllegalArgumentException {
         Collection<Class<?>> rrcs = appConfig.getResourceClasses();
         Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
-        JaxRsClassesLoader.addRrcsToRouter(rrcs, this);
-        JaxRsClassesLoader.addProvidersToRouter(providerClasses, this);
+        if (rrcs == null || rrcs.isEmpty())
+            throw new IllegalArgumentException(
+                    "The ApplicationConfig must return root resource classes");
+        for (Class<?> rrc : rrcs) {
+            try {
+                this.addRootResourceClass(rrc);
+            } catch (MissingAnnotationException e) {
+                getLogger().warning(e.getMessage());
+            }
+        }
+        if (providerClasses != null) {
+            for (Class<?> providerClass : providerClasses) {
+                try {
+                    this.addProvider(providerClass);
+                } catch (InvocationTargetException ite) {
+                    String msg = "The constructor of provider "
+                            + providerClass.getName()
+                            + " has thrown an exception";
+                    throw new IllegalArgumentException(msg, ite.getCause());
+                }
+            }
+        }
         this.addExtensionMappings(appConfig.getExtensionMappings());
     }
 
@@ -192,11 +244,12 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * @param rootResourceClass
      *                the JAX-RS root resource class to add.
      * @throws IllegalArgumentException
+     * @throws MissingAnnotationException
+     *                 if the class is not annotated with &#64;Path.
      * @see {@link #attach(ApplicationConfig)}
      */
-    @Deprecated
-    public void attach(Class<?> rootResourceClass)
-            throws IllegalArgumentException {
+    private void addRootResourceClass(Class<?> rootResourceClass)
+            throws IllegalArgumentException, MissingAnnotationException {
         RootResourceClass newRrc = wrapperFactory
                 .getRootResourceClass(rootResourceClass);
         PathRegExp uriTempl = newRrc.getPathRegExp();
@@ -209,6 +262,53 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                                 + uriTempl.getPathPattern());
         }
         rootResourceClasses.add(newRrc);
+    }
+
+    private void loadDefaultProviders() {
+        this.addDefaultProvider(ByteArrayProvider.class);
+        this.addDefaultProvider(DataSourceProvider.class);
+        this.addDefaultProvider(FileProvider.class);
+        this.addDefaultProvider(InputStreamProvider.class);
+        this.addDefaultProvider(JaxbElementProvider.class);
+        this.addDefaultProvider(JaxbProvider.class);
+        this.addDefaultProvider(StringProvider.class);
+        this.addDefaultProvider(WwwFormFormProvider.class);
+        this.addDefaultProvider(WwwFormMmapProvider.class);
+        this.addDefaultProvider(XmlTransformSourceProvider.class);
+    }
+
+    private void addDefaultProvider(Class<?> jaxRsProviderClass) {
+        try {
+            this.addProvider(jaxRsProviderClass);
+        } catch (IllegalArgumentException e) {
+            throw new ImplementationException(e);
+        } catch (InvocationTargetException e) {
+            throw new ImplementationException(e);
+        }
+    }
+
+    /**
+     * Adds the provider object to this JaxRsRouter.
+     * 
+     * @param jaxRsProviderClass
+     *                the JAX-RS provider class. The class must implement at
+     *                least one of the interfaces
+     *                {@link javax.ws.rs.ext.MessageBodyWriter},
+     *                {@link javax.ws.rs.ext.MessageBodyReader} or
+     *                {@link javax.ws.rs.ext.ContextResolver}.
+     * @throws IllegalArgumentException
+     *                 if the provider is not a valid provider.
+     * @throws InvocationTargetException
+     */
+    private void addProvider(Class<?> jaxRsProviderClass)
+            throws IllegalArgumentException, InvocationTargetException {
+        Provider<?> provider = new Provider<Object>(jaxRsProviderClass);
+        if (provider.isWriter())
+            this.messageBodyWriters.add(provider);
+        if (provider.isReader())
+            this.messageBodyReaders.add(provider);
+        if (provider.isContextResolver())
+            this.contextResolvers.add(provider);
     }
 
     /**
@@ -225,42 +325,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         // TODO JaxRsRouter.extensionMappings.
     }
 
-    private void loadDefaultProviders() {
-        JaxRsClassesLoader.addProviderToRouter(ByteArrayProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(DataSourceProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(FileProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(InputStreamProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(JaxbElementProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(JaxbProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(StringProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(WwwFormFormProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(WwwFormMmapProvider.class, this);
-        JaxRsClassesLoader.addProviderToRouter(
-                XmlTransformSourceProvider.class, this);
-    }
+    // TODO HtmlPreferer an code@restlet.tigris.org.
 
-    /**
-     * Adds the provider object to this JaxRsRouter.
-     * 
-     * @param jaxRsProvider
-     *                the JAX-RS provider. Must implement at least one of the
-     *                interfaces {@link javax.ws.rs.ext.MessageBodyWriter},
-     *                {@link javax.ws.rs.ext.MessageBodyReader} or
-     *                {@link javax.ws.rs.ext.ContextResolver}.
-     * @throws IllegalArgumentException
-     *                 if the provider is not a valid provider.
-     */
-    void addProvider(Object jaxRsProvider) throws IllegalArgumentException {
-        Provider<?> provider = new Provider<Object>(jaxRsProvider);
-        if (provider.isWriter())
-            this.messageBodyWriters.add(provider);
-        if (provider.isReader())
-            this.messageBodyReaders.add(provider);
-        if (provider.isContextResolver())
-            this.contextResolvers.add(provider);
-    }
-
-    // methods for creation ready
+    // methods for initialization ready
     // now methods for the daily work
 
     /**
@@ -529,7 +596,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                     methodIter.remove();
             }
             if (resourceMethods.isEmpty())
-                throwUnsupportedMediaType(httpMethod, resourceClass, u);
+                throwUnsupportedMediaType(httpMethod, resourceClass, u,
+                        givenMediaType);
         }
         // (a) 4
         SortedMetadata<MediaType> accMediaTypes = callContext
@@ -1147,9 +1215,10 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     public void setAccessControl(AccessControl accessControl) {
         if (accessControl == null)
             throw new IllegalArgumentException(
-                    "The accessControl must nit be null. You can use the "
-                            + AllowAllAccess.class.getName() + " or the "
-                            + ForbidAllAccess.class.getName());
+                    "The accessControl must not be null. You can use the "
+                            + AllowAllAccess.class.getName() + ", the "
+                            + ForbidAllAccess.class.getName() + " or the "
+                            + ThrowExcAccessControl.class.getName());
         this.accessControl = accessControl;
     }
 

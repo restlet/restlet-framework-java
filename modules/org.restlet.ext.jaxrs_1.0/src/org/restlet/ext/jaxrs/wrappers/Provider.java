@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +32,10 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateRootRessourceException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 
 /**
  * Wraps a JAX-RS provider.
@@ -60,14 +66,25 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     /**
      * Construct a wrapper for a Provider
      * 
-     * @param jaxRsProvider
-     *                the JAX-RS provider to wrap
+     * @param jaxRsProviderClass
+     *                the JAX-RS provider class.
+     * @throws IllegalArgumentException
+     *                 if the class is not a valid provider, may not be
+     *                 instantiated or what ever.
+     * @throws InvocationTargetException
+     *                 if the constructor throws an Throwable
      * @see javax.ws.rs.ext.MessageBodyReader
      * @see javax.ws.rs.ext.MessageBodyWriter
      * @see javax.ws.rs.ext.ContextResolver
      */
     @SuppressWarnings("unchecked")
-    public Provider(Object jaxRsProvider) {
+    public Provider(Class<?> jaxRsProviderClass)
+            throws IllegalArgumentException, InvocationTargetException {
+        RootResourceClass.checkClassPublicConcrete(jaxRsProviderClass, "provider");
+        Constructor<?> providerConstructor = RootResourceClass
+                .findJaxRsConstructor(jaxRsProviderClass);
+        Object jaxRsProvider = createInstance(providerConstructor,
+                jaxRsProviderClass);
         if (jaxRsProvider == null)
             throw new IllegalArgumentException(
                     "The JAX-RS Provider must not be null");
@@ -89,6 +106,41 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
                     "The given JAX-RS Provider is neither a MessageBodyWriter nor a MessageBodyReader nor a ContextResolver");
         }
         injectDependencies();
+    }
+
+    /**
+     * @param providerConstructor
+     *                the constructor to use.
+     * @param jaxRsProviderClass
+     *                class for exception message.
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     *                 if the constructor throws an Throwable
+     */
+    private Object createInstance(Constructor<?> providerConstructor,
+            Class<?> jaxRsProviderClass) throws IllegalArgumentException,
+            InvocationTargetException {
+        try {
+            return RootResourceClass.createInstance(providerConstructor, false,
+                    null, null);
+        } catch (InstantiateParameterException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (MissingAnnotationException e) {
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (InstantiateRootRessourceException e) {
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (RequestHandledException e) {
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        }
     }
 
     @Override
@@ -117,6 +169,10 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
                 this.consumedMimes = Collections.singletonList(MediaType.ALL);
         }
         return consumedMimes;
+    }
+
+    public T getContext(Class<T> type) {
+        return contextResolver.getContext(type);
     }
 
     private Object getJaxRsProvider() {
@@ -176,6 +232,17 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     }
 
     /**
+     * Returns true, if this Provider is also a
+     * {@link javax.ws.rs.ext.ContextResolver}, otherwise false.
+     * 
+     * @return true, if this Provider is also a
+     *         {@link javax.ws.rs.ext.ContextResolver}, otherwise false.
+     */
+    public boolean isContextResolver() {
+        return this.contextResolver != null;
+    }
+
+    /**
      * Checks, if this MessageBodyReader could read the given type.
      * 
      * @param type
@@ -202,28 +269,6 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     }
 
     /**
-     * Returns true, if this Provider is also a
-     * {@link javax.ws.rs.ext.MessageBodyWriter}, otherwise false.
-     * 
-     * @return true, if this Provider is also a
-     *         {@link javax.ws.rs.ext.MessageBodyWriter}, otherwise false.
-     */
-    public boolean isWriter() {
-        return this.writer != null;
-    }
-
-    /**
-     * Returns true, if this Provider is also a
-     * {@link javax.ws.rs.ext.ContextResolver}, otherwise false.
-     * 
-     * @return true, if this Provider is also a
-     *         {@link javax.ws.rs.ext.ContextResolver}, otherwise false.
-     */
-    public boolean isContextResolver() {
-        return this.contextResolver != null;
-    }
-
-    /**
      * Checks, if the given class could be written by this MessageBodyWriter.
      * 
      * @param type
@@ -235,6 +280,17 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     public boolean isWriteable(Class<T> type, Type genericType,
             Annotation[] annotations) {
         return writer.isWriteable(type, genericType, annotations);
+    }
+
+    /**
+     * Returns true, if this Provider is also a
+     * {@link javax.ws.rs.ext.MessageBodyWriter}, otherwise false.
+     * 
+     * @return true, if this Provider is also a
+     *         {@link javax.ws.rs.ext.MessageBodyWriter}, otherwise false.
+     */
+    public boolean isWriter() {
+        return this.writer != null;
     }
 
     /**
@@ -329,9 +385,5 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             OutputStream entityStream) throws IOException {
         writer.writeTo(t, genericType, annotations, mediaType, httpHeaders,
                 entityStream);
-    }
-
-    public T getContext(Class<T> type) {
-        return contextResolver.getContext(type);
     }
 }

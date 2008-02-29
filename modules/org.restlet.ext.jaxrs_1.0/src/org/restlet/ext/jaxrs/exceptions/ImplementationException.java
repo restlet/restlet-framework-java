@@ -20,8 +20,7 @@ package org.restlet.ext.jaxrs.exceptions;
 
 /**
  * Indicates, that the JAX-RS implementation observed, that it contains an error
- * in itself. An example could be an empty collection, were an empty collection
- * must not be possible. Will be removed later.
+ * in itself. An example is, if a default provider could not be loaded.
  * 
  * @author Stephan Koops
  */

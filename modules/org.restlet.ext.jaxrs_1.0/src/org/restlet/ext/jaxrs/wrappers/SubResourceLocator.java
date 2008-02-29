@@ -53,7 +53,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @param resourceClass
      *                the wrapped resource class.
      */
-    public SubResourceLocator(Method javaMethod, Path path,
+    SubResourceLocator(Method javaMethod, Path path,
             ResourceClass resourceClass) {
         super(javaMethod, path, resourceClass);
     }

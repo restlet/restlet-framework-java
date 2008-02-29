@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
+
 /**
  * A WrapperFactory creates and caches some of the wrapper objects.
  * 
@@ -42,10 +44,15 @@ public class WrapperFactory {
      * Creates a new JAX-RS root resource class wrapper.
      * 
      * @param jaxRsRootResourceClass
-     * @return
+     * @return the wrapped root resource class.
+     * @throws IllegalArgumentException
+     *                 if the class is not a valid root resource class.
+     * @throws MissingAnnotationException
+     *                 if the class is not annotated with &#64;Path.
      */
     public RootResourceClass getRootResourceClass(
-            Class<?> jaxRsRootResourceClass) {
+            Class<?> jaxRsRootResourceClass) throws IllegalArgumentException,
+            MissingAnnotationException {
         return new RootResourceClass(jaxRsRootResourceClass, logger);
     }
 
@@ -59,8 +66,7 @@ public class WrapperFactory {
      */
     ResourceClass getResourceClass(Class<?> jaxRsResourceClass) {
         ResourceClass rc = resourceClasses.get(jaxRsResourceClass);
-        if(rc == null)
-        {
+        if (rc == null) {
             rc = new ResourceClass(jaxRsResourceClass, logger);
             resourceClasses.put(jaxRsResourceClass, rc);
         }

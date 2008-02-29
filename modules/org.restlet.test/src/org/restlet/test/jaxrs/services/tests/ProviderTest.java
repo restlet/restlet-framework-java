@@ -152,9 +152,9 @@ public class ProviderTest extends JaxRsTestCase {
         getAndCheckJaxb("jaxb");
     }
 
-    public void testJaxbPost() throws Exception {
-        // TESTEN postAndCheck("jaxb");
-    }
+    // TESTEN public void testJaxbPost() throws Exception {
+    // postAndCheck("jaxb");
+    // }
 
     public void testMultivaluedMapGet() throws Exception {
         Response response = get("MultivaluedMap");

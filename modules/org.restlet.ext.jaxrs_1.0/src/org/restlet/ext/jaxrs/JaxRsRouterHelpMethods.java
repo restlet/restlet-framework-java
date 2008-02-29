@@ -511,7 +511,7 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
         String message = "Multiple java methods found on "
                 + currentMethod.getResourceClass().getName() + ": "
                 + bestMethod.getName() + " and " + currentMethod.getName();
-        // TODO log exception, bei allen Methoden.
+        getLogger().warning(message);
         throw new CouldNotFindMethodException(
                 this.errorRestletMultipleResourceMethods, message);
     }
@@ -526,6 +526,7 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
         String message = "there are multiple ressources for the same path: "
                 + bestRrc.getPathRegExp() + " and "
                 + currentRrc.getPathRegExp() + " (and perhaps more)";
+        getLogger().warning(message);
         throw new CouldNotFindMethodException(
                 this.errorRestletMultipleRootResourceClasses, message);
     }
@@ -600,16 +601,20 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
      * @param httpMethod
      * @param resourceClass
      * @param u
+     * @param givenMediaType
      * @throws CouldNotFindMethodException
      */
     void throwUnsupportedMediaType(org.restlet.data.Method httpMethod,
-            ResourceClass resourceClass, RemainingPath u)
-            throws CouldNotFindMethodException {
-        // LATER also add supported types and unsupported types
+            ResourceClass resourceClass, RemainingPath u,
+            MediaType givenMediaType) throws CouldNotFindMethodException {
         throw new CouldNotFindMethodException(errorRestletUnsupportedMediaType,
-                "there is no java method on class " + resourceClass.getName()
-                        + " supporting the http method " + httpMethod
-                        + " and remaining path " + u
-                        + " and the given media types");
+                "there is no java method on class "
+                        + resourceClass.getName()
+                        + " supporting the http method "
+                        + httpMethod
+                        + " on an "
+                        + (u.isEmptyOrSlash() ? "empty remaining path"
+                                : (" remaining path " + u))
+                        + " and the given media type " + givenMediaType);
     }
 }

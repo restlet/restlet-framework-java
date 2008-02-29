@@ -61,8 +61,17 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         return AbstractJaxRsWrapper.getPathTemplate(path);
     }
 
+    /**
+     * is true, if the wrapped java method or its class is annotated with
+     * &#64;Path.
+     */
     boolean leaveEncoded;
 
+    /**
+     * the Java method that should be called. This method could be different
+     * from the methods containing the annotations, see section 2.5 "Annotation
+     * Inheritance" of JSR-311-spec.
+     */
     Method javaMethod;
 
     ResourceClass resourceClass;
@@ -72,12 +81,11 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         super(path);
         this.javaMethod = javaMethod;
         this.resourceClass = resourceClass;
-        if (javaMethod.isAnnotationPresent(Encoded.class))
-            leaveEncoded = true;
-        else if (javaMethod.getClass().isAnnotationPresent(Encoded.class))
-            leaveEncoded = true;
+        if (resourceClass.leaveEncoded
+                || javaMethod.isAnnotationPresent(Encoded.class))
+            this.leaveEncoded = true;
         else
-            leaveEncoded = false;
+            this.leaveEncoded = false;
     }
 
     /**
