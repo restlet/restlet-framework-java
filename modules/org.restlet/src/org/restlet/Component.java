@@ -70,6 +70,7 @@ import org.w3c.dom.NodeList;
  * the API JAR under the "org.restlet.Component.xsd" name.<br>
  * <br>
  * Here is a sample of XML configuration:
+ * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot;?&gt;
  * &lt;component xmlns=&quot;http://www.restlet.org/schemas/1.1/Component&quot;
@@ -1066,5 +1067,31 @@ public class Component extends Restlet {
      */
     public synchronized void updateHosts() throws Exception {
         getHelper().update();
+    }
+
+    /**
+     * Used as bootstrap for configuring and running a component in command
+     * line. Just provide as first and unique parameter the path to the XML
+     * file.
+     * 
+     * @param args
+     *                The list of in-line parameters.
+     */
+    public static void main(String[] args) {
+        try {
+            if ((args == null) || (args.length != 1)) {
+                // Display program arguments
+                System.err
+                        .println("Can't launch the component. Requires the path to an XML configuration file.\n");
+            } else {
+                // Create and start the component
+                new Component(LocalReference.createFileReference(args[0]))
+                        .start();
+            }
+        } catch (Exception e) {
+            System.err
+                    .println("Can't launch the component.\nAn unexpected exception occurred:");
+            e.printStackTrace(System.err);
+        }
     }
 }
