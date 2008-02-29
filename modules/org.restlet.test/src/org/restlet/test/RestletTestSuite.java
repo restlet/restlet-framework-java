@@ -36,6 +36,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(ByteUtilsTestCase.class);
         addTestSuite(CallTestCase.class);
         addTestSuite(CookieTestCase.class);
+        addTestSuite(ComponentXmlTestCase.class);
         addTestSuite(DirectoryTestCase.class);
         addTestSuite(FileClientTestCase.class);
         addTestSuite(FileReferenceTestCase.class);
