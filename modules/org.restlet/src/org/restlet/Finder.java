@@ -47,7 +47,7 @@ import org.restlet.resource.Resource;
  * If no matching handle*() method is found, then a
  * Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is returned.
  * 
- * @see <a href="http://www.restlet.org/tutorial#part12">Tutorial: Reaching
+ * @see <a href="http://www.restlet.org/documentation/1.0/tutorial#part12">Tutorial: Reaching
  *      target Resources</a>
  * @author Jerome Louvel (contact@noelios.com)
  */

@@ -37,7 +37,7 @@ import org.restlet.resource.StringRepresentation;
  * call. Of course, you can personalize the representation of this error. Also,
  * if no status is set (null), then the "success ok" status is assumed.<br/>
  * 
- * @see <a href="http://www.restlet.org/tutorial#part08">Tutorial: Displaying
+ * @see <a href="http://www.restlet.org/documentation/1.0/tutorial#part08">Tutorial: Displaying
  *      error pages</a>
  * @author Jerome Louvel (contact@noelios.com)
  */

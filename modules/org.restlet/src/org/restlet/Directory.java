@@ -46,7 +46,7 @@ import org.restlet.util.Engine;
  * case, you just need to set the "modifiable" property to true. The currently
  * supported methods are PUT and DELETE.
  * 
- * @see <a href="http://www.restlet.org/tutorial#part06">Tutorial: Serving
+ * @see <a href="http://www.restlet.org/documentation/1.0/tutorial#part06">Tutorial: Serving
  *      static files</a>
  * @author Jerome Louvel (contact@noelios.com)
  */

@@ -35,7 +35,7 @@ import com.noelios.restlet.util.IdentClient;
  * current format is similar to IIS 6 logs. The logging is based on the
  * java.util.logging package.
  * 
- * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Filters and
+ * @see <a href="http://www.restlet.org/documentation/1.0/tutorial#part07">Tutorial: Filters and
  *      call logging</a>
  * @author Jerome Louvel (contact@noelios.com)
  */

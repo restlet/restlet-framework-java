@@ -28,7 +28,7 @@ public final class Status extends Metadata {
 
     private static final String BASE_WEBDAV = "http://www.webdav.org/specs/rfc2518.html";
 
-    private static final String BASE_RESTLET = "http://www.restlet.org/docs/api/";
+    private static final String BASE_RESTLET = "http://www.restlet.org/documentation/1.0/api/";
 
     /**
      * This interim response (the client has to wait for the final response) is

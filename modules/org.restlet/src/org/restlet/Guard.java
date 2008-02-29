@@ -31,7 +31,7 @@ import org.restlet.data.Status;
 /**
  * Filter guarding the access to an attached Restlet.
  * 
- * @see <a href="http://www.restlet.org/tutorial#part09">Tutorial: Guarding
+ * @see <a href="http://www.restlet.org/documentation/1.0/tutorial#part09">Tutorial: Guarding
  *      access to sensitive resources</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
