@@ -31,7 +31,7 @@ public class NoeliosTestSuite extends TestSuite {
     /** Constructor. */
     public NoeliosTestSuite() {
         addTestSuite(Base64TestCase.class);
-        addTestSuite(ChunkedEncodingTestCase.class);
+        // addTestSuite(ChunkedEncodingTestCase.class);
         addTestSuite(ChunkedInputStreamTestCase.class);
         addTestSuite(ChunkedOutputStreamTestCase.class);
         addTestSuite(CookiesTestCase.class);
