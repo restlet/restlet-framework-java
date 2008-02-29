@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Restlet Extension - JSON
-Bundle-SymbolicName: org.restlet.ext.json
-Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
-Require-Bundle: org.json;visibility:=reexport,
- org.restlet;visibility:=reexport
-Export-Package: org.restlet.ext.json

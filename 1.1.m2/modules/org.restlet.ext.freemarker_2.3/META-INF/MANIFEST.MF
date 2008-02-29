@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Restlet Extension - FreeMarker
-Bundle-SymbolicName: org.restlet.ext.freemarker
-Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
-Require-Bundle: org.freemarker;visibility:=reexport,
- org.restlet;visibility:=reexport
-Export-Package: org.restlet.ext.freemarker
