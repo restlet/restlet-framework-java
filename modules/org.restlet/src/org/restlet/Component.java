@@ -56,17 +56,17 @@ import org.w3c.dom.NodeList;
  * component is an abstract unit of software instructions and internal state
  * that provides a transformation of data via its interface." Roy T. Fielding<br>
  * <br>
- * The configuration of a Component can be done programmatically or by using a XML
- * document. There is a dedicated constructor that accepts an URI reference to such 
- * XML document, allowing easy configuration of the list of supported client and 
- * server connectors as well as services. In addition, you can add and configure 
- * virtual hosts (including the default one). Finally, you can attach applications 
- * either using their fully qualified class name or by pointing to a descriptor 
- * document (at this time only WADL description are supported, see the WADL Restlet 
- * extension for details).<br>
+ * The configuration of a Component can be done programmatically or by using a
+ * XML document. There is a dedicated constructor that accepts an URI reference
+ * to such XML document, allowing easy configuration of the list of supported
+ * client and server connectors as well as services. In addition, you can add
+ * and configure virtual hosts (including the default one). Finally, you can
+ * attach applications either using their fully qualified class name or by
+ * pointing to a descriptor document (at this time only WADL description are
+ * supported, see the WADL Restlet extension for details).<br>
  * <br>
- * The XML Schema of the configuration files is available both 
- * <a href="http://www.restlet.org/schemas/1.1/Component">online</a> and inside
+ * The XML Schema of the configuration files is available both <a
+ * href="http://www.restlet.org/schemas/1.1/Component">online</a> and inside
  * the API JAR under the "org.restlet.Component.xsd" name.<br>
  * <br>
  * Here is a sample of XML configuration:
@@ -1077,7 +1077,7 @@ public class Component extends Restlet {
      * @param args
      *                The list of in-line parameters.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         try {
             if ((args == null) || (args.length != 1)) {
                 // Display program arguments

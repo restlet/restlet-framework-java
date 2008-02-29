@@ -52,7 +52,7 @@ public class WadlComponent extends Component {
      *                List of local WADL document URIs.
      * @throws Exception
      */
-    public static void main(String... args) throws Exception {
+    public static void main(String[] args) throws Exception {
         // Create a new WADL-aware component
         WadlComponent component = new WadlComponent();
 

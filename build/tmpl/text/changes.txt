@@ -6,6 +6,20 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - Fixed setRedirectRef(String) method which wasn't supporting relative URIs when no
+   base reference was available on the resource reference. Now it uses the resource
+   reference instead. Reported by Steve Loughran.
+
+[Enhancements] 
+ -
+
+[Misc] 
+ - All component subclasses now use a main method that throws exceptions and takes
+   a string array as parameter.
+ - More precise log message for a Resource with no variant.
+ 
+1.1 Milestone 2 (2008-02-29)
+[Bugs fixed]
  - Fixed NPE in Connector class. Reported by Rob Heittman and fixed by Tim Peierls.
  - WriterRepresentation was missing a default implementation for getReader() abstract method.
  - If an error is found in HttpClientHelper.sendRequest(), StreamClientHelper ignores it and 
@@ -118,7 +132,7 @@ Changes log
    Suggested by Marcelo Ochoa.
  - Removed unecessary 'synchronized' keyword on Application.createRoot() and added one to the
    setRoot() method. Reported by Tim Peierls.
- - RIAP request are now considered confidential when dispatched. Suggested by Rob Heittman.
+ - RIAP request are now considered confidential when dispatched. Suggested by Carl Scott.
    
 1.1 Milestone 1 (2007-12-24)
 [Bugs fixed]

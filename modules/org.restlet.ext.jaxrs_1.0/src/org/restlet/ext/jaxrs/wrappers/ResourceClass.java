@@ -476,7 +476,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     private java.lang.reflect.Method getAnnotatedJavaMethod(
             java.lang.reflect.Method javaMethod) {
-        boolean useMethod = checkForJaxRsAnnotations(javaMethod);
+        // boolean useMethod = checkForJaxRsAnnotations(javaMethod);
         return javaMethod;
     }
 
@@ -489,7 +489,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     static boolean checkForJaxRsAnnotations(AccessibleObject javaMethod) {
         for (Annotation annotation : javaMethod.getAnnotations()) {
-            if(annotation.annotationType().getName().startsWith(JAX_RS_PACKAGE_PREFIX))
+            if (annotation.annotationType().getName().startsWith(
+                    JAX_RS_PACKAGE_PREFIX))
                 return true;
         }
         return false;

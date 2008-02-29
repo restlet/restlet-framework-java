@@ -368,9 +368,16 @@ public class Response extends Message {
      *                The URI to set.
      */
     public void setLocationRef(String locationUri) {
-        Reference baseRef = (getRequest().getResourceRef() != null) ? getRequest()
-                .getResourceRef().getBaseRef()
-                : null;
+        Reference baseRef = null;
+
+        if (getRequest().getResourceRef() != null) {
+            if (getRequest().getResourceRef().getBaseRef() != null) {
+                baseRef = getRequest().getResourceRef().getBaseRef();
+            } else {
+                baseRef = getRequest().getResourceRef();
+            }
+        }
+
         setLocationRef(new Reference(baseRef, locationUri).getTargetRef());
     }
 

@@ -411,8 +411,8 @@ public class Resource extends Handler {
                 getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 getLogger()
                         .warning(
-                                "A resource should normally have at least one variant added by calling getVariants().add() in the constructor");
-
+                                "A resource should normally have at least one variant added by calling getVariants().add() in the constructor. Check your resource \""
+                                        + getRequest().getResourceRef() + "\".");
             } else if (isNegotiateContent()) {
                 Variant preferredVariant = getPreferredVariant();
 
