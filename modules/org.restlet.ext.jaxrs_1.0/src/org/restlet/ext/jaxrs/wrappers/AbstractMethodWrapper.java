@@ -30,11 +30,14 @@ import javax.ws.rs.WebApplicationException;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.core.CallContext;
-import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.util.PathRegExp;
 import org.restlet.ext.jaxrs.util.Util;
 
 /**
@@ -46,26 +49,63 @@ import org.restlet.ext.jaxrs.util.Util;
 public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
 
     /**
-     * Returns the path template of the given sub resource locator or sub
-     * resource method.
-     * 
-     * @param javaMethod
-     *                the java method
-     * @return the path template or null, if no path template is available (than
-     *         the method is not a sub resource locator or sub resource method.)
+     * @param method
+     *                the java method to get the &#64;Path from
+     * @param pathRequired
+     * @return the &#64;Path annotation.
+     * @throws IllegalArgumentException
+     *                 if null was given.
+     * @throws MissingAnnotationException
+     *                 if the annotation is not present.
      */
-    public static String getPathTemplate(Method javaMethod) {
-        Path path = javaMethod.getAnnotation(Path.class);
+    public static Path getPathAnnotation(Method method)
+            throws IllegalArgumentException, MissingAnnotationException {
+        if (method == null)
+            throw new IllegalArgumentException(
+                    "The root resource class must not be null");
+        Path path = method.getAnnotation(Path.class);
         if (path == null)
-            return null;
-        return AbstractJaxRsWrapper.getPathTemplate(path);
+            throw new MissingAnnotationException("The method "
+                    + method.getName() + " does not have an annotation @Path");
+        return path;
     }
 
     /**
-     * is true, if the wrapped java method or its class is annotated with
-     * &#64;Path.
+     * @param method
+     *                the java method to get the &#64;Path from
+     * @return the &#64;Path annotation or null, if not present.
+     * @throws IllegalArgumentException
+     *                 if null was given
      */
-    boolean leaveEncoded;
+    public static Path getPathAnnotationOrNull(Method method)
+            throws IllegalArgumentException {
+        if (method == null)
+            throw new IllegalArgumentException(
+                    "The root resource class must not be null");
+        return method.getAnnotation(Path.class);
+    }
+
+    /**
+     * Returns the path template of the given sub resource locator or sub
+     * resource method.
+     * 
+     * @param method
+     *                the java method
+     * @return the path template
+     * @throws IllegalPathOnMethodException
+     * @throws IllegalArgumentException
+     * @throws MissingAnnotationException
+     */
+    public static String getPathTemplate(Method method)
+            throws IllegalArgumentException, IllegalPathOnMethodException,
+            MissingAnnotationException {
+        Path path = getPathAnnotation(method);
+        try {
+            return AbstractJaxRsWrapper.getPathTemplate(path);
+        } catch (IllegalPathException e) {
+            throw new IllegalPathOnMethodException(e);
+        }
+    }
 
     /**
      * the Java method that should be called. This method could be different
@@ -74,11 +114,17 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      */
     Method javaMethod;
 
+    /**
+     * is true, if the wrapped java method or its class is annotated with
+     * &#64;Path.
+     */
+    boolean leaveEncoded;
+
     ResourceClass resourceClass;
 
-    AbstractMethodWrapper(Method javaMethod, Path path,
-            ResourceClass resourceClass) {
-        super(path);
+    AbstractMethodWrapper(Method javaMethod, ResourceClass resourceClass)
+            throws IllegalPathOnMethodException, IllegalArgumentException {
+        super(PathRegExp.createForMethod(javaMethod));
         this.javaMethod = javaMethod;
         this.resourceClass = resourceClass;
         if (resourceClass.leaveEncoded
@@ -86,6 +132,44 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             this.leaveEncoded = true;
         else
             this.leaveEncoded = false;
+    }
+
+    /**
+     * Returns the array of
+     * 
+     * @return
+     */
+    public Annotation[] getAnnotations() {
+        return javaMethod.getAnnotations();
+    }
+
+    /**
+     * Returns the generic return type of the wrapped method.
+     * 
+     * @return the generic return type of the wrapped method.
+     */
+    public Type getGenericReturnType() {
+        return javaMethod.getGenericReturnType();
+    }
+
+    /**
+     * @return Returns the name of the method
+     */
+    public String getName() {
+        Class<?>[] paramTypes = this.javaMethod.getParameterTypes();
+        StringBuilder stb = new StringBuilder();
+        stb.append(this.javaMethod.getName());
+        stb.append('(');
+        Util.append(stb, paramTypes);
+        stb.append(')');
+        return stb.toString();
+    }
+
+    /**
+     * @return Retuns the resource class
+     */
+    public ResourceClass getResourceClass() {
+        return this.resourceClass;
     }
 
     /**
@@ -134,43 +218,5 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         return this.getClass().getSimpleName() + "["
                 + this.javaMethod.getDeclaringClass().getSimpleName() + "."
                 + this.javaMethod.getName() + "(__)]";
-    }
-
-    /**
-     * @return Retuns the resource class
-     */
-    public ResourceClass getResourceClass() {
-        return this.resourceClass;
-    }
-
-    /**
-     * @return Returns the name of the method
-     */
-    public String getName() {
-        Class<?>[] paramTypes = this.javaMethod.getParameterTypes();
-        StringBuilder stb = new StringBuilder();
-        stb.append(this.javaMethod.getName());
-        stb.append('(');
-        Util.append(stb, paramTypes);
-        stb.append(')');
-        return stb.toString();
-    }
-
-    /**
-     * Returns the generic return type of the wrapped method.
-     * 
-     * @return the generic return type of the wrapped method.
-     */
-    public Type getGenericReturnType() {
-        return javaMethod.getGenericReturnType();
-    }
-
-    /**
-     * Returns the array of
-     * 
-     * @return
-     */
-    public Annotation[] getAnnotations() {
-        return javaMethod.getAnnotations();
     }
 }

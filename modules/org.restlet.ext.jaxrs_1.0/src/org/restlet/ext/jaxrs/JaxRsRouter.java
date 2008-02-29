@@ -48,6 +48,8 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.core.HttpHeaders;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
@@ -249,8 +251,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      */
     private void addRootResourceClass(Class<?> rootResourceClass)
             throws IllegalArgumentException, MissingAnnotationException {
-        RootResourceClass newRrc = wrapperFactory
-                .getRootResourceClass(rootResourceClass);
+        RootResourceClass newRrc;
+        try {
+            newRrc = wrapperFactory.getRootResourceClass(rootResourceClass);
+        } catch (IllegalPathOnClassException e) {
+            throw new IllegalArgumentException(e);
+        } catch (IllegalPathOnMethodException e) {
+            throw new IllegalArgumentException(e);
+        }
         PathRegExp uriTempl = newRrc.getPathRegExp();
         for (RootResourceClass rrc : this.rootResourceClasses) {
             if (rrc.getJaxRsClass().equals(rootResourceClass))

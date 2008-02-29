@@ -26,11 +26,11 @@ import java.util.List;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.util.SortedMetadata;
 
 /**
@@ -91,18 +91,18 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * 
      * @param javaMethod
      *                the Java method to wrap.
-     * @param path
-     *                the path of the method.
      * @param resourceClass
      *                the wrapped class of the method.
      * @param httpMethod
      *                the HTTP method of the Java method. It will be checked be
      *                the {@link JaxRsRouter}, so avoiding double work. It will
      *                be requested from the javaMethod.
+     * @throws IllegalPathOnMethodException
      */
-    ResourceMethod(Method javaMethod, Path path,
-            ResourceClass resourceClass, org.restlet.data.Method httpMethod) {
-        super(javaMethod, path, resourceClass);
+    ResourceMethod(Method javaMethod, ResourceClass resourceClass,
+            org.restlet.data.Method httpMethod)
+            throws IllegalPathOnMethodException {
+        super(javaMethod, resourceClass);
         this.httpMethod = httpMethod;
     }
 
@@ -142,10 +142,11 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      */
     public List<MediaType> getProducedMimes() {
         if (producedMimes == null) {
-            ProduceMime produceMime = this.javaMethod
-                    .getAnnotation(ProduceMime.class);
-            if (produceMime == null) // TESTEN und FIXME Klasse abfragen
-                produceMime = this.javaMethod.getAnnotation(ProduceMime.class);
+            ProduceMime produceMime;
+            produceMime = this.javaMethod.getAnnotation(ProduceMime.class);
+            if (produceMime == null) // TESTEN @ProduceMime der Klasse abgefragt
+                produceMime = this.javaMethod.getClass().getAnnotation(
+                        ProduceMime.class);
             if (produceMime != null)
                 this.producedMimes = convertToMediaTypes(produceMime.value());
             else

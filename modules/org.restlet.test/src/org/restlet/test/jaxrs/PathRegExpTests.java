@@ -52,18 +52,24 @@ public class PathRegExpTests extends TestCase {
     /** as {@link #VALID_PATH_1} but with "/" at end */
     public static final String VALID_PATH_2 = VALID_PATH_1 + "/";
 
+    @SuppressWarnings("deprecation")
     private PathRegExp regExpOneSegment1 = new PathRegExp(
             PATH_PATTERN_1, true);
 
+    @SuppressWarnings("deprecation")
     private PathRegExp regExpMultipleSegments1 = new PathRegExp(
             PATH_PATTERN_1, false);
 
+    @SuppressWarnings("deprecation")
     private PathRegExp regExpOneSegment2 = new PathRegExp(
             PATH_PATTERN_2, true);
 
+    @SuppressWarnings("deprecation")
     private PathRegExp regExpMultipleSegments2 = new PathRegExp(
             PATH_PATTERN_2, false);
 
+    // TESTEN @Path must not contain matrix parameters.
+    
     /**
      * Test method for
      * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.

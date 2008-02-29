@@ -48,6 +48,10 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.exceptions.JaxRsException;
+import org.restlet.ext.jaxrs.exceptions.JaxRsRuntimeException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.resource.Representation;
@@ -328,15 +332,21 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param subPath
      *                darf null sein
      * @return
+     * @throws JaxRsException
      */
     public Reference createReference(Class<?> jaxRsClass, String subPath) {
         Reference reference = new Reference();
         reference.setProtocol(Protocol.HTTP);
         reference.setAuthority("localhost");
         reference.setHostPort(serverWrapper.getPort());
-        String path = ResourceClass.getPathTemplate(jaxRsClass);
-        if (path == null)
-            throw new RuntimeException("no @Path available on " + jaxRsClass);
+        String path;
+        try {
+            path = ResourceClass.getPathTemplate(jaxRsClass);
+        } catch (IllegalPathOnClassException e) {
+            throw new JaxRsRuntimeException(e);
+        } catch (MissingAnnotationException e) {
+            throw new JaxRsRuntimeException(e);
+        }
         if (!path.startsWith("/"))
             path = "/" + path;
         if (subPath != null) {

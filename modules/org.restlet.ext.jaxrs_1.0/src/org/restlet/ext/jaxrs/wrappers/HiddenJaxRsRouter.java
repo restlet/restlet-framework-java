@@ -2,8 +2,11 @@ package org.restlet.ext.jaxrs.wrappers;
 
 import java.util.logging.Logger;
 
+import org.restlet.data.MediaType;
+import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.AccessControl;
 import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 
 /**
  * This methods are used to get attributes from the {@link JaxRsRouter}. This
@@ -41,10 +44,23 @@ public interface HiddenJaxRsRouter {
      * @return the {@link MessageBodyWriterSet} from the {@link JaxRsRouter}.
      */
     public MessageBodyWriterSet getMessageBodyWriters();
-    
+
     /**
      * Returns the {@link WrapperFactory} for this JaxRsRouter.
+     * 
      * @return the {@link WrapperFactory} for this JaxRsRouter.
      */
     public WrapperFactory getWrapperFactory();
+
+    /**
+     * used by the {@link AbstractJaxRsWrapper}.
+     * @param response
+     * @param mediaType
+     * @param paramType
+     * @return formally the type of thrown Exception
+     * @throws RequestHandledException
+     */
+    public RequestHandledException throwNoMessageBodyReader(Response response,
+            MediaType mediaType, Class<?> paramType)
+            throws RequestHandledException;
 }

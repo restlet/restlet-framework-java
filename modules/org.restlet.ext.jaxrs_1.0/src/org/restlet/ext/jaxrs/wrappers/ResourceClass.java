@@ -45,8 +45,12 @@ import javax.ws.rs.core.Context;
 
 import org.restlet.data.Method;
 import org.restlet.ext.jaxrs.core.CallContext;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.exceptions.InjectException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.util.PathRegExp;
 import org.restlet.ext.jaxrs.util.RemainingPath;
 import org.restlet.ext.jaxrs.util.Util;
@@ -65,42 +69,23 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     /**
      * @param jaxRsClass
-     * @param requirePath
-     * @return the path annotation or null, if no is present.
+     * @return the path annotation or null, if no is present and requirePath is
+     *         false.
+     * @throws MissingAnnotationException
+     *                 if the
      * @throws IllegalArgumentException
-     *                 if the jaxRsClass is null.
+     *                 if the jaxRsClass is null and requirePath is true.
      */
-    public static Path getPathAnnotation(Class<?> jaxRsClass,
-            boolean requirePath) throws IllegalArgumentException {
+    public static Path getPathAnnotation(Class<?> jaxRsClass)
+            throws MissingAnnotationException, IllegalArgumentException {
         if (jaxRsClass == null)
             throw new IllegalArgumentException(
                     "The jaxRsClass must not be null");
         Path path = jaxRsClass.getAnnotation(Path.class);
-        if (requirePath && path == null)
-            throw new IllegalArgumentException(
+        if (path == null)
+            throw new MissingAnnotationException(
                     "The root resource class does not have a @Path annotation");
         return path;
-    }
-
-    /**
-     * Returns the path template of the given root resource class
-     * 
-     * @param rootResourceClass
-     * @return the path template
-     * @throws IllegalArgumentException
-     *                 if the rootResourceClass is not annotated with
-     * @Path
-     * @see Path
-     */
-    public static String getPathTemplate(Class<?> rootResourceClass)
-            throws IllegalArgumentException {
-        Path path = rootResourceClass.getAnnotation(Path.class);
-        if (path == null)
-            throw new IllegalArgumentException(
-                    "The class "
-                            + rootResourceClass.getName()
-                            + " is not a root resource class, because it is not annotated with @Path");
-        return AbstractJaxRsWrapper.getPathTemplate(path);
     }
 
     /**
@@ -129,10 +114,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param jaxRsClass
      * @param logger
      *                The logger to log warnings, if the class is not valid.
+     * @throws IllegalPathOnMethodException
      * @see WrapperFactory#getResourceClass(Class)
      */
-    ResourceClass(Class<?> jaxRsClass, Logger logger) {
-        this(jaxRsClass, null, logger);
+    ResourceClass(Class<?> jaxRsClass, Logger logger)
+            throws IllegalPathOnMethodException {
+        super();
+        this.init(jaxRsClass, logger);
     }
 
     // LATER chaching, not new for every resource class creation
@@ -141,17 +129,34 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * Creates a new root resource class wrapper.
      * 
      * @param jaxRsClass
-     * @param requirePath
-     *                the subclass RootResourceClass must give true here, other
-     *                classes must give false
+     * @param logger
+     * @param sameLogger
+     *                the subclass RootResourceClass must call this constructor.
+     *                This Object is ignored.
+     * @throws IllegalArgumentException
+     * @throws IllegalPathOnClassException
+     * @throws MissingAnnotationException
+     *                 if &#64;{@link Path} is missing on the jaxRsClass
+     * @throws IllegalPathOnMethodException
      * @see WrapperFactory#getResourceClass(Class)
      */
-    ResourceClass(Class<?> jaxRsClass, boolean requirePath, Logger logger) {
-        this(jaxRsClass, getPathAnnotation(jaxRsClass, requirePath), logger);
+    protected ResourceClass(Class<?> jaxRsClass, Logger logger,
+            @SuppressWarnings("unused")
+            Logger sameLogger) throws IllegalArgumentException,
+            IllegalPathOnClassException, MissingAnnotationException,
+            IllegalPathOnMethodException {
+        super(PathRegExp.createForClass(jaxRsClass));
+        this.init(jaxRsClass, logger);
     }
 
-    private ResourceClass(Class<?> jaxRsClass, Path path, Logger logger) {
-        super(path);
+    /**
+     * @param jaxRsClass
+     * @param logger
+     * @throws SecurityException
+     * @throws IllegalPathOnMethodException
+     */
+    private void init(Class<?> jaxRsClass, Logger logger)
+            throws IllegalPathOnMethodException {
         this.jaxRsClass = jaxRsClass;
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         internalSetSubResourceMethodsAndLocators(logger);
@@ -401,7 +406,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * 
      * @throws SecurityException
      */
-    private void initInjectFields() throws SecurityException {
+    private void initInjectFields() {
         List<Field> ifcx = new ArrayList<Field>();
         List<Field> ifcp = new ArrayList<Field>();
         List<Field> ifhp = new ArrayList<Field>();
@@ -434,7 +439,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     private static final String JAX_RS_PACKAGE_PREFIX = "javax.ws.rs";
 
-    private void internalSetSubResourceMethodsAndLocators(Logger logger) {
+    private void internalSetSubResourceMethodsAndLocators(Logger logger)
+            throws IllegalPathOnMethodException {
         Collection<ResourceMethodOrLocator> srmls = new ArrayList<ResourceMethodOrLocator>();
         Collection<ResourceMethod> subRsesMeths = new ArrayList<ResourceMethod>();
         Collection<SubResourceLocator> subResLocs = new ArrayList<SubResourceLocator>();
@@ -451,7 +457,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                 if (checkResMethodNotPublic(javaMethod, logger))
                     continue;
                 ResourceMethod subResMeth = new ResourceMethod(javaMethod,
-                        path, this, httpMethod);
+                        this, httpMethod);
                 subRsesMeths.add(subResMeth);
                 srmls.add(subResMeth);
             } else {
@@ -459,10 +465,11 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                     if (checkResMethodNotPublic(javaMethod, logger))
                         continue;
                     SubResourceLocator subResLoc = new SubResourceLocator(
-                            javaMethod, path, this);
+                            javaMethod, this);
                     subResLocs.add(subResLoc);
                     srmls.add(subResLoc);
                 }
+                // TODO check, if on superclasses, if none
             }
         }
         this.subResourceLocators = subResLocs;
@@ -476,7 +483,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     private java.lang.reflect.Method getAnnotatedJavaMethod(
             java.lang.reflect.Method javaMethod) {
-        // boolean useMethod = checkForJaxRsAnnotations(javaMethod);
+        // TODO boolean useMethod = checkForJaxRsAnnotations(javaMethod);
         return javaMethod;
     }
 
@@ -516,5 +523,22 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[" + this.jaxRsClass + "]";
+    }
+
+    /**
+     * @param resource
+     * @return Returns the path template as String. Never returns null.
+     * @throws IllegalPathOnClassException
+     * @throws MissingAnnotationException
+     * @throws IllegalArgumentException
+     */
+    public static String getPathTemplate(Class<?> resource)
+            throws IllegalPathOnClassException, MissingAnnotationException,
+            IllegalArgumentException {
+        try {
+            return getPathTemplate(getPathAnnotation(resource));
+        } catch (IllegalPathException e) {
+            throw new IllegalPathOnClassException(e);
+        }
     }
 }

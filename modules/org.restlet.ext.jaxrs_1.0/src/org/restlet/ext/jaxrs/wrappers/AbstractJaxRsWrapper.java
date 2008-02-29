@@ -46,9 +46,10 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.core.CallContext;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathException;
+import org.restlet.ext.jaxrs.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
@@ -133,25 +134,6 @@ public abstract class AbstractJaxRsWrapper {
     }
 
     /**
-     * Implementation of function R(A) in JSR-311-Spec, Revision 151, Version
-     * 2007-12-07, Section 2.5.1 Converting URI Templates to Regular Expressions
-     * 
-     * @param ensureStartSlash
-     * @param path
-     * 
-     * @return
-     */
-    private static PathRegExp convertPathToRegularExpression(Path template,
-            boolean ensureStartSlash) {
-        if (template == null)
-            return new PathRegExp("", true);
-        String pathTemplate = getPathTemplate(template);
-        if (ensureStartSlash)
-            pathTemplate = Util.ensureStartSlash(pathTemplate);
-        return new PathRegExp(pathTemplate, template.limited());
-    }
-
-    /**
      * Converts the Restlet request {@link Representation} to the type requested
      * by the resource method.
      * 
@@ -190,11 +172,9 @@ public abstract class AbstractJaxRsWrapper {
             throw new NoMessageBodyReadersException();
         MessageBodyReader<?> mbr = mbrs.getBest(mediaType, paramType,
                 genericType, annotations);
-        if (mbr == null) {
-            callContext.getResponse().setStatus(
-                    Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-            throw new RequestHandledException();
-        }
+        if (mbr == null)
+            throw jaxRsRouter.throwNoMessageBodyReader(callContext
+                    .getResponse(), mediaType, paramType);
         MultivaluedMap<String, String> httpHeaders = Util
                 .getJaxRsHttpHeaders(callContext.getRequest());
         try {
@@ -519,20 +499,28 @@ public abstract class AbstractJaxRsWrapper {
      * @param path
      *                The {@link Path} annotation. Must not be null.
      * @return the encoded path template
+     * @throws IllegalPathException
      * @see Path#encode()
      */
-    public static String getPathTemplate(Path path) {
+    public static String getPathTemplate(Path path) throws IllegalPathException {
         // TODO matrix parameters are not allowed in @Path
         // TODO EncodeOrCheck.path(CharSequence)
         String pathTemplate = path.value();
         if (path.encode()) {
-            return EncodeOrCheck.encodeNotBraces(pathTemplate, false)
+            pathTemplate = EncodeOrCheck.encodeNotBraces(pathTemplate, false)
                     .toString();
         } else {
-            EncodeOrCheck.checkForInvalidUriChars(pathTemplate, -1,
-                    "path template");
-            return pathTemplate;
+            try {
+                EncodeOrCheck.checkForInvalidUriChars(pathTemplate, -1,
+                        "path template");
+            } catch (IllegalArgumentException iae) {
+                throw new IllegalPathException(path, iae);
+            }
         }
+        if (pathTemplate.contains(";"))
+            throw new IllegalPathException(path,
+                    "A path must not contain a semicolon");
+        return pathTemplate;
     }
 
     /**
@@ -561,8 +549,23 @@ public abstract class AbstractJaxRsWrapper {
 
     private PathRegExp pathRegExp;
 
-    AbstractJaxRsWrapper(Path path) {
-        this.pathRegExp = convertPathToRegularExpression(path, true);
+    /**
+     * Creates a new AbstractJaxRsWrapper with a given {@link PathRegExp}.
+     * 
+     * @param pathRegExp
+     *                must not be null.
+     */
+    AbstractJaxRsWrapper(PathRegExp pathRegExp) throws ImplementationException {
+        if (pathRegExp == null)
+            throw new ImplementationException("The PathRegExp must not be null");
+        this.pathRegExp = pathRegExp;
+    }
+
+    /**
+     * Creates a new AbstractJaxRsWrapper without a path.
+     */
+    AbstractJaxRsWrapper() {
+        this.pathRegExp = PathRegExp.EMPTY;
     }
 
     /**

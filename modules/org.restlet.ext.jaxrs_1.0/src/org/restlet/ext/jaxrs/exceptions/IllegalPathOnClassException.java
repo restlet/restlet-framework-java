@@ -16,17 +16,26 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.ext.jaxrs.todo;
+package org.restlet.ext.jaxrs.exceptions;
+
+import javax.ws.rs.Path;
 
 /**
- * Here are notices for the implementation.
+ * This kind of exception is thrown, when an &#64{@link Path} annotation
+ * contains illegal charactres.
+ * 
+ * @author Stephan Koops
+ * 
  */
-public class Notizen {
-    // LATER An implementation MUST allow other runtime exceptions to propagate
-    // to the underlying container. This allows existing container facilities
-    // (e.g. a Servlet filter) to be used to handle the error if desired.
-    // LATER alle LATERs in Masterarbeit uebernehmen
-    // TODO look for warnings in tests and put them away.
-    // TESTEN was passiert, wenn ein Resource class rekursiv zu sich selber
-    // gehört. Gibt es dann ne Endlosrekursion?
+public class IllegalPathOnClassException extends IllegalPathException {
+
+    private static final long serialVersionUID = 6423619202690501704L;
+
+    /**
+     * @param ipe
+     */
+    public IllegalPathOnClassException(IllegalPathException ipe) {
+        super(ipe.getPath(), ipe.getMessage());
+        this.initCause(ipe);
+    }
 }

@@ -36,12 +36,15 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.core.CallContext;
-import org.restlet.ext.jaxrs.exceptions.InjectException;
-import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
+import org.restlet.ext.jaxrs.exceptions.InjectException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateRootRessourceException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 
@@ -81,22 +84,18 @@ public class RootResourceClass extends ResourceClass {
     }
 
     /**
-     * Checks, if the class is public and so on.
+     * Checks, if the class is concrete.
      * 
      * @param jaxRsClass
      *                JAX-RS root resource class or JAX-RS provider.
      * @param typeName
      *                "root resource class" or "provider"
      * @throws IllegalArgumentException
-     *                 if the class is not public or not concrete.
+     *                 if the class is not concrete.
      */
-    public static void checkClassPublicConcrete(Class<?> jaxRsClass,
-            String typeName) throws IllegalArgumentException {
+    public static void checkClassConcrete(Class<?> jaxRsClass, String typeName)
+            throws IllegalArgumentException {
         int modifiers = jaxRsClass.getModifiers();
-        if (!Modifier.isPublic(modifiers)) {
-            throw new IllegalArgumentException("The " + typeName + " "
-                    + jaxRsClass.getName() + " must be public");
-        }
         if (Modifier.isAbstract(modifiers) || Modifier.isInterface(modifiers)) {
             throw new IllegalArgumentException("The " + typeName + " "
                     + jaxRsClass.getName() + " is not concrete");
@@ -130,6 +129,14 @@ public class RootResourceClass extends ResourceClass {
         return true;
     }
 
+    /**
+     * Checks, if the annotations are valid for a runtime environment handled
+     * constructor.
+     * 
+     * @param parameterAnnotations
+     * @param parameterType
+     * @return
+     */
     private static boolean checkParameterAnnotation(
             Annotation[] parameterAnnotations, Class<?> parameterType) {
         if (parameterAnnotations.length == 0)
@@ -223,7 +230,8 @@ public class RootResourceClass extends ResourceClass {
     /**
      * @param jaxRsClass
      * @return Returns the constructor to use for the given root resource class
-     *         (See JSR-311-Spec, section 2.3)
+     *         (See JSR-311-Spec, section 2.3). If no constructor could be
+     *         found, null is returned. Than try {@link Class#newInstance()}
      * @throws IllegalTypeException
      */
     public static Constructor<?> findJaxRsConstructor(Class<?> jaxRsClass) {
@@ -231,6 +239,8 @@ public class RootResourceClass extends ResourceClass {
         Constructor<?> constructor = null;
         int constructorParamNo = Integer.MIN_VALUE;
         for (Constructor<?> constr : jaxRsClass.getConstructors()) {
+            if (!Modifier.isPublic(constr.getModifiers()))
+                continue;
             int constrParamNo = constr.getParameterTypes().length;
             if (constrParamNo <= constructorParamNo)
                 continue; // ignore this constructor
@@ -260,11 +270,14 @@ public class RootResourceClass extends ResourceClass {
      *                 if the class is not a valid root resource class.
      * @throws MissingAnnotationException
      *                 if the class is not annotated with &#64;Path.
+     * @throws IllegalPathOnClassException
+     * @throws IllegalPathOnMethodException 
      */
     RootResourceClass(Class<?> jaxRsClass, Logger logger)
-            throws IllegalArgumentException, MissingAnnotationException {
-        super(jaxRsClass, true, logger);
-        checkClassPublicConcrete(getJaxRsClass(), "root resource class");
+            throws IllegalArgumentException, MissingAnnotationException,
+            IllegalPathOnClassException, IllegalPathOnMethodException {
+        super(jaxRsClass, logger, logger);
+        checkClassConcrete(getJaxRsClass(), "root resource class");
         checkClassForPathAnnot(jaxRsClass, "root resource class");
         this.constructor = findJaxRsConstructor(getJaxRsClass());
         this.constructorLeaveEncoded = leaveEncoded

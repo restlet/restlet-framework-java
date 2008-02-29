@@ -18,11 +18,19 @@
 
 package org.restlet.ext.jaxrs.util;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.Path;
 
+import org.restlet.ext.jaxrs.exceptions.IllegalPathException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.wrappers.AbstractJaxRsWrapper;
+import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
+import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.util.Resolver;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
@@ -35,28 +43,113 @@ import org.restlet.util.Variable;
  */
 public class PathRegExp {
 
+    /**
+     * VariableResolver that returns "" for every variable name
+     * 
+     * @author Stephan Koops
+     */
+    private static class EverNullVariableResolver implements Resolver {
+        public String resolve(String variableName) {
+            return "";
+        }
+    }
+
+    /**
+     * The PathRegExp with an empty path.
+     */
+    public static PathRegExp EMPTY = new PathRegExp("", true);
+
+    private static EverNullVariableResolver EmptyStringVariableResolver = new EverNullVariableResolver();
+
     private static final String VARNAME_FUER_REST = "restlet.jaxrs.rest";
 
-    private Template template;
+    /**
+     * Creates a {@link PathRegExp} for a root resource class.
+     * 
+     * @param jaxRsRootResourceClass
+     * @return
+     * @throws MissingAnnotationException
+     * @throws IllegalArgumentException
+     * @throws IllegalPathOnClassException
+     * @see {@link #EMPTY}
+     */
+    public static PathRegExp createForClass(Class<?> jaxRsRootResourceClass)
+            throws MissingAnnotationException, IllegalArgumentException,
+            IllegalPathOnClassException {
+        try {
+            return new PathRegExp(ResourceClass
+                    .getPathAnnotation(jaxRsRootResourceClass));
+        } catch (IllegalPathException e) {
+            throw new IllegalPathOnClassException(e);
+        }
+    }
 
-    private String pathPattern;
+    /**
+     * Creates a {@link PathRegExp} for a sub resource method or sub resource
+     * locator. Returns {@link #EMPTY}, if the method is not annotated with
+     * &#64;Path.
+     * 
+     * @param javaMethod
+     * @return the {@link PathRegExp}. Never returns null.
+     * @throws IllegalPathOnMethodException
+     * @throws MissingAnnotationException
+     * @throws IllegalArgumentException
+     *                 if the javaMethod was null
+     * @see {@link #EMPTY}
+     */
+    public static PathRegExp createForMethod(Method javaMethod)
+            throws IllegalPathOnMethodException, IllegalArgumentException {
+        Path pathAnnotation = AbstractMethodWrapper
+                .getPathAnnotationOrNull(javaMethod);
+        if (pathAnnotation == null)
+            return EMPTY;
+        try {
+            return new PathRegExp(pathAnnotation);
+        } catch (IllegalPathException e) {
+            throw new IllegalPathOnMethodException(e);
+        }
+    }
+
+    /**
+     * get the pattern of the path. Ensures also, that it starts with a "/"
+     * 
+     * @param path
+     * @return
+     * @throws IllegalPathException
+     */
+    private static String getPathPattern(Path path)
+            throws IllegalArgumentException, IllegalPathException {
+        if (path == null)
+            throw new IllegalArgumentException("The path must not be null");
+        String pathPattern = AbstractJaxRsWrapper.getPathTemplate(path);
+        return Util.ensureStartSlash(pathPattern);
+    }
 
     private boolean isEmptyOrSlash;
 
     /** Contains the number of literal chars in this Regular Expression */
     private Integer noLitChars;
 
+    private String pathPattern;
+
+    private Template template;
+
+    private PathRegExp(Path path) throws IllegalArgumentException,
+            IllegalPathException {
+        this(getPathPattern(path), path.limited());
+    }
+
     /**
+     * Is intended for internal use and testing. Otherwise use the methods
+     * create*
      * 
      * @param pathPattern
      * @param limitedToOneSegment
-     *                Controls whether a trailing template variable is limited
-     *                to a single path segment (<code>true</code>) or not (<code>false</code>).
-     *                E.g. <code>@Path("widgets/{id}")</code> would match widgets/foo but not
-     *                       widgets/foo/bar whereas
-     *                       <code>@Path(value="widgets/{id}", limit=false)</code> would match both.
-     * @see Path#limited()
+     * @see #createForClass(Class)
+     * @see #createForMethod(Method)
+     * @see #EMPTY
      */
+    @Deprecated
     public PathRegExp(String pathPattern, boolean limitedToOneSegment) {
         this.pathPattern = pathPattern;
         this.isEmptyOrSlash = Util.isEmptyOrSlash(pathPattern);
@@ -82,15 +175,61 @@ public class PathRegExp {
         restVar.setRequired(false);
     }
 
+    @Override
+    public boolean equals(Object anotherObject) {
+        if (this == anotherObject)
+            return true;
+        if (!(anotherObject instanceof PathRegExp))
+            return false;
+        PathRegExp otherRegExp = (PathRegExp) anotherObject;
+        return this.getWithEmptyVars().equals(otherRegExp.getWithEmptyVars());
+    }
+
     /**
-     * Checks if this regular expression matches the given remaining path.
-     * 
-     * @param remainingPath
-     * @return Returns an MatchingResult, if the remainingPath matches to this
-     *         template, or null, if not.
+     * @return Returns the number of capturing groups.
      */
-    public MatchingResult match(String remainingPath) {
-        return this.match(new RemainingPath(remainingPath));
+    public int getNumberOfCapturingGroups() {
+        return this.template.getVariableNames().size();
+    }
+
+    /**
+     * See Footnode to JSR-311-Spec, Section 2.5, Algorithm, Part 1e
+     * 
+     * @return Returns the number of literal chars in the path patern
+     */
+    public int getNumberOfLiteralChars() {
+        if (noLitChars == null) {
+            noLitChars = getWithEmptyVars().length();
+        }
+        return noLitChars;
+    }
+
+    /**
+     * @return Returns the path pattern.
+     */
+    public String getPathPattern() {
+        return pathPattern;
+    }
+
+    /**
+     * @return
+     */
+    private String getWithEmptyVars() {
+        return this.template.format(EmptyStringVariableResolver);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.template.hashCode();
+    }
+
+    /**
+     * Checks if the URI template is empty or only a slash.
+     * 
+     * @return
+     */
+    public boolean isEmptyOrSlash() {
+        return isEmptyOrSlash;
     }
 
     /**
@@ -130,12 +269,14 @@ public class PathRegExp {
     }
 
     /**
-     * Checks if the URI template is empty or only a slash.
+     * Checks if this regular expression matches the given remaining path.
      * 
-     * @return
+     * @param remainingPath
+     * @return Returns an MatchingResult, if the remainingPath matches to this
+     *         template, or null, if not.
      */
-    public boolean isEmptyOrSlash() {
-        return isEmptyOrSlash;
+    public MatchingResult match(String remainingPath) {
+        return this.match(new RemainingPath(remainingPath));
     }
 
     /**
@@ -151,69 +292,8 @@ public class PathRegExp {
         return matchingResult.getFinalCapturingGroup().isEmptyOrSlash();
     }
 
-    /**
-     * @return Returns the path pattern.
-     */
-    public String getPathPattern() {
-        return pathPattern;
-    }
-
     @Override
     public String toString() {
         return this.pathPattern;
-    }
-
-    /**
-     * See Footnode to JSR-311-Spec, Section 2.5, Algorithm, Part 1e
-     * 
-     * @return Returns the number of literal chars in the path patern
-     */
-    public int getNumberOfLiteralChars() {
-        if (noLitChars == null) {
-            noLitChars = getWithEmptyVars().length();
-        }
-        return noLitChars;
-    }
-
-    /**
-     * @return
-     */
-    private String getWithEmptyVars() {
-        return this.template.format(EmptyStringVariableResolver);
-    }
-
-    /**
-     * @return Returns the number of capturing groups.
-     */
-    public int getNumberOfCapturingGroups() {
-        return this.template.getVariableNames().size();
-    }
-
-    @Override
-    public boolean equals(Object anotherObject) {
-        if (this == anotherObject)
-            return true;
-        if (!(anotherObject instanceof PathRegExp))
-            return false;
-        PathRegExp otherRegExp = (PathRegExp) anotherObject;
-        return this.getWithEmptyVars().equals(otherRegExp.getWithEmptyVars());
-    }
-
-    @Override
-    public int hashCode() {
-        return this.template.hashCode();
-    }
-
-    private static EverNullVariableResolver EmptyStringVariableResolver = new EverNullVariableResolver();
-
-    /**
-     * VariableResolver that returns "" for every variable name
-     * 
-     * @author Stephan Koops
-     */
-    private static class EverNullVariableResolver implements Resolver {
-        public String resolve(String variableName) {
-            return "";
-        }
     }
 }

@@ -70,7 +70,8 @@ public class EncodeOrCheck {
         StringBuilder stb = new StringBuilder();
         for (char c = 0; c < 256; c++) {
             String cc = new String(new char[] { c });
-            if (c != '%' && c != '{' && c != '}' && !RESERVED.contains(cc) && !UNRESERVED.contains(cc))
+            if (c != '%' && c != '{' && c != '}' && !RESERVED.contains(cc)
+                    && !UNRESERVED.contains(cc))
                 stb.append(c);
         }
         FRAGMENT_FORBIDDEN = stb.toString();
@@ -114,6 +115,7 @@ public class EncodeOrCheck {
      * @param indexForErrMessage
      * @param errMessName
      * @throws IllegalArgumentException
+     *                 if the CharSequence to test contains illegal characters.
      */
     public static void checkForInvalidUriChars(CharSequence uriPart,
             int indexForErrMessage, String errMessName)

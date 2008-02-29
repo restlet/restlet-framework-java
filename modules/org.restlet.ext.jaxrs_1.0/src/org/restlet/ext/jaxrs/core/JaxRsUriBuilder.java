@@ -27,14 +27,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
 
 import org.restlet.data.Reference;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.util.EncodeOrCheck;
 import org.restlet.ext.jaxrs.util.Util;
-import org.restlet.ext.jaxrs.wrappers.AbstractJaxRsWrapper;
 import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.util.Resolver;
@@ -468,8 +470,8 @@ public class JaxRsUriBuilder extends UriBuilder {
      *       for the builder.
      * 
      * @param resource
-     *                a resource whose
-     * @Path value will be used to obtain the path segment.
+     *                a resource whose &#64;Path value will be used to obtain
+     *                the path segment.
      * @return the updated UriBuilder
      * @throws IllegalArgumentException
      *                 if resource is null, or if resource.encode is false and
@@ -483,8 +485,14 @@ public class JaxRsUriBuilder extends UriBuilder {
         if (resource == null)
             throw new IllegalArgumentException(
                     "The root resource class must not be null");
-        addPathSegments(AbstractJaxRsWrapper.getPathTemplate(ResourceClass
-                .getPathAnnotation(resource, true)));
+        try {
+            addPathSegments(ResourceClass.getPathTemplate(resource));
+        } catch (IllegalPathOnClassException e) {
+            throw e.getCause();
+        } catch (MissingAnnotationException e) {
+            throw new IllegalArgumentException("The resource class "
+                    + resource.getName() + " requires an annotation @Path");
+        }
         return this;
     }
 
@@ -520,7 +528,14 @@ public class JaxRsUriBuilder extends UriBuilder {
         for (Method method : resource.getMethods()) {
             if (!method.getName().equals(methodName))
                 continue;
-            String path = AbstractMethodWrapper.getPathTemplate(method);
+            String path;
+            try {
+                path = AbstractMethodWrapper.getPathTemplate(method);
+            } catch (IllegalPathOnMethodException e) {
+                throw e.getCause();
+            } catch (MissingAnnotationException e) {
+                throw new IllegalArgumentException(e);
+            }
             if (path == null)
                 continue;
             if (resMethodPath != null && !resMethodPath.equals(path))
@@ -560,16 +575,14 @@ public class JaxRsUriBuilder extends UriBuilder {
     public UriBuilder path(Method... methods) throws IllegalArgumentException {
         List<String> pathTemplates = new ArrayList<String>(methods.length);
         for (Method method : methods) {
-            if (method == null)
-                throw new IllegalArgumentException(
-                        "The root resource class must not be null");
-            Path path = method.getAnnotation(Path.class);
-            if (path == null)
-                throw new IllegalArgumentException("The method "
-                        + method.getName()
-                        + " does not have an annotation @Path");
-            String pathTemplate = AbstractJaxRsWrapper.getPathTemplate(path);
-            pathTemplates.add(pathTemplate);
+            try {
+                String pathTemplate = AbstractMethodWrapper.getPathTemplate(method);
+                pathTemplates.add(pathTemplate);
+            } catch (MissingAnnotationException e) {
+                throw new IllegalArgumentException(e);
+            } catch (IllegalPathException e) {
+                throw e.getCause();
+            }
         }
         for (String pathTemplate : pathTemplates) {
             addPathSegments(pathTemplate); // LATER call only once !

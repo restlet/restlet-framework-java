@@ -21,16 +21,16 @@ package org.restlet.ext.jaxrs.wrappers;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.core.CallContext;
-import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateRessourceException;
+import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 
@@ -48,14 +48,13 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * 
      * @param javaMethod
      *                The Java method wich creats the sub resource
-     * @param path
-     *                the path on the method
      * @param resourceClass
      *                the wrapped resource class.
+     * @throws IllegalPathOnMethodException
      */
-    SubResourceLocator(Method javaMethod, Path path,
-            ResourceClass resourceClass) {
-        super(javaMethod, path, resourceClass);
+    SubResourceLocator(Method javaMethod, ResourceClass resourceClass)
+            throws IllegalPathOnMethodException {
+        super(javaMethod, resourceClass);
     }
 
     /**
@@ -77,13 +76,14 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @throws MissingAnnotationException
      * @throws InstantiateRessourceException
      * @throws InstantiateParameterException
+     * @throws IllegalPathOnMethodException 
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
             CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
             throws InvocationTargetException, MissingAnnotationException,
             WebApplicationException, RequestHandledException,
             NoMessageBodyReadersException, InstantiateRessourceException,
-            InstantiateParameterException {
+            InstantiateParameterException, IllegalPathOnMethodException {
         Object[] args;
         Class<?>[] parameterTypes = this.javaMethod.getParameterTypes();
         if (parameterTypes.length == 0)

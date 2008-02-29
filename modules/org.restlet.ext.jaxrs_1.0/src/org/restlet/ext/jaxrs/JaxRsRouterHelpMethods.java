@@ -495,6 +495,27 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
                         + " and the given and accepted media types");
     }
 
+    /**
+     * For internal use only
+     * 
+     * @param response
+     * @param mediaType
+     * @param paramType
+     * @return formally the type of thrown Exception
+     * @throws RequestHandledException
+     */
+    @Deprecated
+    public RequestHandledException throwNoMessageBodyReader(Response response,
+            MediaType mediaType, Class<?> paramType)
+            throws RequestHandledException {
+        // LATER Restlet fuer throw
+        response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+        response.setEntity(new StringRepresentation(
+                "No MessageBodyReader found to convert from media type "
+                        + mediaType + " to " + paramType));
+        throw new RequestHandledException();
+    }
+
     RequestHandledException throwNotAcceptableWhileDetermineMediaType(
             Request request, Response response) throws RequestHandledException {
         errorRestletNoResourceMethodForAcceptedMediaType.handle(request,

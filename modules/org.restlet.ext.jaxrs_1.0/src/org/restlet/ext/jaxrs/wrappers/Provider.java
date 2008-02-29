@@ -88,8 +88,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
                 .isAnnotationPresent(javax.ws.rs.ext.Provider.class))
             throw new IllegalArgumentException(
                     "A JAX-RS provider class must be annotated with @Provider");
-        RootResourceClass.checkClassPublicConcrete(jaxRsProviderClass,
-                "provider");
+        RootResourceClass.checkClassConcrete(jaxRsProviderClass, "provider");
         Constructor<?> providerConstructor = RootResourceClass
                 .findJaxRsConstructor(jaxRsProviderClass);
         Object jaxRsProvider = createInstance(providerConstructor,
