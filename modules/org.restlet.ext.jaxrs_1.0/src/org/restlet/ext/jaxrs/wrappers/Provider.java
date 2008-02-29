@@ -42,6 +42,7 @@ import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
  * 
  * @author Stephan Koops
  * @param <T>
+ * @see javax.ws.rs.ext.Provider
  */
 public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         ContextResolver<T> {
@@ -80,15 +81,19 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     @SuppressWarnings("unchecked")
     public Provider(Class<?> jaxRsProviderClass)
             throws IllegalArgumentException, InvocationTargetException {
-        // TODO check, if @Provider
-        RootResourceClass.checkClassPublicConcrete(jaxRsProviderClass, "provider");
+        if (jaxRsProviderClass == null)
+            throw new IllegalArgumentException(
+                    "The JAX-RS provider class must not be null");
+        if (!jaxRsProviderClass
+                .isAnnotationPresent(javax.ws.rs.ext.Provider.class))
+            throw new IllegalArgumentException(
+                    "A JAX-RS provider class must be annotated with @Provider");
+        RootResourceClass.checkClassPublicConcrete(jaxRsProviderClass,
+                "provider");
         Constructor<?> providerConstructor = RootResourceClass
                 .findJaxRsConstructor(jaxRsProviderClass);
         Object jaxRsProvider = createInstance(providerConstructor,
                 jaxRsProviderClass);
-        if (jaxRsProvider == null)
-            throw new IllegalArgumentException(
-                    "The JAX-RS Provider must not be null");
         boolean isProvider = false;
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyWriter) {
             this.writer = (javax.ws.rs.ext.MessageBodyWriter<T>) jaxRsProvider;

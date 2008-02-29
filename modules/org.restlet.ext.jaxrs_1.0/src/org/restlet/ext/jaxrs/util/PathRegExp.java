@@ -102,7 +102,6 @@ public class PathRegExp {
      */
     @SuppressWarnings("unchecked")
     public MatchingResult match(RemainingPath remainingPath) {
-        // TODO matrix parameters are not allowed in @Path
         String givenPath = remainingPath.getWithoutParams();
         Map<String, String> templateVars = new HashMap<String, String>();
         boolean pathSuppl = !givenPath.endsWith("/");

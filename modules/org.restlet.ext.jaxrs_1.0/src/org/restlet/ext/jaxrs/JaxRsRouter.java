@@ -62,7 +62,6 @@ import org.restlet.ext.jaxrs.provider.JaxbProvider;
 import org.restlet.ext.jaxrs.provider.StringProvider;
 import org.restlet.ext.jaxrs.provider.WwwFormFormProvider;
 import org.restlet.ext.jaxrs.provider.WwwFormMmapProvider;
-import org.restlet.ext.jaxrs.provider.XmlTransformSourceProvider;
 import org.restlet.ext.jaxrs.util.MatchingResult;
 import org.restlet.ext.jaxrs.util.PathRegExp;
 import org.restlet.ext.jaxrs.util.RemainingPath;
@@ -274,7 +273,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         this.addDefaultProvider(StringProvider.class);
         this.addDefaultProvider(WwwFormFormProvider.class);
         this.addDefaultProvider(WwwFormMmapProvider.class);
-        this.addDefaultProvider(XmlTransformSourceProvider.class);
+        // LATER this.addDefaultProvider(XmlTransformSourceProvider.class);
     }
 
     private void addDefaultProvider(Class<?> jaxRsProviderClass) {
@@ -299,9 +298,13 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * @throws IllegalArgumentException
      *                 if the provider is not a valid provider.
      * @throws InvocationTargetException
+     * @see {@link javax.ws.rs.ext.Provider}
      */
     private void addProvider(Class<?> jaxRsProviderClass)
             throws IllegalArgumentException, InvocationTargetException {
+        // TODO JSR311: what should happens with providers not annotated with
+        // @Provider? ignore? If they are given the AppConfig, they should no
+        // be used? Than we didnot need the annotation.
         Provider<?> provider = new Provider<Object>(jaxRsProviderClass);
         if (provider.isWriter())
             this.messageBodyWriters.add(provider);

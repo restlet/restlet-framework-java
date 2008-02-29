@@ -74,10 +74,16 @@ public class ResourceMethod extends AbstractMethodWrapper implements
         return null;
     }
 
+    /**
+     * @see ConsumeMime
+     */
     private List<MediaType> consumedMimes;
 
     private org.restlet.data.Method httpMethod;
 
+    /**
+     * @see ProduceMime
+     */
     private List<MediaType> producedMimes;
 
     /**
@@ -94,7 +100,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      *                the {@link JaxRsRouter}, so avoiding double work. It will
      *                be requested from the javaMethod.
      */
-    public ResourceMethod(Method javaMethod, Path path,
+    ResourceMethod(Method javaMethod, Path path,
             ResourceClass resourceClass, org.restlet.data.Method httpMethod) {
         super(javaMethod, path, resourceClass);
         this.httpMethod = httpMethod;
@@ -138,12 +144,12 @@ public class ResourceMethod extends AbstractMethodWrapper implements
         if (producedMimes == null) {
             ProduceMime produceMime = this.javaMethod
                     .getAnnotation(ProduceMime.class);
-            if (produceMime == null)
+            if (produceMime == null) // TESTEN und FIXME Klasse abfragen
                 produceMime = this.javaMethod.getAnnotation(ProduceMime.class);
-            if (produceMime == null)
-                this.producedMimes = Collections.emptyList();
-            else
+            if (produceMime != null)
                 this.producedMimes = convertToMediaTypes(produceMime.value());
+            else
+                this.producedMimes = Collections.emptyList();
         }
         return producedMimes;
     }

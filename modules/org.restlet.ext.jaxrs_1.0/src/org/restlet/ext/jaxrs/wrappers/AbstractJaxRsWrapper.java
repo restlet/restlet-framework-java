@@ -191,7 +191,6 @@ public abstract class AbstractJaxRsWrapper {
         MessageBodyReader<?> mbr = mbrs.getBest(mediaType, paramType,
                 genericType, annotations);
         if (mbr == null) {
-            // REQUESTED JSR311: what, if no MessageBodyReader?
             callContext.getResponse().setStatus(
                     Status.CLIENT_ERROR_NOT_ACCEPTABLE);
             throw new RequestHandledException();
@@ -523,13 +522,17 @@ public abstract class AbstractJaxRsWrapper {
      * @see Path#encode()
      */
     public static String getPathTemplate(Path path) {
+        // TODO matrix parameters are not allowed in @Path
+        // TODO EncodeOrCheck.path(CharSequence)
         String pathTemplate = path.value();
-        if (path.encode())
+        if (path.encode()) {
             return EncodeOrCheck.encodeNotBraces(pathTemplate, false)
                     .toString();
-        EncodeOrCheck
-                .checkForInvalidUriChars(pathTemplate, -1, "path template");
-        return pathTemplate;
+        } else {
+            EncodeOrCheck.checkForInvalidUriChars(pathTemplate, -1,
+                    "path template");
+            return pathTemplate;
+        }
     }
 
     /**
