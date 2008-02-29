@@ -1,0 +1,1716 @@
+
+===========
+Changes log  
+===========
+
+@version-full@ (@release-date@)
+[Bugs fixed]
+ - Fixed Spring XML loading issue related to validation in SpringContext class.
+ - Fixed bug with the FileClientHelper returning wrong list of variants. Reported by Iestyn 
+   Evans.
+ - Fixed bug in Tag.equals() implementation. Reported by Stephan Koops.
+ - Fixed NPE in the WAR client of the Servlet extension. Reported by Jason Terhune.
+ - Caught exception with Simple connector when flushing a closed stream. Now it is logged at
+   a lower priority. Reported by Todd Nguyen. 
+ - Fixed synchronization issue in Template class. Reported by Paulo Silveira.
+
+[Enhancements]
+ - Lowered the logging level for some Simple IO exceptions.
+ - Updated JSON JAR to latest version.
+ - Externalized mappings between file extensions and media types in the MetadataService. 
+   Reported by Alex Milowsky.
+ - Closed an open BufferedReader in IdentClient class.
+ - Updated FreeMarker to version 2.3.12.
+ 
+1.0.7 (2007-12-22)
+[Bugs fixed]
+ - Fixed bug in the matching of "*" E-Tags. Patch contributed by Alex Milowski. 
+ - Set the JAXP Source's systemID property based on the Representation.identifier 
+   property if available (SaxRepresentation and TransformRepresentation).
+ - Simple could log an exception if the input entity was already closed when returning
+   from the handling, as we are trying to consume unread bytes. Reported by Matt Allen.
+ - Allow to delete empty directories. Reported by Paul J. Lucas.
+ - Fixed remaining issues in the processing of XSLT include/document/import via the 
+   TransformRepresentation. Contributed by Marc Portier.
+ - Fixed improper handling of SimpleWeb input stream. Reported and contributed by Quintin May.
+ - Added check for potential NPE in ApplicationClientDispatcher. Reported by Joshua Shinavier.
+ - Fixed bug in Amazon S3 example from REST book in S3Authorized. Reported by Steve Loughran.
+ - Fixed potential nullPointer exception in FileClientHelper.
+ - Fixed getResponseStream method in HTTPClient extension which should return null when the 
+   underlying response body stream is null. Reported and contributed by John R. Fallows.
+ - Fixed casting issue on RouteList. Regression in 1.0.6. Reported by Valdis Rigdon and fixed
+   by Kevin Conaway.
+ - Fixed thread safety issue by removing lazy initialization of parameters in HttpCall. 
+   Contributed by Kevin Conaway.
+ - Prevent malformed responses headers by throwing an illegalArgumentException in case the 
+   description of the returned status contains illegal CR and LF characters. Reported by 
+   Davide Angelocola.
+ 
+[Enhancements]
+ - Clarified Template#parse Javadocs. Suggested by Jonathan Hall.
+ - Upgraded Jetty to 6.1.7
+ - Upgraded FreeMarker to 2.3.11
+
+1.0.6 (2007-11-08)
+[Bugs fixed]
+ - Fixed error when parsing weak Etags. Reported by Larry Gately and John R. Fallows.
+ - Fixed Redirector which didn't implement the SEE_OTHER type of redirections.
+ - Fixed directory listing error in the File connector. Reported by Jochen Bedersdorfer.
+ - The lack of root URI normalization by Directory could lead to listing issues.
+   Reported by Joel Nelson and Rob Heittman.
+ - Fixed bug in the SimpleWeb connector which requires the request input stream to be 
+   fully read. Otherwise, the connectors hangs. Reported by Adam Taft, Nicolas Capdevila 
+   and Rob Heittman.
+ - ChallengeRequests with a null realm are properly formatted. Reported by Sumit Lohia.
+ - The message logged when an authentication scheme is not supported by NRE is now only 
+   of FINE level instead of WARNING level. Reported by Sumit Lohia.
+ - Guard.getSecrets() method was not properly synchronized. Reported by Tim Peierls.
+ - The Redirector wasn't properly rewriting the redirection URIs in the dispatcher mode.
+ - The IO threads created by ByteUtils are now explicitely set as non daemon threads. The 
+   internal pipe stream now times out if nobody uses it. Suggested by Tim Peierls.
+ - Indexed directories were not properly handled with the CLAP protocol. Reported by Rob 
+   Heittman.
+ - Directory restlet not showing files with whitespaces. Reported by Davide Angelocola.
+ - Fixed potential NPE with invalid dates in headers. Reported by Henry Story.
+ - Fixed several bugs related to the URI resolver in TransformRepresentation. Reported
+   by Joe Nellis.
+   
+[Enhancements] 
+ - Clarified ConverterService Javadocs. Suggested by Justin Makeig.
+ - Clarified the dependencies in the "lib/readme.txt" file. Reported by Mike Leary.
+ - Updated javadocs in order to precise crucial apache HTTPClient behaviour. Reported by 
+   Nicolas Capdevila.
+ - Added some extra checks to prevent multiple starts of Applications, Components,
+   Clients, Servers. Reported by Amol Daterao, Joan Picanyol i Puig and Christopher Sun.
+ - Clarified StatusService Javadocs. Suggested by Davide Angelocola.
+ - Made the RouteList class really thread safe using an underlying CopyOnWriteArrayList list.
+
+1.0.5 (2007-09-06)
+[Bugs fixed]
+ - Potential NPE in REST book example (ch7, UserResource). Reported by Marc Portier.
+ - Potential NPE during KeyStore initialization for Simple HTTPS connector. Report by Quintin May.
+ - Transmit the Component dispatcher to the ServletContextAdapter. Reported by Mike Moran.
+ - Fixed bug in the DirectoryResource when looking for variant references. Reported by Mike Moran.
+ - Fixed address binding issue with Simple HTTP/HTTPS connectors. Patch contributed by Alex Milowski.
+ - Fixed potential NPE in Restlet.getContext() method. Patch contributed by Alex Milowski.
+ - Fixed potential NPE in SecurityUtils. Patch contributed by Alex Milowski.
+ - When a component is restarted, the new applications and virtual hosts are no taken into account. 
+   Patch from Alex Milowski.
+ - Relaxed media-type equality test in ch7/BookmarkResource#put method. Reported by Katrin.
+ - Fixed bug when decoding percent-encoded sequences in lowercase (see rfc 3986, chapter 2.1). 
+   Reported by Paul Kaiser and contributed by Rob Heittman.
+
+[Enhancements] 
+ - Clarified the Javadocs for the Variant's "identifier" property. Reported by Joe Holloway.
+ - Clarified the Javadocs for the Resource.getVariants() method. Suggested by John D. Mitchell.
+ - An exception is not thrown anymore when the Etag can not be successfully parsed.
+ - The OPTIONS method now always returns an "Allow" HTTP header to more closely match the HTTP 1.1
+   and WebDAV specifications. Suggested by Rob Heittman.
+ - Replaced the System.out.println() and System.err.println() calls by logger calls. Suggested by Alex Milowski.
+
+1.0.4 (2007-07-25)
+[Bugs fixed]
+ - Fixed spacing issue in HTTP reading/writing code (NRE's HttpUtils class). Reported by Ilya Klyuchnikov.
+ - Fixed bug in StreamClientCall causing the response's status to always be null. Reported by Ilya Klyuchnikov.
+ - Fixed issue that makes the server to return a 304 status even if the resource is modified 
+   (the "if-none-match" condition was badly implemented). Reported by Vladimir Djurovic and Adam Taft.
+ - Fixed closing issue in internal HTTP server causing the browser to hang on requests. Reported by Serge.
+ - Reverted changes to the ServerServlet back to the 1.0.2 behavior (application context set after construction 
+   via setContext() method). The new behavior requires NRE API changes and will only be available in the 
+   Restlet 1.1. Issue reported by Richard Wallace. 
+ - Restlet.getContext() now always return a non-null context.
+ - ServerList.addServer(Server), returned by the Component.getServers() method, wasn't properly setting the 
+   component as the server's target.
+ - Fixed potential NPE in DirectoryResource when no request's baseRef was set. Reported by Joe Holloway.
+ - Fixed issue detected when Directory are based on a symbolic link since the directory path was mistakenly 
+   resolved due to the usage of the getCanonicalPath() method instead of getAbsolutePath() in class 
+   LocalReference. Reported and corrected by Marc Portier.
+
+[Enhancements] 
+ - Mentionned the additional dependency on the cglib in the SpringRouter class.
+ - Clarified and fixed SpringContext Javadocs.
+ - Upgraded Jetty to version 6.1.5.
+ 
+1.0.3 (2007-07-15)
+[Bugs fixed]
+ - Fixed Javadoc issue in Reference.setQuery. Reported by Avi Flax.
+ - Fixed bug with the nsis ant task that requires the path to the 
+   "makensis" executable with NSIS 2.28.
+ - Clarified Javadocs for Directory about the modification mode. Suggested by Chuck Hinson.
+ - Clarified Javadocs for OutputRepresentation. Suggested by Jon Lachelt.
+ - Fixed potential NPE in DomRepresentation.write() method. Reported by Dan Fitzgerald.
+ - The ServletContextAdapter passed by the ServerServlet to the Restlet's Application was
+   not given to the constructor but via the setContext() method. Reported by Tammy Croteau.
+ - Fixed bug in StreamClientCall which wasn't passing the query parameters in the request URI.
+   Reported by Michael Terrington.
+ - Removed unwanted exposing of internal HTTP client and server connector, introduced
+   in version 1.0.2. Those connectors are experimental and not ready for public usage.
+
+[Enhancements] 
+ - Clean up of all the project to support Eclipse 3.3.
+ - Removal of all development code not part of the Restlet 1.0 distribution like Grizzly, JXTA
+   and JMX. This code is now maintained in the SVN trunk.
+
+1.0.2 (2007-06-20)
+[Bugs fixed]
+ - The Component was not correctly detecting the connectors necessary for the
+   attached applications, resulting in invalid log messages. Reported by Yuri de Wit.
+ - If NRE's HttpRequest.setEntity() method is invoked before the first getEntity() call,
+   subsequent getEntity() calls now return the entity set. Reported by Jonathan Hall.
+ - Fixed potential NPE with null passwords in ChallengeResponse. Reported by Yuri de Wit.
+ - Fixed several issues in the CLAP client (based on classloaders). Reported by Heinrich Klobuczek.
+ - ByteUtils now knows how to write representations to non-blocking NIO channels.
+ - The CLAP client (ClassLoader Access Protocol) was unexpectedly exposing partial directory content
+   when the classloader is based on some local directories. Reported by Heinrich Klobuczek.
+ - Fixed bug in the internal HTTP connector causing the returning of a wrong status code.
+ - Overrided the StringRepresentation#setCharacterSet method, in order to refresh the 
+   size of the representation. Reported by Calvin Cheng.
+ - Fixed bug causing Component to not use the StatusService.getStatus() method. Reported
+   by Adam Taft.
+ - Fixed bug in ServletConverter causing the caching of the base URI and inability to handle
+   request with various base URI style (IP address and domain names for example). Report by Ryan Daum.
+ - Fixed bug in DomRepresentation causing the loss of both public and system DocTypes. 
+   Reported by Lee Saferite.
+ - Fixed bug causing the Request.challengeResponse to be overriden after a setChallengeResponse() call
+   before the first getChallengeResponse() call.
+ - When a Client HTTP connector receives a non HTTP URI, it now correctly sets the response status
+   to CONNECTOR_ERROR_INTERNAL instead of silently eating the internal exception. Reported by Jim
+   Alateras and Adam Taft.
+ - Fixed class cast exception in Resource.handleGet when content negotiation was disabled.
+
+[Enhancements] 
+ - Updated Jetty to version 6.1.4.
+ - Clarified Representation Javadocs about transient content. Suggested by Philip Johnson.
+ - Tutorial part 6 now uses a simpler attach() method requiring no empty attachment path.
+ - Updated the conneg algorithm in order to give precedence to the default language set by 
+   the server instead of the "All languages" preference set by the user. Reported by Billy Chan.
+
+1.0.1 (2007-05-04)
+[Bugs fixed]
+ - Fixed comment error in class ServerServlet.
+ - Fixed bug with the ObjectRepresentation class. The constructor with 
+   Representation parameter did not get the stream from the serialized parameter.
+ - Fixed potential bug when testing equality between media types ignoring the 
+   parameters.
+ - ServletConverter now also set the request's rootRef property and allows customization
+   of the "baseRef" and "rootRef" value via getBaseRef() and getRootRef() methods.
+ - Fixed NPE in ApplicationDispatcher when the context from the parent Component isn't
+   set. Now a warning message is logged. Reported by Jeff Walter and Chuck Hinson.
+ - ApplicationHelper was not properly setting the Application.KEY attribute in
+   the incoming requests and responses, causing problem in usage of services such
+   as the ConnectorService. Reported by Dig.
+ - Clarified the Javadocs on the Context.getParameters() method and on the default
+   constructors for Application, Restlet, Router and VirtualHost. Suggested by Alex Milowski
+   and Chuck Hinson.
+ - Test mediaType inclusion instead of equality when checking metadata 
+   consistency in FileClientHelper class.
+ - Fixed bug causing HTTP authentication with a long user or password to fail, added JUnit test case. 
+   Reported and contributed by Stian Soiland.
+
+[Enhancements] 
+ - Separated BLOAT library from db4o library for better dependency management.
+ - Updated db4o to version 6.1.501.
+ - Updated Retrotranslator to version 1.2.1.
+ - Removed unused Retroweaver, ASM and Backport libraries.
+ - Updated Apache Commons DBCP to version 1.2.2.
+ - Updated FreeMarker to version 2.3.10.
+ - Updated JUnit to version 4.3.1.
+ - Updated Jetty to version 6.1.2.
+ - Updated Spring JARs to version 2.0.4.
+ - Lowered the log level of some exceptions from WARNING to INFO.
+
+1.0.0 (2007-04-16)
+[Bugs fixed]
+ - Fixed bug when instantiating the secret of a ChallengeResponse.
+ - Fixed bugs in the Servlet-based WAR client which prevented a normal behavior.
+   Now, URIs like "war:///WEB-INF/web.xml".
+ - Fixed bug in the FileClientHelper. The PUT method creates the parent directories
+   in case they don't exist.
+ - Fixed bug in the FileClientHelper. The renameTo method may fail (depending on the JVM) 
+   when renaming a file from a filesystem to another.
+ - Fixed bug in the FileUpload extension. The RepresentationContext class does not return
+   the full content-type (with parameter) expected by the underlying Apache Commons-fileupload's 
+   FileItem parser. Reported and contributed by Christian Ohr.
+ - Fixed bug in ByteUtils.toString method, lack of a characterSet parameter in order 
+   to read the inner input stream correctly. Reported by Özgün Atacan.
+ - Updated patch providing a workaround to a JDK bug with AWS authorization header
+   (see NRE SecurityUtils class). Applies only to the JVM delivered by Sun. Reported by 
+   Justin C. van Vorst.
+ - Fixed bug in Simple HTTP server causing the improper setting of the server port as
+   the host port. Those two values may be different in certain cases.
+ - Fixed bug in Net HTTP client returning status code -1 in case of communication error 
+   with the server. Reported by Alex Combs.
+ - Fixed bug with the JavaMail extension that lacked the JAF dependencies and made the 
+   ClientHelper class abstract. Reported by Matthieu Hug.
+ - Fixed synchronization issue with Restlet initialization. Reported by Adam Falk.
+ - Fixed uncaught StackOverflowError exception when computing the relative part of a 
+   reference without base reference. Null is returned when the reference is absolute. 
+   Reported by Justin C. van Vorst.
+-  Fixed uncaught NullPointer exception when computing the target reference of a 
+   reference. An IllegalArgument exception in the case the base reference is not absolute. 
+   Reported by Justin C. van Vorst.
+   
+[API changes]
+ - Representation is now an abstract class. If you ever needed to create an instance of 
+   it, just use its super class Variant instead.
+ - Relaxed the usage of standard HTTP headers not currently covered by the Restlet API. 
+   This usage is discouraged by an information message but now allowed. Suggested by 
+   Diggory Briercliffe.
+ - Removed deprecated MediaType constant APPLICATION_RDF (Use APPLICATION_RDF_XML instead).
+   
+[Enhancements] 
+ - Added new ServletConverter class to facilitate lighter integration of Restlets with 
+   Servlet and especially Spring. Inspired from discussions with Ryan Daum, Michael 
+   Makunas, Jim Alateras, Shlok and Jonathan Hall.
+ - Updated Jetty to version 6.1.2 RC2.
+ - Refactored internal NRE HTTP classes to provide more extension points. 
+ - FileRepresentation now relies on a FileInputStream to expose a readable channel
+   as it requires a read-only access to the file.
+ - Changed implementation of Reference.getRemainingPart() to not rely on a try/catch 
+   logic to test edge cases. Suggested by Justin C. van Vorst
+  
+1.0 RC6 (2007-03-21)
+[Bugs fixed]
+ - Fixed bug with the control of the existence of fragment in setIdentifier method.
+ - Fixed bug in ServerServlet failing to set the ServletContextAdapter in some cases.
+   Reported by Ryan Daum.
+ - Fixed bug with the relative links of the Web representation of the "Bookmarks" resource
+   in the book tutorial. Reported by Sean Landis.
+ - Fixed potential bug when checking "modification date" condition on a null variant. 
+ - Fixed bug with db4o configuration in the book tutorial. Reported by Sean Landis.
+ - Fixed potential issue with Request.hostRef.port when the server listening port is 
+   different from the port specified in the HTTP Host header. Reported by Thierry Boileau.
+ - Fixed NPE when parsing the "content encoding" header. Reported and contributed by Brian Crow.
+ - The HTTP client connectors were not correctly sending the content type parameters
+   like the "charset" parameter. Reported by Christian Ohr.
+      
+[API changes]
+ - Added MediaType.TEXT_CALENDAR constant for iCalendar events. Suggested by Aron Roberts.
+ - Added default constructor to NRE's HttpServerHelper and a setServer() method to
+   NRE's ServerHelper. Suggested by Brandon Lonac.
+ - Renamed internal NRE's HttpCall.setProtocol() to setVersion().
+ - Added Parameter.setName() method.
+ - Media type APPLICATION_RDF was renamed to APPLICATION_RDF_XML and TEXT_RDF_N3 was 
+   added. Suggested by Ryan Daum.
+ - Changed secret type in classes ChallengeResponse and Guard classes from String to char[] according
+   to a best practice followed by Sun about the way sensible data must be stored in Java programs.
+   Suggested by Aron Roberts.
+
+[Enhancements] 
+ - Fixed Spring plugin descriptor for Eclipse.
+ - Upgraded Velocity to version 1.5.
+ - Added Apache Commons Lang library, dependency for Velocity 1.5.
+ - Completed missing Javadocs for Series class. Reported by Jonathan Hall.
+ - Added warning message when no Restlet API found in the classpath.
+ - Upgraded Apache HTTP Client to version 3.1 RC1.
+ - Tutorial examples now statically import the Constants class instead of implementing
+   the Constants interface anti-pattern. Reported by Sean Landis.
+ - Updated the normalization process of a reference by ensuring that default ports are ignored.
+ 
+1.0 RC5 (2007-03-09)
+[Bugs fixed]
+ - Added missing dependency on Apache Commons IO for the Commons FileUpload library. Reported by Thierry Boileau.
+ - Fixed unconformity with pre-conditions test when the resource has no representation and the client sends "if-match:*" header.
+ - TunnelService wasn't removing the preference parameters from the query after usage. Reported by Valdis Rigdon.
+ - Fixed potential NPE in Router.detach() method. Reported by Alex Combs.
+ - Stop the applications attached to the default virtual host when stopping the component. Reported by Alex Combs.
+ - Fixed ServerServlet adapter to make it start and stop the application with the Servlet lifecycle. Previously the
+   application was started upon the first request and never stopped.
+ - Fixed bug with the order of the representations provided by a Directory (TEXT/URI-LIST and TEXT/HTML) as IE does 
+   not send HTML preference in the Accept headers.
+ - Send the Vary header only to none-MSIE user agents as MSIE seems to support badly this header. Reported by Heinrich Klobuczek.
+ - Enhanced but non completely fixed support of long URIs (due to regexp limitations). Reported by Ivan Gorgiev.
+ - IllegalStateException is thrown each time a Web form is going to be parsed, but is not available. Reported by Ron Lancaster.
+ - Fixed improper line returns in Linux shell script ("bin/linux/restlet.sh"). Reported by Sébastien Pierre.
+ - Fixed hardcoded "handle" prefix in Finder.getMethod(). Reported by Brian Crow and Ron Lancaster.
+ - Fixed handleXxx method invocation in Finder class (no argument, invocation on "target" resource). Reported and contributed by Brian Crow.
+
+[API changes]
+ - The default HTTPS connector for Jetty is now BIO based because the NIO one is marked as
+   "beta quality" only.
+ - Added Context.setLogger() method. Suggested by Alex Combs.
+ - Remove temporarily the WAR support.
+ - Added a getTransformer() method to TransformRepresentation to get and customize the underlying XSLT engine. 
+   It is currently based on JDK's internal XSLT engine. Suggested by Denis Haskin.
+ - The default name of the application's context logger is now either the canonical application's class name,
+   or "org.restlet.application" for anonymous classes. It allows for a finer filtering of log entries.
+ - Added a SpringFinder class in the Spring extension to allow easier dependency injection
+   with resources. Suggested by Jonathan Hall, Valdis Rigdon and Ryan Daum.
+ - Added a getStatus(Throwable,Request,Response) method to StatusService to allow for customization
+   of behavior when exceptions or errors are intercepted. Suggested by Stokes.
+
+[Enhancements] 
+ - Enhanced support of Java SE 4.0 via Retrotranslator.
+ - The checking of identifier's secret is deported in a delegated method. Contributed by Valdis Rigdon. 
+ - Refactored the build files to extract the Web files to another SVN repository.
+ - Add comments describing status codes and methods (from HTTP, Webdav RFC). Suggested by Chuck Hinson.
+ - Updated Apache Fileupload to 1.2 and Commons IO to 1.3.1.
+ - Clarified the Javadocs for Restlet.init() method.
+ - Added initial support for IntelliJ in the SVN code base. Contributed by James Todd.
+ - Updated db4o library (object database) to version 6.1.
+ - Upgraded Jetty to 6.1.2 RC1.
+ - Improved the Javadocs for VirtualHost. Suggested by Sean Landis.
+ 
+1.0 RC4 (2007-01-26)
+[Bugs fixed]
+ - Guard.authorize() doesn't call authenticate() anymore as doHandle() was already checking
+   this point. Was pontially resulting in two calls to authenticate(). Reported by Vincent Lari.
+ - Replaced "RESTlet" by "Restlet" in all logos to match the actual project name.
+ - Fixed bug in DomRepresentation's constructor for empty Documents. Reported by David Rauschenbach.
+ - Fixed a potential classloader issue with Resin 3.0.19 servlet container. Reported by Denis Haskin.
+ - Force sort order for list of representations set by the DirectoryResource.
+ - Fixed issue with the "timeout" property (class HTTPUrlConnection) which is not defined in Java 1.4. 
+   Reported by Stephan Schmitt. 
+ - FileRepresentation(String path) constructor now accepts both simple path names and file URI. 
+   Suggested by Sean Landis.
+ - Fixed bug with repeated patterns in URI templates. Reported by Vincent Lari.
+ - Fixed bugs in some POM files. Reported by Mitchell Stewart.
+ - The query need to be reconstruct and appended to the requestURI in order to get the "full" uri 
+   from AsyncWeb request object. Reported by David Rauschenbach.
+ - Fixed NPE in the URI template scoring method.
+   
+[API changes]
+ - Added Resource.getPreferredRepresentation() method as a shortcut to  
+   getRepresentation(getPreferredVariant()).
+ - Renamed org.restlet.util.Factory to Engine as it does more than just providing factory methods.
+ - Added init(Context, Request, Response) method and default constructor to Resource.
+ - Finder now looks for a default Resource constructor if the current one (with 3 args) couldn't be found.
+   Suggested by Diggory Briercliffe, Brandon Lonac, Sean Landis and Ryan Daum.
+ - Added Application.KEY string constant containing the reseverved application attribute key.
+ - Exposed Finder.resourceClass property with a getter. 
+ - Extracted the Resource creation logic from Finder.findTarget() into a createResource() method.
+ - Added a "finderClass" property on Router that will create the right Finder instance for 
+   you when calling attach(..., myResource.class) methods. 
+ - Moved MetadataService.indexName property to Directory for more flexibility.
+ - Renamed Redirector.MODE_CONNECTOR constant into MODE_DISPATCHER.
+ - Added redirectDispatcher() method to allow overriding of this logic.
+ - Added setters for all service properties on Component and Application.
+   
+[Enhancements] 
+ - Updated FreeMarker to version 2.3.9.
+ 
+1.0 RC3 (2007-01-19)
+[Bugs fixed]
+ - Fixed bug with the uri parsing in the DirectoryResource class. The query part of the resource uri
+   is removed before sending request to the file connector.
+ - The content negotiation was throwing class cast exceptions when a resource was 
+   returning simple Variant instance via getVariants().
+ - Fixed potential NPE in HttpRequest due to autoboxing. Reported by Valdis Rigdon.
+ - Fixed bug preventing the Jetty connector from returning error status representations.
+ - Fixed bug in DomRepresentation when outputting an instance based on a XML representation.
+ - Fixed bug in Jetty connector potentially trying to send a response twice. Reported by
+   Diggory Briercliffe.
+ - VirtualHost now always set the rootRef, even if the attached Restlet isn't an Application.
+ - Fixed bug in HttpRequest constructor in case the path of the URI starts with "//". Reported by
+   Vincent Lari.
+
+[API changes]
+ - Added ReferenceList.getWebRepresentation() method, using exsiting logic from Directory.
+ - Deprecated Directory.getDirectoryVariants() method and added getIndexVariants() + 
+   getIndexRepresentation() method to follow recent refactoring in Resource.
+ - ClientInfo.port and ServerInfo.port are now 'int' instead of 'Integer' to prevent autoboxing issues.
+ - Added getStatus(Method, Variant) and hasSome() methods to Conditions. Logic moved from private Handler methods.
+ - Added Guard.getSecret() method for easier customization of the authentication system.
+ - Guard.reject() is now public to allow standalone usage, without filtering.
+ - Moved Resource.identifier property to Variant class.
+ - Variant and Representation don't derive from Resource anymore.
+ - Replaced Handler & Resource couple by a more flexible Finder & Resource couple. Based 
+   on real implementation experience, it became clear that a Resource should have full
+   access to the request and response object. As a side effect, the Finder class can now
+   dynamically instantiate the target resources without needing a subclass. The Resource
+   class now contains handle*() methods, with no parameters but with the same logic as
+   the deprecated Handler.handle*(Resource,Request,Response) methods. 
+ - Added convenience attach() and attachDefault() methods on Router to add in a single call
+   a Route to a Finder creating new instance of a given target Resource class.
+ - Deprecated Result class not used anymore.
+ - Deprecated WrapperResource class.
+ - Added Context.attributes property as a way to share objects between all Restlets
+   of an application. Automatically includes the parent application if any.
+ - Added Filter.setNext() method taking a Resource class as parameter and automatically
+   creating an associated Finder instance.
+ - Added TransformRepresentation by refactoring private logic from Transformer.
+ - Added Resource.generateRef() to dynamically format URI templates into proper references.
+   Suggested by Yuri de Wit.
+ - Added the "o" variable in the Template variable list for the new Request.rootRef property.
+ - The creation of new Routes by a Router can now be customized via the protected createRoute() method.
+ - Enhanced the Guard class to cleanly separate authentication from authorization logic.
+   Thanks to Charles Gay (from jGuard) for the feed-back and related discussion.
+ 
+[Enhancements] 
+ - The content negotiation algorithm is now more flexible about languages. It will try
+   to satisfy the client languages preferences, but will always return a representation
+   if the media type is accepted, even if the language is not explicitely accepted. 
+ - Upgraded Jetty to 6.1.1.
+ - Added a dual licensing for GPL (with a Classpath exception) in addition to CDDL.
+ - The ServerServlet now allows easier customization of the creation of Application
+   instances. Based on a patch from Valdis Rigdon.
+ - Updated Spring framework to 2.0.2
+ - Added support for Maven POM generation. The distribution now contains a "lib/poms" directory.
+   Suggested by Turadg Aleahmad, Lars Heuer, Mike Moran, Mitchell Stewart and Vincent Lari.
+ - Updated tutorial to cover the usage of Resources.
+  
+1.0 RC2 (2007-01-09)
+[Bugs fixed]
+ - Fixed minor bug with the URI parsing (query sign "?" inside fragment). 
+   Contributed by Thierry Boileau.
+ - Fixed bug in the dynamic invocation of custom handle*() methods in the Handler class.
+ - Fixed bug with the directory listing generation in the method "getVariants" of class DirectoryResource. 
+   Contributed by Sean Landis.
+
+[API changes]
+ - Added an XmlRepresentation, super class of DomRepresentation and SaxRepresentation
+   that faciliates the evaluation of XPath expressions and manages a context namespaces.
+ - Added Message.getEntityAsSax() and getEntityAsDom() methods.
+ - Added org.restlet.util.NodeSet that facilitates the iteration over a DOM NodeList.
+ - Split Representation class into a new Variant class (containing all metadata 
+   properties) and into a lighter Representation class. Variant is a subclass of 
+   Resource and Representation a subclass of Variant. Zero impact on existing code.
+ - Changed getVariants() to return a List<Variant> instead of a List<Representation>. 
+   Suggested by Sumit Lohia.
+ - Added getRepresentation(Variant variant) : Representation return the full representation 
+   for a variant. By default, it will return 'variant' in case it is already a  
+   representation (instance of Representation class). Suggested by Sumit Lohia.
+ - Renamed Representation.getValue() into getText() to be more precise about intent.
+ - Handler.handle() now set the response status to 404 (Not Found) only if the target
+   resource is null *and* if the response status is a success. Reported by Chris Battey.
+ - Added MediaType.equals(Object, boolean ignoreParameters) to allow comparison without
+   taking into account the parameters (useful for multipart forms for example, because
+   they have a varying "boundary" parameter. Reported by Randy Layman.
+ - The character set of request entities is now parsed and set. 
+ - PreferenceReader class (used for entity metadata headers parsing) now attempts to reuse 
+   constants (MediaType, CharacterSet, etc.) when possible. Suggested by Randy Layman.
+ - Renamed Dispatcher into Uniform to better match with REST terminology. No impact on existing code.
+ - Deprecated Resource.getIdentifiers() and setIdentifiers() method. No obvious usage. More the role of Handler to map/select URIs.
+ - Renamed "com.noelios.restlet.example" to "org.restlet.example" as no more direct dependency on NRE exists in code.
+ - Added new constructor to Variable, taking only a variable type.
+ - Added a Request.rootRef property storing the reference of the application root. This 
+   is be very important when generating URI that must be independent of the application's
+   deployment context.
+ - StringRepresentation constructors now accept CharSequence instances and not just String
+   instances. This plays nicer with StringBuilder, CharBuffer and StringBuffer classes.
+ - Template can now also parse and format using a map to hold variables. Suggested by Ryan Daum.
+  
+[Enhancements] 
+ - The Ant script now check Ant's version and recommend upgrade to at least 1.7 for
+   better integration with JUnit. Suggested by Dave Pawson.
+ - Updated Jetty to 6.1.0.
+ - Slighty clarified the warning message for missing connectors. Suggested by Dave Pawson.
+ - Added db4o 6.0 as a library. Used as an object database engine for some examples.
+ 
+1.0 RC1 (2006-12-26)
+[Bugs fixed]
+ - Handler now sets the response entity from the Result instance returned for the DELETE,
+   POST and PUT methods. Reported by Randy Layman.
+ - If the status is SUCCESS_NO_CONTENT or SUCCESS_RESET_CONTENT, the response entity is 
+   not sent back to the client by HTTP server connectors.
+ - Special characters in Template instance could conflict with special internal characters 
+   (Regex). They are now quoted properly.
+ - The Simple HTTP connector returned in invalid server address.
+ - When a Restlet is normally initialized, the current response doesn't reset its "status" 
+   property anymore.
+
+[API changes]
+ - Removed all deprecated classes and methods.
+ - Replaced inner Series.Entry interface by the Parameter classes as the extra flexibility
+   is not required and complicated the API and the Javadocs understanding.
+ - Replaced Series and AbstractSeries by a single Series class.
+ - Added a setMatchingMode() method on Template.
+ - Added new constructor to Route taking a custom instance of Template.
+ - Added protected getTargetRef(Req, Resp) and rewrite(Repr) methods to Redirector to allow 
+   more customization.
+ - Added "port" property to the ClientInfo class.
+ - Added methods on Dispatcher for each main method (get, put, post, delete, options and head) 
+   taking an instance of Reference. Following a remark from Alex Combs.
+ - Deprecated the trace() method from Dispatcher.
+ - Added an "identityCheck" property on LogService to turn on the IDENT identification 
+   (RFC 1413). This would allow the default log format to display it.
+ - Refactored com.noelios.restlet.LogFilter to make the default format follow more stricly
+   the W3C Extended Log File Format with most of the default fields of Microsoft IIS 6.0.
+ - Deprecated Conditions.isModified() method. Logic moved to Handler. 
+ - Deprecated Response.setEntity(Resource) method.
+ - Refactored the LogService class. Now only responsible of access logging.
+ - Component.logService is now activated by default. Application.logService has been deprecated.
+ - Removed unecessary Component.setDefaultHost, setLogService, setStatusService method.
+ - Removed Application constructor based on Component. Use the one base on a parent Context instance instead.
+ - Removed Application.set*Service methods.
+ - Added warning when an application uses and undeclared client protocol.
+ - Clarified ConnectorService Javadocs for the lists of client and server protocols used.
+ - Added Router.validate method to validate the presence and format of request attributes.
+ 
+[Enhancements] 
+ - Added support for the IDENT protocol (see RFC 1413) in order to log more info about users.
+   This is especially useful when a pool of computers shares the same IP address.
+ - Updated Jetty to version 6.1 RC2.
+ - Added a com.noelios.restlet.util.DefaultAccessLogFormatter adding a log format header.
+ - Removed unecessary logic from org.restlet.Client.
+ - Improved support for conditional methods - issue 219. Support improved for methods 
+   GET, HEAD, PUT, DELETE. Reported and fixed by Thierry Boileau.
+ 
+1.0 beta 23 (2006-12-19)
+[Bugs fixed]
+ - Fixed several documentation typos. Reported by John D. Mitchell and Peter Murray.
+ - Fixed issue with "sub-tagged" Language metadata (like "en-us"), sub-tag comparison must
+   ignore the case. Reported by Jeff Walter and Andrew Barnes. Contributed by Thierry Boileau.
+ - Fixed issues in parsing of "accept*" HTTP headers. Added unit tests. Reported by AJ Barnes and Jeff Walter.
+ - Fixed potential NPE in HostScorer.
+ - Fixed RDF media type from "application/rdf-xml" to "application/rdf+xml". Reported by Aldo Bucchi.
+ - Made VirtualHost-based routing case-insensitive. Suggested by Thierry Boileau.
+ - The Request class now ensures that a referrer reference don't include a fragment. Reported by Thierry Boileau.
+ - Added list of variants references in the body of a 406 message. Reported by Thierry Boileau.
+ 
+[API changes]
+ - Added attachDefault(Restlet) method to Router class. The detach() method now also detaches the default scorer.
+ - Deprecated the StringTemplate mechanism, replaced by a more seamless ReferenceTemplate approach,
+   less intrusive. The following classes were deprecated and will be removed in the next
+   release: StringTemplate, StringTemplateRepresentation, CallModel, Model, MapModel.
+ - Renamed ReferenceList.getRepresentation() to getTextRepresentation().
+ - Tag now extends Metadata, getOpaqueTag() was deprecated, use getName() instead.
+ - The query part of request's resource reference is now routable. WARNING: you may have
+   to revisit your router URI patterns, especially to remove the ending "$" characters.
+ - Directory.getDirectoryVariants() now returns a textual list in addition of a HTML doc.
+ - org.restlet.Restlet class now overrides org.restlet.Dispatcher to facilate client-side invocation of filters such as Redirector.
+ - Language class now supports several sub-tags. "MainTag" property renamed to "PrimaryTag". Contributed by Thierry Boileau.
+ - Improved and expanded support for the "Allow" HTTP header all over the API and NRE.
+ - The LogService, Redirector, Route and context Dispatcher are all based on the same template mechanism and syntax provided by org.restlet.util.Template.
+ - Removed Chainer class and spread logic in Filter and Router classes.
+ - Added getRemainingPart() method to Reference, reusing the getRelativePart() logic previously in Request.
+ - Moved Request.baseRef and relativeRef properties to resourceRef.baseRef and resourceRef.relativeRef.
+ - Added Request.hostRef property carrying the HTTP Host header info or equivalent.
+ - Moved Resource.allowedMethods property to Response.allowedMethods.
+ - Refactored Handler to simplify support of additional methods. Made abstract to force overriding of findTarget() method. 
+   Added introspection of target resource's allow* methods to populate Response.allowedMethods. Removed defaultHandle() method.
+ - Removed Representation.resource property, not used anymore.
+ - Removed Result.set* methods to make it more obvious that it is not intended to be modified.
+ - Removed Extractor and Scorer classes, added Route class as a unified replacement.
+ - Renamed Router.*scorer* properties to *route*.
+ - Renamed ScorerList to RouteList.
+ - Renamed VirtualHost.base* properties to host*.
+ - Merged Container into Component as Component was almost never used separately.
+   Retained the Component name for the final class as it is the REST terminology.
+ - Renamed Directory.rootUri to rootRef for consistency purpose.
+ - Renamed ReferenceList.listRef into identifier
+ - Renamed Result.redirectionRef into redirectRef
+ - Router.attach*() methods now return the created Route instance.
+ - Added Series a generic interface extending List to handle series of Parameter, Cookie and CookieSetting instances.
+ - Added AbstractSeries based on previous ParameterList logic.
+
+[Enhancements] 
+ - Updated Jetty 6.1 to RC1 version.
+ - Added a root "docs" directory with the UML diagrams (using StarUML), the Joint Copyright Assignment for contributors.
+ - Added a "org.restlet.http.version" attribute for request served by HTTP connectors exposing this information.
+
+1.0 beta 22 (2006-12-07)
+[Bugs fixed]
+ - Fixed IndexOutOfBoundsException in HttpServerCall causing ServerServlet to fail. Reported by Steffen Eichenberg.
+ - Fixed NPE in HostScorer when using URIs with default ports. Reported by Jeff Walter.
+ - Fixed issue with header name comparison not ignoring the case. Reported by Sean Landis.
+ 
+[API changes]
+ - Removed Jetty 5 connector from the distribution. Use Jetty 6 connector instead. 
+   Source code still available in SVN. Fixes #180.
+ - Disabled Atom extension for 1.0 RC1. Postponed for completion in 1.1.
+ - Changed Helper SPI interface into an abstract SPI class.
+ - MapModel now derives from WrapperMap instead of TreeMap.
+ - Finalized many classes in order to be explicit about what is intended to be subclassed or not. Contributed by Piyush Purang.
+ - org.restlet.util.PipeStream was moved inside ByteUtils as a private class.
+ - Merged ImmutableDate into DateUtils as an inner private class. Added an "unmodifiable" static method to DateUtils instead.
+
+[Enhancements] 
+ - Add new constructor to Tag for weak tags taking an unquoted opaque value. Fixes #201. 
+   Suggested by Chris Grindstaff
+ - Updated Spring library to 2.0.1
+ - Refactored the JdbcClient to return XML result sets (using a new RowSetRepresentation class). In addition, the
+   XML request can now contain several SQL statements to be executed as a batch. Contributed by Thierry Boileau. 
+ - Added an URI resolver to the Transformer based on the context's dispatcher. That will allow the usage of
+   the "document()" XPath methods and other imports to be defined in XSLT stylesheets. Fixes #125.
+ - Added support for CheckStyle (disabled by default). The CheckStyle configuration file is "build/checks.xml", 
+   currently a clone of sun_checks.xml. Suggested by Piyush Purang.
+ - Improved CheckStyle Ant task: not failing for style violations and HTML reports for each module. Contributed by Piyush Purang.
+ 
+1.0 beta 21 (2006-11-26)
+[Bugs fixed]
+ - Fixed potential NPE when some JAR files are missing (no API implementation, no connector found, etc.). 
+   Reported by Dave Pawson.
+ - Reenabled the content negotiation by default for Directory instances. This prevented the correct serving of
+   index files in tutorial. Reported by Dave Pawson.
+ - Fixed ServerServlet which forgot to set the proper Servlet Context on the Application. Reported by Evan 
+   DiBiase.
+ - Fixed NPE in Guard when no challenge response is set. Reported by Dave Pawson.
+ - Integrated patches and bug fixes (few NPEs) detected by FindBugs. Contributed by Piyush Purang.
+ - Fixed Handler which didn't copy the "redirectRef" from the Result instance returned by post/put/delete
+   methods on Resource. Reported by Chris Grindstaff.
+ - Fixed NRE Container which didn't start the attached applications. Reported by Sumit Lohia.
+ - Fixed inneficiency issue in StringTemplateRepresentation which was reevaluating the same template multiple
+   times. Reported by Chris Grindstaff.
+ - Fixed NPE in Representation when creating an EncoderRepresentation. Reported by Chris Grindstaff.
+ - Fixed bug in EncoderRepresentation returning the original size instead of the size of the encoded 
+   representation (or -1 when no known). That was causing truncation of the output in browsers.
+ - Fixed several issues related to the FILE client connector (#182 and #39). Contributed by Thierry Boileau.
+ - Fixed bug in Message preventing the sending of entities with an unknown size (-1). Reported by Mitch Stewart.
+ - Fixed bug in JdbcClientHelper causing a premature close of the connection. Reported by Kyrre Kristiansen.
+ - Fixed bug in JdbcClientHelper causing a commit even if autoCommit is enabled. Reported by Thierry Boileau.
+ - Fixed bug in HttpUrlConnection setting a transfer mode for GET, when the entity existed but was empty.
+ - Fixed potential NPE in HttpMethodCall : Apache HTTP client.
+ - Redirector now clear the HTTP headers attributes in requests and responses forwarded.
+ - Removed POST and PUT methods from RedirectTestCase: was blocking the RedirectTestCase.
+ 
+[API changes]
+ - Moved org.restlet.data.Result to org.restlet.resource.Result (deprecation used).
+ - Replaced ConnectorService.get*Protocols() methods by just getClientProtocols() and getServerProtocols().
+ - Refactored the TunnelService a bit and added better Javadocs.
+ - DateUtils formats are lists now instead of arrays. Trying to modify system set dates will yield 
+   UnsupportedOperationException. Piyush Purang.
+ - Handler now supports dynamic dispatching to handle*() methods based on the request's method name. Only common 
+   methods are statically provided (handleGet/Head/Post/Put/Delete). handleMove/Copy/Options/Trace are removed 
+   from base Handler class (their default implementation did nothing useful anyway).
+ - Renamed Form.getWebForm() into getWebRepresentation() to make space for a future getMultiPartRepresentation().
+ - Replaced Tag(httpTag) constructor by a static parse(httpTag) method and renamed getName() into format().
+   Suggested by Chris Grindstaff. I have also added a default constructor.
+ - Removed the unused "fallbackLanguage" property/parameter from Handler, Factory, Response, ClientInfo, etc.
+ - Renamed Status.REDIRECTION_MOVE_TEMPORARILY to REDIRECTION_TEMPORARY.
+ - Renamed Status.REDIRECTION_MOVE_PERMANENTLY to REDIRECTION_PERMANENT.
+ - Deprecated Request.setProtocol() method and ServerInfo.domain property. We now rely on Request.baseRef property.
+ - Refactored the HTTP connectors to cleanly separate the server address, port from the baseRef and resourceRef properties.
+ - Improved virtual hosting by using regex patterns in VirtualHost class.
+ 
+[Enhancements] 
+ - HTTP calls now try to use the channel aspect of a representation before its stream aspect. 
+   Suggested by Lars Heuer.
+ - Added source path to JSON external plugin. Suggested by Chris Grindstaff.
+ - Added support for FindBugs in the Ant build script. Suggested by Piyush Purang.
+ - Added "verify" target to build script to provide a shorter cycle for developpers. 
+   Contributed by Piyush Purang.
+ - Slightly updated Eclipse code template file. Please re-import it if possible.
+ - NRE now checks that each application has the required connectors available when starting it.
+ - Added org.restlet.util.ImmutableDate.
+ - Shortened author's info by removing the URI.
+ - Refactored all hashCode() and equals() methods in classes of org.restlet.data package. 
+   Help from Piyush Purang.
+ - Added Cookie test case for complex equality/hash code verification.
+ - Limited AWS patch to JDK 5.0 update 9 and lower as this should be fixed in update 10 and already works in 
+   JDK 6.0.
+ - Filter.doHandle() method now directly dispatch the call to the next Restlet instead of calling the super 
+   class. This prevents double call to initialize() and reduces the stack trace depth. Reported by Dave Pawson.
+ - Added new HTTP client connector based on Jakarta Commons HTTP Client. Allow multi-threaded connection reuse.
+ - Added new constructor and methods on com.noelios.restlet.Factory to turn off auto-discovery of connectors. 
+   See the getRegisteredClients() and getRegisteredServers() methods. Suggested by Mike Moran.
+ - Upgraded Apache MINA to 0.8.4 used by AsyncWeb HTTP server connector. Suggested by Lars Heuer.
+ - Upgraded Jetty 6 to 6.1 pre3 which adds support for APJ and HTTPS/NIO in the Jetty 6-.x series.
+ - Upgraded Jetty 5 to 5.1.12. NOTE: we plan to remove this older Jetty 5 connector in the next beta release.
+ - Renamed NRE's ServletContext into ServletContextAdapter and replaced the private getServlet() method by 
+   a public getServletContext() one.
+ - Added new Restlet extension supporting Spring 2.0 via a custom Spring's ApplicationContext and a Spring's 
+   Resource implementation. It allows loading of bean definitions via properties or XML representations.
+ - Separated content negotiation from conditional handling. Added Conditions.isModified() method. Fixes RFE #183.
+ - Added org.restlet.data.Dimension and Response."dimensions" property. 
+ - Now autoredirects directory URIs without a leading slash character (#113). Contributed by Thierry Boileau.
+ - The distribution Zip file now contains a root directory named "restlet-1.xx". Suggested by Manuel Simoni.
+ - Added support for generation and parsing of the Vary header from/to the Response.dimensions property (#109).
+ - Added a readValue() to HeaderReader which improves the parsing of multi-values headers.
+ - Added Response.redirectPermanent(), redirectSeeOther() and redirectTemporary() methods.
+ - Added new org.restlet.Transformer filter that easily apply an XSLT transform sheet. Fixes #112.
+   
+1.0 beta 20 (2006-11-08)
+[Bugs fixed]
+ - Fixed bug causing the ServerServlet to create an extra HTTP server connector if one is available on the classpath. Reported by Sean Landis.
+ - Fixed bug in StatusFilter, method dohandle() renamed to doHandle().
+ - Removed getStatusCode() and getReasonPhrase() methods in ServletCall hiding the actual value set. Reported by Sean Landis.
+ - Fixed bug preventing the restart of a Jetty 6 connector. Added RestartTestCase. Reported by Piyush Purang.
+ - Fixed bug in AWS authentication algorithm if no AMZ_* header present. Reported by Mikkel Jensen.
+ - Patched Simple connector to not return a "Content-length" header when size is 0.
+ - Bug bug in the Simple connector causing a "Transfer-Encoding: chunked" header to be returned even if no entity was present. May be the cause of problems with the Safari browser.
+ - Fixed issue with StringRepresentation wrongly computing its length in certain cases. Reported by Richard G.
+ - Fixed potential NPE in StringRepresentation and StringTemplateRepresentation when no character set was defined. Reported by Chris Grindstaff.
+
+[API breaking changes]
+ - Moved Atom, FreeMarker and FileUpload extensions to org.restlet.ext.atom/freemarker/fileupload packages.
+ - Moved implementation-independent classes from NRE into org.restlet packages. 
+ - Renamed LogService."loggerName" and "format" properties to add the "access" prefix. Added "contextLoggerName" property.
+ - Moved Resource and Representation to new org.restlet.resource package.
+ - Moved *Service classes to new org.restlet.service package.
+ - Renamed RedirectRestlet into org.restlet.Redirector.
+ - Renamed ExtractFilter into org.restlet.Extractor.
+ - Renamed TunnelFilter into org.restlet.Tunnel.
+ - Moved StringTemplate data model to org.restlet.util.Model. Removed ReadableModel and WritableModel.
+ - Replace Representation.toString() by getValue() to prevent unwanted consumption of the content. Reported by Vincent Lari.
+   Note that getValue() throws IOException instead of eating them as to older toString() implementation. 
+ - Refactored TunnelFilter into a TunnelService enabled by default. 
+ - Also refactored and renamed LocalService into MetadataService used by the TunnelService and local client connectors.
+ - Refactored VirtualClient interface into a Dispatcher class. Renamed Context.getClient() into getDispatcher().
+
+[Other changes] 
+ - Reorganized Javadocs into three parts: Restlet API, Restlet Extensions, Noelios Restlet Engine.
+ - Added JSON library as an external plugin project. See http://www.json.org
+ - Added org.restlet.ext.json extension to manipulate JSON representations.
+ - Added MediaType.APPLICATION_JSON and added entry for "*.json" in common extensions.
+ - Now adds the mandatory "Date" header to all responses.
+ - Added modifiable "identifier" and "secret" properties to ChallengeResponse, in addition to the raw "credentials" property.
+ - Added support for Amazon Web Services authentication scheme for HTTP client requests. Added ChallengeScheme.HTTP_AWS constant and
+   a sample example at com.noelios.restlet.example.misc.AwsTest. Suggested by Mikkel Jensen.
+ - StatusService now has its "overwrite" property set to "false" by default.
+ - Now the StatusService (and associated StatusFilter classes) also catch unhandled Errors. Suggested by Vincent Lari.
+ - Added createStatusFilter and createLogFilter to NRE's ApplicationHelper and ContainerHelper to allow overriding. Reported by Vincent Lari.
+ - Added workaround for AWS authentication caused by HttpUrlConnection in JDK < 1.6 causing sending of "application/x-www-form-urlencoded" content type.
+ - The SPI mechanism now uses the classloader of the Factory's class. get/setClassLoader() methods also added. Suggested by Kabe.
+ - Made package org.restlet.spi visible like other JDK's SPI packages
+ - Implemented support for multiple choices in org.restlet.Handler. Added a "negotiateContent" property to disable automatic content negotiation.
+ - Added "decoderService" to Application to auto-decompress incoming entities.
+ - Implemented support for multiple choices (300 status) in org.restlet.Handler. 
+ - Added a "negotiateContent" property to disable automatic content negotiation.
+ - Refactored DirectoryResource: removed unused handle*() methods and duplicate "negotiationEnabled" property.
+ - Added Reference.encode() and decode() methods, easier to use than raw URLDecoder/URLEncoder classes.
+ - Renamed StringTemplate.process() into format() to make place for a parse() method.
+ - The create*() methods in ApplicationHelper simply require an instance of Filter as result parameter.
+ - Clarified description for 304 status code.
+ - Added @Override annotation to all example source code. Suggested by Piyush Purang.
+ - Added a constructor to ObjectRepresentation taking a serialized object representation. getObject() will return the deserialized object.
+ - Added callback methods beforeSend() and afterSend() to ConnectorService in order to allow custom actions like transaction closing. 
+   Suggested by Diggory Briercliffe for integration with Seam.
+ - Renamed tutorial examples to com.noelios.restlet.example.tutorial.Part**.java
+ - Updated Java Service Wrapper to version 3.2.3.
+ - Added support for Velocity templates in addition to FreeMarker templates. See org.restlet.ext.velocity package.
+ - Merged NRE's ClapReference, JarReference and FileReference into a single org.restlet.data.LocalReference.
+ - Merged org.restlet.spi into org.restlet.util (only Factory and Helper were remaining).
+ - Added Protocol.JAR constant.
+ - Renamed NRE's LogFileHandler and LogFormatter to AccessLogFileHandler and AccessLogFormatter (use for WWW access logs).
+ - Moved "indexName" property from Directory to MetadataService (remove the previous "indexNames" list).
+ - Added "converterService" to Application to converts between Representations and higher-level Objects (like JDOM documents, etc.). 
+   Suggested by Chris Winters.
+ - Added support for URI templates to facilitate the routing of dynamic URIs. 
+ - Reworked tutorial part 11 to illustrate usage of URI templates.
+ 
+1.0 beta 19 (2006-10-23)
+[Bugs fixed]
+ - Fixed issue with error status preventing the setting of response headers with Servlet containers like Tomcat. Report and solution by Evan DiBiase.
+ - Completed support for content streaming in the HTTP client connector extension. Issue reported by Mikkel Jensen.
+ - Fixed bug in ParameterList.getFirstValue(String, boolean) ignoring the "ignoreCase" parameter.
+ - Fixed issue with ServerServlet preventing the returning of an output representation with an error status code. Reported by Sean Landis.
+ - Fixed incomplete plugin descriptors for some extensions.
+ - Added workaround for JDK's bug #6472250 when using the fixed length mode with the HTTP client.
+ - Fixed bug in FreeMarker's TemplateRepresentation closing the output stream too early, causing Simple HTTP server to fail. Reported by Zohar Melamed.
+ - Fixed bug in normalization of paths when Windows style paths were used on Linux. Reported by Kabe.
+ - Fixed compilation issue on Linux with UTF-8 encoding. Removed unmappable characters in DirectoryTestCase. Reported by Piyush Purang.
+ 
+[API breaking changes]
+ - Renamed Representation.isContentAvailable() to isAvailable() and isContentTransient() to isTransient().
+ - Merged Client and GenericClient into a single Client class.
+ - Moved com.noelios.restlet.connector into hidden com.noelios.restlet.impl.connector package.
+ - Moved internal utilities from com.noelios.restlet.util into hidden com.noelios.restlet.impl.util package.
+ - Moved com.noelios.restlet.spi into hidden com.noelios.restlet.impl package.
+ - Moved org.restlet.component.ContainerContext to com.noelios.restlet.impl.component.ContainerContext.
+ - Renamed Server."next" property into "target". "Next" was assuming that a previous Restlet existed, which is false for Server connectors.
+ - Moved com.noelios.restlet.util.WrapperMap into org.restlet.util.
+ - Removed Restlet.compareTo() method. No apparent usage.
+ - Renamed Reference.getProtocol() into getSchemeProtocol().
+ - Scorer now derives from Filter to improve factorization.
+ - Added Context.getClient() returning a generic ClientInterface.
+ - Removed get/post/put/delete methods on Context as getClient() is preferred.
+ - Added a post() method on Resource returning an instance of the new org.restlet.data.Result class as well as put() and delete().
+ - Renamed Chainer.findNext(Call) into getNext(Call). Chainer is now abstract.
+ - Scorer is now abstract to force implementation of the score() method.
+ - Renamed "name" property into "agent" for ClientData and ServerData.
+ - Added "name" (for domain name) and "port" properties to ServerData, matching HTTP's "Host" header.
+ - Refactored HttpCall and related classes to better handle and preserve the "Host" header information.
+ - Renamed CallModel variable "clientName" into "client.agent" and "serverName" into "server.agent", also
+   "serverAddress" into "server.address" and "clientAddress" into "client.address".
+ - Removed Context.getClient(protocol) method, now Context directly implements ClientInterface.
+ - Replaced com.noelios.restlet.HostRouter by a portable org.restlet.component.VirtualHost class. See updated tutorial to know how to migrate.
+ - Moved com.noelios.restlet.PatternScorer to com.noelios.restlet.impl.PatternScorer as this is related to the API implementation.
+ - Refactored and completed the Application class to act as a portable component, deployable on any Restlet engine and 
+   any (virtual) host without any change.
+ - Moved "root" property from Component to Application.
+ - Added new org.restlet.component.VirtualHost class, as a Router subclass to target applications or handlers.
+ - Split org.restlet.Call into org.restlet.Request and org.restlet.Response to solve overweight issue. Suggested by Piyush Purang.
+   Also added a parent Message class following the HTTP semantics. Merged "input" and "output" properties into a single "entity" property on Message.
+ - Merged AbstractResource and Resource into a single Resource class.
+ - Merged AbstractRepresentation and Representation into a single Representation class.
+ - Removed the "com.noelios.restlet.builder" package as the new Application feature broke this approach and makes it less useful. 
+   We may reintroduce a refactored version in a later release.
+ - Moved LogFilter and StatusFilter to com.noelios.restlet.impl.
+ - Moved ClientList and ServerList to org.restlet.util 
+ - Moved ScorerList to org.restlet.util and changed it to an interface.
+ - Renamed ClientData and ServerData to ClientInfo and ServerInfo to be less ambiguous about the type of data.
+   Also renamed "Response.server" property to "serverInfo" and "Response.client" property to "clientInfo".
+ - Moved EmptyValue to org.restlet.util.
+ - Renamed ConditionData to Conditions.
+ - ServerServlet now only works with applications as target. Review updated Javadocs before upgrading.
+ - GuardFilter now logs messages via the context's logger. Changed constructor.
+ - Moved all remaining classes of org.restlet.component and org.restlet.connector into org.restlet for simplification purpose. Suggested by Piyush Purang.
+ - Refactored hierarchy : Restlet, Chainer, Connector and Component directly derive from base Handler class.
+ - Extended usage of contexts.
+ - Removed WrapperRestlet class, replaced by a wrapping constructor on Restlet.
+ - Renamed "input" and "output" to "entity" or "request" or "response" in all properties name for CompressFilter, DecompressFilter, 
+   ExtractFilter, HttpClientCall, HttpServerCall, Result
+ - Moved ClientInterface to org.restlet.util.
+ - Refactored the Restlet SPI and NRE implementation, to use helpers instead of wrappers as plug mechanism.
+ - Added ConnectorService, LocalService, LogService and StatusService to org.restlet.util and as Application properties.
+ - Renamed org.restlet.util.ClientInterface into VirtualClient.
+ - Replaced Protocol.CONTEXT by Protocol.CLAP (ClassLoader Access Protocol) and WAR (Web Application).
+ - Replaced ContextReference by ClapReference.
+ - Renamed "hostName" or "serverName" into "hostDomain" or "serverDomain" in API's Reference, ServerInfo, VirtualHost classes and NRE's CallModel, 
+   HttpCall, HttpServerCall classes.
+
+[Other changes] 
+ - Updated Jetty 6 extension to 6.0.1 release and Jetty 5 extension to 5.1.11 release.
+ - Added Resource.setVariants() and setIdentifiers() methods. Can be easier than doing a getVariants().clear() then a getVariants().addAll(newList). 
+   Suggested by Chris Winters.
+ - org.restlet.ReferenceList now derives from WrapperList<Reference> to factorize code and to clarify (in Javadocs) which extra methods are provided.
+ - Improved Javadocs for the org.restlet.Handler class to explain what is the default behavior of each handle*() method. 
+ - Refactored all HTTP client and server classes to work with the new call converter mechanism.
+ - Renamed AbstractHttpServer to HttpServer, AbstractHttpServerCall to HttpServerCall and AbstractHttpClientCall to HttpClientCall.
+ - Merged HttpCall interface and DefaultHttpCall class into single HttpCall class.
+ - Added com.noelios.restlet.connector.HttpServerConverter as the base call converter (from HTTP calls to uniform REST calls).
+ - Refactored the HttpUrlConnection-based HTTP client to extract a generic HttpClientConverter and added a base HttpClient class.
+ - Added support of HTTP headers in high-level calls. The headers are available in Request|Response.getAttributes().get("org.restlet.http.
+   headers") as an instance of ParameterList. Additional headers can also be added by setting a "org.restlet.http.headers" 
+   attribute in Request or Response. Note that only non-standard HTTP headers are allowed to be added to prevent conflicts with the connector's behavior.
+ - Added sample application illustrating the access raw HTTP headers. Used suggestion from John D. Mitchell.
+ - Added static valueOf() methods to ChallengeScheme, CharacterSet, Encoding, Language, MediaType, Method, Protocol and Status. 
+   Sometimes renamed existing create() method. Suggested by Piyush Purang.
+ - Clarified the Javadocs of root classes in org.restlet.
+ - Added a Message.setEntity(String, MediaType) method facilitating the setting of string-based entities.
+ - Fully updated the FAQ.
+ - Updated pictures in the tutorial to reflect the latest API changes (Application, hierarchy changes, etc.).
+ - Form handling code don't throw IO exceptions anymore for Call.getInputAsForm() and Reference.getQueryAsForm(). Issue reported by Piyush Purang.
+ - Added modification support (PUT and DELETE) to DirectoryHandler. Suggested by Don Dwoske and John D. Mitchell. 
+   Implementation contributed by Thierry Boileau.
+ - Added "protocol" property on Call.
+ - Added FTP constant to Protocol.
+ - Improved detection of default ports in Reference.toString() static methods. Added new toString() variant.
+ - HTTP client connectors now set the "Host" header manually when proper information is found via Call.getServer()."name" and "port".
+ - Refactored the parsing/construction of the target resource reference to handle both relative and absolute URIs.
+ - Improved robustness of Reference when handling relative URIs.
+ - Added a "javadoc-hide" property to "build.properties" to hide the Javadocs of implementation packages (true by default).
+ - Added shortcut attach/detach methods to Router, equivalent to getScorers().add()/removeAll().
+ - Method Filter.getNext(Call) is now final to prevent overriding. If needed, use Chainer as base class.
+ - Added ScorerList.removeAll(UniformInterface) method to remove all scorers pointing to a given handler.
+ - Added Protocol.ALL constant as a protocol wildcard.
+ - Added "hosts" and "localHost" properties to Container.
+ - Updated tutorial examples to leverage application concept.
+ - Refactored all usages of the JDK's loggers in order to reuse the Context's logger, allowing separation of messages for each application.
+ - Optimized the ByteUtils.write(is, os) method.
+ - Added a "defaultScorer" property on Router to have a way to catch calls when no scorer in the normal list matched.
+ - Scorer is no longer abstract, score() now returns 1.0 by default.
+ - Handler is no longer abstract, findTarget() now returns "null" by default.
+ - Refactored HTTP call converters: introduce super HttpConverter class. Added pluggability of converters via a simple connector parameter. Following a request from Diggory Briercliffe.
+ - Representation is no longer abstract and "transient" and "available" properties can be externally modified. Added empty constructor.
+ - Added support "Allow" HTTP headers. New allow*() methods added on Resource and support for setting the 405 status in the Handler class.
+   Also added Resource."allowedMethod" property. Suggested by AJ Barnes and Lars Heuer.
+ - Added Response.setStatus(status, message) method variant.
+ - Added unit test covering execution of  FreeMarker templates.
+
+1.0 beta 18 (2006-08-19)
+[Bugs fixed]
+ - Status descriptions are now sent back to Jetty 6 for error statuses. Reported by AJ Barnes.
+ - The DirectoryHandler was listing the directories twice to do the content negotiation, slowing down the process. 
+ - The content negotiation was not properly handling the situation where no language and media type preferences are defined. Reported by Thierry Boileau.
+ - Fixed potential NPE in DefaultClient and RedirectTestCase when no connector found.
+ - Fixed bug in NRE's factory which prevented the detection of HTTPS connectors. Now all HTTPS connectors work fully (Simple, Jetty5 and Jetty6).
+ - Fixed bug in DirectoryHandler preventing the return of a directory listing if an index file name was set but not found. Reported by Thierry Boileau.
+ - Added option to turn off content negotiation on DirectoryHandler which was causing some issues with online Javadocs. The content negotiation is now
+   off by default. Reported by Tiago Silveira.
+ - Fixed caching conflicts with content negotiation. Now ETags are properly considered. Reported by Chris Winters.
+ - Fixed potential NPE in the DateUtils comparison methods. Reported by Chris Winters.
+ - Reworked all equals() methods in the data package to accept Object as parameter. 
+ - Fixed bug in MediaType.includes() and added a JUnit test case for MediaType comparison. Report and patch by Chris Winters.
+ - Fixed bug in fluent builders prevent the proper usage of routers in routing mode.
+ 
+[API breaking changes]
+ - Removed get/setTimeout() methods from the Client interface and related classes. Also, removed the configureSsl() method from the Server interface.
+   We will now use connectors'parameters instead. Suggested by John D. Mitchell.
+ - NRE's HttpClient (based on HttpUrlConnection) now used these parameters: "chunkLength", "followRedirects", "allowUserInteraction", "useCaches"
+   "connectTimeout" and "readTimeout".
+ - NRE's HttpClient no longers sets the JDK's system property "http.keepalive" to "false". This could conflict with other classes using HttpUrlConnection.
+ - Jetty 5.1 connector now supports parameters: "minThreads", "maxThreads", "lowResourcePersistTimeMs", "maxIdleTimeMs" for the HTTP server and
+   "keystorePath", "keystorePassword", "keyPassword" for the HTTPS one.
+ - Simple 3.1 connector now supports parameters: "defaultThreads", "waitTimeMs" for the HTTP server and "keystorePath", "keystorePassword",
+   "keyPassword" for the HTTPS one.
+ - Moved Jetty5 to com.noelios.ext.jetty5 package so that Javadocs of both versions can be displayed.
+ - The "X-Forwarded-For" header is not used anymore by default to get all client addresses, including intermediary proxies. However, there is now a 
+   standard way to enable this feature: by setting the "useForwardedForHeader" parameter to "true" for the HTTP server connector used. Be aware of the
+   potential security effects of using this header if you don't control all the intermediary proxies as the header could be faked otherwise. This change
+   was suggested by John D. Mitchell.
+ - Removed unused org.restlet.connector.LocalClient connector.
+ - Moved content of com.noelios.restlet.impl to com.noelios.restlet, com.noelios.restlet.connector and com.noelios.restlet.data
+ - Renamed Call's "outputRef" property back to "redirectRef" as we now have Representation's "identifier" property to get the location of the call's output.
+ - Factorized all Call's client data into ClientData class (was PreferenceData). 
+ - Factorized all Call's server data into a new ServerData class.
+ - Renamed Call.contextRef into Call.baseRef and Call.relativePath into Call.relativePart. Added Call.getRelativeRef returning a real relative reference.
+ - org.restlet.Call is now a class instead of an interface. Removed DefaultCall classes.
+ - Removed "requestHeader" and "responseHeader" variables from CallModel. Not accessible anymore at this point from an uniform Call.
+ - Renamed static Reference.toUri() method into Reference.toString() for consistency with existing Reference.toString() methods (non-static).
+ - Renamed Call.setBestOutput() into Call.setOutput() and adjusted the Javadocs to explain behavior (set best output for the given resource).
+ - Removed empty and unused interfaces Gateway, OriginServer, Proxy, UserAgent, Cache, Resolver, Tunnel, ControlData, Data. Suggested by Piyush Purang.
+ - Refactored CharacterSet, CharacterSets and DefaultCharacterSet into a single CharacterSet class.
+ - Refactored Encoding, Encodings and DefaultEncoding into a single Encoding class. 
+ - Refactored ChallengeScheme, ChallengeSchemes and DefaultChallengeScheme into a single ChallengeScheme class. 
+ - Refactored Language, Languages and DefaultLanguage into a single Language class. 
+ - Refactored MediaType, MediaTypes and DefaultMediaType into a single MediaType class. 
+ - Refactored Method, Methods and DefaultMethod into a single Method class. 
+ - Refactored Protocol, Protocols and DefaultProtocol into a single Protocol class. 
+ - Refactored Status, Statuses and DefaultStatus into a single Status class. 
+ - Fixed the remaining inconsistent usages of ParameterList. Removed MediaType.getParametersValue(). 
+   Now getParameters() methods always instantiate a new list of none was existing before.
+ - Separated HTTP constants (header names and status codes) into a separate HttpConstants class.
+ - Added an org.restlet.component.Application class to hold a portable Restlet Application.
+ - Added org.restlet.Context and a specialized ContainerContext subclass. This allow container to provide contextual services to Restlet, without giving
+   a direct access to the container itself or to its connectors.
+ - Following the advices of API design gurus Eamonn McManus and Joshua Bloch), I've refactored the whole API in several ways:
+    - Set most of the member variables to "private" instead of "protected" for better encapsulation and evolving capabilities
+    - Removed most interfaces which and too fragile and little useful without a default/abstract implementation. 
+ - Removed RestletServer and RestletContainer, replaced by Container and Application. A container manages a set of applications.
+ - Separated the Handler concept into a Chainer (similar signature) and a Handler (new method specific to find the target resource). Handler now directly
+   derives from Restlet. The goal is to provide a cleaner separation of roles.
+ - The Resource interface doesn't derive anymore from Restlet. The responsability of the control and handling of incoming calls is moved to the repurposed
+   Handler class.
+ - Replaced ServerMap and ClientMap by ServerList and ClientList to fit with the new Container and Application classes. 
+ - Renamed DefaultClient and DefaultServer to GenericClient and GenericServer to better reflect the purpose of the classes and the concept of call
+   dispatcher based on the scheme instead of the connector name.  
+ - Removed addition of custom headers from Call.connectorCall for JavaMailClient and HttpClient. Will now require the usage of Converters.
+ - Fully refactored the context data of Call. Added a new org.restlet.data.ContextData class containing all data potentially varying with the current
+   Restlet handling the call. For example Call.getResourcePath() is now Call.getContext().getRelativePath(), Call.setContextPath() is now Call.getContext().
+   setBaseRef(), etc.
+ - Replaced the CharacterSetPref, EncodingPref, LanguagePref and MediaTypePref by a generic Preference<Metadata> class.
+ - Replaced Router.Mode enumeration by static constants on Router. Simplifies the Javadocs display and works well enough.
+ - Moved org.restlet.Factory into a hidden org.restlet.spi.Factory package. Same thing for the NRE's Factory.
+ - Replaced HostRouter.Mode enumeration by constants on HostRouter.
+ - Moved WrapperMap to NRE util package as it's not used anymore in the API.
+ - ScorerList now derives from WrapperList like similar classes (ClientList, ParameterList, etc.).
+ - Renamed RedirectHandler to RedirectRestlet as it is not taking advantage of the features of a Handler.
+ - Refactored the Servlet connector to make it work with the new notion of Restlet's context.
+ - Added put() and delete() methods on Resource interface and related classes.
+ - Renamed ContextClient into LocalClient to remove ambiguity with concept of Restlet's context.
+ - Handler now has a default implementation of the handlePut() and handleDelete() methods.
+ - Renamed ClientData.get*Prefs() methods into getAccepted*() to be more inline with HTTP terminology.
+ - Refactored and improved robustness of the ServerServlet adapter. Now you have access to the ServletContext's logger and resources via the standard
+   Restlet.getContext() methods.
+ - Renamed HostRouter.ROUTING and FILTERING to USAGE_ROUTING and USAGE_FILTERING.
+ - Renamed Router.mode to Router.routingMode.
+ 
+[Other changes] 
+ - Separated the HTTP client connector (based on JDK's HttpUrlConnection) previously integrated to the NRE core. This will allow future alternative
+   implementations like based on Apache HTTP Client or Apache MINA NIO framework. Please ensure that the new extension (com.noelios.restlet.ext.net) is
+   added to your classpath when the application is making HTTP client calls.
+ - Added ParameterList.getFirstValue() methods taking and additional "defaultValue" parameter.
+ - Parameterized all connectors, including the LocalClient.
+ - Added HTTPS connector for Jetty 6.0
+ - Updated Jetty 6 to RC1.
+ - The Jetty 6 extension now appears in the Javadocs due to the package renaming of the Jetty 5 extension.
+ - Updated documentation, especially for the distribution. Suggested by Dave Pawson.
+ - Added more control on Simple HTTPS connector, see list of parameters.
+ - Updated AsyncWeb to version 0.8.2.
+ - The number of worker threads can now be configured for AsyncWeb.
+ - Refactored the names in the NRE's impl package, uses Abstract prefix for abstract classes and Default prefix for other ones implementing Restlet API.
+ - The ServerServlet connector now copies all Servlet initialization parameters (from the Web Application then from the Web Container) into the connector
+   parameters list. This allows the settings of the parameters related to HTTP server connectors in all cases (standalone or embedded).
+ - ContextClient now uses parameters for its configuration (default encoding, language, mediatype, etc.).
+ - Some unit test were catching exceptions, preventing JUnit from failing the tests.
+ - Added a Resource.setIdentifier() method taking a URI as a String.
+ - Now the "Content-Location" is supported, for both the HTTP client and server connectors. The corresponding property is available via the 
+   call.getOutput().get/setIdentifier() method.
+ - Added a default implementation for the HEAD method in AbstractResource and AbstractHttpServer. Suggested by Thierry Boileau.
+ - Now, all calls' resource references are automatically normalized to ensure a consistent handling. Reported by Thierry Boileau.
+ - Added Eclipse code formatter and template styles used to SVN.
+ - Added DirectoryHandlerBuilder to allow the setting of the contentNegotiation flag.
+ - Added SVG media type constant to MediaTypes. Also part of the common extesions (*.svg) of ContextClient.
+ - Improved the default directory listing template to look more like Apache style of listing. Added the ".." link when possible, etc.
+ - Added Reference.getParentRef() method.
+ - Added Tag.ALL constant, equivalent to the special "*" value in HTTP.
+ 
+1.0 beta 17 (2006-07-19)
+[Bugs fixed]
+ - Fixed regression in Jetty 6.0 connector which prevented the handling of requests. 
+ - When building its pattern, the HostRouter now adds case insensitive flags for scheme names and domain names, strictly following the URI specification. 
+   Bug reported by Jim.
+ - Fixed bugs in Reference.setHostName().
+ - Fixed potential NPE in com.noelios.restlet.ext.fileupload.RepresentationContext. Reported by Mikkel Jensen.
+ - Fixed potential NPE exceptions in the equals() methods of many metadata classes. Was causing a bug on http://www.noelios.com with English only browsers.
+   Bug reported by Guillaume Laforge (Groovy).
+ - For some unknown reason we were lower casing the type name in DefaultMediaType's constructor. This causes issues with FileUpload. 
+   Reported by Mikkel Jensen.
+ - Fixed potential NPE in Reference.getTargetRef(). Reported by Thierry Boileau.
+ - Fixed issue in ServletCall which was not setting the reason phrase for error statuses. Reported by Bill Morone.
+
+[API breaking changes]
+ - Renamed Filter.attach/detach to get/setTarget. Users won't assume that multiple targets can be attached, also the target can be looked up.
+ - Removed nextHandle() method from Handler and AbstractHandler. Didn't bring much value.
+ - Renamed RestletContainer.attach/detach into get/setRoot. 
+ - Renamed Router.getOptions() to getScorers() and changed the result type from List<Scorer> to ScorerList.
+ - Removed Router.attach() methods and added equivalent add() methods to ScorerList.
+ - Removed Router.detach() method. Use the getOptions().remove() methods instead.
+ - Moved some routing logic from DefaultRouter to ScorerList, see new getFirst(), getLast(), getBest(), getNext() and getRandom() methods.
+ - Renamed RouterMode.*_MATCH to RouterMode.* and ROUND_ROBIN to NEXT. Improved Javadocs.
+ - Moved enumeration org.restlet.RouterMode into Router.Mode.
+ - Refactorized usage of modifiable lists and map for more consistency. Suggested by Lars Heuer.
+    - Added org.restlet.data.WrapperList and WrapperMap classes.
+    - Added org.restlet.connector.ClientMap and ServerMap classes. 
+    - Moved Component.addClient() and addServer() methods to ClientMap.put() and ServerMap.put().
+    - Updated tutorial examples to follow new syntax.
+    - ParameterList now extends WrapperList to factorize wrapping logic.
+    - RestletServer now uses a list of RestletContainer instead of a map. Removed unecessary add() methods.
+
+[Other changes] 
+ - Fully reorganized the SVN code base to separate the packages and third-party into a set of Eclipse plugin projects with inter-dependencies.
+ - Improved the packaging in the distribution so that each module/extension JAR is also an Eclipse plugin. Third-party libraries are also available
+   as plugins directories. All the content of the "lib/" directory can be dropped in an Eclipse "plugins/" directory for direct usage in the IDE.
+ - Added a "dependency.txt" file to list the main dependencies between the various plugins (external libraries and internal modules).
+ - Added new RoadMap document at http://www.restlet.org/roadmap
+ - Added new FAQ entry on "What are the underlying concepts?" and reorganized the questions a little.
+ - Updated FreeMarker to version 2.3.8.
+ - Updated Simple framework to version 3.1.3.
+ - Updated Jetty 6 to version 6.0.0 RC0.
+ - Updated JUnit to version 4.1.
+ - Updated JavaMail to version 1.4.
+ - Updated SLF4J to version 1.0.2.
+ - Ensured that Reference normalization, scheme name setting and host name setting use lower case according to URI specification.
+ - Added Preference.toString() implementation based on patch submitted by Chris Winters.
+ - Added org.restlet.data.ScorerList implementing List<Scorer>.
+ - Changed Preference.parameters type from List<Parameter> to ParameterList and adjusted related classes.
+ - Added DefaultRouter.customFind() method as an easy hook for the RouteMode.CUSTOM routing mode.
+ - Factorized the handling of IO exception in various HTTP server connectors into the base com.noelios.restlet.impl.HttpServer class.
+   Now, when an IO exception, a one line log entry is added at the WARNING level, and the full stack trace is added at the INFO level.
+   This is important to prevent excessive log entries for the Simple connector when the connection is closed by the client (Broken Pipe).
+ - Improved the logging of PatternScorer's logic. Adjust your logging properties to see the traces (FINE and FINER levels).
+ - Added log traces in CallImpl when a contextPath/Ref is specified before any resourcePath/Ref was specified. Reported by Thierry Boileau.
+
+1.0 beta 16 (2006-06-30)
+ - Renamed attachPath() to attachRouter() in RouterBuilder.
+ - Updated all tutorial code snippets (some were slightly outdated)
+ - Removed dependency of API on NRE in ReferenceList and RestletContainer.
+ - Fixed bug in TunnelFilter (see issue 68). Reported by A.J. Barnes.
+ - Restructured code source to split the "source/main" directory into "source/api" and "source/core".
+ - Split NRE Javadocs into NRE Core Javadocs and NRE Extensions Javadocs.
+
+1.0 beta 15 (2006-06-26)
+ - Updated Jetty 6 to version beta 17.
+ - Updated Apache FileUpload extension to version 1.1.1.
+ - Fixed encoding name in JdbcClient sample XML document. Reported by Thierry Boileau.
+ - Added new FileRepresentation constructor accepting a File instance.
+ - Improved ByteUtils.write() methods for streams by automatically buffering output streams if necessary.
+ - Removed the unecessary buffering of the input stream in ByteUtils.write(). We don't use the mark and set features.
+ - Fixed AbstractRestlet which was not reporting the proper error when non standard Method instances were called but not handled.
+ - Added CONTEXT and FILE protocols to Protocols enumeration.
+ - Added com.noelios.restlet.data.FileReference.
+ - Added org.restlet.data.ReferenceList to handle list of references, supporting the "text/uri-list" representations.
+ - Renamed com.noelios.restlet.impl.HttpServerCallImpl to HttpServerCall.
+ - Renamed "initParameters" into "properties" for Component interface and related classes.
+ - Refactored the methods allowing the attachment of connectors in Component interface and related classes.
+ - Removed "name" property from Connector and Component interfaces and related classes.
+ - Added modifiable "properties" map to the Connector interface.
+ - Added ContextClient implementing a client connector for the CONTEXT and FILE protocols, allowing REST access to contextual resources.
+ - Moved StringUtils.normalizePath() method to FileReference.
+ - Added JarReference supporting the JAR URIs defined by JDK's JarUrlConnection.
+ - Added ContextReference supporting the custom context URIs. Those URIs allow the loading of representation from various contextual locations
+   like the current class's classloader, the system's classloader, the Web application's context and the current thread's classloader.
+ - Component.callClient(name, call) now recursively tries to find the closest match for the connector name by navigating in the hierarchy 
+   of owner components.
+ - Fixed bug in ServerServlet in order to auto-start the target Restlet. Problem identified by Bill Morone.
+ - Added ServletContextClient to server as a specialized ContextClient when the ServerServlet server connector is used.
+ - Added log traces with the Router/PatternScorer logic with info on URI matching and context updating. 
+   Enable the log level FINE and FINER to see them in your log file. See JDK's logging mechanism for details. Reported by Bill Morone.
+ - Added HttpUrlConnectionCall, subclass of the (now) generic HttpClientCall, that is based on JDK's HttpUrlConnection.
+ - Changed the default value inserted by the RedirectRestlet when a URI variable is not found: was "null" and now is an empty string.
+ - Changed the repeating variable delimiter in CallModel from "[" and "]" to "(" and ")" to prevent conflicts with the default instruction delimiter
+   characters in StringTemplate. Reported by John D. Mitchell.
+ - Added the possibility to add a local test for variable insertions: ${variableName?exists} in order to test the existence of the variable first.
+   This is equivalent to #[if variableName]${variableName}#[end] but obviously shorter. Without this local test, the default model value will be inserted
+   which may be "null" or some unfriendly string. Added related unit tests.
+ - Added HTTP server connector based on AsyncWeb 0.8 which is based on Apache Mina 0.8. Contributed by Lars Heuer. Suggested by John D. Mitchell.
+ - Removed ClientCall interface and refactored the Client interface and related classes that were too HTTP oriented. 
+ - Removed the ServerCall interface and moved the contract/logic into a new com.noelios.restlet.impl.HttpServer. It was to HTTP oriented.
+   Refactored all Server related classes to adjust to the change. Provided a useful static handle(HttpServerCall, Restlet) method for classes that 
+   can't subclass HttpServer directly (Jetty 6 server and Servlet server).
+ - Rewrote the tutorial part 11 (Routers and hierarchical URIs) to follow the best practice of not subclassing DefaultRouter. This is also more consistent 
+   with the part 12 using the fluent builders. Suggested by Bill Morone.
+ - Removed the FileRestlet which doesn't bring significant lot of value now that we have a flexible DirectoryRestlet and ContextResource.
+ - Renamed FileResource into ContextResource because it can now expose representation with all context authorities (file, class loaders, webapp context).
+ - Refactored all connector to be stricter with the concept of supported protocol: it now means that the connector instance simultaneously supports all
+   the protocols at the same time. When serveral protocols could be supported by a connector but in separate instances, a refactoring was done to create
+   a subclass for each protocol.
+ - The convention saying that each connector must provide a static getProtocols() method was replaced by a non-static getProtocols() method returning 
+   the list of protocol that can be simultaneously supported by the same instance. 
+ - For simplication purpose, the ServerServlet doesn't implements the Server interface anymore. It's still a pseudo-connector.
+ - ComponentBuilder.setParameter() method was changed to addParameter() allowing repeating parameters.
+ - Components and Connectors now have a getParameters() method that exposes a modifiable list of parameters (ParameterList instance).
+ - Moved ContextResource to "impl" package
+ - Added "readOnly" property to DirectoryRestlet to enable modifications from the client. By default, "readOnly" is set to true. Suggested by
+   Don Dwoske and John D. Mitchell.
+ - Refactored Resource interface to extend both Data and Restlet interfaces and moved it to the org.restlet.data package according to the REST classification.
+ - Renamed Resource.getVariantsMetadata() to getVariants() for simplification purpose.
+ - Added "identifier" and "identifiers" properties to the Resource interface (Reference instances), for the official and alias URIs.
+ - Renamed "Chainlet" to "Filter" for all related classes, method names, references, etc. 
+ - Detailled the Filter interface with three methods: beforeHandle(), doHandle() and afterHandle() to facilitate 
+   creation of concrete filters for pre- and post-filtering.
+ - Removed all templatization of Restlet related classes which caused too many warning now that both Resource and
+   Representation are also implementing the Restlet interface and deriving from AbstractRestlet.
+ - Added org.restlet.Scorer, org.restlet.AbstractScorer and com.noelios.restlet.impl.PatternScorer to formalize
+   the attachment of Restlets to Routers. 
+ - Renamed "refirectionRef" to "outputRef" in Call, as this can be used for more than just redirection (cf HTTP)
+ - Removed all attach() method that were accepting a Restlet class instead of a simple instance. The introduction
+   of Handlers reduces the need for them and they seemed to confuse people. Impact of Router, Filter and Restlet
+   Container interfaces and related classes (builders, etc.).
+ - Merged RepresentationMetadata with the parent Representation and introduced a cleaner contract for getting the
+   metadata information without loading in memory the actual representation's content. In particular, the 
+   "contentTransient" and "contentAvailable" properties were added to Representation and supported all over the place.
+ - Added or improved the wrapper classes: WrapperRestlet, WrapperResource, WrapperRepresentation.
+ - Improved the Router (ex-Maplet) interface, adding the "mode" (see RouterMode enum), "requiredScore" to consider
+   a routing option as a match, "maxAttempts" for dynamic routing, "retryDelay" between two attempts. Exposed a 
+   modifiable list of routing options (Scorer).
+ - Added the Handler interface and related classes as a parent interface for Router, Scorer and Filter interfaces.
+ - Added RouterMode enumeration containing available routing modes (round robin, first match, last match, best
+   match, random and custom). Those modes (except "custom") are directly supported by the DefaultRouter.
+ - Reviewed and improved all the NRE representation to better support character encodings (StringRepresentation),
+   serializable objects (ObjectRepresentation). Moved common logic to ByteUtils.
+ - Renamed DirectoryRestlet into DirectoryHandler. No impact for those using the fluent builders.
+ - A default ContextClient is automatically added to each RestletContainer created.
+ - Removed the "contextMatches" property from Call interface and related classes. This was not that much useful nor working as expected.
+
+1.0 beta 14 (2006-06-02)
+ - Adjusted build.properties so that default values work directly.
+ - Refactored the usage of parameter lists by using a new ParameterList (implementing List<Parameter>) and adding helper methods.
+ - Form now derives from ParameterList.
+ - ConnectorCall.getRequestHeaders() and getResponseHeaders() now return a ParameterList, other helper methods removed.
+ - Added urlEncode() on Parameter.
+ - Reference now sets new scheme names in lower case to respect normalization rules.
+ - Added more unit tests for the Resltet API; Contributed by Lars Heuer.
+ - Fixed bug in Jetty 5 HTTPS connector preventing the usage of the specified SSL keystore in certain cases. Found by Dave Pawson.
+ - Added constructors to DefaultServer using the protocol's default port
+ 
+1.0 beta 13 (2006-05-29)
+ - Updated StringTemplate and StringTemplateRepresentation to allow the usage of different delimiters for variable insertion and instructions 
+   like conditions. The goal is to prevent conflict between variable names and (future) instruction names.
+   Now the delimiters must be different and default to ${variableName} and #[if test1]...#[else if test2]...#[else]...#[end].
+   WARNING: this has a potential impact on existing application using the old delimiters for instructions such as for the 
+   RedirectResltet target URI pattern.
+ - Added support for single quotes to delimit the variable names in CallModel instances. Prevents the needs for double quote escaping in Java strings.
+ - Enhanced the Reference to strictly conform to the URI RFC 3896. New methods, normalization code, resolution of relative URIs and relativization.
+ - GuardChainlet doesn't log the password anymore. Reported by AJ Barnes.
+ - Call.setRedirectionRef() and setResourceRef() now accept relative URIs (like ".."). The base URi is the current context. Suggested by Yuri de Wit.
+ - Fixed bug in SimpleCall forgetting to add the port number in the request URIs.
+ - Optimized response time of the Simple HTTP server connector. Suggested by Niall Gallagher.
+ - Added DefaultBuilder.upMaplet() and upMaplet(level) to go up to parent Maplet builders without the need to count non Maplet builders 
+   and having to cast.
+ - Added new RestletContainerBuilder constructor taking an existing RestletContainer instance.
+ - Added empty RestletContainer constructor in case the name is never used.
+ - Added HostMapletBuilder to facilitate the fluent configuration of Host Maplets.
+ - Fully refactored the Ant build process using macro tasks.
+ - Added support for Retroweaver in the build process to backport the classes to older JDKs than 5.0. Contributed by Lars Heuer.
+ - Added a build.properties file containing the machine specific directories in order to have a universal build.xml Ant file. Suggested by Lars Heuer.
+ - Added new attachHost(domain) method to ChainletBuilder, MapletBuilder and RestletContainerBuilder (refactored other attachHost() methods too).
+ - Added "redirectStatus" property to HostMaplet.
+ - Added a DOAP description for the Restlet project: http://www.restlet.org/docs/doap
+ - Added RDF (APPLICATION_RESOURCE_DESCRIPTION_FRAMEWORK) to org.restlet.data.MediaTypes.
+ - Added MapModel.remove() method.
+ - Added DirectoryRestlet.addCommonExtensions() method to add common language and media type mappings to file extensions.
+ - Added new parameter to DirectoryRestlet constructor to add common extensions.
+ - Simplified tutorial examples based on the new addCommonExtensions() method.
+ - Fixed bug in HostMaplet causing NPE when redirection to preferred URI was enabled.
+ - Greatly simplified the sample application (http://www.restlet.org/sample) by using fluent builders.
+ - Added createHost() and attachParent() methods to MapletBuilder and RestletContainerBuilder to delay the attachment (dynamic URI pattern) to the 
+   parent Maplet after the complete configuration.
+ - Renamed DefaultBuilder into ObjectBuilder.
+ - Added BuilderFactory and Builders classes to facilitate the instantiation of builders and their eventual subclassing by applications.
+ - Added Reference.equals(Object) and Reference.hashCode() methods. Contributed by Lars Heuer.
+ - Fixed bug with Call.getClientAddress() not being consistent with Call.getClientAddresses(). Reported by Lars Heuer.
+ - Removed unecessary Call.setClientAddresses(List) method. Use the modifiable list returned by Call.getClientAddresses() instead.
+ - Removed "parseDate" and "formatDate" from HttpServerCallImpl which are already in super class. Reported and fixed by Lars Heuer.
+ - Added Reference.getProtocol() and setProtocol() method to manipulate the URI scheme component via the Protocol interface.
+ - Added Protocols.create(schemeName) static method to allow reuse of Protocols enums.
+ 
+1.0 beta 12 (2006-05-20)
+ - Added com.noelios.restlet.build package containing builder classes allowing a compact construction of Restlet applications base of the Fluent design
+   pattern coined by Martin Fowler. Based on suggestion and contribution from Lars Heuer and Yuri de Wit.
+ - Added Tutorial 12 illustrating the used of builders to reimplement Tutorial 11.
+ - Added buffering to Simple server to solve the performance issue.
+ - Removed the Element interface which doesn't bring value to the framework.
+ - Renamed "parent" property in Restlet into "owner" to prevent risk of confusion with the tree of Maplets or the tree of builders. 
+   Here the owner means the first component ownign or containing the Restlet handler, often a Restlet Container component.
+ - Templatized the AbstractRestlet class with a subclass of Call. This way the handle(Get|Put|...) methods directly cast the call to the application's
+   specialized Call. This is useful when the application has to enrich the default call using the WrapperCall class as it prevents frequent casts
+   and other workarounds such as using a base class. Suggested by Lars Heuer.
+ - Renamed CompressChainlet.ALWAYS_ENCODE constant into ENCODE_ALL_SIZES.
+ - Added default implementation of GuardChainlet.authorize(Call) method based on a map of login, password couples.
+ - When no encoding preferences were provided, we were assuming that all encodings were supported. Now we only assume that the identity encoding is
+   supported. Reported by Lars Heuer.
+ - Added new constructor to RedirectRestlet for the connector mode where you just have to give the connector name.
+ - Added a "context" property to the ServletCall class for application needing access to it via the Call.getConnectorCall() approach.
+ - Added empty constructor to AbstractChainlet.
+ 
+1.0 beta 11 (2006-05-16)
+ - Added HTTP server connector based on the very efficient Simple framework. Contributed by Lars Heuer (Semagia).
+ - Added handle*(Call) methods to AbstractRestlet for common methods: handleGet(Call), handleDelete(Call), etc. Sugested by Yuri de Wit and others.
+ - Added fully configurable CompressChainlet and DecompressChainlet to support automatic compression and decompression of input and output 
+ - Added EncoderRepresentation allowing the transparent encoding of a wrapped representation (supports GZip, Zip and Deflate).
+ - Added DecoderRepresentation allowing the transparent decoding of a wrapped representation (supports GZip, Zip and Deflate).
+ - Added an ExtractChainlet to extract some attributes from a call (query string parameters, input form parameters, call's template model 
+   or context matches). The extracted attributes are available via the Call.getAttributes() map. Suggested by Yuri de Wit.
+ - Added TunnelChainlet, subclass of ExtractChainlet that can tunnel method name, accept headers and resource URI for clients unable to make full REST
+   calls (like browsers restricted to GET and POST methods). Suggested by Yuri de Wit. 
+ - Added a forward(Call) method to AbstractRestlet to facilitate the internal forwarding and dispatching of calls (similar to Servlet forwarding).
+   Suggested by John D. Mitchell.
+ - Fixed issue with HTTP client connector when getting the response stream in error cases (404 not found, etc.).
+ - The HTTP client connector nows correctly reads the "contentLength" headers and use the value to set the "size" property of the call output object.
+ - Fixed bug in Statuses using an invalid code for CONNECTOR_* statuses.
+ - Added an "attributes" map to the Call interface that can be used by developers to store information relative to the current call.
+ - Added a return parameter to the Maplet.attach() methods to facilitate multiple attachments in a single call. Suggested by Yuri de Wit.
+ - Removed getMethods() from the Resource interface as this is the responsability of Restlet handlers.
+ - Added "multipart/form" media type to MediaTypes.
+ - Do not add anymore the "acceptCharset/Encoding/Language" headers with "*" values if call has no preference defined. Reported by Dave Pawson.
+ - Added a finer trace for file not found exceptions caught in Http Client connector. Reported by Dave Pawson.
+ - Changed HTTP client to set the JDK's "keep alive" feature to false.
+ - Fixed HTTP client bug preventing the reading of the output if no content type was returned. Reported by Dave Pawson.
+ - Renamed parameter "templatePath" to "templateName" to prevent confusion. Suggested by Lars Heuer.
+ - Refactored the representation classes, moving the "expectedSize" property in the AbstractRepresentation.
+ - Added APPLICATION_GZIP entry in MediaTypes enumeration.
+ - Added ZIP entry in Encodings enumeration.
+ - Added UNKNOWN_SIZE constant (equivalent to -1) to Representation in order to clarify source code.
+ - Added clone constructor to RepresentationMetadata.
+ - Added WrapperRepresentation to facilitate wrapping of existing representations by application developers.
+ - Added entries for all major media types in the MediaTypes enumeration.
+ - Added includes() method to MediaType and related classes to facilites comparaison between media type ranges.
+   representations. Suggested by John D. Mitchell. Initial code contributed by Lars Heuer.
+ - Removed the CASE_INSENSITIVE flag when compiling URI patterns for Maplets. Suggested by Lars Heuer.
+ - You can now attach and detach targets while handling incoming calls as the Maplet and Chainlet delegation code is ensured to be thread-safe and atomic.
+ - Added detachAll() method to the Maplet interface.
+ - Fixed bug preventing the DefaultServer from intercepting the handle(ServerCall) calls. Reported by Lars Heuer.
+ - Added new attach() methods to Maplet taking an additional "override" parameter to make attachments with a higher priority than existing ones.
+   Suggested by Roger Wallace.
+ - Factorized some HTTP header parsing into Methods.create() and PreferenceUtils
+ - Added support for getting of connector call request/response headers from the CallModel (call's template model). 
+   Useful for the TunnelChainlet to extract "X-HTTP-Method-Override" headers for example.
+ - Added HEADER_X_HTTP_METHOD_OVERRIDE to ConnectorCall. This is specified by Google Data APIs.
+ - Updated Jetty 6 to beta 16 version.
+ - Renamed FreeMarkerRepresentation.getValues() to getDataModel() for consistency with the setDataModel() method. Reported by Lars Heuer.
+ 
+1.0 beta 10 (2006-05-02)
+ - Fully refactored the org.restlet.data package to reduce usage of interfaces and remove the need to use the Manager static methods
+   whose implementation would not significantly vary from one implementation to another. When interfaces were needed, like for enumerations, 
+   the implementation class is provided with the Default* name. Inspired by a discussion with Henry Story.
+ - Merged Manager class and Factory interface into a single Factory class.
+ - Renamed RestletCall interface into Call for further simplification (was UniformCall in beta 8).
+ - Renamed Call.getRestlet*() methods to getContext*().
+ - Renamed Call.setHandlerPath() to setContextPath().
+ - Added setRedirectionRef(String uri) and setReferrerRef(String uri) facility method when a Reference instance isn't directly available.
+ - Added org.restlet.DefaultCall to replace calls to Manager.createCall().
+ - Added a HostMaplet to provide an easy and flexible way to detect the URI related to a single host such as equivalent IP-based URIs. 
+   All aspects are configurable and there is choice between two attachment modes (parent Chainlet or Maplet). 
+   Suggested by Dave Pawson and John D. Mitchell.
+ - The RestletContainer now also implements the Chainlet interface, in addition to the Maplet interface. 
+   If you use both attachment mechanisms at the same time, the Chainlet will have a higher priority. 
+   This is a convenient way to chain a Restlet as a root handler with having to specify a URI pattern (ex: logging, HostMaplet attachment). 
+ - Added org.restlet.connector.DefaultClient and DefaultServer to replace calls to Manager.createClient() and createServer().
+ - Renamed RestletCallWrapper into WrapperCall for consistency purpose.
+ - Renamed UniformCallModel into CallModel for consistency with Call interface naming.
+ - Renamed RestletCallContext to RepresentationContext in FileUpload extension to allow processing of multipart forms provided in any way.
+ - RestletFileUpload now also accepts multipart representations and not simply Restlet calls.
+ - Removed DefaultModel duplicate of MapModel in NRE.
+ - Added support for SMTP STARTTLS and SMTPS protocols.
+ - Added support for authentication in JavaMail connector. Provide login and password using the Call.getSecurity().setLogin() and setPassword() methods.
+ - Added setSize methods to StreamRepresentation and ChannelRepresentation and related classes. Used to specify/get expected size when known.
+ - Fixed issue with HTTP client connector not sending some content metadata (media type, encoding, language). Reported by Dave Pawson.
+ - Fixed issue with HTTP client connector not correctly reporting connection and other IO errors. Reported by Dave Pawson.
+   This uses the new statuses:CONNECTOR_ERROR_CONNECTION, CONNECTOR_ERROR_COMMUNICATION and CONNECTOR_ERROR_INTERNAL.
+ - Added "timeout" property to the Client connector interface. Default and infinite timeouts can be specified. Suggested by Dave Pawson.
+ - Renamed "httpCode" property to "code" for the Status interface.
+ - The content length of posted/put representations is now available when received by the HTTP connectors (based on Content-Length header availability).
+ - Changed the Component "initParameters" property type to Map<String, String> instead of List<Parameter> for easier parameter value retrieval.
+ - Allowed multiple protocol providers to be specified in a single meta-inf/services/org.restlet.connector.Client or Server file.
+ - Added Protocol.equals(), getSchemeName() and getDefaultPort() methods.
+ - Added hasTarget() method on Chainlet to indicate if a target was already attached.
+ - Added new constructor to DefaultStatus taking an existing Status and a custom description. Also added setDescription() method.
+ - Added new constructor for StringRepresentation accepting a simple string and using the "text/plain" media type by default.
+ - Changed "Jérôme" to "Jerome" in source file. Compiling issue reported by Dave Pawson.
+ - Renamed "tutorial" package into "example" and added a readme.txt file. Suggested by Dave Pawson.
+ 
+1.0 beta 9 (2006-04-14)
+ - Merged Restlet and UniformInterface interfaces into a single Restlet interface for simplification purpose.
+ - Moved connectors handling from OriginServer upto Component as other components like Proxies need them.
+ - Renamed UniformCall and related methods into RestletCall.
+ - Renamed RestletCall.getHandler*() methods into getRestlet*().
+ - Updated Jetty 6 to version 6.0 beta 14.
+ - Fixed issue with ServletCall.getRequestUri returning a trailing '?'. Reported by Yuri de Wit.
+ - Renamed NRE implementation classes HandlerTarget and HandlerMapping to RestletTarget and RestletMapping.
+ - Added a new extension to NRE to support Apache Commons FileUpload to facilitate the processing of multipart forms. Suggested by Yuri de Wit.
+ - Removed RestletContainer and RestletServer interfaces.
+ - Renamed DefaultRestletContainer and DefautRestletServer to RestletContainer and RestletServer for simplification purpose.
+ - The parent of all Restlets is now a simple Component and not necessarily a RestletContainer.
+ - Factory and Manager were refactored for clarification and simplification purpose.
+ - Added getInitParameters() to Component to allow external code to pass init params in a standard way (for example a main method or the ServerServlet).
+ - Added a mechanism to pass the Servlet context path to the target component in the ServerServlet. Suggested by Yuri de Wit.
+ - Significantly improved the ServerServlet Javadocs. Now it also includes a sample XML configuration.
+ - Added a createReference(scheme, hostName, hostPort, path, query, fragment) to Manager that is smart with port numbers and optional elements.
+ - Fixed typo in the TraceTarget debugging Restlet.
+ - Updated tutorial and sample application to match the latest API changes.
+
+1.0 beta 8 (2006-04-10)
+ - Fully decoupled the connectors from the Restlet implementation. NRE now autodiscovers the connectors on your classpath 
+   (order matters when multiple connectors are supporting the same protocol). As a consequence, you no longer need the 
+   Jetty and JavaMail classes on your classpath if you don't need them because the NRE factory doesn't contain anymore 
+   hardcoded reference to concrete connector classes.
+ - Added DomRepresentation to NRE data package, a representation based on a DOM document
+ - Added SaxRepresentation to NRE data package, a representation based on SAX events processing
+ - Added StringTemplateRepresentation based on the builtin com.noelios.restlet.util.StringTemplate utility class.
+ - Added com.noelios.restlet.util.MapModel, a simple template model based on a map.
+ - Added XmlWriter to NRE util package, a SAX content handler serializating SAX events to a stream
+ - Fixed bug with Jetty connectors (5.1 and 6.0) that were returning a decoded "requestURI" causing some character losses 
+   when '%' character were present in the URI (reported by John D. Mitchell)
+ - Refactored JettyServer constructors (Jetty 5.1 and 6.0 connectors) for consistency
+ - Added a better toString() implementation for Status instances (suggested by Jerome Bernard)
+ - HTTP client connector was not setting the "content-length" header when sending an input representation (reported by Jerome Bernard)
+ - Fixed Java Service Wrapper default configuration (library paths broken and no default main class). No it starts the third
+   tutorial example. Thanks to Daniel Einspanjer for reporting the bug and suggesting the default service.
+ - Refactored GuardChainlet to separate the concepts of authentication and authorization and make each step optional. More hooks 
+   provided to implement custom authentication schemes based on cookies, query params or IP addresses for example. Suggested by A.J. Barnes.
+ - Added "login", "password" and "role" properties to the SecurityData interface. Used by the GuardChainlet if authentication succeeds.
+   Can also be modified and accessed by the application to manage user roles and resource level access authorizations.
+ - Manager is smarter when handling creation requests with null names. It now returns null instead of throwing NPE exceptions.
+ - Added convenience UniformCall.setResourceRef(String uri) method.
+ - Improved DateUtils parsing by allowing the specification of multiple formats to try before failing. 
+ - Added support for RFC 3339 and RFC 822 date formats in DateUtils.
+ - Added SMTPS protocol in Protocols enumeration.
+ - Added new Atom extension (supports the Atom Document Format and the Atom Publishing Protocol) : work in progress!
+ - Added StringRepresentation.setValue() method to provide/change the internal string after instantiation.
+ 
+1.0 beta 7 (2006-03-24)
+ - Refactored the NRE packages: created an "impl" package regrouping all classes implementing the Restlet API
+   It's now easier to distinguish the extra classes provided by the NRE implementation (LogChainlet, DirectoryRestlet, etc.)
+ - Updated FreeMarker version to 2.3.6
+ - Added support for the great Java Service Wrapper tool to let you run Restlet application as native services
+   Binaries for Windows x86-32 and Linux x86-32 platforms are provide but other platforms are available as well,
+   see the http://wrapper.tanukisoftware.org web site for details. A skeleton configuration file is also provided
+   in the "bin" directory. Thanks to Malcolm Sparks for suggesting this.
+ - Removed the previous Linux script as it doesn't match the features of the Java Service Wrapper.
+
+1.0 beta 6 (2006-03-20)
+ - Added Factory.createRepresentationMetadata() method needed for Resource.getVariantsMetadata()
+ - Added test case for StringTemplate utility
+ - Updated FreeMarker version to 2.3.5 (used as the default page templating engine)
+ - Updated Jetty 6 to version 6.0 beta 12
+ - Restlet implementations now register themselves using the standard JAR service provider mechanism
+ - Removed Tutorial01 as it is not needed anymore due to the transparent registration of implementations
+ - Removed the "X-Forwarded-For" header hack introduced in beta 4. Use instead the new "clientAddresses" property added to UniformCall
+ - Added ConnectorCall.getRequestHeaderValue() and getResponseHeaderValue() methods to simplify the extraction of header values, works with 
+   multiple header occurrences. Refactored UniformHttpServerCall to use new methods and improve handling of repeating headers (cookies, etc.)
+ - Refactored the UniformCallModel class: better docs, more flexible access to repeating variables (by name, by index, by shortcut)
+
+1.0 beta 5 (2006-03-07)
+ - Fixed an error in the StringTemplate javadocs: was mentionning ${end if} instead of ${end}
+ - Doing a POST with no content with the HTTP client connector was throwing a NPE
+ - Added a test case using the RedirectRestlet for proxying purpose
+ - Default UniformCall now resets the "handerPath" when "resourceRef" is changed
+ - Added checks to UnformCall.setHandlerPath to prevent the setting of invalid paths
+ - Reference.getQueryAsForm() now returns an empty form when no query parameter exists
+ 
+1.0 beta 4 (2006-03-03)
+ - Any UniformInterface implementor class can be attached to a Chainlet, not just Restlet implementor classes
+ - Cleaned up the Javadocs to use consistent case for Restlet, Chainlet and Maplet.
+ - Renamed "redirectRef" property to "redirectionRef" in the UniformCall interface, for consistency with the "referrerRef" property
+ - When working with a reverse proxy, the X-Forwarded-For header can now be used to get the original client IP address.
+   A system property needs to be set,see HttpServerCall for details (suggested by John D. Mitchell)
+ - UniformModel was renamed to UniformCallModel
+ - Added links from the Javadocs to the corresponding tutorial examples.
+ - Added documentation to the RedirectRestlet class
+ - Fixed a bug preventing the HTTP client connector from properly using the GET, HEAD and DELETE methods, POST was used instead.
+ - In JavaMailClient, renamed "header" element into "head" and added SMTP URI documentation
+ - Added Protocol interface and Protocols enum
+ - Refactored and modified HttpCall, HttpClientCall, HttpServerCall as ConnectorCall, ClientCall and ServerCall
+ - Added AbstractServer implementation of Server
+ - Renamed HttpCallImpl to ConnectorCallImpl
+ - In Factory, Manager, Engine, refactored createHttpClient and createHttpServer methods as createClient and createServer.
+ - Added getProtocol to org.restlet.connector.Connector interface
+ - Added createCall() to org.restlet.connector.Client interface
+ - Added handle(ServerCall) and configureSsl() to org.restlet.connector.Server interface
+ - Added "connectorCall" property to UniformCall to allow advanced users to access low-level headers (suggested by John D. Mitchell)
+ - Updated all tutorial to match API changes
+ - HTTP client now correctly gets the status reason phrase (reported by A.J. Barnes)
+ - Fixed ServerServlet log message when class is not found (reported by Ken Geis)
+ - Added a sample Linux script to manage a Restlet engine as a system service (start, stop, restart), (suggested by John D. Mitchell)
+ - Updated Tutorial05 to display more URI information (query params and full URI). Suggested by John D. Mitchell.
+ - Updated Jetty 6 to version 6.0 beta 10
+ - Split Tutorial09 into Tutorial09a and a new Tutorial09b showing how to use the client-side Restlet API to authenticate a client call.
+ - Custom headers can be set into the "connectorCall" property, the HTTP and SMTP client connectors will send them automatically
+ - Added getRelativeRef() to Reference. Useful to compute relative URIs from a base URI
+ - Added createChallengeResponse() method to the Factory interface and related classes (Manager, Engine). Uses a scheme, a user ID and a password.
+ - Removed getResourcePaths() and getResourcePath(index, strip) from UniformCall, replace by getResourcePath() and getHandlerPath()
+ - Renamed getResourceMatches() to getHandlerMatches() to UniformCall
+ - Added setHandlerPath() and getHandlerRef() methods to UniformCall
+ - Added getSegments(), getLastSegment() and setSegments() methods to Reference as a way to easily access hierarchical path segments and
+   as a better replacement for the UniformCall.getResourcePath(index, strip) method which depending on the way Maplets were attached.
+ - Added test cases for the Reference interface
+ 
+1.0 beta 3 (2006-02-15)
+ - Moved start(), stop(), isStarted(), isStopped() methods from Connector and Component to UniformInterface (suggested by Peter Marks)
+ - Moved getName() methods from Connector and Component to Element
+ - Added AbstractHandler implementing the UniformInterface which basis start/stop state management
+ - Moved connectors management methods from Component to OriginServer to more closely match the REST dissertation
+ - Renamed ComponentImpl into OriginServerImpl to match interfaces refactoring
+ - Factored common logic from ChainletImpl and MapletImpl into the com.noelios.restlet.util.UniformTarget class (added handle() method)
+ - RestletServer automatically starts the default RestletContainer
+ - Simplified log messages for invalid headers causing parsing failure, don't log the full stack trace anymore
+ - Increased the version number of com.noelios.restlet.Engine and org.restlet.Manager
+ - MapletImpl now derives from AbstractRestlet instead of ArrayList
+ - Internal server errors are now logged with a SEVERE level
+ - AbstractRestlet now derives from AbstractHandler
+ - Added "cachedTarget" property to org.restlet.connector.Cache
+ - Updated Jetty 6 connector to version 6.0 beta 9
+ - Renamed UniformTarget into HandlerTarget
+ - Extracted private MapletImpl.Mapping inner class into the public com.noelios.restlet.util.HandlerMapping class
+
+1.0 beta 2 (2006-02-03)
+ - Fixed parsing issue with invalid tags in if-none-match header
+ - Added unit test for media type parsing
+ - Fixed NPE during formating of preferences with no parameter
+ - Parsing of empty preferences (no name) is now ignored instead of generating an exception
+ - Fixed OutOfBounds exception during the parsing of empty headers
+ - Fixed bug causing the query part of a URI to be directly included in the list of resource paths (used for dispatching by Maplets)
+ - Reworked some log messages to prevent exception stack trace output when exception is understood and correctly handled 
+ - The DirectoryRestlet now controls that only a GET method can return a file representation. Otherwise, a "method not allowed" error is returned.
+ - Removed org.restlet.data.FormReader interface and moved FormReaderImpl into com.noelios.restlet.util as FormReader
+ - Added com.noelios.restlet.util.FormUtils with formatting and parsing logic
+ - Fixed issues with HTTP client connector preventing correct handling of posted forms (reported by John D. Mitchell)
+ - The Form interface doesn't derive anymore from Representation and is now modifiable. Methods addParameter and removeParameters were added
+ - Removed parameter of the Factory.createForm method to allow creation of brand new forms
+ - Added a getInputAsForm to the UniformCall interface
+ - Added unit test for form parsing and formatting
+ - Updated Jetty 6 connector to version 6.0 beta 8
+ 
+1.0 beta 1 (2006-01-26)
+ - Merged RestletCall with UniformCall for simplification purpose, only UniformCall remains
+ - Renamed RestletCallModel into UniformModel
+ - Renamed RestletTarget into UniformTarget
+ - Maplets, Chainlets and Restlet Containers can now delegate to any UniformInterface handler, not just Restlets
+ - org.restlet.Restlet interface nows also implements the UniformInterface
+ - Added get, post, put and delete methods to org.restlet.connector.Client
+ - org.restlet.connector.Connector now implements UniformInterface
+ - Added "handler" property to LocalClient base class (default target handler)
+ - Deleted LocalConnector class
+ - Added AbstractClient providing the default implementation of get, post, put and delete Client methods
+ - Added org.restlet.connector.HttpCall, HttpClient, HttpClientCall, HttpServer, HttpServerCall interfaces
+   to provide a standardization of HTTP connectors and allow direct usage of those connectors without
+   using the UniformInterface and UniformCall interfaces (useful for writing protocol specific handlers)
+ - Fully refactored Jetty connectors to prevent duplicate logic and support multiple listener types (HTTP, HTTPS and AJP)
+ - Updated Jetty 6 connector to version 6.0 beta 7
+ - Added better syntax checks for representation Tags
+ - Added "defaultLanguage" property to DirectoryRestlet, used when no language is specified by a file extension
+ - Improved automatic server-side negotiation in UniformCallImpl (setBestOutput and getBestVariant methods)
+ - Removed JavaMailCall class and added a static "create" method to JavaMailClient
+ - Removed JdbcCall class and added a static "create" method to JdbcClient
+ - Simplified tutorial examples using the latest API changes
+ - Added more create methods to the Factory interface and related classes
+ - Renamed UniformCall.getPaths, getPath and getMatches into getResourcePaths, getResourcePath and getResourceMatches
+ - Moved UniformCall.getCharacterSetPrefs, getLanguagePrefs, getMediaTypePrefs into PreferenceData accessible via UniformCall.getPreference
+ - Renamed org.restlet.data.Security, Conditions into SecurityData, ConditionData for consistency purpose
+ - Added "redirectRef" to UniformCall instead of passing the URI as the call output
+ - Removed org.restlet.data.Cookies and now directly uses a List<Cookie> in UniformCall and utilities in CookieUtils
+ - Added CharacterSetPref, EncodingPref, LanguagePref, MediaTypePref as subinterfaces of Preference, used by the new PreferenceData interface
+ - Added Encoding and Encodings to support modifiers of representation's media type: useful for compressions (suggested by John D. Mitchell)
+ - Added "encoding" property to RepresentationMetadata interface (suggested by John D. Mitchell)
+ - Statuses.REDIRECTION_MOVED_TEMPORARILY now corresponds to HTTP code 307 and not 302
+ - Added PROTOCOL_* constants to org.restlet.connector.Connector
+ - Added all statuses and header names to org.restlet.connector.HttpCall
+ - Added "method" parameter to org.restlet.connector.HttpClient.create() methdod
+ - Added configureSsl method to org.restlet.connector.HttpServer
+ - Removed RestletException exception, now uses JDK's exceptions when necessary
+ - Added "defaultEncoding" property to DirectoryRestlet
+ - Added VERSION_* constants and pluggable HTTP server mechanism to com.noelios.restlet.Engine
+ - Added CLIENT_FOUND mode to RedirectRestlet
+ - Major improvements to the HttpClientImpl (default HTTP client connector): cookies, conditions and preferences sending,
+   output representation metadata, redirection reference, server name extraction, basic HTTP authentication support
+ - Added CookieUtils to support formatting of cookies and cookie settings
+ - Moved CookieReader, HeaderReader and PreferenceReader to com.noelios.restlet.util package
+ - Extracted HeaderUtils from HeaderReader and added some formatting methods
+ - Added PreferenceUtils to support preference formatting.
+ - Added unit tests for Cookies and HTTP authentication.
+ - Major improvements to the HttpClientImpl (default HTTP client connector): cookies, conditions and preferences 
+   sending, output representation metadata, redirection reference, server name extraction, basic HTTP 
+   authentication support
+ - Added SecurityUtils to parse and format challenge request and responses (Basic HTTP authentication)
+ - Improved cookie parsing and formatting
+ - Improved automatic server-side negotiation when no preferences are provided by the client
+ 
+0.19 beta (2006-01-10)
+ - Added a Samples application page detailling the source code of the Restlet and Noelios Consulting Web sites 
+   (suggested by Michael Mayer)
+ - Added "conditions" property to UniformCall and a Conditions interface to support conditional REST methods. 
+   This is currently used by the server-side negotiation logic to prevent sending again an unmodified 
+   representation.
+ - Added getBestVariant() to UniformCall and related classes. Logic was internally used by the setBestOutput() 
+   method before.
+ - Fixed bugs in Tutoria11 example (reported by Roger Menday)
+ - Added isStarted and isStopped methods to connectors and components interfaces (suggested by Roger Menday)
+ - The Maplet.delegate method now returns a boolean to indicate if the delegation suceeded
+ - Updated Jetty connectors to versions 5.1.10 and 6.0 beta 5
+ - Added HTTP server connector based on Servlet API 2.4 to allow deployment of Restlets within existing Web 
+   container instead of using the standalone mode based on the much lighter Jetty HTTP server connectors. 
+   Added ServerServlet and ServletCall classes. Be advised that there is a performance cost for the extra 
+   Servlet layer.
+ - Refactored all HTTP server connectors to use a common base HttpCall class. Removed JettyCookie classes
+ - Renamed HttpClient.doGet, doPost, doPut and deDelete methods into HttpClient.get, post, put and delete for 
+   simplification purpose
+ - Removed duplicate UniformCallImpl.setReferrer method
+ - Added a "timeToLive" property on FileRestlet and DirectoryRestlet to allow automatic setting of an 
+   expiration date
+ - Added DateUtils class to provide date comparison with only second precision (useful to compare with HTTP dates)
+ 
+0.18 beta (2006-01-02)
+ - Added a GuardChainlet providing support for the HTTP basic authentication.
+ - Added coverage of GuardChainlet in the tutorial
+ - Added org.restlet.data.Security, ChallengeRequest, ChallengeResponse and ChallengeScheme interfaces to provide 
+   security support (authentication and confidentiality information). Added implementation classes in 
+   com.noelios.restlet.data package.
+ - Fixed NPE when no language preference was provided by the client (Jetty 5.1 and Jetty 6.0 connectors)
+ - A home page link can now be displayed on status pages
+ - Fixed issue in MediaTypeImpl when clients send invalid media types (with no subtype for example)
+ - Renamed LoggerChainlet to LogChainlet for consistency and simplicity purpose
+
+0.17 beta (2005-12-28)
+ - Extended and reworked the tutorial. Also added new illustrations to clarify processing flow.
+ - Added StatusChainlet as a customizable mechanism to handle all error and display status pages 
+ - RestletCallModel now supports indexed variables for query parameters and cookies. Ex: ${query["name"]}
+ - LoggerChainlet now accepts customized log formats based on RestletCallModel and StringTemplate
+ - The CLIENT mode in RedirectRestlet has beeen renamed CLIENT_TEMPORARY and CLIENT_PERMANENT has been added
+ - Jetty connectors now correctly return the content-length header when the size is known (ex: static file)
+ - StringRepresentation now implements the getSize method
+ - DirectoryRestlet now correctly set the call status to SUCCESS_OK (200)
+ - Fixed AbstractChainlet and used it as super class of LoggerChainlet and StatusChainlet
+ - UniformCall.setTemporaryRedirect was renamed in setRedirect with a new "permanent" parameter
+ - A default value to return can now be specified in RestletCallModel. Ex: return "-" is variable is null 
+   for logs
+ - Cookies.readCookies was renamed to getCookies and getFirstCookie method was added
+ - CookiesReader.readCookie was renamed to readNextCookie and readFirstCookie method was added
+ - Form.readParameter was renamed to getParameter, readParameters to getParameters and getFirstParameter 
+   was added.
+ - Added Status.isInfo, isSuccess, isRedirection, isClientError, isServerError, isError methods
+ - Manager.createChainlet is now a static method
+
+0.16 beta (2005-12-22)
+ - Added RedirectRestlet to support advanced URI rewriting. Based on StringTemplate and Maplets.
+ - Added ReadableModel, WritableModel and Model interfaces to provide a pluggable data model for StringTemplate.
+ - Added DefaultModel with TreeMap based implementation
+ - Added RestletCallModel to wrap a RestletCall as a ReadableModel
+ - DirectoryRestlet now has a "defaultMediaType" property, set to "text/plain" by default.
+ - FileResource can now return files without extension using the default media type.
+ - Renamed Reference.host property into hostName
+ - Renamed Reference.serverIdentifier property into hostIdentifier
+ - Renamed Reference.port property into hostPort
+ - Renamed UniformCall.getReferrerUri to getReferrerRef
+ - Renamed UniformCall.getResourceUri to getResourceRef
+
+0.15 beta (2005-12-16)
+ - Added org.restlet.Chainlet interface and com.noelios.restlet.ChainletImpl
+ - Factorize common code between MapletImpl and ChainletImpl into com.noelios.restlet.util.RestletTarget
+ - Removed unused "parent" parameter for Maplet construction
+ - Renamed UniformCall.userAgentName into clientName
+ - Added UniformCall.clientAddress property to store the client's IP address
+ - Updated the Jetty connectors to set the client IP address and return custom HTTP status messages
+ - Added Representation.getSize method
+ - Added com.noelios.restlet.LoggerChainlet to log restlet calls.
+ - Added com.noelios.restlet.util.LogFileHandler and com.noelios.restlet.util.LogFormatter support classes.
+ - Added Zip, PDF, Word entries in org.restlet.data.MediaTypes enumeration.
+ - Greatly improved the content negotiation algorithm to take into account language preferences.
+ - Added lightweight string template engine at com.noelios.restlet.util.StringTemplate.
+ - Added more logging traces (FileResource, etc.).
+ - Fixed issue with case sensitive URIs when server is running on Unix (ex: Javadocs generated HTML files).
+ 
+0.14 beta (2005-12-06)
+ - Completed the tutorial
+ - Added integration with Jetty 6.0.0 beta 5
+ - Modified the build and packaging, especially for extensions
+      - needed to support the two versions of Jetty adapter (5.1 and 6.0 beta)
+      - allows ligth deployments of NRE (only one JAR file) 
+ - do* methods in HttpClient now returns the created and handled call so status can be tested
+ - Tutorial source code has been added (com.noelios.restlet.tutorial)
+ - Added normalizePath to StringUtils issues with file separators different between Unix and Windows 
+ - OriginServerImpl renamed ComponentImpl to follow the interfaces changes in 0.13beta
+ - Fixed issue in getPath(index, strip) method of RestletCallImpl not passing on the index parameter (0 instead)
+
+0.13 beta (2005-12-03)
+ - Added a detailled tutorial (draft version)
+ - Added doPut and doDelete methods to NRE HTTP client
+ - Added MediaTypes.TEXT_PLAIN
+ - Added code of tutorial examples in the com.noelios.restlet.test package
+ - Implemented the getLastModificationDate() for FileRepresentation
+ - Correctly sets the media type parameter passed to FileRepresentation
+ - JettyConnection now sets the charset parameter for content-type headers, when a character set is defined
+ - JettyConnection now sets the ETag header when a tag is defined
+ - JettyConnection now sets the Expires header when an expiration date is defined
+ - JettyConnection now sets the Last-Modified header when a modification date is defined
+ - Added getMethods() method to org.restlet.Resource and FileResource, to return allowed methods
+ - Added setResource() and getResource() to the Representation interface and AbstractRepresentation class
+ - Moved connector handling methods from OriginServer to Component as other components (proxies, user agents, 
+   etc.) can have connectors attached to them
+
+0.12 beta (2005-12-01)
+ - Distribution license changed from GPL to CDDL (similar to Mozilla Public License).
+ - Added createCharacterSet() to Factory interface, Manager and Engine classes.
+ - HttpClient now correctly sets the output media type and character set when available.
+
+0.11 beta (2005-11-29)
+ - Renamed JettyConnector to JettyServer
+ - Removed unnecessary HttpServer interface
+ - Replaced many RestletException by IOException in non Restlet specific classes and interfaces
+ - TemplateRepresentation no longer load the template upon creation as recommanded for performance reasons
+ - Completed the separation between the Resltet API and the implementations: added org.restlet.Factory interface 
+   and org.restlet.Manager class.
+ - Restlet API implementations must register their implementation of org.restlet.Factory with the 
+   org.restlet.Manager before usage.
+ - Renamed CallImpl to UniformCallImpl
+ - Added setter methods to UniformCall for request field (useful when preparing a call for a client connector)
+ - Added org.restlet.component.DefaultRestletServer and DefaultRestletContainer for easy subclassing by 
+   developpers
+ - Added client HTTP connector in NRE
+
+0.10 beta (2005-11-17)
+ - Renamed all Default* classes in com.noelios.restlet into *Impl for clarity purpose.
+ - Added Status.getUri() method and improved Status.getDescription().
+ - Removed the NONE values from Status and Method enumerations, null is doing a better job.
+ - Added a DirectoryRestlet that behaves like a regular Web server. In addition, automatic media type, language 
+   and character set detection and setting is available in a way that hides technical names and extensions, 
+   allowing a clean content negotiation.
+ - Fixed issue with character encoding in the TemplateRepresentation (FreeMarker integration).
+ - Moved FileResource and FileRestlet to com.noelios.restlet
+ - Refactored the Jetty HTTP server connector to bypass their HTTP handler layer. Now we directly work out of the
+   Jetty SocketListener and HttpConnection class. This will improve performances and reduce the memory consumed. 
+   Note that version 5.1.5 of Jetty is required as it contains a necessary fix.
+ - Moved classes in com.noelios.restlet.ext.jse into com.noelios.restlet (restlets, FileResource), 
+   com.noelios.restlet.data (representations and readers) or com.noelios.restlet.ext.jee (JDBC).
+ - Refactored com.noelios.restelt.RestletMappings into com.noelios.MapletImpl and used it as a delegate in 
+   org.restlet.DefaultMaplet.
+ - Added factory methods to the OriginServer and RestletContainer interface to let the developer override some 
+   default implementations and to prevent direct references to specific restlet API implementations.
+ - Added proper getName() and getDescription() implementations to Method enums
+ - Separated Method into Method, Methods and DefaultMethod to allow any method. Added getUri() method.
+ - Separated CharacterSet into CharacterSet and CharacterSets.
+ - Separated Language into Language and Languages.
+ - Added all HTTP and WebDAV methods in Methods.
+ - Separated Status into Status, Statuses and Default Status to allow any status. 
+ - Variant interface was renamed RepresentationMetadata to remove ambiguity. Also added "expirationDate", 
+   "modificationDate" and "tag" properties.
+ - Added Tag interface and TagImpl for cache validation purpose.
+ - Instead of deriving Variant, Representation now has a getMetadata() method returning an instance of 
+   RepresentationMetadata.
+ - Added all existing HTTP and WebDAV statuses in Statuses.
+ - Added a setTemporaryRedirect() method to UniformCall.
+ - Upgraded the JDBC Client to support multiple databases, drivers and connection pools.
+
+0.9 beta (2005-11-01)
+ - Moved com.restlet into com.noelios.restlet
+ - Moved  net.restlet into org.restlet
+ - Added a readParameter(String parameterName) method to Form and FormReader and their default implementations
+ - Allowed multiple invocations of the DefaultForm.getFormReader() method when it is possible to reset the 
+   underlying input stream.
+ - Added a logging in com.noelios.restlet.ext.jetty.RestletHandler using java.util.logging mechanism.
+ - Refactored all code to use J2SE 5.0 language features (generics, enums)
+ - Added Status and Method enumerations in org.restlet.data
+ - Renamed Call to UniformCall
+ - Added a RestletCall interface which extends UniformCall with a flexible way to get the path of each restlet 
+   in the stack of restlets that handled the call so far.
+ - Added a org.restlet.data.Reference interface to work around the limitation of java.net.URI which is not a 
+   mutable class.
+ - Moved Resource and Restlet interfaces at the root level (org.restlet). 
+ - Refactored the UniformInterface. Many methods where moved to the Reference interface. Added "referrerURI" and
+   "resourceURI" properties.
+ - Separated the Restlet interface into Maplet and Restlet. Maplets are specialized restlets capable of 
+   delegating restlet calls to child restlets. 
+ - RestletContainer now extends Maplet.
+ - Renamed DefaultRestlet into AbstractRestlet.
