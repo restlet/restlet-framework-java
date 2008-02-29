@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ANTLR
+Bundle-SymbolicName: org.antlr
+Bundle-Version: 3.0
+Bundle-ClassPath: org.antlr.runtime.jar
+Bundle-Vendor: Terence Parr
+Export-Package: org.antlr.runtime,
+ org.antlr.runtime.debug,
+ org.antlr.runtime.misc,
+ org.antlr.runtime.tree
