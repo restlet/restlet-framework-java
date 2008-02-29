@@ -57,6 +57,10 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
         Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {
+            // Consider that the request is confidential
+            request.setConfidential(true);
+
+            // Let's dispatch it
             LocalReference cr = new LocalReference(request.getResourceRef());
 
             if (cr.getRiapAuthorityType() == LocalReference.RIAP_COMPONENT) {

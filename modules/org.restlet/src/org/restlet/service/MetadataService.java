@@ -68,6 +68,7 @@ public class MetadataService {
      * <br>
      * The list of media type extensions:<br>
      * <ul>
+     * <li>atom: Atom syndication documents</li>
      * <li>css: CSS stylesheet</li>
      * <li>doc: Microsoft Word document</li>
      * <li>gif: GIF image</li>
@@ -80,10 +81,15 @@ public class MetadataService {
      * <li>png: PNG image</li>
      * <li>ppt: Microsoft Powerpoint document</li>
      * <li>rdf: Description Framework document</li>
+     * <li>rnc: Relax NG Schema document, Compact syntax</li>
+     * <li>rng: Relax NG Schema document, XML syntax</li>
+     * <li>rtf: Rich Text Format document</li>
      * <li>txt: Plain text</li>
      * <li>swf: Shockwave Flash object</li>
+     * <li>wadl: Web Application Description Language document</li>
      * <li>xhtml: XHTML document</li>
      * <li>xml: XML document</li>
+     * <li>xsd: W3C XML Schema document</li>
      * <li>zip: Zip archive</li>
      * </ul>
      */

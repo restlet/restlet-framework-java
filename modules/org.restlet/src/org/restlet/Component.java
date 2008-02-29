@@ -56,17 +56,20 @@ import org.w3c.dom.NodeList;
  * component is an abstract unit of software instructions and internal state
  * that provides a transformation of data via its interface." Roy T. Fielding<br>
  * <br>
- * 
- * XML configuration is supported via a dedicated constructor. It gives access
- * to the list of supported client and server connectors and current services.
- * In addition, you can add and configure virtual hosts (including the default
- * one). Especially, you can attach applications specified by their class name
- * or by a file descriptor (at this moment only WADL format for WADLApplication
- * is supported).<br>
- * The schema of the configuration file is available here :
- * 
+ * The configuration of a Component can be done programmatically or by using a XML
+ * document. There is a dedicated constructor that accepts an URI reference to such 
+ * XML document, allowing easy configuration of the list of supported client and 
+ * server connectors as well as services. In addition, you can add and configure 
+ * virtual hosts (including the default one). Finally, you can attach applications 
+ * either using their fully qualified class name or by pointing to a descriptor 
+ * document (at this time only WADL description are supported, see the WADL Restlet 
+ * extension for details).<br>
  * <br>
- * Here is a sample of XML configuration file:
+ * The XML Schema of the configuration files is available both 
+ * <a href="http://www.restlet.org/schemas/1.1/Component">online</a> and inside
+ * the API JAR under the "org.restlet.Component.xsd" name.<br>
+ * <br>
+ * Here is a sample of XML configuration:
  * <pre>
  * &lt;?xml version=&quot;1.0&quot;?&gt;
  * &lt;component xmlns=&quot;http://www.restlet.org/schemas/1.1/Component&quot;

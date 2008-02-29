@@ -118,6 +118,7 @@ Changes log
    Suggested by Marcelo Ochoa.
  - Removed unecessary 'synchronized' keyword on Application.createRoot() and added one to the
    setRoot() method. Reported by Tim Peierls.
+ - RIAP request are now considered confidential when dispatched. Suggested by Rob Heittman.
    
 1.1 Milestone 1 (2007-12-24)
 [Bugs fixed]

@@ -66,6 +66,10 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
         if (protocol.equals(Protocol.WAR)) {
             getApplicationContext().getWarClient().handle(request, response);
         } else if (protocol.equals(Protocol.RIAP)) {
+            // Consider that the request is confidential
+            request.setConfidential(true);
+
+            // Let's dispatch it
             LocalReference cr = new LocalReference(request.getResourceRef());
 
             if (cr.getRiapAuthorityType() == LocalReference.RIAP_APPLICATION) {
