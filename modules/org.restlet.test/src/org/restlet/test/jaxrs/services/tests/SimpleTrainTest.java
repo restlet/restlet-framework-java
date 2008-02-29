@@ -64,16 +64,16 @@ public class SimpleTrainTest extends JaxRsTestCase {
     public void testGetTextAll() throws Exception {
         if (ONLY_M2)
             return;
-        Response response;
-        // TODO JSR311: This request fails because methods for text/plain and 
-        // for text/html are available, but it is not specified, which to use.
-        // response = get(MediaType.TEXT_ALL);
-        // sysOutEntityIfError(response);
-        // assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Response response = get(MediaType.TEXT_ALL);
+        sysOutEntityIfError(response);
+        Representation representation = response.getEntity();
+        MediaType mediaType = representation.getMediaType();
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertTrue(mediaType.equals(MediaType.TEXT_PLAIN, true) || mediaType.equals(MediaType.TEXT_HTML, true));
 
         response = get(MediaType.TEXT_PLAIN);
         assertTrue(response.getStatus().isSuccess());
-        Representation representation = response.getEntity();
+        representation = response.getEntity();
         assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
         assertEquals(MediaType.TEXT_PLAIN, representation.getMediaType());
     }

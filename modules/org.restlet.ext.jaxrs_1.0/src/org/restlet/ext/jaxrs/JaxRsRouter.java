@@ -318,11 +318,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     @SuppressWarnings("all")
     private void addExtensionMappings(
             Map<String, javax.ws.rs.core.MediaType> extensionMappings) {
-        // REQUESTED JSR311: extensionMappings:
-        // * priority, if method return @ProducesMime and extensionMapping
-        // doesn't match?
-        // * Map<String, List<MediaType>> statt Map? z.B. für xml.
         // TODO JaxRsRouter.extensionMappings.
+        // https://jsr311.dev.java.net/servlets/ReadMsg?listName=users&msgNo=77
+        // there is also a solution in Restlet
     }
 
     // TODO HtmlPreferer an code@restlet.tigris.org.
@@ -657,12 +655,11 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      *                The HTTP method of the request.
      * @return Returns the method who best matches the given and accepted media
      *         type in the request, or null
-     * @throws CouldNotFindMethodException
      */
     private ResourceMethod getBestMethod(
             Collection<ResourceMethod> resourceMethods,
             MediaType givenMediaType, SortedMetadata<MediaType> accMediaTypes,
-            Method httpMethod) throws CouldNotFindMethodException {
+            Method httpMethod) {
         SortedMetadata<MediaType> givenMediaTypes;
         if (givenMediaType != null)
             givenMediaTypes = SortedMetadata.singleton(givenMediaType);
@@ -706,15 +703,10 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                                                 .equals(Method.GET)) {
                                     bestMethod = currentMethod;
                                 } else {
-                                    // TODO JSR311: it is not an internal
-                                    // server error in
-                                    // SimpleTrainTest.testGetTextAll()
-                                    throwMultipleResourceMethods(bestMethod,
-                                            currentMethod);
+                                    // use one of the methods, e.g. the first
                                 }
                             } else {
-                                throwMultipleResourceMethods(bestMethod,
-                                        currentMethod);
+                                // use one of the methods, e.g. the first
                             }
                         }
                     }
@@ -833,12 +825,11 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * 
      * @param eWithMethod
      *                Collection of Sub-ResourceMethods and SubResourceLocators
-     * @return null, if the Map is null or empty
-     * @throws CouldNotFindMethodException
+     * @return the resource method or sub resource locator, or null, if the Map
+     *         is null or empty.
      */
     private ResourceMethodOrLocator getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
-            Collection<ResourceMethodOrLocator> eWithMethod)
-            throws CouldNotFindMethodException {
+            Collection<ResourceMethodOrLocator> eWithMethod) {
         if (eWithMethod == null || eWithMethod.isEmpty())
             return null;
         Iterator<ResourceMethodOrLocator> srmlIter = eWithMethod.iterator();
@@ -870,7 +861,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                         // perhaps for different HTTP methods
                         continue;
                     }
-                    throwMultipleResourceMethods(bestSrml, srml);
+                    // use one the methods
                 }
             }
         }

@@ -80,6 +80,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     @SuppressWarnings("unchecked")
     public Provider(Class<?> jaxRsProviderClass)
             throws IllegalArgumentException, InvocationTargetException {
+        // TODO check, if @Provider
         RootResourceClass.checkClassPublicConcrete(jaxRsProviderClass, "provider");
         Constructor<?> providerConstructor = RootResourceClass
                 .findJaxRsConstructor(jaxRsProviderClass);

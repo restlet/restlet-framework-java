@@ -35,8 +35,6 @@ import javax.xml.bind.Unmarshaller;
  */
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
-    // REQUESTED JSR311: JAXB-Version nicht festgelet.
-
     /**
      * @see org.restlet.ext.jaxrs.provider.AbstractProvider#getSize(java.lang.Object)
      */

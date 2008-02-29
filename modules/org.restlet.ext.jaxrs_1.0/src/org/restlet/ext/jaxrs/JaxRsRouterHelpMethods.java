@@ -34,7 +34,6 @@ import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.util.RemainingPath;
 import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
-import org.restlet.ext.jaxrs.wrappers.ResourceMethodOrLocator;
 import org.restlet.ext.jaxrs.wrappers.ResourceObject;
 import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
 import org.restlet.resource.StringRepresentation;
@@ -97,16 +96,6 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
             Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 
     /**
-     * The default Restlet used when multiple possible resource methods was
-     * found.
-     * 
-     * @see #errorRestletMultipleResourceMethods
-     */
-    private static final ReturnStatusRestlet DEFAULT_MULTIPLE_RESOURCE_METHODS = new ReturnStatusRestlet(
-            new Status(Status.SERVER_ERROR_INTERNAL,
-                    "Multiple possible resource methods found"));
-
-    /**
      * The default Restlet used when multiple root resource were found.
      * 
      * @see #errorRestletMultipleRootResourceClasses
@@ -160,8 +149,6 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
 
     private Restlet errorRestletMethodNotAllowed = DEFAULT_METHOD_NOT_ALLOWED_RESTLET;
 
-    private Restlet errorRestletMultipleResourceMethods = DEFAULT_MULTIPLE_RESOURCE_METHODS;
-
     private Restlet errorRestletMultipleRootResourceClasses = DEFAULT_MULTIPLE_ROOT_RESOURCE_CLASSES;
 
     private Restlet errorRestletNoResourceMethodForAcceptedMediaType = DEFAULT_NOT_ACCEPTABLE_RESTLET;
@@ -193,14 +180,6 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
      */
     public Restlet getErrorRestletMethodNotAllowed() {
         return errorRestletMethodNotAllowed;
-    }
-
-    /**
-     * @return Returns the Restlet that handles the request if multiple resource
-     *         methods for a request were found.
-     */
-    public Restlet getErrorRestletMultipleResourceMethods() {
-        return errorRestletMultipleResourceMethods;
     }
 
     /**
@@ -336,21 +315,6 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
             this.errorRestletMethodNotAllowed = DEFAULT_METHOD_NOT_ALLOWED_RESTLET;
         else
             this.errorRestletMethodNotAllowed = errorRestletMethodNotAllowed;
-    }
-
-    /**
-     * Set the Restlet to handle the request if multiple resource methods for a
-     * request were found. Set to null to use default.
-     * 
-     * @param errorRestletMultipleResourceMethods
-     *                The Restlet to use. Set to null to use default.
-     */
-    public void setErrorRestletMultipleResourceMethods(
-            Restlet errorRestletMultipleResourceMethods) {
-        if (errorRestletMultipleResourceMethods == null)
-            this.errorRestletMultipleResourceMethods = DEFAULT_MULTIPLE_RESOURCE_METHODS;
-        else
-            this.errorRestletMultipleResourceMethods = errorRestletMultipleResourceMethods;
     }
 
     /**
@@ -496,24 +460,6 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
                 "there is no method supporting the http method " + httpMethod
                         + " on class " + resourceClass.getName()
                         + " and remaining path " + u);
-    }
-
-    /**
-     * @param bestMethod
-     * @param currentMethod
-     * @throws CouldNotFindMethodException
-     *                 you can throw the result, if the compiler want to get
-     *                 sure, that you leave the calling method.
-     */
-    void throwMultipleResourceMethods(ResourceMethodOrLocator bestMethod,
-            ResourceMethodOrLocator currentMethod)
-            throws CouldNotFindMethodException {
-        String message = "Multiple java methods found on "
-                + currentMethod.getResourceClass().getName() + ": "
-                + bestMethod.getName() + " and " + currentMethod.getName();
-        getLogger().warning(message);
-        throw new CouldNotFindMethodException(
-                this.errorRestletMultipleResourceMethods, message);
     }
 
     /**

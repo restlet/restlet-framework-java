@@ -338,9 +338,9 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     @Override
     public ResponseBuilder tag(String tag) {
         if (tag == null)
-            getMetadata().remove(HttpHeaders.ETAG);
+            tag((EntityTag)null);
         else
-            getMetadata().putSingle(HttpHeaders.ETAG, tag);
+            tag(new EntityTag(tag, false));
         return this;
     }
 
