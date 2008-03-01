@@ -31,12 +31,14 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.util.Engine;
+import org.restlet.util.Resolver;
 
 /**
  * Filter guarding the access to an attached Restlet.
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial: Guarding
- *      access to sensitive resources</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial:
+ *      Guarding access to sensitive resources</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Guard extends Filter {
@@ -156,6 +158,9 @@ public class Guard extends Filter {
     /** The authentication challenge scheme. */
     private volatile ChallengeScheme scheme;
 
+    /** The secret resolver. */
+    private Resolver<char[]> secretResolver;
+
     /** Map of secrets (login/password combinations). */
     private final ConcurrentMap<String, char[]> secrets;
 
@@ -175,6 +180,12 @@ public class Guard extends Filter {
     public Guard(Context context, ChallengeScheme scheme, String realm) {
         super(context);
         this.rechallengeEnabled = true;
+        this.secretResolver = new Resolver<char[]>() {
+            public char[] resolve(String identifier) {
+                return getSecrets().get(identifier);
+            }
+        };
+
         this.secrets = new ConcurrentHashMap<String, char[]>();
 
         if ((scheme == null)) {
@@ -379,9 +390,12 @@ public class Guard extends Filter {
      * @param identifier
      *                The identifier to lookup.
      * @return The secret associated to the identifier or null.
+     * @deprecated Provide a resolver instead via the
+     *             {@link #setSecretResolver(Resolver)} method.
      */
+    @Deprecated
     public char[] findSecret(String identifier) {
-        return getSecrets().get(identifier);
+        return getSecretResolver().resolve(identifier);
     }
 
     /**
@@ -433,6 +447,15 @@ public class Guard extends Filter {
      */
     public ChallengeScheme getScheme() {
         return this.scheme;
+    }
+
+    /**
+     * Returns the secret resolver.
+     * 
+     * @return The secret resolver.
+     */
+    public Resolver<char[]> getSecretResolver() {
+        return this.secretResolver;
     }
 
     /**
@@ -547,6 +570,16 @@ public class Guard extends Filter {
      */
     public void setScheme(ChallengeScheme scheme) {
         this.scheme = scheme;
+    }
+
+    /**
+     * Sets the secret resolver.
+     * 
+     * @param secretResolver
+     *                The secret resolver.
+     */
+    public void setSecretResolver(Resolver<char[]> secretResolver) {
+        this.secretResolver = secretResolver;
     }
 
     /**

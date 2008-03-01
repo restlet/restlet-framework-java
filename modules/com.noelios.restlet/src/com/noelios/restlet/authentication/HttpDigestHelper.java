@@ -57,8 +57,12 @@ public class HttpDigestHelper extends AuthenticationHelper {
      */
     private static String getHashedSecret(String identifier, Guard guard) {
         return Engine.getInstance().toMd5(
-                identifier + ":" + guard.getRealm() + ":"
-                        + new String(guard.findSecret(identifier)));
+                identifier
+                        + ":"
+                        + guard.getRealm()
+                        + ":"
+                        + new String(guard.getSecretResolver().resolve(
+                                identifier)));
     }
 
     /**

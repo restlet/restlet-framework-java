@@ -1,19 +1,19 @@
 package org.restlet.util;
 
 /**
- * Resolves a variable name into a value.
+ * Resolves a name into a value.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public interface Resolver {
+public interface Resolver<T> {
 
     /**
-     * Resolves a variable name into a value.
+     * Resolves a name into a value.
      * 
-     * @param variableName
-     *                The variable name to resolve.
+     * @param name
+     *                The name to resolve.
      * @return The resolved value.
      */
-    public String resolve(String variableName);
+    public T resolve(String name);
 
 }

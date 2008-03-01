@@ -48,7 +48,7 @@ public class PathRegExp {
      * 
      * @author Stephan Koops
      */
-    private static class EverNullVariableResolver implements Resolver {
+    private static class EverNullVariableResolver implements Resolver<String> {
         public String resolve(String variableName) {
             return "";
         }

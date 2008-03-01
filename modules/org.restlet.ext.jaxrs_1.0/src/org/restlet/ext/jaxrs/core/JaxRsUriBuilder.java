@@ -56,14 +56,14 @@ public class JaxRsUriBuilder extends UriBuilder {
      * This resolver is used, if no variable is allowed in the template. It
      * throws an {@link UriBuilderException}, if a variable is requested.
      */
-    private static final Resolver NO_VAR_RESOLVER = new Resolver() {
+    private static final Resolver<String> NO_VAR_RESOLVER = new Resolver<String>() {
         public String resolve(String variableName) {
             throw new UriBuilderException(
                     "The UriBuilder must not contain any template parameter");
         }
     };
 
-    private class IteratorVariableResolver implements Resolver {
+    private class IteratorVariableResolver implements Resolver<String> {
         private int i = 0;
 
         private Map<String, String> retrievedValues = new HashMap<String, String>();

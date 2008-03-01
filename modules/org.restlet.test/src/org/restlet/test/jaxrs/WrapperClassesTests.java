@@ -81,6 +81,7 @@ public class WrapperClassesTests extends TestCase {
     }
 
     public void testIllegalRrcPath() throws Exception {
+        @SuppressWarnings("unused")
         RootResourceClass rrc = wrapperFactory
                 .getRootResourceClass(IllegalRrcPathRrc.class);
     }
@@ -88,6 +89,7 @@ public class WrapperClassesTests extends TestCase {
     public void testIllegalMethodPath() throws Exception {
         RootResourceClass rrc = wrapperFactory
                 .getRootResourceClass(IllegalMethPathRrc.class);
+        @SuppressWarnings("unused")
         Collection<ResourceMethod> rms;
         rms = rrc.getMethodsForPath(new RemainingPath("abc"));
         rms = rrc.getMethodsForPath(new RemainingPath(""));

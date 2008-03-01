@@ -11,7 +11,9 @@ Changes log
    reference instead. Reported by Steve Loughran.
 
 [Enhancements] 
- -
+ - Made the org.restlet.util.Resolver generic and used it in Guard to allow the user
+   to provide a secret resolver without needing to subclass Guard. Deprecated the
+   findSecret(String) method. 
 
 [Misc] 
  - All component subclasses now use a main method that throws exceptions and takes

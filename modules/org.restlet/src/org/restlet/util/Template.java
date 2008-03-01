@@ -283,7 +283,7 @@ public class Template {
      * 
      * @author Jerome Louvel (contact@noelios.com)
      */
-    private class CallVariableResolver implements Resolver {
+    private class CallVariableResolver implements Resolver<String> {
         /** The request to use as a model. */
         private Request request;
 
@@ -532,7 +532,7 @@ public class Template {
      * 
      * @author Jerome Louvel (contact@noelios.com)
      */
-    private class MapVariableResolver implements Resolver {
+    private class MapVariableResolver implements Resolver<String> {
         /** The variables to use when formatting. */
         private Map<String, Object> map;
 
@@ -837,7 +837,7 @@ public class Template {
      *                The variable resolver to use.
      * @return The formatted string.
      */
-    public String format(Resolver resolver) {
+    public String format(Resolver<String> resolver) {
         StringBuilder result = new StringBuilder();
         StringBuilder varBuffer = null;
         char next;
