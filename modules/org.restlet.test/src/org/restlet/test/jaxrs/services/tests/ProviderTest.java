@@ -22,6 +22,8 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.provider.JaxbElementProvider;
+import org.restlet.ext.jaxrs.provider.JaxbProvider;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
@@ -144,17 +146,27 @@ public class ProviderTest extends JaxRsTestCase {
         getAndCheckJaxb("jaxbElement");
     }
 
-    // TESTEN public void testJaxbElementPost() throws Exception {
-    // postAndCheck("jaxbElement");
+    /**
+     * @see JaxbElementProvider#writeTo(javax.xml.bind.JAXBElement,
+     *      java.lang.reflect.Type, java.lang.annotation.Annotation[],
+     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
+     *      java.io.OutputStream)
+     */
+    // TESTEN QName is missing
+    // public void testJaxbElementPost() throws Exception {
+    //     postAndCheck("jaxbElement");
     // }
 
     public void testJaxbGet() throws Exception {
         getAndCheckJaxb("jaxb");
     }
 
-    // TESTEN public void testJaxbPost() throws Exception {
-    // postAndCheck("jaxb");
-    // }
+    public void testJaxbPost() throws Exception {
+        if (shouldAccessWithoutTcp())
+            postAndCheck("jaxb");
+        else
+            fail("This test works only, if TCP is not used.");
+    }
 
     public void testMultivaluedMapGet() throws Exception {
         Response response = get("MultivaluedMap");
