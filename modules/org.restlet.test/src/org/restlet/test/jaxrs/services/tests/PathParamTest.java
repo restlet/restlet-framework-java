@@ -43,8 +43,7 @@ public class PathParamTest extends JaxRsTestCase {
      * @return
      */
     private Reference createReference(String subPath) {
-        return new Reference("http://localhost:" + super.getPort()
-                + "/pathParamTest/" + subPath);
+        return new Reference(createBaseRef(), createBaseRef() + "/pathParamTest/" + subPath);
     }
 
     public void testGet1() throws IOException {
@@ -54,7 +53,8 @@ public class PathParamTest extends JaxRsTestCase {
     }
 
     public void testGet2() throws IOException {
-        Response response = accessServer(Method.GET, createReference("4711/abc/677/def"));
+        Response response = accessServer(Method.GET,
+                createReference("4711/abc/677/def"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("4711\n677", response.getEntity().getText());
     }

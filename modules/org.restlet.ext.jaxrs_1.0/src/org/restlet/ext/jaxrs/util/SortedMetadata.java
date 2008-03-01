@@ -26,10 +26,17 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
 
     /**
      * Creates a new SortedMetadata from the given Metadata.
+     * 
      * @param preferences
      */
     @SuppressWarnings("unchecked")
     public SortedMetadata(Collection<Preference<T>> preferences) {
+        if (preferences.isEmpty()) {
+            this.metadatas = Collections
+                    .singletonList((Collection<T>) Collections
+                            .singletonList(MediaType.ALL));
+            return;
+        }
         SortedMap<Float, Collection<T>> map = new TreeMap<Float, Collection<T>>(
                 Collections.reverseOrder());
         for (Preference<T> preference : preferences) {
@@ -46,6 +53,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
 
     /**
      * Creates a new SortedMetadata from the sorted Metadata.
+     * 
      * @param metadatas
      */
     private SortedMetadata(List<Collection<T>> metadatas) {

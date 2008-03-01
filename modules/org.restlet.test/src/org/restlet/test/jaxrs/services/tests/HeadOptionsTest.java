@@ -48,7 +48,9 @@ public class HeadOptionsTest extends JaxRsTestCase {
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_HTML, entityHead.getMediaType());
         assertEquals("4711", entityGett.getText());
-        assertNull(entityHead.getText());
+        if (!shouldAccessWithoutTcp())
+            assertEquals("The entity text of the head request must be null",
+                    null, entityHead.getText());
     }
 
     public void testHead2() throws Exception {
@@ -67,7 +69,9 @@ public class HeadOptionsTest extends JaxRsTestCase {
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_HTML, entityHead.getMediaType());
         assertEquals("4711", entityGett.getText());
-        assertNull(entityHead.getText());
+        if (!shouldAccessWithoutTcp())
+            assertEquals("The entity text of the head request must be null",
+                    null, entityHead.getText());
     }
 
     public void testHead2plain() throws Exception {
@@ -86,7 +90,9 @@ public class HeadOptionsTest extends JaxRsTestCase {
         assertEqualMediaType(MediaType.TEXT_PLAIN, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entityHead.getMediaType());
         assertEquals("4711", entityGett.getText());
-        assertNull(entityHead.getText());
+        if (!shouldAccessWithoutTcp())
+            assertEquals("The entity text of the head request must be null",
+                    null, entityHead.getText());
     }
 
     public void testOptions() throws Exception {

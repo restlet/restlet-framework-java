@@ -23,13 +23,14 @@ import java.io.IOException;
 import org.restlet.data.Cookie;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.CookieParamTestService;
 
 /**
  * @author Stephan Koops
  */
 public class CookieParamTest extends JaxRsTestCase {
-    
+
     @Override
     protected Class<?> getRootResourceClass() {
         return CookieParamTestService.class;
@@ -51,11 +52,16 @@ public class CookieParamTest extends JaxRsTestCase {
         Response response = get();
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
-        assertEquals(null, response.getEntity().getText());
-}
+        Representation entity = response.getEntity();
+        String text;
+        if (entity != null)
+            text = entity.getText();
+        else
+            text = null;
+        assertEquals(null, text);
+    }
 
-    public void testWithDefault() throws IOException
-    {
+    public void testWithDefault() throws IOException {
         Response response = get("withDefault", new Cookie("c", "value"));
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());

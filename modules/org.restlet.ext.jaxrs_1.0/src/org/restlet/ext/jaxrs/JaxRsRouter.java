@@ -398,7 +398,12 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         RrcAndRemPath rcat = identifyRootResourceClass(u, callContext);
         ResObjAndRemPath resourceObjectAndPath = obtainObjectThatHandleRequest(
                 rcat, callContext);
-        MediaType givenMediaType = restletRequest.getEntity().getMediaType();
+        final Representation entity = restletRequest.getEntity();
+        MediaType givenMediaType;
+        if (entity != null)
+            givenMediaType = entity.getMediaType();
+        else
+            givenMediaType = null;
         ResObjAndMeth method = identifyMethodThatHandleRequest(
                 resourceObjectAndPath, callContext, givenMediaType);
         return method;

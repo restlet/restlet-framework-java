@@ -33,6 +33,7 @@ import javax.ws.rs.core.ApplicationConfig;
 import junit.framework.TestCase;
 
 import org.restlet.Client;
+import org.restlet.Restlet;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
@@ -53,8 +54,11 @@ import org.restlet.ext.jaxrs.exceptions.JaxRsException;
 import org.restlet.ext.jaxrs.exceptions.JaxRsRuntimeException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.util.Converter;
+import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.resource.Representation;
+import org.restlet.test.jaxrs.server.DirectServerWrapper;
+import org.restlet.test.jaxrs.server.DirectServerWrapperFactory;
 import org.restlet.test.jaxrs.server.RestletServerWrapperFactory;
 import org.restlet.test.jaxrs.server.ServerWrapper;
 import org.restlet.test.jaxrs.server.ServerWrapperFactory;
@@ -70,9 +74,25 @@ import org.restlet.test.jaxrs.server.ServerWrapperFactory;
 public abstract class JaxRsTestCase extends TestCase {
 
     /**
-     * ServerWrapperFactory to use.
+     * ServerWrapperFactory to use. Default: {@link RestletServerWrapperFactory}
      */
-    private static ServerWrapperFactory serverWrapperFactory = new RestletServerWrapperFactory();
+    private static ServerWrapperFactory serverWrapperFactory;
+
+    /**
+     * if true, a real server is started and all communication uses real TCP,
+     * real Restlet request and response serialization. If false, the
+     * application is called without serialization.<br>
+     * The first is more real, the last is very fast.
+     * 
+     * @see #setServerWrapperFactory(ServerWrapperFactory)
+     */
+    public static final boolean USE_TCP = false;
+    static {
+        if (USE_TCP)
+            serverWrapperFactory = new RestletServerWrapperFactory();
+        else
+            serverWrapperFactory = new DirectServerWrapperFactory();
+    }
 
     /**
      * @param request
@@ -112,13 +132,6 @@ public abstract class JaxRsTestCase extends TestCase {
         expected = Converter.getMediaTypeWithoutParams(expected);
         actual = Converter.getMediaTypeWithoutParams(actual);
         assertEquals(expected, actual);
-    }
-
-    /**
-     * @return
-     */
-    protected static Client createClient() {
-        return new Client(Protocol.HTTP);
     }
 
     /**
@@ -250,14 +263,12 @@ public abstract class JaxRsTestCase extends TestCase {
     public Response accessServer(Method httpMethod, Class<?> klasse,
             String subPath, Conditions conditions, ClientInfo clientInfo) {
         Reference reference = createReference(klasse, subPath);
-        Client client = createClient();
         Request request = new Request(httpMethod, reference);
         if (conditions != null)
             request.setConditions(conditions);
         if (clientInfo != null)
             request.setClientInfo(clientInfo);
-        Response response = client.handle(request);
-        return response;
+        return accessServer(request);
     }
 
     @SuppressWarnings("unchecked")
@@ -277,15 +288,24 @@ public abstract class JaxRsTestCase extends TestCase {
     private Response accessServer(Method httpMethod, Reference reference,
             Collection accMediaTypes, ChallengeResponse challengeResponse,
             Representation entity, Cookie cookie) {
-        Client client = createClient();
         Request request = new Request(httpMethod, reference);
         addAcceptedMediaTypes(request, accMediaTypes);
         request.setChallengeResponse(challengeResponse);
         request.setEntity(entity);
         if (cookie != null)
             request.getCookies().add(cookie);
-        Response response = client.handle(request);
-        return response;
+        return accessServer(request);
+    }
+
+    /**
+     * @param request
+     * @return
+     */
+    private Response accessServer(Request request) {
+        Restlet connector = getConnector();
+        if (shouldAccessWithoutTcp())
+            Util.getHttpHeaders(request).add("host", "localhost");
+        return connector.handle(request);
     }
 
     /**
@@ -314,6 +334,15 @@ public abstract class JaxRsTestCase extends TestCase {
                 allowedMethods.size());
     }
 
+    public Reference createBaseRef() {
+        Reference reference = new Reference();
+        reference.setProtocol(Protocol.HTTP);
+        reference.setAuthority("localhost");
+        if (!shouldAccessWithoutTcp())
+            reference.setHostPort(serverWrapper.getPort());
+        return reference;
+    }
+
     /**
      * @param subPath
      * @return
@@ -335,10 +364,8 @@ public abstract class JaxRsTestCase extends TestCase {
      * @throws JaxRsException
      */
     public Reference createReference(Class<?> jaxRsClass, String subPath) {
-        Reference reference = new Reference();
-        reference.setProtocol(Protocol.HTTP);
-        reference.setAuthority("localhost");
-        reference.setHostPort(serverWrapper.getPort());
+        Reference reference = createBaseRef();
+        reference.setBaseRef(createBaseRef());
         String path;
         try {
             path = ResourceClass.getPathTemplate(jaxRsClass);
@@ -401,9 +428,36 @@ public abstract class JaxRsTestCase extends TestCase {
                 accMediaType);
     }
 
+    /**
+     * @return
+     */
+    protected ApplicationConfig getAppConfig() {
+        ApplicationConfig appConfig = new ApplicationConfig() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getResourceClasses() {
+                return (Set) Collections.singleton(getRootResourceClass());
+            }
+        };
+        return appConfig;
+    }
+
     public Response getAuth(String subPath, String username, String pw) {
         return get(subPath, new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
                 username, pw));
+    }
+
+    /**
+     * @return
+     */
+    protected Restlet getConnector() {
+        Restlet connector;
+        if (shouldAccessWithoutTcp()) {
+            connector = ((DirectServerWrapper) serverWrapper).getConnector();
+        } else {
+            connector = new Client(Protocol.HTTP);
+        }
+        return connector;
     }
 
     public int getPort() {
@@ -463,12 +517,23 @@ public abstract class JaxRsTestCase extends TestCase {
                 conditions, null);
     }
 
+    public void setServerWrapper(ServerWrapper serverWrapper) {
+        this.serverWrapper = serverWrapper;
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         if (shouldStartServerInSetUp()) {
             startServer();
         }
+    }
+
+    /**
+     * @return
+     */
+    protected boolean shouldAccessWithoutTcp() {
+        return serverWrapper instanceof DirectServerWrapper;
     }
 
     protected boolean shouldStartServerInSetUp() {
@@ -484,29 +549,6 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     protected void startServer() throws Exception {
         startServer(ChallengeScheme.HTTP_BASIC);
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected void startServer(ChallengeScheme challengeScheme)
-            throws Exception {
-        ApplicationConfig appConfig = getAppConfig();
-        startServer(appConfig, Protocol.HTTP, challengeScheme, null);
-    }
-
-    /**
-     * @return
-     */
-    protected ApplicationConfig getAppConfig() {
-        ApplicationConfig appConfig = new ApplicationConfig() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public Set<Class<?>> getResourceClasses() {
-                return (Set) Collections.singleton(getRootResourceClass());
-            }
-        };
-        return appConfig;
     }
 
     /**
@@ -535,6 +577,15 @@ public abstract class JaxRsTestCase extends TestCase {
     /**
      * @throws Exception
      */
+    protected void startServer(ChallengeScheme challengeScheme)
+            throws Exception {
+        ApplicationConfig appConfig = getAppConfig();
+        startServer(appConfig, Protocol.HTTP, challengeScheme, null);
+    }
+
+    /**
+     * @throws Exception
+     */
     protected void stopServer() throws Exception {
         serverWrapper.stopServer();
     }
@@ -543,9 +594,5 @@ public abstract class JaxRsTestCase extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         stopServer();
-    }
-
-    public void setServerWrapper(ServerWrapper serverWrapper) {
-        this.serverWrapper = serverWrapper;
     }
 }

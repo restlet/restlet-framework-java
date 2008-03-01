@@ -22,14 +22,15 @@ import javax.ws.rs.core.ApplicationConfig;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.AllowAllAccess;
 import org.restlet.ext.jaxrs.AccessControl;
+import org.restlet.ext.jaxrs.AllowAllAccess;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.util.Util;
 
@@ -84,31 +85,48 @@ public class RestletServerWrapper implements ServerWrapper {
         if (contextParameter != null)
             comp.getContext().getParameters().add(contextParameter);
         comp.getServers().add(protocol, 0);
+        final AccessControl accessControl = this.accessControl;
+        final Context context = comp.getContext();
+        Application application1 = createApplication(context, appConfig,
+                challengeScheme, accessControl);
 
         // Create an application
-        Application application = new Application(comp.getContext()) {
-            @Override
-            public Restlet createRoot() {
-                if (accessControl == null) {
-                    return new JaxRsRouter(getContext(), appConfig,
-                            AllowAllAccess.getInstance());
-                }
-                Guard guard = new Guard(getContext(), challengeScheme, "");
-                guard.getSecrets().put("admin", "adminPW".toCharArray());
-                guard.getSecrets().put("alice", "alicesSecret".toCharArray());
-                guard.getSecrets().put("bob", "bobsSecret".toCharArray());
-                JaxRsRouter router = new JaxRsRouter(getContext(), appConfig,
-                        accessControl);
-                guard.setNext(router);
-                return guard;
-            }
-        };
+        Application application = application1;
 
         // Attach the application to the component and start it
         comp.getDefaultHost().attach(application);
         comp.start();
         this.component = comp;
         System.out.println("listening on port " + getPort());
+    }
+
+    /**
+     * @param context
+     * @param appConfig
+     * @param challengeScheme
+     * @param accessControl
+     * @return
+     */
+    public static Application createApplication(Context context,
+            final ApplicationConfig appConfig,
+            final ChallengeScheme challengeScheme,
+            final AccessControl accessControl) {
+        final Application application = new Application(context) {
+            @Override
+            public Restlet createRoot() {
+                final Context context = getContext();
+                if (accessControl == null) {
+                    return new JaxRsRouter(context, appConfig, AllowAllAccess
+                            .getInstance());
+                }
+                Guard guard = createGuard(context, challengeScheme);
+                JaxRsRouter router = new JaxRsRouter(context, appConfig,
+                        accessControl);
+                guard.setNext(router);
+                return guard;
+            }
+        };
+        return application;
     }
 
     /**
@@ -144,5 +162,19 @@ public class RestletServerWrapper implements ServerWrapper {
                 return port;
         }
         throw new IllegalStateException("Sorry, the port is not available");
+    }
+
+    /**
+     * @param context
+     * @param challengeScheme
+     * @return
+     */
+    public static Guard createGuard(final Context context,
+            final ChallengeScheme challengeScheme) {
+        Guard guard = new Guard(context, challengeScheme, "");
+        guard.getSecrets().put("admin", "adminPW".toCharArray());
+        guard.getSecrets().put("alice", "alicesSecret".toCharArray());
+        guard.getSecrets().put("bob", "bobsSecret".toCharArray());
+        return guard;
     }
 }
