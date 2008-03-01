@@ -327,32 +327,42 @@ public class HttpServerConverter extends HttpConverter {
             } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
                 getLogger()
                         .fine(
-                                "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers.");
+                                "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
+                                        + response.getRequest()
+                                                .getResourceRef() + ".");
                 addEntityHeaders(response);
                 response.setEntity(null);
             } else if (response.getStatus()
                     .equals(Status.SUCCESS_RESET_CONTENT)) {
                 getLogger()
                         .warning(
-                                "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity");
+                                "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity for resource \""
+                                        + response.getRequest()
+                                                .getResourceRef() + ".");
                 response.setEntity(null);
             } else if (response.getStatus().equals(
                     Status.SUCCESS_PARTIAL_CONTENT)) {
                 getLogger()
                         .warning(
-                                "Responses with a 206 (Partial content) status aren't supported yet. Ignoring the entity");
+                                "Responses with a 206 (Partial content) status aren't supported yet. Ignoring the entity for resource \""
+                                        + response.getRequest()
+                                                .getResourceRef() + ".");
                 response.setEntity(null);
             } else if (response.getStatus().equals(
                     Status.REDIRECTION_NOT_MODIFIED)) {
                 getLogger()
                         .warning(
-                                "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers.");
+                                "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers for resource \""
+                                        + response.getRequest()
+                                                .getResourceRef() + ".");
                 addEntityHeaders(response);
                 response.setEntity(null);
             } else if (response.getStatus().isInformational()) {
                 getLogger()
                         .warning(
-                                "Responses with an informational (1xx) status can't have an entity. Ignoring the entity");
+                                "Responses with an informational (1xx) status can't have an entity. Ignoring the entity for resource \""
+                                        + response.getRequest()
+                                                .getResourceRef() + ".");
                 response.setEntity(null);
             } else {
                 addEntityHeaders(response);
@@ -361,7 +371,9 @@ public class HttpServerConverter extends HttpConverter {
                     // An entity was returned but isn't really available
                     getLogger()
                             .warning(
-                                    "A response with an unavailable entity was returned. Ignoring the entity");
+                                    "A response with an unavailable entity was returned. Ignoring the entity for resource \""
+                                            + response.getRequest()
+                                                    .getResourceRef() + ".");
                     response.setEntity(null);
                 }
             }

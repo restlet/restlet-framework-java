@@ -253,6 +253,7 @@ public class Resource extends Handler {
                 language = ((Application) app).getMetadataService()
                         .getDefaultLanguage();
             }
+
             result = getRequest().getClientInfo().getPreferredVariant(variants,
                     language);
 
