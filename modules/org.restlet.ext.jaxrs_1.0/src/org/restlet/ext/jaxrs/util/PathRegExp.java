@@ -89,7 +89,7 @@ public class PathRegExp {
      * locator. Returns {@link #EMPTY}, if the method is not annotated with
      * &#64;Path.
      * 
-     * @param javaMethod
+     * @param annotatedMethod
      * @return the {@link PathRegExp}. Never returns null.
      * @throws IllegalPathOnMethodException
      * @throws MissingAnnotationException
@@ -97,10 +97,10 @@ public class PathRegExp {
      *                 if the javaMethod was null
      * @see {@link #EMPTY}
      */
-    public static PathRegExp createForMethod(Method javaMethod)
+    public static PathRegExp createForMethod(Method annotatedMethod)
             throws IllegalPathOnMethodException, IllegalArgumentException {
         Path pathAnnotation = AbstractMethodWrapper
-                .getPathAnnotationOrNull(javaMethod);
+                .getPathAnnotationOrNull(annotatedMethod);
         if (pathAnnotation == null)
             return EMPTY;
         try {

@@ -89,8 +89,10 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     /**
      * Creates a wrapper for a resource method.
      * 
-     * @param javaMethod
+     * @param executeMethod
      *                the Java method to wrap.
+     * @param annotatedMethod
+     *                TODO
      * @param resourceClass
      *                the wrapped class of the method.
      * @param httpMethod
@@ -99,10 +101,10 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      *                be requested from the javaMethod.
      * @throws IllegalPathOnMethodException
      */
-    ResourceMethod(Method javaMethod, ResourceClass resourceClass,
-            org.restlet.data.Method httpMethod)
+    ResourceMethod(Method executeMethod, Method annotatedMethod,
+            ResourceClass resourceClass, org.restlet.data.Method httpMethod)
             throws IllegalPathOnMethodException {
-        super(javaMethod, resourceClass);
+        super(executeMethod, annotatedMethod, resourceClass);
         this.httpMethod = httpMethod;
     }
 
@@ -113,10 +115,11 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      */
     public List<MediaType> getConsumedMimes() {
         if (this.consumedMimes == null) {
-            ConsumeMime consumeMime = this.javaMethod
-                    .getAnnotation(ConsumeMime.class);
-            if (consumeMime == null)
-                consumeMime = this.javaMethod.getAnnotation(ConsumeMime.class);
+            ConsumeMime consumeMime;
+            consumeMime = this.annotatedMethod.getAnnotation(ConsumeMime.class);
+            if (consumeMime == null) // TESTEN use @ConsumeMime of class
+                consumeMime = this.executeMethod.getClass().getAnnotation(
+                        ConsumeMime.class);
             if (consumeMime == null)
                 this.consumedMimes = Collections.singletonList(MediaType.ALL);
             else
@@ -143,9 +146,9 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     public List<MediaType> getProducedMimes() {
         if (producedMimes == null) {
             ProduceMime produceMime;
-            produceMime = this.javaMethod.getAnnotation(ProduceMime.class);
-            if (produceMime == null) // TESTEN @ProduceMime der Klasse abgefragt
-                produceMime = this.javaMethod.getClass().getAnnotation(
+            produceMime = this.annotatedMethod.getAnnotation(ProduceMime.class);
+            if (produceMime == null) // TESTEN use @ProduceMime of class
+                produceMime = this.executeMethod.getClass().getAnnotation(
                         ProduceMime.class);
             if (produceMime != null)
                 this.producedMimes = convertToMediaTypes(produceMime.value());
@@ -230,7 +233,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
             throw new IllegalArgumentException(
                     "null is not a valid HTTP method");
         if (this.httpMethod == null)
-            this.httpMethod = getHttpMethod(this.javaMethod);
+            this.httpMethod = getHttpMethod(this.annotatedMethod);
         if (alsoGet && this.httpMethod.equals(org.restlet.data.Method.GET))
             return true;
         return this.httpMethod.equals(requestedMethod);
@@ -238,7 +241,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[" + javaMethod.toString()
+        return this.getClass().getSimpleName() + "[" + executeMethod.toString()
                 + ", " + this.httpMethod + "]";
     }
 }

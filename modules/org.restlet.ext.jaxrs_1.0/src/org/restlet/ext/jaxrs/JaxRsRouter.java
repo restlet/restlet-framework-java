@@ -310,7 +310,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      */
     private void addProvider(Class<?> jaxRsProviderClass)
             throws IllegalArgumentException, InvocationTargetException {
-        // TODO JSR311: what should happens with providers not annotated with
+        // REQUEST what should happens with providers not annotated with
         // @Provider? ignore? If they are given the AppConfig, they should no
         // be used? Than we didnot need the annotation.
         Provider<?> provider = new Provider<Object>(jaxRsProviderClass);
@@ -658,7 +658,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * i.e. a method that explicitly lists one of the requested media types is
      * sorted before a method that lists *<!---->/*. Quality parameter values
      * are also used such that x/y;q=1.0 < x/y;q=0.7. <br>
-     * See JSR-311 Spec, section 2.5, Part 3b+c. <br>
+     * See JSR-311 Spec, section 2.6, Part 3b+c. <br>
      * Never returns null.
      * 
      * @param resourceMethods
@@ -682,23 +682,26 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         else
             givenMediaTypes = null;
         // mms = methods that support the given MediaType
-        Map<ResourceMethod, List<MediaType>> mms = findMethodSupportsMime(
-                resourceMethods, ConsOrProdMime.CONSUME_MIME, givenMediaTypes);
-        if (mms.isEmpty())
-            throw new WebApplicationException(500);
-        if (mms.size() == 1)
-            return Util.getFirstKey(mms);
+        Map<ResourceMethod, List<MediaType>> mms1;
+        mms1 = findMethodSupportsMime(resourceMethods,
+                ConsOrProdMime.CONSUME_MIME, givenMediaTypes);
+        if (mms1.isEmpty())
+            return Util.getFirstElement(resourceMethods);
+        if (mms1.size() == 1)
+            return Util.getFirstKey(mms1);
         // check for method with best ProduceMime (secondary key)
         // mms = Methods support given MediaType and requested MediaType
-        mms = findMethodSupportsMime(mms.keySet(), ConsOrProdMime.PRODUCE_MIME,
-                accMediaTypes);
-        if (mms.isEmpty())
-            throw new WebApplicationException(500);
-        if (mms.size() == 1)
-            return Util.getFirstKey(mms);
+        Map<ResourceMethod, List<MediaType>> mms2;
+        mms2 = findMethodSupportsMime(mms1.keySet(),
+                ConsOrProdMime.PRODUCE_MIME, accMediaTypes);
+        if (mms2.isEmpty())
+            return Util.getFirstKey(mms1);
+        if (mms2.size() == 1)
+            return Util.getFirstKey(mms2);
         for (MediaType accMediaType : accMediaTypes) {
             ResourceMethod bestMethod = null;
-            for (Map.Entry<ResourceMethod, List<MediaType>> mm : mms.entrySet()) {
+            for (Map.Entry<ResourceMethod, List<MediaType>> mm : mms2
+                    .entrySet()) {
                 for (MediaType methodMediaType : mm.getValue()) {
                     if (accMediaType.includes(methodMediaType)) {
                         ResourceMethod currentMethod = mm.getKey();
@@ -731,7 +734,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             if (bestMethod != null)
                 return bestMethod;
         }
-        throw new WebApplicationException(500);
+        return Util.getFirstKey(mms2);
     }
 
     /**
@@ -885,17 +888,15 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     /**
-     * See JSR-311-Spec, Section 2.5 Matching Requests to Resource Methods, item
+     * See JSR-311-Spec, Section 2.6 Matching Requests to Resource Methods, item
      * 1.e
      * 
      * @param rrcs
      *                Collection of root resource classes
      * @return null, if the Map is null or empty
-     * @throws CouldNotFindMethodException
      */
     private RootResourceClass getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
-            Collection<RootResourceClass> rrcs)
-            throws CouldNotFindMethodException {
+            Collection<RootResourceClass> rrcs) {
         if (rrcs == null || rrcs.isEmpty())
             return null;
         Iterator<RootResourceClass> rrcIter = rrcs.iterator();
@@ -921,10 +922,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                     bestRrcNoCaptGroups = rrcNoCaptGroups;
                     continue;
                 }
-                if (rrcNoCaptGroups == bestRrcNoCaptGroups) {
-                    // TODO JSR311: What happens, if both are equals?
-                    throwMultipleRootResourceClasses(bestRrc, rrc);
-                }
+                // use one of the classes
             }
         }
         return bestRrc;
@@ -1062,8 +1060,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         mbws = mbws.subSet(possMediaTypes);
         MessageBodyWriter<?> mbw = mbws.getBest(accMediaTypes);
         if (mbw == null)
-            throw handleWebAppExc(new WebApplicationException(406),
-                    callContext, resourceMethod);
+            throwNoMessageBodyWriter(callContext.getResponse(), accMediaTypes, entityClass);
         MediaType mediaType;
         if (responseMediaType != null)
             mediaType = responseMediaType;

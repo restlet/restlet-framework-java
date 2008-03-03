@@ -32,10 +32,10 @@ import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.util.RemainingPath;
+import org.restlet.ext.jaxrs.util.SortedMetadata;
 import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
 import org.restlet.ext.jaxrs.wrappers.ResourceObject;
-import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
 import org.restlet.resource.StringRepresentation;
 
 /**
@@ -96,15 +96,6 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
             Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
 
     /**
-     * The default Restlet used when multiple root resource were found.
-     * 
-     * @see #errorRestletMultipleRootResourceClasses
-     */
-    private static final ReturnStatusRestlet DEFAULT_MULTIPLE_ROOT_RESOURCE_CLASSES = new ReturnStatusRestlet(
-            new Status(Status.SERVER_ERROR_INTERNAL,
-                    "Multiple possible root resource classes found"));
-
-    /**
      * The default Restlet used when the request is not acceptable.
      * 
      * @see #errorRestletRootResourceNotFound
@@ -149,8 +140,6 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
 
     private Restlet errorRestletMethodNotAllowed = DEFAULT_METHOD_NOT_ALLOWED_RESTLET;
 
-    private Restlet errorRestletMultipleRootResourceClasses = DEFAULT_MULTIPLE_ROOT_RESOURCE_CLASSES;
-
     private Restlet errorRestletNoResourceMethodForAcceptedMediaType = DEFAULT_NOT_ACCEPTABLE_RESTLET;
 
     private Restlet errorRestletNotAcceptableWhileDetermineMediaType = DEFAULT_NOT_ACCEPTABLE_RESTLET;
@@ -180,13 +169,6 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
      */
     public Restlet getErrorRestletMethodNotAllowed() {
         return errorRestletMethodNotAllowed;
-    }
-
-    /**
-     * @return Returns the request if multiple root resource classes were found.
-     */
-    public Restlet getErrorRestletMultipleRootResourceClasses() {
-        return errorRestletMultipleRootResourceClasses;
     }
 
     /**
@@ -315,21 +297,6 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
             this.errorRestletMethodNotAllowed = DEFAULT_METHOD_NOT_ALLOWED_RESTLET;
         else
             this.errorRestletMethodNotAllowed = errorRestletMethodNotAllowed;
-    }
-
-    /**
-     * Set the Restlet to handle the request if multiple root resource classes
-     * for a request were found. Set to null to use default.
-     * 
-     * @param errorRestletMultipleRootResourceClasses
-     *                The Restlet to use. Set to null to use default.
-     */
-    public void setErrorRestletMultipleRootResourceClasses(
-            Restlet errorRestletMultipleRootResourceClasses) {
-        if (errorRestletMultipleRootResourceClasses == null)
-            this.errorRestletMultipleRootResourceClasses = DEFAULT_MULTIPLE_ROOT_RESOURCE_CLASSES;
-        else
-            this.errorRestletMultipleRootResourceClasses = errorRestletMultipleRootResourceClasses;
     }
 
     /**
@@ -463,21 +430,6 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
     }
 
     /**
-     * @param bestRrc
-     * @param currentRrc
-     * @throws CouldNotFindMethodException
-     */
-    void throwMultipleRootResourceClasses(RootResourceClass bestRrc,
-            RootResourceClass currentRrc) throws CouldNotFindMethodException {
-        String message = "there are multiple ressources for the same path: "
-                + bestRrc.getPathRegExp() + " and "
-                + currentRrc.getPathRegExp() + " (and perhaps more)";
-        getLogger().warning(message);
-        throw new CouldNotFindMethodException(
-                this.errorRestletMultipleRootResourceClasses, message);
-    }
-
-    /**
      * @param httpMethod
      * @param resourceClass
      * @param u
@@ -513,6 +465,18 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
         response.setEntity(new StringRepresentation(
                 "No MessageBodyReader found to convert from media type "
                         + mediaType + " to " + paramType));
+        throw new RequestHandledException();
+    }
+
+    RequestHandledException throwNoMessageBodyWriter(Response response,
+            SortedMetadata<MediaType> accMediaTypes, Class<?> paramType)
+            throws RequestHandledException {
+        // LATER Restlet fuer throw
+        // REQUEST what, if no MessageBodyWriter found
+        response.setStatus(Status.SERVER_ERROR_INTERNAL);
+        response.setEntity(new StringRepresentation(
+                "No MessageBodyReader found to convert from java type " + paramType+" to one of the media types "
+                        + accMediaTypes));
         throw new RequestHandledException();
     }
 

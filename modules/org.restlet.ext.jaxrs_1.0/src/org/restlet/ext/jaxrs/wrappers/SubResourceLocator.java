@@ -48,13 +48,15 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * 
      * @param javaMethod
      *                The Java method wich creats the sub resource
+     * @param annotatedMethod
+     *                TODO
      * @param resourceClass
      *                the wrapped resource class.
      * @throws IllegalPathOnMethodException
      */
-    SubResourceLocator(Method javaMethod, ResourceClass resourceClass)
-            throws IllegalPathOnMethodException {
-        super(javaMethod, resourceClass);
+    SubResourceLocator(Method javaMethod, Method annotatedMethod,
+            ResourceClass resourceClass) throws IllegalPathOnMethodException {
+        super(javaMethod, annotatedMethod, resourceClass);
     }
 
     /**
@@ -76,7 +78,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @throws MissingAnnotationException
      * @throws InstantiateRessourceException
      * @throws InstantiateParameterException
-     * @throws IllegalPathOnMethodException 
+     * @throws IllegalPathOnMethodException
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
             CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
@@ -85,27 +87,28 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             NoMessageBodyReadersException, InstantiateRessourceException,
             InstantiateParameterException, IllegalPathOnMethodException {
         Object[] args;
-        Class<?>[] parameterTypes = this.javaMethod.getParameterTypes();
+        Class<?>[] parameterTypes = this.executeMethod.getParameterTypes();
         if (parameterTypes.length == 0)
             args = new Object[0];
         else
-            args = getParameterValues(parameterTypes, javaMethod
-                    .getGenericParameterTypes(), javaMethod
+            args = getParameterValues(parameterTypes, executeMethod
+                    .getGenericParameterTypes(), annotatedMethod
                     .getParameterAnnotations(), leaveEncoded, callContext,
                     jaxRsRouter);
         Object subResObj;
         try {
-            subResObj = javaMethod.invoke(resourceObject
+            subResObj = executeMethod.invoke(resourceObject
                     .getJaxRsResourceObject(), args);
         } catch (IllegalArgumentException e) {
-            Class<?> returnType = javaMethod.getReturnType();
+            Class<?> returnType = executeMethod.getReturnType();
             throw new InstantiateRessourceException(returnType, e);
         } catch (IllegalAccessException e) {
-            Class<?> returnType = javaMethod.getReturnType();
+            Class<?> returnType = executeMethod.getReturnType();
             throw new InstantiateRessourceException(returnType, e);
         }
         if (subResObj == null) {
-            jaxRsRouter.getLogger().warning("");
+            jaxRsRouter.getLogger().warning(
+                    "The sub resource object is null. That is not allowed");
             ResponseBuilder rb = javax.ws.rs.core.Response.serverError();
             rb.entity("The sub resource object is null. That is not allowed");
             throw new WebApplicationException(rb.build());

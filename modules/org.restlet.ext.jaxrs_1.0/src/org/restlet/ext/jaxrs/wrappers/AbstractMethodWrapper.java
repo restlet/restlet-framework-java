@@ -109,10 +109,21 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
 
     /**
      * the Java method that should be called. This method could be different
-     * from the methods containing the annotations, see section 2.5 "Annotation
+     * from the method containing the annotations, see section 2.5 "Annotation
      * Inheritance" of JSR-311-spec.
+     * 
+     * @see #annotatedMethod
      */
-    Method javaMethod;
+    Method executeMethod;
+
+    /**
+     * the Java method that should be referenced for annotations. This method
+     * could be different from the method is called fro executing, see section
+     * 2.5 "Annotation Inheritance" of JSR-311-spec.
+     * 
+     * @see #executeMethod
+     */
+    Method annotatedMethod;
 
     /**
      * is true, if the wrapped java method or its class is annotated with
@@ -122,13 +133,15 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
 
     ResourceClass resourceClass;
 
-    AbstractMethodWrapper(Method javaMethod, ResourceClass resourceClass)
-            throws IllegalPathOnMethodException, IllegalArgumentException {
-        super(PathRegExp.createForMethod(javaMethod));
-        this.javaMethod = javaMethod;
+    AbstractMethodWrapper(Method executeMethod, Method annotatedMethod,
+            ResourceClass resourceClass) throws IllegalPathOnMethodException,
+            IllegalArgumentException {
+        super(PathRegExp.createForMethod(annotatedMethod));
+        this.executeMethod = executeMethod;
+        this.annotatedMethod = annotatedMethod;
         this.resourceClass = resourceClass;
         if (resourceClass.leaveEncoded
-                || javaMethod.isAnnotationPresent(Encoded.class))
+                || annotatedMethod.isAnnotationPresent(Encoded.class))
             this.leaveEncoded = true;
         else
             this.leaveEncoded = false;
@@ -140,7 +153,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @return
      */
     public Annotation[] getAnnotations() {
-        return javaMethod.getAnnotations();
+        return annotatedMethod.getAnnotations(); // TODO annotMathod
     }
 
     /**
@@ -149,16 +162,16 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @return the generic return type of the wrapped method.
      */
     public Type getGenericReturnType() {
-        return javaMethod.getGenericReturnType();
+        return executeMethod.getGenericReturnType();
     }
 
     /**
      * @return Returns the name of the method
      */
     public String getName() {
-        Class<?>[] paramTypes = this.javaMethod.getParameterTypes();
+        Class<?>[] paramTypes = this.executeMethod.getParameterTypes();
         StringBuilder stb = new StringBuilder();
-        stb.append(this.javaMethod.getName());
+        stb.append(this.executeMethod.getName());
         stb.append('(');
         Util.append(stb, paramTypes);
         stb.append(')');
@@ -197,26 +210,30 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             MissingAnnotationException, WebApplicationException,
             RequestHandledException, NoMessageBodyReadersException,
             InstantiateParameterException {
-        Annotation[][] parameterAnnotationss = javaMethod
+        Annotation[][] parameterAnnotationss = annotatedMethod
                 .getParameterAnnotations();
-        Class<?>[] paramTypes = javaMethod.getParameterTypes();
-        Type[] paramGenericTypes = javaMethod.getGenericParameterTypes();
+        Class<?>[] paramTypes = executeMethod.getParameterTypes();
+        Type[] paramGenericTypes = executeMethod.getGenericParameterTypes();
         Object[] args = getParameterValues(paramTypes, paramGenericTypes,
                 parameterAnnotationss, leaveEncoded, callContext, jaxRsRouter);
         try {
             Object jaxRsResourceObj = resourceObject.getJaxRsResourceObject();
-            return this.javaMethod.invoke(jaxRsResourceObj, args);
+            // REQUEST perhaps it is useful to note, that a nestes class (static
+            // or not) must be public
+            return executeMethod.invoke(jaxRsResourceObj, args);
         } catch (IllegalArgumentException e) {
-            throw new MethodInvokeException("Could not invoke " + javaMethod, e);
+            throw new MethodInvokeException(
+                    "Could not invoke " + executeMethod, e);
         } catch (IllegalAccessException e) {
-            throw new MethodInvokeException("Could not invoke " + javaMethod, e);
+            throw new MethodInvokeException(
+                    "Could not invoke " + executeMethod, e);
         }
     }
 
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "["
-                + this.javaMethod.getDeclaringClass().getSimpleName() + "."
-                + this.javaMethod.getName() + "(__)]";
+                + this.executeMethod.getDeclaringClass().getSimpleName() + "."
+                + this.executeMethod.getName() + "(__)]";
     }
 }

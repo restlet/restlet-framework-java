@@ -235,7 +235,7 @@ public class RootResourceClass extends ResourceClass {
      * @throws IllegalTypeException
      */
     public static Constructor<?> findJaxRsConstructor(Class<?> jaxRsClass) {
-        // TODO JSR311: use only public constructors of provider and rrcs?
+        // REQUEST use only public constructors of provider and rrcs?
         Constructor<?> constructor = null;
         int constructorParamNo = Integer.MIN_VALUE;
         for (Constructor<?> constr : jaxRsClass.getConstructors()) {
