@@ -278,6 +278,7 @@ public class RequestTest extends JaxRsTestCase {
     public void testOptions() {
         Response response = options();
         Set<Method> allowedMethods = response.getAllowedMethods();
+        assertEquals(3, allowedMethods.size());
         assertTrue("allowedOptions must contain ABC", allowedMethods
                 .contains(Method.valueOf("ABC")));
         assertTrue("allowedOptions must contain DEF", allowedMethods

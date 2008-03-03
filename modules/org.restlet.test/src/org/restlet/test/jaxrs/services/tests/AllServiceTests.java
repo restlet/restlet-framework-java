@@ -32,6 +32,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(HeadOptionsTest.class);
         mySuite.addTestSuite(HttpHeaderTest.class);
         mySuite.addTestSuite(IllegalThingsTest.class);
+        mySuite.addTestSuite(InheritAnnotationTest.class);
         mySuite.addTestSuite(InjectionTest.class);
         mySuite.addTestSuite(MatrixParamTest.class);
         mySuite.addTestSuite(OwnProviderTest.class);

@@ -38,7 +38,7 @@ public class InjectionTestService {
     
     @Context private HttpHeaders httpHeaders;
     
-    // TODO JSR311: allow? @HeaderParam("host") private String host;
+    // REQUEST allow? @HeaderParam("host") private String host;
     // also @QueryParam and so on
     
     @GET

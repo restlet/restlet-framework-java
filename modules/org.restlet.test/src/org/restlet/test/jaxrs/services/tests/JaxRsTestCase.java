@@ -362,10 +362,9 @@ public abstract class JaxRsTestCase extends TestCase {
      *                darf null sein
      * @return
      * @throws JaxRsException
+     * @see #createReference(String, String)
      */
     public Reference createReference(Class<?> jaxRsClass, String subPath) {
-        Reference reference = createBaseRef();
-        reference.setBaseRef(createBaseRef());
         String path;
         try {
             path = ResourceClass.getPathTemplate(jaxRsClass);
@@ -374,6 +373,18 @@ public abstract class JaxRsTestCase extends TestCase {
         } catch (MissingAnnotationException e) {
             throw new JaxRsRuntimeException(e);
         }
+        return createReference(path, subPath);
+    }
+
+    /**
+     * @param path
+     * @param subPath
+     * @return
+     * @see #createReference(Class, String)
+     */
+    public Reference createReference(String path, String subPath) {
+        Reference reference = createBaseRef();
+        reference.setBaseRef(createBaseRef());
         if (!path.startsWith("/"))
             path = "/" + path;
         if (subPath != null) {
