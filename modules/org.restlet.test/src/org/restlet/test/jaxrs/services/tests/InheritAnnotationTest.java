@@ -84,4 +84,14 @@ public class InheritAnnotationTest extends JaxRsTestCase {
         String entityText = response.getEntity().getText();
         assertEquals(InheritAnnotationTestService2.RETURN_STRING_SUB, entityText);
     }
+
+    public void x_test2c() throws Exception {
+        Reference reference = createReference(SERVICE_2, "getSubClassText/sub");
+        Response response = accessServer(Method.GET, reference);
+        super.sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
+        String entityText = response.getEntity().getText();
+        assertEquals(InheritAnnotationTestService2.RETURN_STRING_SUB2, entityText);
+    }
 }

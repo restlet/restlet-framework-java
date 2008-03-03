@@ -21,9 +21,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
+import org.restlet.test.jaxrs.services.tests.InheritAnnotationTest;
+
 /**
  * @author Stephan Koops
- * 
+ * @see InheritAnnotationTest
  */
 @Path("1234")
 public class InheritAnnotationTestService2 implements
@@ -32,6 +34,8 @@ public class InheritAnnotationTestService2 implements
     public static final String RETURN_STRING = "fromGetTextResource";
 
     public static final String RETURN_STRING_SUB = "fromGetTextExtResource";
+
+    public static final String RETURN_STRING_SUB2 = "fromGetTextExt2Resource";
 
     @Path("getText")
     public GetTextResource getText() {
@@ -55,6 +59,19 @@ public class InheritAnnotationTestService2 implements
         @Override
         public String get() {
             return RETURN_STRING_SUB;
+        }
+
+        @Path("sub")
+        public SubClassResource2 getSub() {
+            return new SubClassResource2();
+        }
+    }
+
+    public class SubClassResource2 {
+        @GET
+        @ProduceMime("text/plain")
+        public String get() {
+            return RETURN_STRING_SUB2;
         }
     }
 }

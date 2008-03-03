@@ -393,12 +393,15 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             CallContext callContext) throws CouldNotFindMethodException,
             RequestHandledException {
         Request restletRequest = callContext.getRequest();
+        // Part 1
         RemainingPath u = new RemainingPath(restletRequest.getResourceRef()
                 .getRemainingPart());
         RrcAndRemPath rcat = identifyRootResourceClass(u, callContext);
+        // Part 2
         ResObjAndRemPath resourceObjectAndPath = obtainObjectThatHandleRequest(
                 rcat, callContext);
-        final Representation entity = restletRequest.getEntity();
+        Representation entity = restletRequest.getEntity();
+        // Part 3
         MediaType givenMediaType;
         if (entity != null)
             givenMediaType = entity.getMediaType();
@@ -435,14 +438,13 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             // Map.Entry<UriTemplateRegExp, Class> eAndC = eAndCIter.next();
             // UriTemplateRegExp regExp = eAndC.getKey();
             // Class clazz = eAndC.getValue();
-            MatchingResult matchingResult = rootResourceClass.getPathRegExp()
-                    .match(u);
+            PathRegExp rrcPathRegExp = rootResourceClass.getPathRegExp();
+            MatchingResult matchingResult = rrcPathRegExp.match(u);
             if (matchingResult == null)
-                continue;
-            if (!Util.isEmptyOrSlash(matchingResult.getFinalMatchingGroup())
-                    && !rootResourceClass.hasSubResourceMethodsOrLocators())
-                continue;
-            else
+                continue; // doesn't match
+            if (Util.isEmptyOrSlash(matchingResult.getFinalMatchingGroup())) // TODO final matching group
+                eAndCs.add(rootResourceClass);
+            else if(rootResourceClass.hasSubResourceMethodsOrLocators())
                 eAndCs.add(rootResourceClass);
         }
         // (d)
@@ -453,7 +455,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         // (f)
         PathRegExp rMatch = tClass.getPathRegExp();
         MatchingResult matchResult = rMatch.match(u);
-        u = matchResult.getFinalCapturingGroup();
+        u = matchResult.getFinalCapturingGroup(); // TODO final capturing group
         addMrVarsToMap(matchResult, callContext);
         return new RrcAndRemPath(tClass, u);
     }
@@ -519,13 +521,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             // match not empty
             for (ResourceMethodOrLocator methodOrLocator : resClass
                     .getSubResourceMethodsAndLocators()) {
-                MatchingResult matchResult = methodOrLocator.getPathRegExp()
-                        .match(u);
+                PathRegExp pathRegExp = methodOrLocator.getPathRegExp();
+                MatchingResult matchResult = pathRegExp.match(u);
                 if (matchResult == null)
                     continue;
-                if (!Util.isEmptyOrSlash(matchResult.getFinalMatchingGroup()))
-                    continue;
-                eWithMethod.add(methodOrLocator);
+                if (Util.isEmptyOrSlash(matchResult.getFinalMatchingGroup())) // TODO final matching group
+                    eWithMethod.add(methodOrLocator);
+                // if(methodOrLocator instanceof SubResourceLocator)
+                //     eWithMethod.add(methodOrLocator);
             }
             // (e) If E is empty -> HTTP 404
             if (eWithMethod.isEmpty())
@@ -542,7 +545,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             if (firstMeth instanceof ResourceMethod)
                 return new ResObjAndRemPath(o, u);
             // (g) and (i)
-            u = matchingResult.getFinalCapturingGroup();
+            u = matchingResult.getFinalCapturingGroup(); // TODO final capturing group
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
                 o = subResourceLocator.createSubResource(o, callContext, this);
@@ -1060,7 +1063,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         mbws = mbws.subSet(possMediaTypes);
         MessageBodyWriter<?> mbw = mbws.getBest(accMediaTypes);
         if (mbw == null)
-            throwNoMessageBodyWriter(callContext.getResponse(), accMediaTypes, entityClass);
+            throwNoMessageBodyWriter(callContext.getResponse(), accMediaTypes,
+                    entityClass);
         MediaType mediaType;
         if (responseMediaType != null)
             mediaType = responseMediaType;

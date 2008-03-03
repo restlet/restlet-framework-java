@@ -92,7 +92,8 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * @param executeMethod
      *                the Java method to wrap.
      * @param annotatedMethod
-     *                TODO
+     *                the java method that contains the annotations for this
+     *                method.
      * @param resourceClass
      *                the wrapped class of the method.
      * @param httpMethod
@@ -117,9 +118,9 @@ public class ResourceMethod extends AbstractMethodWrapper implements
         if (this.consumedMimes == null) {
             ConsumeMime consumeMime;
             consumeMime = this.annotatedMethod.getAnnotation(ConsumeMime.class);
-            if (consumeMime == null) // TESTEN use @ConsumeMime of class
-                consumeMime = this.executeMethod.getClass().getAnnotation(
-                        ConsumeMime.class);
+            if (consumeMime == null)
+                consumeMime = this.executeMethod.getDeclaringClass()
+                        .getAnnotation(ConsumeMime.class);
             if (consumeMime == null)
                 this.consumedMimes = Collections.singletonList(MediaType.ALL);
             else
@@ -147,9 +148,9 @@ public class ResourceMethod extends AbstractMethodWrapper implements
         if (producedMimes == null) {
             ProduceMime produceMime;
             produceMime = this.annotatedMethod.getAnnotation(ProduceMime.class);
-            if (produceMime == null) // TESTEN use @ProduceMime of class
-                produceMime = this.executeMethod.getClass().getAnnotation(
-                        ProduceMime.class);
+            if (produceMime == null)
+                produceMime = this.executeMethod.getDeclaringClass()
+                        .getAnnotation(ProduceMime.class);
             if (produceMime != null)
                 this.producedMimes = convertToMediaTypes(produceMime.value());
             else

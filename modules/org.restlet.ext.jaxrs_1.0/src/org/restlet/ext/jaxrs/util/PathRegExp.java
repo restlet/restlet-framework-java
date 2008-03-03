@@ -43,25 +43,18 @@ import org.restlet.util.Variable;
  */
 public class PathRegExp {
 
-    /**
-     * VariableResolver that returns "" for every variable name
-     * 
-     * @author Stephan Koops
-     */
-    private static class EverNullVariableResolver implements Resolver<String> {
+    private static Resolver<String> EmptyStringVariableResolver = new Resolver<String>(){
         public String resolve(String variableName) {
             return "";
         }
-    }
+    };
 
     /**
      * The PathRegExp with an empty path.
      */
     public static PathRegExp EMPTY = new PathRegExp("", true);
 
-    private static EverNullVariableResolver EmptyStringVariableResolver = new EverNullVariableResolver();
-
-    private static final String VARNAME_FUER_REST = "restlet.jaxrs.rest";
+    private static final String VARNAME_FUER_REST = "org.restlet.jaxrs.rest";
 
     /**
      * Creates a {@link PathRegExp} for a root resource class.
@@ -140,14 +133,12 @@ public class PathRegExp {
     }
 
     /**
-     * Is intended for internal use and testing. Otherwise use the methods
-     * create*
+     * Is intended for internal use and testing. Otherwise use the static
+     * methods {@link #createForClass(Class)} or
+     * {@link #createForMethod(Method)}, or the constant {@link #EMPTY}.
      * 
      * @param pathPattern
      * @param limitedToOneSegment
-     * @see #createForClass(Class)
-     * @see #createForMethod(Method)
-     * @see #EMPTY
      */
     @Deprecated
     public PathRegExp(String pathPattern, boolean limitedToOneSegment) {
@@ -193,7 +184,7 @@ public class PathRegExp {
     }
 
     /**
-     * See Footnode to JSR-311-Spec, Section 2.5, Algorithm, Part 1e
+     * See Footnode to JSR-311-Spec, Section 2.6, Algorithm, Part 1e
      * 
      * @return Returns the number of literal chars in the path patern
      */
@@ -269,18 +260,7 @@ public class PathRegExp {
     }
 
     /**
-     * Checks if this regular expression matches the given remaining path.
-     * 
-     * @param remainingPath
-     * @return Returns an MatchingResult, if the remainingPath matches to this
-     *         template, or null, if not.
-     */
-    public MatchingResult match(String remainingPath) {
-        return this.match(new RemainingPath(remainingPath));
-    }
-
-    /**
-     * See JSR-311-Spec, Section 2.5, Algorithm, part 3a, point 1.
+     * See JSR-311-Spec, Section 2.6, Algorithm, part 3a, point 1.
      * 
      * @param remainingPath
      * @return
@@ -290,6 +270,7 @@ public class PathRegExp {
         if (matchingResult == null)
             return false;
         return matchingResult.getFinalCapturingGroup().isEmptyOrSlash();
+        // TODO final capturing group
     }
 
     @Override

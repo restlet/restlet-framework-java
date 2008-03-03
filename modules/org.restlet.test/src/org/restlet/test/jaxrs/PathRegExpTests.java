@@ -69,19 +69,21 @@ public class PathRegExpTests extends TestCase {
             PATH_PATTERN_2, false);
 
     // TESTEN @Path must not contain matrix parameters.
+    // TESTEN @Path("abc") and @Path("abc/{id}") on two rrcs, and two methods in
+    // in same resource class.
     
     /**
      * Test method for
      * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchO1() {
-        MatchingResult matchingResult = regExpOneSegment1.match(VALID_PATH_1);
+        MatchingResult matchingResult = regExpOneSegment1.match(new RemainingPath(VALID_PATH_1));
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
         assertEquals(new RemainingPath(""), matchingResult.getFinalCapturingGroup());
 
-        regExpOneSegment1.match(VALID_PATH_2);
+        regExpOneSegment1.match(new RemainingPath(VALID_PATH_2));
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
@@ -93,14 +95,13 @@ public class PathRegExpTests extends TestCase {
      * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchM1() {
-        MatchingResult matchingResult = regExpMultipleSegments1
-                .match(VALID_PATH_1);
+        MatchingResult matchingResult = regExpMultipleSegments1.match(new RemainingPath(VALID_PATH_1));
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
         assertEquals(new RemainingPath(""), matchingResult.getFinalCapturingGroup());
 
-        matchingResult = regExpMultipleSegments1.match(VALID_PATH_2);
+        matchingResult = regExpMultipleSegments1.match(new RemainingPath(VALID_PATH_2));
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
@@ -112,12 +113,12 @@ public class PathRegExpTests extends TestCase {
      * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchO21() {
-        MatchingResult matchingResult = regExpOneSegment2.match(VALID_PATH_1);
+        MatchingResult matchingResult = regExpOneSegment2.match(new RemainingPath(VALID_PATH_1));
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
 
-        matchingResult = regExpOneSegment2.match(VALID_PATH_2);
+        matchingResult = regExpOneSegment2.match(new RemainingPath(VALID_PATH_2));
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
@@ -129,13 +130,12 @@ public class PathRegExpTests extends TestCase {
      * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.
      */
     public void testMatchM2() {
-        MatchingResult matchingResult = regExpMultipleSegments2
-                .match(VALID_PATH_1);
+        MatchingResult matchingResult = regExpMultipleSegments2.match(new RemainingPath(VALID_PATH_1));
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
 
-        matchingResult = regExpMultipleSegments2.match(VALID_PATH_2);
+        matchingResult = regExpMultipleSegments2.match(new RemainingPath(VALID_PATH_2));
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
@@ -164,8 +164,7 @@ public class PathRegExpTests extends TestCase {
      * @param rest
      */
     private void tryWithRest(final String rest) {
-        MatchingResult matchingResult = regExpMultipleSegments2
-                .match(VALID_PATH_2 + rest);
+        MatchingResult matchingResult = regExpMultipleSegments2.match(new RemainingPath(VALID_PATH_2 + rest));
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));

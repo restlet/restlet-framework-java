@@ -333,7 +333,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             return javaMethod;
         // REQUEST first superclass or first interfaces?
         // REQUEST also look for annotations of superclasses / interfaces.
-        // TESTEN look for annotations in superclasses or interfaces.
         Class<?> methodClass = javaMethod.getDeclaringClass();
         Class<?> superclass = methodClass.getSuperclass();
         Method scMethod = getMethodFromClass(superclass, javaMethod);
