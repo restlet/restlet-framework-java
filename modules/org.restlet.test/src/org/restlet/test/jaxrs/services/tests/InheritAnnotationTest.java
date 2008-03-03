@@ -85,7 +85,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
         assertEquals(InheritAnnotationTestService2.RETURN_STRING_SUB, entityText);
     }
 
-    public void x_test2c() throws Exception {
+    public void test2c() throws Exception {
         Reference reference = createReference(SERVICE_2, "getSubClassText/sub");
         Response response = accessServer(Method.GET, reference);
         super.sysOutEntityIfError(response);
