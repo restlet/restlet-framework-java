@@ -250,10 +250,9 @@ public class PathRegExp {
         }
         String finalCapturingGroup = templateVars.get(Util
                 .getLastElement(template.getVariableNames()));
-        // TODO JSR311: finalCapturingGroup habe ich noch nicht richtig
-        // verstanden.
+        // finalCapturingGroup habe ich noch nicht richtig verstanden.
         if (finalCapturingGroup == null)
-            finalCapturingGroup = ""; // TODO ob das stimmt, weiss ich nicht
+            finalCapturingGroup = ""; // TODO final capturing group: stimmt das?
         finalCapturingGroup = finalMatchingGroup;
         return new MatchingResult(templateVars, finalMatchingGroup,
                 finalCapturingGroup, templateVars.size());

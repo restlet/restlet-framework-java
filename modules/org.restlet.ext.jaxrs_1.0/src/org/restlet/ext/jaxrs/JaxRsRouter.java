@@ -334,8 +334,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         // there is also a solution in Restlet
     }
 
-    // TODO HtmlPreferer an code@restlet.tigris.org.
-
     // methods for initialization ready
     // now methods for the daily work
 

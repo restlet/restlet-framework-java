@@ -313,6 +313,7 @@ public class RootResourceClass extends ResourceClass {
         } catch (InjectException e) {
             throw new InstantiateRootRessourceException(e);
         }
+        // TODO JSR250, see @Path
         return rootResourceObject;
     }
 

@@ -33,7 +33,6 @@ import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 
 /**
  * @author Stephan Koops
- * 
  */
 @Provider
 @ProduceMime("text/*")
@@ -46,7 +45,6 @@ public class StringProvider extends AbstractProvider<CharSequence> {
      * 
      */
     public StringProvider() {
-        // nothing to do
     }
 
     /**
