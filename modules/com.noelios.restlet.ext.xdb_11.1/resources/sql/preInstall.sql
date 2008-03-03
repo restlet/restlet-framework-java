@@ -1,0 +1,45 @@
+rem Create the schema and grant required privileges
+rem execute logged as SYS or other DBA user
+rem requires two arguments with the schema used to test Restlet, for example RESTLET
+rem and his password for example RESTLET
+set define '$';
+define sch=$1;
+define pwd=$2;
+
+drop user $sch cascade;
+
+create user $sch identified by $pwd
+temporary tablespace temp
+default tablespace users
+quota unlimited on users;
+
+grant connect,resource to $sch;
+
+grant create public synonym to $sch;
+
+begin
+  -- required grants for using JDK1.4 logging
+  dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.lang.RuntimePermission', 'getClassLoader', '' );
+  dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.util.logging.LoggingPermission', 'control', '' );
+  commit;
+end;
+/
+
+-- as XDB
+alter session set current_schema = XDB
+/
+
+declare
+  result boolean;
+begin
+  -- Create a Restlet home directory to store application config files
+  if (not dbms_xdb.ExistsResource('/home/'||UPPER('$sch'))) then
+    result := dbms_xdb.createFolder('/home/'||UPPER('$sch'));
+    dbms_xdb.setAcl('/home/'||UPPER('$sch'),'/sys/acls/all_owner_acl.xml');
+    update resource_view
+         set res = updateXml(res,'/Resource/Owner/text()',UPPER('$sch'))
+         where equals_path(res,'/home/'||UPPER('$sch')) = 1;
+  end if;
+end;
+/
+commit;

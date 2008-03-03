@@ -35,7 +35,7 @@
           description="Create a DB schema to hold Restlet implementation and demos">
     <exec executable="${ORACLE_HOME}/bin/sqlplus" dir="resources/sql">
       <arg value="${jdbc.sysusr}/${jdbc.syspwd}@${sqlnet.string} as sysdba"/>
-      <arg value="@registerServlet"/>
+      <arg value="@preInstall"/>
       <arg value="${jdbc.username}"/>
       <arg value="${jdbc.password}"/>
     </exec>
@@ -63,6 +63,11 @@
     <loadjava-with-public-synonym login="${jdbc.username}/${jdbc.password}@${jdbc.url}"
               file="${dist-classic}/lib/${mod-example-id}.jar"
               failonerror="no"/>
+    <exec executable="${ORACLE_HOME}/bin/sqlplus" dir="resources/sql">
+      <arg value="${jdbc.sysusr}/${jdbc.syspwd}@${sqlnet.string} as sysdba"/>
+      <arg value="@postInstall"/>
+      <arg value="${jdbc.username}"/>
+    </exec>
   </target>
 
   <!-- Remove Direct Invocation Server Side Entry point -->
@@ -81,5 +86,5 @@
   
   <target name="all"
           depends="create-schema,load-required-libs,load-server-side-runtime,load-server-side-demos" 
-          description="Performs server side installation"/>
+          description="Performs pre and post server side installation"/>
 </project>
