@@ -505,8 +505,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         Collection<ResourceMethod> subRsesMeths = new ArrayList<ResourceMethod>();
         Collection<SubResourceLocator> subResLocs = new ArrayList<SubResourceLocator>();
         Method[] classMethods = jaxRsClass.getDeclaredMethods();
-        // TODO also check for implemented interfaces or super classes, see
-        // section 2."Annotation Inheritance"
         for (Method javaMethod : classMethods) {
             if (!checkResMethodVolatileOrNotPublic(javaMethod, logger))
                 continue;
@@ -517,20 +515,17 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             org.restlet.data.Method httpMethod = ResourceMethod
                     .getHttpMethod(annotatedMethod);
             if (httpMethod != null) {
-                // TODO add method to read annotations from.
                 ResourceMethod subResMeth = new ResourceMethod(javaMethod,
                         annotatedMethod, this, httpMethod);
                 subRsesMeths.add(subResMeth);
                 srmls.add(subResMeth);
             } else {
                 if (path != null) {
-                    // TODO add method to read annotations from.
                     SubResourceLocator subResLoc = new SubResourceLocator(
                             javaMethod, annotatedMethod, this);
                     subResLocs.add(subResLoc);
                     srmls.add(subResLoc);
                 }
-                // TODO check, if on superclasses, if none
             }
         }
         this.subResourceLocators = subResLocs;

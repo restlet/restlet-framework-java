@@ -30,7 +30,7 @@ import org.restlet.data.Response;
 
 /**
  * <p>
- * Some Browser (e.g. Internet Explorer 7.0 and Firefox 2.0) sends as accepted
+ * Some browsers (e.g. Internet Explorer 7.0 and Firefox 2.0) sends as accepted
  * media type XML with a higher quality than html. The consequence is, that a
  * HTTP server sends XML instead of HTML, if it could produce XML. To avoid
  * this, you can use this filter.
@@ -42,6 +42,10 @@ import org.restlet.data.Response;
  * check is implemented in method {@link #shouldChangeToPrefereHtml(Request)}.
  * <br>
  * Requests that not are not effected.
+ * </p>
+ * <p>
+ * You may alter the test if the filter should change the request by subclass
+ * this Filter and overrider method {@link #shouldChangeToPrefereHtml(Request)}.
  * </p>
  * 
  * @author Stephan Koops
@@ -62,13 +66,14 @@ public class HtmlPreferer extends Filter {
      * Creates a new {@link HtmlPreferer}. You should use constructor
      * {@link #HtmlPreferer(Context)} or {@link #HtmlPreferer(Context, Restlet)}.
      */
+    @Deprecated
     public HtmlPreferer() {
         super();
     }
 
     /**
-     * Creates a new {@link HtmlPreferer}. You can give also the next by using
-     * constructor {@link #HtmlPreferer(Context, Restlet)}.
+     * Creates a new {@link HtmlPreferer}. You can give also the next restlet
+     * by using constructor {@link #HtmlPreferer(Context, Restlet)}.
      * 
      * @param context
      *                the context from the parent
@@ -114,6 +119,7 @@ public class HtmlPreferer extends Filter {
      * @param request
      * @return the quality of accepted media type application/xhtml+xml, or
      *         null, if not present in the given request.
+     * @see #getHtmlMinQuality(Request)
      */
     protected Float getAppXhtmlQuality(Request request) {
         return getHtmlXmlMtQualities(request)[MT_PREF_APP_XHTML];
@@ -126,6 +132,7 @@ public class HtmlPreferer extends Filter {
      * @param request
      * @return the quality of accepted media type app/xml, or null, if not
      *         present in the given request.
+     * @see #getXmlMaxQuality(Request)
      */
     protected Float getAppXmlQuality(Request request) {
         return getHtmlXmlMtQualities(request)[MT_PREF_APP_XML];
@@ -138,6 +145,8 @@ public class HtmlPreferer extends Filter {
      * @param request
      * @return the lowest quality of the HTML types (text/html and
      *         application/xhtml+xml), or null, if not available.
+     * @see #getTextHtmlQuality(Request)
+     * @see #getAppXhtmlQuality(Request)
      */
     protected Float getHtmlMinQuality(Request request) {
         Float xhtmlQuality = getAppXhtmlQuality(request);
@@ -181,6 +190,7 @@ public class HtmlPreferer extends Filter {
      * @param request
      * @return the quality of accepted media type text/html, or null, if not
      *         present in the given request.
+     * @see #getHtmlMinQuality(Request)
      */
     protected Float getTextHtmlQuality(Request request) {
         return getHtmlXmlMtQualities(request)[MT_PREF_TEXT_HTML];
@@ -193,6 +203,7 @@ public class HtmlPreferer extends Filter {
      * @param request
      * @return the quality of accepted media type text/xml, or null, if not
      *         present in the given request.
+     * @see #getXmlMaxQuality(Request)
      */
     protected Float getTextXmlQuality(Request request) {
         return getHtmlXmlMtQualities(request)[MT_PREF_TEXT_XML];
@@ -205,6 +216,8 @@ public class HtmlPreferer extends Filter {
      * @param request
      * @return the highest quality of the XML types (text/xml and
      *         application/xml), or null, if not available.
+     * @see #getAppXmlQuality(Request)
+     * @see #getTextXmlQuality(Request)
      */
     protected Float getXmlMaxQuality(Request request) {
         Float appXmlQuality = getAppXmlQuality(request);

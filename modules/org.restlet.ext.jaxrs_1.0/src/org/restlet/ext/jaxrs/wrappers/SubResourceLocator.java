@@ -49,7 +49,8 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @param javaMethod
      *                The Java method wich creats the sub resource
      * @param annotatedMethod
-     *                TODO
+     *                the message containing the annotations for this sub
+     *                resource locator.
      * @param resourceClass
      *                the wrapped resource class.
      * @throws IllegalPathOnMethodException

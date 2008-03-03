@@ -153,7 +153,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @return
      */
     public Annotation[] getAnnotations() {
-        return annotatedMethod.getAnnotations(); // TODO annotMathod
+        return annotatedMethod.getAnnotations();
     }
 
     /**
