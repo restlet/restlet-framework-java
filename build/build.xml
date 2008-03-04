@@ -865,8 +865,8 @@
       <pomModule name="net" />
       <pomModule name="servlet" />
       <pomModule name="simple" />
-      <pomModule name="spring-api" />
-      <pomModule name="spring-nre" />
+      <pomModule name="spring-api" ext="spring" />
+      <pomModule name="spring-nre" ext="spring" />
       <pomModule name="velocity" />
       <pomModule name="wadl" />
       <pomModule name="xdb" />
@@ -874,7 +874,6 @@
 
       <pomLibrary name="simple"/>
       <pomLibrary name="json"/>
-      <pomLibrary name="spring"/>
       <pomLibrary name="db4o" depend1="example" type1="mod" />
       <pomLibrary name="db4o-nativequery"/>
       <pomLibrary name="bloat" depend1="db4o" type1="lib" depend2="db4o-nativequery" type2="lib" />
