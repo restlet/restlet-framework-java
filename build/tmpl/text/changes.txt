@@ -5,6 +5,10 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - Fixed potential NPE in Server.stop() method. Reported by Andrew Cowling.
+
+1.0.8 (2008-02-29)
+[Bugs fixed]
  - Fixed Spring XML loading issue related to validation in SpringContext class.
  - Fixed bug with the FileClientHelper returning wrong list of variants. Reported by Iestyn 
    Evans.
