@@ -874,6 +874,7 @@
 
       <pomLibrary name="simple"/>
       <pomLibrary name="json"/>
+      <pomLibrary name="spring"/>
       <pomLibrary name="db4o" depend1="example" type1="mod" />
       <pomLibrary name="db4o-nativequery"/>
       <pomLibrary name="bloat" depend1="db4o" type1="lib" depend2="db4o-nativequery" type2="lib" />
