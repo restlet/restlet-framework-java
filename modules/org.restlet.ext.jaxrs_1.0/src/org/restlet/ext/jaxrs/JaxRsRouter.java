@@ -440,7 +440,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             MatchingResult matchingResult = rrcPathRegExp.match(u);
             if (matchingResult == null)
                 continue; // doesn't match
-            if (Util.isEmptyOrSlash(matchingResult.getFinalMatchingGroup())) // TODO final matching group
+            if (matchingResult.getFinalCapturingGroup().isEmptyOrSlash())
                 eAndCs.add(rootResourceClass);
             else if(rootResourceClass.hasSubResourceMethodsOrLocators())
                 eAndCs.add(rootResourceClass);
@@ -453,7 +453,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         // (f)
         PathRegExp rMatch = tClass.getPathRegExp();
         MatchingResult matchResult = rMatch.match(u);
-        u = matchResult.getFinalCapturingGroup(); // TODO final capturing group
+        u = matchResult.getFinalCapturingGroup();
         addMrVarsToMap(matchResult, callContext);
         return new RrcAndRemPath(tClass, u);
     }
@@ -520,10 +520,10 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             for (ResourceMethodOrLocator methodOrLocator : resClass
                     .getSubResourceMethodsAndLocators()) {
                 PathRegExp pathRegExp = methodOrLocator.getPathRegExp();
-                MatchingResult matchResult = pathRegExp.match(u);
-                if (matchResult == null)
+                MatchingResult matchingResult = pathRegExp.match(u);
+                if (matchingResult == null)
                     continue;
-                if (Util.isEmptyOrSlash(matchResult.getFinalMatchingGroup())) // TODO final matching group
+                if (matchingResult.getFinalCapturingGroup().isEmptyOrSlash())
                     eWithMethod.add(methodOrLocator);
                 // if(methodOrLocator instanceof SubResourceLocator)
                 //     eWithMethod.add(methodOrLocator);
@@ -543,7 +543,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             if (firstMeth instanceof ResourceMethod)
                 return new ResObjAndRemPath(o, u);
             // (g) and (i)
-            u = matchingResult.getFinalCapturingGroup(); // TODO final capturing group
+            u = matchingResult.getFinalCapturingGroup();
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
                 o = subResourceLocator.createSubResource(o, callContext, this);

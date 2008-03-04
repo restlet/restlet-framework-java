@@ -240,22 +240,16 @@ public class PathRegExp {
         boolean matches = template.parse(givenPath, (Map) templateVars) >= 0;
         if (!matches)
             return null;
-        String finalMatchingGroup = templateVars.remove(VARNAME_FUER_REST);
-        if (finalMatchingGroup.length() > 0) {
-            if (pathSuppl && finalMatchingGroup.endsWith("/"))
-                finalMatchingGroup = finalMatchingGroup.substring(0,
-                        finalMatchingGroup.length() - 1);
-            if (!finalMatchingGroup.startsWith("/"))
-                finalMatchingGroup = "/" + finalMatchingGroup;
+        String finalCapturingGroup = templateVars.remove(VARNAME_FUER_REST);
+        if (finalCapturingGroup.length() > 0) {
+            if (pathSuppl && finalCapturingGroup.endsWith("/"))
+                finalCapturingGroup = finalCapturingGroup.substring(0,
+                        finalCapturingGroup.length() - 1);
+            if (!finalCapturingGroup.startsWith("/"))
+                finalCapturingGroup = "/" + finalCapturingGroup;
         }
-        String finalCapturingGroup = templateVars.get(Util
-                .getLastElement(template.getVariableNames()));
-        // finalCapturingGroup habe ich noch nicht richtig verstanden.
-        if (finalCapturingGroup == null)
-            finalCapturingGroup = ""; // TODO final capturing group: stimmt das?
-        finalCapturingGroup = finalMatchingGroup;
-        return new MatchingResult(templateVars, finalMatchingGroup,
-                finalCapturingGroup, templateVars.size());
+        return new MatchingResult(templateVars, finalCapturingGroup,
+                templateVars.size());
     }
 
     /**
@@ -269,7 +263,6 @@ public class PathRegExp {
         if (matchingResult == null)
             return false;
         return matchingResult.getFinalCapturingGroup().isEmptyOrSlash();
-        // TODO final capturing group
     }
 
     @Override

@@ -139,7 +139,7 @@ public class PathRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals("", matchingResult.getFinalMatchingGroup());
+        assertEquals(new RemainingPath(""), matchingResult.getFinalCapturingGroup());
     }
 
     /**
@@ -168,6 +168,6 @@ public class PathRegExpTests extends TestCase {
         assertNotNull(matchingResult);
         assertEquals("25478", matchingResult.getVariables().get(ID1));
         assertEquals("12345", matchingResult.getVariables().get(ID2));
-        assertEquals(rest, matchingResult.getFinalMatchingGroup());
+        assertEquals(new RemainingPath(rest), matchingResult.getFinalCapturingGroup());
     }
 }

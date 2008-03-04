@@ -31,8 +31,6 @@ import javax.ws.rs.Path;
 public class MatchingResult {
     private Map<String, String> variables;
 
-    private String finalMatchingGroup;
-
     private RemainingPath finalCapturingGroup;
 
     private int numberOfCapturingGroups;
@@ -40,15 +38,12 @@ public class MatchingResult {
     /**
      * 
      * @param variables
-     * @param finalMatchingGroup
      * @param finalCapturingGroup
      * @param numberOfCapturingGroups
      */
     public MatchingResult(Map<String, String> variables,
-            String finalMatchingGroup, String finalCapturingGroup,
-            int numberOfCapturingGroups) {
+            String finalCapturingGroup, int numberOfCapturingGroups) {
         this.variables = variables;
-        this.finalMatchingGroup = finalMatchingGroup;
         this.finalCapturingGroup = new RemainingPath(finalCapturingGroup);
         this.numberOfCapturingGroups = numberOfCapturingGroups;
     }
@@ -58,13 +53,6 @@ public class MatchingResult {
      */
     public Map<String, String> getVariables() {
         return variables;
-    }
-
-    /**
-     * @return returns the final matching group.
-     */
-    public String getFinalMatchingGroup() {
-        return finalMatchingGroup;
     }
 
     /**
