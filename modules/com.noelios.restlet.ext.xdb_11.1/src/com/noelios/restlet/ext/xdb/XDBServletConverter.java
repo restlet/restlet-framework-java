@@ -18,18 +18,11 @@
 
 package com.noelios.restlet.ext.xdb;
 
-import com.noelios.restlet.ext.servlet.ServletLogger;
-import com.noelios.restlet.http.HttpRequest;
-import com.noelios.restlet.http.HttpResponse;
-import com.noelios.restlet.http.HttpServerConverter;
-
 import java.io.IOException;
-
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
-
 import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
@@ -41,6 +34,10 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Reference;
 
+import com.noelios.restlet.ext.servlet.ServletLogger;
+import com.noelios.restlet.http.HttpRequest;
+import com.noelios.restlet.http.HttpResponse;
+import com.noelios.restlet.http.HttpServerConverter;
 
 /**
  * HTTP converter from Servlet calls to Restlet calls. This class can be used in
@@ -50,35 +47,35 @@ import org.restlet.data.Reference;
  * instance. You can get the Restlet context directly on instances of this
  * class, it will be based on the parent Servlet's context for logging purpose.<br/>
  * <br/>
- *
+ * 
  * This class is especially useful when directly integrating Restlets with
  * Spring managed Web applications. Here is a simple usage example:
- *
+ * 
  * <pre>
  * public class TestServlet extends HttpServlet {
  *     private ServletConverter converter;
- *
+ * 
  *     public void init() throws ServletException {
  *         super.init();
  *         this.converter = new XDBServletConverter(getServletContext());
- *
+ * 
  *         Restlet trace = new Restlet(this.converter.getContext()) {
  *             public void handle(Request req, Response res) {
  *                 getLogger().info(&quot;Hello World&quot;);
  *                 res.setEntity(&quot;Hello World!&quot;, MediaType.TEXT_PLAIN);
  *             }
  *         };
- *
+ * 
  *         this.converter.setTarget(trace);
  *     }
- *
+ * 
  *     protected void service(HttpServletRequest req, HttpServletResponse res)
  *             throws ServletException, IOException {
  *         this.converter.service(req, res);
  *     }
  * }
  * </pre>
- *
+ * 
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
 public class XDBServletConverter extends HttpServerConverter {
@@ -87,11 +84,11 @@ public class XDBServletConverter extends HttpServerConverter {
 
     /** Connection to the XMLDB repository. */
     private volatile transient Connection conn;
-    
+
     private volatile transient String localAddr = null;
-    
+
     private volatile transient int localPort = -1;
-    
+
     /**
      * Constructor. Remember to manually set the "target" property before
      * invoking the service() method.
@@ -108,7 +105,7 @@ public class XDBServletConverter extends HttpServerConverter {
      * invoking the service() method.
      * 
      * @param context
-     *            The Servlet context.
+     *                The Servlet context.
      */
     public XDBServletConverter(ServletContext context, Restlet target) {
         super(new Context(new ServletLogger(context)));
@@ -116,9 +113,10 @@ public class XDBServletConverter extends HttpServerConverter {
         CallableStatement preparedstatement = null;
         try {
             conn = XDBServerServlet.getConnection();
+            @SuppressWarnings("unused")
             int endPoint = 1;
-            preparedstatement =
-                    conn.prepareCall("{ call dbms_xdb.getListenerEndPoint(1,?,?,?) }");
+            preparedstatement = conn
+                    .prepareCall("{ call dbms_xdb.getListenerEndPoint(1,?,?,?) }");
             preparedstatement.registerOutParameter(1, Types.VARCHAR);
             preparedstatement.registerOutParameter(2, Types.INTEGER);
             preparedstatement.registerOutParameter(3, Types.INTEGER);
@@ -127,11 +125,11 @@ public class XDBServletConverter extends HttpServerConverter {
             localPort = preparedstatement.getInt(2);
             endPoint = preparedstatement.getInt(3);
         } catch (ServletException e) {
-            context.log("Failed to get SQL Connection",e);
+            context.log("Failed to get SQL Connection", e);
         } catch (SQLException s) {
-            context.log("Failed to get Listener Endpoint",s);
+            context.log("Failed to get Listener Endpoint", s);
         } finally {
-            XDBServerServlet.closeDBResources(preparedstatement,null);    
+            XDBServerServlet.closeDBResources(preparedstatement, null);
         }
     }
 
@@ -140,16 +138,17 @@ public class XDBServletConverter extends HttpServerConverter {
      * "target" Restlet.
      * 
      * @param request
-     *            The HTTP Servlet request.
+     *                The HTTP Servlet request.
      * @param response
-     *            The HTTP Servlet response.
+     *                The HTTP Servlet response.
      */
+    @SuppressWarnings("unused")
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (getTarget() != null) {
             // Convert the Servlet call to a Restlet call
-            XDBServletCall servletCall = new XDBServletCall(getLogger(), this.localAddr,
-                                                      this.localPort, request, response);
+            XDBServletCall servletCall = new XDBServletCall(getLogger(),
+                    this.localAddr, this.localPort, request, response);
             HttpRequest httpRequest = toRequest(servletCall);
             HttpResponse httpResponse = new HttpResponse(servletCall,
                     httpRequest);
@@ -197,14 +196,14 @@ public class XDBServletConverter extends HttpServerConverter {
      * Returns the base reference of new Restlet requests.
      * 
      * @param request
-     *            The Servlet request.
+     *                The Servlet request.
      * @return The base reference of new Restlet requests.
      */
     public Reference getBaseRef(HttpServletRequest request) {
         Reference result = null;
         // Do not use getContextPath and getRequestURL,
         // because XMLDB allways returns null and is servlet 2.2
-        String requestUrl = request.getServletPath()+request.getRequestURI();
+        String requestUrl = request.getServletPath() + request.getRequestURI();
         result = new Reference(requestUrl);
         return result;
     }
@@ -234,7 +233,7 @@ public class XDBServletConverter extends HttpServerConverter {
      * Sets the target Restlet.
      * 
      * @param target
-     *            The target Restlet.
+     *                The target Restlet.
      */
     public void setTarget(Restlet target) {
         this.target = target;

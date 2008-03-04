@@ -308,6 +308,13 @@
       <pathelement path="${classes}/${mod-ri-id}" />
    </path>
 
+   <path id="mod-xdb-path">
+      <path refid="mod-ri-path" />
+      <path refid="mod-servlet-path" />
+      <pathelement path="${classes}/${mod-ri-id}" />
+      <pathelement path="${classes}/${mod-servlet-id}" />
+   </path>
+
    <path id="path-all">
       <pathelement path="${classes}/${mod-api-id}" />
       <pathelement path="${classes}/${mod-ri-id}" />
@@ -331,6 +338,7 @@
       <pathelement path="${classes}/${mod-spring-nre-id}" />
       <pathelement path="${classes}/${mod-velocity-id}" />
       <pathelement path="${classes}/${mod-wadl-id}" />
+      <pathelement path="${classes}/${mod-xdb-id}" />
       <path refid="mod-fileupload-path" />
       <path refid="mod-freemarker-path" />
       <path refid="mod-grizzly-path" />
@@ -352,6 +360,7 @@
       <path refid="mod-spring-nre-path" />
       <path refid="mod-velocity-path" />
       <path refid="mod-wadl-path" />
+      <path refid="mod-xdb-path" />
    </path>
 
    <path id="path-none" />
@@ -387,6 +396,7 @@
    <taskdef name="retrotranslator" classname="net.sf.retrotranslator.transformer.RetrotranslatorTask">
       <classpath>
          <pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.jar" />
+         <pathelement location="tools/retrotranslator/retrotranslator-runtime-1.2.jar" />
       </classpath>
    </taskdef>
    
@@ -477,7 +487,7 @@
 
          <!-- Create plugin jar -->
          <mkdir dir="${dist-classic}/lib" />
-         <jar jarfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
+         <jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
             <fileset dir="${classes}/${mod-@{name}-id}" />
             <fileset dir="${mod}/${mod-@{name}-id}/src" includes="META-INF/**" />
             <fileset dir="${temp}/jar/" />
@@ -681,7 +691,7 @@
 
          <copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-maven}.jar" overwrite="true" />
 
-         <jar jarfile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-maven}-sources.jar" filesetmanifest="merge">
+         <jar destfile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-maven}-sources.jar" filesetmanifest="merge">
             <fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*" />
          </jar>
 
@@ -859,6 +869,7 @@
       <pomModule name="spring-nre" />
       <pomModule name="velocity" />
       <pomModule name="wadl" />
+      <pomModule name="xdb" />
       <pomModule name="example" />
 
       <pomLibrary name="simple"/>
@@ -925,6 +936,7 @@
       <compileModule name="spring-nre" />
       <compileModule name="velocity" />
       <compileModule name="wadl" />
+      <compileModule name="xdb" />
       <compileModule name="example" />
       <compileModule name="api-test" />
       <compileModule name="ri-test" />
@@ -956,6 +968,7 @@
       <backportModule name="spring-nre" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="velocity" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="wadl" failonwarning="@{backport-failonwarning}"/>
+      <backportModule name="xdb" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="example" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="api-test" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="ri-test" failonwarning="@{backport-failonwarning}"/>
@@ -1063,6 +1076,7 @@
             <pathelement path="${mod}/${mod-spring-nre-id}/src/" />
             <pathelement path="${mod}/${mod-velocity-id}/src/" />
             <pathelement path="${mod}/${mod-wadl-id}/src/" />
+            <pathelement path="${mod}/${mod-xdb-id}/src/" />
          </sourcepath>
 
          <bottom>
@@ -1147,6 +1161,7 @@
       <findbugsModule name="spring-nre" />
       <findbugsModule name="velocity" />
       <findbugsModule name="wadl" />
+      <findbugsModule name="xdb" />
       <findbugsModule name="example" />
    </target>
      
@@ -1176,6 +1191,7 @@
       <checkstyleModule name="spring-nre" />
       <checkstyleModule name="velocity" />
       <checkstyleModule name="wadl" />
+      <checkstyleModule name="xdb" />
       <checkstyleModule name="example" />
    </target>
 
@@ -1253,6 +1269,7 @@
       <stageLibrary name="velocity" />
       <stageLibrary name="wrapper" />
       <stageLibrary name="bloat" />
+      <stageLibrary name="xdb" />
       
       <!-- Package modules -->
       <stageModule name="api" />
@@ -1279,6 +1296,7 @@
       <stageModule name="spring-nre" />
       <stageModule name="velocity" />
       <stageModule name="wadl" />
+      <stageModule name="xdb" />
       <stageModule name="example" />
 
       <!-- Copy the POM files -->
@@ -1314,6 +1332,7 @@
       <maven2Module name="spring-api" />
       <maven2Module name="spring-nre" />
       <maven2Module name="velocity" />
+      <maven2Module name="xdb" />
       <maven2Module name="wadl" />
       <maven2Library name="simple" />
       <maven2Library name="json" />

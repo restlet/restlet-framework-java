@@ -18,19 +18,11 @@
 
 package com.noelios.restlet.ext.xdb;
 
-import com.noelios.restlet.http.HttpServerCall;
-import com.noelios.restlet.http.InputEntityStream;
-import com.noelios.restlet.util.ChunkedInputStream;
-import com.noelios.restlet.util.ChunkedOutputStream;
-import com.noelios.restlet.util.KeepAliveOutputStream;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -47,10 +39,12 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.util.Series;
 
+import com.noelios.restlet.http.HttpServerCall;
 
 /**
- * Call that is used by the Servlet HTTP server connector.
- * This is a downgrade version to Servlet 2.2 of ServletCall class
+ * Call that is used by the Servlet HTTP server connector. This is a downgrade
+ * version to Servlet 2.2 of ServletCall class
+ * 
  * @see com.noelios.restlet.ext.servlet.ServletCall
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
@@ -98,20 +92,12 @@ public class XDBServletCall extends HttpServerCall {
         this.response = response;
     }
 
-    /**
-     * Returns the request method.
-     * 
-     * @return The request method.
-     */
+    @Override
     public String getMethod() {
         return getRequest().getMethod();
     }
 
-    /**
-     * Returns the server protocol.
-     * 
-     * @return The server protocol.
-     */
+    @Override
     public Protocol getProtocol() {
         return Protocol.valueOf(getRequest().getScheme());
     }
@@ -146,11 +132,7 @@ public class XDBServletCall extends HttpServerCall {
         return null;
     }
 
-    /**
-     * Returns the list of request headers.
-     * 
-     * @return The list of request headers.
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public Series<Parameter> getRequestHeaders() {
         if (this.requestHeaders == null) {
@@ -205,11 +187,7 @@ public class XDBServletCall extends HttpServerCall {
         return this.response;
     }
 
-    /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
+    @Override
     public WritableByteChannel getResponseEntityChannel() {
         // Can't do anything
         return null;
@@ -241,11 +219,7 @@ public class XDBServletCall extends HttpServerCall {
         return result;
     }
 
-    /**
-     * Indicates if the request was made using a confidential mean.<br/>
-     * 
-     * @return True if the request was made using a confidential mean.<br/>
-     */
+    @Override
     public boolean isConfidential() {
         return getRequest().isSecure();
     }
