@@ -21,6 +21,9 @@ begin
   -- required grants for using JDK1.4 logging
   dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.lang.RuntimePermission', 'getClassLoader', '' );
   dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.util.logging.LoggingPermission', 'control', '' );
+  -- required grants for some examples
+  dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.net.SocketPermission','www.restlet.org', 'connect,resolve' );
+  dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.net.SocketPermission','s3.amazonaws.com', 'connect,resolve' );
   commit;
 end;
 /
