@@ -48,7 +48,7 @@ public class Part12 extends Application {
         Application application = new Part12(component.getContext());
 
         // Attach the application to the component and start it
-        component.getDefaultHost().attach("/users",application);
+        component.getDefaultHost().attachDefault(application);
         component.start();
     }
 
@@ -68,9 +68,9 @@ public class Part12 extends Application {
         Router router = new Router(getContext());
 
         // Attach the resources to the router
-        router.attach("/{user}", UserResource.class);
-        router.attach("/{user}/orders", OrdersResource.class);
-        router.attach("/{user}/orders/{order}", OrderResource.class);
+        router.attach("/users/{user}", UserResource.class);
+        router.attach("/users/{user}/orders", OrdersResource.class);
+        router.attach("/users/{user}/orders/{order}", OrderResource.class);
 
         // Return the root router
         return router;
