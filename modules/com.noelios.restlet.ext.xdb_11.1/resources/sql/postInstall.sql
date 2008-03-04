@@ -16,14 +16,14 @@ DECLARE
 begin
   dbms_xdb.deleteServletMapping('UsersRestlet');
   dbms_xdb.deleteServlet('UsersRestlet');
-  dbms_xdb.addServlet(name=>'UsersRestlet',language=>'Java',class=>'com.noelios.restlet.ext.xdb.XDBServerServlet',dispname=>'Restlet Servlet',schema=>'PUBLIC');
+  dbms_xdb.addServlet(name=>'UsersRestlet',language=>'Java',class=>'com.noelios.restlet.ext.xdb.XdbServerServlet',dispname=>'Restlet Servlet',schema=>'PUBLIC');
   -- Modify the configuration
   -- Due this servlet provide public access, it can not load 
   -- '/home/'||USER||'/restlet/UsersRestlet.xml' from XMLDB repository
   SELECT INSERTCHILDXML(xdburitype('/xdbconfig.xml').getXML(),'/xdbconfig/sysconfig/protocolconfig/httpconfig/webappconfig/servletconfig/servlet-list/servlet[servlet-name="UsersRestlet"]','init-param',
   XMLType('<init-param xmlns="http://xmlns.oracle.com/xdb/xdbconfig.xsd">
                   <param-name>org.restlet.application</param-name>
-                  <param-value>org.restlet.example.tutorial.Part12</param-value>
+                  <param-value>$sch:org.restlet.example.tutorial.Part12</param-value>
                   <description>REST Application</description>
            </init-param>'),'xmlns="http://xmlns.oracle.com/xdb/xdbconfig.xsd"') INTO configxml
   FROM DUAL;
