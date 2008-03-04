@@ -53,7 +53,7 @@ public class SpringApplication extends Application {
      * @param component
      *                The parent component.
      */
-    private SpringApplication(Component component) {
+    public SpringApplication(Component component) {
         super(component.getContext());
     }
 

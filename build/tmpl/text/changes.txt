@@ -9,6 +9,7 @@ Changes log
  - Fixed setRedirectRef(String) method which wasn't supporting relative URIs when no
    base reference was available on the resource reference. Now it uses the resource
    reference instead. Reported by Steve Loughran.
+ - Made the SpringApplication constructor public. Reported by Peter Neubauer.
 
 [Enhancements] 
  - Made the org.restlet.util.Resolver generic and used it in Guard to allow the user
