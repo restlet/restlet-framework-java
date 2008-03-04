@@ -45,9 +45,8 @@ import com.noelios.restlet.http.HttpServerConverter;
  * your Servlet to delegate all those calls to this class's service() method.
  * Remember to set the target Restlet, for example using a Restlet Router
  * instance. You can get the Restlet context directly on instances of this
- * class, it will be based on the parent Servlet's context for logging purpose.<br/>
- * <br/>
- * 
+ * class, it will be based on the parent Servlet's context for logging purpose.<br>
+ * <br>
  * This class is especially useful when directly integrating Restlets with
  * Spring managed Web applications. Here is a simple usage example:
  * 
@@ -85,12 +84,14 @@ public class XdbServletConverter extends HttpServerConverter {
     /** Connection to the XMLDB repository. */
     private volatile transient Connection conn;
 
-    private volatile transient String localAddr = null;
+    /** The local address of the server connector. */
+    private volatile transient String localAddress = null;
 
+    /** The local port of the server connector. */
     private volatile transient int localPort = -1;
 
     /**
-     * Constructor. Remember to manually set the "target" property before
+     * Constructor. Remembers to manually set the "target" property before
      * invoking the service() method.
      * 
      * @param context
@@ -101,7 +102,7 @@ public class XdbServletConverter extends HttpServerConverter {
     }
 
     /**
-     * Constructor. Remember to manually set the "target" property before
+     * Constructor. Remembers to manually set the "target" property before
      * invoking the service() method.
      * 
      * @param context
@@ -121,7 +122,7 @@ public class XdbServletConverter extends HttpServerConverter {
             preparedstatement.registerOutParameter(2, Types.INTEGER);
             preparedstatement.registerOutParameter(3, Types.INTEGER);
             preparedstatement.execute();
-            localAddr = preparedstatement.getString(1);
+            localAddress = preparedstatement.getString(1);
             localPort = preparedstatement.getInt(2);
             endPoint = preparedstatement.getInt(3);
         } catch (ServletException e) {
@@ -129,7 +130,7 @@ public class XdbServletConverter extends HttpServerConverter {
         } catch (SQLException s) {
             context.log("Failed to get Listener Endpoint", s);
         } finally {
-            XdbServerServlet.closeDBResources(preparedstatement, null);
+            XdbServerServlet.closeDbResources(preparedstatement, null);
         }
     }
 
@@ -148,7 +149,7 @@ public class XdbServletConverter extends HttpServerConverter {
         if (getTarget() != null) {
             // Convert the Servlet call to a Restlet call
             XdbServletCall servletCall = new XdbServletCall(getLogger(),
-                    this.localAddr, this.localPort, request, response);
+                    this.localAddress, this.localPort, request, response);
             HttpRequest httpRequest = toRequest(servletCall);
             HttpResponse httpResponse = new HttpResponse(servletCall,
                     httpRequest);
@@ -201,6 +202,7 @@ public class XdbServletConverter extends HttpServerConverter {
      */
     public Reference getBaseRef(HttpServletRequest request) {
         Reference result = null;
+
         // Do not use getContextPath and getRequestURL,
         // because XMLDB allways returns null and is servlet 2.2
         String requestUrl = request.getServletPath() + request.getRequestURI();

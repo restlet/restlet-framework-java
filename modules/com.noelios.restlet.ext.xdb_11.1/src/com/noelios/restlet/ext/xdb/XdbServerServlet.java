@@ -113,13 +113,71 @@ public class XdbServerServlet extends ServerServlet {
     /** Serial version identifier. */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Closes JDBC resources
+     * 
+     * @param statement
+     *                Any statement.
+     * @param resultSet
+     *                Any result set.
+     */
+    protected static void closeDbResources(Statement statement,
+            ResultSet resultSet) {
+        if (resultSet != null)
+            try {
+                resultSet.close();
+            } catch (SQLException s) {
+                s.printStackTrace(System.err);
+            } finally {
+                resultSet = null;
+            }
+        if (statement != null)
+            try {
+                statement.close();
+            } catch (SQLException s) {
+                s.printStackTrace(System.err);
+            } finally {
+                statement = null;
+            }
+    }
+
+    /**
+     * Returns a JDBC connection. Works inside or outside the OJVM.
+     * 
+     * @return A JDBC connection.
+     * @throws SQLException
+     */
+    protected static Connection getConnection() throws ServletException {
+        Connection conn = null;
+
+        try {
+            if (System.getProperty("java.vm.name").equals("JServer VM")) {
+                conn = DriverManager.getConnection("jdbc:oracle:kprb:",
+                        "default", "default");
+            } else {
+                throw new ServletException(
+                        "Class designed to be used at Server side: jdbc:oracle:thin:@");
+            }
+        } catch (SQLException s) {
+            System.err.println("Exception getting SQL Connection: "
+                    + s.getLocalizedMessage());
+            throw new ServletException(
+                    "Unable to connect using: jdbc:oracle:kprb:", s);
+        }
+
+        return conn;
+    }
+
     /** Connection to the XMLDB repository. */
     private volatile transient Connection conn;
 
-    private volatile transient String localAddr = null;
+    /** The local address of the server connector. */
+    private volatile transient String localAddress = null;
 
+    /** The local port of the server connector. */
     private volatile transient int localPort = -1;
 
+    /** Indicates if remote debugging should be activated. */
     private volatile transient boolean remoteDebugging = false;
 
     /**
@@ -131,15 +189,17 @@ public class XdbServerServlet extends ServerServlet {
 
     /**
      * Creates the single Application used by this Servlet. Do not attach WAR
-     * protocol handler because WAR are not loaded into XMLDB repository TODO:
-     * provide an alternative method to deploy applications TODO: Provide an
-     * alternative method to use OJVM classloader extensions without importing
-     * Oracle specific class (may be using reflection)
+     * protocol handler because WAR are not loaded into XMLDB repository
+     * 
+     * TODO: provide an alternative method to deploy applications
+     * 
+     * TODO: Provide an alternative method to use OJVM classloader extensions
+     * without importing Oracle specific class (may be using reflection).
      * 
      * @param context
-     *                The Context for the Application
+     *                The Context for the Application.
      * 
-     * @return The newly created Application or null if unable to create
+     * @return The newly created Application or null if unable to create.
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -231,13 +291,6 @@ public class XdbServerServlet extends ServerServlet {
         return application;
     }
 
-    /**
-     * Creates the associated HTTP server handling calls.
-     * 
-     * @param request
-     *                The HTTP Servlet request.
-     * @return The new HTTP server handling calls.
-     */
     @Override
     public HttpServerHelper createServer(HttpServletRequest request) {
         HttpServerHelper result = null;
@@ -247,20 +300,23 @@ public class XdbServerServlet extends ServerServlet {
         if ((component != null) && (application != null)) {
             // First, let's locate the closest component
             Server server = new Server(component.getContext(),
-                    new ArrayList<Protocol>(), localAddr, localPort, component);
+                    new ArrayList<Protocol>(), localAddress, localPort,
+                    component);
             server.getProtocols().add(Protocol.HTTP);
             result = new HttpServerHelper(server);
 
-            // Attach the application, Do not use getServletContext here because
+            // Attach the application, do not use getServletContext here because
             // XMLDB allways return null
             String uriPattern = request.getServletPath();
-            log(".createServer: attaching application: " + application
-                    + " uri: " + uriPattern);
+            log("[Noelios Restlet Engine] - Attaching application: "
+                    + application + " uri: " + uriPattern);
             Route route = component.getDefaultHost().attach(uriPattern,
                     application);
+
             String extractQueries = getInitParameter(EXTRACT_QUERY_ATTRIBUTE,
                     EXTRACT_QUERY_ATTRIBUTE_DEFAULT);
-            log(".createServer: parsing query attributes: " + extractQueries);
+            log("[Noelios Restlet Engine] - Parsing query attributes: "
+                    + extractQueries);
             if (extractQueries != null && extractQueries.length() > 0) {
                 String extractQuery[] = extractQueries.split(";");
                 for (int i = 0; i < extractQuery.length; i++) {
@@ -286,48 +342,55 @@ public class XdbServerServlet extends ServerServlet {
         } catch (SQLException e) {
             log(e.getLocalizedMessage(), e);
         } finally {
-            closeDBResources(preparedstatement, null);
+            closeDbResources(preparedstatement, null);
         }
         super.destroy();
     }
 
     /**
-     * Services a HTTP Servlet request as an uniform call.
+     * Returns a configuration parameter.
      * 
-     * @param request
-     *                The HTTP Servlet request.
-     * @param response
-     *                The HTTP Servlet response.
+     * @return An String object within the /home/'||USER||'/restlet/app.xml
+     *         XMLDB file.
      */
-    @Override
-    public void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpServerHelper helper = getServer(request);
+    private String getConfigParameter(String app, String name) {
+        String config = null;
+        ResultSet resultset = null;
+        PreparedStatement preparedstatement = null;
+        log("[Noelios Restlet Engine] - Try to load '" + name
+                + "' parameter from '/home/'||USER||'" + "/restlet/" + app
+                + ".xml");
 
-        if (helper != null) {
-            helper.handle(new XdbServletCall(helper.getServer(), request,
-                    response));
-        } else {
-            log("[Noelios Restlet Engine] - Unable to get the Restlet HTTP server connector. Status code 500 returned.");
-            response.sendError(500);
+        try {
+            preparedstatement = conn
+                    .prepareStatement("select extractValue(res,'/res:Resource/res:Contents/restlet-app/'||?,"
+                            + "'xmlns:res=http://xmlns.oracle.com/xdb/XDBResource.xsd') from\n"
+                            + "resource_view where equals_path(res,'/home/'||USER||?)=1");
+            preparedstatement.setString(1, name);
+            preparedstatement.setString(2, "/restlet/" + app + ".xml");
+            resultset = preparedstatement.executeQuery();
+
+            if (resultset.next())
+                config = resultset.getString(1);
+        } catch (SQLException sqe) {
+            log(sqe.getLocalizedMessage(), sqe);
+            throw new RuntimeException(
+                    ".getConfigParameter:  error from XMLDB loading '/home/'||USER||'"
+                            + "/restlet/" + app + ".xml", sqe);
+        } finally {
+            closeDbResources(preparedstatement, resultset);
         }
+
+        return config;
     }
 
-    /**
-     * Returns the value of a given initialization parameter, first from the
-     * Servlet configuration, then from the Web Application context.
-     * 
-     * @param name
-     *                The parameter name.
-     * @param defaultValue
-     *                The default to use in case the parameter is not found.
-     * @return The value of the parameter or null.
-     */
     @Override
     public String getInitParameter(String name, String defaultValue) {
         String app = getServletConfig().getServletName();
+
         // Try to load from XMLDB repository
         String result = getConfigParameter(app, name);
+
         // XDB do not support Servlet Context parameter
         // use Servlet init parameter instead
         if (result == null) {
@@ -346,6 +409,7 @@ public class XdbServerServlet extends ServerServlet {
         CallableStatement preparedstatement = null;
         if (this.conn == null)
             this.conn = getConnection();
+
         // XDBServletContext ctx = (XDBServletContext)this.getServletContext();
         // log(ctx.getServletContextName());
         try {
@@ -356,11 +420,13 @@ public class XdbServerServlet extends ServerServlet {
             preparedstatement.registerOutParameter(2, Types.INTEGER);
             preparedstatement.registerOutParameter(3, Types.INTEGER);
             preparedstatement.execute();
-            localAddr = preparedstatement.getString(1);
+
+            localAddress = preparedstatement.getString(1);
             localPort = preparedstatement.getInt(2);
             endPoint = preparedstatement.getInt(3);
+
             log("[Noelios Restlet Engine] - The ServerServlet address = "
-                    + localAddr);
+                    + localAddress);
             log("[Noelios Restlet Engine] - The ServerServlet port = "
                     + localPort);
             log("[Noelios Restlet Engine] - The ServerServlet endpoint = "
@@ -368,8 +434,9 @@ public class XdbServerServlet extends ServerServlet {
         } catch (SQLException e) {
             log(e.getLocalizedMessage(), e);
         } finally {
-            closeDBResources(preparedstatement, null);
+            closeDbResources(preparedstatement, null);
         }
+
         try {
             if (remoteDebugging) {
                 preparedstatement = conn
@@ -381,8 +448,9 @@ public class XdbServerServlet extends ServerServlet {
         } catch (SQLException e) {
             log(e.getLocalizedMessage(), e);
         } finally {
-            closeDBResources(preparedstatement, null);
+            closeDbResources(preparedstatement, null);
         }
+
         if ((getApplication() != null) && (getApplication().isStopped())) {
             try {
                 getApplication().start();
@@ -392,85 +460,17 @@ public class XdbServerServlet extends ServerServlet {
         }
     }
 
-    /**
-     * @return an String object within the /home/'||USER||'/restlet/app.xml
-     *         XMLDB file
-     */
-    private String getConfigParameter(String app, String name) {
-        String config = null;
-        ResultSet resultset = null;
-        PreparedStatement preparedstatement = null;
-        log("[Noelios Restlet Engine] - Try to load '" + name
-                + "' parameter from '/home/'||USER||'" + "/restlet/" + app
-                + ".xml");
-        try {
-            preparedstatement = conn
-                    .prepareStatement("select extractValue(res,'/res:Resource/res:Contents/restlet-app/'||?,"
-                            + "'xmlns:res=http://xmlns.oracle.com/xdb/XDBResource.xsd') from\n"
-                            + "resource_view where equals_path(res,'/home/'||USER||?)=1");
-            preparedstatement.setString(1, name);
-            preparedstatement.setString(2, "/restlet/" + app + ".xml");
-            resultset = preparedstatement.executeQuery();
-            if (resultset.next())
-                config = resultset.getString(1);
-        } catch (SQLException sqe) {
-            log(sqe.getLocalizedMessage(), sqe);
-            throw new RuntimeException(
-                    ".getConfigParameter:  error from XMLDB loading '/home/'||USER||'"
-                            + "/restlet/" + app + ".xml", sqe);
-        } finally {
-            closeDBResources(preparedstatement, resultset);
-        }
-        return config;
-    }
+    @Override
+    public void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpServerHelper helper = getServer(request);
 
-    /**
-     * Closes JDBC resources
-     * 
-     * @param st
-     *                any Statement
-     * @param rs
-     *                any ResultSet
-     */
-    protected static void closeDBResources(Statement st, ResultSet rs) {
-        if (rs != null)
-            try {
-                rs.close();
-            } catch (SQLException s) {
-                s.printStackTrace(System.err);
-            } finally {
-                rs = null;
-            }
-        if (st != null)
-            try {
-                st.close();
-            } catch (SQLException s) {
-                s.printStackTrace(System.err);
-            } finally {
-                st = null;
-            }
-    }
-
-    /**
-     * @return SQL Connection object, work inside or outside the OJVM
-     * @throws SQLException
-     */
-    protected static Connection getConnection() throws ServletException {
-        Connection conn = null;
-        try {
-            if (System.getProperty("java.vm.name").equals("JServer VM")) {
-                conn = DriverManager.getConnection("jdbc:oracle:kprb:",
-                        "default", "default");
-            } else {
-                throw new ServletException(
-                        "Class designed to be used at Server side: jdbc:oracle:thin:@");
-            }
-        } catch (SQLException s) {
-            System.err.println("Exception getting SQL Connection: "
-                    + s.getLocalizedMessage());
-            throw new ServletException(
-                    "Unable to connect using: jdbc:oracle:kprb:", s);
+        if (helper != null) {
+            helper.handle(new XdbServletCall(helper.getServer(), request,
+                    response));
+        } else {
+            log("[Noelios Restlet Engine] - Unable to get the Restlet HTTP server connector. Status code 500 returned.");
+            response.sendError(500);
         }
-        return conn;
     }
 }

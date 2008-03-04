@@ -43,7 +43,7 @@ import com.noelios.restlet.http.HttpServerCall;
 
 /**
  * Call that is used by the Servlet HTTP server connector. This is a downgrade
- * version to Servlet 2.2 of ServletCall class
+ * version to Servlet 2.2 of ServletCall class.
  * 
  * @see com.noelios.restlet.ext.servlet.ServletCall
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
