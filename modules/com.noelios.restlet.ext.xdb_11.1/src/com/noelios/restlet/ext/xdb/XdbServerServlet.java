@@ -27,6 +27,8 @@ import java.io.IOException;
 
 import java.lang.reflect.InvocationTargetException;
 
+import java.lang.reflect.Method;
+
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -193,9 +195,6 @@ public class XdbServerServlet extends ServerServlet {
      * 
      * TODO: provide an alternative method to deploy applications
      * 
-     * TODO: Provide an alternative method to use OJVM classloader extensions
-     * without importing Oracle specific class (may be using reflection).
-     * 
      * @param context
      *                The Context for the Application.
      * 
@@ -213,8 +212,27 @@ public class XdbServerServlet extends ServerServlet {
         // Load the application class using the given class name
         if (applicationClassName != null) {
             try {
-                Class<?> targetClass = Engine
-                        .classForName(applicationClassName);
+                int doubleDotPos = applicationClassName.indexOf(':');
+                Class targetClass;
+
+                if (doubleDotPos > 0) {
+                    // Use DbmsJava by reflection to avoid dependency to Oracle libs
+                    // at compiling time
+                    Class loaderClass =
+                        Engine.classForName("oracle.aurora.rdbms.DbmsJava");
+                    Method meth =
+                        loaderClass.getMethod("classForNameAndSchema",
+                                              new Class[] { String.class,
+                                                            String.class });
+                    String sch =
+                        applicationClassName.substring(0, doubleDotPos);
+                    String className =
+                        applicationClassName.substring(doubleDotPos + 1);
+                    log("[Noelios Restlet Engine] - Schema: "+sch+" class: "+className + " loader: "+loaderClass);
+                    targetClass =
+                            (Class)meth.invoke(null, new Object[] { className, sch });
+                } else
+                    targetClass = Engine.classForName(applicationClassName);
 
                 try {
                     // Create a new instance of the application class by
@@ -410,8 +428,6 @@ public class XdbServerServlet extends ServerServlet {
         if (this.conn == null)
             this.conn = getConnection();
 
-        // XDBServletContext ctx = (XDBServletContext)this.getServletContext();
-        // log(ctx.getServletContextName());
         try {
             int endPoint = 1;
             preparedstatement = conn
