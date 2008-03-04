@@ -90,6 +90,12 @@ import com.noelios.restlet.http.HttpServerHelper;
  */
 public class ServerServlet extends HttpServlet {
     /**
+     * Name of the attribute key containing a reference to the current
+     * application.
+     */
+    private static final String COMPONENT_KEY = "org.restlet.component";
+
+    /**
      * The Servlet context initialization parameter's name containing the name
      * of the Servlet context attribute that should be used to store the Restlet
      * Application instance.
@@ -118,12 +124,6 @@ public class ServerServlet extends HttpServlet {
 
     /** The default value for the NAME_SERVER_ATTRIBUTE parameter. */
     private static final String NAME_SERVER_ATTRIBUTE_DEFAULT = "com.noelios.restlet.ext.servlet.ServerServlet.server";
-
-    /**
-     * Name of the attribute key containing a reference to the current
-     * application.
-     */
-    private static final String COMPONENT_KEY = "org.restlet.component";
 
     /** Serial version identifier. */
     private static final long serialVersionUID = 1L;
@@ -155,7 +155,7 @@ public class ServerServlet extends HttpServlet {
      * @return The newly created Application or null if unable to create
      */
     @SuppressWarnings("unchecked")
-    public Application createApplication(Context context) {
+    protected Application createApplication(Context context) {
         Application application = null;
 
         // Try to instantiate a new target application
@@ -249,12 +249,29 @@ public class ServerServlet extends HttpServlet {
     }
 
     /**
+     * Creates a new Servlet call wrapping a Servlet request/response couple and
+     * a Server connector.
+     * 
+     * @param server
+     *                The Server connector.
+     * @param request
+     *                The Servlet request.
+     * @param response
+     *                The Servlet response.
+     * @return The new ServletCall instance.
+     */
+    protected ServletCall createCall(Server server, HttpServletRequest request,
+            HttpServletResponse response) {
+        return new ServletCall(server, request, response);
+    }
+
+    /**
      * Creates the single Component used by this Servlet.
      * 
      * @return The newly created Component or null if unable to create
      */
     @SuppressWarnings("unchecked")
-    public Component createComponent() {
+    protected Component createComponent() {
         Component component = null;
 
         // Try to instantiate a new target component
@@ -338,7 +355,7 @@ public class ServerServlet extends HttpServlet {
      *                The HTTP Servlet request.
      * @return The new HTTP server handling calls.
      */
-    public HttpServerHelper createServer(HttpServletRequest request) {
+    protected HttpServerHelper createServer(HttpServletRequest request) {
         HttpServerHelper result = null;
         Component component = getComponent();
         Application application = getApplication();
@@ -520,9 +537,7 @@ public class ServerServlet extends HttpServlet {
         HttpServerHelper helper = getServer(request);
 
         if (helper != null) {
-            helper
-                    .handle(new ServletCall(helper.getServer(), request,
-                            response));
+            helper.handle(createCall(helper.getServer(), request, response));
         } else {
             log("[Noelios Restlet Engine] - Unable to get the Restlet HTTP server connector. Status code 500 returned.");
             response.sendError(500);

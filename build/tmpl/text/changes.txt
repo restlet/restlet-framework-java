@@ -19,6 +19,8 @@ Changes log
  - All component subclasses now use a main method that throws exceptions and takes
    a string array as parameter.
  - More precise log message for a Resource with no variant.
+ - Made the ServerServlet.create*() method protected instead of public.
+ - Added a ServerServlet.createCall() method for easier subclassing.
  
 1.1 Milestone 2 (2008-02-29)
 [Bugs fixed]
