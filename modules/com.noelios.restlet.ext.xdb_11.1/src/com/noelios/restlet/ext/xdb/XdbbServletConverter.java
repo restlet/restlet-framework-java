@@ -78,7 +78,7 @@ import com.noelios.restlet.http.HttpServerConverter;
  * 
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
-public class XDBServletConverter extends HttpServerConverter {
+public class XdbbServletConverter extends HttpServerConverter {
     /** The target Restlet. */
     private volatile Restlet target;
 
@@ -96,7 +96,7 @@ public class XDBServletConverter extends HttpServerConverter {
      * @param context
      *                The Servlet context.
      */
-    public XDBServletConverter(ServletContext context) {
+    public XdbbServletConverter(ServletContext context) {
         this(context, null);
     }
 
@@ -107,12 +107,12 @@ public class XDBServletConverter extends HttpServerConverter {
      * @param context
      *                The Servlet context.
      */
-    public XDBServletConverter(ServletContext context, Restlet target) {
+    public XdbbServletConverter(ServletContext context, Restlet target) {
         super(new Context(new ServletLogger(context)));
         this.target = target;
         CallableStatement preparedstatement = null;
         try {
-            conn = XDBServerServlet.getConnection();
+            conn = XdbbServerServlet.getConnection();
             @SuppressWarnings("unused")
             int endPoint = 1;
             preparedstatement = conn
@@ -129,7 +129,7 @@ public class XDBServletConverter extends HttpServerConverter {
         } catch (SQLException s) {
             context.log("Failed to get Listener Endpoint", s);
         } finally {
-            XDBServerServlet.closeDBResources(preparedstatement, null);
+            XdbbServerServlet.closeDBResources(preparedstatement, null);
         }
     }
 
@@ -147,7 +147,7 @@ public class XDBServletConverter extends HttpServerConverter {
             throws ServletException, IOException {
         if (getTarget() != null) {
             // Convert the Servlet call to a Restlet call
-            XDBServletCall servletCall = new XDBServletCall(getLogger(),
+            XdbbServletCall servletCall = new XdbbServletCall(getLogger(),
                     this.localAddr, this.localPort, request, response);
             HttpRequest httpRequest = toRequest(servletCall);
             HttpResponse httpResponse = new HttpResponse(servletCall,
@@ -177,7 +177,7 @@ public class XDBServletConverter extends HttpServerConverter {
      * @return A new high-level uniform request.
      */
     @SuppressWarnings("unchecked")
-    public HttpRequest toRequest(XDBServletCall servletCall) {
+    public HttpRequest toRequest(XdbbServletCall servletCall) {
         HttpRequest result = super.toRequest(servletCall);
 
         // Copy all Servlet's request attributes

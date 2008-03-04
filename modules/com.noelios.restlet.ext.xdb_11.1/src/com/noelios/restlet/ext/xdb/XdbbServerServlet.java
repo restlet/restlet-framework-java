@@ -97,7 +97,7 @@ import org.restlet.util.Engine;
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
-public class XDBServerServlet extends ServerServlet {
+public class XdbbServerServlet extends ServerServlet {
     /**
      * The Servlet initialization parameter name containing the list of coma
      * separated string of the query extract arguments separated by ; for
@@ -125,7 +125,7 @@ public class XDBServerServlet extends ServerServlet {
     /**
      * Constructor.
      */
-    public XDBServerServlet() {
+    public XdbbServerServlet() {
         super();
     }
 
@@ -305,7 +305,7 @@ public class XDBServerServlet extends ServerServlet {
         HttpServerHelper helper = getServer(request);
 
         if (helper != null) {
-            helper.handle(new XDBServletCall(helper.getServer(), request,
+            helper.handle(new XdbbServletCall(helper.getServer(), request,
                     response));
         } else {
             log("[Noelios Restlet Engine] - Unable to get the Restlet HTTP server connector. Status code 500 returned.");

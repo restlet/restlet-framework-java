@@ -48,7 +48,7 @@ import com.noelios.restlet.http.HttpServerCall;
  * @see com.noelios.restlet.ext.servlet.ServletCall
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
-public class XDBServletCall extends HttpServerCall {
+public class XdbbServletCall extends HttpServerCall {
     /** The HTTP Servlet request to wrap. */
     private HttpServletRequest request;
 
@@ -68,7 +68,7 @@ public class XDBServletCall extends HttpServerCall {
      * @param serverPort
      *                The server port.
      */
-    public XDBServletCall(Logger logger, String serverAddress, int serverPort,
+    public XdbbServletCall(Logger logger, String serverAddress, int serverPort,
             HttpServletRequest request, HttpServletResponse response) {
         super(logger, serverAddress, serverPort);
         this.request = request;
@@ -85,7 +85,7 @@ public class XDBServletCall extends HttpServerCall {
      * @param response
      *                The HTTP Servlet response to wrap.
      */
-    public XDBServletCall(Server server, HttpServletRequest request,
+    public XdbbServletCall(Server server, HttpServletRequest request,
             HttpServletResponse response) {
         super(server);
         this.request = request;
