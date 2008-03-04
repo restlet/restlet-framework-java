@@ -341,6 +341,7 @@ public class Server extends Connector {
     public synchronized void start() throws Exception {
         if (isStopped()) {
             super.start();
+
             if (getHelper() != null)
                 getHelper().start();
         }
@@ -349,9 +350,10 @@ public class Server extends Connector {
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
-            getHelper().stop();
             if (getHelper() != null)
-                super.stop();
+                getHelper().stop();
+
+            super.stop();
         }
     }
 
