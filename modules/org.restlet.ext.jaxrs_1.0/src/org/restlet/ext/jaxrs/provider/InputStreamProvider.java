@@ -35,6 +35,8 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class InputStreamProvider extends AbstractProvider<InputStream> {
 
+    // TODO implement ReaderProvider
+    
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */

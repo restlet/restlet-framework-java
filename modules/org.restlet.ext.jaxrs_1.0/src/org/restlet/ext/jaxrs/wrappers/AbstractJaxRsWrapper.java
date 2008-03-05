@@ -543,7 +543,7 @@ public abstract class AbstractJaxRsWrapper {
         String paramName = queryParam.value();
         String queryParamValue = form.getFirstValue(paramName);
         return convertParamValueFromParam(paramClass, queryParamValue,
-                defaultValue, true);
+                defaultValue, true); // TODO Encode or not of @QueryParam
         // leaveEncoded = true -> not change
     }
 

@@ -573,6 +573,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     void init(ResourceObject resourceObject, CallContext callContext)
             throws InjectException, InstantiateParameterException,
             WebApplicationException, MethodInvokeException {
+        // inject fields annotated with @Context
         Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
         for (Field contextField : this.injectFieldsContext) {
             Util.inject(jaxRsResObj, contextField, callContext);
@@ -618,6 +619,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                     defaultValue, callContext, Logger.getAnonymousLogger());
             Util.inject(jaxRsResObj, hpf, value);
         }
+        // invoke @PostConstruct annotated method
         try {
             Util.invokeNoneArgMethod(jaxRsResObj, this.postConstructMethod);
         } catch (InvocationTargetException e) {

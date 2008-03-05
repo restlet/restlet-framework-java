@@ -530,8 +530,11 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      */
     public String getLastTemplParamEnc(PathParam annotation) {
         String key = annotation.value();
-        return Util.getLastElement(interalGetTemplateParametersEncoded().get(
-                key));
+        MultivaluedMap<String, String> templParamsEncoded = interalGetTemplateParametersEncoded();
+        List<String> values = templParamsEncoded.get(key);
+        if(values == null || values.isEmpty())
+            return null;
+        return Util.getLastElement(values);
     }
 
     /**
