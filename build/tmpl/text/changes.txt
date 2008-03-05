@@ -1,4 +1,4 @@
-   
+﻿   
 ===========
 Changes log  
 ===========
@@ -13,6 +13,7 @@ Changes log
           Peter Neubauer.
         - The AWS authentication wasn't properly detected by the
           engine. Reported by Steve Loughran.
+        - Fixed directory redirections in DirectoryResource class.
     - API Enhancements
         - Made the org.restlet.util.Resolver generic and used it in 
           Guard to allow the user to provide a secret resolver without

@@ -254,7 +254,7 @@ public class DirectoryResource extends Resource {
         if ((variants == null) || (variants.isEmpty())) {
             setAvailable(false);
         }
-        
+
         // Log results
         getLogger().info("Converted target URI: " + this.targetUri);
         getLogger().info("Converted base name : " + this.baseName);
@@ -276,8 +276,8 @@ public class DirectoryResource extends Resource {
     @Override
     public void removeRepresentations() throws ResourceException {
         if (directoryRedirection && !targetIndex) {
-            getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
-            getResponse().setLocationRef(this.targetUri);
+            getResponse().redirectSeeOther(
+                    getRequest().getResourceRef().getIdentifier() + "/");
         } else {
             Request contextRequest = new Request(Method.DELETE, this.targetUri);
             Response contextResponse = new Response(contextRequest);
@@ -315,8 +315,8 @@ public class DirectoryResource extends Resource {
     public void storeRepresentation(Representation entity)
             throws ResourceException {
         if (directoryRedirection && !targetIndex) {
-            getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
-            getResponse().setLocationRef(this.targetUri);
+            getResponse().redirectSeeOther(
+                    getRequest().getResourceRef().getIdentifier() + "/");
         }
 
         // We allow the transfer of the PUT calls only if the readOnly flag is

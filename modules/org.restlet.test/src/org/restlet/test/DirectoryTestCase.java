@@ -198,10 +198,11 @@ public class DirectoryTestCase extends TestCase {
             response = handle(application, webSiteURL, testDirectoryUrl,
                     Method.DELETE, null, "6c-1");
             assertEquals(Status.REDIRECTION_SEE_OTHER, response.getStatus());
-            System.out.println(response.getLocationRef());
-            response = handle(application, response.getLocationRef().getPath(),
-                    response.getLocationRef().getPath(), Method.DELETE, null,
-                    "6c-2");
+
+            response = handle(application, response.getLocationRef()
+                    .getIdentifier(),
+                    response.getLocationRef().getIdentifier(), Method.DELETE,
+                    null, "6c-2");
             assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
             response = handle(application, webSiteURL, webSiteURL,
                     Method.DELETE, null, "6c-3");
