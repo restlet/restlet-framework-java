@@ -63,10 +63,19 @@
     <loadjava-with-public-synonym login="${jdbc.username}/${jdbc.password}@${jdbc.url}"
               file="${dist-classic}/lib/${mod-example-id}.jar"
               failonerror="no"/>
+    <echo message="Ignore somre resolvers errors due are not used examples"/>
     <exec executable="${ORACLE_HOME}/bin/sqlplus" dir="resources/sql">
       <arg value="${jdbc.sysusr}/${jdbc.syspwd}@${sqlnet.string} as sysdba"/>
       <arg value="@postInstall"/>
       <arg value="${jdbc.username}"/>
+    </exec>
+  </target>
+
+  <target name="test-callout"
+          description="Create a PLSQL call spec for some client API examples">
+    <exec executable="${ORACLE_HOME}/bin/sqlplus" dir="resources/sql">
+      <arg value="${jdbc.username}/${jdbc.password}@${sqlnet.string}"/>
+      <arg value="@testCallOut"/>
     </exec>
   </target>
 
