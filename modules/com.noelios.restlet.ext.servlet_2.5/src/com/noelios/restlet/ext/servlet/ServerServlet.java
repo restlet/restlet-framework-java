@@ -166,8 +166,7 @@ public class ServerServlet extends HttpServlet {
         // Load the application class using the given class name
         if (applicationClassName != null) {
             try {
-                Class<?> targetClass = Engine
-                        .classForName(applicationClassName);
+                Class<?> targetClass = getClass(applicationClassName);
 
                 try {
                     // Create a new instance of the application class by
@@ -282,18 +281,7 @@ public class ServerServlet extends HttpServlet {
         // Load the component class using the given class name
         if (componentClassName != null) {
             try {
-                // According to
-                // http://www.caucho.com/resin-3.0/webapp/faq.xtp#Class.forName()-doesn't-seem-to-work-right
-                // this approach may need to used when loading classes.
-                Class<?> targetClass;
-                ClassLoader loader = Thread.currentThread()
-                        .getContextClassLoader();
-
-                if (loader != null)
-                    targetClass = Class.forName(componentClassName, false,
-                            loader);
-                else
-                    targetClass = Class.forName(componentClassName);
+                Class<?> targetClass = getClass(componentClassName);
 
                 // Create a new instance of the component class by
                 // invoking the constructor with the Context parameter.
@@ -420,6 +408,18 @@ public class ServerServlet extends HttpServlet {
         }
 
         return result;
+    }
+
+    /**
+     * Returns a class for a given qualified class name.
+     * 
+     * @param className
+     *                The class name to lookup.
+     * @return The class object.
+     * @throws ClassNotFoundException
+     */
+    protected Class<?> getClass(String className) throws ClassNotFoundException {
+        return Engine.classForName(className);
     }
 
     /**

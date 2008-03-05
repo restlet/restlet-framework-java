@@ -20,9 +20,13 @@ Changes log
           needing to subclass Guard. Deprecated the findSecret(String) 
           method. 
     - NRE and Extension Enhancements
-        - Made the ServerServlet.create*() method protected instead of public.
-        - Added a ServerServlet.createCall() method for easier subclassing.
+        - Made the ServerServlet.create*() method protected instead of 
+          public.
+        - Added a ServerServlet.createCall() method for easier 
+          subclassingby the XDB extension.
         - Added new javax.annotation library for the JAX-RS extension.
+        - Added ServerServlet.getClass() method to facilitate 
+          subclassing by the XDB extension. Suggested by Marcelo Ochoa.
     - Misc
         - Reformatting of the changes log. Contributed by Avi Flax.
         - All Component subclasses now use a main method that throws 
