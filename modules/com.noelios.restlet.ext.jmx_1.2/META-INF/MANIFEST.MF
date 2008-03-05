@@ -4,5 +4,4 @@ Bundle-Name: Noelios Restlet Engine - Extension - JMX
 Bundle-SymbolicName: com.noelios.restlet.ext.jmx
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Require-Bundle: org.restlet,
- com.noelios.restlet
+Require-Bundle: com.noelios.restlet;visibility:=reexport

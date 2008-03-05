@@ -26,6 +26,7 @@ Changes log
         - All Component subclasses now use a main method that throws 
           exceptions and takes a string array as parameter.
         - More precise log message for a Resource with no variant.
+        - Otpimized Eclipse dependencies by leveraging reexport option.
  
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed

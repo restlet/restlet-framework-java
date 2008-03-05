@@ -5,9 +5,6 @@ Bundle-SymbolicName: org.restlet.example
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
 Export-Package: org.restlet.example
-Require-Bundle: com.db4o,
- com.noelios.restlet,
- org.restlet.ext.json,
- org.restlet.ext.jaxrs,
- javax.ws.rs,
- javax.xml.bind
+Require-Bundle: com.db4o;visibility:=reexport,
+ org.restlet.ext.json;visibility:=reexport,
+ org.restlet.ext.jaxrs;visibility:=reexport

@@ -4,6 +4,7 @@ Bundle-Name: Grizzly NIO Framework
 Bundle-SymbolicName: com.sun.grizzly
 Bundle-Version: 1.7.2
 Bundle-ClassPath: com.sun.grizzly.jar
+Bundle-Vendor: Sun Microsystems Inc.
 Export-Package: com.sun.grizzly,
  com.sun.grizzly.async,
  com.sun.grizzly.connectioncache.client,
@@ -14,4 +15,3 @@ Export-Package: com.sun.grizzly,
  com.sun.grizzly.connectioncache.spi.transport,
  com.sun.grizzly.filter,
  com.sun.grizzly.util
-Bundle-Vendor: Sun Microsystems Inc.

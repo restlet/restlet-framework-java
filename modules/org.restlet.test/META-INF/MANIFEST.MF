@@ -4,16 +4,13 @@ Bundle-Name: Restlet API - Tests
 Bundle-SymbolicName: org.restlet.test
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Require-Bundle: com.noelios.restlet,
- com.noelios.restlet.ext.grizzly,
- com.noelios.restlet.ext.net,
- org.junit4,
- org.restlet.example,
- org.restlet.ext.atom,
- org.restlet.ext.freemarker,
- org.restlet.ext.jaxrs,
- org.restlet.ext.velocity,
- org.restlet.ext.spring,
- org.restlet.ext.wadl,
- javax.ws.rs,
- javax.xml.bind
+Require-Bundle: com.noelios.restlet.ext.grizzly;visibility:=reexport,
+ com.noelios.restlet.ext.net;visibility:=reexport,
+ org.junit4;visibility:=reexport,
+ org.restlet.example;visibility:=reexport,
+ org.restlet.ext.atom;visibility:=reexport,
+ org.restlet.ext.freemarker;visibility:=reexport,
+ org.restlet.ext.jaxrs;visibility:=reexport,
+ org.restlet.ext.velocity;visibility:=reexport,
+ org.restlet.ext.spring;visibility:=reexport,
+ org.restlet.ext.wadl;visibility:=reexport
