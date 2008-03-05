@@ -17,15 +17,13 @@
  */
 package org.restlet.example.jaxrs;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
 
-import org.restlet.ext.jaxrs.util.Util;
-
 /**
- * @author Stephan
- * 
+ * @author Stephan Koops
  */
 public class ExampleAppConfig extends ApplicationConfig {
 
@@ -41,7 +39,9 @@ public class ExampleAppConfig extends ApplicationConfig {
     @Override
     @SuppressWarnings("unchecked")
     public Set<Class<?>> getResourceClasses() {
-        return Util.createSet(EasyRootResource.class,
-                PersonsRootResource.class);
+        Set<Class<?>> rrcs = new HashSet<Class<?>>();
+        rrcs.add(EasyRootResource.class);
+        rrcs.add(PersonsRootResource.class);
+        return rrcs;
     }
 }
