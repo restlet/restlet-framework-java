@@ -249,6 +249,12 @@ public class DirectoryResource extends Resource {
 
         }
 
+        // Check if the resource exists or not.
+        List<Variant> variants = getVariants();
+        if ((variants == null) || (variants.isEmpty())) {
+            setAvailable(false);
+        }
+        
         // Log results
         getLogger().info("Converted target URI: " + this.targetUri);
         getLogger().info("Converted base name : " + this.baseName);
