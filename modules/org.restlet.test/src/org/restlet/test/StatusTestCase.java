@@ -67,4 +67,10 @@ public class StatusTestCase extends RestletTestCase {
         assertTrue(s2.isError());
     }
 
+    public void testCustomDescription() {
+        String customDescription = "My custom description";
+        Status s = new Status(Status.CLIENT_ERROR_NOT_FOUND, customDescription);
+        assertEquals(customDescription, s.getDescription());
+    }
+
 }
