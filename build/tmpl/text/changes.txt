@@ -21,6 +21,7 @@ Changes log
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of public.
         - Added a ServerServlet.createCall() method for easier subclassing.
+        - Added new javax.annotation library for the JAX-RS extension.
     - Misc
         - Reformatting of the changes log. Contributed by Avi Flax.
         - All Component subclasses now use a main method that throws 

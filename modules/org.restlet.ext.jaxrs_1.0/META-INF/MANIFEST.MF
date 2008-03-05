@@ -7,6 +7,7 @@ Bundle-Vendor: Noelios Consulting
 Require-Bundle: org.restlet;visibility:=reexport,
  javax.ws.rs;visibility:=reexport,
  javax.activation;visibility:=reexport,
+ javax.annotation;visibility:=reexport,
  javax.mail;visibility:=reexport,
  javax.xml.bind;visibility:=reexport,
  javax.xml.stream;visibility:=reexport

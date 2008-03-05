@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Common Annotations for the Java Platform
+Bundle-SymbolicName: javax.annotation
+Bundle-Version: 1.0
+Bundle-ClassPath: javax.annotation.jar
+Bundle-Vendor: Sun Microsystems Inc.
+Export-Package: javax.annotation,
+ javax.annotation.security
