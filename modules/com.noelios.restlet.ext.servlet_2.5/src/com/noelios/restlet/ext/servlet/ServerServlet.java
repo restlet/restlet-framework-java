@@ -37,6 +37,7 @@ import org.restlet.util.Engine;
 
 import com.noelios.restlet.application.ApplicationContext;
 import com.noelios.restlet.component.ComponentContext;
+import com.noelios.restlet.http.HttpServerCall;
 import com.noelios.restlet.http.HttpServerHelper;
 
 /**
@@ -260,8 +261,8 @@ public class ServerServlet extends HttpServlet {
      *                The Servlet response.
      * @return The new ServletCall instance.
      */
-    protected ServletCall createCall(Server server, HttpServletRequest request,
-            HttpServletResponse response) {
+    protected HttpServerCall createCall(Server server,
+            HttpServletRequest request, HttpServletResponse response) {
         return new ServletCall(server, request, response);
     }
 

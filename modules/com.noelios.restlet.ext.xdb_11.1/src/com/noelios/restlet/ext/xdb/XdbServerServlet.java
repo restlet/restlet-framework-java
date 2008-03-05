@@ -202,7 +202,7 @@ public class XdbServerServlet extends ServerServlet {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Application createApplication(Context context) {
+    protected Application createApplication(Context context) {
         Application application = null;
 
         // Try to instantiate a new target application
@@ -216,21 +216,22 @@ public class XdbServerServlet extends ServerServlet {
                 Class targetClass;
 
                 if (doubleDotPos > 0) {
-                    // Use DbmsJava by reflection to avoid dependency to Oracle libs
-                    // at compiling time
-                    Class loaderClass =
-                        Engine.classForName("oracle.aurora.rdbms.DbmsJava");
-                    Method meth =
-                        loaderClass.getMethod("classForNameAndSchema",
-                                              new Class[] { String.class,
-                                                            String.class });
-                    String sch =
-                        applicationClassName.substring(0, doubleDotPos);
-                    String className =
-                        applicationClassName.substring(doubleDotPos + 1);
-                    log("[Noelios Restlet Engine] - Schema: "+sch+" class: "+className + " loader: "+loaderClass);
-                    targetClass =
-                            (Class)meth.invoke(null, new Object[] { className, sch });
+                    // Use DbmsJava by reflection to avoid dependency to Oracle
+                    // libs at compiling time
+                    Class loaderClass = Engine
+                            .classForName("oracle.aurora.rdbms.DbmsJava");
+                    Method meth = loaderClass.getMethod(
+                            "classForNameAndSchema", new Class[] {
+                                    String.class, String.class });
+                    String sch = applicationClassName
+                            .substring(0, doubleDotPos);
+                    String className = applicationClassName
+                            .substring(doubleDotPos + 1);
+                    log("[Noelios Restlet Engine] - Schema: " + sch
+                            + " class: " + className + " loader: "
+                            + loaderClass);
+                    targetClass = (Class) meth.invoke(null, new Object[] {
+                            className, sch });
                 } else
                     targetClass = Engine.classForName(applicationClassName);
 
@@ -310,7 +311,7 @@ public class XdbServerServlet extends ServerServlet {
     }
 
     @Override
-    public HttpServerHelper createServer(HttpServletRequest request) {
+    protected HttpServerHelper createServer(HttpServletRequest request) {
         HttpServerHelper result = null;
         Component component = getComponent();
         Application application = getApplication();
