@@ -52,6 +52,7 @@ public class ProviderTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         DomRepresentation entity = response.getEntityAsDom();
         Node xml = entity.getDocument().getFirstChild();
+        System.out.println(subPath + ": " + entity.getText());
         assertEquals("person", xml.getNodeName());
         NodeList nodeList = xml.getChildNodes();
         Node node = nodeList.item(0);
@@ -154,20 +155,16 @@ public class ProviderTest extends JaxRsTestCase {
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
      *      java.io.OutputStream)
      */
-    // TESTEN QName is missing
-    // public void testJaxbElementPost() throws Exception {
-    //     postAndCheck("jaxbElement");
-    // }
+    public void testJaxbElementPost() throws Exception {
+        postAndCheck("jaxbElement");
+    }
 
     public void testJaxbGet() throws Exception {
         getAndCheckJaxb("jaxb");
     }
 
     public void testJaxbPost() throws Exception {
-        if (shouldAccessWithoutTcp())
-            postAndCheck("jaxb");
-        else
-            fail("This test works only, if TCP is not used.");
+        postAndCheck("jaxb");
     }
 
     public void testMultivaluedMapGet() throws Exception {
@@ -187,7 +184,18 @@ public class ProviderTest extends JaxRsTestCase {
         assertEquals("[lastname: Merkel, firstname: Angela]", respEntity);
     }
 
-    public void testXmlTransform() throws Exception {
-        // TODO XmlTransform
+    public void testXmlTransformGet() throws Exception {
+        Response response = get("xslt?text=Hello%20World");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        System.out.println(response.getEntity().getText());
+    }
+
+    public void testXmlTransformPost() throws Exception {
+        Response response = post("xslt", new StringRepresentation("abcdefg",
+                MediaType.TEXT_XML));
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("abcdefg", response.getEntity().getText());
     }
 }

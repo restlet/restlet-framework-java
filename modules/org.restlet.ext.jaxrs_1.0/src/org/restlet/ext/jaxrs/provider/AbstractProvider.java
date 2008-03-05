@@ -57,12 +57,12 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
     protected abstract boolean isReadableAndWriteable(Class<?> type,
             Type genericType, Annotation[] annotations);
 
-    public final boolean isWriteable(Class<?> type, Type genericType,
+    public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
         return isReadableAndWriteable(type, genericType, annotations);
     }
 
-    public final boolean isReadable(Class<?> type, Type genericType,
+    public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations) {
         return isReadableAndWriteable(type, genericType, annotations);
     }

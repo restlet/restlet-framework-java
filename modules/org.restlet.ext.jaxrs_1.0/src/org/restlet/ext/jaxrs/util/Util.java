@@ -18,7 +18,10 @@
 
 package org.restlet.ext.jaxrs.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -746,7 +749,7 @@ public class Util {
     public static void invokeNoneArgMethod(final Object object,
             final Method javaMethod) throws MethodInvokeException,
             InvocationTargetException {
-        if(javaMethod == null)
+        if (javaMethod == null)
             return;
         // REQUEST put in spec, to init only ROOT resource classes.
         javaMethod.setAccessible(true);
@@ -762,8 +765,8 @@ public class Util {
             Throwable cause = e.getCause();
             if (cause instanceof IllegalAccessException)
                 throw new MethodInvokeException(
-                        "Not allowed to invoke post construct method " + javaMethod,
-                        cause);
+                        "Not allowed to invoke post construct method "
+                                + javaMethod, cause);
             if (cause instanceof InvocationTargetException)
                 throw (InvocationTargetException) cause;
             if (cause instanceof ExceptionInInitializerError)
@@ -886,5 +889,35 @@ public class Util {
         if (object == null)
             return null;
         return object.toString();
+    }
+
+    /**
+     * Reads the full inputStream and returns an byte-array of it
+     * 
+     * @param inputStream
+     * @return
+     * @throws IOException 
+     */
+    public static byte[] getByteArray(InputStream inputStream)
+            throws IOException {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(4096);
+        streamCopy(inputStream, byteStream);
+        return byteStream.toByteArray();
+    }
+
+    /**
+     * Copiees the InputStream to the OutputStream.
+     * 
+     * @param in
+     * @param out
+     * @throws IOException
+     */
+    public static void streamCopy(InputStream in, OutputStream out)
+            throws IOException {
+        byte[] buffer = new byte[512];
+        int bytesRead;
+        while ((bytesRead = in.read(buffer)) >= 0) {
+            out.write(buffer, 0, bytesRead);
+        }
     }
 }

@@ -58,7 +58,7 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
         if (atp instanceof Class)
             return true;
         if (atp instanceof ParameterizedType)
-            return (((ParameterizedType)atp).getRawType() instanceof Class);
+            return (((ParameterizedType) atp).getRawType() instanceof Class);
         return false;
     }
 
@@ -84,12 +84,13 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
         Type atp = pt.getActualTypeArguments()[0];
         Class<?> clazz;
         if (atp instanceof Class)
-            clazz = (Class<?>)atp;
+            clazz = (Class<?>) atp;
         else if (atp instanceof ParameterizedType)
-            clazz = (Class<?>)((ParameterizedType)atp).getRawType();
+            clazz = (Class<?>) ((ParameterizedType) atp).getRawType();
         else
-            throw new ImplementationException("The JaxbElement provider has gotten a type it could not unmarshal. Perhaps it is not consistent to itself.");
-        QName qName = null; // TODO get QName from anywhere
+            throw new ImplementationException(
+                    "The JaxbElement provider has gotten a type it could not unmarshal. Perhaps is the JaxbElementProvider not consistent to itself.");
+        QName qName = new QName("testQName"); // LATER QName for JAXBElement?
         Class<?> declaredType = clazz;
         Object value = unmarshal(clazz, entityStream);
         return new JAXBElement(qName, declaredType, value);

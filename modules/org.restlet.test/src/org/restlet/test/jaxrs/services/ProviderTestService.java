@@ -28,13 +28,20 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.data.Form;
+import org.restlet.ext.jaxrs.XsltSource;
 import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.util.Converter;
+import org.restlet.ext.jaxrs.util.Util;
+import org.xml.sax.InputSource;
 
 /**
  * @author Stephan
@@ -91,6 +98,28 @@ public class ProviderTestService {
             stb.append((char) b);
         return stb.toString();
     }
+    
+    // TESTEN StringBuilder, CharSequence as Parameter read and write
+    
+    @GET
+    @Path("xslt")
+    @ProduceMime("text/html")
+    @XsltSource("src/org/restlet/test/jaxrs/services/greeting.xsl")
+    public Source getByXslt(@QueryParam("text") String text) {
+        String xmlStart = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
+        String xml = "<greeting>"+text+"</greeting>";
+        byte[] bytes = (xmlStart+xml).getBytes();
+        return new StreamSource(new ByteArrayInputStream(bytes));
+    }
+
+    @POST
+    @Path("xslt")
+    @ConsumeMime("text/xml")
+    @ProduceMime("text/plain")
+    public byte[] postByXslt(Source source) throws IOException {
+        InputSource inputSource = SAXSource.sourceToInputSource(source);
+        return Util.getByteArray(inputSource.getByteStream());
+    }
 
     @GET
     @Path("jaxb")
@@ -111,7 +140,7 @@ public class ProviderTestService {
     @Path("jaxbElement")
     @ProduceMime("text/xml")
     public JAXBElement<Person> getJaxbElement() {
-        return new JAXBElement<Person>(new QName(""), Person.class, getJaxb());
+        return new JAXBElement<Person>(new QName("qName"), Person.class, getJaxb());
     }
 
     @POST

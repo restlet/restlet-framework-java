@@ -67,6 +67,7 @@ import org.restlet.ext.jaxrs.provider.JaxbProvider;
 import org.restlet.ext.jaxrs.provider.StringProvider;
 import org.restlet.ext.jaxrs.provider.WwwFormFormProvider;
 import org.restlet.ext.jaxrs.provider.WwwFormMmapProvider;
+import org.restlet.ext.jaxrs.provider.XsltProvider;
 import org.restlet.ext.jaxrs.util.MatchingResult;
 import org.restlet.ext.jaxrs.util.PathRegExp;
 import org.restlet.ext.jaxrs.util.RemainingPath;
@@ -313,7 +314,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         this.addDefaultProvider(StringProvider.class);
         this.addDefaultProvider(WwwFormFormProvider.class);
         this.addDefaultProvider(WwwFormMmapProvider.class);
-        // LATER this.addDefaultProvider(XmlTransformSourceProvider.class);
+        this.addDefaultProvider(XsltProvider.class);
     }
 
     private void addDefaultProvider(Class<?> jaxRsProviderClass) {

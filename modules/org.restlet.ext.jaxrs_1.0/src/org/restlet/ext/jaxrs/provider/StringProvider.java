@@ -39,8 +39,6 @@ import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 @ConsumeMime("text/*")
 public class StringProvider extends AbstractProvider<CharSequence> {
 
-    // TODO wie soll man application/*+xml feststellen?
-
     /**
      * 
      */
