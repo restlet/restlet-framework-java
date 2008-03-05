@@ -22,9 +22,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Response;
 
+import org.restlet.test.jaxrs.services.tests.OwnProviderTest;
+
 /**
- * @see CrazyTypeProvider
  * @author Stephan Koops
+ * @see CrazyTypeProvider
+ * @see OwnProviderTest
  */
 @Path("ownProviderTest")
 public class OwnProviderTestService {

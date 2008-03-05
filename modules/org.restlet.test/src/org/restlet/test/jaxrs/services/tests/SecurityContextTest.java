@@ -150,7 +150,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         assertEquals(SecurityContext.BASIC_AUTH, entity);
     }
 
-    // TODO waiting for Digest Auth is running
+    // TESTEN waiting for Digest Auth is running
     public void _testAuthenticationSchemeDigest() throws Exception {
         if (!setAccessControl(AllowAllAccess.getInstance()))
             return;

@@ -31,6 +31,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * @author Stephan Koops
+ * @see OwnProviderTestService
  */
 @Provider
 @ProduceMime("application/crazyType")

@@ -49,10 +49,6 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
-import org.restlet.ext.jaxrs.exceptions.JaxRsException;
-import org.restlet.ext.jaxrs.exceptions.JaxRsRuntimeException;
-import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.ext.jaxrs.wrappers.ResourceClass;
@@ -361,17 +357,16 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param subPath
      *                darf null sein
      * @return
-     * @throws JaxRsException
      * @see #createReference(String, String)
      */
     public Reference createReference(Class<?> jaxRsClass, String subPath) {
         String path;
         try {
             path = ResourceClass.getPathTemplate(jaxRsClass);
-        } catch (IllegalPathOnClassException e) {
-            throw new JaxRsRuntimeException(e);
-        } catch (MissingAnnotationException e) {
-            throw new JaxRsRuntimeException(e);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return createReference(path, subPath);
     }
