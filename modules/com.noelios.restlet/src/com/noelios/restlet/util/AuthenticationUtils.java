@@ -175,7 +175,7 @@ public class AuthenticationUtils {
             Series<Parameter> httpHeaders) {
         String result = null;
         AuthenticationHelper helper = Engine.getInstance().findHelper(
-                challenge.getScheme(), false, true);
+                challenge.getScheme(), true, false);
 
         if (helper != null) {
             result = helper.format(challenge, request, httpHeaders);
@@ -226,14 +226,14 @@ public class AuthenticationUtils {
 
                 String rest = header.substring(space + 1);
                 parseParameters(rest, result.getParameters());
-                
+
                 result.setRealm(result.getParameters().getFirstValue("realm"));
             }
         }
 
         // Give a chance to the authentication helper to do further parsing
         AuthenticationHelper helper = Engine.getInstance().findHelper(
-                result.getScheme(), false, true);
+                result.getScheme(), true, false);
 
         if (helper != null) {
             helper.parseRequest(result, header);
@@ -273,7 +273,7 @@ public class AuthenticationUtils {
                 // Give a chance to the authentication helper to do further
                 // parsing
                 AuthenticationHelper helper = Engine.getInstance().findHelper(
-                        result.getScheme(), false, true);
+                        result.getScheme(), true, false);
 
                 if (helper != null) {
                     helper.parseResponse(result, request, logger, header);
