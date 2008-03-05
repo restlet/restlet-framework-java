@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.ApplicationConfig;
@@ -52,6 +53,8 @@ import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateProviderException;
+import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.provider.ByteArrayProvider;
@@ -112,6 +115,8 @@ import org.restlet.resource.StringRepresentation;
  */
 public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         HiddenJaxRsRouter {
+
+    private static final String PRE_CONSTR_EXC_MESSAGE = "Exception while calling the pre construct method";
 
     /**
      * This set must only changed by adding a root resource class to this
@@ -227,15 +232,42 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             for (Class<?> providerClass : providerClasses) {
                 try {
                     this.addProvider(providerClass);
-                } catch (InvocationTargetException ite) {
-                    String msg = "The constructor of provider "
+                } catch (InstantiateProviderException ipe) {
+                    String msg = "The provider "
                             + providerClass.getName()
-                            + " has thrown an exception";
-                    throw new IllegalArgumentException(msg, ite.getCause());
+                            + " could not be instantiated";
+                    throw new IllegalArgumentException(msg, ipe.getCause());
                 }
             }
         }
         this.addExtensionMappings(appConfig.getExtensionMappings());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public synchronized void stop() throws Exception
+    {
+        try
+        {
+            Set<Provider<?>> allProviders = new HashSet<Provider<?>>(64);
+            allProviders.addAll((Collection)this.messageBodyReaders);
+            allProviders.addAll((Collection)this.messageBodyWriters);
+            allProviders.addAll((Collection)this.contextResolvers);
+            for(Provider<?> p : allProviders) 
+            {
+                try {
+                    p.preDestroy();
+                } catch (MethodInvokeException e) {
+                    getLogger().log(Level.INFO, PRE_CONSTR_EXC_MESSAGE, e);
+                } catch (InvocationTargetException e) {
+                    getLogger().log(Level.INFO, PRE_CONSTR_EXC_MESSAGE, e);
+                }
+            }
+        }
+        finally
+        {
+            super.stop();
+        }
     }
 
     /**
@@ -289,7 +321,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             this.addProvider(jaxRsProviderClass);
         } catch (IllegalArgumentException e) {
             throw new ImplementationException(e);
-        } catch (InvocationTargetException e) {
+        } catch (InstantiateProviderException e) {
             throw new ImplementationException(e);
         }
     }
@@ -305,15 +337,25 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      *                {@link javax.ws.rs.ext.ContextResolver}.
      * @throws IllegalArgumentException
      *                 if the provider is not a valid provider.
+     * @throws InstantiateProviderException
      * @throws InvocationTargetException
      * @see {@link javax.ws.rs.ext.Provider}
      */
     private void addProvider(Class<?> jaxRsProviderClass)
-            throws IllegalArgumentException, InvocationTargetException {
+            throws IllegalArgumentException, InstantiateProviderException {
         // REQUEST what should happens with providers not annotated with
         // @Provider? ignore? If they are given the AppConfig, they should no
         // be used? Than we didnot need the annotation.
-        Provider<?> provider = new Provider<Object>(jaxRsProviderClass);
+        Provider<?> provider;
+        try {
+            provider = new Provider<Object>(jaxRsProviderClass);
+        } catch (InvocationTargetException e) {
+            InstantiateProviderException ipe = new InstantiateProviderException(
+                    e.getMessage());
+            ipe.initCause(e.getCause());
+            throw ipe;
+        }
+        provider.init();
         if (provider.isWriter())
             this.messageBodyWriters.add(provider);
         if (provider.isReader())
@@ -348,6 +390,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
+        ResourceObject resourceObject = null;
         try {
             CallContext callContext = new CallContext(request, response,
                     this.accessControl);
@@ -363,7 +406,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                 }
                 callContext.setReadOnly();
                 ResourceMethod resourceMethod = resObjAndMeth.resourceMethod;
-                ResourceObject resourceObject = resObjAndMeth.resourceObject;
+                resourceObject = resObjAndMeth.resourceObject;
                 invokeMethodAndHandleResult(resourceMethod, resourceObject,
                         callContext);
             } catch (WebApplicationException e) {
@@ -372,6 +415,16 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             }
         } catch (RequestHandledException e) {
             // Exception was handled and data were set into the Response.
+        } finally {
+            if (resourceObject != null) {
+                try {
+                    resourceObject.preDestroy();
+                } catch (MethodInvokeException e) {
+                    getLogger().log(Level.INFO, PRE_CONSTR_EXC_MESSAGE, e);
+                } catch (InvocationTargetException e) {
+                    getLogger().log(Level.INFO, PRE_CONSTR_EXC_MESSAGE, e);
+                }
+            }
         }
     }
 
@@ -442,7 +495,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                 continue; // doesn't match
             if (matchingResult.getFinalCapturingGroup().isEmptyOrSlash())
                 eAndCs.add(rootResourceClass);
-            else if(rootResourceClass.hasSubResourceMethodsOrLocators())
+            else if (rootResourceClass.hasSubResourceMethodsOrLocators())
                 eAndCs.add(rootResourceClass);
         }
         // (d)
@@ -526,7 +579,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                 if (matchingResult.getFinalCapturingGroup().isEmptyOrSlash())
                     eWithMethod.add(methodOrLocator);
                 // if(methodOrLocator instanceof SubResourceLocator)
-                //     eWithMethod.add(methodOrLocator);
+                // eWithMethod.add(methodOrLocator);
             }
             // (e) If E is empty -> HTTP 404
             if (eWithMethod.isEmpty())

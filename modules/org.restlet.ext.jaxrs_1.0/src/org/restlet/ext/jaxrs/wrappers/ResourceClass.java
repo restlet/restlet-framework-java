@@ -21,6 +21,7 @@ package org.restlet.ext.jaxrs.wrappers;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
@@ -51,6 +54,7 @@ import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.exceptions.InjectException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.util.PathRegExp;
 import org.restlet.ext.jaxrs.util.RemainingPath;
@@ -82,10 +86,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     static boolean checkForJaxRsAnnotations(AccessibleObject javaMethod) {
         for (Annotation annotation : javaMethod.getAnnotations()) {
             Class<? extends Annotation> annoType = annotation.annotationType();
-            if (annoType.getName().startsWith(
-                    JAX_RS_PACKAGE_PREFIX))
+            if (annoType.getName().startsWith(JAX_RS_PACKAGE_PREFIX))
                 return true;
-            if(annoType.isAnnotationPresent(HttpMethod.class))
+            if (annoType.isAnnotationPresent(HttpMethod.class))
                 return true;
         }
         return false;
@@ -211,6 +214,10 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     private Collection<ResourceMethod> subResourceMethods;
 
     private Collection<ResourceMethodOrLocator> subResourceMethodsAndLocators;
+
+    private Method postConstructMethod;
+
+    private Method preDestroyMethod;
 
     /**
      * Creates a new root resource class wrapper. Will not set the path, because
@@ -463,6 +470,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         initResourceMethodsAndLocators(logger);
         initInjectFields();
+        findJsr250Methods();
+    }
+
+    private void findJsr250Methods() {
+        Class<?> jaxRsClass = this.getJaxRsClass();
+        this.postConstructMethod = Util.findPostConstructMethod(jaxRsClass);
+        this.preDestroyMethod = Util.findPreDestroyMethod(jaxRsClass);
     }
 
     /**
@@ -506,8 +520,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         Collection<SubResourceLocator> subResLocs = new ArrayList<SubResourceLocator>();
         Method[] classMethods = jaxRsClass.getDeclaredMethods();
         for (Method javaMethod : classMethods) {
-            if (!checkResMethodVolatileOrNotPublic(javaMethod, logger))
-                continue;
             Method annotatedMethod = getAnnotatedJavaMethod(javaMethod);
             if (annotatedMethod == null)
                 continue;
@@ -515,12 +527,16 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             org.restlet.data.Method httpMethod = ResourceMethod
                     .getHttpMethod(annotatedMethod);
             if (httpMethod != null) {
+                if (!checkResMethodVolatileOrNotPublic(javaMethod, logger))
+                    continue;
                 ResourceMethod subResMeth = new ResourceMethod(javaMethod,
                         annotatedMethod, this, httpMethod);
                 subRsesMeths.add(subResMeth);
                 srmls.add(subResMeth);
             } else {
                 if (path != null) {
+                    if (!checkResMethodVolatileOrNotPublic(javaMethod, logger))
+                        continue;
                     SubResourceLocator subResLoc = new SubResourceLocator(
                             javaMethod, annotatedMethod, this);
                     subResLocs.add(subResLoc);
@@ -534,8 +550,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     }
 
     /**
-     * Injects all the supported dependencies into the the given resource object
-     * of this class.
+     * Initiates the resource object:
+     * <ul>
+     * <li>Injects all the supported dependencies into the the given resource
+     * object of this class.</li>
+     * <li>Calls the method annotated with &#64;{@link PostConstruct}, see
+     * JSR-250.</li>
+     * </ul>
      * 
      * @param resourceObject
      * @param callContext
@@ -545,16 +566,17 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      *                 {@link InjectException#getCause()} for the reason.
      * @throws WebApplicationException
      * @throws InstantiateParameterException
+     * @throws MethodInvokeException
+     *                 if the method annotated with &#64;{@link PostConstruct}
+     *                 could not be called or throws an exception.
      */
-    void injectDependencies(ResourceObject resourceObject,
-            CallContext callContext) throws InjectException,
-            InstantiateParameterException, WebApplicationException {
+    void init(ResourceObject resourceObject, CallContext callContext)
+            throws InjectException, InstantiateParameterException,
+            WebApplicationException, MethodInvokeException {
         Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
         for (Field contextField : this.injectFieldsContext) {
             Util.inject(jaxRsResObj, contextField, callContext);
         }
-        if (true)
-            return;
         // not supported, because @*Param are only allowed for parameters.
         for (Field cpf : this.injectFieldsCookieParam) {
             CookieParam headerParam = cpf.getAnnotation(CookieParam.class);
@@ -596,10 +618,40 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                     defaultValue, callContext, Logger.getAnonymousLogger());
             Util.inject(jaxRsResObj, hpf, value);
         }
+        try {
+            Util.invokeNoneArgMethod(jaxRsResObj, this.postConstructMethod);
+        } catch (InvocationTargetException e) {
+            String message = e.getMessage();
+            MethodInvokeException mie = new MethodInvokeException(message);
+            mie.initCause(e.getCause());
+            throw mie;
+        }
     }
 
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[" + this.jaxRsClass + "]";
+    }
+
+    /**
+     * Do work before destroying the given object:
+     * <ul>
+     * <li>Calls the method annotated with &#64;{@link PreDestroy}, see
+     * JSR-250. Excptions while calling this method</li>
+     * </ul>
+     * 
+     * @param resourceObject
+     *                the object that is prepared for destroying.
+     * @throws MethodInvokeException
+     *                 if the method annotated with &#64;{@link PreDestroy}
+     *                 could not be called
+     * @throws InvocationTargetException
+     *                 if the method annotated with &#64;{@link PreDestroy} has
+     *                 thrown an Exception.
+     */
+    public void preDestroy(ResourceObject resourceObject)
+            throws MethodInvokeException, InvocationTargetException {
+        Object jaxRsResourceObject = resourceObject.getJaxRsResourceObject();
+        Util.invokeNoneArgMethod(jaxRsResourceObject, this.preDestroyMethod);
     }
 }

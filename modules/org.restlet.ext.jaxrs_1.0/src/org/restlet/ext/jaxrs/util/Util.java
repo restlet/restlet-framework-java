@@ -20,10 +20,13 @@ package org.restlet.ext.jaxrs.util;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -40,6 +43,8 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -53,6 +58,8 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.exceptions.InjectException;
+import org.restlet.ext.jaxrs.exceptions.JaxRsRuntimeException;
+import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Engine;
@@ -398,6 +405,38 @@ public class Util {
     }
 
     /**
+     * 
+     * @param jaxRsClass
+     *                the class to find the method to call for &#64;{@link PostConstruct}.
+     * @return The method to call for post construct, or null, if none found.
+     * @see #invokeNoneArgMethod(Object, Method)
+     * @see #findPreDestroyMethod(Class)
+     */
+    public static Method findPostConstructMethod(Class<?> jaxRsClass) {
+        for (Method method : jaxRsClass.getDeclaredMethods())
+            if (method.isAnnotationPresent(PostConstruct.class))
+                // LATER check, if no args -> warn and ignore
+                return method;
+        return null;
+    }
+
+    /**
+     * 
+     * @param jaxRsClass
+     *                the class to find the method to call for &#64;{@link PreDestroy}.
+     * @return The method to call for post construct, or null, if none found.
+     * @see #invokeNoneArgMethod(Object, Method)
+     * @see #findPostConstructMethod(Class)
+     */
+    public static Method findPreDestroyMethod(Class<?> jaxRsClass) {
+        for (Method method : jaxRsClass.getDeclaredMethods())
+            if (method.isAnnotationPresent(PreDestroy.class))
+                // LATER check, if no args -> warn and ignore
+                return method;
+        return null;
+    }
+
+    /**
      * Converte the given Date into a String. Copied from
      * {@link com.noelios.restlet.HttpCall}.
      * 
@@ -646,6 +685,7 @@ public class Util {
     public static RuntimeException handleException(Exception e, Logger logger,
             String logMessage) {
         logger.log(Level.WARNING, logMessage, e);
+        e.printStackTrace();
         throw new WebApplicationException(e, Status.SERVER_ERROR_INTERNAL
                 .getCode());
     }
@@ -686,6 +726,55 @@ public class Util {
         } catch (RuntimeException e) {
             throw new InjectException("Could not inject the " + toInject
                     + " into field " + field + " of object " + resource, e);
+        }
+    }
+
+    /**
+     * Invokes the given method without parameters. This constraint is not
+     * checked; but the method could also be called, if access is normally not
+     * allowed.<br>
+     * If no javaMethod is given, nothing happens.
+     * 
+     * @param object
+     * @param javaMethod
+     * @throws MethodInvokeException
+     * @throws InvocationTargetException
+     * @see #inject(Object, Field, Object)
+     * @see #findPostConstructMethod(Class)
+     * @see #findPreDestroyMethod(Class)
+     */
+    public static void invokeNoneArgMethod(final Object object,
+            final Method javaMethod) throws MethodInvokeException,
+            InvocationTargetException {
+        if(javaMethod == null)
+            return;
+        // REQUEST put in spec, to init only ROOT resource classes.
+        javaMethod.setAccessible(true);
+        try {
+            AccessController
+                    .doPrivileged(new PrivilegedExceptionAction<Object>() {
+                        public Object run() throws Exception {
+                            javaMethod.invoke(object);
+                            return null;
+                        }
+                    });
+        } catch (PrivilegedActionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof IllegalAccessException)
+                throw new MethodInvokeException(
+                        "Not allowed to invoke post construct method " + javaMethod,
+                        cause);
+            if (cause instanceof InvocationTargetException)
+                throw (InvocationTargetException) cause;
+            if (cause instanceof ExceptionInInitializerError)
+                throw new MethodInvokeException(
+                        "Could not invoke post construct method " + javaMethod,
+                        cause);
+            if (cause instanceof RuntimeException)
+                throw (RuntimeException) cause;
+            throw new JaxRsRuntimeException(
+                    "Error while invoking post construct method " + javaMethod,
+                    cause);
         }
     }
 

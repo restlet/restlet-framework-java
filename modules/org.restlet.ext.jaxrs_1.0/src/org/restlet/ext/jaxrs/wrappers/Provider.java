@@ -23,19 +23,25 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.InstantiateProviderException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateRootRessourceException;
+import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.util.Util;
 
 /**
  * Wraps a JAX-RS provider.
@@ -110,7 +116,6 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             throw new IllegalArgumentException(
                     "The given JAX-RS Provider is neither a MessageBodyWriter nor a MessageBodyReader nor a ContextResolver");
         }
-        injectDependencies();
     }
 
     /**
@@ -227,13 +232,48 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     }
 
     /**
-     * Injects the supported dependencies into this provider. Until now no
-     * dependencies are supported.
+     * Injects the supported dependencies into this provider and calls the
+     * method annotated with &#64;{@link PostConstruct}.
+     * 
+     * @throws InstantiateProviderException
+     *                 if the provider could not be instantiated, because the
+     *                 method could not be called or because of an Exception
+     *                 while calling the post construct method.
      */
     @SuppressWarnings("unused")
-    void injectDependencies() {
+    public void init() throws InstantiateProviderException {
         // until now no dependencies possible.
         // Perhaps later some are added.
+        Object jaxRsProvider = this.getJaxRsProvider();
+        Class<? extends Object> providerClass = jaxRsProvider.getClass();
+        Method postConstructMethod = Util
+                .findPostConstructMethod(providerClass);
+        try {
+            Util.invokeNoneArgMethod(jaxRsProvider, postConstructMethod);
+        } catch (MethodInvokeException e) {
+            InstantiateProviderException ipe = new InstantiateProviderException(
+                    e.getMessage());
+            ipe.initCause(e);
+            throw ipe;
+        } catch (InvocationTargetException e) {
+            String message = "Exception while calling " + postConstructMethod;
+            throw new InstantiateProviderException(message, e);
+        }
+    }
+
+    /**
+     * Invokes the method annotated with &#64;{@link PreDestroy}.
+     * 
+     * @throws InvocationTargetException
+     * @throws MethodInvokeException
+     * 
+     */
+    public void preDestroy() throws MethodInvokeException,
+            InvocationTargetException {
+        Object provider = getJaxRsProvider();
+        Class<? extends Object> providerClass = provider.getClass();
+        Method preDestroxMethod = Util.findPreDestroyMethod(providerClass);
+        Util.invokeNoneArgMethod(provider, preDestroxMethod);
     }
 
     /**

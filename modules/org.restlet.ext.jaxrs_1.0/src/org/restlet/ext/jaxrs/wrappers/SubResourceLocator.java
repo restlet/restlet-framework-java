@@ -117,7 +117,6 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         WrapperFactory wrapperFactory = jaxRsRouter.getWrapperFactory();
         ResourceClass resourceClass = wrapperFactory.getResourceClass(subResObj
                 .getClass());
-        // TODO JSR250, see @Path
         return new ResourceObject(subResObj, resourceClass);
     }
 }

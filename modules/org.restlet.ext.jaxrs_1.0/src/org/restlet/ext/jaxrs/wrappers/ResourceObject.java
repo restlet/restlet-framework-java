@@ -18,11 +18,16 @@
 
 package org.restlet.ext.jaxrs.wrappers;
 
+import java.lang.reflect.InvocationTargetException;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ws.rs.WebApplicationException;
 
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.InjectException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 
 /**
  * Represents a resource Object
@@ -74,7 +79,13 @@ public class ResourceObject {
     }
 
     /**
-     * Injects all the supported dependencies into the this resource object.
+     * Initiates the resource object:
+     * <ul>
+     * <li>Injects all the supported dependencies into the this resource
+     * object.</li>
+     * <li> calls the method annotated with &#64;{@link PostConstruct}, see
+     * JSR-250.</li>
+     * </ul>
      * 
      * @param callContext
      *                The CallContext to get the dependencies from.
@@ -83,10 +94,33 @@ public class ResourceObject {
      *                 {@link InjectException#getCause()} for the reason.
      * @throws WebApplicationException
      * @throws InstantiateParameterException
+     * @throws MethodInvokeException
+     *                 if the method annotated with &#64;{@link PostConstruct}
+     *                 could not be called or throws an exception.
      */
-    public void injectDependencies(CallContext callContext)
-            throws InjectException, InstantiateParameterException,
-            WebApplicationException {
-        this.getResourceClass().injectDependencies(this, callContext);
+    public void init(CallContext callContext) throws InjectException,
+            InstantiateParameterException, WebApplicationException,
+            MethodInvokeException {
+        this.getResourceClass().init(this, callContext);
+    }
+
+    /**
+     * Do work before destroying the object:
+     * <ul>
+     * <li>Calls the method annotated with &#64;{@link PreDestroy}, see
+     * JSR-250.</li>
+     * </ul>
+     * 
+     * @throws MethodInvokeException
+     *                 if the method annotated with &#64;{@link PreDestroy}
+     *                 could not be called
+     * @throws InvocationTargetException
+     * @throws InvocationTargetException
+     *                 if the method annotated with &#64;{@link PreDestroy} has
+     *                 thrown an Exception.
+     */
+    public void preDestroy() throws MethodInvokeException,
+            InvocationTargetException {
+        this.getResourceClass().preDestroy(this);
     }
 }

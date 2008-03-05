@@ -30,6 +30,7 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
@@ -44,6 +45,7 @@ import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.exceptions.InjectException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateRootRessourceException;
+import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
@@ -298,22 +300,26 @@ public class RootResourceClass extends ResourceClass {
      * @throws RequestHandledException
      * @throws InstantiateRootRessourceException
      * @throws MissingAnnotationException
+     * @throws MethodInvokeException 
+     * @throws WebApplicationException 
+     * @throws MethodInvokeException
+     *                 if the method annotated with &#64;{@link PostConstruct}
+     *                 could not be called or throws an exception.
      */
     public ResourceObject createInstance(CallContext callContext,
             HiddenJaxRsRouter jaxRsRouter)
             throws InstantiateParameterException, MissingAnnotationException,
             InstantiateRootRessourceException, RequestHandledException,
-            InvocationTargetException {
+            InvocationTargetException, WebApplicationException, MethodInvokeException {
         Constructor<?> constructor = this.constructor;
         Object instance = createInstance(constructor, constructorLeaveEncoded,
                 callContext, jaxRsRouter);
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {
-            rootResourceObject.injectDependencies(callContext);
+            rootResourceObject.init(callContext);
         } catch (InjectException e) {
             throw new InstantiateRootRessourceException(e);
         }
-        // TODO JSR250, see @Path
         return rootResourceObject;
     }
 
