@@ -253,7 +253,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         } catch (MethodInvokeException e) {
             InstantiateProviderException ipe = new InstantiateProviderException(
                     e.getMessage());
-            ipe.initCause(e);
+            ipe.setStackTrace(e.getStackTrace());
             throw ipe;
         } catch (InvocationTargetException e) {
             String message = "Exception while calling " + postConstructMethod;

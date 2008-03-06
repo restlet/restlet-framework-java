@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
-import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 
 /**
@@ -52,12 +51,10 @@ public class WrapperFactory {
      * @throws MissingAnnotationException
      *                 if the class is not annotated with &#64;Path.
      * @throws IllegalPathOnClassException
-     * @throws IllegalPathOnMethodException
      */
     public RootResourceClass getRootResourceClass(
             Class<?> jaxRsRootResourceClass) throws IllegalArgumentException,
-            MissingAnnotationException, IllegalPathOnClassException,
-            IllegalPathOnMethodException {
+            MissingAnnotationException, IllegalPathOnClassException {
         return new RootResourceClass(jaxRsRootResourceClass, logger);
     }
 
@@ -68,10 +65,8 @@ public class WrapperFactory {
      * 
      * @param jaxRsResourceClass
      * @return
-     * @throws IllegalPathOnMethodException
      */
-    ResourceClass getResourceClass(Class<?> jaxRsResourceClass)
-            throws IllegalPathOnMethodException {
+    ResourceClass getResourceClass(Class<?> jaxRsResourceClass) {
         ResourceClass rc = resourceClasses.get(jaxRsResourceClass);
         if (rc == null) {
             rc = new ResourceClass(jaxRsResourceClass, logger);

@@ -15,27 +15,55 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+package org.restlet.example.jaxrs;
 
-package org.restlet.ext.jaxrs.exceptions;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.ws.rs.Path;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * This kind of exception is thrown, when an &#64{@link Path} annotation
- * contains illegal charactres.
- * 
+ * This list is serializable by JAXB.
  * @author Stephan Koops
- * 
  */
-public class IllegalPathOnMethodException extends IllegalPathException {
+@XmlRootElement
+public class PersonList {
 
-    private static final long serialVersionUID = -6655373875338074948L;
+    private List<Person> persons = new ArrayList<Person>();
+    
+    /**
+     * 
+     */
+    public PersonList() {
+    }
 
     /**
-     * @param ipe
+     * @param persons 
      */
-    public IllegalPathOnMethodException(IllegalPathException ipe) {
-        super(ipe.getPath(), ipe.getMessage());
-        this.setStackTrace(ipe.getStackTrace());
+    public PersonList(List<Person> persons) {
+        this.persons = persons;
+    }
+
+    /**
+     * @return
+     */
+    @XmlElement(name = "persons")
+    public List<Person> getPersons() {
+        return persons;
+    }
+
+    /**
+     * @param persons
+     */
+    public void setPersons(List<Person> persons) {
+        this.persons = persons;
+    }
+
+    /**
+     * @param person
+     */
+    public void add(Person person) {
+        this.persons.add(person);
     }
 }

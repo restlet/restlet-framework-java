@@ -57,8 +57,7 @@ public class PersonsRootResource {
      * @return
      */
     @Path("{personId}")
-    public PersonResource onePerson(@PathParam("personId")
-    int personId) {
+    public PersonResource onePerson(@PathParam("personId") int personId) {
         if (!dbPersonExists(personId))
             throw new WebApplicationException(404);
         return new PersonResource(personId);
@@ -72,13 +71,12 @@ public class PersonsRootResource {
      */
     @GET
     @ProduceMime( { "application/xml", "text/xml" })
-    public Person[] getXmlList() {
-        // TODO getXmlList() can not serialize a Person list / person array.
+    public PersonList getXmlList() {
         // for a good REST style links to the sub resources should be added.
         List<Person> allPersons = dbGetAllPersons();
-        return allPersons.toArray(new Person[allPersons.size()]);
+        return new PersonList(allPersons);
     }
-
+    
     /**
      * Returns the persons as HTML page
      * 
@@ -87,8 +85,7 @@ public class PersonsRootResource {
      */
     @GET
     @ProduceMime("text/html")
-    public String getHtmlList(@Context
-    UriInfo uriInfo) {
+    public String getHtmlList(@Context UriInfo uriInfo) {
         Collection<Person> persons = dbGetAllPersons();
         StringBuilder html = new StringBuilder();
         html.append("<html><head></head><body>\n");
@@ -132,8 +129,7 @@ public class PersonsRootResource {
      */
     @POST
     @ConsumeMime("application/x-www-form-urlencoded")
-    public Response createPerson(Form restletForm, @Context
-    UriInfo uriInfo) {
+    public Response createPerson(Form restletForm, @Context UriInfo uriInfo) {
         Person person = new Person();
         person.setFirstname(restletForm.getFirstValue("firstname"));
         person.setLastname(restletForm.getFirstValue("lastname"));
@@ -153,8 +149,7 @@ public class PersonsRootResource {
      */
     @POST
     @ConsumeMime( { "application/xml", "text/xml" })
-    public Response createPerson(Person person, @Context
-    UriInfo uriInfo) {
+    public Response createPerson(Person person, @Context UriInfo uriInfo) {
         String newId = String.valueOf(dbCreatePerson(person));
         URI location = uriInfo.getRequestUriBuilder().path(newId).build();
         return Response.created(location).build();

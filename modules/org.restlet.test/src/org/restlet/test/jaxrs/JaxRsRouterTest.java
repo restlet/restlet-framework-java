@@ -30,6 +30,7 @@ import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
 import org.restlet.test.jaxrs.services.path.IllegalPathService2;
+import org.restlet.test.jaxrs.services.path.IllegalPathService3;
 import org.restlet.test.jaxrs.services.resources.DoublePath1;
 import org.restlet.test.jaxrs.services.resources.DoublePath2;
 import org.restlet.test.jaxrs.services.resources.SimpleTrain;
@@ -85,7 +86,7 @@ public class JaxRsRouterTest extends TestCase {
         };
         try {
             JaxRsRouter router = new JaxRsRouter(null, appConfig);
-            fail("must not pass");
+            fail("must not fail");
         } catch (IllegalArgumentException e) {
             // wunderful, exception raised :-)
         }
@@ -102,7 +103,22 @@ public class JaxRsRouterTest extends TestCase {
         };
         try {
             JaxRsRouter router = new JaxRsRouter(null, appConfig);
-            fail("must not pass");
+            fail("must not fail");
+        } catch (IllegalArgumentException e) {
+            // wunderful, exception raised :-)
+        }
+    }
+
+    public void test5() {
+        ApplicationConfig appConfig = new ApplicationConfig() {
+            @Override
+            public Set<Class<?>> getResourceClasses() {
+                return (Set) Util.createSet(IllegalPathService3.class);
+            }
+        };
+        try {
+            JaxRsRouter router = new JaxRsRouter(null, appConfig);
+            fail("must not fail");
         } catch (IllegalArgumentException e) {
             // wunderful, exception raised :-)
         }

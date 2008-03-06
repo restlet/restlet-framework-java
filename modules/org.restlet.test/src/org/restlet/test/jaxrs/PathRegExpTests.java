@@ -68,10 +68,6 @@ public class PathRegExpTests extends TestCase {
     private PathRegExp regExpMultipleSegments2 = new PathRegExp(
             PATH_PATTERN_2, false);
 
-    // TESTEN @Path must not contain matrix parameters.
-    // TESTEN @Path("abc") and @Path("abc/{id}") on two rrcs, and two methods in
-    // in same resource class.
-    
     /**
      * Test method for
      * {@link org.restlet.ext.jaxrs.util.PathRegExp#match(java.lang.String)}.

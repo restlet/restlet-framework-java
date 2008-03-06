@@ -28,6 +28,7 @@ import java.io.StringReader;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
@@ -56,8 +57,8 @@ import org.xml.sax.InputSource;
 public class ProviderTestService {
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    private static final int CS_LAST_CHAR = 126; 
-    
+    private static final int CS_LAST_CHAR = 126;
+
     /**
      * @return
      */
@@ -105,6 +106,7 @@ public class ProviderTestService {
 
     /**
      * Returns a {@link CharSequence}, which class is equals to no default.
+     * 
      * @return a {@link CharSequence}, which class is equals to no default.
      */
     @GET
@@ -279,6 +281,16 @@ public class ProviderTestService {
     @ConsumeMime("text/plain")
     public String stringPost(String entity) {
         return entity;
+    }
+
+    @GET
+    @Path("String/substring")
+    @ProduceMime("text/plain")
+    public String subStringGet(@MatrixParam("start") int start, 
+            @MatrixParam("end") int end) {
+        if(end >= ALPHABET.length())
+            return ALPHABET.substring(start);
+        return ALPHABET.substring(start, end);
     }
 
     @GET

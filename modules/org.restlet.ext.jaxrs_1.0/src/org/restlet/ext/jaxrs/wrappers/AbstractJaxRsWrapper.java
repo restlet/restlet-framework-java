@@ -503,9 +503,11 @@ public abstract class AbstractJaxRsWrapper {
      * @see Path#encode()
      */
     public static String getPathTemplate(Path path) throws IllegalPathException {
-        // TODO matrix parameters are not allowed in @Path
         // TODO EncodeOrCheck.path(CharSequence)
         String pathTemplate = path.value();
+        if (pathTemplate.contains(";"))
+            throw new IllegalPathException(path,
+                    "A path must not contain a semicolon");
         if (path.encode()) {
             pathTemplate = EncodeOrCheck.encodeNotBraces(pathTemplate, false)
                     .toString();
@@ -517,9 +519,6 @@ public abstract class AbstractJaxRsWrapper {
                 throw new IllegalPathException(path, iae);
             }
         }
-        if (pathTemplate.contains(";"))
-            throw new IllegalPathException(path,
-                    "A path must not contain a semicolon");
         return pathTemplate;
     }
 

@@ -25,12 +25,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.test.jaxrs.services.tests.MatrixParamTest;
 
 /**
  * @author Stephan Koops
+ * @see MatrixParamTest
  */
 @Path("matrixParamTest")
 public class MatrixParamTestService {
@@ -38,17 +41,15 @@ public class MatrixParamTestService {
     @GET
     @ProduceMime("text/plain")
     @Path("a")
-    public String getA(@MatrixParam("firstname")
-    String firstname, @MatrixParam("lastname")
-    String lastname) {
+    public String getA(@MatrixParam("firstname") String firstname,
+            @MatrixParam("lastname") String lastname) {
         return firstname + " " + lastname;
     }
 
     @GET
     @ProduceMime("text/plain")
     @Path("b")
-    public String getB(@Context
-    UriInfo uriInfo) {
+    public String getB(@Context UriInfo uriInfo) {
         PathSegment pSeg = Util.getLastElement(uriInfo.getPathSegments());
         String vorname = pSeg.getMatrixParameters().getFirst("firstname");
         String nachname = pSeg.getMatrixParameters().getFirst("lastname");
@@ -59,9 +60,8 @@ public class MatrixParamTestService {
     @ProduceMime("text/plain")
     @Path("encoded")
     @Encoded
-    public String encoded(@MatrixParam("firstname")
-    String firstname, @MatrixParam("lastname")
-    String lastname) {
+    public String encoded(@MatrixParam("firstname") String firstname,
+            @MatrixParam("lastname") String lastname) {
         return firstname + " " + lastname;
     }
 
@@ -69,8 +69,7 @@ public class MatrixParamTestService {
     @ProduceMime("text/plain")
     @Path("withDefault")
     @Encoded
-    public String withDefault(@MatrixParam("mp") @DefaultValue("default")
-    String mp) {
+    public String withDefault(@MatrixParam("mp") @DefaultValue("default") String mp) {
         return withoutDefault(mp);
     }
 
@@ -79,10 +78,20 @@ public class MatrixParamTestService {
     @Path("withoutDefault")
     @Encoded
     public String withoutDefault(@MatrixParam("mp") String mp) {
-        if(mp == null)
+        if (mp == null)
             return "[null]";
-        if(mp.equals(""))
+        if (mp.equals(""))
             return "[empty]";
         return mp;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("semicolon;mpA=")
+    public Response withSemicolon(@MatrixParam("mpA") String mpA,
+            @MatrixParam("mpB") String mpB) {
+        String entity = "this method must not be called\nmpA param is " + mpA
+                + "\nmpB param is " + mpB;
+        return Response.serverError().entity(entity).build();
     }
 }

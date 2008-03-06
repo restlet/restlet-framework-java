@@ -151,6 +151,19 @@ public class ProviderTest extends JaxRsTestCase {
         assertEquals("big test", response.getEntity().getText());
     }
 
+    public void testCharSequenceGet() throws Exception {
+        Response response = get("CharSequence");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation entity = response.getEntity();
+        assertEquals(ProviderTestService.createCS(), entity.getText());
+    }
+
+    public void testCharSequencePost() throws Exception {
+        postAndExceptGiven("CharSequence", "a character sequence",
+                MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN);
+    }
+
     public void testFileGet() throws Exception {
         getAndExpectAlphabet("file");
     }
@@ -236,6 +249,10 @@ public class ProviderTest extends JaxRsTestCase {
         postAndExceptGiven("Reader", "big test",
                 MediaType.APPLICATION_OCTET_STREAM, null);
     }
+    
+    public void testStringBuilderGet() throws Exception {
+        getAndExpectAlphabet("StringBuilder");
+    }
 
     public void testStringGet() throws Exception {
         getAndExpectAlphabet("String");
@@ -246,21 +263,11 @@ public class ProviderTest extends JaxRsTestCase {
                 MediaType.TEXT_PLAIN);
     }
 
-    public void testCharSequenceGet() throws Exception {
-        Response response = get("CharSequence");
+    public void testSubStringGet() throws Exception {
+        Response response = get("String/substring;start=5;end=9");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
-        assertEquals(ProviderTestService.createCS(), entity.getText());
-    }
-
-    public void testCharSequencePost() throws Exception {
-        postAndExceptGiven("CharSequence", "a character sequence",
-                MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN);
-    }
-
-    public void testStringBuilderGet() throws Exception {
-        getAndExpectAlphabet("StringBuilder");
+        assertEquals("FGHI", response.getEntity().getText());
     }
 
     public void testXmlTransformGet() throws Exception {

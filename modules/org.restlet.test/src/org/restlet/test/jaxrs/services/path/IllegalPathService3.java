@@ -16,26 +16,16 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.ext.jaxrs.exceptions;
+package org.restlet.test.jaxrs.services.path;
 
 import javax.ws.rs.Path;
 
 /**
- * This kind of exception is thrown, when an &#64{@link Path} annotation
- * contains illegal charactres.
+ * This class must be rejected, because it contains an illegal &#64;Path
  * 
  * @author Stephan Koops
  * 
  */
-public class IllegalPathOnMethodException extends IllegalPathException {
-
-    private static final long serialVersionUID = -6655373875338074948L;
-
-    /**
-     * @param ipe
-     */
-    public IllegalPathOnMethodException(IllegalPathException ipe) {
-        super(ipe.getPath(), ipe.getMessage());
-        this.setStackTrace(ipe.getStackTrace());
-    }
+@Path("afsdf;use")
+public class IllegalPathService3 {
 }

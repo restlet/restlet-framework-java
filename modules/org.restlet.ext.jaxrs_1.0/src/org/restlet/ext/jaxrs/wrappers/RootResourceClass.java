@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
@@ -40,7 +41,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
-import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.exceptions.InjectException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
@@ -273,11 +273,10 @@ public class RootResourceClass extends ResourceClass {
      * @throws MissingAnnotationException
      *                 if the class is not annotated with &#64;Path.
      * @throws IllegalPathOnClassException
-     * @throws IllegalPathOnMethodException 
      */
     RootResourceClass(Class<?> jaxRsClass, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException,
-            IllegalPathOnClassException, IllegalPathOnMethodException {
+            IllegalPathOnClassException {
         super(jaxRsClass, logger, logger);
         checkClassConcrete(getJaxRsClass(), "root resource class");
         checkClassForPathAnnot(jaxRsClass, "root resource class");

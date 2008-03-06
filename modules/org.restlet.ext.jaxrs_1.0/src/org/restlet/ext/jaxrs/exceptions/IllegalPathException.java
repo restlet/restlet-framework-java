@@ -87,11 +87,12 @@ public class IllegalPathException extends JaxRsException {
     @Override
     public IllegalArgumentException getCause() {
         Throwable cause = super.getCause();
-        if (cause != null)
+        if (cause instanceof IllegalArgumentException)
             return (IllegalArgumentException) cause;
         IllegalArgumentException iae = new IllegalArgumentException(this
                 .getMessage());
-        iae.initCause(cause);
+        if(cause != null)
+            iae.setStackTrace(cause.getStackTrace());
         return iae;
     }
 

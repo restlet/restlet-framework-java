@@ -226,11 +226,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param jaxRsClass
      * @param logger
      *                The logger to log warnings, if the class is not valid.
-     * @throws IllegalPathOnMethodException
      * @see WrapperFactory#getResourceClass(Class)
      */
-    ResourceClass(Class<?> jaxRsClass, Logger logger)
-            throws IllegalPathOnMethodException {
+    ResourceClass(Class<?> jaxRsClass, Logger logger) {
         super();
         this.init(jaxRsClass, logger);
     }
@@ -247,14 +245,12 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @throws IllegalPathOnClassException
      * @throws MissingAnnotationException
      *                 if &#64;{@link Path} is missing on the jaxRsClass
-     * @throws IllegalPathOnMethodException
      * @see WrapperFactory#getResourceClass(Class)
      */
     protected ResourceClass(Class<?> jaxRsClass, Logger logger,
             @SuppressWarnings("unused")
             Logger sameLogger) throws IllegalArgumentException,
-            IllegalPathOnClassException, MissingAnnotationException,
-            IllegalPathOnMethodException {
+            IllegalPathOnClassException, MissingAnnotationException {
         super(PathRegExp.createForClass(jaxRsClass));
         this.init(jaxRsClass, logger);
     }
@@ -464,8 +460,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @throws SecurityException
      * @throws IllegalPathOnMethodException
      */
-    private void init(Class<?> jaxRsClass, Logger logger)
-            throws IllegalPathOnMethodException {
+    private void init(Class<?> jaxRsClass, Logger logger) {
         this.jaxRsClass = jaxRsClass;
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         initResourceMethodsAndLocators(logger);
@@ -514,8 +509,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         this.injectFieldsQueryParam = ifqp.toArray(EMPTY_FIELD_ARRAY);
     }
 
-    private void initResourceMethodsAndLocators(Logger logger)
-            throws IllegalPathOnMethodException {
+    private void initResourceMethodsAndLocators(Logger logger) {
         Collection<ResourceMethodOrLocator> srmls = new ArrayList<ResourceMethodOrLocator>();
         Collection<ResourceMethod> subRsesMeths = new ArrayList<ResourceMethod>();
         Collection<SubResourceLocator> subResLocs = new ArrayList<SubResourceLocator>();
@@ -525,24 +519,31 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             if (annotatedMethod == null)
                 continue;
             Path path = annotatedMethod.getAnnotation(Path.class);
-            org.restlet.data.Method httpMethod = ResourceMethod
-                    .getHttpMethod(annotatedMethod);
-            if (httpMethod != null) {
-                if (!checkResMethodVolatileOrNotPublic(javaMethod, logger))
-                    continue;
-                ResourceMethod subResMeth = new ResourceMethod(javaMethod,
-                        annotatedMethod, this, httpMethod);
-                subRsesMeths.add(subResMeth);
-                srmls.add(subResMeth);
-            } else {
-                if (path != null) {
+            org.restlet.data.Method httpMethod;
+            httpMethod = ResourceMethod.getHttpMethod(annotatedMethod);
+            try {
+                if (httpMethod != null) {
                     if (!checkResMethodVolatileOrNotPublic(javaMethod, logger))
                         continue;
-                    SubResourceLocator subResLoc = new SubResourceLocator(
-                            javaMethod, annotatedMethod, this);
-                    subResLocs.add(subResLoc);
-                    srmls.add(subResLoc);
+                    ResourceMethod subResMeth = new ResourceMethod(javaMethod,
+                            annotatedMethod, this, httpMethod);
+                    subRsesMeths.add(subResMeth);
+                    srmls.add(subResMeth);
+                } else {
+                    if (path != null) {
+                        if (!checkResMethodVolatileOrNotPublic(javaMethod,
+                                logger))
+                            continue;
+                        SubResourceLocator subResLoc = new SubResourceLocator(
+                                javaMethod, annotatedMethod, this);
+                        subResLocs.add(subResLoc);
+                        srmls.add(subResLoc);
+                    }
                 }
+            } catch (IllegalPathOnMethodException e) {
+                logger.warning("The method " + annotatedMethod
+                        + " is annotated with an illegal path: " + e.getPath()
+                        + ". Ignoring this method. (" + e.getMessage() + ")");
             }
         }
         this.subResourceLocators = subResLocs;
@@ -626,7 +627,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         } catch (InvocationTargetException e) {
             String message = e.getMessage();
             MethodInvokeException mie = new MethodInvokeException(message);
-            mie.initCause(e.getCause());
+            mie.setStackTrace(e.getCause().getStackTrace());
             throw mie;
         }
     }

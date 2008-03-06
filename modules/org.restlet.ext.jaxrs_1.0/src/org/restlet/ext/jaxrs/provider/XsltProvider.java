@@ -172,12 +172,12 @@ public class XsltProvider implements MessageBodyWriter<Source>,
         } catch (Exception e) {
             IOException ioException = new IOException(
                     "Could not transform the javax.xml.transform.Source");
-            ioException.initCause(e);
+            ioException.setStackTrace(e.getStackTrace());
             throw ioException;
         } catch (TransformerFactoryConfigurationError e) {
             IOException ioException = new IOException(
                     "Could not transform the javax.xml.transform.Source");
-            ioException.initCause(e);
+            ioException.setStackTrace(e.getStackTrace());
             throw ioException;
         }
     }

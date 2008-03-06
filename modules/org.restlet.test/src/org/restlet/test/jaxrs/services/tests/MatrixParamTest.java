@@ -34,34 +34,32 @@ public class MatrixParamTest extends JaxRsTestCase {
         return MatrixParamTestService.class;
     }
 
-    public void testA() throws IOException
-    {
+    public void testA() throws IOException {
         checkBothGiven("a");
         checkOneGiven("a");
     }
-    
-    public void testB() throws IOException
-    {
+
+    public void testB() throws IOException {
         checkBothGiven("b");
         checkOneGiven("b");
     }
-    
+
     public void checkBothGiven(String subPath) throws IOException {
-        Response response = get(subPath+";firstname=Angela;lastname=Merkel");
+        Response response = get(subPath + ";firstname=Angela;lastname=Merkel");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("Angela Merkel", response.getEntity().getText());
 
-        response = get(subPath+";lastname=Merkel;firstname=Angela");
+        response = get(subPath + ";lastname=Merkel;firstname=Angela");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("Angela Merkel", response.getEntity().getText());
     }
-    
+
     public void checkOneGiven(String subPath) throws IOException {
-        Response response = get(subPath+";firstname=Goofy");
+        Response response = get(subPath + ";firstname=Goofy");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("Goofy null", response.getEntity().getText());
 
-        response = get(subPath+";lastname=Goofy");
+        response = get(subPath + ";lastname=Goofy");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("null Goofy", response.getEntity().getText());
     }
@@ -90,8 +88,7 @@ public class MatrixParamTest extends JaxRsTestCase {
         response = get("withDefault");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("default", response.getEntity().getText());
-}
-
+    }
 
     public void testWithoutDefault() throws IOException {
         Response response = get("withoutDefault;mp=abcde");
@@ -105,5 +102,27 @@ public class MatrixParamTest extends JaxRsTestCase {
         response = get("withoutDefault");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("[null]", response.getEntity().getText());
+    }
+    
+    public void testSemicolon() {
+        Response response1 = get("semicolon");
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response1.getStatus());
+        sysOutEntityIfError(response1);
+
+        Response response2 = get("semicolon;mpA=6");
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response2.getStatus());
+        sysOutEntityIfError(response2);
+
+        Response response3 = get("semicolon;mpB=6");
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response3.getStatus());
+        sysOutEntityIfError(response3);
+
+        Response response4 = get("semicolon;mpB=6;mpA=5");
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response4.getStatus());
+        sysOutEntityIfError(response4);
+
+        Response response5 = get("semicolon;mpA=5;mpB=6");
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response5.getStatus());
+        sysOutEntityIfError(response5);
 }
 }

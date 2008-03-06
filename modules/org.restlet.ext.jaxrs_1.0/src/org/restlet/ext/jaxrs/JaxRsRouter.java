@@ -50,7 +50,6 @@ import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.core.HttpHeaders;
 import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
-import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateProviderException;
@@ -290,9 +289,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         try {
             newRrc = wrapperFactory.getRootResourceClass(rootResourceClass);
         } catch (IllegalPathOnClassException e) {
-            throw new IllegalArgumentException(e);
-        } catch (IllegalPathOnMethodException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException("The root resource class "+rootResourceClass.getName()+" is annotated with an illegal path: "+e.getPath()+". ("+e.getMessage()+")", e);
         }
         PathRegExp uriTempl = newRrc.getPathRegExp();
         for (RootResourceClass rrc : this.rootResourceClasses) {
@@ -357,7 +354,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         } catch (InvocationTargetException e) {
             InstantiateProviderException ipe = new InstantiateProviderException(
                     e.getMessage());
-            ipe.initCause(e.getCause());
+            ipe.setStackTrace(e.getCause().getStackTrace());
             throw ipe;
         }
         provider.init();

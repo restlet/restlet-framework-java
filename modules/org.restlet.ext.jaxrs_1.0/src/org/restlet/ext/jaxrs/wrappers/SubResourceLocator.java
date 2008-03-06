@@ -79,14 +79,13 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @throws MissingAnnotationException
      * @throws InstantiateRessourceException
      * @throws InstantiateParameterException
-     * @throws IllegalPathOnMethodException
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
             CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
             throws InvocationTargetException, MissingAnnotationException,
             WebApplicationException, RequestHandledException,
             NoMessageBodyReadersException, InstantiateRessourceException,
-            InstantiateParameterException, IllegalPathOnMethodException {
+            InstantiateParameterException {
         Object[] args;
         Class<?>[] parameterTypes = this.executeMethod.getParameterTypes();
         if (parameterTypes.length == 0)
