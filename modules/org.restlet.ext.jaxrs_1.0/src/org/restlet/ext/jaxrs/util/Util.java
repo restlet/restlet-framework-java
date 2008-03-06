@@ -252,6 +252,38 @@ public class Util {
     }
 
     /**
+     * Copiees the InputStream to the OutputStream.
+     * 
+     * @param in
+     * @param out
+     * @throws IOException
+     */
+    public static void copyStream(InputStream in, OutputStream out)
+            throws IOException {
+        byte[] buffer = new byte[512];
+        int bytesRead;
+        while ((bytesRead = in.read(buffer)) >= 0) {
+            out.write(buffer, 0, bytesRead);
+        }
+    }
+
+    /**
+     * Copies the InputStream to a StringBuilder.
+     * 
+     * @param in
+     * @return a StringBuilder with the content of the given InputStream
+     * @throws IOException
+     */
+    public static StringBuilder copyToStringBuilder(InputStream in)
+            throws IOException {
+        StringBuilder stb = new StringBuilder();
+        int ch;
+        while ((ch = in.read()) >= 0)
+            stb.append((char)ch);
+        return stb;
+    }
+
+    /**
      * Copies the non-null components of the supplied URI to the Reference
      * replacing any existing values for those components.
      * 
@@ -455,6 +487,20 @@ public class Util {
         } else {
             return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
         }
+    }
+
+    /**
+     * Reads the full inputStream and returns an byte-array of it
+     * 
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
+    public static byte[] getByteArray(InputStream inputStream)
+            throws IOException {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(4096);
+        copyStream(inputStream, byteStream);
+        return byteStream.toByteArray();
     }
 
     /**
@@ -889,35 +935,5 @@ public class Util {
         if (object == null)
             return null;
         return object.toString();
-    }
-
-    /**
-     * Reads the full inputStream and returns an byte-array of it
-     * 
-     * @param inputStream
-     * @return
-     * @throws IOException 
-     */
-    public static byte[] getByteArray(InputStream inputStream)
-            throws IOException {
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(4096);
-        streamCopy(inputStream, byteStream);
-        return byteStream.toByteArray();
-    }
-
-    /**
-     * Copiees the InputStream to the OutputStream.
-     * 
-     * @param in
-     * @param out
-     * @throws IOException
-     */
-    public static void streamCopy(InputStream in, OutputStream out)
-            throws IOException {
-        byte[] buffer = new byte[512];
-        int bytesRead;
-        while ((bytesRead = in.read(buffer)) >= 0) {
-            out.write(buffer, 0, bytesRead);
-        }
     }
 }

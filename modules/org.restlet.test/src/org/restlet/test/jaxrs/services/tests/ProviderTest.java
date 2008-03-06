@@ -33,6 +33,10 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * @author Stephan Koops
+ * @see ProviderTestService
+ */
 public class ProviderTest extends JaxRsTestCase {
 
     private static Form createForm() {
@@ -64,6 +68,19 @@ public class ProviderTest extends JaxRsTestCase {
         assertEquals(2, nodeList.getLength());
     }
 
+    /**
+     * @param subPath
+     * @throws IOException
+     */
+    private Response getAndExpectAlphabet(String subPath) throws IOException {
+        Response response = get(subPath);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation entity = response.getEntity();
+        assertEquals(ProviderTestService.ALPHABET, entity.getText());
+        return response;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     protected Class<?> getRootResourceClass() {
@@ -75,7 +92,7 @@ public class ProviderTest extends JaxRsTestCase {
      * @throws IOException
      */
     @SuppressWarnings("unused")
-    private void postAndCheck(String subPath) throws Exception {
+    private void postAndCheckXml(String subPath) throws Exception {
         Representation send = new DomRepresentation(
                 new StringRepresentation(
                         "<person><firstname>Helmut</firstname><lastname>Kohl</lastname></person>\n",
@@ -86,11 +103,44 @@ public class ProviderTest extends JaxRsTestCase {
         assertEquals("Helmut Kohl", respEntity.getText());
     }
 
-    public void testByteArrayGet() throws Exception {
-        Response response = get("byteArray");
+    /**
+     * @param subPath
+     * @param postEntity
+     * @param postMediaType
+     * @param responseMediaType
+     *                if null, it will not be testet
+     * @throws IOException
+     */
+    private void postAndExceptGiven(String subPath, String postEntity,
+            MediaType postMediaType, MediaType responseMediaType)
+            throws IOException {
+        Representation entity = new StringRepresentation(postEntity,
+                postMediaType);
+        Response response = post(subPath, entity);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation representation = response.getEntity();
-        assertEquals(ProviderTestService.ALPHABET, representation.getText());
+        entity = response.getEntity();
+        assertEquals(postEntity, entity.getText());
+        if (responseMediaType != null)
+            assertEquals(responseMediaType, entity.getMediaType());
+    }
+
+    public void testBufferedReaderGet() throws Exception {
+        getAndExpectAlphabet("BufferedReader");
+    }
+
+    public void testBufferedReaderPost() throws Exception {
+        Representation entity = new StringRepresentation("big test",
+                MediaType.APPLICATION_OCTET_STREAM);
+        Response response = post("BufferedReader", entity);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        entity = response.getEntity();
+        assertEquals("big test", entity.getText());
+    }
+
+    public void testByteArrayGet() throws Exception {
+        getAndExpectAlphabet("byteArray");
     }
 
     public void testByteArrayPost() throws Exception {
@@ -102,10 +152,7 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testFileGet() throws Exception {
-        Response response = get("file");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
-        assertEquals(ProviderTestService.ALPHABET, entity.getText());
+        getAndExpectAlphabet("file");
     }
 
     public void testFilePost() throws Exception {
@@ -130,10 +177,7 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testInputStreamGet() throws Exception {
-        Response response = get("InputStream");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
-        assertEquals(ProviderTestService.ALPHABET, entity.getText());
+        getAndExpectAlphabet("InputStream");
     }
 
     public void testInputStreamPost() throws Exception {
@@ -156,7 +200,7 @@ public class ProviderTest extends JaxRsTestCase {
      *      java.io.OutputStream)
      */
     public void testJaxbElementPost() throws Exception {
-        postAndCheck("jaxbElement");
+        postAndCheckXml("jaxbElement");
     }
 
     public void testJaxbGet() throws Exception {
@@ -164,7 +208,7 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testJaxbPost() throws Exception {
-        postAndCheck("jaxb");
+        postAndCheckXml("jaxb");
     }
 
     public void testMultivaluedMapGet() throws Exception {
@@ -182,6 +226,41 @@ public class ProviderTest extends JaxRsTestCase {
         assertEqualMediaType(MediaType.TEXT_PLAIN, respMediaType);
         String respEntity = response.getEntity().getText();
         assertEquals("[lastname: Merkel, firstname: Angela]", respEntity);
+    }
+
+    public void testReaderGet() throws Exception {
+        getAndExpectAlphabet("Reader");
+    }
+
+    public void testReaderPost() throws Exception {
+        postAndExceptGiven("Reader", "big test",
+                MediaType.APPLICATION_OCTET_STREAM, null);
+    }
+
+    public void testStringGet() throws Exception {
+        getAndExpectAlphabet("String");
+    }
+
+    public void testStringPost() throws Exception {
+        postAndExceptGiven("String", "another String", MediaType.TEXT_PLAIN,
+                MediaType.TEXT_PLAIN);
+    }
+
+    public void testCharSequenceGet() throws Exception {
+        Response response = get("CharSequence");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation entity = response.getEntity();
+        assertEquals(ProviderTestService.createCS(), entity.getText());
+    }
+
+    public void testCharSequencePost() throws Exception {
+        postAndExceptGiven("CharSequence", "a character sequence",
+                MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN);
+    }
+
+    public void testStringBuilderGet() throws Exception {
+        getAndExpectAlphabet("StringBuilder");
     }
 
     public void testXmlTransformGet() throws Exception {

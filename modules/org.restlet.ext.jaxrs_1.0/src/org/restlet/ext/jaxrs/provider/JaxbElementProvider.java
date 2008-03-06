@@ -42,12 +42,13 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
     private Logger logger = Logger.getLogger(JaxbElementProvider.class
             .getName());
 
-    /**
-     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#isReadableAndWriteable(java.lang.Class,
-     *      Type, Annotation[])
-     */
     @Override
-    public boolean isReadableAndWriteable(Class<?> type, Type genericType,
+    Logger getLogger() {
+        return this.logger;
+    }
+
+    @Override
+    public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations) {
         if (!JAXBElement.class.isAssignableFrom(type))
             return false;
@@ -62,16 +63,20 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
         return false;
     }
 
-    /**
-     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#writeTo(Object,
-     *      Type, Annotation[], MediaType, MultivaluedMap, OutputStream)
-     */
     @Override
-    public void writeTo(JAXBElement<?> jaxbElement, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpResponseHeaders,
-            OutputStream entityStream) throws IOException {
-        marshal(jaxbElement.getValue(), entityStream);
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
+        if (!type.isAssignableFrom(JAXBElement.class))
+            return false;
+        if (!(genericType instanceof ParameterizedType))
+            return false;
+        ParameterizedType pt = (ParameterizedType) genericType;
+        Type atp = pt.getActualTypeArguments()[0];
+        if (atp instanceof Class)
+            return true;
+        if (atp instanceof ParameterizedType)
+            return (((ParameterizedType) atp).getRawType() instanceof Class);
+        return false;
     }
 
     @Override
@@ -96,8 +101,15 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
         return new JAXBElement(qName, declaredType, value);
     }
 
+    /**
+     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#writeTo(Object,
+     *      Type, Annotation[], MediaType, MultivaluedMap, OutputStream)
+     */
     @Override
-    Logger getLogger() {
-        return this.logger;
+    public void writeTo(JAXBElement<?> jaxbElement, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpResponseHeaders,
+            OutputStream entityStream) throws IOException {
+        marshal(jaxbElement.getValue(), entityStream);
     }
 }

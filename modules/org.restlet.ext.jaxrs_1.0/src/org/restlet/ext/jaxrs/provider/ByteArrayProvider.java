@@ -37,12 +37,6 @@ import javax.ws.rs.ext.Provider;
 public class ByteArrayProvider extends AbstractProvider<byte[]> {
 
     /**
-     * 
-     */
-    public ByteArrayProvider() {
-    }
-
-    /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
     @Override
@@ -50,12 +44,22 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
         return t.length;
     }
 
+    @Override
+    public byte[] readFrom(Class<byte[]> type, Type genericType,
+            MediaType mediaType, Annotation[] annotations,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        copyAndCloseStream(entityStream, baos);
+        return baos.toByteArray();
+    }
+
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class)
      */
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
-        return byte[].class.isAssignableFrom(type);
+    protected Class<?> supportedClass() {
+        return byte[].class;
     }
 
     /**
@@ -65,19 +69,9 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
      */
     @Override
     public void writeTo(byte[] data, Type genericType,
-            Annotation[] annotations,
-            MediaType mediaType, 
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         entityStream.write(data);
-    }
-
-    @Override
-    public byte[] readFrom(Class<byte[]> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        copyAndCloseStream(entityStream, baos);
-        return baos.toByteArray();
     }
 }

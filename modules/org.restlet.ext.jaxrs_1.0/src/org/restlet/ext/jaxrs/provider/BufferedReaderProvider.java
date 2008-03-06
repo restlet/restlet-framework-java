@@ -17,14 +17,16 @@
  */
 package org.restlet.ext.jaxrs.provider;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 /**
@@ -33,39 +35,22 @@ import javax.ws.rs.ext.Provider;
  * @author Stephan Koops
  */
 @Provider
-public class InputStreamProvider extends AbstractProvider<InputStream> {
+public class BufferedReaderProvider implements
+        MessageBodyReader<BufferedReader> {
 
-    /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
-     */
-    @Override
-    public long getSize(InputStream t) {
-        return -1;
+    public boolean isReadable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
+        return BufferedReader.class.isAssignableFrom(type);
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.InputStream)
+     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(Class, Type, MediaType,
+     *      Annotation[], MultivaluedMap, InputStream)
      */
-    @Override
-    public InputStream readFrom(Class<InputStream> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
+    public BufferedReader readFrom(Class<BufferedReader> type,
+            Type genericType, MediaType mediaType, Annotation[] annotations,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return entityStream;
-    }
-
-    @Override
-    protected Class<?> supportedClass() {
-        return InputStream.class;
-    }
-
-    @Override
-    public void writeTo(InputStream inputStream, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
-        copyAndCloseStream(inputStream, entityStream);
+        return new BufferedReader(new InputStreamReader(entityStream));
     }
 }

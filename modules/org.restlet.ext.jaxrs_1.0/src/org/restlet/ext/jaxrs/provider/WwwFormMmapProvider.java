@@ -62,11 +62,11 @@ public class WwwFormMmapProvider extends
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#isReadableAndWriteable(java.lang.Class, Type, Annotation[])
+     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#supportedClass()
      */
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
-        return MultivaluedMap.class.isAssignableFrom(type);
+    protected Class<?> supportedClass() {
+        return MultivaluedMap.class;
     }
 
     /**

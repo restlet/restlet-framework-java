@@ -30,6 +30,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
+import org.restlet.ext.jaxrs.util.Util;
+
 /**
  * This abstract class ease the development of {@link MessageBodyReader}s and
  * {@link MessageBodyWriter}.
@@ -42,82 +44,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
  */
 public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
         MessageBodyReader<T> {
-
-    /**
-     * Returns the size of the given objects.
-     * 
-     * @param object
-     *                the object to check the size
-     * @return the size of the object, or -1, if it is not direct readable from
-     *         the object.
-     * @see MessageBodyWriter#getSize(Object)
-     */
-    public abstract long getSize(T object);
-
-    protected abstract boolean isReadableAndWriteable(Class<?> type,
-            Type genericType, Annotation[] annotations);
-
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return isReadableAndWriteable(type, genericType, annotations);
-    }
-
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return isReadableAndWriteable(type, genericType, annotations);
-    }
-
-    /**
-     * Copies the data from the {@link InputStream} the {@link OutputStream}.
-     * 
-     * @param inputStream
-     * @param outputStream
-     * @throws IOException
-     */
-    protected void copyStream(InputStream inputStream, OutputStream outputStream)
-            throws IOException {
-        int noBytes;
-        byte[] bytes = new byte[1024];
-        while ((noBytes = inputStream.read(bytes)) >= 0)
-            outputStream.write(bytes, 0, noBytes);
-    }
-
-    protected void copyAndCloseStream(InputStream inputStream,
-            OutputStream outputStream) throws IOException {
-        try {
-            copyStream(inputStream, outputStream);
-        } finally {
-            inputStream.close();
-        }
-    }
-
-    /**
-     * @param genericType
-     *                The generic {@link Type} to convert to.
-     * @param annotations
-     *                the annotations of the artefact to convert to
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.OutputStream)
-     */
-    public abstract void writeTo(T t, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException;
-
-    /**
-     * @param genericType
-     *                The generic {@link Type} to convert to.
-     * @param annotations
-     *                the annotations of the artefact to convert to
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.InputStream)
-     */
-    public abstract T readFrom(Class<T> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
-            MultivaluedMap<String, String> httpResponseHeaders,
-            InputStream entityStream) throws IOException;
 
     /**
      * Logs the problem and throws an IOException.
@@ -134,4 +60,80 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
             throw new IOException(message);
         throw new IOException(message + ": " + exc.getMessage());
     }
+
+    protected void copyAndCloseStream(InputStream inputStream,
+            OutputStream outputStream) throws IOException {
+        try {
+            Util.copyStream(inputStream, outputStream);
+        } finally {
+            inputStream.close();
+        }
+    }
+
+    /**
+     * Copies the data from the {@link InputStream} the {@link OutputStream}.
+     * 
+     * @param inputStream
+     * @param outputStream
+     * @throws IOException
+     */
+    @Deprecated
+    protected void copyStream(InputStream inputStream, OutputStream outputStream)
+            throws IOException {
+        Util.copyStream(inputStream, outputStream);
+    }
+
+    /**
+     * Returns the size of the given objects.
+     * 
+     * @param object
+     *                the object to check the size
+     * @return the size of the object, or -1, if it is not direct readable from
+     *         the object.
+     * @see MessageBodyWriter#getSize(Object)
+     */
+    public abstract long getSize(T object);
+
+    public boolean isReadable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
+        return type.isAssignableFrom(supportedClass());
+    }
+
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
+        return supportedClass().isAssignableFrom(type);
+        // mainClass.isAssignableFrom(subClass);
+    }
+
+    /**
+     * @param genericType
+     *                The generic {@link Type} to convert to.
+     * @param annotations
+     *                the annotations of the artefact to convert to
+     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
+     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
+     *      java.io.InputStream)
+     */
+    public abstract T readFrom(Class<T> type, Type genericType,
+            MediaType mediaType, Annotation[] annotations,
+            MultivaluedMap<String, String> httpResponseHeaders,
+            InputStream entityStream) throws IOException;
+
+    protected Class<?> supportedClass() {
+        throw new UnsupportedOperationException("You must implement method "+this.getClass().getName()+".supportedClass(), if you do not implement isReadable(...) or isWriteable(...)");
+    }
+
+    /**
+     * @param genericType
+     *                The generic {@link Type} to convert to.
+     * @param annotations
+     *                the annotations of the artefact to convert to
+     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
+     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
+     *      java.io.OutputStream)
+     */
+    public abstract void writeTo(T t, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException;
 }

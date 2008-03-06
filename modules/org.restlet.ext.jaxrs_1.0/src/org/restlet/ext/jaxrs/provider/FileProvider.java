@@ -30,6 +30,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.ext.jaxrs.util.Util;
+
 /**
  * This Provider reads or writes {@link File}s.
  * 
@@ -46,11 +48,6 @@ public class FileProvider extends AbstractProvider<File> {
         return -1;
     }
 
-    @Override
-    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
-        return File.class.isAssignableFrom(type);
-    }
-
     /**
      * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
@@ -58,11 +55,12 @@ public class FileProvider extends AbstractProvider<File> {
      */
     @Override
     public File readFrom(Class<File> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            MediaType mediaType, Annotation[] annotations,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         try {
             File file = File.createTempFile("FileProvider", ".tmp");
-            super.copyStream(entityStream, new FileOutputStream(file));
+            Util.copyStream(entityStream, new FileOutputStream(file));
             return file;
         } finally {
             entityStream.close();
@@ -70,10 +68,13 @@ public class FileProvider extends AbstractProvider<File> {
     }
 
     @Override
-    public void writeTo(File file, Type genericType,
-            Annotation[] annotations,
-            MediaType mediaType, 
-            MultivaluedMap<String, Object> httpHeaders,
+    protected Class<?> supportedClass() {
+        return File.class;
+    }
+
+    @Override
+    public void writeTo(File file, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         InputStream inputStream = new FileInputStream(file);
         copyAndCloseStream(inputStream, entityStream);

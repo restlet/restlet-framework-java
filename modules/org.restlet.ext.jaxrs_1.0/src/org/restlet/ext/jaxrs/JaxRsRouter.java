@@ -57,6 +57,7 @@ import org.restlet.ext.jaxrs.exceptions.InstantiateProviderException;
 import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.provider.BufferedReaderProvider;
 import org.restlet.ext.jaxrs.provider.ByteArrayProvider;
 import org.restlet.ext.jaxrs.provider.DataSourceProvider;
 import org.restlet.ext.jaxrs.provider.FileProvider;
@@ -64,6 +65,7 @@ import org.restlet.ext.jaxrs.provider.InputStreamProvider;
 import org.restlet.ext.jaxrs.provider.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.provider.JaxbElementProvider;
 import org.restlet.ext.jaxrs.provider.JaxbProvider;
+import org.restlet.ext.jaxrs.provider.ReaderProvider;
 import org.restlet.ext.jaxrs.provider.StringProvider;
 import org.restlet.ext.jaxrs.provider.WwwFormFormProvider;
 import org.restlet.ext.jaxrs.provider.WwwFormMmapProvider;
@@ -305,12 +307,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     private void loadDefaultProviders() {
+        this.addDefaultProvider(BufferedReaderProvider.class);
         this.addDefaultProvider(ByteArrayProvider.class);
         this.addDefaultProvider(DataSourceProvider.class);
         this.addDefaultProvider(FileProvider.class);
         this.addDefaultProvider(InputStreamProvider.class);
         this.addDefaultProvider(JaxbElementProvider.class);
         this.addDefaultProvider(JaxbProvider.class);
+        this.addDefaultProvider(ReaderProvider.class);
         this.addDefaultProvider(StringProvider.class);
         this.addDefaultProvider(WwwFormFormProvider.class);
         this.addDefaultProvider(WwwFormMmapProvider.class);

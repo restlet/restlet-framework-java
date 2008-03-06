@@ -17,11 +17,14 @@
  */
 package org.restlet.test.jaxrs.services;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.GET;
@@ -41,34 +44,105 @@ import org.restlet.ext.jaxrs.XsltSource;
 import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.test.jaxrs.services.tests.ProviderTest;
 import org.xml.sax.InputSource;
 
 /**
- * @author Stephan
- * 
+ * @author Stephan Koops
+ * @see ProviderTest
  */
-@Path("/providertest")
+@Path("/providerTest")
 public class ProviderTestService {
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    private static final int CS_LAST_CHAR = 126; 
+    
+    /**
+     * @return
+     */
+    public static String createCS() {
+        StringBuilder stb = new StringBuilder();
+        for (char c = 32; c <= CS_LAST_CHAR; c++)
+            stb.append(c);
+        return stb.toString();
+    }
+
+    @GET
+    @Path("BufferedReader")
+    @ProduceMime("application/octet-stream")
+    public BufferedReader bufferedReaderGet() {
+        return new BufferedReader(readerGet());
+    }
+
+    @POST
+    @Path("BufferedReader")
+    @ProduceMime("text/plain")
+    public String bufferedReaderPost(BufferedReader reader) throws IOException {
+        StringBuilder stb = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            stb.append(line);
+            stb.append('\n');
+        }
+        stb.deleteCharAt(stb.length() - 1);
+        return stb.toString();
+    }
 
     @GET
     @Path("byteArray")
     @ProduceMime("application/octet-stream")
-    public byte[] getByteArray() {
+    public byte[] byteArrayGet() {
         return ALPHABET.getBytes();
     }
 
     @POST
     @Path("byteArray")
     @ProduceMime("text/plain")
-    public String postByteArray(byte[] byteArray) {
+    public String byteArrayPost(byte[] byteArray) {
         return new String(byteArray);
+    }
+
+    /**
+     * Returns a {@link CharSequence}, which class is equals to no default.
+     * @return a {@link CharSequence}, which class is equals to no default.
+     */
+    @GET
+    @Path("CharSequence")
+    @ProduceMime("text/plain")
+    public CharSequence charSequenceGet() {
+        return new CharSequence() {
+
+            public char charAt(int index) {
+                return (char) (index + 32);
+            }
+
+            public int length() {
+                return CS_LAST_CHAR - 32;
+            }
+
+            public CharSequence subSequence(int start, int end) {
+                return toString().subSequence(start, end);
+            }
+
+            @Override
+            public String toString() {
+                return createCS();
+            }
+        };
+    }
+
+    @POST
+    @Path("CharSequence")
+    @ProduceMime("text/plain")
+    @ConsumeMime("text/plain")
+    public String charSequencePost(CharSequence form) {
+        return form.toString();
     }
 
     @GET
     @Path("file")
     @ProduceMime("application/octet-stream")
-    public File getFile() {
+    public File fileGet() {
         return new File(this.getClass().getResource("alphabet.txt").getPath());
     }
 
@@ -76,85 +150,15 @@ public class ProviderTestService {
     @Path("file")
     @ConsumeMime("application/octet-stream")
     @ProduceMime("text/plain")
-    public String postFile(File file) throws IOException {
+    public String filePost(File file) throws IOException {
         InputStream inputStream = new FileInputStream(file);
-        return postInputStream(inputStream);
-    }
-
-    @GET
-    @Path("InputStream")
-    @ProduceMime("application/octet-stream")
-    public InputStream getInputStream() {
-        return new ByteArrayInputStream(ALPHABET.getBytes());
-    }
-
-    @POST
-    @Path("InputStream")
-    @ProduceMime("text/plain")
-    public String postInputStream(InputStream inputStream) throws IOException {
-        StringBuilder stb = new StringBuilder();
-        int b;
-        while ((b = inputStream.read()) >= 0)
-            stb.append((char) b);
-        return stb.toString();
-    }
-    
-    // TESTEN StringBuilder, CharSequence as Parameter read and write
-    
-    @GET
-    @Path("xslt")
-    @ProduceMime("text/html")
-    @XsltSource("src/org/restlet/test/jaxrs/services/greeting.xsl")
-    public Source getByXslt(@QueryParam("text") String text) {
-        String xmlStart = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
-        String xml = "<greeting>"+text+"</greeting>";
-        byte[] bytes = (xmlStart+xml).getBytes();
-        return new StreamSource(new ByteArrayInputStream(bytes));
-    }
-
-    @POST
-    @Path("xslt")
-    @ConsumeMime("text/xml")
-    @ProduceMime("text/plain")
-    public byte[] postByXslt(Source source) throws IOException {
-        InputSource inputSource = SAXSource.sourceToInputSource(source);
-        return Util.getByteArray(inputSource.getByteStream());
-    }
-
-    @GET
-    @Path("jaxb")
-    @ProduceMime("text/xml")
-    public Person getJaxb() {
-        return new Person("Angela", "Merkel");
-    }
-
-    @POST
-    @Path("jaxb")
-    @ConsumeMime({"text/xml", "application/xml"})
-    @ProduceMime("text/plain")
-    public String postJaxb(Person person) {
-        return person.toString();
-    }
-
-    @GET
-    @Path("jaxbElement")
-    @ProduceMime("text/xml")
-    public JAXBElement<Person> getJaxbElement() {
-        return new JAXBElement<Person>(new QName("qName"), Person.class, getJaxb());
-    }
-
-    @POST
-    @Path("jaxbElement")
-    @ConsumeMime({"text/xml", "application/xml"})
-    @ProduceMime("text/plain")
-    public String postJaxb(JAXBElement<Person> person) {
-        return person.getValue().toString();
+        return inputStreamPost(inputStream);
     }
 
     @GET
     @Path("form")
     @ProduceMime("application/x-www-form-urlencoded")
-    public Form getForm() {
+    public Form formGet() {
         Form form = new Form();
         form.add("firstname", "Angela");
         form.add("lastname", "Merkel");
@@ -165,14 +169,63 @@ public class ProviderTestService {
     @Path("form")
     @ProduceMime("text/plain")
     @ConsumeMime("application/x-www-form-urlencoded")
-    public String postForm(Form form) {
+    public String formPost(Form form) {
         return form.toString();
+    }
+
+    @GET
+    @Path("InputStream")
+    @ProduceMime("application/octet-stream")
+    public InputStream inputStreamGet() {
+        return new ByteArrayInputStream(ALPHABET.getBytes());
+    }
+
+    @POST
+    @Path("InputStream")
+    @ProduceMime("text/plain")
+    public String inputStreamPost(InputStream inputStream) throws IOException {
+        StringBuilder stb = new StringBuilder();
+        int b;
+        while ((b = inputStream.read()) >= 0)
+            stb.append((char) b);
+        return stb.toString();
+    }
+
+    @GET
+    @Path("jaxbElement")
+    @ProduceMime("text/xml")
+    public JAXBElement<Person> jaxbElementGet() {
+        return new JAXBElement<Person>(new QName("qName"), Person.class,
+                jaxbGet());
+    }
+
+    @GET
+    @Path("jaxb")
+    @ProduceMime("text/xml")
+    public Person jaxbGet() {
+        return new Person("Angela", "Merkel");
+    }
+
+    @POST
+    @Path("jaxbElement")
+    @ConsumeMime( { "text/xml", "application/xml" })
+    @ProduceMime("text/plain")
+    public String jaxbPost(JAXBElement<Person> person) {
+        return person.getValue().toString();
+    }
+
+    @POST
+    @Path("jaxb")
+    @ConsumeMime( { "text/xml", "application/xml" })
+    @ProduceMime("text/plain")
+    public String jaxbPost(Person person) {
+        return person.toString();
     }
 
     @GET
     @Path("MultivaluedMap")
     @ProduceMime("application/x-www-form-urlencoded")
-    public MultivaluedMap<String, String> getMMap() {
+    public MultivaluedMap<String, String> mMapGet() {
         MultivaluedMap<String, String> mmap = new MultivaluedMapImpl<String, String>();
         mmap.add("firstname", "Angela");
         mmap.add("lastname", "Merkel");
@@ -183,7 +236,68 @@ public class ProviderTestService {
     @Path("MultivaluedMap")
     @ConsumeMime("application/x-www-form-urlencoded")
     @ProduceMime("text/plain")
-    public String postMMap(MultivaluedMap<String, String> mmap) {
+    public String mMapPost(MultivaluedMap<String, String> mmap) {
         return Converter.toForm(mmap).toString();
+    }
+
+    @GET
+    @Path("Reader")
+    @ProduceMime("application/octet-stream")
+    public Reader readerGet() {
+        return new StringReader(ALPHABET);
+    }
+
+    @POST
+    @Path("Reader")
+    @ProduceMime("text/plain")
+    public String readerPost(Reader reader) throws IOException {
+        StringBuilder stb = new StringBuilder();
+        int c;
+        while ((c = reader.read()) >= 0)
+            stb.append((char) c);
+        return stb.toString();
+    }
+
+    @GET
+    @Path("StringBuilder")
+    @ProduceMime("text/plain")
+    public StringBuilder stringBuilderGet() {
+        return new StringBuilder(ALPHABET);
+    }
+
+    @GET
+    @Path("String")
+    @ProduceMime("text/plain")
+    public String stringGet() {
+        return ALPHABET;
+    }
+
+    @POST
+    @Path("String")
+    @ProduceMime("text/plain")
+    @ConsumeMime("text/plain")
+    public String stringPost(String entity) {
+        return entity;
+    }
+
+    @GET
+    @Path("xslt")
+    @ProduceMime("text/html")
+    @XsltSource("src/org/restlet/test/jaxrs/services/greeting.xsl")
+    public Source xsltGet(@QueryParam("text")
+    String text) {
+        String xmlStart = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
+        String xml = "<greeting>" + text + "</greeting>";
+        byte[] bytes = (xmlStart + xml).getBytes();
+        return new StreamSource(new ByteArrayInputStream(bytes));
+    }
+
+    @POST
+    @Path("xslt")
+    @ConsumeMime("text/xml")
+    @ProduceMime("text/plain")
+    public byte[] xsltPost(Source source) throws IOException {
+        InputSource inputSource = SAXSource.sourceToInputSource(source);
+        return Util.getByteArray(inputSource.getByteStream());
     }
 }

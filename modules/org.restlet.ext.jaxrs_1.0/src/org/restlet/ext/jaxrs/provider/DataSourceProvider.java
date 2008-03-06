@@ -42,21 +42,21 @@ public class DataSourceProvider extends AbstractProvider<DataSource> {
     }
 
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
-        return DataSource.class.isAssignableFrom(type);
-    }
-
-    @Override
     public DataSource readFrom(Class<DataSource> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            MediaType mediaType, Annotation[] annotations,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return new ByteArrayDataSource(entityStream, mediaType.toString());
     }
 
     @Override
+    protected Class<?> supportedClass() {
+        return DataSource.class;
+    }
+
+    @Override
     public void writeTo(DataSource dataSource, Type genericType,
-            Annotation[] annotations,
-            MediaType mediaType, 
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         InputStream inputStream = dataSource.getInputStream();

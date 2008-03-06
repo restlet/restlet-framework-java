@@ -60,11 +60,11 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#isReadableAndWriteable(java.lang.Class, Type, Annotation[])
+     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#supportedClass()
      */
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type, Type genericType, Annotation[] annotations) {
-        return Form.class.isAssignableFrom(type);
+    protected Class<?> supportedClass() {
+        return Form.class;
     }
 
     /**

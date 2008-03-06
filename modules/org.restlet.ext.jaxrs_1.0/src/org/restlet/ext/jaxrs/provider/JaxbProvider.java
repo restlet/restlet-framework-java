@@ -38,12 +38,19 @@ public class JaxbProvider extends AbstractJaxbProvider<Object> {
 
     private Logger logger = Logger.getLogger(JaxbProvider.class.getName());
 
-    /**
-     * @see org.restlet.ext.jaxrs.provider.AbstractProvider#isReadableAndWriteable(java.lang.Class,
-     *      Type, Annotation[])
-     */
     @Override
-    protected boolean isReadableAndWriteable(Class<?> type, Type genericType,
+    Logger getLogger() {
+        return this.logger;
+    }
+
+    @Override
+    public boolean isReadable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
+        return type.isAnnotationPresent(XmlRootElement.class);
+    }
+
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
         return type.isAnnotationPresent(XmlRootElement.class);
     }
@@ -72,10 +79,5 @@ public class JaxbProvider extends AbstractJaxbProvider<Object> {
             MultivaluedMap<String, Object> httpResponseHeaders,
             OutputStream entityStream) throws IOException {
         marshal(object, entityStream);
-    }
-
-    @Override
-    Logger getLogger() {
-        return this.logger;
     }
 }

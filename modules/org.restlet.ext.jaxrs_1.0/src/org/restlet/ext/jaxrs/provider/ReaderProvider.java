@@ -19,52 +19,48 @@ package org.restlet.ext.jaxrs.provider;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.ext.jaxrs.util.Util;
-
 /**
+ * This Provider is used to read directly from an InputStream
+ * 
  * @author Stephan Koops
  */
 @Provider
-@ProduceMime("text/*")
-@ConsumeMime("text/*")
-public class StringProvider extends AbstractProvider<CharSequence> {
+public class ReaderProvider extends AbstractProvider<Reader> {
 
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
     @Override
-    public long getSize(CharSequence t) {
-        return t.length();
+    public long getSize(Reader t) {
+        return -1;
     }
 
+    /**
+     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
+     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
+     *      java.io.InputStream)
+     */
     @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return type.isAssignableFrom(String.class);
-    }
-
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return CharSequence.class.isAssignableFrom(type);
-    }
-
-    @Override
-    public String readFrom(Class<CharSequence> type, Type genericType,
+    public Reader readFrom(Class<Reader> type, Type genericType,
             MediaType mediaType, Annotation[] annotations,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return Util.copyToStringBuilder(entityStream).toString();
+        return new InputStreamReader(entityStream);
+    }
+
+    @Override
+    protected Class<?> supportedClass() {
+        return Reader.class;
     }
 
     /**
@@ -72,11 +68,14 @@ public class StringProvider extends AbstractProvider<CharSequence> {
      *      Annotation[], MediaType, MultivaluedMap, OutputStream)
      */
     @Override
-    public void writeTo(CharSequence cs, Type genericType,
+    public void writeTo(Reader reader, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        byte[] array = cs.toString().getBytes();
-        entityStream.write(array);
+        int ch;
+        while ((ch = reader.read()) >= 0) {
+            entityStream.write((byte) ch);
+            // LATER charset for ReaderProvider ?
+        }
     }
 }
