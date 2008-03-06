@@ -19,6 +19,8 @@ Changes log
           Guard to allow the user to provide a secret resolver without
           needing to subclass Guard. Deprecated the findSecret(String) 
           method. 
+        - DomRepresentation.getDocument() new creates a new empty document
+          if no document is available or can't be parsed.  
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.

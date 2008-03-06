@@ -98,18 +98,25 @@ public class DomRepresentation extends XmlRepresentation {
     }
 
     /**
-     * Returns the wrapped DOM document.
+     * Returns the wrapped DOM document. If no document is defined yet, it
+     * attempts to parse the XML representation eventually given at construction
+     * time. Otherwise, it just creates a new document.
      * 
      * @return The wrapped DOM document.
      */
     public Document getDocument() throws IOException {
-        if ((this.dom == null) && (this.xmlRepresentation != null)) {
-            try {
-                this.dom = getDocumentBuilder().parse(
-                        xmlRepresentation.getStream());
-            } catch (SAXException se) {
-                throw new IOException("Couldn't read the XML representation. "
-                        + se.getMessage());
+        if (this.dom == null) {
+            if (this.xmlRepresentation != null) {
+                try {
+                    this.dom = getDocumentBuilder().parse(
+                            xmlRepresentation.getStream());
+                } catch (SAXException se) {
+                    throw new IOException(
+                            "Couldn't read the XML representation. "
+                                    + se.getMessage());
+                }
+            } else {
+                this.dom = getDocumentBuilder().newDocument();
             }
         }
 
