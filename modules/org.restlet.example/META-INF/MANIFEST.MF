@@ -6,5 +6,6 @@ Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
 Export-Package: org.restlet.example
 Require-Bundle: com.db4o;visibility:=reexport,
+ com.noelios.restlet,
  org.restlet.ext.json;visibility:=reexport,
  org.restlet.ext.jaxrs;visibility:=reexport
