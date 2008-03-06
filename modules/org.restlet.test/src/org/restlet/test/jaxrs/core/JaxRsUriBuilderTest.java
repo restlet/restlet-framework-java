@@ -36,9 +36,9 @@ import org.restlet.data.Reference;
 import org.restlet.ext.jaxrs.core.JaxRsPathSegment;
 import org.restlet.ext.jaxrs.core.JaxRsUriBuilder;
 import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
-import org.restlet.test.jaxrs.services.SimpleTrain;
 import org.restlet.test.jaxrs.services.car.CarListResource;
 import org.restlet.test.jaxrs.services.car.CarResource;
+import org.restlet.test.jaxrs.services.resources.SimpleTrain;
 
 /**
  * @author Stephan

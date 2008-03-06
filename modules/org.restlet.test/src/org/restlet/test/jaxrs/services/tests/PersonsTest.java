@@ -15,51 +15,44 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
 
-import org.restlet.ext.jaxrs.util.Util;
-import org.restlet.test.jaxrs.services.car.CarListResource;
-import org.restlet.test.jaxrs.services.resources.SimpleTrain;
+import org.restlet.data.Response;
+import org.restlet.test.jaxrs.services.resources.PersonResource;
+import org.restlet.test.jaxrs.services.resources.PersonsResource;
 
-public class MultipleResourcesTest extends JaxRsTestCase {
+/**
+ * @author Stephan Koops
+ * @see PersonsResource
+ * @see PersonResource
+ */
+public class PersonsTest extends JaxRsTestCase {
     @Override
     protected ApplicationConfig getAppConfig() {
         return new ApplicationConfig() {
             @Override
-            @SuppressWarnings("unchecked")
             public Set<Class<?>> getResourceClasses() {
-                return Util.createSet(SimpleTrain.class, CarListResource.class);
+                Set<Class<?>> rrcs = new HashSet<Class<?>>(2);
+                rrcs.add(PersonResource.class);
+                rrcs.add(PersonsResource.class);
+                return rrcs;
             }
         };
     }
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    protected Class<?> getRootResourceClass() {
+        return PersonResource.class;
     }
 
-    public void testCar() throws Exception {
-        CarTest carTest = new CarTest();
-        carTest.setServerWrapper(this.getServerWrapper());
-        carTest.testGetPlainText();
-        carTest.testGetHtmlText();
-        carTest.testDelete();
-        carTest.testGetCar();
-        carTest.testGetOffers();
-    }
-
-    public void testSimpleTrain() throws Exception {
-        SimpleTrainTest simpleTrainTest = new SimpleTrainTest();
-        simpleTrainTest.setServerWrapper(this.getServerWrapper());
-        simpleTrainTest.testGetPlainText();
-        simpleTrainTest.testGetHtmlText();
-        simpleTrainTest.testGetTextAll();
-        simpleTrainTest.testGetTextMultiple1();
-        simpleTrainTest.testGetTextMultiple2();
+    public void test1() {
+        Response response = get();
+        sysOutEntityIfError(response);
+        "".toString(); // FIXME not ready
     }
 }

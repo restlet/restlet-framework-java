@@ -26,8 +26,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.util.Util;
-import org.restlet.test.jaxrs.services.CrazyTypeProvider;
-import org.restlet.test.jaxrs.services.OwnProviderTestService;
+import org.restlet.test.jaxrs.services.others.CrazyTypeProvider;
+import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
 
 /**
  * @see CrazyTypeProvider

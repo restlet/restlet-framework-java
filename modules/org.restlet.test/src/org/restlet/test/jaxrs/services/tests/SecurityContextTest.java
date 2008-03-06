@@ -35,7 +35,7 @@ import org.restlet.ext.jaxrs.ForbidAllAccess;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.server.RestletServerWrapper;
 import org.restlet.test.jaxrs.server.ServerWrapper;
-import org.restlet.test.jaxrs.services.SecurityContextService;
+import org.restlet.test.jaxrs.services.resources.SecurityContextService;
 
 /**
  * This test class checks if the Request.evaluatePreconditions methods works
@@ -150,8 +150,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         assertEquals(SecurityContext.BASIC_AUTH, entity);
     }
 
-    // TESTEN waiting for Digest Auth is running
-    public void _testAuthenticationSchemeDigest() throws Exception {
+    public void testAuthenticationSchemeDigest() throws Exception {
         if (!setAccessControl(AllowAllAccess.getInstance()))
             return;
         startServer(ChallengeScheme.HTTP_DIGEST);

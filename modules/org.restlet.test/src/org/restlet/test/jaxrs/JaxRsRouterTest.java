@@ -28,11 +28,11 @@ import junit.framework.TestCase;
 import org.restlet.ext.jaxrs.AllowAllAccess;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.util.Util;
-import org.restlet.test.jaxrs.services.DoublePath1;
-import org.restlet.test.jaxrs.services.DoublePath2;
-import org.restlet.test.jaxrs.services.SimpleTrain;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
 import org.restlet.test.jaxrs.services.path.IllegalPathService2;
+import org.restlet.test.jaxrs.services.resources.DoublePath1;
+import org.restlet.test.jaxrs.services.resources.DoublePath2;
+import org.restlet.test.jaxrs.services.resources.SimpleTrain;
 
 @SuppressWarnings("all")
 public class JaxRsRouterTest extends TestCase {

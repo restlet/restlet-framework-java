@@ -22,7 +22,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
-import org.restlet.test.jaxrs.services.SimpleHouse;
+import org.restlet.test.jaxrs.services.resources.SimpleHouse;
 
 public class SimpleHouseTest extends JaxRsTestCase {
 

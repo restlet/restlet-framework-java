@@ -15,26 +15,32 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+package org.restlet.test.jaxrs.services.others;
 
-package org.restlet.test.jaxrs.services.tests;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.InjectionTestService;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Stephan Koops
  */
-public class InjectionTest extends JaxRsTestCase {
+@XmlRootElement
+public class PersonList {
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return InjectionTestService.class;
+    private List<Person> persons = new ArrayList<Person>();
+
+    @XmlElement(name = "persons")
+    public List<Person> getPersons() {
+        return persons;
     }
 
-    public void testGet1() {
-        Response response = get();
-        super.sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    public void setPersons(List<Person> persons) {
+        this.persons = persons;
+    }
+
+    public void add(Person person) {
+        this.persons.add(person);
     }
 }

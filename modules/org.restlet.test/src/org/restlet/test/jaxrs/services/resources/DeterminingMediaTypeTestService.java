@@ -15,26 +15,29 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+package org.restlet.test.jaxrs.services.resources;
 
-package org.restlet.test.jaxrs.services.tests;
-
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.InjectionTestService;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.ProduceMime;
 
 /**
  * @author Stephan Koops
  */
-public class InjectionTest extends JaxRsTestCase {
+@Path("/providertest")
+public class DeterminingMediaTypeTestService {
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return InjectionTestService.class;
+    @GET
+    @Path("textStar")
+    @ProduceMime("text/*")
+    public String getTextStar() {
+        return "isfhl";
     }
 
-    public void testGet1() {
-        Response response = get();
-        super.sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    @GET
+    @Path("htmlPlainGif")
+    @ProduceMime({"text/html", "text/plain", "image/gif"})
+    public byte[] getHtmlPlainGif() {
+        return "gkjlgk".getBytes();
     }
 }

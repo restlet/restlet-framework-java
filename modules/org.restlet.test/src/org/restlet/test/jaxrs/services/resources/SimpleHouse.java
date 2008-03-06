@@ -16,25 +16,30 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.test.jaxrs.services.tests;
+package org.restlet.test.jaxrs.services.resources;
 
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.InjectionTestService;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.ProduceMime;
 
 /**
+ * This class contains only data for one media type
+ * 
  * @author Stephan Koops
+ * 
  */
-public class InjectionTest extends JaxRsTestCase {
+@Path("/ho%20use")
+public class SimpleHouse {
+    /** Text of the Plain-Text-Representation. */
+    public static final String RERP_PLAIN_TEXT = "  /\\ \n /  \\ \n |  | \n +--+ \n \n This is a simple text house";
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return InjectionTestService.class;
-    }
-
-    public void testGet1() {
-        Response response = get();
-        super.sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    /**
+     * 
+     * @return
+     */
+    @GET
+    @ProduceMime("text/plain")
+    public String getPlainText() {
+        return RERP_PLAIN_TEXT;
     }
 }

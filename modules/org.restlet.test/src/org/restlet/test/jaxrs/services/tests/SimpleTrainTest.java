@@ -25,7 +25,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.resource.Representation;
-import org.restlet.test.jaxrs.services.SimpleTrain;
+import org.restlet.test.jaxrs.services.resources.SimpleTrain;
 
 public class SimpleTrainTest extends JaxRsTestCase {
 

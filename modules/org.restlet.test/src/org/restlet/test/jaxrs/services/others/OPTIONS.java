@@ -15,26 +15,19 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+package org.restlet.test.jaxrs.services.others;
 
-package org.restlet.test.jaxrs.services.tests;
-
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.InjectionTestService;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @author Stephan Koops
+ * Indicates that the annotated method responds to HTTP GET requests
+ * @see HttpMethod
  */
-public class InjectionTest extends JaxRsTestCase {
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return InjectionTestService.class;
-    }
-
-    public void testGet1() {
-        Response response = get();
-        super.sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-    }
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@javax.ws.rs.HttpMethod("OPTIONS")
+public @interface OPTIONS { 
 }

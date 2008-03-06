@@ -28,8 +28,8 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.InheritAnnotationTestService1;
-import org.restlet.test.jaxrs.services.InheritAnnotationTestService2;
+import org.restlet.test.jaxrs.services.resources.InheritAnnotationTestService1;
+import org.restlet.test.jaxrs.services.resources.InheritAnnotationTestService2;
 
 public class InheritAnnotationTest extends JaxRsTestCase {
 

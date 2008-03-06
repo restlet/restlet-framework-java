@@ -34,7 +34,7 @@ import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.util.Util;
-import org.restlet.test.jaxrs.services.RequestService;
+import org.restlet.test.jaxrs.services.resources.RequestService;
 
 /**
  * This test class checks if the Request.evaluatePreconditions methods works

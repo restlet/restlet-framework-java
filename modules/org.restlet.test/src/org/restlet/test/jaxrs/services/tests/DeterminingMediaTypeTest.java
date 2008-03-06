@@ -21,7 +21,7 @@ package org.restlet.test.jaxrs.services.tests;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.DeterminingMediaTypeTestService;
+import org.restlet.test.jaxrs.services.resources.DeterminingMediaTypeTestService;
 
 /**
  * This test class checks if the Request.evaluatePreconditions methods works

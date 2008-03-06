@@ -16,25 +16,45 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.test.jaxrs.services.tests;
+package org.restlet.test.jaxrs.services.resources;
 
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.InjectionTestService;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
 /**
+ * This class contains only data for one media type
+ * 
  * @author Stephan Koops
+ * 
  */
-public class InjectionTest extends JaxRsTestCase {
+@Path("/illegalThingsInternal")
+public class IllegalThingsTestService {
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return InjectionTestService.class;
+    /**
+     * This sub resource locator returns null; that is not allowed
+     * 
+     * @return
+     */
+    @Path("nullSubResource")
+    public Object getPlainText() {
+        return null;
     }
 
-    public void testGet1() {
-        Response response = get();
-        super.sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    @GET
+    @Path("protected")
+    protected String getProtected() {
+        return "this method is protected. Is there a warning?";
+    }
+
+    @GET
+    @Path("package")
+    String getPackageVisible() {
+        return "this method is package visible. Is there a warning?";
+    }
+
+    @GET
+    @Path("private")
+    String getPrivateVisible() {
+        return "this method is private visible. Is there a warning?";
     }
 }

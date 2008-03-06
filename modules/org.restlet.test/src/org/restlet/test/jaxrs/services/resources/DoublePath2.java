@@ -16,25 +16,24 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.test.jaxrs.services.tests;
+package org.restlet.test.jaxrs.services.resources;
 
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.InjectionTestService;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
 /**
+ * Test what happens when two methods should be use for the same request
+ * 
  * @author Stephan Koops
+ * 
  */
-public class InjectionTest extends JaxRsTestCase {
+@Path("/doubleMethodsForResources")
+public class DoublePath2 {
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return InjectionTestService.class;
-    }
+    private static final String ANOTHER_RESULT = null;
 
-    public void testGet1() {
-        Response response = get();
-        super.sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    @GET
+    public String getResource() {
+        return ANOTHER_RESULT;
     }
 }

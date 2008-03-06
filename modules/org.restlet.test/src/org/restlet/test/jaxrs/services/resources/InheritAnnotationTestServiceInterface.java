@@ -15,26 +15,21 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+package org.restlet.test.jaxrs.services.resources;
 
-package org.restlet.test.jaxrs.services.tests;
-
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.InjectionTestService;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.ProduceMime;
 
 /**
+ * Interface to test the inheritaion and non inheritation of annotations.
  * @author Stephan Koops
+ * @see InheritAnnotationTestService1
+ * @see InheritAnnotationTestService2
  */
-public class InjectionTest extends JaxRsTestCase {
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return InjectionTestService.class;
-    }
-
-    public void testGet1() {
-        Response response = get();
-        super.sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-    }
+public interface InheritAnnotationTestServiceInterface {
+    @GET
+    @ProduceMime("text/plain")
+    @Path("getText")
+    public Object getText();
 }

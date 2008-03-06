@@ -20,7 +20,7 @@ package org.restlet.test.jaxrs.services.tests;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.RecursiveTestService;
+import org.restlet.test.jaxrs.services.resources.RecursiveTestService;
 
 public class RecursiveTest extends JaxRsTestCase {
     @Override

@@ -24,7 +24,7 @@ import org.restlet.data.Cookie;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
-import org.restlet.test.jaxrs.services.CookieParamTestService;
+import org.restlet.test.jaxrs.services.resources.CookieParamTestService;
 
 /**
  * @author Stephan Koops

@@ -15,26 +15,34 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+package org.restlet.test.jaxrs.services.resources;
 
-package org.restlet.test.jaxrs.services.tests;
-
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.InjectionTestService;
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Encoded;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.ProduceMime;
 
 /**
  * @author Stephan Koops
  */
-public class InjectionTest extends JaxRsTestCase {
+@Path("cookieParamTest")
+public class CookieParamTestService {
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return InjectionTestService.class;
+    @GET
+    @ProduceMime("text/plain")
+    public String get(@CookieParam("c")
+    String cookieValue) {
+        return cookieValue;
     }
 
-    public void testGet1() {
-        Response response = get();
-        super.sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    @GET
+    @ProduceMime("text/plain")
+    @Path("withDefault")
+    @Encoded
+    public String withDefault(@CookieParam("c") @DefaultValue("default")
+    String cookieValue) {
+        return cookieValue;
     }
 }

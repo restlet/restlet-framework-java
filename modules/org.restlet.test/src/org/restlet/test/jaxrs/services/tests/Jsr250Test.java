@@ -32,8 +32,8 @@ import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.util.Util;
 import org.restlet.resource.Representation;
-import org.restlet.test.jaxrs.services.Jsr250TestProvider;
-import org.restlet.test.jaxrs.services.Jsr250TestService;
+import org.restlet.test.jaxrs.services.others.Jsr250TestProvider;
+import org.restlet.test.jaxrs.services.resources.Jsr250TestService;
 
 /**
  * @author Stephan Koops

@@ -20,7 +20,7 @@ package org.restlet.test.jaxrs.services.tests;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.IllegalThingsTestService;
+import org.restlet.test.jaxrs.services.resources.IllegalThingsTestService;
 
 public class IllegalThingsTest extends JaxRsTestCase {
 

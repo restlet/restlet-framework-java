@@ -21,7 +21,7 @@ import java.util.Set;
 
 import org.restlet.data.Dimension;
 import org.restlet.data.Response;
-import org.restlet.test.jaxrs.services.ResponseBuilderService;
+import org.restlet.test.jaxrs.services.resources.ResponseBuilderService;
 
 /**
  * @author Stephan Koops

@@ -22,7 +22,7 @@ import java.io.IOException;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.MatrixParamTestService;
+import org.restlet.test.jaxrs.services.resources.MatrixParamTestService;
 
 /**
  * @author Stephan Koops
