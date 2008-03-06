@@ -81,6 +81,8 @@ public class XsltProvider implements MessageBodyWriter<Source>,
         if (transformer == null) {
             try {
                 Source source = loadSource(xsltSource);
+                if(source == null)
+                    return null;
                 transformer = transformerFactory.newTransformer(source);
                 transformerCache.put(xsltSource, transformer);
             } catch (TransformerConfigurationException e) {
