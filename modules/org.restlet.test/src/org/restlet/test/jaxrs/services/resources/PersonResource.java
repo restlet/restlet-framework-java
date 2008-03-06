@@ -17,6 +17,7 @@
  */
 package org.restlet.test.jaxrs.services.resources;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
@@ -29,6 +30,7 @@ import org.restlet.test.jaxrs.services.others.Person;
  */
 @Path("persons/{id}")
 public class PersonResource {
+    @GET
     public Person get(@PathParam("id") int id)
     {
         return new Person("firstname"+id, "lastname");

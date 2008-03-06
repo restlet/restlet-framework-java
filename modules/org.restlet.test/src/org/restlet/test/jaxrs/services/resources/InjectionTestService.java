@@ -45,13 +45,13 @@ public class InjectionTestService {
     @ProduceMime("text/plain")
     public Response get() {
         String msg = "";
-        if(securityContext != null)
+        if(securityContext == null)
             msg += "\n* securityContext";
-        if(uriInfo != null)
+        if(uriInfo == null)
             msg += "\n* uriInfo";
-        if(request != null)
+        if(request == null)
             msg += "\n* request";
-        if(httpHeaders != null)
+        if(httpHeaders == null)
             msg += "\n* httpHeaders";
         if(msg.length() > 0)
             return Response.serverError().entity("missing:"+msg).build();

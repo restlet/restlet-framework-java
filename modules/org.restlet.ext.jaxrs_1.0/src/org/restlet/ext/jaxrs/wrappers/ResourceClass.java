@@ -70,7 +70,7 @@ import org.restlet.ext.jaxrs.util.Util;
  */
 public class ResourceClass extends AbstractJaxRsWrapper {
 
-    // LATER cache ResourceClasses
+    // LATER cache ResourceClasses, e.g. for recursive resources
 
     private static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
 
@@ -491,7 +491,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         List<Field> ifmp = new ArrayList<Field>();
         List<Field> ifpp = new ArrayList<Field>();
         List<Field> ifqp = new ArrayList<Field>();
-        for (Field field : this.jaxRsClass.getFields()) {
+        for (Field field : this.jaxRsClass.getDeclaredFields()) {
+            field.setAccessible(true);
             if (field.isAnnotationPresent(Context.class))
                 ifcx.add(field);
             if (field.isAnnotationPresent(CookieParam.class))

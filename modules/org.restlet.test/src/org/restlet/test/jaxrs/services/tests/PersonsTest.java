@@ -18,11 +18,17 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
 
+import org.restlet.data.Reference;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.ext.jaxb.JaxbRepresentation;
+import org.restlet.test.jaxrs.services.others.Person;
+import org.restlet.test.jaxrs.services.others.PersonList;
 import org.restlet.test.jaxrs.services.resources.PersonResource;
 import org.restlet.test.jaxrs.services.resources.PersonsResource;
 
@@ -47,12 +53,33 @@ public class PersonsTest extends JaxRsTestCase {
 
     @Override
     protected Class<?> getRootResourceClass() {
-        return PersonResource.class;
+        return PersonsResource.class;
     }
 
-    public void test1() {
+    public void testGetList() throws Exception {
         Response response = get();
         sysOutEntityIfError(response);
-        "".toString(); // FIXME not ready
+        JaxbRepresentation<PersonList> personListRepr = new JaxbRepresentation<PersonList>(response.getEntity(), PersonList.class);
+        List<Person> persons = personListRepr.getObject().getPersons();
+        assertEquals(3, persons.size());
+        assertEquals("Angela", persons.get(0).getFirstname());
+        assertEquals("Olmert", persons.get(1).getLastname());
+        assertEquals("George U.", persons.get(2).getFirstname());
+    }
+
+    public void testCreate() throws Exception {
+        Person newPerson = new Person("Kurt", "Beck");
+        Response response1 = post(new JaxbRepresentation<Person>(newPerson));
+        sysOutEntityIfError(response1);
+        assertEquals(Status.SUCCESS_CREATED, response1.getStatus());
+        Reference newLocation = response1.getLocationRef();
+        
+        Response response2 = get(newLocation);
+        sysOutEntityIfError(response2);
+        assertEquals(Status.SUCCESS_OK, response2.getStatus());
+        JaxbRepresentation<Person> repr = new JaxbRepresentation<Person>(response2.getEntity(), Person.class);
+        Person person = repr.getObject();
+        assertTrue(person.getFirstname().startsWith("firstname"));
+        assertEquals("lastname", person.getLastname());
     }
 }

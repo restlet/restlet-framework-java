@@ -299,8 +299,10 @@ public abstract class JaxRsTestCase extends TestCase {
      */
     private Response accessServer(Request request) {
         Restlet connector = getConnector();
-        if (shouldAccessWithoutTcp())
-            Util.getHttpHeaders(request).add("host", "localhost");
+        if (shouldAccessWithoutTcp()) {
+            String hostDomain = request.getResourceRef().getHostDomain();
+            Util.getHttpHeaders(request).add("host", hostDomain);
+        }
         return connector.handle(request);
     }
 
@@ -398,6 +400,12 @@ public abstract class JaxRsTestCase extends TestCase {
 
     public Response get(Cookie cookie) {
         return get(null, cookie);
+    }
+
+    public Response get(Reference reference) {
+        if(reference.getBaseRef() == null)
+            reference.setBaseRef(reference.getHostIdentifier());
+        return accessServer(Method.GET, reference);
     }
 
     public Response get(MediaType accMediaType) {

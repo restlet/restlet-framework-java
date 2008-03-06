@@ -35,7 +35,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
                 !caseSensitive), caseSensitive);
     }
 
-    private MultivaluedMapImpl<K, V> map;
+    private MultivaluedMapImpl<K, V> mmap;
 
     private boolean caseInsensitive;
 
@@ -47,7 +47,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
      */
     private UnmodifiableMultivaluedMap(MultivaluedMapImpl<K, V> mmap,
             boolean caseSensitive) {
-        this.map = mmap;
+        this.mmap = mmap;
         this.caseInsensitive = !caseSensitive;
     }
 
@@ -65,8 +65,8 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
 
     public boolean containsKey(Object key) {
         if (caseInsensitive && key != null)
-            map.containsKey(caseInsensitive(key.toString()));
-        return map.containsKey(key);
+            mmap.containsKey(caseInsensitive(key.toString()));
+        return mmap.containsKey(key);
     }
 
     private Object caseInsensitive(Object key) {
@@ -77,27 +77,46 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
 
     public boolean containsValue(Object value) {
         if (value instanceof List) {
-            return map.containsValue(value);
+            return mmap.containsValue(value);
         }
-        for (List<V> vList : map.values())
+        for (List<V> vList : mmap.values())
             if (vList.contains(value))
                 return true;
         return false;
     }
 
     public Set<java.util.Map.Entry<K, List<V>>> entrySet() {
-        return Collections.unmodifiableSet(map.entrySet());
+        return Collections.unmodifiableSet(mmap.entrySet());
     }
 
+    @Override
+    public boolean equals(Object anotherObect)
+    {
+        if(anotherObect == this)
+            return true;
+        if(!(anotherObect instanceof MultivaluedMap))
+            return false;
+        return this.mmap.equals(anotherObect);
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        int hashCode = this.mmap.hashCode();
+        if(this.caseInsensitive)
+            hashCode++;
+        return hashCode;
+    }
+    
     public List<V> get(Object key) {
-        return Collections.unmodifiableList(map.get(caseInsensitive(key)));
+        return Collections.unmodifiableList(mmap.get(caseInsensitive(key)));
     }
 
     @SuppressWarnings("unchecked")
     public V getFirst(K key) {
         if (caseInsensitive && key instanceof String)
             key = (K) key.toString().toLowerCase();
-        return map.getFirst(key);
+        return mmap.getFirst(key);
     }
 
     /**
@@ -110,15 +129,15 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     public V getLast(K key) {
         if (caseInsensitive && key instanceof String)
             key = (K) key.toString().toLowerCase();
-        return map.getLast(key);
+        return mmap.getLast(key);
     }
 
     public boolean isEmpty() {
-        return map.isEmpty();
+        return mmap.isEmpty();
     }
 
     public Set<K> keySet() {
-        return Collections.unmodifiableSet(map.keySet());
+        return Collections.unmodifiableSet(mmap.keySet());
     }
 
     @Deprecated
@@ -149,7 +168,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
 
     public int size() {
         int size = 0;
-        for (List<V> l : map.values())
+        for (List<V> l : mmap.values())
             size += l.size();
         return size;
     }
@@ -195,7 +214,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     }
     
     public Collection<List<V>> values() {
-        return Collections.unmodifiableCollection(map.values());
+        return Collections.unmodifiableCollection(mmap.values());
     }
 
     /**

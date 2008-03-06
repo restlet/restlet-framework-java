@@ -204,9 +204,10 @@ public class JaxRsUriInfo implements UriInfo {
      * 
      * @return a UriBuilder initialized with the absolute path of the request.
      * @see UriInfo#getAbsolutePathBuilder()
+     * @see UriInfo#getBaseUriBuilder()
      */
     public UriBuilder getBaseUriBuilder() {
-        return UriBuilder.fromPath(getBaseUriStr());
+        return UriBuilder.fromUri(getBaseUriStr());
     }
 
     private String getBaseUriStr() {
@@ -360,11 +361,9 @@ public class JaxRsUriInfo implements UriInfo {
      */
     public MultivaluedMap<String, String> getTemplateParameters() {
         if (this.templateParametersDecoded == null) {
-            if (this.templateParametersEncoded == null)
-                return null;
             MultivaluedMapImpl<String, String> templParamsDec = new MultivaluedMapImpl<String, String>();
-            for (Map.Entry<String, List<String>> entryEnc : this.templateParametersEncoded
-                    .entrySet()) {
+            for (Map.Entry<String, List<String>> entryEnc : this
+                    .interalGetTemplateParametersEncoded().entrySet()) {
                 String keyDec = Reference.decode(entryEnc.getKey());
                 List<String> valuesEnc = entryEnc.getValue();
                 List<String> valuesDec = new ArrayList<String>(valuesEnc.size());
@@ -437,5 +436,10 @@ public class JaxRsUriInfo implements UriInfo {
     protected void setTemplateParametersEncoded(
             MultivaluedMap<String, String> templateParametersEncoded) {
         this.templateParametersEncoded = templateParametersEncoded;
+    }
+
+    @Override
+    public String toString() {
+        return this.reference.toString(true, false);
     }
 }

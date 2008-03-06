@@ -24,6 +24,7 @@ import org.restlet.test.jaxrs.services.resources.InjectionTestService;
 
 /**
  * @author Stephan Koops
+ * @see InjectionTestService
  */
 public class InjectionTest extends JaxRsTestCase {
 

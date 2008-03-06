@@ -27,6 +27,8 @@ public class Notizen {
     // (e.g. a Servlet filter) to be used to handle the error if desired.
     // LATER alle LATERs in Masterarbeit uebernehmen
     // TODO look for warnings in tests and put them away.
-    // TESTEN was passiert, wenn ein Resource class rekursiv zu sich selber
     // gehört. Gibt es dann ne Endlosrekursion?
+    // TODO MessageBodyWorkers
+    // TODO ContextResolver
+    // TODO UriInfo: 2 new methods. (create new javax.ws.rs.jar)
 }
