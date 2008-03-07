@@ -9,6 +9,9 @@ Changes log
  - Prevented potential NPE in DomRepresentation constructor
    if a null representation is passed. Reported by Dhabaleswar Jena. 
 
+[Enhancements]
+ - Updated Jetty to version 6.1.8.
+
 1.0.8 (2008-02-29)
 [Bugs fixed]
  - Fixed Spring XML loading issue related to validation in SpringContext class.
