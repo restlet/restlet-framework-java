@@ -32,13 +32,13 @@ import javax.ws.rs.ProduceMime;
  * @see CarListResource
  */
 public class CarResource {
-    private String id;
+    private int id;
 
     /**
      * 
      * @param id
      */
-    public CarResource(String id) {
+    public CarResource(int id) {
         this.id = id;
     }
 
@@ -53,7 +53,7 @@ public class CarResource {
     }
 
     /**
-     * Konnen Sub-Resourcen konnen auch weiter Sub-Resourcen zuruckgeben?
+     * REQUEST could a sub resource contains other sub resources?
      * 
      * @param id
      * @return
@@ -67,7 +67,7 @@ public class CarResource {
      * 
      * @return
      */
-    public String getId() {
+    public int getId() {
         return id;
     }
 

@@ -22,6 +22,10 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.RecursiveTestService;
 
+/**
+ * @author Stephan Koops
+ * @see RecursiveTestService
+ */
 public class RecursiveTest extends JaxRsTestCase {
     @Override
     protected Class<?> getRootResourceClass() {
@@ -43,7 +47,7 @@ public class RecursiveTest extends JaxRsTestCase {
     }
 
     public void test1b() throws Exception {
-        Response response = get("a");
+        Response response = get("a/");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1", response.getEntity().getText());

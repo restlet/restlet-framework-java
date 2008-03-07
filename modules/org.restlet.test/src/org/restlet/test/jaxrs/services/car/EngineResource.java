@@ -32,6 +32,15 @@ public class EngineResource {
     @GET
     @ProduceMime("text/plain")
     public String getText() {
-        return "This is the engine of car with id " + car.getId() + ".";
+        int carId = car.getId();
+        return getPlainRepr(carId);
+    }
+
+    /**
+     * @param carId
+     * @return
+     */
+    public static String getPlainRepr(int carId) {
+        return "This is the engine of car with id " + carId + ".";
     }
 }

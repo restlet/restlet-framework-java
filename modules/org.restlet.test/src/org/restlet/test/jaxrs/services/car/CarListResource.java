@@ -140,8 +140,7 @@ public class CarListResource {
      */
     @Path("{id}")
     @Encoded
-    public CarResource findCar(@javax.ws.rs.PathParam("id")
-    String id) {
+    public CarResource findCar(@javax.ws.rs.PathParam("id") int id) {
         return new CarResource(id);
     }
 }

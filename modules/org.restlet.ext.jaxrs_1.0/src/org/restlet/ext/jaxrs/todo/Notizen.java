@@ -31,4 +31,6 @@ public class Notizen {
     // TODO MessageBodyWorkers
     // TODO ContextResolver
     // TODO UriInfo: 2 new methods. (create new javax.ws.rs.jar)
+    // REQUEST why RuntimeDelegate.createEndpoint()?
+    // REQUEST what should an app developer do, if he get a mbw from a mbworker?
 }

@@ -18,6 +18,8 @@
 
 package org.restlet.ext.jaxrs;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
@@ -235,8 +237,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                 try {
                     this.addProvider(providerClass);
                 } catch (InstantiateProviderException ipe) {
-                    String msg = "The provider "
-                            + providerClass.getName()
+                    String msg = "The provider " + providerClass.getName()
                             + " could not be instantiated";
                     throw new IllegalArgumentException(msg, ipe.getCause());
                 }
@@ -244,19 +245,16 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         }
         this.addExtensionMappings(appConfig.getExtensionMappings());
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
-    public synchronized void stop() throws Exception
-    {
-        try
-        {
+    public synchronized void stop() throws Exception {
+        try {
             Set<Provider<?>> allProviders = new HashSet<Provider<?>>(64);
-            allProviders.addAll((Collection)this.messageBodyReaders);
-            allProviders.addAll((Collection)this.messageBodyWriters);
-            allProviders.addAll((Collection)this.contextResolvers);
-            for(Provider<?> p : allProviders) 
-            {
+            allProviders.addAll((Collection) this.messageBodyReaders);
+            allProviders.addAll((Collection) this.messageBodyWriters);
+            allProviders.addAll((Collection) this.contextResolvers);
+            for (Provider<?> p : allProviders) {
                 try {
                     p.preDestroy();
                 } catch (MethodInvokeException e) {
@@ -265,9 +263,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                     getLogger().log(Level.INFO, PRE_CONSTR_EXC_MESSAGE, e);
                 }
             }
-        }
-        finally
-        {
+        } finally {
             super.stop();
         }
     }
@@ -289,7 +285,10 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         try {
             newRrc = wrapperFactory.getRootResourceClass(rootResourceClass);
         } catch (IllegalPathOnClassException e) {
-            throw new IllegalArgumentException("The root resource class "+rootResourceClass.getName()+" is annotated with an illegal path: "+e.getPath()+". ("+e.getMessage()+")", e);
+            throw new IllegalArgumentException("The root resource class "
+                    + rootResourceClass.getName()
+                    + " is annotated with an illegal path: " + e.getPath()
+                    + ". (" + e.getMessage() + ")", e);
         }
         PathRegExp uriTempl = newRrc.getPathRegExp();
         for (RootResourceClass rrc : this.rootResourceClasses) {
@@ -547,12 +546,12 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             throws CouldNotFindMethodException, RequestHandledException,
             WebApplicationException {
         RemainingPath u = rrcAndRemPath.u;
-        RootResourceClass resClass = rrcAndRemPath.rrc;
-        PathRegExp rMatch = resClass.getPathRegExp();
+        RootResourceClass rrc = rrcAndRemPath.rrc;
+        PathRegExp rMatch = rrc.getPathRegExp();
         ResourceObject o;
         // LATER Do I use dynamic proxies, to inject instance variables?
         try {
-            o = resClass.createInstance(callContext, this);
+            o = rrc.createInstance(callContext, this);
         } catch (InstantiateParameterException e) {
             throw new WebApplicationException(e, 404);
         } catch (WebApplicationException e) {
@@ -561,6 +560,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             throw handleExecption(e, null, callContext,
                     "Could not create new instance of root resource class");
         }
+        ResourceClass resClass = rrc;
         // Part 2
         for (;;) // (j)
         {
@@ -580,8 +580,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                     continue;
                 if (matchingResult.getFinalCapturingGroup().isEmptyOrSlash())
                     eWithMethod.add(methodOrLocator);
-                // if(methodOrLocator instanceof SubResourceLocator)
-                // eWithMethod.add(methodOrLocator);
+                // the following is added by Stephan (is not in spec 2008-03-06)
+                else if (methodOrLocator instanceof SubResourceLocator)
+                    eWithMethod.add(methodOrLocator);
             }
             // (e) If E is empty -> HTTP 404
             if (eWithMethod.isEmpty())
@@ -605,11 +606,17 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             } catch (WebApplicationException e) {
                 throw e;
             } catch (InstantiateParameterException e) {
-                throw new WebApplicationException(e, 404);
+                // LATER better Exception handling
+                ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
+                StringWriter stw = new StringWriter();
+                e.printStackTrace(new PrintWriter(stw));
+                rb.entity(stw.toString());
+                throw new WebApplicationException(e, rb.build());
             } catch (Exception e) {
                 throw handleExecption(e, subResourceLocator, callContext,
                         "Could not create new instance of root resource class");
             }
+            resClass = o.getResourceClass();
             // (j) Go to step 2a (repeat for)
         }
     }

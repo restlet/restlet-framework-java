@@ -195,7 +195,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
-     * @return
+     * @return the unwrapped returned onject by the wrapped method.
      * @throws MethodInvokeException
      * @throws InvocationTargetException
      * @throws InstantiateParameterException

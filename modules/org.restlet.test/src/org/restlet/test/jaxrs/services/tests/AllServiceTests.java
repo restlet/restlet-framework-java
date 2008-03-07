@@ -42,6 +42,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(PersonsTest.class);
         mySuite.addTestSuite(ProviderTest.class);
         mySuite.addTestSuite(QueryParamTest.class);
+        mySuite.addTestSuite(RecursiveTest.class);
         mySuite.addTestSuite(RepresentationTest.class);
         mySuite.addTestSuite(RequestTest.class);
         mySuite.addTestSuite(ResponseBuilderTest.class);

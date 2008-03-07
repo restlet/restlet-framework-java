@@ -315,7 +315,7 @@ public class JaxRsUriBuilderTest extends TestCase {
     public void testPathMethodArray() throws Exception {
         uriBuilder1.replacePath((String[]) null);
         Method findCar = CarListResource.class.getMethod("findCar",
-                String.class);
+                Integer.TYPE);
         Method engine = CarResource.class.getMethod("findEngine");
         uriBuilder1.path(CarListResource.class);
         uriBuilder1.path(findCar, engine);

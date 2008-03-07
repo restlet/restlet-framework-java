@@ -23,13 +23,24 @@ import org.restlet.data.Method;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.test.jaxrs.server.RestletServerWrapperFactory;
 import org.restlet.test.jaxrs.services.car.CarListResource;
 import org.restlet.test.jaxrs.services.car.CarResource;
+import org.restlet.test.jaxrs.services.car.EngineResource;
 
+/**
+ * @author Stephan Koops
+ * @see CarListResource
+ * @see CarResource
+ * @see EngineResource
+ */
 public class CarTest extends JaxRsTestCase {
-    private static final boolean ONLY_OFFERS = false;
 
-    private static final boolean ONLY_ONE_CAR = false;
+    public static void main(String[] args) throws Exception {
+        if(USE_TCP == false)
+            setServerWrapperFactory(new RestletServerWrapperFactory());
+        runServerUntilKeyPressed(new CarTest());
+    }
 
     @Override
     protected Class<?> getRootResourceClass() {
@@ -37,8 +48,6 @@ public class CarTest extends JaxRsTestCase {
     }
 
     public void testDelete() throws Exception {
-        if (ONLY_ONE_CAR || ONLY_OFFERS)
-            return;
         Response response = accessServer(Method.DELETE, CarListResource.class,
                 null, null);
         assertTrue(response.getStatus().isClientError());
@@ -48,8 +57,6 @@ public class CarTest extends JaxRsTestCase {
 
     @SuppressWarnings("null")
     public void testGetCar() throws Exception {
-        if (ONLY_OFFERS)
-            return;
         String carNumber = "57";
 
         Response response = get(carNumber);
@@ -58,19 +65,9 @@ public class CarTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(CarResource.createTextRepr(carNumber), entity.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
-
-        carNumber = "5%20%2B7";
-        response = get(carNumber);
-        entity = response.getEntity();
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(CarResource.createTextRepr(carNumber), entity.getText());
-        assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
     }
 
     public void testGetHtmlText() throws Exception {
-        if (ONLY_ONE_CAR || ONLY_OFFERS)
-            return;
         Response response = get(MediaType.TEXT_HTML);
         assertTrue(response.getStatus().isClientError());
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
@@ -78,8 +75,6 @@ public class CarTest extends JaxRsTestCase {
 
     @SuppressWarnings("null")
     public void testGetOffers() throws Exception {
-        if (ONLY_ONE_CAR)
-            return;
         Response response = get("offers");
         Representation representation = response.getEntity();
         sysOutEntityIfError(response);
@@ -90,8 +85,6 @@ public class CarTest extends JaxRsTestCase {
     }
 
     public void testGetPlainText() throws Exception {
-        if (ONLY_ONE_CAR || ONLY_OFFERS)
-            return;
         Response response = get(MediaType.TEXT_PLAIN);
         Status status = response.getStatus();
         assertTrue("Status should be 2xx, but is " + status, status.isSuccess());
@@ -99,6 +92,21 @@ public class CarTest extends JaxRsTestCase {
         assertEquals(CarListResource.DUMMY_CAR_LIST, representation.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, representation
                 .getMediaType());
+    }
+
+    /**
+     * This tests, if a sub resource class of a sub resource class of a root
+     * resource class is accessable.
+     * 
+     * @throws Exception
+     */
+    public void testEngine() throws Exception {
+        Response response = get("4711/engine");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation entity = response.getEntity();
+        assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
+        assertEquals(EngineResource.getPlainRepr(4711), entity.getText());
     }
 
     public void testOptions() throws Exception {
