@@ -1,4 +1,4 @@
-﻿   
+   
 ===========
 Changes log  
 ===========
@@ -35,6 +35,7 @@ Changes log
           exceptions and takes a string array as parameter.
         - More precise log message for a Resource with no variant.
         - Otpimized Eclipse dependencies by leveraging reexport option.
+        - Updated Spring to version 2.5.2.
  
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed
