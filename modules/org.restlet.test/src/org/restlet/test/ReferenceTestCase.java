@@ -37,6 +37,130 @@ public class ReferenceTestCase extends RestletTestCase {
     protected final static String DEFAULT_SCHEMEPART = "//";
 
     /**
+     * Returns a reference that is initialized with http://www.restlet.org.
+     * 
+     * @return Reference instance.
+     */
+    protected Reference getDefaultReference() {
+        Reference ref = getReference();
+        ref.setHostDomain("www.restlet.org");
+        return ref;
+    }
+
+    /**
+     * Returns a reference with uri == http://
+     * 
+     * @return Reference instance.
+     */
+    protected Reference getReference() {
+        Reference ref = new Reference();
+        ref.setScheme(DEFAULT_SCHEME);
+        ref.setSchemeSpecificPart(DEFAULT_SCHEMEPART);
+        return ref;
+    }
+
+    /**
+     * Test addition methods.
+     */
+    public void testAdditions() throws Exception {
+        Reference ref = new Reference("http://www.restlet.org");
+        ref.addQueryParameter("abc", "123");
+        assertEquals("http://www.restlet.org?abc=123", ref.toString());
+        ref.addQueryParameter("def", null);
+        assertEquals("http://www.restlet.org?abc=123&def", ref.toString());
+        ref.addSegment("root");
+        assertEquals("http://www.restlet.org/root?abc=123&def", ref.toString());
+        ref.addSegment("dir");
+        assertEquals("http://www.restlet.org/root/dir?abc=123&def", ref
+                .toString());
+    }
+
+    public void testEmptyRef() {
+        Reference reference = new Reference();
+        reference.setAuthority("testAuthority"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setBaseRef("http://localhost"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setFragment("fragment"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setHostDomain("localhost"); // must not produce NPE
+        assertEquals("localhost", reference.getAuthority());
+        reference.setHostPort(new Integer(4711)); // must not produce NPE
+        assertEquals("localhost:4711", reference.getAuthority());
+        reference.setUserInfo("sdgj:skdfj"); // must not produce NPE
+        assertEquals("sdgj:skdfj@localhost:4711", reference.getAuthority());
+
+        reference = new Reference();
+        reference.setIdentifier("http://host/abc/wkj"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setPath("loc/alhost"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setProtocol(Protocol.HTTPS); // must not produce NPE
+
+        reference = new Reference();
+        reference.setQuery("a=b&c=&g=1"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setRelativePart("http://localhost"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setScheme("skjf"); // must not produce NPE
+
+        reference = new Reference();
+        reference.setSchemeSpecificPart("host/afjhsd"); // must not produce NPE
+
+        reference = new Reference();
+        List<String> segments = new ArrayList<String>();
+        segments.add("skhf");
+        segments.add("sgdfg");
+        segments.add("xiz");
+        reference.setSegments(segments); // must not produce NPE
+    }
+
+    /**
+     * Equality tests.
+     */
+    public void testEquals() throws Exception {
+        Reference ref1 = getDefaultReference();
+        Reference ref2 = getDefaultReference();
+        assertEquals(ref1, ref2);
+        assertTrue(ref1.equals(ref2));
+    }
+
+    public void testGetLastSegment() {
+        Reference reference = new Reference("http://hostname");
+        assertNull(reference.getLastSegment());
+        reference = new Reference("http://hostname/");
+        assertNull("", reference.getLastSegment());
+        reference = new Reference("http://hostname/abc");
+        assertEquals("abc", reference.getLastSegment());
+        reference = new Reference("http://hostname/abc/");
+        assertEquals("abc", reference.getLastSegment());
+        reference = new Reference("http://hostname/123/abc/");
+        assertEquals("abc", reference.getLastSegment());
+        reference = new Reference("http://hostname/123/abc");
+        assertEquals("abc", reference.getLastSegment());
+    }
+
+    /**
+     * Test hostname getting/setting.
+     */
+    public void testHostName() throws Exception {
+        Reference ref = getReference();
+        String host = "www.restlet.org";
+        ref.setHostDomain(host);
+        assertEquals(host, ref.getHostDomain());
+        host = "restlet.org";
+        ref.setHostDomain(host);
+        assertEquals(host, ref.getHostDomain());
+    }
+
+    /**
      * Tests the URI parsing.
      */
     public void testParsing() {
@@ -273,6 +397,30 @@ public class ReferenceTestCase extends RestletTestCase {
     }
 
     /**
+     * Test port getting/setting.
+     */
+    public void testPort() throws Exception {
+        Reference ref = getDefaultReference();
+        int port = 8080;
+        ref.setHostPort(port);
+        assertEquals(port, ref.getHostPort());
+        port = 9090;
+        ref.setHostPort(port);
+        assertEquals(port, ref.getHostPort());
+    }
+
+    public void testProtocolConstructors() {
+        assertEquals("http://restlet.org", new Reference(Protocol.HTTP,
+                "restlet.org").toString());
+        assertEquals("https://restlet.org:8443", new Reference(Protocol.HTTPS,
+                "restlet.org", 8443).toString());
+
+        Reference ref = new Reference(Protocol.HTTP, "restlet.org");
+        ref.addQueryParameter("abc", "123");
+        assertEquals("http://restlet.org?abc=123", ref.toString());
+    }
+
+    /**
      * Tests the parsing of a reference into its components
      * 
      * @param reference
@@ -358,77 +506,6 @@ public class ReferenceTestCase extends RestletTestCase {
     }
 
     /**
-     * Returns a reference with uri == http://
-     * 
-     * @return Reference instance.
-     */
-    protected Reference getReference() {
-        Reference ref = new Reference();
-        ref.setScheme(DEFAULT_SCHEME);
-        ref.setSchemeSpecificPart(DEFAULT_SCHEMEPART);
-        return ref;
-    }
-
-    /**
-     * Returns a reference that is initialized with http://www.restlet.org.
-     * 
-     * @return Reference instance.
-     */
-    protected Reference getDefaultReference() {
-        Reference ref = getReference();
-        ref.setHostDomain("www.restlet.org");
-        return ref;
-    }
-
-    /**
-     * Equality tests.
-     */
-    public void testEquals() throws Exception {
-        Reference ref1 = getDefaultReference();
-        Reference ref2 = getDefaultReference();
-        assertEquals(ref1, ref2);
-        assertTrue(ref1.equals(ref2));
-    }
-
-    /**
-     * Test references that are unequal.
-     */
-    public void testUnEquals() throws Exception {
-        String uri1 = "http://www.restlet.org/";
-        String uri2 = "http://www.restlet.net/";
-        Reference ref1 = new Reference(uri1);
-        Reference ref2 = new Reference(uri2);
-        assertFalse(ref1.equals(ref2));
-        assertFalse(ref1.equals(null));
-    }
-
-    /**
-     * Test hostname getting/setting.
-     */
-    public void testHostName() throws Exception {
-        Reference ref = getReference();
-        String host = "www.restlet.org";
-        ref.setHostDomain(host);
-        assertEquals(host, ref.getHostDomain());
-        host = "restlet.org";
-        ref.setHostDomain(host);
-        assertEquals(host, ref.getHostDomain());
-    }
-
-    /**
-     * Test port getting/setting.
-     */
-    public void testPort() throws Exception {
-        Reference ref = getDefaultReference();
-        int port = 8080;
-        ref.setHostPort(port);
-        assertEquals(port, ref.getHostPort());
-        port = 9090;
-        ref.setHostPort(port);
-        assertEquals(port, ref.getHostPort());
-    }
-
-    /**
      * Test scheme getting/setting.
      */
     public void testScheme() throws Exception {
@@ -454,92 +531,28 @@ public class ReferenceTestCase extends RestletTestCase {
     }
 
     /**
-     * Test addition methods.
+     * Test references that are unequal.
      */
-    public void testAdditions() throws Exception {
-        Reference ref = new Reference("http://www.restlet.org");
-        ref.addQueryParameter("abc", "123");
-        assertEquals("http://www.restlet.org?abc=123", ref.toString());
-        ref.addQueryParameter("def", null);
-        assertEquals("http://www.restlet.org?abc=123&def", ref.toString());
-        ref.addSegment("root");
-        assertEquals("http://www.restlet.org/root?abc=123&def", ref.toString());
-        ref.addSegment("dir");
-        assertEquals("http://www.restlet.org/root/dir?abc=123&def", ref
-                .toString());
+    public void testUnEquals() throws Exception {
+        String uri1 = "http://www.restlet.org/";
+        String uri2 = "http://www.restlet.net/";
+        Reference ref1 = new Reference(uri1);
+        Reference ref2 = new Reference(uri2);
+        assertFalse(ref1.equals(ref2));
+        assertFalse(ref1.equals(null));
     }
 
-    public void testProtocolConstructors() {
-        assertEquals("http://restlet.org", new Reference(Protocol.HTTP,
-                "restlet.org").toString());
-        assertEquals("https://restlet.org:8443", new Reference(Protocol.HTTPS,
-                "restlet.org", 8443).toString());
+    public void testValidity() {
+        String uri = "http ://domain.tld/whatever/";
 
-        Reference ref = new Reference(Protocol.HTTP, "restlet.org");
-        ref.addQueryParameter("abc", "123");
-        assertEquals("http://restlet.org?abc=123", ref.toString());
-    }
+        try {
+            new Reference(uri);
+        } catch (IllegalArgumentException iae) {
+            // As expected
+            return;
+        }
 
-    public void testEmptyRef() {
-        Reference reference = new Reference();
-        reference.setAuthority("testAuthority"); // must not produce NPE
-
-        reference = new Reference();
-        reference.setBaseRef("http://localhost"); // must not produce NPE
-
-        reference = new Reference();
-        reference.setFragment("fragment"); // must not produce NPE
-
-        reference = new Reference();
-        reference.setHostDomain("localhost"); // must not produce NPE
-        assertEquals("localhost", reference.getAuthority());
-        reference.setHostPort(new Integer(4711)); // must not produce NPE
-        assertEquals("localhost:4711", reference.getAuthority());
-        reference.setUserInfo("sdgj:skdfj"); // must not produce NPE
-        assertEquals("sdgj:skdfj@localhost:4711", reference.getAuthority());
-
-        reference = new Reference();
-        reference.setIdentifier("http://host/abc/wkj"); // must not produce NPE
-
-        reference = new Reference();
-        reference.setPath("loc/alhost"); // must not produce NPE
-
-        reference = new Reference();
-        reference.setProtocol(Protocol.HTTPS); // must not produce NPE
-
-        reference = new Reference();
-        reference.setQuery("a=b&c=&g=1"); // must not produce NPE
-
-        reference = new Reference();
-        reference.setRelativePart("http://localhost"); // must not produce NPE
-
-        reference = new Reference();
-        reference.setScheme("skjf"); // must not produce NPE
-
-        reference = new Reference();
-        reference.setSchemeSpecificPart("host/afjhsd"); // must not produce NPE
-
-        reference = new Reference();
-        List<String> segments = new ArrayList<String>();
-        segments.add("skhf");
-        segments.add("sgdfg");
-        segments.add("xiz");
-        reference.setSegments(segments); // must not produce NPE
-    }
-
-    public void testGetLastSegment() {
-        Reference reference = new Reference("http://hostname");
-        assertNull(reference.getLastSegment());
-        reference = new Reference("http://hostname/");
-        assertNull("", reference.getLastSegment());
-        reference = new Reference("http://hostname/abc");
-        assertEquals("abc", reference.getLastSegment());
-        reference = new Reference("http://hostname/abc/");
-        assertEquals("abc", reference.getLastSegment());
-        reference = new Reference("http://hostname/123/abc/");
-        assertEquals("abc", reference.getLastSegment());
-        reference = new Reference("http://hostname/123/abc");
-        assertEquals("abc", reference.getLastSegment());
+        fail("An exception should have been thrown");
     }
 
 }

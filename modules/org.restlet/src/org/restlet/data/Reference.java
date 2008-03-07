@@ -226,6 +226,118 @@ public class Reference {
     }
 
     /**
+     * Indicates if the given character is alphabetical (a-z or A-Z).
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is alphabetical (a-z or A-Z).
+     */
+    private static boolean isAlpha(int character) {
+        return isUpperCase(character) || isLowerCase(character);
+    }
+
+    /**
+     * Indicates if the given character is a digit (0-9).
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is a digit (0-9).
+     */
+    private static boolean isDigit(int character) {
+        return (character >= '0') && (character <= '9');
+    }
+
+    /**
+     * Indicates if the given character is a generic URI component delimiter
+     * character.
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is a generic URI component delimiter
+     *         character.
+     */
+    public static boolean isGenericDelimiter(int character) {
+        return (character == ':') || (character == '/') || (character == '?')
+                || (character == '#') || (character == '[')
+                || (character == ']') || (character == '@');
+    }
+
+    /**
+     * Indicates if the given character is lower case (a-z).
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is lower case (a-z).
+     */
+    private static boolean isLowerCase(int character) {
+        return (character >= 'a') && (character <= 'z');
+    }
+
+    /**
+     * Indicates if the given character is a reserved URI character.
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is a reserved URI character.
+     */
+    public static boolean isReserved(int character) {
+        return isGenericDelimiter(character) || isSubDelimiter(character);
+    }
+
+    /**
+     * Indicates if the given character is an URI subcomponent delimiter
+     * character.
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is an URI subcomponent delimiter
+     *         character.
+     */
+    public static boolean isSubDelimiter(int character) {
+        return (character == '!') || (character == '$') || (character == '&')
+                || (character == '\'') || (character == '(')
+                || (character == ')') || (character == '*')
+                || (character == '+') || (character == ',')
+                || (character == ';') || (character == '=');
+    }
+
+    /**
+     * Indicates if the given character is an unreserved URI character.
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is an unreserved URI character.
+     */
+    public static boolean isUnreserved(int character) {
+        return isAlpha(character) || isDigit(character) || (character == '-')
+                || (character == '.') || (character == '_')
+                || (character == '~');
+    }
+
+    /**
+     * Indicates if the given character is upper case (A-Z).
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is upper case (A-Z).
+     */
+    private static boolean isUpperCase(int character) {
+        return (character >= 'A') && (character <= 'Z');
+    }
+
+    /**
+     * Indicates if the given character is a valid URI character.
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is a valid URI character.
+     */
+    public static boolean isValid(int character) {
+        return isReserved(character) || isUnreserved(character)
+                || (character == '%');
+    }
+
+    /**
      * Creates a reference string from its parts.
      * 
      * @param scheme
@@ -416,7 +528,7 @@ public class Reference {
     public Reference(Reference baseRef, String uriReference) {
         this.baseRef = baseRef;
         this.internalRef = uriReference;
-        updateIndexes();
+        internalUpdate();
     }
 
     /**
@@ -1665,7 +1777,7 @@ public class Reference {
             }
         }
 
-        updateIndexes();
+        internalUpdate();
     }
 
     /**
@@ -1767,7 +1879,7 @@ public class Reference {
                 this.internalRef = identifier;
             }
 
-            updateIndexes();
+            internalUpdate();
         }
     }
 
@@ -1907,7 +2019,7 @@ public class Reference {
             }
         }
 
-        updateIndexes();
+        internalUpdate();
     }
 
     /**
@@ -1935,7 +2047,7 @@ public class Reference {
             }
         }
 
-        updateIndexes();
+        internalUpdate();
     }
 
     /**
@@ -1970,7 +2082,7 @@ public class Reference {
             }
         }
 
-        updateIndexes();
+        internalUpdate();
     }
 
     /**
@@ -2008,7 +2120,7 @@ public class Reference {
             }
         }
 
-        updateIndexes();
+        internalUpdate();
     }
 
     /**
@@ -2110,10 +2222,21 @@ public class Reference {
     }
 
     /**
-     * Update internal indexes.
+     * Update internal indexes and check if all characters are valid.
      */
-    private void updateIndexes() {
+    private void internalUpdate() {
         if (internalRef != null) {
+            // Ensure that all characters are valid
+            for (int i = 0; i < internalRef.length(); i++) {
+                if (!isValid(internalRef.charAt(i))) {
+                    throw new IllegalArgumentException(
+                            "Invalid character detected in URI reference at index '"
+                                    + i + "': \"" + internalRef.charAt(i)
+                                    + "\"");
+                }
+            }
+
+            // Compute the indexes
             int firstSlashIndex = this.internalRef.indexOf('/');
             this.schemeIndex = this.internalRef.indexOf(':');
 

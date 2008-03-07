@@ -218,6 +218,8 @@ public final class LocalReference extends Reference {
                 // Convert the Windows style path separator to the standard path
                 // separator
                 result.append('/');
+            } else if (!isValid(nextChar)) {
+                result.append(Reference.encode("" + nextChar));
             } else {
                 result.append(nextChar);
             }
@@ -312,7 +314,7 @@ public final class LocalReference extends Reference {
 
             if ((hostName == null) || hostName.equals("")
                     || hostName.equalsIgnoreCase("localhost")) {
-                String filePath = getPath();
+                String filePath = Reference.decode(getPath());
                 result = new File(filePath);
             } else {
                 throw new RuntimeException(

@@ -556,63 +556,6 @@ public class Template {
 
     public static final int MODE_STARTS_WITH = 1;
 
-    /**
-     * Indicates if the given character is alphabetical (a-z or A-Z).
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is alphabetical (a-z or A-Z).
-     */
-    private static boolean isAlpha(int character) {
-        return isUpperCase(character) || isLowerCase(character);
-    }
-
-    /**
-     * Indicates if the given character is a digit (0-9).
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is a digit (0-9).
-     */
-    private static boolean isDigit(int character) {
-        return (character >= '0') && (character <= '9');
-    }
-
-    /**
-     * Indicates if the given character is lower case (a-z).
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is lower case (a-z).
-     */
-    private static boolean isLowerCase(int character) {
-        return (character >= 'a') && (character <= 'z');
-    }
-
-    /**
-     * Indicates if the given character is an unreserved URI character.
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is an unreserved URI character.
-     */
-    private static boolean isUnreserved(int character) {
-        return isAlpha(character) || isDigit(character) || (character == '-')
-                || (character == '.') || (character == '_')
-                || (character == '~');
-    }
-
-    /**
-     * Indicates if the given character is upper case (A-Z).
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is upper case (A-Z).
-     */
-    private static boolean isUpperCase(int character) {
-        return (character >= 'A') && (character <= 'Z');
-    }
-
     /** The default variable to use when no matching variable descriptor exists. */
     private volatile Variable defaultVariable;
 
@@ -847,7 +790,7 @@ public class Template {
             next = getPattern().charAt(i);
 
             if (inVariable) {
-                if (isUnreserved(next)) {
+                if (Reference.isUnreserved(next)) {
                     // Append to the variable name
                     varBuffer.append(next);
                 } else if (next == '}') {
@@ -979,7 +922,7 @@ public class Template {
                         next = getPattern().charAt(i);
 
                         if (inVariable) {
-                            if (isUnreserved(next)) {
+                            if (Reference.isUnreserved(next)) {
                                 // Append to the variable name
                                 varBuffer.append(next);
                             } else if (next == '}') {
@@ -1074,7 +1017,7 @@ public class Template {
             next = pattern.charAt(i);
 
             if (inVariable) {
-                if (isUnreserved(next)) {
+                if (Reference.isUnreserved(next)) {
                     // Append to the variable name
                     varBuffer.append(next);
                 } else if (next == '}') {

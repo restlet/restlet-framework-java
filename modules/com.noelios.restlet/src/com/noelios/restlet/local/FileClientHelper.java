@@ -172,7 +172,8 @@ public class FileClientHelper extends LocalClientHelper {
                         }
 
                         for (File entry : files) {
-                            rl.add(directoryUri + entry.getName());
+                            rl.add(directoryUri
+                                    + Reference.encode(entry.getName()));
                         }
 
                         output = rl.getTextRepresentation();

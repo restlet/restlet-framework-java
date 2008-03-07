@@ -20,7 +20,12 @@ Changes log
           needing to subclass Guard. Deprecated the findSecret(String) 
           method. 
         - DomRepresentation.getDocument() new creates a new empty 
-          document if no document is available or can't be parsed.  
+          document if no document is available or can't be parsed.
+        - Reference class now enforces the usage of valid URI 
+          characters only. Suggested by Avi Flax.
+        - Static methods added to Reference: isGenericDelimiter(char),
+          isReserved(char), isSubDelimiter(char), isUnreserved(char)
+          and isValid(char).             
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.

@@ -106,7 +106,7 @@ public class RiapTestCase extends TestCase {
 
         Uniform dispatcher = comp.getContext().getClientDispatcher();
 
-        final String msg = "this message";
+        final String msg = "this%20message";
         final String echoURI = localBase + "/echo/" + msg;
         final Representation echoRep = dispatcher.get(echoURI).getEntity();
         assertEquals("expected echo of uri-remainder", msg, echoRep.getText());
