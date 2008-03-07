@@ -33,6 +33,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
+import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.util.Converter;
 import org.restlet.ext.jaxrs.util.Util;
 
@@ -180,6 +181,22 @@ public class JaxRsUriInfo implements UriInfo {
             throw new IllegalArgumentException(ex.getMessage(), ex);
         }
         return b;
+    }
+
+    /**
+     * @see javax.ws.rs.core.UriInfo#getAncestorResources()
+     */
+    public List<Object> getAncestorResources() {
+        // TODO UriInfo.getAncestorResources()
+        throw new NotYetImplementedException();
+    }
+
+    /**
+     * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs()
+     */
+    public List<URI> getAncestorResourceURIs() {
+        // TODO UriInfo.getAncestorResourceURIs()
+        throw new NotYetImplementedException();
     }
 
     /**

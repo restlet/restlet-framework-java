@@ -18,6 +18,7 @@
 
 package org.restlet.ext.jaxrs.spi;
 
+import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
@@ -48,18 +49,20 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <T> HeaderDelegate createHeaderDelegate(Class<T> type) throws IllegalArgumentException {
-        if(type.equals(Cookie.class))
+    public <T> HeaderDelegate createHeaderDelegate(Class<T> type)
+            throws IllegalArgumentException {
+        if (type.equals(Cookie.class))
             return new CookieHeaderDelegate();
-        if(type.equals(CacheControl.class))
+        if (type.equals(CacheControl.class))
             return new CacheControlHeaderDelegate();
-        if(type.equals(EntityTag.class))
+        if (type.equals(EntityTag.class))
             return new EntityTagHeaderDelegate();
-        if(type.equals(NewCookie.class))
+        if (type.equals(NewCookie.class))
             return new NewCookieHeaderDelegate();
-        if(type.equals(MediaType.class))
+        if (type.equals(MediaType.class))
             return new MediaTypeHeaderDelegate();
-        throw new IllegalArgumentException("This method support only the Types Cookie, CacheControl, EntityTag, NewCookie and MediaType");
+        throw new IllegalArgumentException(
+                "This method support only the Types Cookie, CacheControl, EntityTag, NewCookie and MediaType");
     }
 
     /**
@@ -84,5 +87,19 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
     @Override
     public VariantListBuilder createVariantListBuilder() {
         return new VariantListBuilderImpl();
+    }
+
+    /**
+     * This method is not supported by this implementation.
+     * 
+     * @throws UnsupportedOperationException
+     *                 ever.
+     */
+    @Override
+    public <T> T createEndpoint(ApplicationConfig applicationConfig,
+            Class<T> endpointType) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException(
+                "The method RuntimeDelegate.createEndpoint() is not available by the Restlet JAX-RS extension");
+        // REQUEST allow officially UnsupportedOperationException
     }
 }

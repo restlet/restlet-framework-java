@@ -18,15 +18,41 @@
 
 package org.restlet.test.jaxrs.services.tests;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.ws.rs.core.ApplicationConfig;
+
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.InjectionTestService;
+import org.restlet.test.jaxrs.services.resources.InjectionTestService2;
 
 /**
  * @author Stephan Koops
  * @see InjectionTestService
+ * @see InjectionTestService2
  */
 public class InjectionTest extends JaxRsTestCase {
+
+    /**
+     * @return
+     */
+    @Override
+    protected ApplicationConfig getAppConfig() {
+        ApplicationConfig appConfig = new ApplicationConfig() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getResourceClasses() {
+                Set<Class<?>> rrcs = new HashSet<Class<?>>();
+                rrcs.add(getRootResourceClass());
+                rrcs.add(InjectionTestService2.class);
+                return rrcs;
+            }
+        };
+        return appConfig;
+    }
 
     @Override
     protected Class<?> getRootResourceClass() {
@@ -43,5 +69,12 @@ public class InjectionTest extends JaxRsTestCase {
         Response response = get("sub");
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
+    }
+
+    public void testGetWithIndex() throws IOException {
+        Response response = get("two/56");
+        super.sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("ok", response.getEntity().getText()); // LATER assert "56"
     }
 }

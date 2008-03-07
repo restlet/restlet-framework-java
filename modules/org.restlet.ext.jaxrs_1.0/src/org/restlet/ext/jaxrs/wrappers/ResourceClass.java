@@ -582,7 +582,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         for (Field cpf : this.injectFieldsCookieParam) {
             CookieParam headerParam = cpf.getAnnotation(CookieParam.class);
             DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = cpf.getDeclaringClass();
+            Class<?> convTo = cpf.getType();
             Object value = getCookieParamValue(convTo, headerParam,
                     defaultValue, callContext);
             Util.inject(jaxRsResObj, cpf, value);
@@ -590,7 +590,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         for (Field hpf : this.injectFieldsHeaderParam) {
             HeaderParam headerParam = hpf.getAnnotation(HeaderParam.class);
             DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = hpf.getDeclaringClass();
+            Class<?> convTo = hpf.getType();
             Object value = getHeaderParamValue(convTo, headerParam,
                     defaultValue, callContext);
             Util.inject(jaxRsResObj, hpf, value);
@@ -598,7 +598,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         for (Field hpf : this.injectFieldsMatrixParam) {
             MatrixParam headerParam = hpf.getAnnotation(MatrixParam.class);
             DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = hpf.getDeclaringClass();
+            Class<?> convTo = hpf.getType();
             Object value = getMatrixParamValue(convTo, headerParam,
                     leaveEncoded, defaultValue, callContext);
             Util.inject(jaxRsResObj, hpf, value);
@@ -606,7 +606,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         for (Field hpf : this.injectFieldsPathParam) {
             PathParam headerParam = hpf.getAnnotation(PathParam.class);
             DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = hpf.getDeclaringClass();
+            Class<?> convTo = hpf.getType();
             Object value = getPathParamValue(convTo, headerParam, leaveEncoded,
                     defaultValue, callContext);
             Util.inject(jaxRsResObj, hpf, value);
@@ -614,7 +614,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         for (Field hpf : this.injectFieldsQueryParam) {
             QueryParam headerParam = hpf.getAnnotation(QueryParam.class);
             DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = hpf.getDeclaringClass();
+            Class<?> convTo = hpf.getType();
             Object value = getQueryParamValue(convTo, headerParam,
                     defaultValue, callContext, Logger.getAnonymousLogger());
             Util.inject(jaxRsResObj, hpf, value);

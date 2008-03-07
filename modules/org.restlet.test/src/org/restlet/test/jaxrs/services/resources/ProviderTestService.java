@@ -297,8 +297,7 @@ public class ProviderTestService {
     @Path("xslt")
     @ProduceMime("text/html")
     @XsltSource("src/org/restlet/test/jaxrs/services/others/greeting.xsl")
-    public Source xsltGet(@QueryParam("text")
-    String text) {
+    public Source xsltGet(@QueryParam("text") String text) {
         String xmlStart = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
         String xml = "<greeting>" + text + "</greeting>";
         byte[] bytes = (xmlStart + xml).getBytes();

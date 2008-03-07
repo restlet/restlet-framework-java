@@ -64,12 +64,8 @@ public class ConvertParameterException extends JaxRsException {
     public static ConvertParameterException primitive(Class<?> paramType,
             String unparseableValue, Throwable cause)
             throws ConvertParameterException {
-        ConvertParameterException cpe = new ConvertParameterException(
-                "Could not convert the String \"" + unparseableValue
-                        + "\" to a " + paramType);
-        if (cause != null)
-            cpe.setStackTrace(cause.getStackTrace());
-        throw cpe;
+        throw new ConvertParameterException("Could not convert the String \""
+                + unparseableValue + "\" to a " + paramType, cause);
     }
 
     /**
@@ -85,11 +81,7 @@ public class ConvertParameterException extends JaxRsException {
     public static ConvertParameterException object(Class<?> paramType,
             Object unparseableValue, Throwable cause)
             throws ConvertParameterException {
-        ConvertParameterException cpe = new ConvertParameterException(
-                "Could not convert " + unparseableValue + " to a "
-                        + paramType.getName());
-        if (cause != null)
-            cpe.setStackTrace(cause.getStackTrace());
-        throw cpe;
+        throw new ConvertParameterException("Could not convert "
+                + unparseableValue + " to a " + paramType.getName(), cause);
     }
 }
