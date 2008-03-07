@@ -189,8 +189,7 @@ public class XdbServerServlet extends ServerServlet {
             String uriPattern = request.getServletPath();
             log("[Noelios Restlet Engine] - Attaching application: "
                     + application + " uri: " + uriPattern);
-            component.getDefaultHost().attach(uriPattern,
-                    application);
+            component.getDefaultHost().attach(uriPattern, application);
         }
 
         return result;
@@ -325,10 +324,9 @@ public class XdbServerServlet extends ServerServlet {
     }
 
     @Override
-    protected HttpServerCall createCall(Server server, HttpServletRequest request,
-                                     HttpServletResponse response) {
-        return new XdbServletCall(server, request,
-                    response);
+    protected HttpServerCall createCall(Server server,
+            HttpServletRequest request, HttpServletResponse response) {
+        return new XdbServletCall(server, request, response);
     }
 
     @Override
@@ -342,26 +340,28 @@ public class XdbServerServlet extends ServerServlet {
             String sch = className.substring(0, doubleDotPos);
             String cName = className.substring(doubleDotPos + 1);
             try {
-                Class loaderClass =
-                    Engine.classForName("oracle.aurora.rdbms.DbmsJava");
-                Method meth =
-                    loaderClass.getMethod("classForNameAndSchema", new Class[] { String.class,
-                                                                                 String.class });
-                log("[Noelios Restlet Engine] - Schema: " + sch + " class: " +
-                    className + " loader: " + loaderClass);
-                targetClass =
-                        (Class<?>)meth.invoke(null, new Object[] { cName, sch });
+                Class<?> loaderClass = Engine
+                        .classForName("oracle.aurora.rdbms.DbmsJava");
+                Method meth = loaderClass.getMethod("classForNameAndSchema",
+                        new Class[] { String.class, String.class });
+                log("[Noelios Restlet Engine] - Schema: " + sch + " class: "
+                        + className + " loader: " + loaderClass);
+                targetClass = (Class<?>) meth.invoke(null, new Object[] {
+                        cName, sch });
             } catch (NoSuchMethodException nse) {
-                log("[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: " +
-                    sch + " and class: " + cName, nse);
+                log(
+                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
+                                + sch + " and class: " + cName, nse);
                 targetClass = Engine.classForName(className);
             } catch (IllegalAccessException iae) {
-                log("[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: " +
-                    sch + " and class: " + cName, iae);
+                log(
+                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
+                                + sch + " and class: " + cName, iae);
                 targetClass = Engine.classForName(className);
             } catch (InvocationTargetException ite) {
-                log("[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: " +
-                    sch + " and class: " + cName, ite);
+                log(
+                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
+                                + sch + " and class: " + cName, ite);
                 targetClass = Engine.classForName(className);
             }
         } else

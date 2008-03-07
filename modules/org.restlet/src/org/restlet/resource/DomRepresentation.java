@@ -85,7 +85,8 @@ public class DomRepresentation extends XmlRepresentation {
      *                A source XML representation to parse.
      */
     public DomRepresentation(Representation xmlRepresentation) {
-        super(xmlRepresentation.getMediaType());
+        super((xmlRepresentation == null) ? null : xmlRepresentation
+                .getMediaType());
         this.xmlRepresentation = xmlRepresentation;
     }
 
