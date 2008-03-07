@@ -938,16 +938,13 @@ public class Template {
 
                                     if (varIndex != -1) {
                                         // The variable is used several times in
-                                        // the
-                                        // pattern, ensure that this constraint
-                                        // is
-                                        // enforced when parsing.
+                                        // the pattern, ensure that this
+                                        // constraint is enforced when parsing.
                                         patternBuffer.append("\\"
                                                 + (varIndex + 1));
                                     } else {
                                         // New variable detected. Insert a
-                                        // capturing
-                                        // group.
+                                        // capturing group.
                                         getRegexVariables().add(varName);
                                         Variable var = getVariables().get(
                                                 varName);
