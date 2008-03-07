@@ -70,6 +70,9 @@ public abstract class Connector extends Restlet {
         super(context);
         if (protocols == null) {
             this.protocols = new CopyOnWriteArrayList<Protocol>();
+            getLogger()
+                    .warning(
+                            "The connector has been instantiated without any protocol.");
         } else {
             this.protocols = new CopyOnWriteArrayList<Protocol>(protocols);
         }

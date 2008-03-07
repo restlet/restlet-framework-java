@@ -120,7 +120,8 @@ public class Server extends Connector {
      *                The target Restlet.
      */
     public Server(Context context, Protocol protocol, Restlet target) {
-        this(context, protocol, null, protocol.getDefaultPort(), target);
+        this(context, protocol, null, (protocol == null) ? -1 : protocol
+                .getDefaultPort(), target);
     }
 
     /**
@@ -141,7 +142,8 @@ public class Server extends Connector {
      */
     public Server(Context context, Protocol protocol, String address, int port,
             Restlet target) {
-        this(context, Arrays.asList(protocol), address, port, target);
+        this(context, (protocol == null) ? null : Arrays.asList(protocol),
+                address, port, target);
     }
 
     /**

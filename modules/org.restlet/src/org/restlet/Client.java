@@ -64,7 +64,7 @@ public class Client extends Connector {
      *                The connector protocol.
      */
     public Client(Context context, Protocol protocol) {
-        this(context, Arrays.asList(protocol));
+        this(context, (protocol == null) ? null : Arrays.asList(protocol));
     }
 
     /**

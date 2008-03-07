@@ -36,6 +36,8 @@ Changes log
         - More precise log message for a Resource with no variant.
         - Otpimized Eclipse dependencies by leveraging reexport option.
         - Updated Spring to version 2.5.2.
+        - Improved handling of connectors created without a protocol.
+          Contributed by Avi Flax.
  
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed

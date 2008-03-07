@@ -325,7 +325,7 @@ public class Engine extends org.restlet.util.Engine {
                         .append("No available client connector supports the required protocols: ");
 
                 for (Protocol p : client.getProtocols()) {
-                    sb.append(p.getName()).append(" ");
+                    sb.append("'").append(p.getName()).append("' ");
                 }
 
                 sb
@@ -374,7 +374,7 @@ public class Engine extends org.restlet.util.Engine {
                         .append("No available server connector supports the required protocols: ");
 
                 for (Protocol p : server.getProtocols()) {
-                    sb.append(p.getName()).append(" ");
+                    sb.append("'").append(p.getName()).append("' ");
                 }
 
                 sb
