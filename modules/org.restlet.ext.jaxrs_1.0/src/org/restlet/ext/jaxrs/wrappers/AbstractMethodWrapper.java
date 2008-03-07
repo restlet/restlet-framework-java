@@ -25,18 +25,16 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
-import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.ConvertParameterException;
 import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
-import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.util.PathRegExp;
 import org.restlet.ext.jaxrs.util.Util;
 
@@ -138,7 +136,9 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             IllegalArgumentException {
         super(PathRegExp.createForMethod(annotatedMethod));
         this.executeMethod = executeMethod;
+        this.executeMethod.setAccessible(true);
         this.annotatedMethod = annotatedMethod;
+        this.annotatedMethod.setAccessible(true);
         this.resourceClass = resourceClass;
         if (resourceClass.leaveEncoded
                 || annotatedMethod.isAnnotationPresent(Encoded.class))
@@ -198,18 +198,15 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @return the unwrapped returned onject by the wrapped method.
      * @throws MethodInvokeException
      * @throws InvocationTargetException
-     * @throws InstantiateParameterException
-     * @throws NoMessageBodyReadersException
-     * @throws RequestHandledException
-     * @throws WebApplicationException
+     * @throws ConvertParameterException
+     * @throws NoMessageBodyReaderException
      * @throws MissingAnnotationException
      */
     public Object invoke(ResourceObject resourceObject,
             CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
             throws MethodInvokeException, InvocationTargetException,
-            MissingAnnotationException, WebApplicationException,
-            RequestHandledException, NoMessageBodyReadersException,
-            InstantiateParameterException {
+            MissingAnnotationException, ConvertParameterException,
+            NoMessageBodyReaderException {
         Annotation[][] parameterAnnotationss = annotatedMethod
                 .getParameterAnnotations();
         Class<?>[] paramTypes = executeMethod.getParameterTypes();
@@ -218,8 +215,6 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
                 parameterAnnotationss, leaveEncoded, callContext, jaxRsRouter);
         try {
             Object jaxRsResourceObj = resourceObject.getJaxRsResourceObject();
-            // REQUEST perhaps it is useful to note, that a nestes class (static
-            // or not) must be public
             return executeMethod.invoke(jaxRsResourceObj, args);
         } catch (IllegalArgumentException e) {
             throw new MethodInvokeException(

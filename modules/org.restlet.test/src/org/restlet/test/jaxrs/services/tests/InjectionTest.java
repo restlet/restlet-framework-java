@@ -33,8 +33,14 @@ public class InjectionTest extends JaxRsTestCase {
         return InjectionTestService.class;
     }
 
-    public void testGet1() {
+    public void testGet() {
         Response response = get();
+        super.sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    }
+
+    public void testGetSub() {
+        Response response = get("sub");
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }

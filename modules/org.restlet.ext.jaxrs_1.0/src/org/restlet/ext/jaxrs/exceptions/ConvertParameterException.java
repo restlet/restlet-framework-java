@@ -23,14 +23,14 @@ package org.restlet.ext.jaxrs.exceptions;
  * 
  * @author Stephan Koops
  */
-public class InstantiateParameterException extends JaxRsException {
+public class ConvertParameterException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**
      * 
      * @param message
      */
-    private InstantiateParameterException(String message) {
+    private ConvertParameterException(String message) {
         super(message);
     }
 
@@ -38,7 +38,7 @@ public class InstantiateParameterException extends JaxRsException {
      * 
      * @param cause
      */
-    private InstantiateParameterException(Throwable cause) {
+    private ConvertParameterException(Throwable cause) {
         super(cause);
     }
 
@@ -47,7 +47,7 @@ public class InstantiateParameterException extends JaxRsException {
      * @param message
      * @param cause
      */
-    private InstantiateParameterException(String message, Throwable cause) {
+    private ConvertParameterException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -59,14 +59,17 @@ public class InstantiateParameterException extends JaxRsException {
      * @param unparseableValue
      * @param cause
      * @return
-     * @throws InstantiateParameterException
+     * @throws ConvertParameterException
      */
-    public static InstantiateParameterException primitive(Class<?> paramType,
+    public static ConvertParameterException primitive(Class<?> paramType,
             String unparseableValue, Throwable cause)
-            throws InstantiateParameterException {
-        throw new InstantiateParameterException(
+            throws ConvertParameterException {
+        ConvertParameterException cpe = new ConvertParameterException(
                 "Could not convert the String \"" + unparseableValue
-                        + "\" to a " + paramType, cause);
+                        + "\" to a " + paramType);
+        if (cause != null)
+            cpe.setStackTrace(cause.getStackTrace());
+        throw cpe;
     }
 
     /**
@@ -77,12 +80,16 @@ public class InstantiateParameterException extends JaxRsException {
      * @param unparseableValue
      * @param cause
      * @return
-     * @throws InstantiateParameterException
+     * @throws ConvertParameterException
      */
-    public static InstantiateParameterException object(Class<?> paramType,
+    public static ConvertParameterException object(Class<?> paramType,
             Object unparseableValue, Throwable cause)
-            throws InstantiateParameterException {
-        throw new InstantiateParameterException("Could not convert "
-                + unparseableValue + " to a " + paramType.getName(), cause);
+            throws ConvertParameterException {
+        ConvertParameterException cpe = new ConvertParameterException(
+                "Could not convert " + unparseableValue + " to a "
+                        + paramType.getName());
+        if (cause != null)
+            cpe.setStackTrace(cause.getStackTrace());
+        throw cpe;
     }
 }

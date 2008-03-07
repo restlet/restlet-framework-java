@@ -18,6 +18,8 @@
 
 package org.restlet.ext.jaxrs.exceptions;
 
+import java.lang.reflect.Method;
+
 /**
  * Thrown if a resource can not be instantiated.
  * 
@@ -28,12 +30,11 @@ public class InstantiateRessourceException extends JaxRsException {
 
     /**
      * 
-     * @param resourceClass
+     * @param executeMethod
      * @param cause
      */
-    public InstantiateRessourceException(Class<?> resourceClass, Throwable cause) {
-        super(
-                "Could not instantiate resource class "
-                        + resourceClass.getName(), cause);
+    public InstantiateRessourceException(Method executeMethod, Throwable cause) {
+        super("The method " + executeMethod
+                + " could not instantiate a resource class", cause);
     }
 }

@@ -27,6 +27,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.restlet.test.jaxrs.services.tests.InjectionTest;
+
+/**
+ * @author Stephan Koops
+ * @see InjectionTest
+ */
 @Path("/InjectionTestService")
 public class InjectionTestService {
 
@@ -38,7 +44,7 @@ public class InjectionTestService {
     
     @Context private HttpHeaders httpHeaders;
     
-    // REQUEST allow? @HeaderParam("host") private String host; also @QueryParam
+    // REQUESTED allow? @HeaderParam("host") private String host; also @QueryParam
     // and so on. @PathParam ist auch sinvoll, wenn Path z.B. ne id enthaelt.
     
     @GET
@@ -57,4 +63,38 @@ public class InjectionTestService {
             return Response.serverError().entity("missing:"+msg).build();
         return Response.ok("ok").build();
     }
+    
+    @Path("sub")
+    public SubResource getSub()
+    {
+        return new SubResource();
+    }
+    
+    class SubResource
+    {
+        @Context private SecurityContext securityContext;
+        
+        @Context private UriInfo uriInfo;
+        
+        @Context private Request request;
+        
+        @Context private HttpHeaders httpHeaders;
+        
+        @GET
+        @ProduceMime("text/plain")
+        public Response get() {
+            String msg = "";
+            if(securityContext == null)
+                msg += "\n* securityContext";
+            if(uriInfo == null)
+                msg += "\n* uriInfo";
+            if(request == null)
+                msg += "\n* request";
+            if(httpHeaders == null)
+                msg += "\n* httpHeaders";
+            if(msg.length() > 0)
+                return Response.serverError().entity("missing:"+msg).build();
+            return Response.ok("ok").build();
+        }
+   }
 }

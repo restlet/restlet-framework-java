@@ -53,7 +53,7 @@ import org.restlet.ext.jaxrs.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.exceptions.InjectException;
-import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.ConvertParameterException;
 import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.util.PathRegExp;
@@ -335,7 +335,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         if (useMethod)
             return javaMethod;
         // REQUEST first superclass or first interfaces?
-        // REQUEST also look for annotations of superclasses / interfaces.
         Class<?> methodClass = javaMethod.getDeclaringClass();
         Class<?> superclass = methodClass.getSuperclass();
         Method scMethod = getMethodFromClass(superclass, javaMethod);
@@ -566,14 +565,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @throws InjectException
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
-     * @throws WebApplicationException
-     * @throws InstantiateParameterException
+     * @throws ConvertParameterException
      * @throws MethodInvokeException
      *                 if the method annotated with &#64;{@link PostConstruct}
      *                 could not be called or throws an exception.
      */
     void init(ResourceObject resourceObject, CallContext callContext)
-            throws InjectException, InstantiateParameterException,
+            throws InjectException, ConvertParameterException,
             WebApplicationException, MethodInvokeException {
         // inject fields annotated with @Context
         Object jaxRsResObj = resourceObject.getJaxRsResourceObject();

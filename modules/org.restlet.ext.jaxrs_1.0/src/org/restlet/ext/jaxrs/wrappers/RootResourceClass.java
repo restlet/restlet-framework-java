@@ -31,7 +31,6 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
@@ -43,11 +42,11 @@ import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.exceptions.InjectException;
-import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.ConvertParameterException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateRootRessourceException;
 import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
+import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 
 /**
@@ -185,8 +184,8 @@ public class RootResourceClass extends ResourceClass {
      * @param jaxRsRouter
      * @return
      * @throws MissingAnnotationException
-     * @throws RequestHandledException
-     * @throws InstantiateParameterException
+     * @throws NoMessageBodyReaderException
+     * @throws ConvertParameterException
      * @throws InstantiateRootRessourceException
      *                 if the class could not be instantiated.
      * @throws InvocationTargetException
@@ -194,23 +193,16 @@ public class RootResourceClass extends ResourceClass {
     public static Object createInstance(Constructor<?> constructor,
             boolean leaveEncoded, CallContext callContext,
             HiddenJaxRsRouter jaxRsRouter) throws MissingAnnotationException,
-            RequestHandledException, InstantiateParameterException,
+            NoMessageBodyReaderException, ConvertParameterException,
             InstantiateRootRessourceException, InvocationTargetException {
         Object[] args;
         if (constructor.getParameterTypes().length == 0) {
             args = new Object[0];
         } else {
-            try {
-                args = getParameterValues(constructor.getParameterTypes(),
-                        constructor.getGenericParameterTypes(), constructor
-                                .getParameterAnnotations(), leaveEncoded,
-                        callContext, jaxRsRouter);
-            } catch (NoMessageBodyReadersException e) {
-                throw new MissingAnnotationException(
-                        "the root resource class constructor ("
-                                + constructor
-                                + ") must have annotations on any parameters. (normally this excpetion could not occur)");
-            }
+            args = getParameterValues(constructor.getParameterTypes(),
+                    constructor.getGenericParameterTypes(), constructor
+                            .getParameterAnnotations(), leaveEncoded,
+                    callContext, jaxRsRouter);
         }
         try {
             return constructor.newInstance(args);
@@ -294,22 +286,21 @@ public class RootResourceClass extends ResourceClass {
      *                Restlet {@link Response}.
      * @param jaxRsRouter
      * @return
-     * @throws InstantiateParameterException
+     * @throws ConvertParameterException
      * @throws InvocationTargetException
      * @throws RequestHandledException
      * @throws InstantiateRootRessourceException
      * @throws MissingAnnotationException
-     * @throws MethodInvokeException 
-     * @throws WebApplicationException 
+     * @throws NoMessageBodyReaderException
      * @throws MethodInvokeException
      *                 if the method annotated with &#64;{@link PostConstruct}
      *                 could not be called or throws an exception.
      */
     public ResourceObject createInstance(CallContext callContext,
             HiddenJaxRsRouter jaxRsRouter)
-            throws InstantiateParameterException, MissingAnnotationException,
-            InstantiateRootRessourceException, RequestHandledException,
-            InvocationTargetException, WebApplicationException, MethodInvokeException {
+            throws ConvertParameterException, MissingAnnotationException,
+            InstantiateRootRessourceException, NoMessageBodyReaderException,
+            InvocationTargetException, MethodInvokeException {
         Constructor<?> constructor = this.constructor;
         Object instance = createInstance(constructor, constructorLeaveEncoded,
                 callContext, jaxRsRouter);

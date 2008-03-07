@@ -26,7 +26,7 @@ import javax.ws.rs.WebApplicationException;
 
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.InjectException;
-import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.ConvertParameterException;
 import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 
 /**
@@ -93,14 +93,13 @@ public class ResourceObject {
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
      * @throws WebApplicationException
-     * @throws InstantiateParameterException
+     * @throws ConvertParameterException
      * @throws MethodInvokeException
      *                 if the method annotated with &#64;{@link PostConstruct}
      *                 could not be called or throws an exception.
      */
     public void init(CallContext callContext) throws InjectException,
-            InstantiateParameterException, WebApplicationException,
-            MethodInvokeException {
+            ConvertParameterException, MethodInvokeException {
         this.getResourceClass().init(this, callContext);
     }
 

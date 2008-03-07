@@ -35,12 +35,12 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
-import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.ConvertParameterException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateProviderException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateRootRessourceException;
 import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.util.Util;
 
 /**
@@ -133,7 +133,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         try {
             return RootResourceClass.createInstance(providerConstructor, false,
                     null, null);
-        } catch (InstantiateParameterException e) {
+        } catch (ConvertParameterException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
@@ -146,7 +146,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (RequestHandledException e) {
+        } catch (NoMessageBodyReaderException e) {
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);

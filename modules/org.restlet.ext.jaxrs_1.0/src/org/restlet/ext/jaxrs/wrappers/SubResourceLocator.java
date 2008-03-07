@@ -28,11 +28,12 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.core.CallContext;
 import org.restlet.ext.jaxrs.exceptions.IllegalPathOnMethodException;
-import org.restlet.ext.jaxrs.exceptions.InstantiateParameterException;
+import org.restlet.ext.jaxrs.exceptions.InjectException;
+import org.restlet.ext.jaxrs.exceptions.ConvertParameterException;
 import org.restlet.ext.jaxrs.exceptions.InstantiateRessourceException;
+import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReadersException;
-import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReaderException;
 
 /**
  * A method of a resource class that is used to locate sub-resources of the
@@ -72,20 +73,19 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @param jaxRsRouter
      * @return Returns the wrapped sub resource object.
      * @throws InvocationTargetException
-     * @throws InstantiateParameterException
-     * @throws NoMessageBodyReadersException
-     * @throws RequestHandledException
+     * @throws NoMessageBodyReaderException
      * @throws WebApplicationException
      * @throws MissingAnnotationException
      * @throws InstantiateRessourceException
-     * @throws InstantiateParameterException
+     * @throws ConvertParameterException
+     * @throws MethodInvokeException
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
             CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
             throws InvocationTargetException, MissingAnnotationException,
-            WebApplicationException, RequestHandledException,
-            NoMessageBodyReadersException, InstantiateRessourceException,
-            InstantiateParameterException {
+            WebApplicationException, NoMessageBodyReaderException,
+            InstantiateRessourceException, ConvertParameterException,
+            MethodInvokeException {
         Object[] args;
         Class<?>[] parameterTypes = this.executeMethod.getParameterTypes();
         if (parameterTypes.length == 0)
@@ -100,11 +100,9 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             subResObj = executeMethod.invoke(resourceObject
                     .getJaxRsResourceObject(), args);
         } catch (IllegalArgumentException e) {
-            Class<?> returnType = executeMethod.getReturnType();
-            throw new InstantiateRessourceException(returnType, e);
+            throw new InstantiateRessourceException(executeMethod, e);
         } catch (IllegalAccessException e) {
-            Class<?> returnType = executeMethod.getReturnType();
-            throw new InstantiateRessourceException(returnType, e);
+            throw new InstantiateRessourceException(executeMethod, e);
         }
         if (subResObj == null) {
             jaxRsRouter.getLogger().warning(
@@ -116,6 +114,13 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         WrapperFactory wrapperFactory = jaxRsRouter.getWrapperFactory();
         ResourceClass resourceClass = wrapperFactory.getResourceClass(subResObj
                 .getClass());
-        return new ResourceObject(subResObj, resourceClass);
+        ResourceObject subResourceObject = new ResourceObject(subResObj,
+                resourceClass);
+        try {
+            subResourceObject.init(callContext);
+        } catch (InjectException e) {
+            throw new InstantiateRessourceException(executeMethod, e);
+        }
+        return subResourceObject;
     }
 }

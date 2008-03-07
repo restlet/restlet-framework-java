@@ -17,10 +17,13 @@
  */
 package org.restlet.ext.jaxrs;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
@@ -30,6 +33,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.core.CallContext;
+import org.restlet.ext.jaxrs.exceptions.ConvertParameterException;
+import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.util.RemainingPath;
 import org.restlet.ext.jaxrs.util.SortedMetadata;
@@ -220,6 +225,20 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
     }
 
     /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException handleConvertParameterExc(ConvertParameterException cpe)
+            throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
+        StringWriter stw = new StringWriter();
+        cpe.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cpe, rb.build());
+    }
+
+    /**
      * Handles the given Exception, catched by an invoke of a resource method or
      * a creation if a sub resource object.
      * 
@@ -249,6 +268,141 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
         getLogger().log(Level.WARNING, logMessage, exception.getCause());
         exception.printStackTrace();
         throw new RequestHandledException();
+    }
+
+    /**
+     * @param httpMethod
+     * @param resourceClass
+     * @param u
+     * @throws CouldNotFindMethodException
+     */
+    void handleMethodNotAllowed(org.restlet.data.Method httpMethod,
+            ResourceClass resourceClass, RemainingPath u)
+            throws CouldNotFindMethodException {
+        throw new CouldNotFindMethodException(errorRestletMethodNotAllowed,
+                "there is no method supporting the http method " + httpMethod
+                        + " on class " + resourceClass.getName()
+                        + " and remaining path " + u);
+    }
+
+    /**
+     * @param response
+     * @param mediaType
+     * @param paramType
+     * @return formally the type of thrown Exception
+     * @throws RequestHandledException
+     */
+    RequestHandledException handleNoMessageBodyReader(CallContext callContext,
+            NoMessageBodyReaderException nmbre)
+            throws RequestHandledException {
+        // LATER Restlet fuer throw
+        Response response = callContext.getResponse();
+        MediaType mediaType = nmbre.getMediaType();
+        Class<?> paramType = nmbre.getParamType();
+        response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+        response.setEntity(new StringRepresentation(
+                "No MessageBodyReader found to convert from media type "
+                        + mediaType + " to " + paramType));
+        throw new RequestHandledException();
+    }
+
+    RequestHandledException handleNoMessageBodyWriter(Response response,
+            SortedMetadata<MediaType> accMediaTypes, Class<?> paramType)
+            throws RequestHandledException {
+        // LATER Restlet fuer throw
+        // REQUEST what, if no MessageBodyWriter found
+        response.setStatus(Status.SERVER_ERROR_INTERNAL);
+        response.setEntity(new StringRepresentation(
+                "No MessageBodyReader found to convert from java type " + paramType+" to one of the media types "
+                        + accMediaTypes));
+        throw new RequestHandledException();
+    }
+
+    /**
+     * @param httpMethod
+     * @param resourceClass
+     * @param u
+     * @throws CouldNotFindMethodException
+     */
+    void handleNoResourceMethodForAccMediaTypes(
+            org.restlet.data.Method httpMethod, ResourceClass resourceClass,
+            RemainingPath u) throws CouldNotFindMethodException {
+        // LATER return MediaTypes are supported.
+        throw new CouldNotFindMethodException(
+                errorRestletNoResourceMethodForAcceptedMediaType,
+                "there is no java method on class " + resourceClass.getName()
+                        + " supporting the http method " + httpMethod
+                        + " and remaining path " + u
+                        + " and the given and accepted media types");
+    }
+
+    RequestHandledException handleNotAcceptableWhileDetermineMediaType(
+            Request request, Response response) throws RequestHandledException {
+        errorRestletNoResourceMethodForAcceptedMediaType.handle(request,
+                response);
+        response.setEntity(new StringRepresentation(
+                "Could not determinde the media type of the created response",
+                MediaType.TEXT_PLAIN, Language.ENGLISH));
+        throw new RequestHandledException();
+    }
+
+    /**
+     * @param resourceClass
+     * @param u
+     * @throws CouldNotFindMethodException
+     */
+    void handleResourceMethodNotFound(ResourceClass resourceClass,
+            RemainingPath u) throws CouldNotFindMethodException {
+        throw new CouldNotFindMethodException(
+                errorRestletResourceMethodNotFound,
+                "there is no method on class " + resourceClass.getName()
+                        + " for remaining path " + u);
+    }
+
+    /**
+     * @param o
+     * @param u
+     * @throws CouldNotFindMethodException
+     */
+    void handleResourceNotFound(ResourceObject o, RemainingPath u)
+            throws CouldNotFindMethodException {
+        throw new CouldNotFindMethodException(
+                errorRestletResourceNotFound,
+                "The resource class "
+                        + o.getResourceClass().getName()
+                        + " could not find a resource object to handle the request for remaining path "
+                        + u);
+    }
+
+    /**
+     * @param u
+     * @throws CouldNotFindMethodException
+     */
+    void handleRootResourceNotFound(RemainingPath u)
+            throws CouldNotFindMethodException {
+        throw new CouldNotFindMethodException(errorRestletRootResourceNotFound,
+                "No root resource class found for realtiv path " + u);
+    }
+
+    /**
+     * @param httpMethod
+     * @param resourceClass
+     * @param u
+     * @param givenMediaType
+     * @throws CouldNotFindMethodException
+     */
+    void handleUnsupportedMediaType(org.restlet.data.Method httpMethod,
+            ResourceClass resourceClass, RemainingPath u,
+            MediaType givenMediaType) throws CouldNotFindMethodException {
+        throw new CouldNotFindMethodException(errorRestletUnsupportedMediaType,
+                "there is no java method on class "
+                        + resourceClass.getName()
+                        + " supporting the http method "
+                        + httpMethod
+                        + " on an "
+                        + (u.isEmptyOrSlash() ? "empty remaining path"
+                                : (" remaining path " + u))
+                        + " and the given media type " + givenMediaType);
     }
 
     /**
@@ -412,140 +566,5 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
             this.errorRestletUnsupportedMediaType = DEFAULT_UNSUPPORTED_MEDIA_TYPE_RESTLET;
         else
             this.errorRestletUnsupportedMediaType = errorRestletUnsupportedMediaType;
-    }
-
-    /**
-     * @param httpMethod
-     * @param resourceClass
-     * @param u
-     * @throws CouldNotFindMethodException
-     */
-    void throwMethodNotAllowed(org.restlet.data.Method httpMethod,
-            ResourceClass resourceClass, RemainingPath u)
-            throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(errorRestletMethodNotAllowed,
-                "there is no method supporting the http method " + httpMethod
-                        + " on class " + resourceClass.getName()
-                        + " and remaining path " + u);
-    }
-
-    /**
-     * @param httpMethod
-     * @param resourceClass
-     * @param u
-     * @throws CouldNotFindMethodException
-     */
-    void throwNoResourceMethodForAccMediaTypes(
-            org.restlet.data.Method httpMethod, ResourceClass resourceClass,
-            RemainingPath u) throws CouldNotFindMethodException {
-        // LATER return MediaTypes are supported.
-        throw new CouldNotFindMethodException(
-                errorRestletNoResourceMethodForAcceptedMediaType,
-                "there is no java method on class " + resourceClass.getName()
-                        + " supporting the http method " + httpMethod
-                        + " and remaining path " + u
-                        + " and the given and accepted media types");
-    }
-
-    /**
-     * For internal use only
-     * 
-     * @param response
-     * @param mediaType
-     * @param paramType
-     * @return formally the type of thrown Exception
-     * @throws RequestHandledException
-     */
-    @Deprecated
-    public RequestHandledException throwNoMessageBodyReader(Response response,
-            MediaType mediaType, Class<?> paramType)
-            throws RequestHandledException {
-        // LATER Restlet fuer throw
-        response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-        response.setEntity(new StringRepresentation(
-                "No MessageBodyReader found to convert from media type "
-                        + mediaType + " to " + paramType));
-        throw new RequestHandledException();
-    }
-
-    RequestHandledException throwNoMessageBodyWriter(Response response,
-            SortedMetadata<MediaType> accMediaTypes, Class<?> paramType)
-            throws RequestHandledException {
-        // LATER Restlet fuer throw
-        // REQUEST what, if no MessageBodyWriter found
-        response.setStatus(Status.SERVER_ERROR_INTERNAL);
-        response.setEntity(new StringRepresentation(
-                "No MessageBodyReader found to convert from java type " + paramType+" to one of the media types "
-                        + accMediaTypes));
-        throw new RequestHandledException();
-    }
-
-    RequestHandledException throwNotAcceptableWhileDetermineMediaType(
-            Request request, Response response) throws RequestHandledException {
-        errorRestletNoResourceMethodForAcceptedMediaType.handle(request,
-                response);
-        response.setEntity(new StringRepresentation(
-                "Could not determinde the media type of the created response",
-                MediaType.TEXT_PLAIN, Language.ENGLISH));
-        throw new RequestHandledException();
-    }
-
-    /**
-     * @param resourceClass
-     * @param u
-     * @throws CouldNotFindMethodException
-     */
-    void throwResourceMethodNotFound(ResourceClass resourceClass,
-            RemainingPath u) throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(
-                errorRestletResourceMethodNotFound,
-                "there is no method on class " + resourceClass.getName()
-                        + " for remaining path " + u);
-    }
-
-    /**
-     * @param o
-     * @param u
-     * @throws CouldNotFindMethodException
-     */
-    void throwResourceNotFound(ResourceObject o, RemainingPath u)
-            throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(
-                errorRestletResourceNotFound,
-                "The resource class "
-                        + o.getResourceClass().getName()
-                        + " could not find a resource object to handle the request for remaining path "
-                        + u);
-    }
-
-    /**
-     * @param u
-     * @throws CouldNotFindMethodException
-     */
-    void throwRootResourceNotFound(RemainingPath u)
-            throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(errorRestletRootResourceNotFound,
-                "No root resource class found for realtiv path " + u);
-    }
-
-    /**
-     * @param httpMethod
-     * @param resourceClass
-     * @param u
-     * @param givenMediaType
-     * @throws CouldNotFindMethodException
-     */
-    void throwUnsupportedMediaType(org.restlet.data.Method httpMethod,
-            ResourceClass resourceClass, RemainingPath u,
-            MediaType givenMediaType) throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(errorRestletUnsupportedMediaType,
-                "there is no java method on class "
-                        + resourceClass.getName()
-                        + " supporting the http method "
-                        + httpMethod
-                        + " on an "
-                        + (u.isEmptyOrSlash() ? "empty remaining path"
-                                : (" remaining path " + u))
-                        + " and the given media type " + givenMediaType);
     }
 }
