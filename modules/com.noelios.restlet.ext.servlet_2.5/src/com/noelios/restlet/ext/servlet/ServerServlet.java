@@ -359,6 +359,8 @@ public class ServerServlet extends HttpServlet {
             // Attach the application
             String uriPattern = request.getContextPath()
                     + request.getServletPath();
+            log("[Noelios Restlet Engine] - Attaching application: "
+                    + application + " to URI: " + uriPattern);
             component.getDefaultHost().attach(uriPattern, application);
         }
 

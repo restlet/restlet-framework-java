@@ -171,13 +171,13 @@ public class XdbServerServlet extends ServerServlet {
     }
 
     @Override
-    public HttpServerHelper createServer(HttpServletRequest request) {
+    protected HttpServerHelper createServer(HttpServletRequest request) {
         HttpServerHelper result = null;
         Component component = getComponent();
         Application application = getApplication();
 
         if ((component != null) && (application != null)) {
-            // First, let's locate the closest component
+            // First, let's create a pseudo server
             Server server = new Server(component.getContext(),
                     new ArrayList<Protocol>(), localAddress, localPort,
                     component);
@@ -188,7 +188,7 @@ public class XdbServerServlet extends ServerServlet {
             // XMLDB allways return null
             String uriPattern = request.getServletPath();
             log("[Noelios Restlet Engine] - Attaching application: "
-                    + application + " uri: " + uriPattern);
+                    + application + " to URI: " + uriPattern);
             component.getDefaultHost().attach(uriPattern, application);
         }
 
