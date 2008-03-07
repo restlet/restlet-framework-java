@@ -797,7 +797,6 @@ public class Util {
             InvocationTargetException {
         if (javaMethod == null)
             return;
-        // REQUEST put in spec, to init only ROOT resource classes.
         javaMethod.setAccessible(true);
         try {
             AccessController

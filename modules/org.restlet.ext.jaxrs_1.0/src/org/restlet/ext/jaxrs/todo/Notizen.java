@@ -28,9 +28,5 @@ public class Notizen {
     // LATER alle LATERs in Masterarbeit uebernehmen
     // TODO look for warnings in tests and put them away.
     // gehört. Gibt es dann ne Endlosrekursion?
-    // TODO MessageBodyWorkers
-    // TODO ContextResolver
-    // TODO UriInfo: 2 new methods. (create new javax.ws.rs.jar)
-    // REQUEST why RuntimeDelegate.createEndpoint()?
-    // REQUEST what should an app developer do, if he get a mbw from a mbworker?
+    // TODO inject ContextResolver and MessageBodyWorkers into providers.
 }

@@ -50,8 +50,6 @@ import org.restlet.util.Template;
  */
 public class JaxRsUriBuilder extends UriBuilder {
 
-    // REQUESTED JSR311: What about a method parent()
-
     /**
      * This resolver is used, if no variable is allowed in the template. It
      * throws an {@link UriBuilderException}, if a variable is requested.

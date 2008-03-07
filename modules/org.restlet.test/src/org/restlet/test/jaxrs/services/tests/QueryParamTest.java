@@ -34,9 +34,6 @@ public class QueryParamTest extends JaxRsTestCase {
         return QueryParamTestService.class;
     }
 
-    // TESTEN create extra TestCase: with "%20" or "+" in reference
-    // TODO create extra TestCase: if Reference-Request contains a space -> Status = -1
-    
     public void testDecoded() throws IOException {
         Response response = get("qpDecoded?firstname=George%20U.&lastname=Bush");
         sysOutEntityIfError(response);

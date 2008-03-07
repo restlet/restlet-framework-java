@@ -53,8 +53,6 @@ public class CarResource {
     }
 
     /**
-     * REQUEST could a sub resource contains other sub resources?
-     * 
      * @param id
      * @return
      */
