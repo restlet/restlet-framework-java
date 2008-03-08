@@ -18,7 +18,6 @@
 package org.restlet.example.jaxrs;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,18 +29,17 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import org.restlet.data.Form;
 
 /**
  * <p>
  * This resource class handles the persons.
  * </p>
  * <p>
- * No data store is used; the data reading and creation is all faked.
+ * No real data store is used; the data reading and creation is all faked.
  * </p>
  * 
  * @author Stephan Koops
@@ -50,21 +48,13 @@ import org.restlet.data.Form;
 public class PersonsRootResource {
 
     /**
-     * This sub resource locator creates a sub resource locator for a concrete
-     * person.
-     * 
-     * @param personId
-     * @return
-     */
-    @Path("{personId}")
-    public PersonResource onePerson(@PathParam("personId") int personId) {
-        if (!dbPersonExists(personId))
-            throw new WebApplicationException(404);
-        return new PersonResource(personId);
-    }
-
-    /**
+     * <p>
      * Returns the persons as XML document.
+     * </p>
+     * <p>
+     * This class demonstrates a resource method: It is annotated with a HTTP
+     * method, but not with a &#64;{@link Path}.
+     * </p>
      * 
      * @param uriInfo
      * @return
@@ -73,12 +63,18 @@ public class PersonsRootResource {
     @ProduceMime( { "application/xml", "text/xml" })
     public PersonList getXmlList() {
         // for a good REST style links to the sub resources should be added.
-        List<Person> allPersons = dbGetAllPersons();
+        List<Person> allPersons = getDataStore().getAllPersons();
         return new PersonList(allPersons);
     }
-    
+
     /**
-     * Returns the persons as HTML page
+     * <p>
+     * Returns the persons as HTML page.
+     * </p>
+     * <p>
+     * This class demonstrates a resource method: It is annotated with a HTTP
+     * method, but not with a &#64;{@link Path}.
+     * </p>
      * 
      * @param uriInfo
      * @return
@@ -86,7 +82,7 @@ public class PersonsRootResource {
     @GET
     @ProduceMime("text/html")
     public String getHtmlList(@Context UriInfo uriInfo) {
-        Collection<Person> persons = dbGetAllPersons();
+        Collection<Person> persons = getDataStore().getAllPersons();
         StringBuilder html = new StringBuilder();
         html.append("<html><head></head><body>\n");
 
@@ -109,74 +105,83 @@ public class PersonsRootResource {
         // create person form
         URI resourceUri = uriInfo.getAbsolutePath();
         html.append("<form action=\"" + resourceUri + "\" method=\"POST\">");
-        html.append("<input type=\"text\" name=\"firstname\" /><br>");
-        html.append("<input type=\"text\" name=\"lastname\"  /><br>");
-        html.append("<input type=\"submit\" /><br>");
+        html.append("<table border=0><tr>");
+        html.append("<td>first name:</td>");
+        html.append("<td><input type=\"text\" name=\"firstname\" /></td>");
+        html.append("</tr><tr>");
+        html.append("<td>last name:</td>");
+        html.append("<td><input type=\"text\" name=\"lastname\"  /></td>");
+        html.append("</tr><tr>");
+        html.append("<td></td>");
+        html.append("<td><input type=\"submit\" value=\"create person\"></td>");
+        html.append("</tr></table>");
         html.append("</form>");
         html.append("</body></html>");
         return html.toString();
-        // You can use Freemarker, Velocity or other Template engines here to
+        // You can use Freemarker, Velocity or other Template engines to
         // create the HTML page.
     }
 
     /**
      * Creates a person from an HTML form.
      * 
-     * @param restletForm
+     * @param form
+     *                the form, submitted by the Web Browser
      * @param uriInfo
-     * 
-     * @return the Response
+     *                info about the called URI.
+     * @return the Response to return to the client.
      */
     @POST
     @ConsumeMime("application/x-www-form-urlencoded")
-    public Response createPerson(Form restletForm, @Context UriInfo uriInfo) {
+    public Response createPerson(MultivaluedMap<String, String> form,
+            @Context UriInfo uriInfo) {
         Person person = new Person();
-        person.setFirstname(restletForm.getFirstValue("firstname"));
-        person.setLastname(restletForm.getFirstValue("lastname"));
-        String newId = String.valueOf(dbCreatePerson(person));
+        person.setFirstname(form.getFirst("firstname"));
+        person.setLastname(form.getFirst("lastname"));
+        String newId = String.valueOf(getDataStore().createPerson(person));
         UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
         URI location = uriBuilder.path(newId).build();
         return Response.seeOther(location).build();
     }
 
     /**
-     * Creates a person from an XML person.
-     * 
-     * @param person
-     * @param uriInfo
-     * 
-     * @return the Response
-     */
-    @POST
-    @ConsumeMime( { "application/xml", "text/xml" })
-    public Response createPerson(Person person, @Context UriInfo uriInfo) {
-        String newId = String.valueOf(dbCreatePerson(person));
-        URI location = uriInfo.getRequestUriBuilder().path(newId).build();
-        return Response.created(location).build();
-    }
-
-    private int dbCreatePerson(Person person) {
-        int newId = 1234;
-        System.out.println("The person " + person.getFirstname() + " "
-                + person.getLastname() + " would be created with id " + newId);
-        return newId;
-    }
-
-    private List<Person> dbGetAllPersons() {
-        List<Person> persons = new ArrayList<Person>();
-        persons.add(new Person(1, "George U.", "Buch"));
-        persons.add(new Person(2, "Gordon", "Brown"));
-        persons.add(new Person(3, "Angela", "Merkel"));
-        return persons;
-    }
-
-    /**
-     * Checks, if the person exists in the database.
+     * This sub resource locator creates a sub resource instance for a concrete
+     * person.
      * 
      * @param personId
      * @return
      */
-    private boolean dbPersonExists(int personId) {
-        return personId > 0 && personId < 10;
+    @Path("{personId}")
+    public PersonResource onePerson(@PathParam("personId") int personId) {
+        if (!getDataStore().existPerson(personId))
+            throw new WebApplicationException(404); // person not found
+        return new PersonResource(personId);
+    }
+
+    /**
+     * Creates a person from an XML person.
+     * 
+     * @param person
+     *                the person to create
+     * @param uriInfo
+     *                info about the called URI.
+     * @return the Response to return to the client.
+     */
+    @POST
+    @ConsumeMime( { "application/xml", "text/xml" })
+    public Response createPerson(Person person, @Context
+    UriInfo uriInfo) {
+        String newId = String.valueOf(getDataStore().createPerson(person));
+        URI location = uriInfo.getRequestUriBuilder().path(newId).build();
+        return Response.created(location).build();
+    }
+
+    /**
+     * Returns the example DataStore
+     * 
+     * @return
+     */
+    private DataStore getDataStore() {
+        return DataStore.getInstance();
     }
 }

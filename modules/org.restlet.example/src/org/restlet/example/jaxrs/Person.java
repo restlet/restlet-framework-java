@@ -20,9 +20,10 @@ package org.restlet.example.jaxrs;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * This class is used to demonstrate serializing.
+ * This class is used to demonstrate JAXB serializing.
  * 
  * @author Stephan Koops
+ * @see PersonList
  */
 @XmlRootElement
 public class Person {

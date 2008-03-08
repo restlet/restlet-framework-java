@@ -35,7 +35,6 @@ import org.restlet.ext.jaxrs.JaxRsRouter;
 public class ExampleServer {
 
     /**
-     * 
      * @param args
      * @throws Exception
      */
@@ -66,5 +65,6 @@ public class ExampleServer {
         System.in.read();
         System.out.println("Stopping server");
         comp.stop();
+        System.out.println("Server stopped");
     }
 }

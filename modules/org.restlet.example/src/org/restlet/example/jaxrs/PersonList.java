@@ -25,21 +25,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This list is serializable by JAXB.
+ * 
  * @author Stephan Koops
+ * @see Person
  */
 @XmlRootElement
 public class PersonList {
 
     private List<Person> persons = new ArrayList<Person>();
-    
+
     /**
-     * 
+     * Creates a new PersonList
      */
     public PersonList() {
     }
 
     /**
-     * @param persons 
+     * Creates a new PersonList with the given persons.
+     * @param persons
      */
     public PersonList(List<Person> persons) {
         this.persons = persons;
