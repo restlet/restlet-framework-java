@@ -31,6 +31,7 @@ import javax.ws.rs.core.UriInfo;
  * This resource class handles a concrete Person.
  * 
  * @author Stephan Koops
+ * @see Person
  * @see PersonsRootResource
  */
 public class PersonResource {
@@ -60,7 +61,8 @@ public class PersonResource {
 
     /**
      * Returns the Person as HTML page.
-     * @param uriInfo 
+     * 
+     * @param uriInfo
      * 
      * @return the Person as HTML page.
      */
@@ -71,7 +73,7 @@ public class PersonResource {
 
         URI parentLoc = uriInfo.getBaseUriBuilder().path("persons").build();
         // this will get better later
-        
+
         StringBuilder html = new StringBuilder();
         html.append("<html><head>\n</head><body>\n");
         html.append("<h1>Person</h1>");
@@ -80,7 +82,7 @@ public class PersonResource {
         html.append("lastname:  " + person.getLastname() + " <br>\n");
         html.append("(ID: " + person.getId() + ")\n");
         html.append("</p><p>");
-        html.append("<a href=\""+parentLoc+"\">person list</a>");
+        html.append("<a href=\"" + parentLoc + "\">person list</a>");
         html.append("</p>");
         html.append("</body></html>");
         return html.toString();
@@ -95,10 +97,9 @@ public class PersonResource {
     public void delete() {
         getDataStore().removePerson(personId);
     }
-    
+
     /**
-     * Updates the person identified by this resource.
-     * <br>
+     * Updates the person identified by this resource. <br>
      * Is not implemented for HTML.
      * 
      * @param person

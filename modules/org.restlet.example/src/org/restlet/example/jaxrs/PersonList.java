@@ -28,6 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * @author Stephan Koops
  * @see Person
+ * @see PersonResource
+ * @see PersonsRootResource
  */
 @XmlRootElement
 public class PersonList {

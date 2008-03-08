@@ -43,6 +43,10 @@ import javax.ws.rs.core.UriInfo;
  * </p>
  * 
  * @author Stephan Koops
+ * @see Person
+ * @see PersonList
+ * @see PersonResource
+ * @see ExampleAppConfig
  */
 @Path("persons")
 public class PersonsRootResource {
@@ -169,8 +173,7 @@ public class PersonsRootResource {
      */
     @POST
     @ConsumeMime( { "application/xml", "text/xml" })
-    public Response createPerson(Person person, @Context
-    UriInfo uriInfo) {
+    public Response createPerson(Person person, @Context UriInfo uriInfo) {
         String newId = String.valueOf(getDataStore().createPerson(person));
         URI location = uriInfo.getRequestUriBuilder().path(newId).build();
         return Response.created(location).build();

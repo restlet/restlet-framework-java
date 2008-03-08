@@ -30,7 +30,8 @@ import org.restlet.ext.jaxrs.JaxRsRouter;
  * control.
  * 
  * @author Stephan Koops
- * @see GuardedExample
+ * @see GuardedExample for an example with authentification
+ * @see ExampleAppConfig
  */
 public class ExampleServer {
 

@@ -25,6 +25,7 @@ import javax.ws.rs.ProduceMime;
  * This demonstrates an easy representation.
  * 
  * @author Stephan Koops
+ * @see ExampleAppConfig
  */
 @Path("easy")
 public class EasyRootResource {

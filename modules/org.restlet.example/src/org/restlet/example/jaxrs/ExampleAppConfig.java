@@ -23,7 +23,15 @@ import java.util.Set;
 import javax.ws.rs.core.ApplicationConfig;
 
 /**
+ * An {@link ApplicationConfig} contains the root resource classes and the
+ * providers for an JAX-RS application.<br>
+ * This example application configuration contains two root resource classes ({@link EasyRootResource}
+ * and {@link PersonsRootResource}, see {@link #getResourceClasses()}) and no
+ * provider (would be returned by {@link ApplicationConfig#getProviderClasses()}.
+ * 
  * @author Stephan Koops
+ * @see EasyRootResource
+ * @see PersonsRootResource
  */
 public class ExampleAppConfig extends ApplicationConfig {
 

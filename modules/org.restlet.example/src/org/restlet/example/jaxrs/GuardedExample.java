@@ -36,7 +36,8 @@ import org.restlet.ext.jaxrs.JaxRsRouter;
  * This class shows how to use the Restlet JAX-RS extension with access control.
  * 
  * @author Stephan Koops
- * @see ExampleServer
+ * @see ExampleServer for an easier example without authentification.
+ * @see ExampleAppConfig
  */
 public class GuardedExample {
 
