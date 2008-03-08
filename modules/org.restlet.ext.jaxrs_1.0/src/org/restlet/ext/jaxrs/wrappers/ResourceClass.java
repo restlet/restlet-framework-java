@@ -577,6 +577,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
         for (Field contextField : this.injectFieldsContext) {
             Util.inject(jaxRsResObj, contextField, callContext);
+            // TODO UriInfo anders.
+            // TODO ContextResolver und MessageBodyWorker anders.
         }
         // not supported, because @*Param are only allowed for parameters.
         for (Field cpf : this.injectFieldsCookieParam) {

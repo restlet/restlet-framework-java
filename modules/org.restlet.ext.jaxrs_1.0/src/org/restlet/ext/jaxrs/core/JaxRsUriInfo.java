@@ -192,10 +192,35 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
+     * Get a list of URIs for ancestor resources. Each entry is a relative URI
+     * that is a partial path that matched a resource class, a sub-resource 
+     * method or a sub-resource locator. The entries are ordered according to 
+     * request URI matching order, with the root resource URI first. E.g.:
+     * 
+     * <pre>&#064;Path("foo")
+     *public class FooResource {
+     *  &#064;GET
+     *  public String getFoo() {...}
+     * 
+     *  &#064;Path("bar")
+     *  &#064;GET
+     *  public String getFooBar() {...}
+     *}</pre>
+     * 
+     * <p>A request <code>GET /foo</code> would return an empty list since
+     * <code>FooResource</code> is a root resource.</p>
+     * 
+     * <p>A request <code>GET /foo/bar</code> would return a list with one
+     * entry: "foo".</p>
+     * 
+     * @return a list of URIs for ancestor resources.
      * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs()
      */
     public List<URI> getAncestorResourceURIs() {
         // TODO UriInfo.getAncestorResourceURIs()
+        // REQUEST return last resource as first?
+        // REQUEST UriInfo.getAncestorResourceURIs() and getAnchestorResources()
+        // list should be unmodifiable
         throw new NotYetImplementedException();
     }
 
