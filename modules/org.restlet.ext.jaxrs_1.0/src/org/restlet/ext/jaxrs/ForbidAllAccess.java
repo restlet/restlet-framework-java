@@ -19,12 +19,13 @@ package org.restlet.ext.jaxrs;
 
 import java.security.Principal;
 
+import javax.ws.rs.core.SecurityContext;
+
 /**
- * An AccessControl that forbid every what it is requested.
+ * An {@link AccessControl} that forbid every what it is requested.<br>
+ * For more explanation see the documentation of interface {@link AccessControl}.
  * 
  * @see AccessControl
- * @see AllowAllAccess
- * @see ThrowExcAccessControl
  * @author Stephan Koops
  */
 public class ForbidAllAccess implements AccessControl {
@@ -43,8 +44,8 @@ public class ForbidAllAccess implements AccessControl {
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.AccessControl#isUserInRole(Principal,
-     *      java.lang.String)
+     * @see AccessControl#isUserInRole(Principal, java.lang.String)
+     * @see SecurityContext#isUserInRole(String)
      */
     public boolean isUserInRole(Principal principal, String role) {
         return false;

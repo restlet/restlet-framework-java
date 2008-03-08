@@ -20,16 +20,16 @@ package org.restlet.ext.jaxrs;
 import java.security.Principal;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.SecurityContext;
 
 import org.restlet.data.Status;
 
 /**
  * An {@link AccessControl} that throws an WebApplicationExeption with status
- * 500 (Internal Server Error) for every call on it.
+ * 500 (Internal Server Error) for every call on it.<br>
+ * For more explanation see the documentation of interface {@link AccessControl}.
  * 
  * @see AccessControl
- * @see AllowAllAccess
- * @see ForbidAllAccess
  * @author Stephan Koops
  */
 public class ThrowExcAccessControl implements AccessControl {
@@ -48,8 +48,8 @@ public class ThrowExcAccessControl implements AccessControl {
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.AccessControl#isUserInRole(Principal,
-     *      java.lang.String)
+     * @see AccessControl#isUserInRole(Principal, java.lang.String)
+     * @see SecurityContext#isUserInRole(String)
      */
     public boolean isUserInRole(Principal principal, String role) {
         throw new WebApplicationException(Status.SERVER_ERROR_INTERNAL

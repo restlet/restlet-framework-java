@@ -19,12 +19,13 @@ package org.restlet.ext.jaxrs;
 
 import java.security.Principal;
 
+import javax.ws.rs.core.SecurityContext;
+
 /**
- * An AccessControl that always allow access.
+ * An AccessControl that always allow access.<br>
+ * For more explanation see the documentation of interface {@link AccessControl}.
  * 
  * @see AccessControl
- * @see ForbidAllAccess
- * @see ThrowExcAccessControl
  * @author Stephan Koops
  */
 public class AllowAllAccess implements AccessControl {
@@ -43,8 +44,8 @@ public class AllowAllAccess implements AccessControl {
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.AccessControl#isUserInRole(Principal,
-     *      java.lang.String)
+     * @see AccessControl#isUserInRole(Principal, java.lang.String)
+     * @see SecurityContext#isUserInRole(String)
      */
     public boolean isUserInRole(Principal principal, String role) {
         return true;

@@ -39,6 +39,8 @@ public class ExampleServer {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
+        // This method is build like any Restlet server starting class.
+        // The only difference is in the method createRoot()
         Component comp = new Component();
         Server server = comp.getServers().add(Protocol.HTTP, 8182);
 

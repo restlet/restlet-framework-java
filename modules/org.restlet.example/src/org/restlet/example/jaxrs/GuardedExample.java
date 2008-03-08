@@ -42,7 +42,7 @@ public class GuardedExample {
 
     /**
      * An example {@link AccessControl}. This example allows anything to user
-     * admin and nothing to anyone else.
+     * admin and only read to any other user.
      * 
      * @author Stephan Koops
      */
@@ -69,6 +69,8 @@ public class GuardedExample {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
+        // This method is build like any Restlet server starting class.
+        // The only difference is in the method createRoot()
         Component comp = new Component();
         Server server = comp.getServers().add(Protocol.HTTP, 8182);
 

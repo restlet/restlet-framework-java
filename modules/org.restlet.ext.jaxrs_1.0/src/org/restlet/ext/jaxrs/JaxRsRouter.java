@@ -96,16 +96,19 @@ import org.restlet.resource.StringRepresentation;
 /**
  * <p>
  * The router choose the JAX-RS resource class and method to use for a request.
- * This class has methods {@link #addRootResourceClass(Class)} and
- * {@link #detach(Class)} like the Restlet {@link Router}. The variable names
- * in this class are often the same as in the JAX-RS-Definition.
+ * This class has methods {@link #attach(ApplicationConfig)} like the Restlet
+ * {@link Router}.
  * </p>
  * <p>
- * This class is a subclass of {@link JaxRsRouterHelpMethods}. The methods to
- * handle exceptions while identifying the method that should handle the request
- * and in other situations are moved to that super class. So this class contains
- * only the real logic code and is more well arranged.
- * </p>
+ * Now some internal informations are following:
+ * <ul>
+ * <li>The variable names in this class are often the same as in the
+ * JAX-RS-Definition.</li>
+ * <li>This class is a subclass of {@link JaxRsRouterHelpMethods}. The methods
+ * to handle exceptions while identifying the method that should handle the
+ * request and in other situations are moved to that super class. So this class
+ * contains only the real logic code and is more well arranged. </li>
+ * </ul>
  * 
  * LATER The class JaxRsRouter is not thread save while attach or detach
  * classes.
@@ -138,7 +141,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     private WrapperFactory wrapperFactory;
 
     /**
-     * Creates a new JaxRsRouter with the given Context.
+     * Creates a new JaxRsRouter with the {@link ApplicationConfig}. You can
+     * add more {@link ApplicationConfig}s; use method
+     * {@link #attach(ApplicationConfig)}.
      * 
      * @param context
      *                the context from the parent, see
@@ -148,12 +153,15 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      *                as providers. You could add more {@link ApplicationConfig}s;
      *                use method {@link #attach(ApplicationConfig)}.
      * @param accessControl
-     *                The AccessControl, must not be null. If you don't need the
-     *                authentification, you can use the {@link ForbidAllAccess},
-     *                the {@link AllowAllAccess} or the
-     *                {@link ThrowExcAccessControl}.
+     *                The AccessControl to use. If you don't need the access
+     *                control, you can use the {@link ForbidAllAccess}, the
+     *                {@link AllowAllAccess} or the
+     *                {@link ThrowExcAccessControl}. See also
+     *                {@link #JaxRsRouter(Context, ApplicationConfig)}.
      * @throws IllegalArgumentException
-     *                 if the given {@link AccessControl} ist null.
+     *                 if the {@link ApplicationConfig} contains invalid date;
+     *                 see {@link #attach(ApplicationConfig)} for detailed
+     *                 information.
      */
     public JaxRsRouter(Context context, ApplicationConfig appConfig,
             AccessControl accessControl) throws IllegalArgumentException {
@@ -169,38 +177,49 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     /**
-     * Creates a new JaxRsRouter with the given Context. Only the default
-     * providers are loaded by default. If a resource class wants to check if a
-     * user has a role, the request is returned with HTTP status 500 (Internal
-     * Server Error), see {@link SecurityContext#isUserInRole(String)}.
+     * <p>
+     * Creates a new JaxRsRouter with the {@link ApplicationConfig}. You can
+     * add more {@link ApplicationConfig}s; use method
+     * {@link #attach(ApplicationConfig)}.
+     * </p>
+     * <p>
+     * If a resource class wants to check if a user has a role, the request is
+     * returned with HTTP status 500 (Internal Server Error), see
+     * {@link SecurityContext#isUserInRole(String)}. If you want to use the
+     * access control, use constructor
+     * {@link #JaxRsRouter(Context, ApplicationConfig, AccessControl)}.
+     * </p>
      * 
      * @param context
      *                the context from the parent, see
-     *                {@link Restlet#Restlet(Context)}
+     *                {@link Restlet#Restlet(Context)}.
      * @param appConfig
      *                Contains the classes to load as root resource classes and
      *                as providers. You could add more {@link ApplicationConfig}s;
      *                use method {@link #attach(ApplicationConfig)}.
+     * @throws IllegalArgumentException
+     *                 if the {@link ApplicationConfig} contains invalid date;
+     *                 see {@link #attach(ApplicationConfig)} for detailed
+     *                 information.
      * @see #JaxRsRouter(Context, ApplicationConfig, AccessControl)
      */
-    public JaxRsRouter(Context context, ApplicationConfig appConfig) {
+    public JaxRsRouter(Context context, ApplicationConfig appConfig)
+            throws IllegalArgumentException {
         this(context, appConfig, null);
     }
 
     /**
      * Creates a new JaxRsRouter with the given Context. Only the default
-     * providers are loaded by default. No {@link ApplicationConfig} is loaded,
-     * use {@link #attach(ApplicationConfig)} to attach some. If a resource
-     * class later wants to check if a user has a role, the request is returned
-     * with HTTP status 500 (Internal Server Error), see
+     * providers are loaded. No {@link ApplicationConfig} is loaded, use
+     * {@link #attach(ApplicationConfig)} to attach some. If a resource class
+     * later wants to check if a user has a role, the request is returned with
+     * HTTP status 500 (Internal Server Error), see
      * {@link SecurityContext#isUserInRole(String)}.
      * 
      * @param context
      *                the context from the parent, see
-     *                {@link Restlet#Restlet(Context)}
-     * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers.
+     *                {@link Restlet#Restlet(Context)}.
+     * @see #JaxRsRouter(Context, ApplicationConfig)
      * @see #JaxRsRouter(Context, ApplicationConfig, AccessControl)
      */
     public JaxRsRouter(Context context) {
@@ -208,12 +227,37 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     /**
+     * Creates a new JaxRsRouter with the given Context. Only the default
+     * providers are loaded. No {@link ApplicationConfig} is loaded, use
+     * {@link #attach(ApplicationConfig)} to attach some, or use constructor
+     * {@link #JaxRsRouter(Context, ApplicationConfig, AccessControl)}.
+     * 
+     * @param context
+     *                the context from the parent, see
+     *                {@link Restlet#Restlet(Context)}.
+     * @param accessControl
+     *                The AccessControl to use. If you don't need the access
+     *                control, you can use the {@link ForbidAllAccess}, the
+     *                {@link AllowAllAccess} or the
+     *                {@link ThrowExcAccessControl}.
+     * @see #JaxRsRouter(Context, ApplicationConfig, AccessControl)
+     */
+    public JaxRsRouter(Context context, AccessControl accessControl) {
+        this(context, null, accessControl);
+    }
+
+    /**
+     * attaches the classes and providers to this JaxRsRouter. The providers are
+     * available for all root resource classes provided to this JaxRsRouter. If
+     * you want mix them, instantiate another JaxRsRouter.
+     * 
      * @param appConfig
      *                Contains the classes to load as root resource classes and
      *                as providers.
      * @throws IllegalArgumentException
-     *                 if the provider is not a valid provider, or the
-     *                 constructor throws an {@link InvocationTargetException}.
+     *                 if {@link ApplicationConfig} contains non-valid resource
+     *                 classes or non-valid providers, or one of their
+     *                 constructors throws an exception.
      * @throws NullPointerException
      *                 if the appConfig is null.
      */
@@ -272,8 +316,13 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * only. Use the method {@link #attach(ApplicationConfig)}.
      * 
      * @param rootResourceClass
-     *                the JAX-RS root resource class to add.
+     *                the JAX-RS root resource class to add. If the root
+     *                resource class is already available in this JaxRsRouter,
+     *                it is ignored for later calls of this method.
      * @throws IllegalArgumentException
+     *                 if the class is not a valid root resource class, or if
+     *                 there is already a root resource class with the given
+     *                 name, which is not the same root resource class.
      * @throws MissingAnnotationException
      *                 if the class is not annotated with &#64;Path.
      * @see {@link #attach(ApplicationConfig)}
@@ -292,7 +341,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         PathRegExp uriTempl = newRrc.getPathRegExp();
         for (RootResourceClass rrc : this.rootResourceClasses) {
             if (rrc.getJaxRsClass().equals(rootResourceClass))
-                return;// true;
+                return;
             if (rrc.getPathRegExp().equals(uriTempl))
                 throw new IllegalArgumentException(
                         "There is already a root resource class with path "
@@ -1177,8 +1226,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                     m.add(MediaType.getMostSpecific(prod, acc));
         // 6.
         if (m.isEmpty())
-            handleNotAcceptableWhileDetermineMediaType(callContext.getRequest(),
-                    callContext.getResponse());
+            handleNotAcceptableWhileDetermineMediaType(
+                    callContext.getRequest(), callContext.getResponse());
         return m;
     }
 
