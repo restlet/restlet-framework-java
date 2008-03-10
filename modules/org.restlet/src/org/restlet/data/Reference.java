@@ -522,13 +522,14 @@ public class Reference {
      * 
      * @param baseRef
      *                The base reference.
-     * @param uriReference
+     * @param uriRef
      *                The URI reference, either absolute or relative.
      */
-    public Reference(Reference baseRef, String uriReference) {
+    public Reference(Reference baseRef, String uriRef) {
+        checkValidity(uriRef);
         this.baseRef = baseRef;
-        this.internalRef = uriReference;
-        internalUpdate();
+        this.internalRef = uriRef;
+        updateIndexes();
     }
 
     /**
@@ -647,6 +648,25 @@ public class Reference {
         }
 
         return this;
+    }
+
+    /**
+     * Checks if all characters are valid.
+     * 
+     * @param uriRef
+     *                The URI reference to check.
+     */
+    private void checkValidity(String uriRef) throws IllegalArgumentException {
+        if (uriRef != null) {
+            // Ensure that all characters are valid
+            for (int i = 0; i < uriRef.length(); i++) {
+                if (!isValid(uriRef.charAt(i))) {
+                    throw new IllegalArgumentException(
+                            "Invalid character detected in URI reference at index '"
+                                    + i + "': \"" + uriRef.charAt(i) + "\"");
+                }
+            }
+        }
     }
 
     @Override
@@ -1749,6 +1769,8 @@ public class Reference {
      *                 ('#').
      */
     public void setFragment(String fragment) {
+        checkValidity(fragment);
+
         if ((fragment != null) && (fragment.indexOf('#') != -1)) {
             throw new IllegalArgumentException(
                     "Illegal '#' character detected in parameter");
@@ -1777,7 +1799,7 @@ public class Reference {
             }
         }
 
-        internalUpdate();
+        updateIndexes();
     }
 
     /**
@@ -1864,8 +1886,12 @@ public class Reference {
      *                 delimiter ('#').
      */
     public void setIdentifier(String identifier) {
-        if (identifier == null)
+        checkValidity(identifier);
+
+        if (identifier == null) {
             identifier = "";
+        }
+
         if (identifier.indexOf('#') != -1) {
             throw new IllegalArgumentException(
                     "Illegal '#' character detected in parameter");
@@ -1879,7 +1905,7 @@ public class Reference {
                 this.internalRef = identifier;
             }
 
-            internalUpdate();
+            updateIndexes();
         }
     }
 
@@ -1968,6 +1994,8 @@ public class Reference {
      *                The query component for hierarchical identifiers.
      */
     public void setQuery(String query) {
+        checkValidity(query);
+
         if (queryIndex != -1) {
             // Query found
             if (fragmentIndex != -1) {
@@ -2019,7 +2047,7 @@ public class Reference {
             }
         }
 
-        internalUpdate();
+        updateIndexes();
     }
 
     /**
@@ -2029,8 +2057,12 @@ public class Reference {
      *                The relative part to set.
      */
     public void setRelativePart(String relativePart) {
-        if (relativePart == null)
+        checkValidity(relativePart);
+
+        if (relativePart == null) {
             relativePart = "";
+        }
+
         if (schemeIndex == -1) {
             // This is a relative reference, no scheme found
             if (queryIndex != -1) {
@@ -2047,7 +2079,7 @@ public class Reference {
             }
         }
 
-        internalUpdate();
+        updateIndexes();
     }
 
     /**
@@ -2057,6 +2089,8 @@ public class Reference {
      *                The scheme component.
      */
     public void setScheme(String scheme) {
+        checkValidity(scheme);
+
         if (scheme != null) {
             // URI specification indicates that scheme names should be
             // produced in lower case
@@ -2082,7 +2116,7 @@ public class Reference {
             }
         }
 
-        internalUpdate();
+        updateIndexes();
     }
 
     /**
@@ -2092,8 +2126,12 @@ public class Reference {
      *                The scheme specific part.
      */
     public void setSchemeSpecificPart(String schemeSpecificPart) {
-        if (schemeSpecificPart == null)
+        checkValidity(schemeSpecificPart);
+
+        if (schemeSpecificPart == null) {
             schemeSpecificPart = "";
+        }
+
         if (schemeIndex != -1) {
             // Scheme found
             if (fragmentIndex != -1) {
@@ -2120,7 +2158,7 @@ public class Reference {
             }
         }
 
-        internalUpdate();
+        updateIndexes();
     }
 
     /**
@@ -2222,20 +2260,10 @@ public class Reference {
     }
 
     /**
-     * Update internal indexes and check if all characters are valid.
+     * Updates internal indexes.
      */
-    private void internalUpdate() {
+    private void updateIndexes() {
         if (internalRef != null) {
-            // Ensure that all characters are valid
-            for (int i = 0; i < internalRef.length(); i++) {
-                if (!isValid(internalRef.charAt(i))) {
-                    throw new IllegalArgumentException(
-                            "Invalid character detected in URI reference at index '"
-                                    + i + "': \"" + internalRef.charAt(i)
-                                    + "\"");
-                }
-            }
-
             // Compute the indexes
             int firstSlashIndex = this.internalRef.indexOf('/');
             this.schemeIndex = this.internalRef.indexOf(':');
