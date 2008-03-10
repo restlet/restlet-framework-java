@@ -21,6 +21,7 @@ package com.noelios.restlet.local;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.logging.Level;
 
 import org.restlet.Client;
@@ -123,6 +124,7 @@ public class ClapClientHelper extends LocalClientHelper {
                 path = path.substring(1);
             // As the path may be percent-encoded, it has to be percent-decoded.
             URL url = classLoader.getResource(Reference.decode(path));
+            Date modificationDate = null;
 
             // The ClassLoader returns a directory listing in some cases.
             // As this listing is partial, it is of little value in the context
@@ -130,6 +132,8 @@ public class ClapClientHelper extends LocalClientHelper {
             if (url != null) {
                 if (url.getProtocol().equals("file")) {
                     File file = new File(url.getFile());
+                    modificationDate = new Date(file.lastModified());
+
                     if (file.isDirectory()) {
                         url = null;
                     }
@@ -142,6 +146,7 @@ public class ClapClientHelper extends LocalClientHelper {
                             .openStream(), metadataService
                             .getDefaultMediaType());
                     output.setIdentifier(request.getResourceRef());
+                    output.setModificationDate(modificationDate);
 
                     // Update the metadata based on file extensions
                     String name = path.substring(path.lastIndexOf('/') + 1);

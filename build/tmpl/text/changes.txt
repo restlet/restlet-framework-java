@@ -46,6 +46,9 @@ Changes log
         - Updated Spring to version 2.5.2.
         - Improved handling of connectors created without a protocol.
           Contributed by Avi Flax.
+        - Representations returned by the CLAP connector now have their
+          modification date set if it is based on a file. Suggested by
+          Keke.
  
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed
