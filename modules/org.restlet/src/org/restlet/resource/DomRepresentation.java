@@ -142,6 +142,33 @@ public class DomRepresentation extends XmlRepresentation {
     }
 
     /**
+     * Creates a new JAXP Transformer object that will be used to serialize this
+     * DOM. This method may be overridden in order to set custom properties on
+     * the Transformer.
+     * 
+     * @return The transformer to be used for serialization.
+     */
+    protected Transformer createTransformer() throws IOException {
+        try {
+            Transformer transformer = TransformerFactory.newInstance()
+                    .newTransformer();
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+
+            if (getDocument().getDoctype() != null) {
+                transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
+                        getDocument().getDoctype().getSystemId());
+                transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
+                        getDocument().getDoctype().getPublicId());
+            }
+
+            return transformer;
+        } catch (TransformerConfigurationException tce) {
+            throw new IOException("Couldn't write the XML representation: "
+                    + tce.getMessage());
+        }
+    }
+
+    /**
      * Returns a DOMSource.
      * 
      * @return A DOMSource.
@@ -180,16 +207,7 @@ public class DomRepresentation extends XmlRepresentation {
     public void write(OutputStream outputStream) throws IOException {
         try {
             if (getDocument() != null) {
-                Transformer transformer = TransformerFactory.newInstance()
-                        .newTransformer();
-
-                if (getDocument().getDoctype() != null) {
-                    transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
-                            getDocument().getDoctype().getSystemId());
-                    transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
-                            getDocument().getDoctype().getPublicId());
-                }
-
+                Transformer transformer = createTransformer();
                 transformer.transform(new DOMSource(getDocument()),
                         new StreamResult(outputStream));
             }
