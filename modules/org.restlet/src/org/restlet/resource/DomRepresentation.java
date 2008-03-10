@@ -154,6 +154,7 @@ public class DomRepresentation extends XmlRepresentation {
             if (getDocument() != null) {
                 Transformer transformer = TransformerFactory.newInstance()
                         .newTransformer();
+                transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 
                 if (getDocument().getDoctype() != null) {
                     transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,

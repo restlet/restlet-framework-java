@@ -7,7 +7,10 @@ Changes log
 [Bugs fixed]
  - Fixed potential NPE in Server.stop() method. Reported by Andrew Cowling.
  - Prevented potential NPE in DomRepresentation constructor
-   if a null representation is passed. Reported by Dhabaleswar Jena. 
+   if a null representation is passed. Reported by Dhabaleswar Jena.
+ - DomRepresentation now explicitely sets the output format of the JAXP
+   Transformer to 'XML' to prevent HTML detection. Reported by Elliot Long 
+   and fixed by Rob Heittman. 
 
 [Enhancements]
  - Updated Jetty to version 6.1.8.
