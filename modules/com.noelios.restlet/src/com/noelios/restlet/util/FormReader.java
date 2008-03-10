@@ -333,8 +333,8 @@ public class FormReader {
         Parameter param = null;
 
         // Let's read all form parameters
-        while (readNext) {
-            try {
+        try {
+            while (readNext) {
                 param = readNextParameter();
 
                 if (param != null) {
@@ -344,10 +344,13 @@ public class FormReader {
                     // Last parameter parsed
                     readNext = false;
                 }
-            } catch (IOException ioe) {
-                getLogger().log(Level.WARNING,
-                        "Unable to parse a form parameter. Skipping it.", ioe);
             }
+        } catch (IOException ioe) {
+            getLogger()
+                    .log(
+                            Level.WARNING,
+                            "Unable to parse a form parameter. Skipping the remaining parameters.",
+                            ioe);
         }
 
         try {
