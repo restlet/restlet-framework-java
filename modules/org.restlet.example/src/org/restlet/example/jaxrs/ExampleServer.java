@@ -53,7 +53,8 @@ public class ExampleServer {
                 JaxRsRouter router = new JaxRsRouter(getContext(), appConfig);
                 // some browser request XML with higher quality than HTML.
                 // If you want to change the quality, use this HtmlPreferer
-                // filter. If not, you can directly return the router
+                // filter. If you do not need it, you can directly return the
+                // router.
                 HtmlPreferer filter = new HtmlPreferer(getContext(), router);
                 return filter;
             }
@@ -63,7 +64,7 @@ public class ExampleServer {
         comp.getDefaultHost().attach(application);
         comp.start();
 
-        System.out.println("Server stated on port " + server.getPort());
+        System.out.println("Server started on port " + server.getPort());
         System.out.println("Press key to stop server");
         System.in.read();
         System.out.println("Stopping server");

@@ -110,7 +110,7 @@ public class GuardedExample {
         comp.getDefaultHost().attach(application);
         comp.start();
 
-        System.out.println("Server stated on port " + server.getPort());
+        System.out.println("Server started on port " + server.getPort());
         System.out.println("Press key to stop server");
         System.in.read();
         System.out.println("Stopping server");
