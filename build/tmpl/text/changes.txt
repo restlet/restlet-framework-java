@@ -11,6 +11,7 @@ Changes log
  - DomRepresentation now explicitely sets the output format of the JAXP
    Transformer to 'XML' to prevent HTML detection. Reported by Elliot Long 
    and fixed by Rob Heittman. 
+ - Fixed potential infinite loops while reading forms. Reported by Sean Curtis.
 
 [Enhancements]
  - Updated Jetty to version 6.1.8.
