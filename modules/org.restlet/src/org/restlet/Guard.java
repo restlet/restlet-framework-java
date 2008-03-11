@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
 
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -327,6 +328,7 @@ public class Guard extends Filter {
     protected boolean checkSecret(String identifier, char[] secret) {
         boolean result = false;
         char[] secret2 = findSecret(identifier);
+
         if (secret == null || secret2 == null) {
             // check if both are null
             result = (secret == secret2);
@@ -354,21 +356,54 @@ public class Guard extends Filter {
      */
     @Override
     public int doHandle(Request request, Response response) {
+        boolean loggable = getLogger().isLoggable(Level.FINE);
+
         switch (authenticate(request)) {
         case AUTHENTICATION_VALID:
             // Valid credentials provided
+            if (loggable) {
+                getLogger().fine(
+                        "Authentication suceeded. Valid credentials provided for identifier: "
+                                + request.getChallengeResponse()
+                                        .getIdentifier() + ".");
+            }
+
             if (authorize(request)) {
+                if (loggable) {
+                    getLogger().fine(
+                            "Request authorized for identifier: "
+                                    + request.getChallengeResponse()
+                                            .getIdentifier() + ".");
+                }
+
                 accept(request, response);
             } else {
+                if (loggable) {
+                    getLogger().fine(
+                            "Request not authorized for identifier: "
+                                    + request.getChallengeResponse()
+                                            .getIdentifier() + ".");
+                }
+
                 forbid(response);
             }
             break;
         case AUTHENTICATION_MISSING:
             // No credentials provided
+            if (loggable) {
+                getLogger().fine(
+                        "Authentication failed. No credentials provided.");
+            }
+
             challenge(response, false);
             break;
         case AUTHENTICATION_INVALID:
             // Invalid credentials provided
+            if (loggable) {
+                getLogger().fine(
+                        "Authentication failed. Invalid credentials provided.");
+            }
+
             if (isRechallengeEnabled()) {
                 challenge(response, false);
             } else {
@@ -376,6 +411,11 @@ public class Guard extends Filter {
             }
             break;
         case AUTHENTICATION_STALE:
+            if (loggable) {
+                getLogger().fine(
+                        "Authentication failed. Stale credentials provided.");
+            }
+
             challenge(response, true);
             break;
         }

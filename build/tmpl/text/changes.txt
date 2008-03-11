@@ -32,8 +32,9 @@ Changes log
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.
-        - Added a ServerServlet.createCall() method for easier 
-          subclassingby the XDB extension.
+        - Added a ServerServlet.createCall() and createWarClient() 
+          methods for easier subclassing by the XDB extension. 
+          Some contributions from Marcelo Ochoa.
         - Added new javax.annotation library for the JAX-RS extension.
         - Added ServerServlet.getClass() method to facilitate 
           subclassing by the XDB extension. Suggested by Marcelo Ochoa.
@@ -49,6 +50,8 @@ Changes log
         - Representations returned by the CLAP connector now have their
           modification date set if it is based on a file. Suggested by
           Keke.
+        - Refactored and improved logging for Guard and challenge
+          processing. Suggested by Alex Milowski.
  
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed

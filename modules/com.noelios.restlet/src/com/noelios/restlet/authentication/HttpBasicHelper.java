@@ -79,13 +79,6 @@ public class HttpBasicHelper extends AuthenticationHelper {
             } else {
                 cr.setIdentifier(credentials.substring(0, separator));
                 cr.setSecret(credentials.substring(separator + 1));
-
-                // Log the authentication result
-                if (logger != null) {
-                    logger
-                            .info("Basic HTTP authentication succeeded: identifier="
-                                    + cr.getIdentifier() + ".");
-                }
             }
         } catch (UnsupportedEncodingException e) {
             logger.log(Level.WARNING, "Unsupported encoding error", e);

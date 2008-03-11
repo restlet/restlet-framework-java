@@ -23,12 +23,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Application;
+import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Server;
@@ -51,19 +53,19 @@ import com.noelios.restlet.http.HttpServerHelper;
  * &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
  * &lt;web-app&gt;
  *         &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- *                                                         
+ * 
  *         &lt;!-- Your application class name --&gt;
  *         &lt;context-param&gt;
  *                 &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
  *                 &lt;param-value&gt;com.noelios.restlet.test.TraceApplication&lt;/param-value&gt;
  *         &lt;/context-param&gt;
- *                                                         
+ * 
  *         &lt;!-- Restlet adapter --&gt;
  *         &lt;servlet&gt;
  *                 &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
  *                 &lt;servlet-class&gt;com.noelios.restlet.ext.servlet.ServerServlet&lt;/servlet-class&gt;
  *         &lt;/servlet&gt;
- *                                                         
+ * 
  *         &lt;!-- Catch all requests --&gt;
  *         &lt;servlet-mapping&gt;
  *                 &lt;servlet-name&gt;ServerServlet&lt;/servlet-name&gt;
@@ -220,9 +222,8 @@ public class ServerServlet extends HttpServlet {
                     .getContext();
 
             // Set the special WAR client
-            applicationContext.setWarClient(new ServletWarClient(
-                    applicationContext, this.getServletConfig()
-                            .getServletContext()));
+            applicationContext.setWarClient(createWarClient(applicationContext,
+                    this.getServletConfig()));
 
             // Copy all the servlet parameters into the context
             String initParam;
@@ -263,6 +264,20 @@ public class ServerServlet extends HttpServlet {
     protected HttpServerCall createCall(Server server,
             HttpServletRequest request, HttpServletResponse response) {
         return new ServletCall(server, request, response);
+    }
+
+    /**
+     * Creates a new client for the WAR protocol.
+     * 
+     * @param context
+     *                The Application context.
+     * @param config
+     *                The Servlet config.
+     * @return The new WAR client instance.
+     */
+    protected Client createWarClient(ApplicationContext context,
+            ServletConfig config) {
+        return new ServletWarClient(context, config.getServletContext());
     }
 
     /**
