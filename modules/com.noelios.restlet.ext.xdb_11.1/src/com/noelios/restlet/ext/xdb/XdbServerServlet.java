@@ -18,6 +18,7 @@
 
 package com.noelios.restlet.ext.xdb;
 
+import com.noelios.restlet.application.ApplicationContext;
 import com.noelios.restlet.ext.servlet.ServerServlet;
 import com.noelios.restlet.http.HttpServerCall;
 import com.noelios.restlet.http.HttpServerHelper;
@@ -36,11 +37,13 @@ import java.sql.Types;
 
 import java.util.ArrayList;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Application;
+import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -367,5 +370,11 @@ public class XdbServerServlet extends ServerServlet {
         } else
             targetClass = Engine.classForName(className);
         return targetClass;
+    }
+
+    @Override
+    protected Client createWarClient(ApplicationContext appCtx,
+                                  ServletConfig config) {
+        return new XdbServletWarClient(appCtx, config, conn);
     }
 }
