@@ -623,6 +623,8 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
         try {
             new Marshaller(contextPath).marshal(getObject(), outputStream);
         } catch (JAXBException e) {
+            logger.log(Level.WARNING, "JAXB marshalling error caught.", e);
+
             // Maybe the tree represents a failure, try that.
             try {
                 new Marshaller("failure").marshal(getObject(), outputStream);
