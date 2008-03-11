@@ -52,6 +52,9 @@ Changes log
           Keke.
         - Refactored and improved logging for Guard and challenge
           processing. Suggested by Alex Milowski.
+        - Updated Reference's Javadocs to mention that getters do not 
+          automatically do URI decoding. Suggested by Paul J. Lucas.
+        
  
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed

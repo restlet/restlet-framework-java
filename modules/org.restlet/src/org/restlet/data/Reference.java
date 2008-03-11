@@ -53,7 +53,9 @@ import java.util.logging.Logger;
  * Note that this class doesn't encode or decode the reserved characters. It
  * assumes that the URIs or the URI parts passed in are properly encoded using
  * the standard URI encoding mechanism. You can use the static "encode()" and
- * "decode()" methods for this purpose.
+ * "decode()" methods for this purpose. Note that if an invalid URI character is
+ * detected by the constructor or one of the setters, an
+ * IllegalArgumentException will be thrown.
  * </p>
  * <p>
  * The fundamental point to underline is the difference between an URI
@@ -711,7 +713,8 @@ public class Reference {
 
     /**
      * Returns the authority component for hierarchical identifiers. Includes
-     * the user info, host name and the host port number.
+     * the user info, host name and the host port number.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The authority component for hierarchical identifiers.
      */
@@ -747,7 +750,8 @@ public class Reference {
     }
 
     /**
-     * Returns the fragment identifier.
+     * Returns the fragment identifier.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The fragment identifier.
      */
@@ -761,7 +765,8 @@ public class Reference {
 
     /**
      * Returns the hierarchical part which is equivalent to the scheme specific
-     * part less the query component.
+     * part less the query component.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The hierarchical part .
      */
@@ -802,7 +807,8 @@ public class Reference {
     /**
      * Returns the host domain name component for server based hierarchical
      * identifiers. It can also be replaced by an IP address when no domain name
-     * was registered.
+     * was registered.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The host domain name component for server based hierarchical
      *         identifiers.
@@ -841,7 +847,8 @@ public class Reference {
 
     /**
      * Returns the host identifier. Includes the scheme, the host name and the
-     * host port number.
+     * host port number.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The host identifier.
      */
@@ -881,7 +888,8 @@ public class Reference {
     }
 
     /**
-     * Returns the absolute resource identifier, without the fragment.
+     * Returns the absolute resource identifier, without the fragment.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The absolute resource identifier, without the fragment.
      */
@@ -898,7 +906,8 @@ public class Reference {
     /**
      * Returns the last segment of a hierarchical path.<br>
      * For example the "/a/b/c" and "/a/b/c/" paths have the same segments: "a",
-     * "b", "c.
+     * "b", "c.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The last segment of a hierarchical path.
      */
@@ -951,7 +960,8 @@ public class Reference {
     }
 
     /**
-     * Returns the path component for hierarchical identifiers.
+     * Returns the path component for hierarchical identifiers.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The path component for hierarchical identifiers.
      */
@@ -995,7 +1005,8 @@ public class Reference {
     }
 
     /**
-     * Returns the optional query component for hierarchical identifiers.
+     * Returns the optional query component for hierarchical identifiers.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The query component or null.
      */
@@ -1042,7 +1053,8 @@ public class Reference {
 
     /**
      * Returns the relative part of relative references, without the query and
-     * fragment. If the reference is absolute, then null is returned.
+     * fragment. If the reference is absolute, then null is returned.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The relative part.
      */
@@ -1264,6 +1276,8 @@ public class Reference {
      * <li>the reference is absolute</li>
      * <li>the reference identifier starts with the resource baseRef</li>
      * </ul>
+     * <br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The remaining resource part or null if the prerequisites are not
      *         satisfied.
@@ -1286,7 +1300,8 @@ public class Reference {
     }
 
     /**
-     * Returns the scheme component.
+     * Returns the scheme component.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The scheme component.
      */
@@ -1310,7 +1325,8 @@ public class Reference {
     }
 
     /**
-     * Returns the scheme specific part.
+     * Returns the scheme specific part.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The scheme specific part.
      */
@@ -1334,7 +1350,8 @@ public class Reference {
 
     /**
      * Returns the list of segments in a hierarchical path.<br>
-     * A new list is created for each call.
+     * A new list is created for each call.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The segments of a hierarchical path.
      */
@@ -1478,7 +1495,8 @@ public class Reference {
 
     /**
      * Returns the user info component for server based hierarchical
-     * identifiers.
+     * identifiers.<br>
+     * Note that no URI decoding is done by this method.
      * 
      * @return The user info component for server based hierarchical
      *         identifiers.
