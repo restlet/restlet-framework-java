@@ -722,7 +722,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                 handleUnsupportedMediaType(httpMethod, resourceClass, u,
                         givenMediaType);
         }
-        // TODO Added sort key so that a matching sub-resource method will be chosen ahead of a sub-resource locator
         // (a) 4
         SortedMetadata<MediaType> accMediaTypes = callContext
                 .getAccMediaTypes();
@@ -950,7 +949,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
 
     /**
      * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
-     * 2007-12-07, Section 2.5, Part 2f+2g
+     * 2008-03-11, Section 3.6, Part 2f+2g
      * 
      * @param eWithMethod
      *                Collection of Sub-ResourceMethods and SubResourceLocators
@@ -985,9 +984,12 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                     continue;
                 }
                 if (srmlNoCaptGroups == bestSrmlNoCaptGroups) {
-                    if (srml.getPathRegExp().equals(bestSrml.getPathRegExp())) {
-                        // different Java methods for the same resource, but
-                        // perhaps for different HTTP methods
+                    if ((srml instanceof ResourceMethod)
+                            && (bestSrml instanceof SubResourceLocator)) {
+                        // prefare methods ahead locators
+                        bestSrml = srml;
+                        bestSrmlChars = srmlNoLitChars;
+                        bestSrmlNoCaptGroups = srmlNoCaptGroups;
                         continue;
                     }
                     // use one the methods
@@ -1076,7 +1078,10 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                         callContext, resourceMethod);
                 // } else if(result instanceof URI) { // perhaps 201 or 303
             } else if (result instanceof javax.ws.rs.core.Response.ResponseBuilder) {
-                // TODO log warning
+                String warning = "the method "
+                        + resourceMethod
+                        + " returnef a ResponseBuilder. This is not allowed by default. Call responseBuilder.build() in the resource method";
+                getLogger().warning(warning);
                 javax.ws.rs.core.Response jaxRsResponse = ((javax.ws.rs.core.Response.ResponseBuilder) result)
                         .build();
                 jaxRsRespToRestletResp(jaxRsResponse, callContext,

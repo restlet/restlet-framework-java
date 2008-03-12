@@ -36,6 +36,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(InjectionTest.class);
         mySuite.addTestSuite(Jsr250Test.class);
         mySuite.addTestSuite(MatrixParamTest.class);
+        mySuite.addTestSuite(MethodAheadLocatorTest.class);
         mySuite.addTestSuite(OwnProviderTest.class);
         mySuite.addTestSuite(PathParamTest.class);
         mySuite.addTestSuite(PathParamTest2.class);
