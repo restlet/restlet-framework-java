@@ -66,7 +66,7 @@ public class JaxRsPathSegment implements PathSegment {
             String valueEnc;
             if (posEquSign <= 0) {
                 nameEnc = matrParamEnc;
-                valueEnc = null;
+                valueEnc = "";
             } else {
                 nameEnc = matrParamEnc.substring(0, posEquSign);
                 valueEnc = matrParamEnc.substring(posEquSign + 1);

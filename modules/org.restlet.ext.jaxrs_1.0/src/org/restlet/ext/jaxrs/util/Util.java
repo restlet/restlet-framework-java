@@ -164,38 +164,6 @@ public class Util {
     }
 
     /**
-     * Checks, if the String is a valid URI scheme
-     * 
-     * @param scheme
-     *                the String to check.
-     * @throws IllegalArgumentException
-     *                 If the string is not a valid URI scheme.
-     */
-    public static void checkValidScheme(String scheme)
-            throws IllegalArgumentException {
-        if (scheme == null)
-            throw new IllegalArgumentException("The scheme must not be null");
-        int schemeLength = scheme.length();
-        if (schemeLength == 0)
-            throw new IllegalArgumentException(
-                    "The scheme must not be an empty String");
-        char c = scheme.charAt(0);
-        if (!((c > 64 && c <= 90) || (c > 92 && c <= 118)))
-            throw new IllegalArgumentException(
-                    "The first character of a scheme must be an alphabetic character");
-        for (int i = 1; i < schemeLength; i++) {
-            c = scheme.charAt(i);
-            if (!((c > 64 && c <= 90) || (c > 92 && c <= 118) || (c == '+')
-                    || (c == '-') || (c == '.'))) {
-                String message = "The "
-                        + i
-                        + ". character of a scheme must be an alphabetic character, a number, a '+', a '-' or a '.'";
-                throw new IllegalArgumentException(message);
-            }
-        }
-    }
-
-    /**
      * Copies headers into a response.
      * 
      * @param jaxRsHeaders

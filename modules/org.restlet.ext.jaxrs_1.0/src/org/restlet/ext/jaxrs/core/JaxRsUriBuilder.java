@@ -133,40 +133,55 @@ public class JaxRsUriBuilder extends UriBuilder {
      * called once.
      * 
      * @param path
-     *                may contain "/". The path will be splitted there,
-     *                independent of {@link #encode}
+     *                may contain "/". The path will be splitted here,
+     *                independent of {@link #encode}.
      */
-    private void addPathSegments(String path) {
+    private void addUnencodedPathSegments(String path) {
         if (path.startsWith("/"))
             path = path.substring(1);
-        if (path.length() == 0)
-            return;
-        addPathSegments(path.split("/"));
+        if (path.length() > 0) {
+            // first check preconditions
+            List<JaxRsPathSegment> pathSegments = convertToJaxRsPathSegments(path
+                    .split("/"));
+            // than add
+            this.pathSegments.addAll(pathSegments);
+        }
     }
 
     /**
-     * Adds the given path segments to the path of the UriBuilder. Call only
-     * once internal !!
+     * Converts the given segments to {@link JaxRsPathSegment}s. Encodes the
+     * segments (if wished) xor check, if the chars were valid.
      * 
      * @param segments
-     *                must not be null. The strings are not splitted at '/'.
-     * @throws NullPointerException
-     *                 if segments is null
+     * @return
      * @throws IllegalArgumentException
-     *                 if at least one of the segments is invalid.
      */
-    private void addPathSegments(String[] segments)
+    private List<JaxRsPathSegment> convertToJaxRsPathSegments(String[] segments)
             throws IllegalArgumentException {
-        // first check preconditions
         List<JaxRsPathSegment> pathSegments = new ArrayList<JaxRsPathSegment>(
                 segments.length);
+        addToJaxRsPathSegments(segments, pathSegments);
+        return pathSegments;
+    }
+
+    /**
+     * Converts the given segments to {@link JaxRsPathSegment}s and add them to
+     * the given {@link List}. Encodes also the segments (if wished) xor check,
+     * if the chars were valid.
+     * 
+     * @param segments
+     *                the segments to convert
+     * @param pathSegments
+     *                the List to add the converted {@link JaxRsPathSegment}s.
+     * @throws IllegalArgumentException
+     */
+    private void addToJaxRsPathSegments(String[] segments,
+            List<JaxRsPathSegment> pathSegments)
+            throws IllegalArgumentException {
         int l = segments.length;
         for (int i = 0; i < l; i++)
             pathSegments.add(new JaxRsPathSegment(segments[i], false, false,
                     encode, true, i));
-        // than add
-        for (JaxRsPathSegment pathSegment : pathSegments)
-            this.pathSegments.add(pathSegment);
     }
 
     /**
@@ -332,74 +347,6 @@ public class JaxRsUriBuilder extends UriBuilder {
     }
 
     /**
-     * Intended for testing only.
-     * 
-     * @return the fragment
-     */
-    @Deprecated
-    public String getFragment() {
-        return Util.toString(fragment);
-    }
-
-    /**
-     * Intended for testing only.
-     * 
-     * @return the host
-     */
-    @Deprecated
-    public String getHost() {
-        return Util.toString(host);
-    }
-
-    /**
-     * Intended for testing only.
-     * 
-     * @return the pathSegments
-     */
-    public LinkedList<JaxRsPathSegment> getPathSegments() {
-        return pathSegments;
-    }
-
-    /**
-     * Intended for testing only.
-     * 
-     * @return the port
-     */
-    public int getPort() {
-        return port;
-    }
-
-    /**
-     * Intended for testing only.
-     * 
-     * @return the query
-     */
-    @Deprecated
-    public String getQuery() {
-        return Util.toString(query);
-    }
-
-    /**
-     * Intended for testing only.
-     * 
-     * @return the scheme
-     */
-    @Deprecated
-    public String getScheme() {
-        return Util.toString(scheme);
-    }
-
-    /**
-     * Intended for testing only.
-     * 
-     * @return the userInfo
-     */
-    @Deprecated
-    public String getUserInfo() {
-        return Util.toString(userInfo);
-    }
-
-    /**
      * Set the URI host.
      * 
      * @return the updated UriBuilder
@@ -411,10 +358,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder host(String host) throws IllegalArgumentException {
-        if (host == null)
-            throw new IllegalArgumentException("The host must not be null");
-        // LATER check host name for invalid characters
-        this.host = host;
+        this.host = EncodeOrCheck.host(host);
         return this;
     }
 
@@ -484,7 +428,7 @@ public class JaxRsUriBuilder extends UriBuilder {
             throw new IllegalArgumentException(
                     "The root resource class must not be null");
         try {
-            addPathSegments(ResourceClass.getPathTemplate(resource));
+            addUnencodedPathSegments(ResourceClass.getPathTemplate(resource));
         } catch (IllegalPathOnClassException e) {
             throw e.getCause();
         } catch (MissingAnnotationException e) {
@@ -547,7 +491,7 @@ public class JaxRsUriBuilder extends UriBuilder {
                     + " has no method with the name " + methodName
                     + " annotated with @Path");
         path(resource);
-        addPathSegments(resMethodPath);
+        addUnencodedPathSegments(resMethodPath);
         return this;
     }
 
@@ -571,20 +515,28 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder path(Method... methods) throws IllegalArgumentException {
-        List<String> pathTemplates = new ArrayList<String>(methods.length);
+        if (methods == null || methods.length == 0)
+            return this;
+        List<JaxRsPathSegment> newPathSegments = new ArrayList<JaxRsPathSegment>();
+        // first check all preconditions
         for (Method method : methods) {
+            String segment;
             try {
-                String pathTemplate = AbstractMethodWrapper.getPathTemplate(method);
-                pathTemplates.add(pathTemplate);
+                segment = AbstractMethodWrapper.getPathTemplate(method);
             } catch (MissingAnnotationException e) {
                 throw new IllegalArgumentException(e);
             } catch (IllegalPathException e) {
                 throw e.getCause();
             }
+            if (segment.startsWith("/"))
+                segment = segment.substring(1);
+            if (segment.length() > 0) {
+                String[] segments = segment.split("/");
+                addToJaxRsPathSegments(segments, newPathSegments);
+            }
         }
-        for (String pathTemplate : pathTemplates) {
-            addPathSegments(pathTemplate); // LATER call only once !
-        }
+        // than add
+        this.pathSegments.addAll(newPathSegments);
         return this;
     }
 
@@ -607,7 +559,10 @@ public class JaxRsUriBuilder extends UriBuilder {
     public UriBuilder path(String... segments) throws IllegalArgumentException {
         if (segments == null)
             throw new IllegalArgumentException("The segments must not be null");
-        addPathSegments(segments);
+        // first check preconditions
+        List<JaxRsPathSegment> pathSegments = convertToJaxRsPathSegments(segments);
+        // than add
+        this.pathSegments.addAll(pathSegments);
         return this;
     }
 
@@ -687,10 +642,12 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder replaceMatrixParams(String matrixParams)
             throws IllegalArgumentException {
-        if (matrixParams == null)
-            this.pathSegments.getLast().getMatrixParameters().clear();
-        this.pathSegments.getLast().setMatrixParameters(
-                JaxRsPathSegment.parseMatrixParams(matrixParams, false, true));
+        JaxRsPathSegment lastPathSegment = this.pathSegments.getLast();
+        if (matrixParams == null || matrixParams.length() == 0)
+            lastPathSegment.getMatrixParameters().clear();
+        else
+            lastPathSegment.setMatrixParameters(JaxRsPathSegment
+                    .parseMatrixParams(matrixParams, false, true));
         return this;
     }
 
@@ -715,9 +672,22 @@ public class JaxRsUriBuilder extends UriBuilder {
     public UriBuilder replacePath(String... path)
             throws IllegalArgumentException {
         this.pathSegments.clear();
-        if (path != null && path.length != 0)
-            for (String segment : path)
-                addPathSegments(segment); // LATER call only once.
+        if (path == null || path.length == 0) // empty array
+            return this;
+        if (path.length == 1 && (path[0] == null || path[0].length() == 0))
+            return this; // only 1 element, which is empty
+        // first check all preconditions
+        List<JaxRsPathSegment> newPathSegments = new ArrayList<JaxRsPathSegment>();
+        for (String segment : path) {
+            if (segment.startsWith("/"))
+                segment = segment.substring(1);
+            if (segment.length() > 0) {
+                String[] segments = segment.split("/");
+                addToJaxRsPathSegments(segments, newPathSegments);
+            }
+        }
+        // than add
+        this.pathSegments.addAll(newPathSegments);
         return this;
     }
 
@@ -738,7 +708,7 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder replaceQueryParams(String query)
             throws IllegalArgumentException {
-        if (query == null)
+        if (query == null || query.length() == 0)
             this.query = null;
         else
             this.query = EncodeOrCheck.fullQuery(query, this.encode);
@@ -757,9 +727,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder scheme(String scheme) throws IllegalArgumentException {
-        if (scheme == null)
-            throw new IllegalArgumentException("The scheme must not be null");
-        Util.checkValidScheme(scheme);
+        EncodeOrCheck.checkValidScheme(scheme);
         this.scheme = scheme;
         return this;
     }
@@ -790,7 +758,7 @@ public class JaxRsUriBuilder extends UriBuilder {
         String path = reference.getPath();
         this.pathSegments.clear();
         if (path != null)
-            this.addPathSegments(path);
+            this.addUnencodedPathSegments(path);
         this.query = reference.getQuery();
         this.fragment = reference.getFragment();
         return this;
@@ -816,7 +784,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      * @return the actual URI as String.
      * @see #toStringWithCheck()
      */
-    public String toString(boolean convertBraces) {
+    private String toString(boolean convertBraces) {
         try {
             StringBuilder stb = new StringBuilder();
             if (scheme != null) {
@@ -865,7 +833,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      * @return the actual URI as String.
      * @see #toString()
      */
-    public String toStringWithCheck(boolean convertBraces) {
+    private String toStringWithCheck(boolean convertBraces) {
         if (this.host == null) {
             if (this.port >= 0)
                 throw new UriBuilderException(

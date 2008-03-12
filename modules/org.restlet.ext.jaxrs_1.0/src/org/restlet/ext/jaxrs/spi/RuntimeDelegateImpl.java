@@ -75,6 +75,7 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
 
     /**
      * @see javax.ws.rs.ext.RuntimeDelegate#createUriBuilder()
+     * REQUEST javadoc: encoding an
      */
     @Override
     public UriBuilder createUriBuilder() {

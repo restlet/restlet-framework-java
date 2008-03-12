@@ -92,11 +92,14 @@ public class EncodeOrCheckTests extends TestCase {
     }
 
     public void testFragment() {
+        // the followoing must not throw an IllegalArgumentException
         EncodeOrCheck.fragment(EncodeOrCheck.RESERVED, false);
         EncodeOrCheck.fragment(EncodeOrCheck.UNRESERVED, false);
         EncodeOrCheck.fragment(EncodeOrCheck.TEMPL_PARAMS, false);
         EncodeOrCheck.fragment("%20%27HH", false);
         String forbidden = EncodeOrCheck.FRAGMENT_FORBIDDEN;
+        
+        // the following must throw an IllegalArgumentException
         for (int i = 0; i < forbidden.length(); i++) {
             try {
                 String substring = forbidden.substring(i, i + 1);
@@ -106,7 +109,7 @@ public class EncodeOrCheckTests extends TestCase {
                         + ((int) substring.charAt(0))
                         + ") must not be allwed in a fragment");
             } catch (IllegalArgumentException e) {
-                // 
+                // good.
             }
         }
     }

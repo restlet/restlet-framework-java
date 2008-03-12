@@ -17,6 +17,8 @@
  */
 package org.restlet.ext.jaxrs.util;
 
+import org.restlet.data.Reference;
+
 // unreserv = ALPHA / DIGIT / "-" / "." / "_" / "~"
 // unreserv = ALPHA / DIGIT / 045 / 046 / 095 / 126
 // reserved = gen-delims / sub-delims
@@ -151,6 +153,39 @@ public class EncodeOrCheck {
                 throw throwIllegalArgExc(indexForErrMessage, errMessName,
                         uriPart, " contains at least one illegal character: "
                                 + c + ". They must be encoded.");
+        }
+    }
+
+    /**
+     * Checks, if the String is a valid URI scheme
+     * 
+     * @param scheme
+     *                the String to check.
+     * @throws IllegalArgumentException
+     *                 If the string is not a valid URI scheme.
+     */
+    public static void checkValidScheme(String scheme)
+            throws IllegalArgumentException {
+        if (scheme == null)
+            throw new IllegalArgumentException("The scheme must not be null");
+        int schemeLength = scheme.length();
+        if (schemeLength == 0)
+            throw new IllegalArgumentException(
+                    "The scheme must not be an empty String");
+        char c = scheme.charAt(0);
+        if (!((c > 64 && c <= 90) || (c > 92 && c <= 118)))
+            throw new IllegalArgumentException(
+                    "The first character of a scheme must be an alphabetic character");
+        for (int i = 1; i < schemeLength; i++) {
+            c = scheme.charAt(i);
+            if ((c > 64 && c <= 90) || (c > 92 && c <= 118)
+                    || (c >= '0' && c <= '9') || (c == '+') || (c == '-')
+                    || (c == '.'))
+                continue;
+            String message = "The "
+                    + i
+                    + ". character of a scheme must be an alphabetic character, a number, a '+', a '-' or a '.'";
+            throw new IllegalArgumentException(message);
         }
     }
 
@@ -299,6 +334,30 @@ public class EncodeOrCheck {
     }
 
     /**
+     * @param host
+     * @param encode
+     * @return
+     * @throws IllegalArgumentException
+     *                 if the host is null or contains an invalid character.
+     */
+    public static CharSequence host(String host)
+            throws IllegalArgumentException {
+        if (host == null)
+            throw new IllegalArgumentException("The host must not be null");
+        if (host.length() == 0)
+            throw new IllegalArgumentException("The host must not be empty");
+        int length = host.length();
+        for (int i = 0; i < length; i++) {
+            char ch = host.charAt(i);
+            if (ch <= ' ' || ch >= 127) {
+                String message = "The " + i + ". character is not valid";
+                throw new IllegalArgumentException(message);
+            }
+        }
+        return host;
+    }
+
+    /**
      * Writes the ASCII chars from 32 to 127 to System.out
      * 
      * @param args
@@ -411,7 +470,26 @@ public class EncodeOrCheck {
      */
     public static CharSequence userInfo(CharSequence userInfo, boolean encode)
             throws IllegalArgumentException {
-        return encode(userInfo, encode, true, Integer.MIN_VALUE, "userInfo");
+        // This method is optimized for speed, so it is not very good readable.
+        int length = userInfo.length();
+        StringBuilder stb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            char c = userInfo.charAt(i);
+            if (Reference.isUnreserved(c) || Reference.isSubDelimiter(c))
+                stb.append(c);
+            else if (c == ':') // upper chars and beside them
+                stb.append(c);
+            else if (c == '%') {
+                if (encode)
+                    toHex(c, stb);
+                else {
+                    checkForHexDigit(userInfo, i);
+                    i += 2;
+                }
+            } else
+                toHexOrReject(c, stb, encode);
+        }
+        return stb;
         // LATER userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
     }
 }
