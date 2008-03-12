@@ -40,6 +40,8 @@ Changes log
         - Added new javax.annotation library for the JAX-RS extension.
         - Added ServerServlet.getClass() method to facilitate 
           subclassing by the XDB extension. Suggested by Marcelo Ochoa.
+        - Added new constructors to JiBX extension not requiring the
+          binding name parameter.
     - Misc
         - Reformatting of the changes log. Contributed by Avi Flax.
         - All Component subclasses now use a main method that throws 
