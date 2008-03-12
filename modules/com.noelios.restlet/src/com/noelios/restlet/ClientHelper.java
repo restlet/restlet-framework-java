@@ -18,23 +18,16 @@
 
 package com.noelios.restlet;
 
-import java.util.logging.Logger;
-
 import org.restlet.Client;
-import org.restlet.Context;
-import org.restlet.data.Form;
-import org.restlet.data.Parameter;
-import org.restlet.util.Series;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Client connector helper.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ClientHelper extends ConnectorHelper {
-    /** The client to help. */
-    private volatile Client client;
-
+public class ClientHelper extends ConnectorHelper<Client> {
     /**
      * Constructor.
      * 
@@ -42,44 +35,11 @@ public class ClientHelper extends ConnectorHelper {
      *                The client to help.
      */
     public ClientHelper(Client client) {
-        this.client = client;
+        super(client);
     }
 
-    /**
-     * Returns the client to help.
-     * 
-     * @return The client to help.
-     */
-    public Client getClient() {
-        return this.client;
-    }
-
-    /**
-     * Returns the server parameters.
-     * 
-     * @return The server parameters.
-     */
-    public Series<Parameter> getParameters() {
-        return (getClient() != null) ? getClient().getContext().getParameters()
-                : new Form();
-    }
-
-    /**
-     * Returns the server logger.
-     * 
-     * @return The server logger.
-     */
-    public Logger getLogger() {
-        return getClient().getLogger();
-    }
-
-    /**
-     * Returns the server context.
-     * 
-     * @return The server context.
-     */
-    public Context getContext() {
-        return getClient().getContext();
+    @Override
+    public void handle(Request request, Response response) {
     }
 
 }

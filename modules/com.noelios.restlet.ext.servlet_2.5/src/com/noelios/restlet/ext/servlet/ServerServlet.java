@@ -555,7 +555,7 @@ public class ServerServlet extends HttpServlet {
         HttpServerHelper helper = getServer(request);
 
         if (helper != null) {
-            helper.handle(createCall(helper.getServer(), request, response));
+            helper.handle(createCall(helper.getHelped(), request, response));
         } else {
             log("[Noelios Restlet Engine] - Unable to get the Restlet HTTP server connector. Status code 500 returned.");
             response.sendError(500);

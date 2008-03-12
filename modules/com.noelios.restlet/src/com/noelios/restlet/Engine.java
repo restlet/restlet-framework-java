@@ -55,7 +55,6 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
-import org.restlet.util.Helper;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.application.ApplicationHelper;
@@ -199,10 +198,10 @@ public class Engine extends org.restlet.util.Engine {
     private volatile List<AuthenticationHelper> registeredAuthentications;
 
     /** List of available client connectors. */
-    private volatile List<ConnectorHelper> registeredClients;
+    private volatile List<ClientHelper> registeredClients;
 
     /** List of available server connectors. */
-    private volatile List<ConnectorHelper> registeredServers;
+    private volatile List<ServerHelper> registeredServers;
 
     /**
      * Constructor that will automatically attempt to discover connectors.
@@ -218,8 +217,8 @@ public class Engine extends org.restlet.util.Engine {
      *                True if helpers should be automatically discovered.
      */
     public Engine(boolean discoverHelpers) {
-        this.registeredClients = new CopyOnWriteArrayList<ConnectorHelper>();
-        this.registeredServers = new CopyOnWriteArrayList<ConnectorHelper>();
+        this.registeredClients = new CopyOnWriteArrayList<ClientHelper>();
+        this.registeredServers = new CopyOnWriteArrayList<ServerHelper>();
         this.registeredAuthentications = new CopyOnWriteArrayList<AuthenticationHelper>();
 
         if (discoverHelpers) {
@@ -290,17 +289,18 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     @Override
-    public Helper createHelper(Application application, Context parentContext) {
+    public ApplicationHelper createHelper(Application application,
+            Context parentContext) {
         return new ApplicationHelper(application, parentContext);
     }
 
     @Override
-    public Helper createHelper(Client client) {
-        Helper result = null;
+    public ClientHelper createHelper(Client client) {
+        ClientHelper result = null;
 
         if (client.getProtocols().size() > 0) {
-            ConnectorHelper connector = null;
-            for (Iterator<ConnectorHelper> iter = getRegisteredClients()
+            ClientHelper connector = null;
+            for (Iterator<ClientHelper> iter = getRegisteredClients()
                     .iterator(); (result == null) && iter.hasNext();) {
                 connector = iter.next();
 
@@ -339,17 +339,17 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     @Override
-    public Helper createHelper(Component component) {
+    public ComponentHelper createHelper(Component component) {
         return new ComponentHelper(component);
     }
 
     @Override
-    public Helper createHelper(Server server) {
-        Helper result = null;
+    public ServerHelper createHelper(Server server) {
+        ServerHelper result = null;
 
         if (server.getProtocols().size() > 0) {
-            ConnectorHelper connector = null;
-            for (Iterator<ConnectorHelper> iter = getRegisteredServers()
+            ServerHelper connector = null;
+            for (Iterator<ServerHelper> iter = getRegisteredServers()
                     .iterator(); (result == null) && iter.hasNext();) {
                 connector = iter.next();
 
@@ -783,7 +783,7 @@ public class Engine extends org.restlet.util.Engine {
      * 
      * @return The list of available client connectors.
      */
-    public List<ConnectorHelper> getRegisteredClients() {
+    public List<ClientHelper> getRegisteredClients() {
         return this.registeredClients;
     }
 
@@ -792,7 +792,7 @@ public class Engine extends org.restlet.util.Engine {
      * 
      * @return The list of available server connectors.
      */
-    public List<ConnectorHelper> getRegisteredServers() {
+    public List<ServerHelper> getRegisteredServers() {
         return this.registeredServers;
     }
 
@@ -997,7 +997,7 @@ public class Engine extends org.restlet.util.Engine {
      * @param helper
      *                The client helper to register.
      */
-    public void registerClientHelper(ConnectorHelper helper) {
+    public void registerClientHelper(ClientHelper helper) {
         getRegisteredClients().add(helper);
     }
 
@@ -1035,7 +1035,7 @@ public class Engine extends org.restlet.util.Engine {
      * @param helper
      *                The server helper to register.
      */
-    public void registerServerHelper(ConnectorHelper helper) {
+    public void registerServerHelper(ServerHelper helper) {
         getRegisteredServers().add(helper);
     }
 
@@ -1044,8 +1044,8 @@ public class Engine extends org.restlet.util.Engine {
      * 
      * @param helpers
      */
-    public void setClientHelpers(List<ConnectorHelper> helpers) {
-        for (ConnectorHelper helper : helpers) {
+    public void setClientHelpers(List<ClientHelper> helpers) {
+        for (ClientHelper helper : helpers) {
             registerClientHelper(helper);
         }
     }
@@ -1055,8 +1055,8 @@ public class Engine extends org.restlet.util.Engine {
      * 
      * @param helpers
      */
-    public void setServerHelpers(List<ConnectorHelper> helpers) {
-        for (ConnectorHelper helper : helpers) {
+    public void setServerHelpers(List<ServerHelper> helpers) {
+        for (ServerHelper helper : helpers) {
             registerServerHelper(helper);
         }
     }

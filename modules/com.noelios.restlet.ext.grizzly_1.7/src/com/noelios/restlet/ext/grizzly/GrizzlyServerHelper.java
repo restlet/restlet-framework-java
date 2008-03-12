@@ -73,7 +73,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
                         }
 
                         public void onReady() {
-                            if (getServer().getPort() == 0) {
+                            if (getHelped().getPort() == 0) {
                                 TCPSelectorHandler tsh = (TCPSelectorHandler) controller
                                         .getSelectorHandler(Controller.Protocol.TCP);
                                 setEphemeralPort(tsh.getPortLowLevel());

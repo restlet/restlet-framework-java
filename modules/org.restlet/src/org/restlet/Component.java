@@ -103,7 +103,7 @@ public class Component extends Restlet {
     private volatile VirtualHost defaultHost;
 
     /** The helper provided by the implementation. */
-    private volatile Helper helper;
+    private volatile Helper<Component> helper;
 
     /** The modifiable list of virtual hosts. */
     private final List<VirtualHost> hosts;
@@ -678,7 +678,7 @@ public class Component extends Restlet {
      * 
      * @return The helper provided by the implementation.
      */
-    private Helper getHelper() {
+    private Helper<Component> getHelper() {
         return this.helper;
     }
 

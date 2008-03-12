@@ -100,7 +100,7 @@ public class Application extends Restlet {
     private volatile TunnelService tunnelService;
 
     /** The helper provided by the implementation. */
-    private volatile Helper helper;
+    private volatile Helper<Application> helper;
 
     /**
      * Constructor. Note that usage of this constructor is not recommended as
@@ -218,7 +218,7 @@ public class Application extends Restlet {
      * 
      * @return The helper provided by the implementation.
      */
-    private Helper getHelper() {
+    private Helper<Application> getHelper() {
         return this.helper;
     }
 

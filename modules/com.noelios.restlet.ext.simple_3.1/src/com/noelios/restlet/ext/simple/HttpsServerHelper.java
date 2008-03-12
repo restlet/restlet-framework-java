@@ -134,7 +134,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
 
         // Initialize the socket
         SSLServerSocket serverSocket = null;
-        String addr = getServer().getAddress();
+        String addr = getHelped().getAddress();
         if (addr != null) {
             // this call may throw UnknownHostException and otherwise always
             // returns an instance of INetAddress
@@ -143,11 +143,11 @@ public class HttpsServerHelper extends SimpleServerHelper {
             // Note: the backlog of 50 is the default
             serverSocket = (SSLServerSocket) sslContext
                     .getServerSocketFactory().createServerSocket(
-                            getServer().getPort(), 50, iaddr);
+                            getHelped().getPort(), 50, iaddr);
         } else {
             serverSocket = (SSLServerSocket) sslContext
                     .getServerSocketFactory().createServerSocket(
-                            getServer().getPort());
+                            getHelped().getPort());
         }
 
         if (isNeedClientAuthentication()) {

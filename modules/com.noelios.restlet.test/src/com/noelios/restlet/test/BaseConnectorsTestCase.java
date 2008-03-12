@@ -25,8 +25,9 @@ import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.ConnectorHelper;
+import com.noelios.restlet.ClientHelper;
 import com.noelios.restlet.Engine;
+import com.noelios.restlet.ServerHelper;
 import com.noelios.restlet.http.StreamClientHelper;
 import com.noelios.restlet.http.StreamServerHelper;
 
@@ -59,7 +60,7 @@ public abstract class BaseConnectorsTestCase extends TestCase {
     protected abstract Application createApplication(Component component);
 
     // Helper methods
-    private void runTest(ConnectorHelper server, ConnectorHelper client)
+    private void runTest(ServerHelper server, ClientHelper client)
             throws Exception {
         Engine nre = new Engine(false);
         nre.getRegisteredServers().add(server);

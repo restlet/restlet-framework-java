@@ -59,7 +59,7 @@ public class HttpParserFilter implements ProtocolFilter {
         byteBuffer.flip();
         SelectionKey key = context.getSelectionKey();
         GrizzlyServerCall serverCall = new GrizzlyServerCall(this.helper
-                .getServer(), byteBuffer, key,
+                .getHelped(), byteBuffer, key,
                 (helper instanceof HttpsServerHelper));
 
         boolean keepAlive = false;

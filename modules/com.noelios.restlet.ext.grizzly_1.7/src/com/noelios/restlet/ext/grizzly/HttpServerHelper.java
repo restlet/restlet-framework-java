@@ -52,9 +52,9 @@ public class HttpServerHelper extends GrizzlyServerHelper {
     protected void configure(Controller controller) throws Exception {
         // Create and configure a select handler
         TCPSelectorHandler selectorHandler = new TCPSelectorHandler();
-        selectorHandler.setPort(getServer().getPort());
-        if (getServer().getAddress() != null) {
-            selectorHandler.setInet(InetAddress.getByName(getServer()
+        selectorHandler.setPort(getHelped().getPort());
+        if (getHelped().getAddress() != null) {
+            selectorHandler.setInet(InetAddress.getByName(getHelped()
                     .getAddress()));
         }
 

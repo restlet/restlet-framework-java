@@ -25,7 +25,8 @@ import org.restlet.Context;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.util.Helper;
+
+import com.noelios.restlet.ClientHelper;
 
 /**
  * Connector acting as a WAR client for a Servlet Application. It internally
@@ -39,7 +40,7 @@ import org.restlet.util.Helper;
  */
 public class ServletWarClient extends Client {
     /** The helper provided by the implementation. */
-    private volatile Helper helper;
+    private volatile ClientHelper helper;
 
     /**
      * Constructor.
@@ -59,7 +60,7 @@ public class ServletWarClient extends Client {
      * 
      * @return The helper provided by the implementation.
      */
-    private Helper getHelper() {
+    private ClientHelper getHelper() {
         return this.helper;
     }
 

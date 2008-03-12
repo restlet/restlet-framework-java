@@ -86,7 +86,7 @@ public class JettyHandler extends AbstractHandler {
             ServletException {
         Request baseRequest = (request instanceof Request) ? (Request) request
                 : HttpConnection.getCurrentConnection().getRequest();
-        helper.handle(new JettyCall(helper.getServer(), HttpConnection
+        helper.handle(new JettyCall(helper.getHelped(), HttpConnection
                 .getCurrentConnection()));
         baseRequest.setHandled(true);
     }

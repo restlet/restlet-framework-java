@@ -35,7 +35,7 @@ import org.restlet.util.Helper;
  */
 public class Client extends Connector {
     /** The helper provided by the implementation. */
-    private volatile Helper helper;
+    private volatile Helper<Client> helper;
 
     /**
      * Constructor.
@@ -92,7 +92,7 @@ public class Client extends Connector {
      * 
      * @return The helper provided by the implementation.
      */
-    private Helper getHelper() {
+    private Helper<Client> getHelper() {
         return this.helper;
     }
 

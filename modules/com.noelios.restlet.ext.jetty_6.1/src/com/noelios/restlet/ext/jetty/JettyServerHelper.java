@@ -191,9 +191,9 @@ public abstract class JettyServerHelper extends
      *                The internal Jetty connector.
      */
     protected void configure(AbstractConnector connector) {
-        if (getServer().getAddress() != null)
-            connector.setHost(getServer().getAddress());
-        connector.setPort(getServer().getPort());
+        if (getHelped().getAddress() != null)
+            connector.setHost(getHelped().getAddress());
+        connector.setPort(getHelped().getPort());
         connector.setLowResourceMaxIdleTime(getLowResourceMaxIdleTimeMs());
         connector.setAcceptors(getAcceptorThreads());
         connector.setAcceptQueueSize(getAcceptQueueSize());
@@ -231,7 +231,7 @@ public abstract class JettyServerHelper extends
         @Override
         public void handle(HttpConnection connection) throws IOException,
                 ServletException {
-            helper.handle(new JettyCall(helper.getServer(), connection));
+            helper.handle(new JettyCall(helper.getHelped(), connection));
         }
     }
 

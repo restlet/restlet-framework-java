@@ -324,7 +324,7 @@ public abstract class Engine {
      *                The parent context, typically the component's context.
      * @return The new helper.
      */
-    public abstract Helper createHelper(Application application,
+    public abstract Helper<Application> createHelper(Application application,
             Context parentContext);
 
     /**
@@ -334,7 +334,7 @@ public abstract class Engine {
      *                The client to help.
      * @return The new helper.
      */
-    public abstract Helper createHelper(Client client);
+    public abstract Helper<Client> createHelper(Client client);
 
     /**
      * Creates a new helper for a given component.
@@ -343,7 +343,7 @@ public abstract class Engine {
      *                The component to help.
      * @return The new helper.
      */
-    public abstract Helper createHelper(Component component);
+    public abstract Helper<Component> createHelper(Component component);
 
     /**
      * Creates a new helper for a given server connector.
@@ -352,7 +352,7 @@ public abstract class Engine {
      *                The server to help.
      * @return The new helper.
      */
-    public abstract Helper createHelper(Server server);
+    public abstract Helper<Server> createHelper(Server server);
 
     /**
      * Formats the given Cookie to a String

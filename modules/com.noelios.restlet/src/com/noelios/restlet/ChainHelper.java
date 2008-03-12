@@ -18,9 +18,14 @@
 
 package com.noelios.restlet;
 
+import java.util.logging.Level;
+
 import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.Restlet;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.service.LogService;
 import org.restlet.util.Helper;
 
@@ -29,7 +34,7 @@ import org.restlet.util.Helper;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class ChainHelper extends Helper {
+public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
     /** The first Restlet. */
     private volatile Restlet first;
 
@@ -42,21 +47,25 @@ public abstract class ChainHelper extends Helper {
     /**
      * Constructor.
      * 
-     * @param parentContext
-     *                The parent context, typically the component's context.
+     * @param helped
+     *                The helped Restlet.
      */
-    public ChainHelper(Context parentContext) {
-        this.parentContext = parentContext;
-        this.first = null;
+    public ChainHelper(T helped) {
+        this(helped, null);
     }
 
     /**
-     * Returns the parent context, typically the component's context.
+     * Constructor.
      * 
-     * @return The parent context.
+     * @param helpedRestlet
+     *                The helped Restlet.
+     * @param parentContext
+     *                The parent context, typically the component's context.
      */
-    public Context getParentContext() {
-        return this.parentContext;
+    public ChainHelper(T helpedRestlet, Context parentContext) {
+        super(helpedRestlet);
+        this.parentContext = parentContext;
+        this.first = null;
     }
 
     /**
@@ -76,17 +85,11 @@ public abstract class ChainHelper extends Helper {
     }
 
     /**
-     * Sets the next Restlet after the chain.
-     * 
-     * @param next
-     *                The Restlet to process after the chain.
+     * Clears the chain. Sets the first and last filters to null.
      */
-    protected synchronized void setNext(Restlet next) {
-        if (getFirst() == null) {
-            setFirst(next);
-        } else {
-            getLast().setNext(next);
-        }
+    public void clear() {
+        setFirst(null);
+        setNext(null);
     }
 
     /**
@@ -112,6 +115,40 @@ public abstract class ChainHelper extends Helper {
     }
 
     /**
+     * Returns the last Filter.
+     * 
+     * @return the last Filter.
+     */
+    protected Filter getLast() {
+        return this.last;
+    }
+
+    /**
+     * Returns the parent context, typically the component's context.
+     * 
+     * @return The parent context.
+     */
+    public Context getParentContext() {
+        return this.parentContext;
+    }
+
+    @Override
+    public void handle(Request request, Response response) {
+        if (getFirst() != null) {
+            getFirst().handle(request, response);
+        } else {
+            response.setStatus(Status.SERVER_ERROR_INTERNAL);
+            getHelped()
+                    .getLogger()
+                    .log(
+                            Level.SEVERE,
+                            "The "
+                                    + getHelped().getClass().getName()
+                                    + " class has no Restlet defined to process calls. Maybe it wasn't properly started.");
+        }
+    }
+
+    /**
      * Sets the first Restlet.
      * 
      * @param first
@@ -122,15 +159,6 @@ public abstract class ChainHelper extends Helper {
     }
 
     /**
-     * Returns the last Filter.
-     * 
-     * @return the last Filter.
-     */
-    protected Filter getLast() {
-        return this.last;
-    }
-
-    /**
      * Sets the last Filter.
      * 
      * @param last
@@ -138,6 +166,20 @@ public abstract class ChainHelper extends Helper {
      */
     protected void setLast(Filter last) {
         this.last = last;
+    }
+
+    /**
+     * Sets the next Restlet after the chain.
+     * 
+     * @param next
+     *                The Restlet to process after the chain.
+     */
+    protected synchronized void setNext(Restlet next) {
+        if (getFirst() == null) {
+            setFirst(next);
+        } else {
+            getLast().setNext(next);
+        }
     }
 
 }

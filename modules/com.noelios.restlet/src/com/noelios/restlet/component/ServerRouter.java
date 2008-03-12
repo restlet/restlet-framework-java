@@ -44,7 +44,7 @@ public class ServerRouter extends Router {
      *                The parent component.
      */
     public ServerRouter(Component component) {
-        super(component.getContext());
+        super((component == null) ? null : component.getContext());
         this.component = component;
         setRoutingMode(FIRST);
     }

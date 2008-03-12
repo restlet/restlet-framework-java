@@ -21,10 +21,9 @@ package com.noelios.restlet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.Connector;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.util.Helper;
 
 /**
@@ -32,14 +31,15 @@ import org.restlet.util.Helper;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ConnectorHelper extends Helper {
+public abstract class ConnectorHelper<T extends Connector> extends Helper<T> {
     /** The protocols simultaneously supported. */
     private volatile List<Protocol> protocols;
 
     /**
      * Constructor.
      */
-    public ConnectorHelper() {
+    public ConnectorHelper(T connector) {
+        super(connector);
         this.protocols = new CopyOnWriteArrayList<Protocol>();
     }
 
@@ -55,10 +55,6 @@ public class ConnectorHelper extends Helper {
     @Override
     public Context createContext(String loggerName) {
         return null;
-    }
-
-    @Override
-    public void handle(Request request, Response response) {
     }
 
     @Override

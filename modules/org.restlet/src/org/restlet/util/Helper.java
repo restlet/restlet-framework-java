@@ -20,8 +20,12 @@ package org.restlet.util;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.data.Form;
+import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -31,7 +35,7 @@ import org.restlet.data.Response;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class Helper {
+public abstract class Helper<T extends Restlet> {
 
     /**
      * The map of attributes exchanged between the API and the Engine via this
@@ -40,10 +44,19 @@ public abstract class Helper {
     private final Map<String, Object> attributes;
 
     /**
-     * Constructor.
+     * The helped Restlet.
      */
-    public Helper() {
+    private T helped;
+
+    /**
+     * Constructor.
+     * 
+     * @param helped
+     *                The helped Restlet.
+     */
+    public Helper(T helped) {
         this.attributes = new ConcurrentHashMap<String, Object>();
+        this.helped = helped;
     }
 
     /**
@@ -66,6 +79,43 @@ public abstract class Helper {
     }
 
     /**
+     * Returns the helped Restlet context.
+     * 
+     * @return The helped Restlet context.
+     */
+    public Context getContext() {
+        return getHelped().getContext();
+    }
+
+    /**
+     * Returns the helped Restlet.
+     * 
+     * @return The helped Restlet.
+     */
+    public T getHelped() {
+        return this.helped;
+    }
+
+    /**
+     * Returns the helped Restlet logger.
+     * 
+     * @return The helped Restlet logger.
+     */
+    public Logger getLogger() {
+        return getHelped().getLogger();
+    }
+
+    /**
+     * Returns the helped Restlet parameters.
+     * 
+     * @return The helped Restlet parameters.
+     */
+    public Series<Parameter> getParameters() {
+        return (getHelped() != null) ? getHelped().getContext().getParameters()
+                : new Form();
+    }
+
+    /**
      * Handles a call.
      * 
      * @param request
@@ -74,6 +124,16 @@ public abstract class Helper {
      *                The response to update.
      */
     public abstract void handle(Request request, Response response);
+
+    /**
+     * Sets the helped Restlet.
+     * 
+     * @param helpedRestlet
+     *                The helped Restlet.
+     */
+    public void setHelped(T helpedRestlet) {
+        this.helped = helpedRestlet;
+    }
 
     /** Start callback. */
     public abstract void start() throws Exception;

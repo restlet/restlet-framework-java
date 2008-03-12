@@ -40,7 +40,7 @@ public class Server extends Connector {
     private volatile String address;
 
     /** The helper provided by the implementation. */
-    private volatile Helper helper;
+    private volatile Helper<Server> helper;
 
     /** The listening port if specified. */
     private volatile int port;
@@ -265,7 +265,7 @@ public class Server extends Connector {
      * 
      * @return The internal server.
      */
-    private Helper getHelper() {
+    private Helper<Server> getHelper() {
         return this.helper;
     }
 

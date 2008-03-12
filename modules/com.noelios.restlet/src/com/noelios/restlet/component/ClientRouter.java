@@ -39,7 +39,7 @@ public class ClientRouter extends Router {
      *                The parent component.
      */
     public ClientRouter(Component component) {
-        super(component.getContext());
+        super((component == null) ? null : component.getContext());
         this.component = component;
     }
 

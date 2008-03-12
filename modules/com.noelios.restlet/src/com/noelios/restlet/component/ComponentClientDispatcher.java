@@ -71,7 +71,7 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
 
                 // Ask the private internal route to handle the call
                 if (getComponentContext() != null) {
-                    getComponentContext().getComponentHelper().getComponent()
+                    getComponentContext().getComponentHelper().getHelped()
                             .getInternalRouter().handle(request, response);
                 }
             } else {

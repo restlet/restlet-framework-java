@@ -154,10 +154,10 @@ public class StreamServerHelper extends HttpServerHelper {
      */
     @SuppressWarnings("unused")
     protected SocketAddress createSocketAddress() throws IOException {
-        if (getServer().getAddress() == null) {
-            return new InetSocketAddress(getServer().getPort());
+        if (getHelped().getAddress() == null) {
+            return new InetSocketAddress(getHelped().getPort());
         } else {
-            return new InetSocketAddress(getServer().getAddress(), getServer()
+            return new InetSocketAddress(getHelped().getAddress(), getHelped()
                     .getPort());
         }
     }
@@ -191,7 +191,7 @@ public class StreamServerHelper extends HttpServerHelper {
          */
         public void run() {
             try {
-                helper.handle(new StreamServerCall(helper.getServer(), socket
+                helper.handle(new StreamServerCall(helper.getHelped(), socket
                         .getInputStream(), socket.getOutputStream(), socket));
             } catch (IOException ex) {
                 helper.getLogger().log(Level.WARNING,

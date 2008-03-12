@@ -65,7 +65,7 @@ public class SimpleProtocolHandler implements ProtocolHandler {
      */
     public void handle(Request request, Response response) {
         getHelper().handle(
-                new SimpleCall(getHelper().getServer(), request, response,
+                new SimpleCall(getHelper().getHelped(), request, response,
                         getHelper().isConfidential()));
 
         try {

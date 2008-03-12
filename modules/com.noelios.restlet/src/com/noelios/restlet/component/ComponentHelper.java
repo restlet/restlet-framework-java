@@ -19,7 +19,6 @@
 package com.noelios.restlet.component;
 
 import java.util.Iterator;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
@@ -31,9 +30,6 @@ import org.restlet.Route;
 import org.restlet.Server;
 import org.restlet.VirtualHost;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
 
 import com.noelios.restlet.ChainHelper;
 import com.noelios.restlet.StatusFilter;
@@ -43,12 +39,9 @@ import com.noelios.restlet.StatusFilter;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ComponentHelper extends ChainHelper {
+public class ComponentHelper extends ChainHelper<Component> {
     /** The internal client router. */
     private volatile ClientRouter clientRouter;
-
-    /** The helped component. */
-    private volatile Component component;
 
     /** The internal server router. */
     private volatile ServerRouter serverRouter;
@@ -60,10 +53,9 @@ public class ComponentHelper extends ChainHelper {
      *                The helper component.
      */
     public ComponentHelper(Component component) {
-        super(null);
-        this.component = component;
-        this.clientRouter = new ClientRouter(getComponent());
-        this.serverRouter = new ServerRouter(getComponent());
+        super(component);
+        this.clientRouter = new ClientRouter(getHelped());
+        this.serverRouter = new ServerRouter(getHelped());
     }
 
     /**
@@ -91,16 +83,15 @@ public class ComponentHelper extends ChainHelper {
                         // Try to find a client connector matching the client
                         // protocol
                         Client client;
-                        for (Iterator<Client> iter = getComponent()
-                                .getClients().iterator(); !clientFound
-                                && iter.hasNext();) {
+                        for (Iterator<Client> iter = getHelped().getClients()
+                                .iterator(); !clientFound && iter.hasNext();) {
                             client = iter.next();
                             clientFound = client.getProtocols().contains(
                                     clientProtocol);
                         }
 
                         if (!clientFound) {
-                            getComponent()
+                            getHelped()
                                     .getLogger()
                                     .severe(
                                             "Unable to start the application \""
@@ -119,16 +110,15 @@ public class ComponentHelper extends ChainHelper {
                         // Try to find a server connector matching the server
                         // protocol
                         Server server;
-                        for (Iterator<Server> iter = getComponent()
-                                .getServers().iterator(); !serverFound
-                                && iter.hasNext();) {
+                        for (Iterator<Server> iter = getHelped().getServers()
+                                .iterator(); !serverFound && iter.hasNext();) {
                             server = iter.next();
                             serverFound = server.getProtocols().contains(
                                     serverProtocol);
                         }
 
                         if (!serverFound) {
-                            getComponent()
+                            getHelped()
                                     .getLogger()
                                     .severe(
                                             "Unable to start the application \""
@@ -150,13 +140,6 @@ public class ComponentHelper extends ChainHelper {
         return result;
     }
 
-    /**
-     * Creates a new context.
-     * 
-     * @param loggerName
-     *                The JDK's logger name to use for contextual logging.
-     * @return The new context.
-     */
     @Override
     public Context createContext(String loggerName) {
         return new ComponentContext(this, Logger.getLogger(loggerName));
@@ -183,15 +166,6 @@ public class ComponentHelper extends ChainHelper {
     }
 
     /**
-     * Returns the helped component.
-     * 
-     * @return The helped component.
-     */
-    protected Component getComponent() {
-        return this.component;
-    }
-
-    /**
      * Returns the internal host router.
      * 
      * @return the internal host router.
@@ -200,51 +174,29 @@ public class ComponentHelper extends ChainHelper {
         return this.serverRouter;
     }
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     */
-    @Override
-    public void handle(Request request, Response response) {
-        if (getFirst() != null) {
-            getFirst().handle(request, response);
-        } else {
-            response.setStatus(Status.SERVER_ERROR_INTERNAL);
-            getComponent()
-                    .getLogger()
-                    .log(Level.SEVERE,
-                            "The component wasn't properly started, it can't handle calls.");
-        }
-    }
-
-    /** Start callback. */
     @Override
     public synchronized void start() throws Exception {
         // Checking if all applications have proper connectors
-        boolean success = checkVirtualHost(getComponent().getDefaultHost());
+        boolean success = checkVirtualHost(getHelped().getDefaultHost());
         if (success) {
-            for (VirtualHost host : getComponent().getHosts()) {
+            for (VirtualHost host : getHelped().getHosts()) {
                 success = success && checkVirtualHost(host);
             }
         }
 
         // Let's actually start the component
         if (!success) {
-            getComponent().stop();
+            getHelped().stop();
         } else {
             // Logging of calls
-            if (getComponent().getLogService().isEnabled()) {
-                addFilter(createLogFilter(getComponent().getContext(),
-                        getComponent().getLogService()));
+            if (getHelped().getLogService().isEnabled()) {
+                addFilter(createLogFilter(getHelped().getContext(), getHelped()
+                        .getLogService()));
             }
 
             // Addition of status pages
-            if (getComponent().getStatusService().isEnabled()) {
-                addFilter(createStatusFilter(getComponent()));
+            if (getHelped().getStatusService().isEnabled()) {
+                addFilter(createStatusFilter(getHelped()));
             }
 
             // Reattach the original filter's attached Restlet
@@ -252,15 +204,14 @@ public class ComponentHelper extends ChainHelper {
         }
     }
 
-    /** Stop callback. */
     @Override
     public synchronized void stop() throws Exception {
         // Stop the server's router
         getServerRouter().stop();
 
         // Stop all applications
-        stopVirtualHostApplications(getComponent().getDefaultHost());
-        for (VirtualHost host : getComponent().getHosts()) {
+        stopVirtualHostApplications(getHelped().getDefaultHost());
+        for (VirtualHost host : getHelped().getHosts()) {
             stopVirtualHostApplications(host);
         }
     }
@@ -286,7 +237,7 @@ public class ComponentHelper extends ChainHelper {
 
         // Set the new server router that will compute the new routes when the
         // first request will be received (automatic start).
-        setServerRouter(new ServerRouter(getComponent()));
+        setServerRouter(new ServerRouter(getHelped()));
 
         // Replace the old server router
         setNext(getServerRouter());
@@ -298,7 +249,7 @@ public class ComponentHelper extends ChainHelper {
     }
 
     /**
-     * Sets the internal host router.
+     * Sets the internal server router.
      * 
      * @param serverRouter
      *                The internal host router.

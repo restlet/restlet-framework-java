@@ -54,7 +54,8 @@ Changes log
           processing. Suggested by Alex Milowski.
         - Updated Reference's Javadocs to mention that getters do not 
           automatically do URI decoding. Suggested by Paul J. Lucas.
-        
+        - Refactored NRE helpers hiearchy to take advantage of generics
+          and remove duplicatations.
  
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed

@@ -142,7 +142,7 @@ public class JavaMailClientHelper extends ClientHelper {
             int smtpPort = smtpURI.getPort();
             // String smtpUserInfo = smtpURI.getUserInfo();
 
-            Protocol defaultProtocol = getClient().getProtocols().get(0);
+            Protocol defaultProtocol = getHelped().getProtocols().get(0);
 
             if (defaultProtocol != null) {
                 if (smtpPort == -1) {
@@ -212,7 +212,7 @@ public class JavaMailClientHelper extends ClientHelper {
                     props.put("mail.smtp.auth", Boolean.toString(authenticate)
                             .toLowerCase());
                     props.put("mail.smtp.starttls.enable", Boolean.toString(
-                            getClient().getProtocols().get(0).equals(
+                            getHelped().getProtocols().get(0).equals(
                                     Protocol.SMTP_STARTTLS)).toLowerCase());
                     session = Session.getDefaultInstance(props);
                     // session.setDebug(true);

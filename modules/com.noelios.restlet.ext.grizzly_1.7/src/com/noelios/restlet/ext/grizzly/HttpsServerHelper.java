@@ -136,9 +136,9 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
             readFilter.setWantClientAuth(isWantClientAuthentication());
         }
 
-        selectorHandler.setPort(getServer().getPort());
-        if (getServer().getAddress() != null) {
-            selectorHandler.setInet(InetAddress.getByName(getServer()
+        selectorHandler.setPort(getHelped().getPort());
+        if (getHelped().getAddress() != null) {
+            selectorHandler.setInet(InetAddress.getByName(getHelped()
                     .getAddress()));
         }
         final HttpParserFilter httpParserFilter = new HttpParserFilter(this);

@@ -48,7 +48,7 @@ public class HttpServerHelper extends SimpleServerHelper {
     /** Starts the Restlet. */
     @Override
     public void start() throws Exception {
-        String addr = getServer().getAddress();
+        String addr = getHelped().getAddress();
         if (addr != null) {
             // This call may throw UnknownHostException and otherwise always
             // returns an instance of INetAddress.
@@ -56,9 +56,9 @@ public class HttpServerHelper extends SimpleServerHelper {
             InetAddress iaddr = InetAddress.getByName(addr);
 
             // Note: the backlog of 50 is the default
-            setSocket(new ServerSocket(getServer().getPort(), 50, iaddr));
+            setSocket(new ServerSocket(getHelped().getPort(), 50, iaddr));
         } else {
-            setSocket(new ServerSocket(getServer().getPort()));
+            setSocket(new ServerSocket(getHelped().getPort()));
         }
 
         setConfidential(false);
