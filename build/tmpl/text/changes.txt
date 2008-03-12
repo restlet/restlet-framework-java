@@ -28,7 +28,10 @@ Changes log
           and isValid(char).   
         - DomRepresentation now has a protected createTransformer()
           method that can be overridden to customize the properties of
-          the JAXP Transformer. Contributed by Rob Heittman.           
+          the JAXP Transformer. Contributed by Rob Heittman.
+        - All getters in Reference returning URI encoded string now
+          have an additional method taking a 'decode' parameter. 
+          Suggested by Paul J. Lucas.           
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.

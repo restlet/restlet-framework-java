@@ -741,6 +741,19 @@ public class Reference {
     }
 
     /**
+     * Returns the optionnally decoded authority component.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded authority component.
+     * @see #getAuthority()
+     */
+    public String getAuthority(boolean decode) {
+        return decode ? decode(getAuthority()) : getAuthority();
+    }
+
+    /**
      * Returns the base reference for relative references.
      * 
      * @return The base reference for relative references.
@@ -761,6 +774,19 @@ public class Reference {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Returns the optionnally decoded fragment identifier.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded fragment identifier.
+     * @see #getFragment()
+     */
+    public String getFragment(boolean decode) {
+        return decode ? decode(getFragment()) : getFragment();
     }
 
     /**
@@ -805,6 +831,19 @@ public class Reference {
     }
 
     /**
+     * Returns the optionnally decoded hierarchical part.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded hierarchical part.
+     * @see #getHierarchicalPart()
+     */
+    public String getHierarchicalPart(boolean decode) {
+        return decode ? decode(getHierarchicalPart()) : getHierarchicalPart();
+    }
+
+    /**
      * Returns the host domain name component for server based hierarchical
      * identifiers. It can also be replaced by an IP address when no domain name
      * was registered.<br>
@@ -846,6 +885,19 @@ public class Reference {
     }
 
     /**
+     * Returns the optionnally decoded host domain name component.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded host domain name component.
+     * @see #getHostDomain()
+     */
+    public String getHostDomain(boolean decode) {
+        return decode ? decode(getHostDomain()) : getHostDomain();
+    }
+
+    /**
      * Returns the host identifier. Includes the scheme, the host name and the
      * host port number.<br>
      * Note that no URI decoding is done by this method.
@@ -856,6 +908,19 @@ public class Reference {
         StringBuilder result = new StringBuilder();
         result.append(getScheme()).append("://").append(getAuthority());
         return result.toString();
+    }
+
+    /**
+     * Returns the optionnally decoded host identifier.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded host identifier.
+     * @see #getHostIdentifier()
+     */
+    public String getHostIdentifier(boolean decode) {
+        return decode ? decode(getHostIdentifier()) : getHostIdentifier();
     }
 
     /**
@@ -904,6 +969,19 @@ public class Reference {
     }
 
     /**
+     * Returns the optionnally decoded absolute resource identifier.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded absolute resource identifier.
+     * @see #getIdentifier()
+     */
+    public String getIdentifier(boolean decode) {
+        return decode ? decode(getIdentifier()) : getIdentifier();
+    }
+
+    /**
      * Returns the last segment of a hierarchical path.<br>
      * For example the "/a/b/c" and "/a/b/c/" paths have the same segments: "a",
      * "b", "c.<br>
@@ -928,6 +1006,19 @@ public class Reference {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the optionnally decoded last segment.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded last segment.
+     * @see #getLastSegment()
+     */
+    public String getLastSegment(boolean decode) {
+        return decode ? decode(getLastSegment()) : getLastSegment();
     }
 
     /**
@@ -1005,6 +1096,19 @@ public class Reference {
     }
 
     /**
+     * Returns the optionnally decoded path component.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded path component.
+     * @see #getPath()
+     */
+    public String getPath(boolean decode) {
+        return decode ? decode(getPath()) : getPath();
+    }
+
+    /**
      * Returns the optional query component for hierarchical identifiers.<br>
      * Note that no URI decoding is done by this method.
      * 
@@ -1029,6 +1133,19 @@ public class Reference {
             // No query found
             return null;
         }
+    }
+
+    /**
+     * Returns the optionnally decoded query component.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded query component.
+     * @see #getQuery()
+     */
+    public String getQuery(boolean decode) {
+        return decode ? decode(getQuery()) : getQuery();
     }
 
     /**
@@ -1060,6 +1177,19 @@ public class Reference {
      */
     public String getRelativePart() {
         return isRelative() ? toString(false, false) : null;
+    }
+
+    /**
+     * Returns the optionnally decoded relative part.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded relative part.
+     * @see #getRelativePart()
+     */
+    public String getRelativePart(boolean decode) {
+        return decode ? decode(getRelativePart()) : getRelativePart();
     }
 
     /**
@@ -1300,6 +1430,19 @@ public class Reference {
     }
 
     /**
+     * Returns the optionnally decoded remaining part.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded remaining part.
+     * @see #getRemainingPart()
+     */
+    public String getRemainingPart(boolean decode) {
+        return decode ? decode(getRemainingPart()) : getRemainingPart();
+    }
+
+    /**
      * Returns the scheme component.<br>
      * Note that no URI decoding is done by this method.
      * 
@@ -1313,6 +1456,19 @@ public class Reference {
             // No scheme found
             return null;
         }
+    }
+
+    /**
+     * Returns the optionnally decoded scheme component.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded scheme component.
+     * @see #getScheme()
+     */
+    public String getScheme(boolean decode) {
+        return decode ? decode(getScheme()) : getScheme();
     }
 
     /**
@@ -1346,6 +1502,20 @@ public class Reference {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the optionnally decoded scheme specific part.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded scheme specific part.
+     * @see #getSchemeSpecificPart()
+     */
+    public String getSchemeSpecificPart(boolean decode) {
+        return decode ? decode(getSchemeSpecificPart())
+                : getSchemeSpecificPart();
     }
 
     /**
@@ -1388,6 +1558,27 @@ public class Reference {
             if (start != -2) {
                 // Add the last segment
                 result.add(path.substring(start + 1));
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the optionnally decoded list of segments.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded list of segments.
+     * @see #getSegments()
+     */
+    public List<String> getSegments(boolean decode) {
+        List<String> result = getSegments();
+
+        if (decode) {
+            for (int i = 0; i < result.size(); i++) {
+                result.set(i, decode(result.get(i)));
             }
         }
 
@@ -1514,6 +1705,19 @@ public class Reference {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the optionnally decoded user info component.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded user info component.
+     * @see #getUserInfo()
+     */
+    public String getUserInfo(boolean decode) {
+        return decode ? decode(getUserInfo()) : getUserInfo();
     }
 
     /**
