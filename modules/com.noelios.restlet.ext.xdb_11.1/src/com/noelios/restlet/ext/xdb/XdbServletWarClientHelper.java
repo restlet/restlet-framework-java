@@ -51,7 +51,8 @@ import org.restlet.service.MetadataService;
  * /home/[SCHEMA]/wars/[AppName]/
  * where SCHEMA: is a database user, for example SCOTT
  *      AppName: is a Servlet Name configured with XdbServerServlet adapter
- * Note: For Servlet running with PUBLIC grants run with an effective user ANONYMOUS
+ * Note:
+ *   For Servlet running with PUBLIC grants run with an effective user ANONYMOUS
  * so WARs deployment will be located at /home/ANONYMOUS/wars
  *
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
@@ -75,14 +76,15 @@ public class XdbServletWarClientHelper extends WarClientHelper {
 
     /**
      * Efective user who is running XdbServerServlet for example SCOTT or
-     * ANONYMOUS if is a Servlet running with PUBLIC grants (no http auhtorization is required)
+     * ANONYMOUS if is a Servlet running with PUBLIC grants
+     * (no http auhtorization is required)
      */
     private volatile String connectedUser;
 
     /**
      * SQL Connection to XMLDB repository
      */
-    Connection conn = null;
+    private volatile Connection conn = null;
 
     /**
      * Constructor.
@@ -91,6 +93,8 @@ public class XdbServletWarClientHelper extends WarClientHelper {
      *                The client to help.
      * @param config
      *                The Servlet Config
+     * @param conn
+     *                The JDBC Connection
      */
     public XdbServletWarClientHelper(Client client, ServletConfig config,
                                      Connection conn) {
@@ -113,26 +117,29 @@ public class XdbServletWarClientHelper extends WarClientHelper {
     protected void handleWar(Request request, Response response) {
         PreparedStatement stmt = null;
         ResultSet rset = null;
-        if (request.getMethod().equals(Method.GET) ||
-            request.getMethod().equals(Method.HEAD)) {
+        if (request.getMethod().equals(Method.GET) 
+            || request.getMethod().equals(Method.HEAD)) {
             String basePath = request.getResourceRef().getPath();
             int lastSlashIndex = basePath.lastIndexOf('/');
             String entry =
-                (lastSlashIndex == -1) ? basePath : basePath.substring(lastSlashIndex +
-                                                                       1);
+                (lastSlashIndex == -1) 
+                ? basePath : basePath.substring(lastSlashIndex + 1);
             Representation output = null;
             String xdbResPath =
-                BASE_DIR + connectedUser + DEPLOY_DIR + this.config.getServletName() +
-                basePath;
+                BASE_DIR
+                + connectedUser
+                + DEPLOY_DIR
+                + this.config.getServletName()
+                + basePath;
 
             if (basePath.endsWith("/")) {
                 // Return the directory listing
                 try {
                     stmt = conn.prepareStatement(
-                      "SELECT path(1),extractValue(res,'/Resource/@Container') " +
-                      "FROM resource_view WHERE under_path(res,1,?,1 ) = 1");
-                    this.getLogger().info("looking resources at: " +
-                                          xdbResPath);
+                    "SELECT path(1),extractValue(res,'/Resource/@Container') "
+                    + "FROM resource_view WHERE under_path(res,1,?,1 ) = 1");
+                    this.getLogger().info("looking resources at: "
+                                          + xdbResPath);
                     stmt.setString(1, xdbResPath);
                     rset = stmt.executeQuery();
                     if (rset.next()) {
@@ -140,10 +147,11 @@ public class XdbServletWarClientHelper extends WarClientHelper {
                         rl.setIdentifier(request.getResourceRef());
 
                         while (rset.next()) {
-                            entry = rset.getString(1) + 
-                                    (("true".equalsIgnoreCase(rset.getString(2))) ? "/" : "");
-                            this.getLogger().info("Reference: " + basePath +
-                                                  entry);
+                            entry = rset.getString(1)
+                                    + (("true".equalsIgnoreCase(rset.getString(2)))
+                                    ? "/" : "");
+                            this.getLogger().info("Reference: " + basePath
+                                                  + entry);
                             rl.add(new Reference(basePath + entry));
                         }
 
@@ -152,8 +160,9 @@ public class XdbServletWarClientHelper extends WarClientHelper {
                 } catch (SQLException sqe) {
                     this.getLogger().throwing("XdbServletWarClientHelper",
                                               "handleWar", sqe);
-                    throw new RuntimeException("Exception querying resource_view - xdbResPath: " +
-                                               xdbResPath, sqe);
+                    throw new RuntimeException(
+                             "Exception querying resource_view - xdbResPath: "
+                             + xdbResPath, sqe);
                 } finally {
                     XdbServerServlet.closeDbResources(stmt, rset);
                 }
@@ -162,26 +171,27 @@ public class XdbServletWarClientHelper extends WarClientHelper {
                 try {
                     InputStream is = null;
                     stmt = conn.prepareStatement(
-                      "select xdburitype(?).getBlob()," +
-                      "xdburitype(?).getContentType() " + "from dual");
+                      "select xdburitype(?).getBlob(),"
+                      + "xdburitype(?).getContentType() " + "from dual");
                     stmt.setString(1, xdbResPath);
                     stmt.setString(2, xdbResPath);
-                    this.getLogger().info("looking resources at: " +
-                                          xdbResPath);
+                    this.getLogger().info("looking resources at: "
+                                          + xdbResPath);
                     rset = stmt.executeQuery();
                     if (rset.next()) {
-                        Blob blob = (Blob)rset.getObject(1);
+                        Blob blob = (Blob) rset.getObject(1);
                         String mediaType = rset.getString(2);
                         is = blob.getBinaryStream();
                         MetadataService metadataService =
                             getMetadataService(request);
                         output =
-                                new InputRepresentation(is, metadataService.getDefaultMediaType());
+                                new InputRepresentation(is,
+                                        metadataService.getDefaultMediaType());
                         output.setIdentifier(request.getResourceRef());
                         updateMetadata(metadataService, entry, output);
 
-                        // See if the Servlet context specified a particular Mime
-                        // Type
+                        // See if the Servlet context specified
+                        // a particular Mime Type
                         if (mediaType != null) {
                             this.getLogger().info("mediaType: " + mediaType);
                             output.setMediaType(new MediaType(mediaType));
@@ -190,8 +200,9 @@ public class XdbServletWarClientHelper extends WarClientHelper {
                 } catch (SQLException sqe) {
                     this.getLogger().throwing("XdbServletWarClientHelper",
                                               "handleWar", sqe);
-                    throw new RuntimeException("Exception querying xdburitype(?).getBlob() - xdbResPath: " +
-                                               xdbResPath, sqe);
+                    throw new RuntimeException(
+                   "Exception querying xdburitype(?).getBlob() - xdbResPath: "
+                   + xdbResPath, sqe);
                 } finally {
                     XdbServerServlet.closeDbResources(stmt, rset);
                 }
@@ -214,10 +225,11 @@ public class XdbServletWarClientHelper extends WarClientHelper {
         try {
             stmt = conn.prepareStatement("select USER from dual");
             rset = stmt.executeQuery();
-            if (rset.next())
+            if (rset.next()) {
                 connectedUser = rset.getString(1);
-            else
+            } else {
                 connectedUser = "PUBLIC";
+            }
             this.getLogger().info("efective user is: " + connectedUser);
         } catch (SQLException sqe) {
             this.getLogger().throwing("XdbServletWarClientHelper", "start",

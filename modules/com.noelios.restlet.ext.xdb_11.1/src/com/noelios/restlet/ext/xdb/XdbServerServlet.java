@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -54,44 +54,56 @@ import org.restlet.util.Engine;
  * href="/documentation/1.0/faq#02">Developper FAQ #2</a> for details on how to
  * integrate a Restlet application into a servlet container.<br/> Here is a
  * sample configuration for your Restlet webapp:
- * 
+ *
  * <pre>
  * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
- * &lt;!DOCTYPE web-app PUBLIC &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot; &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
+ * &lt;!DOCTYPE web-app PUBLIC
+ *       &quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot;
+ *       &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
  * &lt;web-app&gt;
  *         &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- * 
- * 
- *         &lt;!-- Restlet adapter --&gt;
- *         &lt;servlet&gt;
- *                 &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
- *                 &lt;servlet-class&gt;com.noelios.restlet.ext.xdb.XDBServerServlet&lt;/servlet-class&gt;
- *                 &lt;!-- Your application class name --&gt;
- *                 &lt;init-param xmlns=&quot;http://xmlns.oracle.com/xdb/xdbconfig.xsd&quot;&gt;
- *                     &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
- *                     &lt;param-value&gt;org.restlet.example.tutorial.Part12&lt;/param-value&gt;
- *                     &lt;description&gt;REST Application&lt;/description&gt;
- *                 &lt;/init-param&gt;
- *                 &lt;init-param xmlns=&quot;http://xmlns.oracle.com/xdb/xdbconfig.xsd&quot;&gt;
- *                     &lt;param-name&gt;org.restlet.query&lt;/param-name&gt;
- *                     &lt;param-value&gt;keywords,kwd,true;xx,yy,false&lt;/param-value&gt;
- *                     &lt;description&gt;route.extractQuery arguments&lt;/description&gt;
- *                 &lt;/init-param&gt;
- *         &lt;/servlet&gt;
- * 
- *         &lt;!-- Catch all requests --&gt;
- *         &lt;servlet-mapping&gt;
- *                 &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
- *                 &lt;url-pattern&gt;/users/*&lt;/url-pattern&gt;
- *         &lt;/servlet-mapping&gt;
+ *
+ *
+ *       &lt;!-- Restlet adapter --&gt;
+ *       &lt;servlet&gt;
+ *        &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
+ *          &lt;servlet-class&gt;
+ *              com.noelios.restlet.ext.xdb.XDBServerServlet
+ *          &lt;/servlet-class&gt;
+ *          &lt;!-- Your application class name --&gt;
+ *          &lt;init-param
+ *            xmlns=&quot;http://xmlns.oracle.com/xdb/xdbconfig.xsd&quot;&gt;
+ *            &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
+ *            &lt;param-value&gt;
+ *               org.restlet.example.tutorial.Part12
+ *            &lt;/param-value&gt;
+ *            &lt;description&gt;REST Application&lt;/description&gt;
+ *          &lt;/init-param&gt;
+ *          &lt;init-param
+ *            xmlns=&quot;http://xmlns.oracle.com/xdb/xdbconfig.xsd&quot;&gt;
+ *            &lt;param-name&gt;org.restlet.query&lt;/param-name&gt;
+ *            &lt;param-value&gt;
+ *               keywords,kwd,true;xx,yy,false
+ *            &lt;/param-value&gt;
+ *            &lt;description&gt;
+ *              route.extractQuery arguments
+ *            &lt;/description&gt;
+ *          &lt;/init-param&gt;
+ *       &lt;/servlet&gt;
+ *
+ *       &lt;!-- Catch all requests --&gt;
+ *       &lt;servlet-mapping&gt;
+ *         &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
+ *         &lt;url-pattern&gt;/users/*&lt;/url-pattern&gt;
+ *       &lt;/servlet-mapping&gt;
  * &lt;/web-app&gt;
  * </pre>
- * 
+ *
  * The enumeration of initParameters of your Servlet will be copied to the
  * "context.parameters" property of your application. This way, you can pass
  * additional initialization parameters to your Restlet application, and share
  * them with existing Servlets.
- * 
+ *
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
@@ -99,39 +111,37 @@ public class XdbServerServlet extends ServerServlet {
     /** Serial version identifier. */
     private static final long serialVersionUID = 1L;
 
-    /**
+   /**
      * Closes JDBC resources
-     * 
+     *
      * @param statement
      *                Any statement.
      * @param resultSet
      *                Any result set.
      */
-    protected static void closeDbResources(Statement statement,
-            ResultSet resultSet) {
-        if (resultSet != null)
+    protected static void closeDbResources(final Statement statement,
+                                           final ResultSet resultSet) {
+        if (resultSet != null) {
             try {
                 resultSet.close();
             } catch (SQLException s) {
                 s.printStackTrace(System.err);
-            } finally {
-                resultSet = null;
             }
-        if (statement != null)
+        }
+        if (statement != null) {
             try {
                 statement.close();
             } catch (SQLException s) {
                 s.printStackTrace(System.err);
-            } finally {
-                statement = null;
             }
+        }
     }
 
     /**
      * Returns a JDBC connection. Works inside or outside the OJVM.
-     * 
+     *
      * @return A JDBC connection.
-     * @throws SQLException
+     * @throws ServletException
      */
     protected static Connection getConnection() throws ServletException {
         Connection conn = null;
@@ -142,7 +152,7 @@ public class XdbServerServlet extends ServerServlet {
                         "default", "default");
             } else {
                 throw new ServletException(
-                        "Class designed to be used at Server side using: jdbc:oracle:kprb:@ driver");
+                        "Class designed to be used with Server side driver");
             }
         } catch (SQLException s) {
             System.err.println("Exception getting SQL Connection: "
@@ -158,13 +168,13 @@ public class XdbServerServlet extends ServerServlet {
     private volatile transient Connection conn;
 
     /** The local address of the server connector. */
-    private volatile transient String localAddress = null;
+    private volatile String localAddress = null;
 
     /** The local port of the server connector. */
-    private volatile transient int localPort = -1;
+    private volatile int localPort = -1;
 
     /** Indicates if remote debugging should be activated. */
-    private volatile transient boolean remoteDebugging = false;
+    private volatile boolean remoteDebugging = false;
 
     /**
      * Constructor.
@@ -217,7 +227,7 @@ public class XdbServerServlet extends ServerServlet {
 
     /**
      * Returns a configuration parameter.
-     * 
+     *
      * @return An String object within the /home/'||USER||'/restlet/app.xml
      *         XMLDB file.
      */
@@ -231,9 +241,10 @@ public class XdbServerServlet extends ServerServlet {
 
         try {
             preparedstatement = conn
-                    .prepareStatement("select extractValue(res,'/res:Resource/res:Contents/restlet-app/'||?,"
-                            + "'xmlns:res=http://xmlns.oracle.com/xdb/XDBResource.xsd') from\n"
-                            + "resource_view where equals_path(res,'/home/'||USER||?)=1");
+                    .prepareStatement(
+         "select extractValue(res,'/res:Resource/res:Contents/restlet-app/'||?,"
+         + "'xmlns:res=http://xmlns.oracle.com/xdb/XDBResource.xsd') from\n"
+         + "resource_view where equals_path(res,'/home/'||USER||?)=1");
             preparedstatement.setString(1, name);
             preparedstatement.setString(2, "/restlet/" + app + ".xml");
             resultset = preparedstatement.executeQuery();
@@ -243,8 +254,8 @@ public class XdbServerServlet extends ServerServlet {
         } catch (SQLException sqe) {
             log(sqe.getLocalizedMessage(), sqe);
             throw new RuntimeException(
-                    ".getConfigParameter:  error from XMLDB loading '/home/'||USER||'"
-                            + "/restlet/" + app + ".xml", sqe);
+              ".getConfigParameter:  error from XMLDB loading '/home/'||USER||'"
+                         + "/restlet/" + app + ".xml", sqe);
         } finally {
             closeDbResources(preparedstatement, resultset);
         }
@@ -281,7 +292,7 @@ public class XdbServerServlet extends ServerServlet {
         try {
             int endPoint = 1;
             preparedstatement = conn
-                    .prepareCall("{ call dbms_xdb.getListenerEndPoint(1,?,?,?) }");
+                 .prepareCall("{ call dbms_xdb.getListenerEndPoint(1,?,?,?) }");
             preparedstatement.registerOutParameter(1, Types.VARCHAR);
             preparedstatement.registerOutParameter(2, Types.INTEGER);
             preparedstatement.registerOutParameter(3, Types.INTEGER);
@@ -306,7 +317,7 @@ public class XdbServerServlet extends ServerServlet {
         try {
             if (remoteDebugging) {
                 preparedstatement = conn
-                        .prepareCall("{ call dbms_debug_jdwp.connect_tcp(?,?) }");
+                      .prepareCall("{ call dbms_debug_jdwp.connect_tcp(?,?) }");
                 preparedstatement.setString(1, "localhost");
                 preparedstatement.setInt(2, 4000);
                 preparedstatement.execute();
@@ -333,7 +344,8 @@ public class XdbServerServlet extends ServerServlet {
     }
 
     @Override
-    protected Class<?> getClass(String className) throws ClassNotFoundException {
+    protected Class<?> getClass(String className)
+        throws ClassNotFoundException {
         int doubleDotPos = className.indexOf(':');
         Class<?> targetClass;
 
@@ -353,17 +365,17 @@ public class XdbServerServlet extends ServerServlet {
                         cName, sch });
             } catch (NoSuchMethodException nse) {
                 log(
-                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
+       "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, nse);
                 targetClass = Engine.classForName(className);
             } catch (IllegalAccessException iae) {
                 log(
-                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
+       "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, iae);
                 targetClass = Engine.classForName(className);
             } catch (InvocationTargetException ite) {
                 log(
-                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
+       "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, ite);
                 targetClass = Engine.classForName(className);
             }
