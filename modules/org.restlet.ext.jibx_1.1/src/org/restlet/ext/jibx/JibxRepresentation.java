@@ -61,7 +61,13 @@ public class JibxRepresentation<T> extends XmlRepresentation {
                 + bindingClass.toString());
 
         if (jibxBFact == null) {
-            jibxBFact = BindingDirectory.getFactory(bindingName, bindingClass);
+            if (bindingName == null) {
+                jibxBFact = BindingDirectory.getFactory(bindingClass);
+            } else {
+                jibxBFact = BindingDirectory.getFactory(bindingName,
+                        bindingClass);
+            }
+
             bindingFactories.put(bindingName + bindingClass.toString(),
                     jibxBFact);
         }
@@ -84,6 +90,20 @@ public class JibxRepresentation<T> extends XmlRepresentation {
 
     /** The source XML representation. */
     private Representation xmlRepresentation;
+
+    /**
+     * Creates a JIBX representation from an existing Java object. This allows a
+     * translation from a Java object to a XML representation.
+     * 
+     * @param mediaType
+     *                The representation's media type (usually
+     *                MediaType.APPLICATION_XML or MediaType.TEXT_XML).
+     * @param object
+     *                The Java object.
+     */
+    public JibxRepresentation(MediaType mediaType, T object) {
+        this(mediaType, object, null);
+    }
 
     /**
      * Creates a JIBX representation from an existing Java object. This allows a
@@ -122,6 +142,21 @@ public class JibxRepresentation<T> extends XmlRepresentation {
         this.xmlRepresentation = xmlRepresentation;
         this.bindingClass = bindingClass;
         this.bindingName = bindingName;
+    }
+
+    /**
+     * Creates a new JIBX representation, that can be used to convert the input
+     * XML into a Java object. The XML is not validated.
+     * 
+     * @param xmlRepresentation
+     *                The XML wrapped in a representation.
+     * @param bindingClass
+     *                The Target Java class for binding.
+     */
+    @SuppressWarnings("unchecked")
+    public JibxRepresentation(Representation xmlRepresentation,
+            Class bindingClass) {
+        this(xmlRepresentation, bindingClass, null);
     }
 
     @Override
