@@ -425,15 +425,14 @@ public class Guard extends Filter {
 
     /**
      * Finds the secret associated to a given identifier. By default it looks up
-     * into the secrets map, but this behavior can be overriden.
+     * into the secrets map, but this behavior can be overriden by setting a
+     * custom secret resolver using the {@link #setSecretResolver(Resolver)}
+     * method.
      * 
      * @param identifier
      *                The identifier to lookup.
      * @return The secret associated to the identifier or null.
-     * @deprecated Provide a resolver instead via the
-     *             {@link #setSecretResolver(Resolver)} method.
      */
-    @Deprecated
     public char[] findSecret(String identifier) {
         return getSecretResolver().resolve(identifier);
     }
