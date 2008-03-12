@@ -26,6 +26,7 @@ import org.restlet.test.jaxrs.services.resources.MatrixParamTestService;
 
 /**
  * @author Stephan Koops
+ * @see MatrixParamTestService
  */
 public class MatrixParamTest extends JaxRsTestCase {
 
@@ -103,7 +104,7 @@ public class MatrixParamTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("[null]", response.getEntity().getText());
     }
-    
+
     public void testSemicolon() {
         Response response1 = get("semicolon");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response1.getStatus());
@@ -124,5 +125,33 @@ public class MatrixParamTest extends JaxRsTestCase {
         Response response5 = get("semicolon;mpA=5;mpB=6");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response5.getStatus());
         sysOutEntityIfError(response5);
-}
+    }
+
+    public void testOne1() throws Exception {
+        Response response = get("one;name");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[empty]", response.getEntity().getText());
+    }
+
+    public void testOne2() throws Exception {
+        Response response = get("one;name=");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[empty]", response.getEntity().getText());
+    }
+
+    public void testOne3() throws Exception {
+        Response response = get("one;name=x");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("x", response.getEntity().getText());
+    }
+
+    public void testOne4() throws Exception {
+        Response response = get("one;name2=sdf");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[null]", response.getEntity().getText());
+    }
 }

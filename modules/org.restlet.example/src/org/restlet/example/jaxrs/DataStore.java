@@ -82,7 +82,7 @@ public class DataStore {
      */
     public List<Person> getAllPersons() {
         List<Person> persons = new ArrayList<Person>();
-        persons.add(new Person(1, "George U.", "Buch"));
+        persons.add(new Person(1, "George U.", "Bush"));
         persons.add(new Person(2, "Gordon", "Brown"));
         persons.add(new Person(3, "Angela", "Merkel"));
         return persons;

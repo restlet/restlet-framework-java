@@ -26,6 +26,7 @@ import org.restlet.test.jaxrs.services.resources.QueryParamTestService;
 
 /**
  * @author Stephan Koops
+ * @see QueryParamTestService
  */
 public class QueryParamTest extends JaxRsTestCase {
     
@@ -94,5 +95,33 @@ public class QueryParamTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("George%20U. Bush", response.getEntity().getText());
+    }
+    
+    public void testOne1() throws Exception {
+        Response response = get("one?name");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[empty]", response.getEntity().getText());
+    }
+    
+    public void testOne2() throws Exception {
+        Response response = get("one?name=");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[empty]", response.getEntity().getText());
+    }
+
+    public void testOne3() throws Exception {
+        Response response = get("one?name=x");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("x", response.getEntity().getText());
+    }
+
+    public void testOne4() throws Exception {
+        Response response = get("one?name2=sdf");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[null]", response.getEntity().getText());
     }
 }

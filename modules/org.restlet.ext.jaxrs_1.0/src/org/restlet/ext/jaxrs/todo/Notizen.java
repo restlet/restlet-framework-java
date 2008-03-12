@@ -18,6 +18,15 @@
 
 package org.restlet.ext.jaxrs.todo;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.restlet.util.Series;
+
 /**
  * Here are notices for the implementation.
  */
@@ -25,8 +34,34 @@ public class Notizen {
     // LATER An implementation MUST allow other runtime exceptions to propagate
     // to the underlying container. This allows existing container facilities
     // (e.g. a Servlet filter) to be used to handle the error if desired.
+
     // LATER alle LATERs in Masterarbeit uebernehmen
+
     // TODO look for warnings in tests and put them away.
     // gehört. Gibt es dann ne Endlosrekursion?
+
     // TODO inject ContextResolver and MessageBodyWorkers into providers.
+
+    // TODO When writing responses, implementations SHOULD respect
+    // application-supplied character set metadata and SHOULD use UTF-8 if a
+    // character set is not specified by the application or if the application
+    // specifies a character set that is unsupported.
+
+    // TODO @Context: ClientInfo und Coditions
+    
+    // LATER Constructor-Nutzung ist inkompatibel 
+
+    private List<Integer> x;
+
+    public static void main(String[] args) throws Exception {
+        Field field = Notizen.class.getDeclaredField("x");
+        System.out.println(field.getType());
+        System.out.println(field.getType().isAssignableFrom(Series.class));
+        Type t = field.getGenericType();
+        if (t instanceof ParameterizedType) {
+            System.out.println(((ParameterizedType)t).getActualTypeArguments()[0]);
+        } else {
+            "".toString();
+        }
+    }
 }

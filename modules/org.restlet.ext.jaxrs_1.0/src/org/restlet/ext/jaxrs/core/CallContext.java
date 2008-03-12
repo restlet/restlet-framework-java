@@ -532,7 +532,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
         String key = annotation.value();
         MultivaluedMap<String, String> templParamsEncoded = interalGetTemplateParametersEncoded();
         List<String> values = templParamsEncoded.get(key);
-        if(values == null || values.isEmpty())
+        if (values == null || values.isEmpty())
             return null;
         return Util.getLastElement(values);
     }
@@ -557,8 +557,12 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
             PathSegment pathSegment = pathSegments.get(i);
             List<String> mpValues = pathSegment.getMatrixParameters().get(
                     mpName);
-            if (mpValues != null && !mpValues.isEmpty())
-                return Util.getLastElement(mpValues);
+            if (mpValues != null && !mpValues.isEmpty()) {
+                String result = Util.getLastElement(mpValues);
+                if(result == null)
+                    return "";
+                return result;
+            }
         }
         return null;
     }

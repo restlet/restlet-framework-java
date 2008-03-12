@@ -44,6 +44,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -517,10 +518,30 @@ public abstract class AbstractJaxRsWrapper {
         String queryString = resourceRef.getQuery();
         Form form = Converter.toFormEncoded(queryString, logger);
         String paramName = queryParam.value();
-        String queryParamValue = form.getFirstValue(paramName);
+        Parameter param = form.getFirst(paramName);
+        String queryParamValue = getValue(param);
         return convertParamValueFromParam(paramClass, queryParamValue,
                 defaultValue, true); // TODO Encode or not of @QueryParam
         // leaveEncoded = true -> not change
+    }
+
+    /**
+     * Returns the value from the given Parameter. If the given parameter is
+     * null, null will returned. If the parameter is not null, but it's value, ""
+     * is returned.
+     * 
+     * @param parameter
+     * @return the value from the given Parameter. If the given parameter is
+     *         null, null will returned. If the parameter is not null, but it's
+     *         value, "" is returned.
+     */
+    private static String getValue(Parameter parameter) {
+        if (parameter == null)
+            return null;
+        String paramValue = parameter.getValue();
+        if (paramValue == null)
+            return "";
+        return paramValue;
     }
 
     private PathRegExp pathRegExp;

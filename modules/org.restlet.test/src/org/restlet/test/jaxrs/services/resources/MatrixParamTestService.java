@@ -94,4 +94,15 @@ public class MatrixParamTestService {
                 + "\nmpB param is " + mpB;
         return Response.serverError().entity(entity).build();
     }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("one")
+    public String getOne(@MatrixParam("name") String name) {
+        if(name == null)
+            return "[null]";
+        if (name.equals(""))
+            return "[empty]";
+        return name;
+    }
 }

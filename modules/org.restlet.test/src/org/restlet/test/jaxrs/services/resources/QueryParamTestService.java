@@ -25,8 +25,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import org.restlet.test.jaxrs.services.tests.QueryParamTest;
+
 /**
  * @author Stephan Koops
+ * @see QueryParamTest
  */
 @Path("queryParamTest")
 public class QueryParamTestService {
@@ -34,27 +37,35 @@ public class QueryParamTestService {
     @GET
     @ProduceMime("text/plain")
     @Path("a")
-    public String getA(@QueryParam("firstname")
-    String firstname, @QueryParam("lastname")
-    String lastname) {
+    public String getA(@QueryParam("firstname") String firstname,
+            @QueryParam("lastname") String lastname) {
         return firstname + " " + lastname;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("one")
+    public String getOne(@QueryParam("name") String name) {
+        if(name == null)
+            return "[null]";
+        if (name.equals(""))
+            return "[empty]";
+        return name;
     }
 
     @GET
     @ProduceMime("text/plain")
     @Path("encodedA")
     @Encoded
-    public String encodedA(@QueryParam("firstname")
-    String firstname, @QueryParam("lastname")
-    String lastname) {
+    public String encodedA(@QueryParam("firstname") String firstname,
+            @QueryParam("lastname") String lastname) {
         return firstname + " " + lastname;
     }
 
     @GET
     @ProduceMime("text/plain")
     @Path("qpDecoded")
-    public String getQueryParamsDecoded(@Context
-    UriInfo uriInfo) {
+    public String getQueryParamsDecoded(@Context UriInfo uriInfo) {
         String firstname = uriInfo.getQueryParameters().getFirst("firstname");
         String lastname = uriInfo.getQueryParameters().getFirst("lastname");
         return firstname + " " + lastname;
@@ -63,8 +74,7 @@ public class QueryParamTestService {
     @GET
     @ProduceMime("text/plain")
     @Path("qpEncoded")
-    public String getQueryParamsEncoded(@Context
-    UriInfo uriInfo) {
+    public String getQueryParamsEncoded(@Context UriInfo uriInfo) {
         String firstn = uriInfo.getQueryParameters(false).getFirst("firstname");
         String lastn = uriInfo.getQueryParameters(false).getFirst("lastname");
         return firstn + " " + lastn;

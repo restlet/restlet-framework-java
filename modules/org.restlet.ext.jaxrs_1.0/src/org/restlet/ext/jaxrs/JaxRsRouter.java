@@ -263,6 +263,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      */
     public void attach(ApplicationConfig appConfig)
             throws IllegalArgumentException {
+        // TODO Interface comparable to other Restlet classes.
         Collection<Class<?>> rrcs = appConfig.getResourceClasses();
         Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
         if (rrcs == null || rrcs.isEmpty())
@@ -721,6 +722,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                 handleUnsupportedMediaType(httpMethod, resourceClass, u,
                         givenMediaType);
         }
+        // TODO Added sort key so that a matching sub-resource method will be chosen ahead of a sub-resource locator
         // (a) 4
         SortedMetadata<MediaType> accMediaTypes = callContext
                 .getAccMediaTypes();
@@ -1074,6 +1076,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                         callContext, resourceMethod);
                 // } else if(result instanceof URI) { // perhaps 201 or 303
             } else if (result instanceof javax.ws.rs.core.Response.ResponseBuilder) {
+                // TODO log warning
                 javax.ws.rs.core.Response jaxRsResponse = ((javax.ws.rs.core.Response.ResponseBuilder) result)
                         .build();
                 jaxRsRespToRestletResp(jaxRsResponse, callContext,
