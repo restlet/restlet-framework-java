@@ -272,6 +272,13 @@
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
    </path>
+	
+   <path id="mod-oauth-path">
+	  <path refid="mod-ri-path" />
+	  <pathelement path="${classes}/${mod-ri-id}" />
+      <fileset dir="${lib}/${lib-oauth-id}" includes="*.jar" />
+   	  <fileset dir="${lib}/${lib-codec-id}" includes="*.jar" />
+   </path>
    
    <path id="mod-servlet-path">
       <path refid="mod-ri-path" />
@@ -334,6 +341,7 @@
       <pathelement path="${classes}/${mod-json-id}" />
       <pathelement path="${classes}/${mod-jxta-id}" />
       <pathelement path="${classes}/${mod-net-id}" />
+      <pathelement path="${classes}/${mod-oauth-id}" />
       <pathelement path="${classes}/${mod-servlet-id}" />
       <pathelement path="${classes}/${mod-spring-api-id}" />
       <pathelement path="${classes}/${mod-spring-nre-id}" />
@@ -355,6 +363,7 @@
       <path refid="mod-json-path" />
       <path refid="mod-jxta-path" />
       <path refid="mod-net-path" />
+      <path refid="mod-oauth-path" />
       <path refid="mod-servlet-path" />
       <path refid="mod-simple-path" />
       <path refid="mod-spring-api-path" />
@@ -864,6 +873,7 @@
       <pomModule name="json" />
 <!-- disabled for now  <pomModule name="jxta" /> -->
       <pomModule name="net" />
+      <pomModule name="oauth" />
       <pomModule name="servlet" />
       <pomModule name="simple" />
       <pomModule name="spring-api" ext="spring" />
@@ -930,6 +940,7 @@
       <compileModule name="json" />
       <compileModule name="jxta" />
       <compileModule name="net" />
+      <compileModule name="oauth" />
       <compileModule name="servlet" />
       <compileModule name="gwt" /> <!-- depends on servlet -->
       <compileModule name="simple" />
@@ -963,6 +974,7 @@
       <backportModule name="json" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="jxta" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="net" failonwarning="@{backport-failonwarning}"/>
+   	  <backportModule name="oauth" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="servlet" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="simple" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="spring-api" failonwarning="@{backport-failonwarning}"/>
@@ -1071,6 +1083,7 @@
             <pathelement path="${mod}/${mod-json-id}/src/" />
 <!-- disabled for now  <pathelement path="${mod}/${mod-jxta-id}/src/" /> -->
             <pathelement path="${mod}/${mod-net-id}/src/" />
+         	<pathelement path="${mod}/${mod-oauth-id}/src/" />
             <pathelement path="${mod}/${mod-servlet-id}/src/" />
             <pathelement path="${mod}/${mod-simple-id}/src/" />
             <pathelement path="${mod}/${mod-spring-api-id}/src/" />
@@ -1162,6 +1175,7 @@
       <findbugsModule name="json" />
       <findbugsModule name="jxta" />
       <findbugsModule name="net" />
+   	  <findbugsModule name="oauth" />
       <findbugsModule name="servlet" />
       <findbugsModule name="simple" />
       <findbugsModule name="spring-api" />
@@ -1192,6 +1206,7 @@
       <checkstyleModule name="json" />
       <checkstyleModule name="jxta" />
       <checkstyleModule name="net" />
+   	  <checkstyleModule name="oauth" />
       <checkstyleModule name="servlet" />
       <checkstyleModule name="simple" />
       <checkstyleModule name="spring-api" />
@@ -1269,6 +1284,7 @@
       <stageLibrary name="lang" />
       <stageLibrary name="logging" />
       <stageLibrary name="mina" />
+   	  <stageLibrary name="oauth" />
       <stageLibrary name="pool" />
       <stageLibrary name="servlet" />
       <stageLibrary name="simple" />
@@ -1298,6 +1314,7 @@
       <stageModule name="json" />
 <!-- disabled for now  <stageModule name="jxta" /> -->
       <stageModule name="net" />
+   	  <stageModule name="oauth" />
       <stageModule name="servlet" />
       <stageModule name="simple" />
       <stageModule name="spring-api" />
@@ -1335,6 +1352,7 @@
       <maven2Module name="jibx" />
       <maven2Module name="json" />
       <maven2Module name="net" />
+   	  <maven2Module name="oauth" />
       <maven2Module name="servlet" />
       <maven2Module name="simple" />
       <maven2Module name="spring-api" />

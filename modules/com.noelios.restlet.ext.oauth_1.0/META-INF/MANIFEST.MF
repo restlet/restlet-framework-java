@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Noelios Restlet Engine - Extension - OAuth
+Bundle-SymbolicName: com.noelios.restlet.ext.oauth
+Bundle-Version: 1.0
+Bundle-Vendor: Noelios Consulting
+Require-Bundle: com.noelios.restlet;visibility:=reexport,
+ net.oauth;visibility:=reexport,
+ org.apache.commons.codec;visibility:=reexport
+Export-Package: com.noelios.restlet.ext.oauth
