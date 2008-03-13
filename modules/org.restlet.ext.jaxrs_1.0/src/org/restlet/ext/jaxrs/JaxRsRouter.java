@@ -47,49 +47,49 @@ import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.core.CallContext;
-import org.restlet.ext.jaxrs.core.HttpHeaders;
-import org.restlet.ext.jaxrs.exceptions.ConvertParameterException;
-import org.restlet.ext.jaxrs.exceptions.IllegalPathOnClassException;
-import org.restlet.ext.jaxrs.exceptions.ImplementationException;
-import org.restlet.ext.jaxrs.exceptions.InstantiateProviderException;
-import org.restlet.ext.jaxrs.exceptions.MethodInvokeException;
-import org.restlet.ext.jaxrs.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReaderException;
-import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
-import org.restlet.ext.jaxrs.provider.BufferedReaderProvider;
-import org.restlet.ext.jaxrs.provider.ByteArrayProvider;
-import org.restlet.ext.jaxrs.provider.DataSourceProvider;
-import org.restlet.ext.jaxrs.provider.FileProvider;
-import org.restlet.ext.jaxrs.provider.InputStreamProvider;
-import org.restlet.ext.jaxrs.provider.JaxRsOutputRepresentation;
-import org.restlet.ext.jaxrs.provider.JaxbElementProvider;
-import org.restlet.ext.jaxrs.provider.JaxbProvider;
-import org.restlet.ext.jaxrs.provider.ReaderProvider;
-import org.restlet.ext.jaxrs.provider.StringProvider;
-import org.restlet.ext.jaxrs.provider.WwwFormFormProvider;
-import org.restlet.ext.jaxrs.provider.WwwFormMmapProvider;
-import org.restlet.ext.jaxrs.provider.XsltProvider;
-import org.restlet.ext.jaxrs.util.MatchingResult;
-import org.restlet.ext.jaxrs.util.PathRegExp;
-import org.restlet.ext.jaxrs.util.RemainingPath;
-import org.restlet.ext.jaxrs.util.SortedMetadata;
-import org.restlet.ext.jaxrs.util.Util;
-import org.restlet.ext.jaxrs.util.WrappedRequestForHttpHeaders;
-import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
-import org.restlet.ext.jaxrs.wrappers.ContextResolver;
-import org.restlet.ext.jaxrs.wrappers.HiddenJaxRsRouter;
-import org.restlet.ext.jaxrs.wrappers.MessageBodyReaderSet;
-import org.restlet.ext.jaxrs.wrappers.MessageBodyWriter;
-import org.restlet.ext.jaxrs.wrappers.MessageBodyWriterSet;
-import org.restlet.ext.jaxrs.wrappers.Provider;
-import org.restlet.ext.jaxrs.wrappers.ResourceClass;
-import org.restlet.ext.jaxrs.wrappers.ResourceMethod;
-import org.restlet.ext.jaxrs.wrappers.ResourceMethodOrLocator;
-import org.restlet.ext.jaxrs.wrappers.ResourceObject;
-import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
-import org.restlet.ext.jaxrs.wrappers.SubResourceLocator;
-import org.restlet.ext.jaxrs.wrappers.WrapperFactory;
+import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.core.HttpHeaders;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
+import org.restlet.ext.jaxrs.internal.exceptions.InstantiateProviderException;
+import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
+import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.internal.provider.BufferedReaderProvider;
+import org.restlet.ext.jaxrs.internal.provider.ByteArrayProvider;
+import org.restlet.ext.jaxrs.internal.provider.DataSourceProvider;
+import org.restlet.ext.jaxrs.internal.provider.FileProvider;
+import org.restlet.ext.jaxrs.internal.provider.InputStreamProvider;
+import org.restlet.ext.jaxrs.internal.provider.JaxRsOutputRepresentation;
+import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
+import org.restlet.ext.jaxrs.internal.provider.JaxbProvider;
+import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
+import org.restlet.ext.jaxrs.internal.provider.StringProvider;
+import org.restlet.ext.jaxrs.internal.provider.WwwFormFormProvider;
+import org.restlet.ext.jaxrs.internal.provider.WwwFormMmapProvider;
+import org.restlet.ext.jaxrs.internal.provider.XsltProvider;
+import org.restlet.ext.jaxrs.internal.util.MatchingResult;
+import org.restlet.ext.jaxrs.internal.util.PathRegExp;
+import org.restlet.ext.jaxrs.internal.util.RemainingPath;
+import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
+import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.ext.jaxrs.internal.util.WrappedRequestForHttpHeaders;
+import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
+import org.restlet.ext.jaxrs.internal.wrappers.ContextResolver;
+import org.restlet.ext.jaxrs.internal.wrappers.HiddenJaxRsRouter;
+import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyReaderSet;
+import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriter;
+import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriterSet;
+import org.restlet.ext.jaxrs.internal.wrappers.Provider;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceClass;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethodOrLocator;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceObject;
+import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
+import org.restlet.ext.jaxrs.internal.wrappers.SubResourceLocator;
+import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
@@ -1100,8 +1100,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      * {@link Response}.
      * 
      * @see org.restlet.ext.jaxrs.JaxRsRouterHelpMethods#jaxRsRespToRestletResp(javax.ws.rs.core.Response,
-     *      org.restlet.ext.jaxrs.core.CallContext,
-     *      org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper)
+     *      org.restlet.ext.jaxrs.internal.core.CallContext,
+     *      org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper)
      */
     @Override
     void jaxRsRespToRestletResp(javax.ws.rs.core.Response jaxRsResponse,
@@ -1355,7 +1355,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     /**
      * for internal use only
      * 
-     * @see org.restlet.ext.jaxrs.wrappers.HiddenJaxRsRouter#getMessageBodyReaders()
+     * @see org.restlet.ext.jaxrs.internal.wrappers.HiddenJaxRsRouter#getMessageBodyReaders()
      */
     @Deprecated
     public MessageBodyReaderSet getMessageBodyReaders() {
@@ -1365,7 +1365,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     /**
      * for internal use only
      * 
-     * @see org.restlet.ext.jaxrs.wrappers.HiddenJaxRsRouter#getMessageBodyWriters()
+     * @see org.restlet.ext.jaxrs.internal.wrappers.HiddenJaxRsRouter#getMessageBodyWriters()
      */
     @Deprecated
     public MessageBodyWriterSet getMessageBodyWriters() {
@@ -1375,7 +1375,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     /**
      * for internal use only
      * 
-     * @see org.restlet.ext.jaxrs.wrappers.HiddenJaxRsRouter#getWrapperFactory()
+     * @see org.restlet.ext.jaxrs.internal.wrappers.HiddenJaxRsRouter#getWrapperFactory()
      */
     @Deprecated
     public WrapperFactory getWrapperFactory() {

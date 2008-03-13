@@ -20,7 +20,7 @@ package org.restlet.test.jaxrs.util;
 
 import junit.framework.TestCase;
 
-import org.restlet.ext.jaxrs.util.RemainingPath;
+import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 
 @SuppressWarnings("unchecked")
 public class RemainingPathTests extends TestCase {

@@ -28,7 +28,7 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.tests.MatrixParamTest;
 
 /**

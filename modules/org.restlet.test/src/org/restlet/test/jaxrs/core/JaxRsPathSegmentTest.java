@@ -21,7 +21,7 @@ import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.restlet.ext.jaxrs.core.JaxRsPathSegment;
+import org.restlet.ext.jaxrs.internal.core.JaxRsPathSegment;
 
 import junit.framework.TestCase;
 

@@ -32,7 +32,7 @@ import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.AccessControl;
 import org.restlet.ext.jaxrs.AllowAllAccess;
 import org.restlet.ext.jaxrs.JaxRsRouter;
-import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server

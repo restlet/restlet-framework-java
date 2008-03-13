@@ -22,7 +22,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
 
-import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.car.CarListResource;
 import org.restlet.test.jaxrs.services.resources.SimpleTrain;
 

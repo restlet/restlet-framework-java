@@ -20,7 +20,7 @@ package org.restlet.test.jaxrs.util;
 
 import junit.framework.TestCase;
 
-import org.restlet.ext.jaxrs.util.EncodeOrCheck;
+import org.restlet.ext.jaxrs.internal.util.EncodeOrCheck;
 
 @SuppressWarnings("unchecked")
 public class EncodeOrCheckTests extends TestCase {

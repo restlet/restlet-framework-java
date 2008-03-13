@@ -22,8 +22,8 @@ import java.util.logging.Logger;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
-import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
-import org.restlet.ext.jaxrs.wrappers.WrapperFactory;
+import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
+import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
 import org.restlet.test.jaxrs.services.path.IllegalPathService2;
 

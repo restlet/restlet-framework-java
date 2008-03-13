@@ -32,15 +32,15 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.core.CallContext;
-import org.restlet.ext.jaxrs.exceptions.ConvertParameterException;
-import org.restlet.ext.jaxrs.exceptions.NoMessageBodyReaderException;
-import org.restlet.ext.jaxrs.exceptions.RequestHandledException;
-import org.restlet.ext.jaxrs.util.RemainingPath;
-import org.restlet.ext.jaxrs.util.SortedMetadata;
-import org.restlet.ext.jaxrs.wrappers.AbstractMethodWrapper;
-import org.restlet.ext.jaxrs.wrappers.ResourceClass;
-import org.restlet.ext.jaxrs.wrappers.ResourceObject;
+import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
+import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
+import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.internal.util.RemainingPath;
+import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
+import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceClass;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceObject;
 import org.restlet.resource.StringRepresentation;
 
 /**

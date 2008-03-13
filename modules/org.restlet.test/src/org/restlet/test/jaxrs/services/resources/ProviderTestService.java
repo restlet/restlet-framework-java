@@ -42,9 +42,9 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.data.Form;
 import org.restlet.ext.jaxrs.XsltSource;
-import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
-import org.restlet.ext.jaxrs.util.Converter;
-import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
+import org.restlet.ext.jaxrs.internal.util.Converter;
+import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.tests.ProviderTest;
 import org.xml.sax.InputSource;

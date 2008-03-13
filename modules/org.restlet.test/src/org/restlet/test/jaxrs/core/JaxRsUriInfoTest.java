@@ -28,8 +28,8 @@ import javax.ws.rs.core.UriInfo;
 import junit.framework.TestCase;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.jaxrs.core.JaxRsUriInfo;
-import org.restlet.ext.jaxrs.todo.NotYetImplementedException;
+import org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo;
+import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 
 /**
  * @author Stephan Koops
@@ -106,7 +106,7 @@ public class JaxRsUriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getRequestUriBuilder()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getRequestUriBuilder()}.
      */
     public void testEqualsObject() {
         assertEquals("URI_INFO_3 and URI_INFO_4 must be equals", URI_INFO_3,
@@ -115,7 +115,7 @@ public class JaxRsUriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getAbsolutePath()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getAbsolutePath()}.
      */
     public void testGetAbsolutePath() throws Exception {
         JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
@@ -126,7 +126,7 @@ public class JaxRsUriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getAbsolutePathBuilder()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getAbsolutePathBuilder()}.
      */
     public void testGetAbsolutePathBuilder() throws Exception {
         JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
@@ -140,7 +140,7 @@ public class JaxRsUriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getBaseUri()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getBaseUri()}.
      */
     public void testGetBaseUri() {
         URI baseUri1 = URI_INFO_1.getBaseUri();
@@ -149,7 +149,7 @@ public class JaxRsUriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getBaseUriBuilder()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getBaseUriBuilder()}.
      */
     public void testGetBaseUriBuilder() throws Exception {
         URI uri = URI_INFO_1.getBaseUri();
@@ -157,7 +157,7 @@ public class JaxRsUriInfoTest extends TestCase {
     }
 
     /**
-     * Test method for {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getPath()}.
+     * Test method for {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPath()}.
      */
     public void testGetPath() {
         assertEquals(RELATIV_1, URI_INFO_1.getPath());
@@ -166,7 +166,7 @@ public class JaxRsUriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getPath(boolean)}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPath(boolean)}.
      */
     public void testGetPathBoolean() {
         assertEquals(RELATIV_1, URI_INFO_1.getPath(true));
@@ -177,7 +177,7 @@ public class JaxRsUriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getPathSegments()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPathSegments()}.
      */
     public void testGetPathSegments() {
         // must be alid for every UriInfo
@@ -189,7 +189,7 @@ public class JaxRsUriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getPathSegments(boolean)}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPathSegments(boolean)}.
      */
     public void testGetPathSegmentsBoolean() {
         checkPathSegments(URI_INFO_1.getPathSegments(true), "relativ", 0, "a",
@@ -221,7 +221,7 @@ public class JaxRsUriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getQueryParameters(boolean)}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getQueryParameters(boolean)}.
      */
     public void testGetQueryParametersDecoded() {
         assertEquals("123", URI_INFO_7.getQueryParameters(true).getFirst("def"));
@@ -237,7 +237,7 @@ public class JaxRsUriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getQueryParameters()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getQueryParameters()}.
      */
     public void testGetQueryParametersEncoded() {
         assertEquals("123", URI_INFO_7.getQueryParameters(false)
@@ -260,7 +260,7 @@ public class JaxRsUriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getRequestUri()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getRequestUri()}.
      */
     public void testGetRequestUri() throws Exception {
         URI uri1 = URI_INFO_1.getRequestUri();

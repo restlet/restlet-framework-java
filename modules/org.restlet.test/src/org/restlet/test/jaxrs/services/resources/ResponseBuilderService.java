@@ -26,7 +26,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 
-import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
  * Test what happens when two methods should be use for the same request

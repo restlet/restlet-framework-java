@@ -24,7 +24,7 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.provider.JaxbElementProvider;
+import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;

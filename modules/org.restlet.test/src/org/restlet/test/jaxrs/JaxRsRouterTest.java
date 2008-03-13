@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.AllowAllAccess;
 import org.restlet.ext.jaxrs.JaxRsRouter;
-import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
 import org.restlet.test.jaxrs.services.path.IllegalPathService2;
 import org.restlet.test.jaxrs.services.path.IllegalPathService3;

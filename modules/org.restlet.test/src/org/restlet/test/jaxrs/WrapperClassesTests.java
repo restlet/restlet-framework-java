@@ -24,10 +24,10 @@ import java.util.logging.Logger;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import org.restlet.ext.jaxrs.util.RemainingPath;
-import org.restlet.ext.jaxrs.wrappers.ResourceMethod;
-import org.restlet.ext.jaxrs.wrappers.RootResourceClass;
-import org.restlet.ext.jaxrs.wrappers.WrapperFactory;
+import org.restlet.ext.jaxrs.internal.util.RemainingPath;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
+import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
+import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 
 import junit.framework.TestCase;
 

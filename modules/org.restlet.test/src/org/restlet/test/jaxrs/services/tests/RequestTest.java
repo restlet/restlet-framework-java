@@ -32,8 +32,8 @@ import org.restlet.data.Preference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.ext.jaxrs.util.Converter;
-import org.restlet.ext.jaxrs.util.Util;
+import org.restlet.ext.jaxrs.internal.util.Converter;
+import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.resources.RequestService;
 
 /**
