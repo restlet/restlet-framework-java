@@ -424,6 +424,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         // TODO JaxRsRouter.extensionMappings.
         // https://jsr311.dev.java.net/servlets/ReadMsg?listName=users&msgNo=77
         // there is also a solution in Restlet
+        // http://restlet.tigris.org/issues/show_bug.cgi?id=463
     }
 
     // methods for initialization ready

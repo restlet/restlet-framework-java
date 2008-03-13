@@ -18,12 +18,6 @@
 
 package org.restlet.ext.jaxrs.todo;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
-import org.restlet.util.Series;
-
 /**
  * Here are notices for the implementation.
  */
@@ -44,21 +38,7 @@ public class Notizen {
     // character set is not specified by the application or if the application
     // specifies a character set that is unsupported.
 
-    // TODO @Context: ClientInfo und Coditions
+    // TODO @Context: ClientInfo und Conditions
     
     // LATER Constructor-Nutzung ist inkompatibel 
-
-    // private List<Integer> x;
-
-    public static void main(String[] args) throws Exception {
-        Field field = Notizen.class.getDeclaredField("x");
-        System.out.println(field.getType());
-        System.out.println(field.getType().isAssignableFrom(Series.class));
-        Type t = field.getGenericType();
-        if (t instanceof ParameterizedType) {
-            System.out.println(((ParameterizedType)t).getActualTypeArguments()[0]);
-        } else {
-            "".toString();
-        }
-    }
 }

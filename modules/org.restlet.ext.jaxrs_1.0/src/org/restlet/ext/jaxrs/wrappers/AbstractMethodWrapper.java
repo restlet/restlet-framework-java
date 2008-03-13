@@ -85,7 +85,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
 
     /**
      * Returns the path template of the given sub resource locator or sub
-     * resource method.
+     * resource method. It is encoded (if necessary) and valid.
      * 
      * @param method
      *                the java method
