@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.internal.util.EncodeOrCheck;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 public class EncodeOrCheckTests extends TestCase {
 
     void checkForHexDigitAllowd(String string) {

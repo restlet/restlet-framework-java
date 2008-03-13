@@ -32,7 +32,6 @@ import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.AccessControl;
 import org.restlet.ext.jaxrs.AllowAllAccess;
 import org.restlet.ext.jaxrs.JaxRsRouter;
-import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
@@ -144,7 +143,7 @@ public class RestletServerWrapper implements ServerWrapper {
     public int getPort() {
         if (this.component == null)
             throw new IllegalStateException("the server is not started yet.");
-        Server server = Util.getOnlyElement(this.component.getServers());
+        Server server = this.component.getServers().get(0);
         int port = server.getPort();
         if (port > 0)
             return port;

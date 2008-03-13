@@ -23,9 +23,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.resources.SimpleTrain;
+import org.restlet.test.jaxrs.util.TestUtils;
 
 public class SimpleTrainTest extends JaxRsTestCase {
 
@@ -71,7 +71,8 @@ public class SimpleTrainTest extends JaxRsTestCase {
         Representation representation = response.getEntity();
         MediaType mediaType = representation.getMediaType();
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertTrue(mediaType.equals(MediaType.TEXT_PLAIN, true) || mediaType.equals(MediaType.TEXT_HTML, true));
+        assertTrue(mediaType.equals(MediaType.TEXT_PLAIN, true)
+                || mediaType.equals(MediaType.TEXT_HTML, true));
 
         response = get(MediaType.TEXT_PLAIN);
         sysOutEntityIfError(response);
@@ -84,8 +85,8 @@ public class SimpleTrainTest extends JaxRsTestCase {
     public void testGetTextMultiple1() throws Exception {
         if (ONLY_M2 || ONLY_TEXT_ALL)
             return;
-        Response response = accessServer(Method.GET, SimpleTrain.class, Util
-                .createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+        Response response = accessServer(Method.GET, SimpleTrain.class,
+                TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
                         MediaType.TEXT_CALENDAR }));
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -97,8 +98,8 @@ public class SimpleTrainTest extends JaxRsTestCase {
     public void testGetTextMultiple2() throws Exception {
         if (ONLY_TEXT_ALL)
             return;
-        Response response = accessServer(Method.GET, SimpleTrain.class, Util
-                .createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+        Response response = accessServer(Method.GET, SimpleTrain.class,
+                TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
                         MediaType.TEXT_HTML }));
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -111,10 +112,10 @@ public class SimpleTrainTest extends JaxRsTestCase {
         if (ONLY_M2 || ONLY_TEXT_ALL)
             return;
         Response responseHead = accessServer(Method.HEAD, SimpleTrain.class,
-                Util.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+                TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
                         MediaType.TEXT_HTML }));
         Response responseGett = accessServer(Method.GET, SimpleTrain.class,
-                Util.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
+                TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
                         MediaType.TEXT_HTML }));
         assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
         assertEquals(Status.SUCCESS_OK, responseGett.getStatus());

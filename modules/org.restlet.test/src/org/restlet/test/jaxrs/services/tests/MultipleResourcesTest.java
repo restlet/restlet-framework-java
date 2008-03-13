@@ -22,9 +22,9 @@ import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
 
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.car.CarListResource;
 import org.restlet.test.jaxrs.services.resources.SimpleTrain;
+import org.restlet.test.jaxrs.util.TestUtils;
 
 public class MultipleResourcesTest extends JaxRsTestCase {
     @Override
@@ -33,7 +33,8 @@ public class MultipleResourcesTest extends JaxRsTestCase {
             @Override
             @SuppressWarnings("unchecked")
             public Set<Class<?>> getResourceClasses() {
-                return Util.createSet(SimpleTrain.class, CarListResource.class);
+                return TestUtils.createSet(SimpleTrain.class,
+                        CarListResource.class);
             }
         };
     }

@@ -15,3 +15,4 @@ Require-Bundle: com.noelios.restlet.ext.grizzly;visibility:=reexport,
  org.restlet.ext.spring;visibility:=reexport,
  org.restlet.ext.wadl;visibility:=reexport,
  org.restlet.ext.jaxb
+

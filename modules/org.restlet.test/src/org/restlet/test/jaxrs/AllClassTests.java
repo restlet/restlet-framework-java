@@ -26,7 +26,9 @@ import org.restlet.test.jaxrs.core.JaxRsPathSegmentTest;
 import org.restlet.test.jaxrs.core.JaxRsUriBuilderTest;
 import org.restlet.test.jaxrs.core.JaxRsUriInfoTest;
 import org.restlet.test.jaxrs.util.EncodeOrCheckTests;
+import org.restlet.test.jaxrs.util.PathRegExpTests;
 import org.restlet.test.jaxrs.util.RemainingPathTests;
+import org.restlet.test.jaxrs.wrappers.RootResourceClassTest;
 
 public class AllClassTests extends TestCase {
     public static Test suite() {

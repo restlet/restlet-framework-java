@@ -25,9 +25,9 @@ import javax.ws.rs.core.ApplicationConfig;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.others.CrazyTypeProvider;
 import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
+import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
  * @see CrazyTypeProvider
@@ -46,12 +46,12 @@ public class OwnProviderTest extends JaxRsTestCase {
         return new ApplicationConfig() {
             @Override
             public Set<Class<?>> getResourceClasses() {
-                return (Set) Util.createSet(getRootResourceClass());
+                return (Set) TestUtils.createSet(getRootResourceClass());
             }
 
             @Override
             public Set<Class<?>> getProviderClasses() {
-                return (Set) Util.createSet(CrazyTypeProvider.class);
+                return (Set) TestUtils.createSet(CrazyTypeProvider.class);
             }
         };
     }

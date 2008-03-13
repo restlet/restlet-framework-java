@@ -30,10 +30,10 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.JaxRsRouter;
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.others.Jsr250TestProvider;
 import org.restlet.test.jaxrs.services.resources.Jsr250TestService;
+import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
  * @author Stephan Koops
@@ -45,12 +45,12 @@ public class Jsr250Test extends TestCase {
         return new ApplicationConfig() {
             @Override
             public Set<Class<?>> getResourceClasses() {
-                return (Set) Util.createSet(Jsr250TestService.class);
+                return (Set) TestUtils.createSet(Jsr250TestService.class);
             }
 
             @Override
             public Set<Class<?>> getProviderClasses() {
-                return (Set) Util.createSet(Jsr250TestProvider.class);
+                return (Set) TestUtils.createSet(Jsr250TestProvider.class);
             }
         };
     }

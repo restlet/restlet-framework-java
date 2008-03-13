@@ -42,6 +42,7 @@ import org.restlet.test.jaxrs.services.resources.HttpHeaderTestService;
  * 
  * @author Stephan Koops
  */
+@SuppressWarnings("all")
 public class HttpHeaderTest extends JaxRsTestCase {
 
     @Override

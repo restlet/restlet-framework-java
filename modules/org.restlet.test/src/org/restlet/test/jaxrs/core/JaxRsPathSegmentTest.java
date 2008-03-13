@@ -25,6 +25,7 @@ import org.restlet.ext.jaxrs.internal.core.JaxRsPathSegment;
 
 import junit.framework.TestCase;
 
+@SuppressWarnings("all")
 public class JaxRsPathSegmentTest extends TestCase {
 
     @Override

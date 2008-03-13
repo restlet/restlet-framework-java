@@ -35,6 +35,7 @@ import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
  * @author Stephan Koops
  * 
  */
+@SuppressWarnings("all")
 public class JaxRsUriInfoTest extends TestCase {
 
     private static final String BASE_REF_STR = "http://localhost/test/";

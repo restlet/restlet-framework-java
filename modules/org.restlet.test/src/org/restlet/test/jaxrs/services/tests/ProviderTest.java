@@ -24,7 +24,6 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
@@ -206,12 +205,6 @@ public class ProviderTest extends JaxRsTestCase {
         getAndCheckJaxb("jaxbElement");
     }
 
-    /**
-     * @see JaxbElementProvider#writeTo(javax.xml.bind.JAXBElement,
-     *      java.lang.reflect.Type, java.lang.annotation.Annotation[],
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.OutputStream)
-     */
     public void testJaxbElementPost() throws Exception {
         postAndCheckXml("jaxbElement");
     }

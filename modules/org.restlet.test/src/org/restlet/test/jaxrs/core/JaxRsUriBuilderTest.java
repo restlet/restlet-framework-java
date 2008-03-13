@@ -40,6 +40,7 @@ import org.restlet.test.jaxrs.services.resources.SimpleTrain;
  * @author Stephan
  * 
  */
+@SuppressWarnings("all")
 public class JaxRsUriBuilderTest extends TestCase {
 
     /**

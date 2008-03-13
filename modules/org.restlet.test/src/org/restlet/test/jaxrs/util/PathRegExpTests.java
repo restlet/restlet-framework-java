@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.test.jaxrs;
+package org.restlet.test.jaxrs.util;
 
 import junit.framework.TestCase;
 
@@ -28,6 +28,7 @@ import org.restlet.ext.jaxrs.internal.util.RemainingPath;
  * @author Stephan Koops
  * 
  */
+@SuppressWarnings("all")
 public class PathRegExpTests extends TestCase {
 
     /**

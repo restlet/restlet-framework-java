@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 public class RemainingPathTests extends TestCase {
 
     public void testRemoveParams1() {

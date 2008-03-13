@@ -11,15 +11,12 @@ Require-Bundle: org.restlet;visibility:=reexport,
  javax.mail;visibility:=reexport,
  javax.xml.bind;visibility:=reexport,
  javax.xml.stream;visibility:=reexport
-Export-Package: org.restlet.ext.jaxrs;uses:="org.restlet.data,org.restlet.ext.jaxrs.wrappers,org.restlet",
- org.restlet.ext.jaxrs.internal.core;uses:="org.restlet.data,javax.ws.rs.core",
- org.restlet.ext.jaxrs.internal.exceptions,
- org.restlet.ext.jaxrs.internal.provider,
- org.restlet.ext.jaxrs.internal.spi,
- org.restlet.ext.jaxrs.internal.todo,
- org.restlet.ext.jaxrs.internal.util;uses:="org.restlet.data,javax.ws.rs.core",
- org.restlet.ext.jaxrs.internal.wrappers;
-  uses:="javax.ws.rs,
+Export-Package: org.restlet.ext.jaxrs;
+  uses:="org.restlet.ext.jaxrs.internal.util,
+   javax.ws.rs,
+   org.restlet.ext.jaxrs.internal.core,
+   org.restlet.ext.jaxrs.internal.wrappers,
    org.restlet.data,
-   org.restlet.resource,
-   org.restlet.ext.jaxrs"
+   org.restlet,
+   org.restlet.ext.jaxrs.internal.exceptions,
+   javax.ws.rs.core"

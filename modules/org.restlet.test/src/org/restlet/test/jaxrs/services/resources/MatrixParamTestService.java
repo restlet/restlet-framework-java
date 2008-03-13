@@ -28,8 +28,8 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.tests.MatrixParamTest;
+import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
  * @author Stephan Koops
@@ -50,7 +50,7 @@ public class MatrixParamTestService {
     @ProduceMime("text/plain")
     @Path("b")
     public String getB(@Context UriInfo uriInfo) {
-        PathSegment pSeg = Util.getLastElement(uriInfo.getPathSegments());
+        PathSegment pSeg = TestUtils.getLastElement(uriInfo.getPathSegments());
         String vorname = pSeg.getMatrixParameters().getFirst("firstname");
         String nachname = pSeg.getMatrixParameters().getFirst("lastname");
         return vorname + " " + nachname;

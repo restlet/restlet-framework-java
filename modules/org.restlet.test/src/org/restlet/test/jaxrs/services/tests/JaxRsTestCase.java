@@ -67,6 +67,7 @@ import org.restlet.test.jaxrs.server.ServerWrapperFactory;
  * @author Stephan
  * 
  */
+@SuppressWarnings("all")
 public abstract class JaxRsTestCase extends TestCase {
 
     /**

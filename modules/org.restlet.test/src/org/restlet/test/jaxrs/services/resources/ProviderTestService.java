@@ -47,12 +47,14 @@ import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.tests.ProviderTest;
+import org.restlet.test.jaxrs.util.TestUtils;
 import org.xml.sax.InputSource;
 
 /**
  * @author Stephan Koops
  * @see ProviderTest
  */
+@SuppressWarnings("all")
 @Path("/providerTest")
 public class ProviderTestService {
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -310,6 +312,6 @@ public class ProviderTestService {
     @ProduceMime("text/plain")
     public byte[] xsltPost(Source source) throws IOException {
         InputSource inputSource = SAXSource.sourceToInputSource(source);
-        return Util.getByteArray(inputSource.getByteStream());
+        return TestUtils.getByteArray(inputSource.getByteStream());
     }
 }

@@ -32,9 +32,8 @@ import org.restlet.data.Preference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.ext.jaxrs.internal.util.Converter;
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.resources.RequestService;
+import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
  * This test class checks if the Request.evaluatePreconditions methods works
@@ -69,7 +68,7 @@ public class RequestTest extends JaxRsTestCase {
     private static Conditions createConditions(Date modifiedSince, Tag entityTag) {
         Conditions conditions = new Conditions();
         conditions.setModifiedSince(modifiedSince);
-        conditions.setMatch(Util.createList(entityTag));
+        conditions.setMatch(TestUtils.createList(entityTag));
         return conditions;
     }
 
@@ -80,9 +79,10 @@ public class RequestTest extends JaxRsTestCase {
     /**
      * @return
      */
+    @SuppressWarnings("all")
     private Tag getDatastoreETag() {
-        return Converter.toRestletTag(RequestService
-                .getEntityTagFromDatastore());
+        return org.restlet.ext.jaxrs.internal.util.Converter
+                .toRestletTag(RequestService.getEntityTagFromDatastore());
     }
 
     @Override
@@ -192,7 +192,7 @@ public class RequestTest extends JaxRsTestCase {
 
     public void testGetEntityTagMatch() throws Exception {
         Conditions conditions = new Conditions();
-        conditions.setMatch(Util.createList(getDatastoreETag()));
+        conditions.setMatch(TestUtils.createList(getDatastoreETag()));
         Response response = get("date", conditions);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(RequestService.getLastModificationDateFromDatastore(),
@@ -202,7 +202,7 @@ public class RequestTest extends JaxRsTestCase {
         assertTrue(response.getEntity().getSize() > 0);
 
         conditions = new Conditions();
-        conditions.setMatch(Util.createList(new Tag("affer")));
+        conditions.setMatch(TestUtils.createList(new Tag("affer")));
         response = get("date", conditions);
         assertEquals(PREC_FAILED, response.getStatus());
         assertTrue("Entity must contain \"does not match Entity Tag\"",
@@ -212,7 +212,7 @@ public class RequestTest extends JaxRsTestCase {
 
     public void testGetEntityTagNoneMatch() throws Exception {
         Conditions conditions = new Conditions();
-        conditions.setNoneMatch(Util.createList(getDatastoreETag()));
+        conditions.setNoneMatch(TestUtils.createList(getDatastoreETag()));
         Response response = get("date", conditions);
         assertEquals(PREC_FAILED, response.getStatus());
         assertTrue("Entity must contain \"matches Entity Tag\"", response
@@ -220,7 +220,7 @@ public class RequestTest extends JaxRsTestCase {
                 .contains("The entity matches Entity Tag"));
 
         conditions = new Conditions();
-        conditions.setNoneMatch(Util.createList(new Tag("affer")));
+        conditions.setNoneMatch(TestUtils.createList(new Tag("affer")));
         response = get("date", conditions);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
@@ -334,7 +334,7 @@ public class RequestTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEqualMediaType(MediaType.TEXT_HTML, response.getEntity()
                 .getMediaType());
-        assertEquals(new Language("de"), Util.getOnlyElement(response
+        assertEquals(new Language("de"), TestUtils.getOnlyElement(response
                 .getEntity().getLanguages()));
         assertTrue("dimensions must contain " + Dimension.MEDIA_TYPE, response
                 .getDimensions().contains(Dimension.MEDIA_TYPE));
@@ -346,14 +346,14 @@ public class RequestTest extends JaxRsTestCase {
         response = get("selectVariants", clientInfo);
         assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
                 .getMediaType());
-        assertEquals(new Language("de"), Util.getOnlyElement(response
+        assertEquals(new Language("de"), TestUtils.getOnlyElement(response
                 .getEntity().getLanguages()));
 
         accLangs.add(new Preference<Language>(Language.ENGLISH, 0.9f));
         response = get("selectVariants", clientInfo);
         assertEqualMediaType(MediaType.TEXT_PLAIN, response.getEntity()
                 .getMediaType());
-        assertEquals(Language.ENGLISH, Util.getOnlyElement(response.getEntity()
-                .getLanguages()));
+        assertEquals(Language.ENGLISH, TestUtils.getOnlyElement(response
+                .getEntity().getLanguages()));
     }
 }

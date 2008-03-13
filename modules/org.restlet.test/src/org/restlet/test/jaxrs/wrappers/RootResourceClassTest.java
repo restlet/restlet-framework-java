@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.test.jaxrs;
+package org.restlet.test.jaxrs.wrappers;
 
 import java.util.logging.Logger;
 
@@ -27,6 +27,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
 import org.restlet.test.jaxrs.services.path.IllegalPathService2;
 
+@SuppressWarnings("all")
 public class RootResourceClassTest extends TestCase {
 
     @Override

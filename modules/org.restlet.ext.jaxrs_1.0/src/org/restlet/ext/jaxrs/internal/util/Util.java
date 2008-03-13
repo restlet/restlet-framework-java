@@ -18,7 +18,6 @@
 
 package org.restlet.ext.jaxrs.internal.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -455,20 +454,6 @@ public class Util {
         } else {
             return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
         }
-    }
-
-    /**
-     * Reads the full inputStream and returns an byte-array of it
-     * 
-     * @param inputStream
-     * @return
-     * @throws IOException
-     */
-    public static byte[] getByteArray(InputStream inputStream)
-            throws IOException {
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(4096);
-        copyStream(inputStream, byteStream);
-        return byteStream.toByteArray();
     }
 
     /**

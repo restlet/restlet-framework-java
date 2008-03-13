@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.test.jaxrs;
+package org.restlet.test.jaxrs.wrappers;
 
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -35,6 +35,7 @@ import junit.framework.TestCase;
  * @author Stephan Koops
  * 
  */
+@SuppressWarnings("all")
 public class WrapperClassesTests extends TestCase {
 
     private static final WrapperFactory wrapperFactory = new WrapperFactory(
