@@ -30,6 +30,7 @@ public class NoeliosTestSuite extends TestSuite {
 
     /** Constructor. */
     public NoeliosTestSuite() {
+        addTestSuite(AuthenticationTestCase.class);
         addTestSuite(Base64TestCase.class);
         // addTestSuite(ChunkedEncodingTestCase.class);
         addTestSuite(ChunkedInputStreamTestCase.class);
@@ -45,7 +46,7 @@ public class NoeliosTestSuite extends TestSuite {
         addTestSuite(PostPutTestCase.class);
         addTestSuite(PreferencesTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
-        addTestSuite(AuthenticationTestCase.class);
+        // addTestSuite(SslGetTestCase.class);
     }
 
     /**

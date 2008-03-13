@@ -1,4 +1,4 @@
-package org.restlet.ext.jaxrs.wrappers;
+package org.restlet.ext.jaxrs.internal.wrappers;
 
 /**
  * Wraps a {@link javax.ws.rs.ext.ContextResolver}.

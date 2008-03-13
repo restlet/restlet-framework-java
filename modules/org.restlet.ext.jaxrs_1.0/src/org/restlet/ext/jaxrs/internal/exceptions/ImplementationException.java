@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.ext.jaxrs.exceptions;
+package org.restlet.ext.jaxrs.internal.exceptions;
 
 /**
  * Indicates, that the JAX-RS implementation observed, that it contains an error
@@ -24,7 +24,7 @@ package org.restlet.ext.jaxrs.exceptions;
  * 
  * @author Stephan Koops
  */
-public class ImplementationException extends JaxRsRuntimeException  {
+public class ImplementationException extends JaxRsRuntimeException {
 
     private static final long serialVersionUID = 5635188228961655076L;
 
@@ -43,7 +43,7 @@ public class ImplementationException extends JaxRsRuntimeException  {
     public ImplementationException(Throwable cause) {
         super(cause);
     }
-    
+
     /**
      * 
      * @param message

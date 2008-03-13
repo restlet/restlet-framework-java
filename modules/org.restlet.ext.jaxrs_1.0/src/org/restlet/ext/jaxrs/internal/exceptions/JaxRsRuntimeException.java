@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.ext.jaxrs.exceptions;
+package org.restlet.ext.jaxrs.internal.exceptions;
 
 /**
  * This class is the super class for the runtime exception in this

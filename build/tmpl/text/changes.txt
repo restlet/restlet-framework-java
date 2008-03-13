@@ -42,6 +42,8 @@ Changes log
           subclassing by the XDB extension. Suggested by Marcelo Ochoa.
         - Added new constructors to JiBX extension not requiring the
           binding name parameter.
+        - Distributed experimental JAX-RS extension implementing the
+          JSR-311 draft specification. Contributed by Stephan Koops.
     - Misc
         - Reformatting of the changes log. Contributed by Avi Flax.
         - All Component subclasses now use a main method that throws 
@@ -60,6 +62,7 @@ Changes log
           automatically do URI decoding. Suggested by Paul J. Lucas.
         - Refactored NRE helpers hiearchy to take advantage of generics
           and remove duplicatations.
+        - Added SSL unit test contributed by Bruno Harbulot.
  
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed

@@ -338,7 +338,8 @@ public class EncodeOrCheck {
     }
 
     /**
-     * @param host must not be null
+     * @param host
+     *                must not be null
      * @param encode
      * @return
      * @throws IllegalArgumentException
@@ -405,8 +406,7 @@ public class EncodeOrCheck {
         else
             EncodeOrCheck.checkForInvalidUriChars(string, indexForErrMessage,
                     nameForMessage);
-        if (string == null)
-            return null;
+
         return string.toString();
     }
 
@@ -427,7 +427,8 @@ public class EncodeOrCheck {
     }
 
     /**
-     * @param path must not be null.
+     * @param path
+     *                must not be null.
      * @param encode
      * @return
      */

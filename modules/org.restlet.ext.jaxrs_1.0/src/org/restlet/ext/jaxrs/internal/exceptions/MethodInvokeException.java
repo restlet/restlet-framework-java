@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.exceptions;
+package org.restlet.ext.jaxrs.internal.exceptions;
 
 import java.lang.reflect.InvocationTargetException;
 

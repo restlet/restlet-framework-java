@@ -856,7 +856,7 @@
       <pomModule name="httpclient" />
       <pomModule name="javamail" />
       <pomModule name="jaxb" />
-<!-- disabled for now  <pomModule name="jaxrs" /> -->
+      <pomModule name="jaxrs" />
       <pomModule name="jdbc" ext="dbcp" />
       <pomModule name="jetty" />
       <pomModule name="jibx" />
@@ -1063,7 +1063,7 @@
             <pathelement path="${mod}/${mod-httpclient-id}/src/" />
             <pathelement path="${mod}/${mod-javamail-id}/src/" />
             <pathelement path="${mod}/${mod-jaxb-id}/src/" />
-<!-- disabled for now  <pathelement path="${mod}/${mod-jaxrs-id}/src/" /> -->
+            <pathelement path="${mod}/${mod-jaxrs-id}/src/" />
             <pathelement path="${mod}/${mod-jdbc-id}/src/" />
             <pathelement path="${mod}/${mod-jetty-id}/src/" />
             <pathelement path="${mod}/${mod-jibx-id}/src/" />
@@ -1121,11 +1121,17 @@
 
    <target name="verify-tests" depends="verify-ant" description="Execute the tests suites.">
       <mkdir dir="${temp}/test"/>
+      <property name="server.testkeystore.location" location="${mod}/${mod-ri-test-id}/dummy.jks" />
+      <property name="server.testkeystore.password" value="testtest" />
       <junit printsummary="true"
              fork="true"
              haltonfailure="true"
              filtertrace="true"
              showoutput="${verbose}">
+         <jvmarg value="-Djavax.net.ssl.keyStore=${server.testkeystore.location}" />
+      	 <jvmarg value="-Djavax.net.ssl.trustStore=${server.testkeystore.location}" />
+      	 <jvmarg value="-Djavax.net.ssl.trustStorePassword=${server.testkeystore.password}" />
+      	 <jvmarg value="-Djavax.net.ssl.keyStorePassword=${server.testkeystore.password}" />
          <classpath>
             <path refid="mod-api-test-path" />
          </classpath>
@@ -1253,7 +1259,7 @@
       <stageLibrary name="io" />
       <stageLibrary name="javamail" />
       <stageLibrary name="jaxb" />
-<!-- disabled for now  <stageLibrary name="jaxrs" /> -->
+      <stageLibrary name="jaxrs" />
       <stageLibrary name="activation" />
       <stageLibrary name="annotation" />
       <stageLibrary name="jetty" />
@@ -1284,7 +1290,7 @@
       <stageModule name="httpclient" />
       <stageModule name="javamail" />
       <stageModule name="jaxb" />
-<!-- disabled for now  <stageModule name="jaxrs" /> -->
+      <stageModule name="jaxrs" />
       <stageModule name="jibx" />
       <stageModule name="jdbc" />
       <stageModule name="jetty" />
@@ -1323,7 +1329,7 @@
       <maven2Module name="httpclient" />
       <maven2Module name="javamail" />
       <maven2Module name="jaxb" />
-<!-- disabled for now  <maven2Module name="jaxrs" /> -->
+      <maven2Module name="jaxrs" />
       <maven2Module name="jdbc" />
       <maven2Module name="jetty" />
       <maven2Module name="jibx" />
