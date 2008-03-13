@@ -19,4 +19,11 @@ Export-Package: org.restlet.ext.jaxrs;
    org.restlet.data,
    org.restlet,
    org.restlet.ext.jaxrs.internal.exceptions,
-   javax.ws.rs.core"
+   javax.ws.rs.core",
+ org.restlet.ext.jaxrs.internal.core,
+ org.restlet.ext.jaxrs.internal.exceptions,
+ org.restlet.ext.jaxrs.internal.provider,
+ org.restlet.ext.jaxrs.internal.spi,
+ org.restlet.ext.jaxrs.internal.todo,
+ org.restlet.ext.jaxrs.internal.util,
+ org.restlet.ext.jaxrs.internal.wrappers
