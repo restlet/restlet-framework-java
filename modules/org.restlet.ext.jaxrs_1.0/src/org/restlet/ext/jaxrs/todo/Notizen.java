@@ -21,9 +21,6 @@ package org.restlet.ext.jaxrs.todo;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import org.restlet.util.Series;
 
@@ -51,7 +48,7 @@ public class Notizen {
     
     // LATER Constructor-Nutzung ist inkompatibel 
 
-    private List<Integer> x;
+    // private List<Integer> x;
 
     public static void main(String[] args) throws Exception {
         Field field = Notizen.class.getDeclaredField("x");
