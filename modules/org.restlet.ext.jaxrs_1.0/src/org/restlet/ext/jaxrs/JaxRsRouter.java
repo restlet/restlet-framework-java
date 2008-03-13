@@ -393,9 +393,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      */
     private void addProvider(Class<?> jaxRsProviderClass)
             throws IllegalArgumentException, InstantiateProviderException {
-        // REQUEST what should happens with providers not annotated with
-        // @Provider? ignore? If they are given the AppConfig, they should no
-        // be used? Than we didnot need the annotation.
+        // TODO if not @Provider annotated, log a warning, but use it.
         Provider<?> provider;
         try {
             provider = new Provider<Object>(jaxRsProviderClass);

@@ -75,7 +75,7 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
 
     /**
      * @see javax.ws.rs.ext.RuntimeDelegate#createUriBuilder()
-     * REQUEST javadoc: encoding an
+     * REQUESTED javadoc: encoding an
      */
     @Override
     public UriBuilder createUriBuilder() {
@@ -101,6 +101,6 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
             Class<T> endpointType) throws UnsupportedOperationException {
         throw new UnsupportedOperationException(
                 "The method RuntimeDelegate.createEndpoint() is not available by the Restlet JAX-RS extension");
-        // REQUEST allow officially UnsupportedOperationException
+        // REQUESTED allow officially UnsupportedOperationException
     }
 }

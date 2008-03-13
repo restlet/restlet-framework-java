@@ -229,7 +229,7 @@ public class RootResourceClass extends ResourceClass {
      * @throws IllegalTypeException
      */
     public static Constructor<?> findJaxRsConstructor(Class<?> jaxRsClass) {
-        // REQUEST use only public constructors of provider and rrcs?
+        // REQUESTED use only public constructors of provider and rrcs?
         Constructor<?> constructor = null;
         int constructorParamNo = Integer.MIN_VALUE;
         for (Constructor<?> constr : jaxRsClass.getConstructors()) {

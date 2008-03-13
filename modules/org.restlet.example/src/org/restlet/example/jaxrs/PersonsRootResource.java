@@ -125,6 +125,26 @@ public class PersonsRootResource {
         // You can use Freemarker, Velocity or other Template engines to
         // create the HTML page.
     }
+    
+    /**
+     * 
+     * @param uriInfo
+     * @return
+     */
+    @GET
+    @ProduceMime("text/hmtl")
+    @Path("createNew")
+    public String getCreateForm(@Context UriInfo uriInfo)
+    {
+        // REQUESTED javadoc: rootResource wird hier gar nicht zurückgegeben. Wäre ""
+        // bei den Resourcen selber könnte man über den gleichen Index zugreifen; da macht die rrc Sinn.
+        // am Besten root resource class als letztes.
+        List<URI> parentURIs = uriInfo.getAncestorResourceURIs();
+        uriInfo.getAncestorResources();
+        URI segments = parentURIs.get(parentURIs.size()-1);
+        URI parentUri = uriInfo.getBaseUriBuilder().uri(segments).build();
+        return parentUri.toString();
+    }
 
     /**
      * Creates a person from an HTML form.

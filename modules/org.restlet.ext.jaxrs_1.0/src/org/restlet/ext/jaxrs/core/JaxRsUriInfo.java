@@ -222,8 +222,8 @@ public class JaxRsUriInfo implements UriInfo {
      */
     public List<URI> getAncestorResourceURIs() {
         // TODO UriInfo.getAncestorResourceURIs()
-        // REQUEST return last resource as first?
-        // REQUEST UriInfo.getAncestorResourceURIs() and getAnchestorResources()
+        // REQUESTED return last resource as first?
+        // REQUESTED UriInfo.getAncestorResourceURIs() and getAnchestorResources()
         // list should be unmodifiable
         throw new NotYetImplementedException();
     }

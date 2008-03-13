@@ -52,7 +52,7 @@ public class PersonsResource {
         int id = createPerson(person);
         URI location = uris.getBaseUriBuilder().path(PersonResource.class)
                 .build(String.valueOf(id));
-        // REQUEST UriBuilder.build(int...), because ids are often ints
+        // REQUESTED UriBuilder.build(int...), because ids are often ints
         // (but not null)
         return Response.created(location).build();
     }
