@@ -109,6 +109,19 @@ public class EncodeOrCheck {
     }
 
     /**
+     * @param string
+     * @param i
+     * @param stb
+     */
+    private static void checkForHexDigitAndAppend(CharSequence string, int i,
+            StringBuilder stb) {
+        checkForHexDigit(string, i);
+        stb.append('%');
+        stb.append(string.charAt(i + 1));
+        stb.append(string.charAt(i + 2));
+    }
+
+    /**
      * Checks, if the string contains characters that are reserved in URIs.
      * 
      * @see <a href="http://tools.ietf.org/html/rfc3986#section-2.2">RFC 3986,
@@ -160,7 +173,7 @@ public class EncodeOrCheck {
      * Checks, if the String is a valid URI scheme
      * 
      * @param scheme
-     *                the String to check.
+     *                the String to check. May contain template variables.
      * @throws IllegalArgumentException
      *                 If the string is not a valid URI scheme.
      */
@@ -173,14 +186,14 @@ public class EncodeOrCheck {
             throw new IllegalArgumentException(
                     "The scheme must not be an empty String");
         char c = scheme.charAt(0);
-        if (!((c > 64 && c <= 90) || (c > 92 && c <= 118)))
+        if (!((c > 64 && c <= 90) || (c > 92 && c <= 118) || (c == '{') || (c == '}')))
             throw new IllegalArgumentException(
                     "The first character of a scheme must be an alphabetic character");
         for (int i = 1; i < schemeLength; i++) {
             c = scheme.charAt(i);
             if ((c > 64 && c <= 90) || (c > 92 && c <= 118)
                     || (c >= '0' && c <= '9') || (c == '+') || (c == '-')
-                    || (c == '.'))
+                    || (c == '.') || (c == '{') || (c == '}'))
                 continue;
             String message = "The "
                     + i
@@ -214,42 +227,6 @@ public class EncodeOrCheck {
     }
 
     /**
-     * Encodes the given string, if encoding is enabled. If encoding is
-     * disabled, the methods checks the validaty of the containing characters.
-     * 
-     * @param uriPart
-     *                the string to encode or check. Must not be null; result
-     *                are not defined.
-     * @param encode
-     *                see {@link #encode}
-     * @param encodeSlash
-     *                if encode is true: if encodeSlash is true, than slashes
-     *                are also converted, otherwise not. if encode is false,
-     *                this is ignored.
-     * @param indexForErrMessage
-     *                index in an array or list if necessary. If not necessary,
-     *                set it lower than zero.
-     * @param errMessName
-     *                The name for the message
-     * @return
-     * @throws IllegalArgumentException
-     *                 if the given String is null, or at least one char is
-     *                 invalid.
-     */
-    public static CharSequence encode(CharSequence uriPart, boolean encode,
-            boolean encodeSlash, int indexForErrMessage, String errMessName)
-            throws IllegalArgumentException {
-        if (uriPart == null)
-            throw throwIllegalArgExc(indexForErrMessage, errMessName, uriPart,
-                    " must not be null");
-        if (encode)
-            return encodeNotBraces(uriPart, encodeSlash);
-        EncodeOrCheck.checkForInvalidUriChars(uriPart, indexForErrMessage,
-                errMessName);
-        return uriPart;
-    }
-
-    /**
      * This methods encodes the given String, but doesn't encode braces.
      * 
      * @param uriPart
@@ -275,7 +252,8 @@ public class EncodeOrCheck {
 
     /**
      * @param fragment
-     *                the fragment, may contain URI template parameters.
+     *                the fragment, may contain URI template parameters. Must
+     *                not be null.
      * @param encode
      * @return
      * @throws IllegalArgumentException
@@ -300,7 +278,7 @@ public class EncodeOrCheck {
                 if (encode)
                     toHex(c, stb);
                 else {
-                    checkForHexDigit(fragment, i);
+                    checkForHexDigitAndAppend(fragment, i, stb);
                     i += 2;
                 }
             } else
@@ -313,37 +291,60 @@ public class EncodeOrCheck {
     }
 
     /**
-     * encodes respectively checks a full query.
+     * encodes respectively checks a full matrix parameter list.
      * 
-     * @param query
-     *                query to convert or check, may contain URI template
-     *                parameters.
+     * @param matrix
+     *                matrix parameters to convert or check, may contain URI
+     *                template parameters. Must not be null.
      * @param encode
      * @return
      */
     @SuppressWarnings("unused")
-    public static StringBuilder fullQuery(CharSequence query, boolean encode) {
-        // LATER replaceQueryParams: alles außer "=" und "?" kodieren/verbieten
-        // LATER query = *( pchar / "/" / "?" )
-        // "=" und "&" nicht kodieren.
-        if (query == null)
-            return null;
-        if (query instanceof StringBuilder)
-            return (StringBuilder) query;
-        return new StringBuilder(query);
+    public static CharSequence fullMatrix(CharSequence matrix, boolean encode) {
+        // this method is also used by #fullQuery(query, encode);
+        int l = matrix.length();
+        StringBuilder stb = new StringBuilder(l + 6);
+        for (int i = 0; i < l; i++) {
+            char c = matrix.charAt(i);
+            if (Reference.isUnreserved(c) || Reference.isReserved(c))
+                stb.append(c);
+            else if (c == '{' || c == '}')
+                stb.append(c);
+            else if (c == '%') {
+                if (encode)
+                    toHex(c, stb);
+                else {
+                    checkForHexDigitAndAppend(matrix, i, stb);
+                    i += 2;
+                }
+            } else
+                toHexOrReject(c, stb, encode);
+        }
+        return stb;
     }
 
     /**
-     * @param host
+     * encodes respectively checks a full query.
+     * 
+     * @param query
+     *                query to convert or check, may contain URI template
+     *                parameters. Must not be null.
+     * @param encode
+     * @return
+     */
+    @SuppressWarnings("unused")
+    public static CharSequence fullQuery(CharSequence query, boolean encode) {
+        return fullMatrix(query, encode);
+    }
+
+    /**
+     * @param host must not be null
      * @param encode
      * @return
      * @throws IllegalArgumentException
-     *                 if the host is null or contains an invalid character.
+     *                 if the host contains an invalid character.
      */
-    public static CharSequence host(String host)
-            throws IllegalArgumentException {
-        if (host == null)
-            throw new IllegalArgumentException("The host must not be null");
+    public static String host(String host) throws IllegalArgumentException {
         if (host.length() == 0)
             throw new IllegalArgumentException("The host must not be empty");
         int length = host.length();
@@ -369,9 +370,18 @@ public class EncodeOrCheck {
     }
 
     /**
+     * Encodes the given string, if encoding is enabled. If encoding is
+     * disabled, the methods checks the validaty of the containing characters.
+     * 
      * @param string
-     *                String to convert, may contain URI template parameters.
+     *                the string to encode or check. Must not be null; result
+     *                are not defined, may contain URI template parameters.
      * @param encode
+     *                see {@link #encode}
+     * @param encodeSlash
+     *                if encode is true: if encodeSlash is true, than slashes
+     *                are also converted, otherwise not. if encode is false,
+     *                this is ignored.
      * @param indexForErrMessage
      *                index in an array or list if necessary. If not necessary,
      *                set it lower than zero.
@@ -379,17 +389,25 @@ public class EncodeOrCheck {
      *                The name for the message
      * @return
      * @throws IllegalArgumentException
+     *                 if the given String is null, or at least one char is
+     *                 invalid.
      */
-    public static String nameOrValue(CharSequence string, boolean encode,
+    public static CharSequence nameOrValue(CharSequence string, boolean encode,
             int indexForErrMessage, String nameForMessage)
             throws IllegalArgumentException {
         // LATER matrixParam(..): hier gilt, was im pathSegment erlaubt ist,
         // "=" und "&" und ";" nicht kodieren
-        CharSequence encoded = encode(string, encode, true, indexForErrMessage,
-                nameForMessage);
-        if (encoded == null)
+        if (string == null)
+            throw throwIllegalArgExc(indexForErrMessage, nameForMessage,
+                    string, " must not be null");
+        if (encode)
+            return encodeNotBraces(string, true);
+        else
+            EncodeOrCheck.checkForInvalidUriChars(string, indexForErrMessage,
+                    nameForMessage);
+        if (string == null)
             return null;
-        return encoded.toString();
+        return string.toString();
     }
 
     /**
@@ -403,9 +421,37 @@ public class EncodeOrCheck {
      * @return
      * @throws IllegalArgumentException
      */
-    public static String nameOrValue(CharSequence string, boolean encode,
+    public static CharSequence nameOrValue(CharSequence string, boolean encode,
             String nameForMessage) throws IllegalArgumentException {
         return nameOrValue(string, encode, Integer.MIN_VALUE, nameForMessage);
+    }
+
+    /**
+     * @param path must not be null.
+     * @param encode
+     * @return
+     */
+    public static CharSequence pathSegmentWithMatrix(CharSequence path,
+            boolean encode) {
+        int l = path.length();
+        StringBuilder stb = new StringBuilder(l + 6);
+        for (int i = 0; i < l; i++) {
+            char c = path.charAt(i);
+            if (Reference.isUnreserved(c) || Reference.isReserved(c))
+                stb.append(c);
+            else if (c == '{' || c == '}')
+                stb.append(c);
+            else if (c == '%') {
+                if (encode)
+                    toHex(c, stb);
+                else {
+                    checkForHexDigitAndAppend(path, i, stb);
+                    i += 2;
+                }
+            } else
+                toHexOrReject(c, stb, encode);
+        }
+        return stb;
     }
 
     /**
@@ -477,13 +523,15 @@ public class EncodeOrCheck {
             char c = userInfo.charAt(i);
             if (Reference.isUnreserved(c) || Reference.isSubDelimiter(c))
                 stb.append(c);
-            else if (c == ':') // upper chars and beside them
+            else if (c == '{' || c == '}')
+                stb.append(c);
+            else if (c == ':')
                 stb.append(c);
             else if (c == '%') {
                 if (encode)
                     toHex(c, stb);
                 else {
-                    checkForHexDigit(userInfo, i);
+                    checkForHexDigitAndAppend(userInfo, i, stb);
                     i += 2;
                 }
             } else

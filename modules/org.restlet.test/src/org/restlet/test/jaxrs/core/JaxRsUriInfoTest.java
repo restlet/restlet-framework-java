@@ -45,13 +45,17 @@ public class JaxRsUriInfoTest extends TestCase {
 
     private static final String RELATIV_2 = "relativ/%20a%20/%21b%40%2C";
 
+    private static final Reference REFERENCE_1 = new Reference(BASE_REF,
+            BASE_REF_STR + RELATIV_1);
+
+    private static final Reference REFERENCE_2 = new Reference(BASE_REF,
+            BASE_REF_STR + RELATIV_2);
+
     private static final String RELATIV_2_DECODED = "relativ/ a /!b@,";
 
-    private static final UriInfo URI_INFO_1 = new JaxRsUriInfo(new Reference(
-            BASE_REF, BASE_REF_STR + RELATIV_1));
+    private static final UriInfo URI_INFO_1 = new JaxRsUriInfo(REFERENCE_1);
 
-    private static final UriInfo URI_INFO_2 = new JaxRsUriInfo(new Reference(
-            BASE_REF, BASE_REF_STR + RELATIV_2));
+    private static final UriInfo URI_INFO_2 = new JaxRsUriInfo(REFERENCE_2);
 
     private static final JaxRsUriInfo URI_INFO_3 = new JaxRsUriInfo(
             new Reference(BASE_REF, BASE_REF_STR + "hfk;abc=def;ghi=jkl/hjh"));
@@ -105,7 +109,8 @@ public class JaxRsUriInfoTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriInfo#getRequestUriBuilder()}.
      */
     public void testEqualsObject() {
-        assertEquals("URI_INFO_3 and URI_INFO_4 must be equals", URI_INFO_3, URI_INFO_4);
+        assertEquals("URI_INFO_3 and URI_INFO_4 must be equals", URI_INFO_3,
+                URI_INFO_4);
     }
 
     /**
@@ -126,8 +131,11 @@ public class JaxRsUriInfoTest extends TestCase {
     public void testGetAbsolutePathBuilder() throws Exception {
         JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
                 URI_INFO_1.getAbsolutePathBuilder());
-        JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_2,
-                URI_INFO_2.getAbsolutePathBuilder());
+        
+        String expectedUri = BASE_REF_STR + RELATIV_2;
+        URI actualUri = URI_INFO_2.getAbsolutePathBuilder().build();
+        JaxRsUriBuilderTest.assertEquals(new URI(expectedUri), actualUri);
+        JaxRsUriBuilderTest.assertEquals(expectedUri, actualUri.toString());
     }
 
     /**

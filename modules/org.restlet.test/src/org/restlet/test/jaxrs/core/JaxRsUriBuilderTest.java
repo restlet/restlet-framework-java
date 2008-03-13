@@ -22,10 +22,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.RuntimeDelegate;
 
@@ -33,9 +31,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.jaxrs.core.JaxRsPathSegment;
 import org.restlet.ext.jaxrs.core.JaxRsUriBuilder;
-import org.restlet.ext.jaxrs.core.MultivaluedMapImpl;
 import org.restlet.test.jaxrs.services.car.CarListResource;
 import org.restlet.test.jaxrs.services.car.CarResource;
 import org.restlet.test.jaxrs.services.resources.SimpleTrain;
@@ -45,6 +41,11 @@ import org.restlet.test.jaxrs.services.resources.SimpleTrain;
  * 
  */
 public class JaxRsUriBuilderTest extends TestCase {
+
+    /**
+     * 
+     */
+    private static final String TEMPL_VARS_EXPECTED = "abc://username:password@www.secure.org:8080/def/ghi;jkl=mno/pqr;stu=vwx?ABC=DEF&GHI=JKL#MNO";
 
     private static final URI URI_1;
     static {
@@ -62,8 +63,8 @@ public class JaxRsUriBuilderTest extends TestCase {
      */
     static void assertEqualsURI(String expectedUri, URI actualUri)
             throws URISyntaxException {
-        assertEquals(new URI(expectedUri), actualUri);
         assertEquals(expectedUri, actualUri.toString());
+        assertEquals(new URI(expectedUri), actualUri);
     }
 
     static void assertEqualsURI(String expectedUri, UriBuilder actual)
@@ -84,39 +85,33 @@ public class JaxRsUriBuilderTest extends TestCase {
      * Note, that the actual value is at the beginning, because of the
      * expectedPathSegents must be the last parameter.
      * 
-     * @param actualUriBuilder
      * @param expectedScheme
      * @param expectedUserInfo
      * @param expectedHost
      * @param expectedPort
      * @param expectedQuery
+     * @param actualUriBuilder
      * @param expectedPathSegments
      */
-    private static void assertEqualUriBuilder(UriBuilder actualUriBuilder,
-            String expectedScheme, String expectedUserInfo,
-            String expectedHost, int expectedPort, String expectedQuery,
-            JaxRsPathSegment... expectedPathSegments) throws Exception {
+    private static void assertEqualUriBuilder(String expectedScheme,
+            String expectedUserInfo, String expectedHost, String expectedPort,
+            String expectedPath, String expectedQuery,
+            UriBuilder actualUriBuilder) throws Exception {
         if (actualUriBuilder instanceof JaxRsUriBuilder) {
             JaxRsUriBuilder jaxRsUriBuilder = (JaxRsUriBuilder) actualUriBuilder;
             assertEquals(expectedScheme, getScheme(jaxRsUriBuilder));
             assertEquals(expectedUserInfo, getUserInfo(jaxRsUriBuilder));
             assertEquals(expectedHost, getHost(jaxRsUriBuilder));
             assertEquals(expectedPort, getPort(jaxRsUriBuilder));
-            List<PathSegment> actPathSegms = getPathSegments(jaxRsUriBuilder);
-            for (int i = 0; i < expectedPathSegments.length; i++) {
-                PathSegment expectedPathSegment = expectedPathSegments[i];
-                PathSegment actPathSegm = actPathSegms.get(i);
-                assertEquals(i + ". path segm:", expectedPathSegment,
-                        actPathSegm);
-            }
-            assertEquals(expectedPathSegments.length, actPathSegms.size());
+            String actPath = getPath(jaxRsUriBuilder);
+            assertEquals(expectedPath, actPath);
             CharSequence actualQuery = getQuery(jaxRsUriBuilder);
             if (actualQuery != null)
                 actualQuery = actualQuery.toString();
             assertEquals(expectedQuery, actualQuery);
         }
-        UriBuilder expectedUriBuilder = RuntimeDelegate.getInstance()
-                .createUriBuilder();
+        JaxRsUriBuilder expectedUriBuilder = (JaxRsUriBuilder) RuntimeDelegate
+                .getInstance().createUriBuilder();
         expectedUriBuilder.encode(false);
         if (expectedScheme != null)
             expectedUriBuilder.scheme(expectedScheme);
@@ -125,13 +120,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         if (expectedHost != null)
             expectedUriBuilder.host(expectedHost);
         expectedUriBuilder.port(expectedPort);
-        for (JaxRsPathSegment pathSegment : expectedPathSegments) {
-            expectedUriBuilder.path(pathSegment.getPath());
-            for (Map.Entry<String, List<String>> mpEntry : pathSegment
-                    .getMatrixParameters().entrySet())
-                for (String mpValue : mpEntry.getValue())
-                    expectedUriBuilder.matrixParam(mpEntry.getKey(), mpValue);
-        }
+        expectedUriBuilder.path(expectedPath);
         if (expectedQuery != null)
             expectedUriBuilder.replaceQueryParams(expectedQuery);
         assertEquals(expectedUriBuilder.build(), actualUriBuilder.build());
@@ -146,12 +135,15 @@ public class JaxRsUriBuilderTest extends TestCase {
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      */
-    private static Object getFieldValue(JaxRsUriBuilder jaxRsUriBuilder,
+    private static String getFieldValue(JaxRsUriBuilder jaxRsUriBuilder,
             String fieldName) throws Exception {
         Field queryField = jaxRsUriBuilder.getClass().getDeclaredField(
                 fieldName);
         queryField.setAccessible(true);
-        return queryField.get(jaxRsUriBuilder);
+        Object value = queryField.get(jaxRsUriBuilder);
+        if (value == null)
+            return null;
+        return value.toString();
     }
 
     /**
@@ -160,7 +152,7 @@ public class JaxRsUriBuilderTest extends TestCase {
      */
     private static String getHost(JaxRsUriBuilder jaxRsUriBuilder)
             throws Exception {
-        return (String) getFieldValue(jaxRsUriBuilder, "host");
+        return getFieldValue(jaxRsUriBuilder, "host");
     }
 
     /**
@@ -168,18 +160,21 @@ public class JaxRsUriBuilderTest extends TestCase {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private static List<PathSegment> getPathSegments(
-            JaxRsUriBuilder jaxRsUriBuilder) throws Exception {
-        return (List) getFieldValue(jaxRsUriBuilder, "pathSegments");
+    private static String getPath(JaxRsUriBuilder jaxRsUriBuilder)
+            throws Exception {
+        Object path = getFieldValue(jaxRsUriBuilder, "path");
+        if (path == null)
+            return null;
+        return path.toString();
     }
 
     /**
      * @param jaxRsUriBuilder
      * @return
      */
-    private static int getPort(JaxRsUriBuilder jaxRsUriBuilder)
+    private static String getPort(JaxRsUriBuilder jaxRsUriBuilder)
             throws Exception {
-        return ((Number) getFieldValue(jaxRsUriBuilder, "port")).intValue();
+        return getFieldValue(jaxRsUriBuilder, "port");
     }
 
     /**
@@ -188,7 +183,7 @@ public class JaxRsUriBuilderTest extends TestCase {
      */
     private static String getQuery(JaxRsUriBuilder jaxRsUriBuilder)
             throws Exception {
-        return (String) getFieldValue(jaxRsUriBuilder, "query");
+        return getFieldValue(jaxRsUriBuilder, "query");
     }
 
     /**
@@ -197,7 +192,7 @@ public class JaxRsUriBuilderTest extends TestCase {
      */
     private static String getScheme(JaxRsUriBuilder jaxRsUriBuilder)
             throws Exception {
-        return (String) getFieldValue(jaxRsUriBuilder, "scheme");
+        return getFieldValue(jaxRsUriBuilder, "scheme");
     }
 
     /**
@@ -206,7 +201,7 @@ public class JaxRsUriBuilderTest extends TestCase {
      */
     private static String getUserInfo(JaxRsUriBuilder jaxRsUriBuilder)
             throws Exception {
-        return (String) getFieldValue(jaxRsUriBuilder, "userInfo");
+        return getFieldValue(jaxRsUriBuilder, "userInfo");
     }
 
     public static void main(String[] args) {
@@ -332,14 +327,14 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder.scheme("http");
         uriBuilder.path("path1", "path2");
         try {
-            uriBuilder.path("hh:ho");
+            uriBuilder.path("hh ho");
             fail("must fail, because of invalid character");
         } catch (IllegalArgumentException e) {
             // wonderful
         }
         uriBuilder.encode(true);
-        uriBuilder.path("hh:ho");
-        assertEqualsURI("http://www.xyz.de/path1/path2/hh%3Aho", uriBuilder);
+        uriBuilder.path("hh ho");
+        assertEqualsURI("http://www.xyz.de/path1/path2/hh%20ho", uriBuilder);
     }
 
     /**
@@ -420,9 +415,10 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder1Enc.replaceMatrixParams("mp4=mv4");
         assertEqualsURI(URI_1 + ";mp4=mv4", uriBuilder1Enc);
         uriBuilder1Enc.replaceMatrixParams("");
-        assertEquals(URI_1, uriBuilder1Enc.build());
+        assertEquals(new URI(URI_1 + ";"), uriBuilder1Enc.build());
 
         uriBuilder1Enc.replaceMatrixParams(null);
+        assertEquals(URI_1, uriBuilder1Enc.build());
         uriBuilder1Enc.matrixParam("jkj$sdf", "ij a%20");
         assertEqualsURI(URI_1 + ";jkj%24sdf=ij%20a%2520", uriBuilder1Enc);
     }
@@ -447,9 +443,10 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder1NoE.replaceMatrixParams("mp4=mv4");
         assertEqualsURI(URI_1 + ";mp4=mv4", uriBuilder1NoE);
         uriBuilder1NoE.replaceMatrixParams("");
-        assertEquals(URI_1, uriBuilder1NoE.build());
+        assertEquals(new URI(URI_1 + ";"), uriBuilder1NoE.build());
 
         uriBuilder1NoE.replaceMatrixParams(null);
+        assertEquals(URI_1, uriBuilder1NoE.build());
         try {
             uriBuilder1NoE.matrixParam("jkj$sdf", "ij a%20");
             fail();
@@ -516,8 +513,8 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder1Enc.path("mno");
         assertEqualsURI(URI_1 + "/jjj/kkk/ll/mno", uriBuilder1Enc);
 
-        uriBuilder1Enc.path("$");
-        assertEqualsURI(URI_1 + "/jjj/kkk/ll/mno/%24", uriBuilder1Enc);
+        uriBuilder1Enc.path(" ");
+        assertEqualsURI(URI_1 + "/jjj/kkk/ll/mno/%20", uriBuilder1Enc);
     }
 
     /**
@@ -531,7 +528,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         assertEqualsURI(URI_1 + "/jjj/kkk/ll/mno", uriBuilder1NoE);
 
         try {
-            uriBuilder1NoE.path("$");
+            uriBuilder1NoE.path(" ");
             fail();
         } catch (IllegalArgumentException iae) {
             // good
@@ -593,29 +590,51 @@ public class JaxRsUriBuilderTest extends TestCase {
         assertEquals(URI_1, uriBuilder1NoE.build());
     }
 
-    public void _testReplaceMatrixParamsEnc() throws Exception {
-        fail("not yet impemented");
+    public void testReplaceMatrixParamsEnc() throws Exception {
+        uriBuilder1Enc.matrixParam("a", "b");
+        uriBuilder1Enc.matrixParam("c", "d");
+        assertEqualsURI("http://localhost/path1/path2;a=b;c=d", uriBuilder1Enc);
+
+        uriBuilder1Enc.replaceMatrixParams("ksd hflk");
+        assertEqualsURI("http://localhost/path1/path2;ksd%20hflk",
+                uriBuilder1Enc);
+
+        uriBuilder1Enc.replaceMatrixParams("e=f");
+        assertEqualsURI("http://localhost/path1/path2;e=f", uriBuilder1Enc);
     }
 
-    public void _testReplaceMatrixParamsNoE() throws Exception {
-        fail("not yet impemented");
+    public void testReplaceMatrixParamsNoE() throws Exception {
+        uriBuilder1NoE.matrixParam("a", "b");
+        uriBuilder1NoE.matrixParam("c", "d");
+        assertEqualsURI("http://localhost/path1/path2;a=b;c=d", uriBuilder1NoE);
+
+        try {
+            uriBuilder1NoE.replaceMatrixParams("ksd hflk");
+            fail();
+        } catch (IllegalArgumentException iae) {
+            // good
+        }
+        assertEqualsURI("http://localhost/path1/path2;a=b;c=d", uriBuilder1NoE);
+
+        uriBuilder1NoE.replaceMatrixParams("e=f");
+        assertEqualsURI("http://localhost/path1/path2;e=f", uriBuilder1NoE);
     }
 
     /**
      * Test method for
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#replacePath(java.lang.String)}.
      */
-    public void _testReplacePathEnc() throws Exception {
+    public void testReplacePathEnc() throws Exception {
         uriBuilder1Enc.replacePath("newPath");
         assertEqualsURI("http://localhost/newPath", uriBuilder1Enc);
 
         uriBuilder1Enc.replacePath((String[]) null);
-        assertEqualUriBuilder(uriBuilder1Enc, "http", null, "localhost", -1,
-                null);
+        assertEqualUriBuilder("http", null, "localhost", null, "", null,
+                uriBuilder1Enc);
         assertEqualsUriSlashAllowed("http://localhost", uriBuilder1Enc);
 
-        uriBuilder1Enc.replacePath("gh", "r$t");
-        assertEqualsURI("http://localhost/gh/r%24t", uriBuilder1Enc);
+        uriBuilder1Enc.replacePath("gh", "r t");
+        assertEqualsURI("http://localhost/gh/r%20t", uriBuilder1Enc);
 
         uriBuilder1Enc.replacePath("gh", "r;t");
         assertEqualsURI("http://localhost/gh/r;t", uriBuilder1Enc);
@@ -634,18 +653,18 @@ public class JaxRsUriBuilderTest extends TestCase {
      * Test method for
      * {@link org.restlet.ext.jaxrs.core.JaxRsUriBuilder#replacePath(java.lang.String)}.
      */
-    public void _testReplacePathNoE() throws Exception {
+    public void testReplacePathNoE() throws Exception {
         uriBuilder1NoE.replacePath("newPath");
         assertEqualsURI("http://localhost/newPath", uriBuilder1NoE);
 
         uriBuilder1NoE.replacePath((String[]) null);
-        assertEqualUriBuilder(uriBuilder1NoE, "http", null, "localhost", -1,
-                null);
+        assertEqualUriBuilder("http", null, "localhost", null, "", null,
+                uriBuilder1NoE);
 
         assertEqualsUriSlashAllowed("http://localhost", uriBuilder1NoE);
 
         try {
-            uriBuilder1NoE.replacePath("gh", "r$t");
+            uriBuilder1NoE.replacePath("gh", "r t");
             fail();
         } catch (IllegalArgumentException iae) {
             // good
@@ -665,12 +684,34 @@ public class JaxRsUriBuilderTest extends TestCase {
         assertEqualsURI("http://localhost/gh/r;t=6;g", uriBuilder1Enc);
     }
 
-    public void _testReplaceQueryParamsEnc() throws Exception {
-        fail("not yet impemented");
+    public void testReplaceQueryParamsEnc() throws Exception {
+        uriBuilder1Enc.queryParam("a", "b");
+        uriBuilder1Enc.queryParam("c", "d");
+        assertEqualsURI("http://localhost/path1/path2?a=b&c=d", uriBuilder1Enc);
+
+        uriBuilder1Enc.replaceQueryParams("ksd hflk");
+        assertEqualsURI("http://localhost/path1/path2?ksd%20hflk",
+                uriBuilder1Enc);
+
+        uriBuilder1Enc.replaceQueryParams("e=f");
+        assertEqualsURI("http://localhost/path1/path2?e=f", uriBuilder1Enc);
     }
 
-    public void _testReplaceQueryParamsNoE() throws Exception {
-        fail("not yet impemented");
+    public void testReplaceQueryParamsNoE() throws Exception {
+        uriBuilder1NoE.queryParam("a", "b");
+        uriBuilder1NoE.queryParam("c", "d");
+        assertEqualsURI("http://localhost/path1/path2?a=b&c=d", uriBuilder1NoE);
+
+        try {
+            uriBuilder1NoE.replaceQueryParams("ksd hflk");
+            fail();
+        } catch (IllegalArgumentException iae) {
+            // good
+        }
+        assertEqualsURI("http://localhost/path1/path2?a=b&c=d", uriBuilder1NoE);
+
+        uriBuilder1NoE.replaceQueryParams("e=f");
+        assertEqualsURI("http://localhost/path1/path2?e=f", uriBuilder1NoE);
     }
 
     /**
@@ -732,33 +773,32 @@ public class JaxRsUriBuilderTest extends TestCase {
      */
     public void testSchemeSpecificPartEnc() throws Exception {
         uriBuilder1Enc.schemeSpecificPart("//shkf");
-        assertEqualUriBuilder(uriBuilder1Enc, "http", null, "shkf", -1, null);
+        assertEqualUriBuilder("http", null, "shkf", null, null, null,
+                uriBuilder1Enc);
 
         uriBuilder1Enc.schemeSpecificPart("//shkf/akfshdf");
-        assertEqualUriBuilder(uriBuilder1Enc, "http", null, "shkf", -1, null,
-                new JaxRsPathSegment("akfshdf", false, null));
+        assertEqualUriBuilder("http", null, "shkf", null, "/akfshdf", null,
+                uriBuilder1Enc);
 
         uriBuilder1Enc.schemeSpecificPart("//user@shkf/akfshdf/akjhf");
-        assertEqualUriBuilder(uriBuilder1Enc, "http", "user", "shkf", -1, null,
-                new JaxRsPathSegment("akfshdf", false, null),
-                new JaxRsPathSegment("akjhf", false, null));
+        assertEqualUriBuilder("http", "user", "shkf", null, "/akfshdf/akjhf",
+                null, uriBuilder1Enc);
 
         uriBuilder1Enc.schemeSpecificPart("//shkf:4711/akjhf?a=b");
-        assertEqualUriBuilder(uriBuilder1Enc, "http", null, "shkf", 4711,
-                "a=b", new JaxRsPathSegment("akjhf", false, null));
+        assertEqualUriBuilder("http", null, "shkf", "4711", "/akjhf", "a=b",
+                uriBuilder1Enc);
 
         uriBuilder1Enc.schemeSpecificPart("//www.domain.org/akjhf;1=2?a=b");
-        MultivaluedMapImpl<String, String> mp = new MultivaluedMapImpl<String, String>();
-        mp.putSingle("1", "2");
-        assertEqualUriBuilder(uriBuilder1Enc, "http", null, "www.domain.org",
-                -1, "a=b", new JaxRsPathSegment("akjhf", false, mp));
+        assertEqualUriBuilder("http", null, "www.domain.org", null,
+                "/akjhf;1=2", "a=b", uriBuilder1Enc);
 
         uriBuilder1Enc.schemeSpecificPart("//www.domain.org/akjhf;1=2;3=4?a=b");
-        mp = new MultivaluedMapImpl<String, String>();
-        mp.putSingle("1", "2");
-        mp.putSingle("3", "4");
-        assertEqualUriBuilder(uriBuilder1Enc, "http", null, "www.domain.org",
-                -1, "a=b", new JaxRsPathSegment("akjhf", false, mp));
+        assertEqualUriBuilder("http", null, "www.domain.org", null,
+                "/akjhf;1=2;3=4", "a=b", uriBuilder1Enc);
+
+        uriBuilder1Enc.schemeSpecificPart("//www.domain.org/ ");
+        assertEqualUriBuilder("http", null, "www.domain.org", null, "/%20",
+                null, uriBuilder1Enc);
     }
 
     /**
@@ -767,33 +807,37 @@ public class JaxRsUriBuilderTest extends TestCase {
      */
     public void testSchemeSpecificPartNoE() throws Exception {
         uriBuilder1NoE.schemeSpecificPart("//shkf");
-        assertEqualUriBuilder(uriBuilder1NoE, "http", null, "shkf", -1, null);
+        assertEqualUriBuilder("http", null, "shkf", null, null, null,
+                uriBuilder1NoE);
 
         uriBuilder1NoE.schemeSpecificPart("//shkf/akfshdf");
-        assertEqualUriBuilder(uriBuilder1NoE, "http", null, "shkf", -1, null,
-                new JaxRsPathSegment("akfshdf", false, null));
+        assertEqualUriBuilder("http", null, "shkf", null, "/akfshdf", null,
+                uriBuilder1NoE);
 
         uriBuilder1NoE.schemeSpecificPart("//user@shkf/akfshdf/akjhf");
-        assertEqualUriBuilder(uriBuilder1NoE, "http", "user", "shkf", -1, null,
-                new JaxRsPathSegment("akfshdf", false, null),
-                new JaxRsPathSegment("akjhf", false, null));
+        assertEqualUriBuilder("http", "user", "shkf", null, "/akfshdf/akjhf",
+                null, uriBuilder1NoE);
 
         uriBuilder1NoE.schemeSpecificPart("//shkf:4711/akjhf?a=b");
-        assertEqualUriBuilder(uriBuilder1NoE, "http", null, "shkf", 4711,
-                "a=b", new JaxRsPathSegment("akjhf", false, null));
+        assertEqualUriBuilder("http", null, "shkf", "4711", "/akjhf", "a=b",
+                uriBuilder1NoE);
 
         uriBuilder1NoE.schemeSpecificPart("//www.domain.org/akjhf;1=2?a=b");
-        MultivaluedMapImpl<String, String> mp = new MultivaluedMapImpl<String, String>();
-        mp.putSingle("1", "2");
-        assertEqualUriBuilder(uriBuilder1NoE, "http", null, "www.domain.org",
-                -1, "a=b", new JaxRsPathSegment("akjhf", false, mp));
+        assertEqualUriBuilder("http", null, "www.domain.org", null,
+                "/akjhf;1=2", "a=b", uriBuilder1NoE);
 
         uriBuilder1NoE.schemeSpecificPart("//www.domain.org/akjhf;1=2;3=4?a=b");
-        mp = new MultivaluedMapImpl<String, String>();
-        mp.putSingle("1", "2");
-        mp.putSingle("3", "4");
-        assertEqualUriBuilder(uriBuilder1NoE, "http", null, "www.domain.org",
-                -1, "a=b", new JaxRsPathSegment("akjhf", false, mp));
+        assertEqualUriBuilder("http", null, "www.domain.org", null,
+                "/akjhf;1=2;3=4", "a=b", uriBuilder1NoE);
+
+        try {
+            uriBuilder1NoE.schemeSpecificPart("//www.domain.org/ ");
+            fail();
+        } catch (IllegalArgumentException iae) {
+            // good
+        }
+        assertEqualUriBuilder("http", null, "www.domain.org", null,
+                "/akjhf;1=2;3=4", "a=b", uriBuilder1NoE);
     }
 
     /**
@@ -803,47 +847,100 @@ public class JaxRsUriBuilderTest extends TestCase {
     public void testStaticFromPath() throws Exception {
         UriBuilder uriBuilder = UriBuilder.fromPath("path");
         if (uriBuilder instanceof JaxRsUriBuilder) {
-            assertEqualUriBuilder((JaxRsUriBuilder) uriBuilder, null, null,
-                    null, -1, null, new JaxRsPathSegment("path", false, null));
+            assertEqualUriBuilder(null, null, null, null, "path", null,
+                    uriBuilder);
         }
         assertEqualsURI("path", uriBuilder);
 
         uriBuilder = UriBuilder.fromPath("path1/path2/abc.html");
         if (uriBuilder instanceof JaxRsUriBuilder) {
-            assertEqualUriBuilder(uriBuilder, null, null, null, -1, null,
-                    new JaxRsPathSegment("path1", false, null),
-                    new JaxRsPathSegment("path2", false, null),
-                    new JaxRsPathSegment("abc.html", false, null));
+            assertEqualUriBuilder(null, null, null, null,
+                    "path1/path2/abc.html", null, uriBuilder);
         }
         assertEqualsURI("path1/path2/abc.html", uriBuilder);
 
         uriBuilder = UriBuilder.fromPath(
-                "path1/path2;mp1=mv?1;mp2=mv2/abc.html", true);
+                "path1/path2;mp1=mv 1;mp2=mv2/abc.html", true);
         if (uriBuilder instanceof JaxRsUriBuilder) {
-            MultivaluedMapImpl<String, String> map2 = new MultivaluedMapImpl<String, String>();
-            map2.add("mp1", "mv%3F1");
-            map2.add("mp2", "mv2");
-            assertEqualUriBuilder(uriBuilder, null, null, null, -1, null,
-                    new JaxRsPathSegment("path1", false, null),
-                    new JaxRsPathSegment("path2", false, map2),
-                    new JaxRsPathSegment("abc.html", false, null));
+            assertEqualUriBuilder(null, null, null, null,
+                    "path1/path2;mp1=mv%201;mp2=mv2/abc.html", null, uriBuilder);
         }
-        assertEquals("path1/path2;mp1=mv%3F1;mp2=mv2/abc.html", uriBuilder
+        assertEquals("path1/path2;mp1=mv%201;mp2=mv2/abc.html", uriBuilder
                 .build().toString());
 
         String path = "path1/path2;mp1=mv1" + Reference.encode("?")
                 + ";mp2=mv2/abc.html";
         uriBuilder = UriBuilder.fromPath(path, false);
         if (uriBuilder instanceof JaxRsUriBuilder) {
-            MultivaluedMapImpl<String, String> map2 = new MultivaluedMapImpl<String, String>();
-            map2.add("mp1", "mv1%3F");
-            map2.add("mp2", "mv2");
-            assertEqualUriBuilder(uriBuilder, null, null, null, -1, null,
-                    new JaxRsPathSegment("path1", false, null),
-                    new JaxRsPathSegment("path2", false, map2),
-                    new JaxRsPathSegment("abc.html", false, null));
+            assertEqualUriBuilder(null, null, null, null,
+                    "path1/path2;mp1=mv1%3F;mp2=mv2/abc.html", null, uriBuilder);
         }
         assertEqualsURI(path, uriBuilder);
+    }
+
+    public void testTemplateParamsEnc() throws Exception {
+        changeWithTemplVars((JaxRsUriBuilder) uriBuilderWithVarsEnc);
+
+        URI uri = buildFromTemplVarsWithMap(uriBuilderWithVarsEnc);
+        assertEqualsURI(TEMPL_VARS_EXPECTED, uri);
+
+        uri = buildFromTemplVarsWithStrings(uriBuilderWithVarsEnc);
+        assertEqualsURI(TEMPL_VARS_EXPECTED, uri);
+    }
+
+    public void testTemplateParamsNoE() throws Exception {
+        changeWithTemplVars((JaxRsUriBuilder) uriBuilderWithVarsNoE);
+
+        URI uri = buildFromTemplVarsWithMap(uriBuilderWithVarsNoE);
+        assertEqualsURI(TEMPL_VARS_EXPECTED, uri);
+
+        uri = buildFromTemplVarsWithStrings(uriBuilderWithVarsNoE);
+        assertEqualsURI(TEMPL_VARS_EXPECTED, uri);
+    }
+
+    private URI buildFromTemplVarsWithMap(UriBuilder uriBuilder) {
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put("scheme", "abc");
+        vars.put("userInfo", "username:password");
+        vars.put("host", "www.secure.org");
+        vars.put("port", "8080");
+        vars.put("path1", "def");
+        vars.put("path2", "ghi");
+        vars.put("mp2Name", "jkl");
+        vars.put("mp2Value", "mno");
+        vars.put("path3", "pqr");
+        vars.put("mp3Name", "stu");
+        vars.put("mp3Value", "vwx");
+        vars.put("qp1Name", "ABC");
+        vars.put("qp1Value", "DEF");
+        vars.put("qp2Name", "GHI");
+        vars.put("qp2Value", "JKL");
+        vars.put("fragment", "MNO");
+        return uriBuilder.build(vars);
+    }
+
+    private URI buildFromTemplVarsWithStrings(UriBuilder uriBuilder) {
+        return uriBuilder.build("abc", "username:password", "www.secure.org",
+                "8080", "def", "ghi", "jkl", "mno", "pqr", "stu", "vwx", "ABC",
+                "DEF", "GHI", "JKL", "MNO");
+    }
+
+    /**
+     * @throws IllegalArgumentException
+     */
+    private void changeWithTemplVars(JaxRsUriBuilder uriBuilder) {
+        uriBuilder.scheme("{scheme}");
+        uriBuilder.userInfo("{userInfo}");
+        uriBuilder.host("{host}");
+        uriBuilder.port("{port}"); // REQUEST uriBuilder.port(String) missing
+        uriBuilder.replacePath("{path1}");
+        uriBuilder.path("{path2}");
+        uriBuilder.replaceMatrixParams("{mp2Name}={mp2Value}");
+        uriBuilder.path("{path3}");
+        uriBuilder.matrixParam("{mp3Name}", "{mp3Value}");
+        uriBuilder.replaceQueryParams("{qp1Name}={qp1Value}");
+        uriBuilder.queryParam("{qp2Name}", "{qp2Value}");
+        uriBuilder.fragment("{fragment}");
     }
 
     /**

@@ -80,9 +80,9 @@ public class JaxRsPathSegment implements PathSegment {
                 value = Reference.decode(valueEnc);
             } else if (encodeAndCheckWhenNotDecode) {
                 name = EncodeOrCheck.nameOrValue(nameEnc, true, i,
-                        " matrix parameter name");
+                        " matrix parameter name").toString();
                 value = EncodeOrCheck.nameOrValue(valueEnc, true, i,
-                        " matrix parameter value");
+                        " matrix parameter value").toString();
             } else {
 
                 name = nameEnc;

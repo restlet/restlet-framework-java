@@ -173,13 +173,17 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getAbsolutePathBuilder()
      */
     public UriBuilder getAbsolutePathBuilder() {
+    	// LATER what happens, if the Reference is invalid for the UriBuilder?
         UriBuilder b = new JaxRsUriBuilder();
         b.encode(false);
-        try {
-            b.uri(URI.create(reference.toString(true, false)));
-        } catch (NullPointerException ex) {
-            throw new IllegalArgumentException(ex.getMessage(), ex);
-        }
+        b.scheme(reference.getScheme(false));
+        b.userInfo(reference.getUserInfo(false));
+        b.host(reference.getHostDomain(false));
+        b.port(reference.getHostPort());
+        b.path(reference.getPath(false));
+        b.replaceQueryParams(reference.getQuery(false));
+        b.fragment(reference.getFragment(false));
+        b.encode(true);
         return b;
     }
 
