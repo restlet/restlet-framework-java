@@ -29,7 +29,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * This Provider is used to read directly from an InputStream
+ * This Provider is used to read directly from an {@link StreamingOutput}.
  * 
  * @author Stephan Koops
  */
@@ -61,6 +61,5 @@ public class StreamingOutputProvider implements
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         so.write(entityStream);
-        // LATER finally { so.cleanUp(); }
     }
 }

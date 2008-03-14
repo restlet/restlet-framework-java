@@ -22,11 +22,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.restlet.test.jaxrs.services.others.Person;
+import org.restlet.test.jaxrs.services.tests.PersonsTest;
 
 /**
- * 
  * @author Stephan Koops
- *
+ * @see PersonsTest
  */
 @Path("persons/{id}")
 public class PersonResource {

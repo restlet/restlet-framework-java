@@ -40,10 +40,9 @@ import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.util.Engine;
 
 /**
- * Implementation of the {@link ResponseBuilder}
+ * Implementation of the {@link ResponseBuilder}.
  * 
  * @author Stephan Koops
- * 
  */
 public class ResponseBuilderImpl extends ResponseBuilder {
 

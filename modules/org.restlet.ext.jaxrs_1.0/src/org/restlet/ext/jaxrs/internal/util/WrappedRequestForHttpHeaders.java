@@ -1,3 +1,20 @@
+/*
+ * Copyright 2005-2008 Noelios Consulting.
+ * 
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the "License"). You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at
+ * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL HEADER in each file and
+ * include the License file at http://www.opensource.org/licenses/cddl1.txt If
+ * applicable, add the following below this CDDL HEADER, with the fields
+ * enclosed by brackets "[]" replaced with your own identifying information:
+ * Portions Copyright [yyyy] [name of copyright owner]
+ */
 package org.restlet.ext.jaxrs.internal.util;
 
 import java.util.Collection;
@@ -16,7 +33,9 @@ import org.restlet.util.Series;
 
 /**
  * This class wraps the request to get the headers from, if needed in a
- * {@link MessageBodyWriter}.
+ * {@link MessageBodyWriter}. The changing of the http headers is not supported
+ * by this runtime environment, because it is not a good design and Restlet does
+ * not support it.
  * 
  * @author Stephan Koops
  */
@@ -54,7 +73,7 @@ public class WrappedRequestForHttpHeaders implements
 
     public void add(String headerName, Object headerValue) {
         throw new UnsupportedOperationException(
-                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
+                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
         // LATER in die Masterarbeit aufnehmen
     }
 
@@ -85,7 +104,7 @@ public class WrappedRequestForHttpHeaders implements
 
     public void clear() {
         throw new UnsupportedOperationException(
-                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
+                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
     }
 
     public boolean containsKey(Object headerName) {
@@ -171,22 +190,22 @@ public class WrappedRequestForHttpHeaders implements
 
     public List<Object> put(String headerName, List<Object> headerValues) {
         throw new UnsupportedOperationException(
-                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
+                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
     }
 
     public void putAll(Map<? extends String, ? extends List<Object>> t) {
         throw new UnsupportedOperationException(
-                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
+                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
     }
 
     public void putSingle(String headerName, Object headerValue) {
         throw new UnsupportedOperationException(
-                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
+                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
     }
 
     public List<Object> remove(Object headerName) {
         throw new UnsupportedOperationException(
-                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
+                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
     }
 
     public int size() {

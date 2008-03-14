@@ -31,7 +31,7 @@ import org.restlet.data.MediaType;
  * Class to wrap a {@link javax.ws.rs.ext.MessageBodyWriter}
  * 
  * @author Stephan Koops
- * @param <T> 
+ * @param <T> the java type to convert.
  */
 @SuppressWarnings("unchecked")
 public interface MessageBodyReader<T> {

@@ -27,12 +27,15 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * This Provider is used to read directly from an InputStream
+ * This Provider is used to read directly from a {@link Reader}
  * 
  * @author Stephan Koops
+ * @see BufferedReaderProvider
  */
 @Provider
 public class ReaderProvider extends AbstractProvider<Reader> {
@@ -46,9 +49,8 @@ public class ReaderProvider extends AbstractProvider<Reader> {
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.InputStream)
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
      */
     @Override
     public Reader readFrom(Class<Reader> type, Type genericType,
@@ -64,8 +66,8 @@ public class ReaderProvider extends AbstractProvider<Reader> {
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Type,
-     *      Annotation[], MediaType, MultivaluedMap, OutputStream)
+     * @see MessageBodyWriter#writeTo(Object, Type, Annotation[], MediaType,
+     *      MultivaluedMap, OutputStream)
      */
     @Override
     public void writeTo(Reader reader, Type genericType,

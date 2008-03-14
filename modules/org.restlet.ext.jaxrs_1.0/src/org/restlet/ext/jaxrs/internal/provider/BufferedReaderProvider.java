@@ -30,9 +30,11 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 /**
- * This Provider is used to read directly from an InputStream
+ * This {@link MessageBodyReader} is used to read from the net to a
+ * {@link BufferedReader}.
  * 
  * @author Stephan Koops
+ * @see ReaderProvider
  */
 @Provider
 public class BufferedReaderProvider implements

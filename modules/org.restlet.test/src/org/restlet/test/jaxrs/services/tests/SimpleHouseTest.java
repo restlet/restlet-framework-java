@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import org.restlet.data.MediaType;
@@ -24,6 +23,12 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.resources.SimpleHouse;
 
+/**
+ * One of the first Test classes.
+ * 
+ * @author Stephan Koops
+ * @see SimpleHouse
+ */
 public class SimpleHouseTest extends JaxRsTestCase {
 
     @Override

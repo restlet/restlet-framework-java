@@ -15,16 +15,26 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
+
+import javax.ws.rs.HEAD;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.test.jaxrs.services.others.OPTIONS;
 import org.restlet.test.jaxrs.services.resources.HeadOptionsTestService;
 
+/**
+ * Test to check if HTTP methods HEAD and OPTIONS work fine.
+ * 
+ * @author Stephan Koops
+ * @see HeadOptionsTestService
+ * @see HEAD
+ * @see OPTIONS
+ */
 public class HeadOptionsTest extends JaxRsTestCase {
 
     @Override

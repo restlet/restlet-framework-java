@@ -52,7 +52,7 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#getSize(java.lang.Object)
+     * @see AbstractProvider#getSize(java.lang.Object)
      */
     @Override
     public long getSize(Form form) {
@@ -60,7 +60,7 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#supportedClass()
+     * @see AbstractProvider#supportedClass()
      */
     @Override
     protected Class<?> supportedClass() {
@@ -68,16 +68,12 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
     }
 
     /**
-     * 
-     * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#writeTo(java.lang.Object,
-     *      Type, Annotation[],
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+     * @see AbstractProvider#writeTo(Object, Type, Annotation[], MediaType,
+     *      MultivaluedMap, OutputStream)
      */
     @Override
-    public void writeTo(Form form, Type genericType,
-            Annotation[] annotations,
-            MediaType mediaType, 
-            MultivaluedMap<String, Object> httpHeaders,
+    public void writeTo(Form form, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         Representation formRepr = form.getWebRepresentation();
         super.copyAndCloseStream(formRepr.getStream(), entityStream);
@@ -85,14 +81,14 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
 
     /**
      * 
-     * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#readFrom(java.lang.Class,
-     *      Type, javax.ws.rs.core.MediaType,
-     *      Annotation[], javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
+     * @see AbstractProvider#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
      */
     @Override
     public Form readFrom(Class<Form> type, Type genericType,
-            MediaType mediaType,
-            Annotation[] annotations, MultivaluedMap<String, String> httpResponseHeaders, InputStream entityStream) throws IOException {
+            MediaType mediaType, Annotation[] annotations,
+            MultivaluedMap<String, String> httpResponseHeaders,
+            InputStream entityStream) throws IOException {
         org.restlet.data.MediaType restletMediaType = Converter
                 .toRestletMediaType(mediaType);
         return new Form(new InputRepresentation(entityStream, restletMediaType));

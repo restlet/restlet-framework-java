@@ -34,7 +34,8 @@ import org.restlet.resource.OutputRepresentation;
  * {@link javax.ws.rs.ext.MessageBodyWriter}.
  * 
  * @author Stephan Koops
- * @param <T> 
+ * @param <T>
+ *                type of the object to serialize.
  */
 public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
 

@@ -22,12 +22,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.ws.rs.HttpMethod;
+
+import org.restlet.test.jaxrs.services.resources.HeadOptionsTestService;
+import org.restlet.test.jaxrs.services.resources.RequestService;
+
 /**
  * Indicates that the annotated method responds to HTTP GET requests
+ * 
+ * @author Stephan Koops
  * @see HttpMethod
+ * @see RequestService
+ * @see HeadOptionsTestService
  */
-@Target({ElementType.METHOD})
+@Target( { ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @javax.ws.rs.HttpMethod("OPTIONS")
-public @interface OPTIONS { 
+public @interface OPTIONS {
 }

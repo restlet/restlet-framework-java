@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import org.restlet.data.MediaType;
@@ -27,6 +26,12 @@ import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.resources.SimpleTrain;
 import org.restlet.test.jaxrs.util.TestUtils;
 
+/**
+ * one of the first test case classes.
+ * 
+ * @author Stephan Koops
+ * @see SimpleTrain
+ */
 public class SimpleTrainTest extends JaxRsTestCase {
 
     private static final boolean ONLY_M2 = false;

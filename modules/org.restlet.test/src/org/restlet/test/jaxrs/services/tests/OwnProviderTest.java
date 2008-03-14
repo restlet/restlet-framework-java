@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import java.util.Set;
@@ -30,8 +29,9 @@ import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
 import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
- * @see CrazyTypeProvider
  * @author Stephan Koops
+ * @see CrazyTypeProvider
+ * @see OwnProviderTestService
  */
 public class OwnProviderTest extends JaxRsTestCase {
 

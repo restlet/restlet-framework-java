@@ -21,8 +21,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
+import org.restlet.test.jaxrs.services.tests.DeterminingMediaTypeTest;
+
 /**
  * @author Stephan Koops
+ * @see DeterminingMediaTypeTest
  */
 @Path("/providertest")
 public class DeterminingMediaTypeTestService {

@@ -34,6 +34,7 @@ import org.restlet.test.jaxrs.util.TestUtils;
 /**
  * @author Stephan Koops
  * @see MatrixParamTest
+ * @see MatrixParam
  */
 @Path("matrixParamTest")
 public class MatrixParamTestService {

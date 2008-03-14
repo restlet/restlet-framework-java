@@ -24,8 +24,8 @@ import java.util.NoSuchElementException;
  * Iterator that iterates over exact one element.
  * 
  * @author Stephan Koops
- * 
  * @param <T>
+ *                The type of the contained object.
  */
 public class OneElementIterator<T> implements Iterator<T> {
 

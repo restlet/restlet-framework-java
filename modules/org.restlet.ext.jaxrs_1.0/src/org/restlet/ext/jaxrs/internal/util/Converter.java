@@ -41,8 +41,10 @@ import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**
- * @author Stephan
+ * This utility class converts Restlet objects to it correponding JAX-RS objects
+ * and vice versa.
  * 
+ * @author Stephan Koops
  */
 public class Converter {
 

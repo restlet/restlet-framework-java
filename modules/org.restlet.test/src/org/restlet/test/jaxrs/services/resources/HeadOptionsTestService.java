@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
@@ -24,11 +23,16 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
+import org.restlet.test.jaxrs.services.others.OPTIONS;
+import org.restlet.test.jaxrs.services.tests.HeadOptionsTest;
+
 /**
  * This class contains only data for one media type
  * 
  * @author Stephan Koops
- * 
+ * @see HeadOptionsTest
+ * @see HEAD
+ * @see OPTIONS
  */
 @Path("/headOptionsTest")
 public class HeadOptionsTestService {

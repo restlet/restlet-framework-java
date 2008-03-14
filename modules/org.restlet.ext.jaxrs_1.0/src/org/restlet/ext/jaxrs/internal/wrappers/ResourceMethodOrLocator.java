@@ -15,14 +15,13 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.wrappers;
 
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 
 /**
  * This interface describes a resource method, a sub resource method or a sub
- * resource locator. See section 1.5 and 2.3.1 of JSR-311-Spec
+ * resource locator. See section 1.5 and 3.3.1 of JAX-RS specification.
  * 
  * @author Stephan Koops
  */

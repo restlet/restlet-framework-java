@@ -24,8 +24,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
+import org.restlet.test.jaxrs.services.tests.CookieParamTest;
+
 /**
  * @author Stephan Koops
+ * @see CookieParamTest
+ * @see CookieParam
  */
 @Path("cookieParamTest")
 public class CookieParamTestService {

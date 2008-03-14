@@ -25,8 +25,9 @@ import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 
 /**
- * @author Stephan Koops
+ * {@link HeaderDelegate} for {@link EntityTag}
  * 
+ * @author Stephan Koops
  */
 public class EntityTagHeaderDelegate implements HeaderDelegate<EntityTag> {
 

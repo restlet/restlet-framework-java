@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.server;
 
 import javax.ws.rs.core.ApplicationConfig;
@@ -32,6 +31,7 @@ import org.restlet.ext.jaxrs.AccessControl;
  * pass of the root resource class.
  * 
  * @author Stephan Koops
+ * @see DirectServerWrapperFactory
  */
 public class DirectServerWrapper implements ServerWrapper {
 

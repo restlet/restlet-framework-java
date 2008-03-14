@@ -61,11 +61,10 @@ import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 
 /**
- * Implemetation of the JAX-RS interfaces {@link HttpHeaders}, {@link UriInfo}
- * and {@link Request}
+ * Implemetation of the JAX-RS interfaces {@link HttpHeaders}, {@link UriInfo},
+ * {@link Request} and {@link SecurityContext}.
  * 
  * @author Stephan Koops
- * 
  */
 public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
         HttpHeaders, SecurityContext {

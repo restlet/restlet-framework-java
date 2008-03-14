@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.annotation.Annotation;
@@ -66,7 +65,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * Instances represents a root resource class.
  * 
  * A Java class that uses JAX-RS annotations to implement a corresponding Web
- * resource, see chapter 2 of JSR-311-Spec.
+ * resource, see chapter 3 of JAX-RS specification
  * 
  * @author Stephan Koops
  */

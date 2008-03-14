@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import java.util.Set;
@@ -26,6 +25,11 @@ import org.restlet.test.jaxrs.services.car.CarListResource;
 import org.restlet.test.jaxrs.services.resources.SimpleTrain;
 import org.restlet.test.jaxrs.util.TestUtils;
 
+/**
+ * @author Stephan Koops
+ * @see SimpleTrainTest
+ * @see CarTest
+ */
 public class MultipleResourcesTest extends JaxRsTestCase {
     @Override
     protected ApplicationConfig getAppConfig() {

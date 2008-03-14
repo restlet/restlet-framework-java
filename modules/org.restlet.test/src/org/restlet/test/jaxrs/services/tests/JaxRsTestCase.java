@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
@@ -64,8 +63,7 @@ import org.restlet.test.jaxrs.server.ServerWrapperFactory;
  * for a given class and access the server for a given sub pass relativ to the
  * pass of the root resource class.
  * 
- * @author Stephan
- * 
+ * @author Stephan Koops
  */
 @SuppressWarnings("all")
 public abstract class JaxRsTestCase extends TestCase {

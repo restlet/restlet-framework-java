@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.io.IOException;
@@ -65,7 +64,7 @@ import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 
 /**
- * An abstract wrapper class. contains some useful static methods.
+ * An abstract wrapper class. Contains some useful static methods.
  * 
  * @author Stephan Koops
  */

@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.annotation.Annotation;

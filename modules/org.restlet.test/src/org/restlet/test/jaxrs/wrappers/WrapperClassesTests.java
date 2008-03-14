@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.wrappers;
 
 import java.util.Collection;
@@ -32,8 +31,9 @@ import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 import junit.framework.TestCase;
 
 /**
- * @author Stephan Koops
+ * Tests for classes in package {@link org.restlet.ext.jaxrs.internal.wrappers}.
  * 
+ * @author Stephan Koops
  */
 @SuppressWarnings("all")
 public class WrapperClassesTests extends TestCase {

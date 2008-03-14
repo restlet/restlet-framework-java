@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.spi;
 
 import javax.ws.rs.core.ApplicationConfig;
@@ -33,10 +32,10 @@ import org.restlet.ext.jaxrs.internal.core.ResponseBuilderImpl;
 import org.restlet.ext.jaxrs.internal.core.VariantListBuilderImpl;
 
 /**
- * Implementation of abstract class {@link javax.ws.rs.ext.RuntimeDelegate}
+ * Implementation of abstract JAX-RS class
+ * {@link javax.ws.rs.ext.RuntimeDelegate}.
  * 
  * @author Stephan Koops
- * 
  */
 public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
     /**

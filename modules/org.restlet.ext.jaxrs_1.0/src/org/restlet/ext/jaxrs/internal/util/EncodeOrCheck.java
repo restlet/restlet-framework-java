@@ -19,17 +19,8 @@ package org.restlet.ext.jaxrs.internal.util;
 
 import org.restlet.data.Reference;
 
-// unreserv = ALPHA / DIGIT / "-" / "." / "_" / "~"
-// unreserv = ALPHA / DIGIT / 045 / 046 / 095 / 126
-// reserved = gen-delims / sub-delims
-// gen-del = ":" / "/" / "?" / "#" / "[" / "]" / "@"
-// gen-del = 058 / 047 / 063 / 035 / 091 / 093 / 064
-// sub-del = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
-// sub-del = 033 / 036 / 038 / 039 / 040 / 041 / 042 / 043 / 044 / 059 / 061
-// pct-enc = "%" HEXDIG HEXDIG
-
 /**
- * Utility class to encode or check data
+ * Utility class to encode or check data.
  * 
  * @author Stephan Koops
  */

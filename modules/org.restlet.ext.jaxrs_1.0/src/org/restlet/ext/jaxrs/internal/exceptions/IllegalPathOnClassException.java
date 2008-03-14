@@ -15,14 +15,13 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 import javax.ws.rs.Path;
 
 /**
- * This kind of exception is thrown, when an &#64{@link Path} annotation
- * contains illegal charactres.
+ * This kind of exception is thrown, when an &#64{@link Path} annotation of a
+ * root resource class contains illegal characters.
  * 
  * @author Stephan Koops
  * 

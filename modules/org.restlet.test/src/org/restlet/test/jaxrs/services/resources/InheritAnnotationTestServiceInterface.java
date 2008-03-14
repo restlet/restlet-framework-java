@@ -23,6 +23,7 @@ import javax.ws.rs.ProduceMime;
 
 /**
  * Interface to test the inheritaion and non inheritation of annotations.
+ * 
  * @author Stephan Koops
  * @see InheritAnnotationTestService1
  * @see InheritAnnotationTestService2

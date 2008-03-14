@@ -15,11 +15,12 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.todo;
 
 /**
  * Here are notices for the implementation.
+ * 
+ * @author Stephan Koops
  */
 public class Notizen {
     // LATER An implementation MUST allow other runtime exceptions to propagate
@@ -38,7 +39,5 @@ public class Notizen {
     // character set is not specified by the application or if the application
     // specifies a character set that is unsupported.
 
-    // TODO @Context: ClientInfo und Conditions
-    
-    // LATER Constructor-Nutzung ist inkompatibel 
+    // LATER Constructor-Nutzung ist inkompatibel
 }

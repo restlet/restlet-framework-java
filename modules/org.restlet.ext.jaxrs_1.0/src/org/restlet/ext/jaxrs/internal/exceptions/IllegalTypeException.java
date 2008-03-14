@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 /**
@@ -23,7 +22,6 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * parameter has an illegal type.
  * 
  * @author Stephan Koops
- * 
  */
 public class IllegalTypeException extends JaxRsException {
     private static final long serialVersionUID = 6796414811480666857L;

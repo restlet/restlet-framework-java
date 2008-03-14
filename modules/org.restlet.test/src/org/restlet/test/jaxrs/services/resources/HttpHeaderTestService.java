@@ -36,10 +36,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.restlet.test.jaxrs.services.tests.HttpHeaderTest;
+
 /**
- * Service to test, if the headers are read correct; this class is not used yet.
- * @author Stephan Koops
+ * Service to test, if the headers are read correct.
  * 
+ * @author Stephan Koops
+ * @see HttpHeaderTest
  */
 @Path("/skjflsfh")
 public class HttpHeaderTestService {

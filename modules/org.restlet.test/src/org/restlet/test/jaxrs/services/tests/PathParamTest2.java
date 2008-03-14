@@ -15,10 +15,11 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
+
+import javax.ws.rs.PathParam;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -26,6 +27,8 @@ import org.restlet.test.jaxrs.services.resources.PathParamTestService2;
 
 /**
  * @author Stephan Koops
+ * @see PathParamTestService2
+ * @see PathParam
  */
 public class PathParamTest2 extends JaxRsTestCase {
 

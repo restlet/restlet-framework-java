@@ -25,8 +25,9 @@ import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.util.Engine;
 
 /**
- * @author Stephan Koops
+ * {@link HeaderDelegate} for {@link MediaType}.
  * 
+ * @author Stephan Koops
  */
 public class MediaTypeHeaderDelegate implements HeaderDelegate<MediaType> {
 
@@ -50,9 +51,10 @@ public class MediaTypeHeaderDelegate implements HeaderDelegate<MediaType> {
      */
     public MediaType fromString(String contentType)
             throws IllegalArgumentException {
-        //if(true)
-        //    throw new NotYetImplementedException("waiting for an Engine patch");
-        org.restlet.data.MediaType restletMediaType = Engine.getInstance().parseContentType(contentType);
+        // if(true)
+        // throw new NotYetImplementedException("waiting for an Engine patch");
+        org.restlet.data.MediaType restletMediaType = Engine.getInstance()
+                .parseContentType(contentType);
         return Converter.toJaxRsMediaType(restletMediaType, null);
     }
 

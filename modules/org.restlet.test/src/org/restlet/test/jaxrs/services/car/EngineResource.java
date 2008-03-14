@@ -15,12 +15,15 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.car;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.ProduceMime;
 
+/**
+ * @author Stephan Koops
+ * @see CarResource
+ */
 public class EngineResource {
     public EngineResource(CarResource car) {
         this.car = car;

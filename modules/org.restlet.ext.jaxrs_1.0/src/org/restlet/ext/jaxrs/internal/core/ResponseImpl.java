@@ -21,8 +21,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 /**
- * @author Stephan Koops
+ * Implementation of {@link Response}.
  * 
+ * @author Stephan Koops
  */
 public class ResponseImpl extends Response {
 

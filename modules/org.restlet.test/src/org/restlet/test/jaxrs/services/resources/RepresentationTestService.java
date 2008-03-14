@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response;
 
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.test.jaxrs.services.tests.RepresentationTest;
 
 import com.noelios.restlet.application.DecodeRepresentation;
 
@@ -35,6 +36,8 @@ import com.noelios.restlet.application.DecodeRepresentation;
  * {@link Representation} and subclasses.
  * 
  * @author Stephan Koops
+ * @see RepresentationTest
+ * @see Representation
  */
 @Path("representationTest")
 public class RepresentationTestService {

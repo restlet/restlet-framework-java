@@ -33,7 +33,13 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Status;
+import org.restlet.test.jaxrs.services.tests.SecurityContextTest;
 
+/**
+ * @author Stephan Koops
+ * @see SecurityContextTest
+ * @see SecurityContext
+ */
 @Path("/SecurityContextTestService")
 public class SecurityContextService {
 

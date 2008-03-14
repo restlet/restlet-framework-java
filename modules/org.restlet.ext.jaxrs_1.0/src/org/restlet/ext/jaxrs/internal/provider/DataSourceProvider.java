@@ -30,8 +30,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
 /**
- * @author Stephan Koops
+ * Provider for {@link DataSource}s.
  * 
+ * @author Stephan Koops
  */
 @Provider
 public class DataSourceProvider extends AbstractProvider<DataSource> {

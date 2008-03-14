@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.core;
 
 import java.io.IOException;
@@ -33,7 +32,6 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * The implementation of the JAX-RS interface {@link PathSegment}
  * 
  * @author Stephan Koops
- * 
  */
 public class JaxRsPathSegment implements PathSegment {
 

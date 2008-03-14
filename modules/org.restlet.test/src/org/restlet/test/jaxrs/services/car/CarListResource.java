@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.car;
 
 import java.net.URI;
@@ -35,21 +34,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 /**
- * <p>
- * Diese Klasse soll ein Beispiel sein, an dem alle Funktionalitaten zu sehen
- * sein sollen. Es ist an die Beispiele der Spezifikation angelehnt.
- * </p>
- * <p>
- * Fur HEAD und OPTIONS: wenns ne passende Methode gibt diese aufrufen.
- * Ansonsten: Bei HEAD die fur GET und Entity verwerfen, bei OPTIONS aus den
- * Metadaten der Klasse generieren. Aufpassen bei Sub-Resourcen
- * </p>
- * <p>
- * Nicht nur Methoden, auch Resource-Klassen konnen mit &#64;ConsumeMime oder
- * &#64;ConsumeMime annotiert sein
- * </p>
- * 
  * @author Stephan Koops
+ * @see CarResource
  */
 @Path(CarListResource.PATH)
 public class CarListResource {

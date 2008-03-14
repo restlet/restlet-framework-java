@@ -30,6 +30,8 @@ import org.restlet.test.jaxrs.services.tests.AncestorTest;
 /**
  * @author Stephan Koops
  * @see AncestorTest
+ * @see UriInfo#getAncestorResources()
+ * @see UriInfo#getAncestorResourceURIs()
  */
 @Path("ancestorTest")
 public class AncestorTestService {

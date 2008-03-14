@@ -31,6 +31,7 @@ import junit.framework.TestCase;
  * This TextCase checks the {@link HtmlPreferer}.
  * 
  * @author Stephan Koops
+ * @see HtmlPreferer
  */
 public class HtmlPrefererTest extends TestCase {
 

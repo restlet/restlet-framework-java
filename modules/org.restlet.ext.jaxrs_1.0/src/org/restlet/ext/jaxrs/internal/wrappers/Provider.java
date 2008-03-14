@@ -44,10 +44,10 @@ import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
- * Wraps a JAX-RS provider.
+ * Wraps a JAX-RS provider, see chapter 4 of JAX-RS specification.
  * 
  * @author Stephan Koops
- * @param <T>
+ * @param <T> the java type to convert.
  * @see javax.ws.rs.ext.Provider
  */
 public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,

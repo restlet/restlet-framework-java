@@ -18,10 +18,12 @@
 package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.Path;
+import org.restlet.test.jaxrs.services.tests.InheritAnnotationTest;
 
 /**
  * @author Stephan Koops
- * 
+ * @see InheritAnnotationTestServiceInterface
+ * @see InheritAnnotationTest
  */
 @Path("abcd")
 public class InheritAnnotationTestService1 implements

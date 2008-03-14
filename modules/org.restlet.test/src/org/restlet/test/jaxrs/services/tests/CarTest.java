@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import org.restlet.data.MediaType;
@@ -37,7 +36,7 @@ import org.restlet.test.jaxrs.services.car.EngineResource;
 public class CarTest extends JaxRsTestCase {
 
     public static void main(String[] args) throws Exception {
-        if(USE_TCP == false)
+        if (USE_TCP == false)
             setServerWrapperFactory(new RestletServerWrapperFactory());
         runServerUntilKeyPressed(new CarTest());
     }

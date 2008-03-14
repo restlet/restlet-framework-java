@@ -17,6 +17,13 @@
  */
 
 /**
- * Implementations of package javax.ws.rs.core
+ * <p>
+ * Implementations of package javax.ws.rs.core.
+ * </p>
+ * <p>
+ * Note that the JAX-RS extension is under development. It could only be used
+ * experimentally.
+ * </p>
+ * @author Stephan Koops
  */
 package org.restlet.ext.jaxrs.internal.core;

@@ -25,18 +25,22 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * This Provider is used to read directly from an InputStream
+ * This Provider is used to read directly from an {@link InputStream}
  * 
  * @author Stephan Koops
+ * @see MessageBodyReader
+ * @see MessageBodyWriter
  */
 @Provider
 public class InputStreamProvider extends AbstractProvider<InputStream> {
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
+     * @see MessageBodyWriter#getSize(Object)
      */
     @Override
     public long getSize(InputStream t) {
@@ -44,9 +48,8 @@ public class InputStreamProvider extends AbstractProvider<InputStream> {
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.InputStream)
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
      */
     @Override
     public InputStream readFrom(Class<InputStream> type, Type genericType,
@@ -56,6 +59,9 @@ public class InputStreamProvider extends AbstractProvider<InputStream> {
         return entityStream;
     }
 
+    /**
+     * @see AbstractProvider#supportedClass()
+     */
     @Override
     protected Class<?> supportedClass() {
         return InputStream.class;

@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
@@ -37,10 +36,8 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.test.jaxrs.services.resources.HttpHeaderTestService;
 
 /**
- * This test class checks if the Request.evaluatePreconditions methods works
- * fine.
- * 
  * @author Stephan Koops
+ * @see HttpHeaderTestService
  */
 @SuppressWarnings("all")
 public class HttpHeaderTest extends JaxRsTestCase {

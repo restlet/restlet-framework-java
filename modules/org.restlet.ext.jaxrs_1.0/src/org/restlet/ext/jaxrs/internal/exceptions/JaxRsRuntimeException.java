@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 /**
@@ -23,7 +22,6 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  * implementation.
  * 
  * @author Stephan Koops
- * 
  */
 public class JaxRsRuntimeException extends RuntimeException {
     private static final long serialVersionUID = -7662465289573982489L;

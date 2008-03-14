@@ -27,7 +27,7 @@ import javax.xml.transform.Source;
 /**
  * Because the JAX-RS spec (2008-03-05) does not define where to get the
  * XsltSource for the Provider for a {@link Source}, this annotation is used
- * for it, hoping that JAX-RS defines a way for it.
+ * for it, hoping that JAX-RS defines a standardized way for it.
  * 
  * @author Stephan Koops
  */

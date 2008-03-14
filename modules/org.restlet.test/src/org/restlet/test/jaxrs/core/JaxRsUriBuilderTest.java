@@ -37,15 +37,13 @@ import org.restlet.test.jaxrs.services.car.CarResource;
 import org.restlet.test.jaxrs.services.resources.SimpleTrain;
 
 /**
- * @author Stephan
- * 
+ * @author Stephan Koops
+ * @see JaxRsUriBuilder
+ * @see UriBuilder
  */
 @SuppressWarnings("all")
 public class JaxRsUriBuilderTest extends TestCase {
 
-    /**
-     * 
-     */
     private static final String TEMPL_VARS_EXPECTED = "abc://username:password@www.secure.org:8080/def/ghi;jkl=mno/pqr;stu=vwx?ABC=DEF&GHI=JKL#MNO";
 
     private static final URI URI_1;

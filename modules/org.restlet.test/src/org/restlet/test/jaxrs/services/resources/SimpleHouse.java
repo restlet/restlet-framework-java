@@ -15,18 +15,19 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
+import org.restlet.test.jaxrs.services.tests.SimpleHouseTest;
+
 /**
- * This class contains only data for one media type
+ * This class contains only data for one media type.
  * 
  * @author Stephan Koops
- * 
+ * @see SimpleHouseTest
  */
 @Path("/ho%20use")
 public class SimpleHouse {

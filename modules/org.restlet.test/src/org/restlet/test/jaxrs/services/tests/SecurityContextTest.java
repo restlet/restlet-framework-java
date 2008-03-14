@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import java.security.Principal;
@@ -151,7 +150,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         assertEquals(SecurityContext.BASIC_AUTH, entity);
     }
 
-    // TESTEN create extra TestCase: DigestAuth does not work 
+    // TESTEN create extra TestCase: DigestAuth does not work
     public void _testAuthenticationSchemeDigest() throws Exception {
         if (!setAccessControl(AllowAllAccess.getInstance()))
             return;

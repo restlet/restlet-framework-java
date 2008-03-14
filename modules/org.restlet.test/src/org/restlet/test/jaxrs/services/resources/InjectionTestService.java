@@ -32,6 +32,7 @@ import org.restlet.test.jaxrs.services.tests.InjectionTest;
 /**
  * @author Stephan Koops
  * @see InjectionTest
+ * @see Context
  */
 @Path("/InjectionTestService")
 public class InjectionTestService {

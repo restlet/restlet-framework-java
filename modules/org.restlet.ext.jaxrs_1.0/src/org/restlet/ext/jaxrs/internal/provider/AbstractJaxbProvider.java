@@ -31,12 +31,11 @@ import javax.xml.bind.Unmarshaller;
 
 /**
  * @author Stephan Koops
- * 
  */
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
     /**
-     * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#getSize(java.lang.Object)
+     * @see AbstractProvider#getSize(java.lang.Object)
      */
     @Override
     public final long getSize(T object) {

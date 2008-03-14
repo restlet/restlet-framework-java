@@ -15,11 +15,12 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.server;
 
 /**
  * @author Stephan Koops
+ * @see DirectServerWrapper
+ * @see ServerWrapperFactory
  */
 public class DirectServerWrapperFactory implements ServerWrapperFactory {
 

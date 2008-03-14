@@ -15,10 +15,11 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
+
+import javax.ws.rs.CookieParam;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.Response;
@@ -28,6 +29,8 @@ import org.restlet.test.jaxrs.services.resources.CookieParamTestService;
 
 /**
  * @author Stephan Koops
+ * @see CookieParamTestService
+ * @see CookieParam
  */
 public class CookieParamTest extends JaxRsTestCase {
 

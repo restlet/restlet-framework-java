@@ -15,13 +15,17 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+/**
+ * Collect all service tests. See method {@link #suite()}.
+ * 
+ * @author Stephan Koops
+ */
 public class AllServiceTests extends TestCase {
     public static Test suite() {
         TestSuite mySuite = new TestSuite();
@@ -52,7 +56,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(SecurityContextTest.class);
         mySuite.addTestSuite(SimpleHouseTest.class);
         mySuite.addTestSuite(SimpleTrainTest.class);
-        
+
         // at the end because it uses multiple of the previous classes
         mySuite.addTestSuite(MultipleResourcesTest.class);
         return mySuite;

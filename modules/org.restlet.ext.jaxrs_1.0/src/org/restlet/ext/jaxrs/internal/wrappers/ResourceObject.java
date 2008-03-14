@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.reflect.InvocationTargetException;
@@ -30,10 +29,10 @@ import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 
 /**
- * Represents a resource Object
+ * An instance wraps a JAX-RS resource object. See section 3 of JAX-RS
+ * specification.
  * 
- * @author Stephan
- * 
+ * @author Stephan Koops
  */
 public class ResourceObject {
     private ResourceClass resourceClass;

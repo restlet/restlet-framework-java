@@ -31,7 +31,7 @@ import org.restlet.data.MediaType;
  * Interface to access a wrapped a {@link javax.ws.rs.ext.MessageBodyWriter}
  * 
  * @author Stephan Koops
- * @param <T> 
+ * @param <T> the java type to convert.
  */
 public interface MessageBodyWriter<T> {
 

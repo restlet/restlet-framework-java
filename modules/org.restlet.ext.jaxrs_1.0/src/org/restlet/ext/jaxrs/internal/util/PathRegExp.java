@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.util;
 
 import java.lang.reflect.Method;
@@ -36,10 +35,9 @@ import org.restlet.util.Template;
 import org.restlet.util.Variable;
 
 /**
- * Immutable
+ * Wraps a regular expression of a &#64;{@link Path}. Instances are immutable.
  * 
  * @author Stephan Koops
- * 
  */
 public class PathRegExp {
 
@@ -250,7 +248,7 @@ public class PathRegExp {
         }
         String matched;
         int matchedChars = givenPath.length() - finalCapturingGroup.length();
-        if(matchedChars > 0 && givenPath.charAt(matchedChars-1) == '/')
+        if (matchedChars > 0 && givenPath.charAt(matchedChars - 1) == '/')
             matchedChars--;
         matched = givenPath.substring(0, matchedChars); // ignore '/' at end
         return new MatchingResult(matched, templateVars, finalCapturingGroup,

@@ -17,7 +17,6 @@
  */
 package org.restlet.test.jaxrs.server;
 
-
 import javax.ws.rs.core.ApplicationConfig;
 
 import org.restlet.Component;
@@ -32,6 +31,7 @@ import org.restlet.test.jaxrs.services.tests.JaxRsTestCase;
  * possible, for example for the JSR-311 reference implementation Jersey.
  * 
  * @see JaxRsTestCase#setServerWrapper(ServerWrapper)
+ * @see ServerWrapperFactory
  * 
  * @author Stephan Koops
  */
@@ -67,7 +67,6 @@ public interface ServerWrapper {
 
     /**
      * Returns the port the server is running on.
-     * @return
      */
     public int getPort();
 }

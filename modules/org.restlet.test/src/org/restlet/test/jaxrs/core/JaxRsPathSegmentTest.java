@@ -20,11 +20,17 @@ package org.restlet.test.jaxrs.core;
 import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.PathSegment;
 
 import org.restlet.ext.jaxrs.internal.core.JaxRsPathSegment;
 
 import junit.framework.TestCase;
 
+/**
+ * @author Stephan Koops
+ * @see JaxRsPathSegment
+ * @see PathSegment
+ */
 @SuppressWarnings("all")
 public class JaxRsPathSegmentTest extends TestCase {
 

@@ -15,17 +15,19 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
+import org.restlet.test.jaxrs.JaxRsRouterTest;
+
 /**
  * Test what happens when two methods should be use for the same request
  * 
  * @author Stephan Koops
- * 
+ * @see DoublePath1
+ * @see JaxRsRouterTest
  */
 @Path("/doubleMethodsForResources")
 public class DoublePath2 {

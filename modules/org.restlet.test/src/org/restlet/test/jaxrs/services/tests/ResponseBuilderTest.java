@@ -25,7 +25,8 @@ import org.restlet.test.jaxrs.services.resources.ResponseBuilderService;
 
 /**
  * @author Stephan Koops
- * 
+ * @see ResponseBuilderService
+ * @see javax.ws.rs.core.Response.ResponseBuilder
  */
 public class ResponseBuilderTest extends JaxRsTestCase {
 

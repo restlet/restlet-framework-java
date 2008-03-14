@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs;
 
 import junit.framework.Test;
@@ -30,6 +29,12 @@ import org.restlet.test.jaxrs.util.PathRegExpTests;
 import org.restlet.test.jaxrs.util.RemainingPathTests;
 import org.restlet.test.jaxrs.wrappers.RootResourceClassTest;
 
+/**
+ * Collect all class tests
+ * 
+ * @author Stephan Koops
+ * @see #suite()
+ */
 public class AllClassTests extends TestCase {
     public static Test suite() {
         TestSuite mySuite = new TestSuite();

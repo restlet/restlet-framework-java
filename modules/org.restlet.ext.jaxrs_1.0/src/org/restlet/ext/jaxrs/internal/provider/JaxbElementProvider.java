@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -34,7 +36,11 @@ import javax.xml.namespace.QName;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 
 /**
+ * Provider for {@link JAXBElement}s.
+ * 
  * @author Stephan Koops
+ * @see MessageBodyReader
+ * @see MessageBodyWriter
  */
 @Provider
 public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {

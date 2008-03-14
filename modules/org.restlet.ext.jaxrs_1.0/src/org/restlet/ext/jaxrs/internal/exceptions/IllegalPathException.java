@@ -22,10 +22,9 @@ import javax.ws.rs.Path;
 
 /**
  * This kind of exception is thrown, when an &#64{@link Path} annotation
- * contains illegal charactres.
+ * contains illegal characters.
  * 
  * @author Stephan Koops
- * 
  */
 public class IllegalPathException extends JaxRsException {
     private static final long serialVersionUID = 6796414811480666857L;

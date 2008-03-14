@@ -33,8 +33,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.test.jaxrs.services.others.OPTIONS;
+import org.restlet.test.jaxrs.services.tests.RequestTest;
 
+/**
+ * @author Stephan Koops
+ * @see RequestTest
+ * @see Request
+ * @see CallContext
+ */
 @Path("/requestTestService")
 public class RequestService {
 

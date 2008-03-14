@@ -26,9 +26,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 
 import org.restlet.data.MediaType;
+import org.restlet.test.jaxrs.services.tests.PathParamTest2;
 
 /**
  * @author Stephan Koops
+ * @see PathParamTest2
+ * @see PathParam
  */
 @Path("pathParamTest/")
 public class PathParamTestService2 {

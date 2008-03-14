@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.core;
 
 import java.util.HashMap;
@@ -28,7 +27,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
- * Implementation of the JAX-RS interface {@link MultivaluedMap}
+ * Implementation of the JAX-RS interface {@link MultivaluedMap}.
  * 
  * @author Stephan Koops
  * 

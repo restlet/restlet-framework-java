@@ -19,9 +19,11 @@
 /**
  * This package contains some Restful WebServices to test if the {@link Path} is
  * checked right.
+ * 
  * @see JaxRsRouterTest#testEncodePath()
  */
 package org.restlet.test.jaxrs.services.path;
 
 import javax.ws.rs.Path;
 import org.restlet.test.jaxrs.JaxRsRouterTest;
+

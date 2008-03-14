@@ -35,6 +35,17 @@ import org.restlet.test.jaxrs.services.resources.DoublePath1;
 import org.restlet.test.jaxrs.services.resources.DoublePath2;
 import org.restlet.test.jaxrs.services.resources.SimpleTrain;
 
+/**
+ * 
+ * @author Stephan
+ * @see JaxRsRouter
+ * @see DoublePath1
+ * @see DoublePaths
+ * @see SimpleTrain
+ * @see IllegalPathService1
+ * @see IllegalPathService2
+ * @see IllegalPathService3
+ */
 @SuppressWarnings("all")
 public class JaxRsRouterTest extends TestCase {
 

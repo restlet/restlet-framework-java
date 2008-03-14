@@ -119,8 +119,16 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
             MultivaluedMap<String, String> httpResponseHeaders,
             InputStream entityStream) throws IOException;
 
+    /**
+     * Returns the class object supported by this provider.
+     * 
+     * @return the class object supported by this provider.
+     */
     protected Class<?> supportedClass() {
-        throw new UnsupportedOperationException("You must implement method "+this.getClass().getName()+".supportedClass(), if you do not implement isReadable(...) or isWriteable(...)");
+        throw new UnsupportedOperationException(
+                "You must implement method "
+                        + this.getClass().getName()
+                        + ".supportedClass(), if you do not implement isReadable(...) or isWriteable(...)");
     }
 
     /**

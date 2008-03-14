@@ -15,10 +15,12 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
+
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -35,6 +37,8 @@ import org.w3c.dom.NodeList;
 /**
  * @author Stephan Koops
  * @see ProviderTestService
+ * @see MessageBodyReader
+ * @see MessageBodyWriter
  */
 public class ProviderTest extends JaxRsTestCase {
 

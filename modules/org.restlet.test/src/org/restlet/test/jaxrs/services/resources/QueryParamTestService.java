@@ -30,6 +30,7 @@ import org.restlet.test.jaxrs.services.tests.QueryParamTest;
 /**
  * @author Stephan Koops
  * @see QueryParamTest
+ * @see QueryParam
  */
 @Path("queryParamTest")
 public class QueryParamTestService {

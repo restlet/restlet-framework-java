@@ -36,7 +36,7 @@ import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 
 /**
- * This {@link Provider} converts MultivaluedMap&lt;String,String&gt; Form
+ * This {@link Provider} converts MultivaluedMap&lt;String,String&gt; form
  * content to application/x-www-form-urlencoded and vice versa.
  * 
  * @author Stephan Koops

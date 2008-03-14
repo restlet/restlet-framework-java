@@ -19,12 +19,12 @@ package org.restlet.test.jaxrs.server;
 
 /**
  * @see ServerWrapper
- * 
  * @author Stephan Koops
  */
 public interface ServerWrapperFactory {
     /**
      * Creates a new {@link ServerWrapper}.
+     * 
      * @return Returns the new {@link ServerWrapper}.
      */
     public ServerWrapper createServerWrapper();

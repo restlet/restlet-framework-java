@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.reflect.InvocationTargetException;
@@ -37,10 +36,9 @@ import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 
 /**
  * A method of a resource class that is used to locate sub-resources of the
- * corresponding resource, see section 2.3.1.
+ * corresponding resource, see section 3.3.1. of the JAX-RS specification.
  * 
  * @author Stephan Koops
- * 
  */
 public class SubResourceLocator extends AbstractMethodWrapper implements
         ResourceMethodOrLocator {

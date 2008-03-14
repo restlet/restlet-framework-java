@@ -26,8 +26,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 
+import org.restlet.test.jaxrs.services.tests.PathParamTest;
+
 /**
  * @author Stephan Koops
+ * @see PathParamTest
+ * @see PathParam
  */
 @Path("pathParamTest/{var1}")
 public class PathParamTestService {

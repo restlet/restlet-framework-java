@@ -15,13 +15,15 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.util;
 
 import junit.framework.TestCase;
-
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 
+/**
+ * @author Stephan Koops
+ * @see RemainingPath
+ */
 @SuppressWarnings("all")
 public class RemainingPathTests extends TestCase {
 
@@ -74,7 +76,7 @@ public class RemainingPathTests extends TestCase {
     public void testRemoveParams9() {
         aear("sdhfk/gkjj/a", "sdhfk;sdf=1;ff=2/gkjj/a");
     }
-    
+
     public void testRemoveParams11() {
         aear("/ddf", ";/ddf");
         aear("/ddf", ";sdf/ddf");
@@ -94,7 +96,7 @@ public class RemainingPathTests extends TestCase {
         aear("", ";df=sdfsdf?sdf=");
         aear("", ";df=sdfsdf?sdf=sdffs");
     }
-    
+
     public void testRemoveParamsEmptyResult2() {
         aear("", "?");
         aear("", "?df");

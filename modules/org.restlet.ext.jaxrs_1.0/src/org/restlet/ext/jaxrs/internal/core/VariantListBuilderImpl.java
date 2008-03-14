@@ -32,7 +32,6 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * Concrete implementation of abstract class {@link VariantListBuilder}
  * 
  * @author Stephan Koops
- * 
  */
 public class VariantListBuilderImpl extends VariantListBuilder {
 

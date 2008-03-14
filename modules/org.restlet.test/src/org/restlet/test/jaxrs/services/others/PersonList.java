@@ -23,8 +23,14 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.restlet.test.jaxrs.services.resources.PersonsResource;
+import org.restlet.test.jaxrs.services.tests.PersonsTest;
+
 /**
  * @author Stephan Koops
+ * @see Person
+ * @see PersonsResource
+ * @see PersonsTest
  */
 @XmlRootElement
 public class PersonList {

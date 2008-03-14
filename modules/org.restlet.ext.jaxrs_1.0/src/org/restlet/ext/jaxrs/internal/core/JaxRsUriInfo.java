@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.core;
 
 import java.net.URI;
@@ -40,10 +39,9 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 /**
  * Implementation of the JAX-RS interface {@link UriInfo}.<br>
  * LATER This class may be refactored to a parent class which can be used
- * without the JAX-RS context
+ * without the JAX-RS context.
  * 
  * @author Stephan Koops
- * 
  */
 public class JaxRsUriInfo implements UriInfo {
 

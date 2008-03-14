@@ -15,13 +15,18 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.IllegalThingsTestService;
 
+/**
+ * Checks, if illegal things are forbidden.
+ * 
+ * @author Stephan Koops
+ * @see IllegalThingsTestService
+ */
 public class IllegalThingsTest extends JaxRsTestCase {
 
     @Override

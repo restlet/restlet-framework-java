@@ -30,6 +30,10 @@ import javax.ws.rs.core.UriInfo;
 import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.others.PersonList;
 
+/**
+ * @author Stephan Koops
+ * @ee PersonsTest
+ */
 @Path("persons")
 public class PersonsResource {
 

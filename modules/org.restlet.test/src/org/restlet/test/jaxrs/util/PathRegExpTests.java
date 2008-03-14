@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.util;
 
 import junit.framework.TestCase;
@@ -26,7 +25,7 @@ import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 
 /**
  * @author Stephan Koops
- * 
+ * @see PathRegExp
  */
 @SuppressWarnings("all")
 public class PathRegExpTests extends TestCase {

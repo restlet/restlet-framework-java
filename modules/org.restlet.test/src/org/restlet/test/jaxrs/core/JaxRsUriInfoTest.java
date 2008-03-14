@@ -33,7 +33,8 @@ import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 
 /**
  * @author Stephan Koops
- * 
+ * @see JaxRsUriInfo
+ * @see UriInfo
  */
 @SuppressWarnings("all")
 public class JaxRsUriInfoTest extends TestCase {

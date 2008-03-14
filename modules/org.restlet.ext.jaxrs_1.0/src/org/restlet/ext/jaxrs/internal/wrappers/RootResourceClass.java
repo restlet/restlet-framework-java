@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.annotation.Annotation;
@@ -50,15 +49,10 @@ import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
 
 /**
- * Instances represents a root resource class.
- * 
- * A resource class annotated with
- * 
- * {@link Path}: Root resource classes provide the roots of the resource class
- * tree and provide access to sub-resources, see chapter 2 of JSR-311-Spec.
+ * Instances represents a root resource class, see chapter 3 of JAX-RS
+ * specification.
  * 
  * @author Stephan Koops
- * 
  */
 public class RootResourceClass extends ResourceClass {
 
@@ -296,10 +290,10 @@ public class RootResourceClass extends ResourceClass {
      *                 could not be called or throws an exception.
      */
     public ResourceObject createInstance(CallContext callContext,
-            HiddenJaxRsRouter jaxRsRouter)
-            throws ConvertParameterException, MissingAnnotationException,
-            InstantiateRootRessourceException, NoMessageBodyReaderException,
-            InvocationTargetException, MethodInvokeException {
+            HiddenJaxRsRouter jaxRsRouter) throws ConvertParameterException,
+            MissingAnnotationException, InstantiateRootRessourceException,
+            NoMessageBodyReaderException, InvocationTargetException,
+            MethodInvokeException {
         Constructor<?> constructor = this.constructor;
         Object instance = createInstance(constructor, constructorLeaveEncoded,
                 callContext, jaxRsRouter);

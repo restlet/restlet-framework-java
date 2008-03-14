@@ -15,17 +15,18 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
+import org.restlet.test.jaxrs.services.tests.IllegalThingsTest;
+
 /**
  * This class contains only data for one media type
  * 
  * @author Stephan Koops
- * 
+ * @see IllegalThingsTest
  */
 @Path("/illegalThingsInternal")
 public class IllegalThingsTestService {

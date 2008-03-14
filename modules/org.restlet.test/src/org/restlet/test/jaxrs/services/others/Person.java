@@ -22,7 +22,9 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
+import org.restlet.test.jaxrs.services.resources.PersonsResource;
 import org.restlet.test.jaxrs.services.resources.ProviderTestService;
+import org.restlet.test.jaxrs.services.tests.PersonsTest;
 
 /**
  * This class is used as data object in the resource classes
@@ -30,6 +32,9 @@ import org.restlet.test.jaxrs.services.resources.ProviderTestService;
  * serialized by the {@link CrazyTypeProvider}.
  * 
  * @author Stephan Koops
+ * @see PersonList
+ * @see PersonsResource
+ * @see PersonsTest
  */
 @XmlRootElement
 public class Person implements Serializable {

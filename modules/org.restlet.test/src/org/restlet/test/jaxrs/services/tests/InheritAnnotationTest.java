@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.tests;
 
 import java.util.HashSet;
@@ -30,7 +29,16 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.InheritAnnotationTestService1;
 import org.restlet.test.jaxrs.services.resources.InheritAnnotationTestService2;
+import org.restlet.test.jaxrs.services.resources.InheritAnnotationTestServiceInterface;
 
+/**
+ * Check, if the inheritation of method annotations works corerct.
+ * 
+ * @author Stephan Koops
+ * @see InheritAnnotationTestService1
+ * @see InheritAnnotationTestService2
+ * @see InheritAnnotationTestServiceInterface
+ */
 public class InheritAnnotationTest extends JaxRsTestCase {
 
     private static final Class<InheritAnnotationTestService1> SERVICE_1 = InheritAnnotationTestService1.class;
@@ -82,7 +90,8 @@ public class InheritAnnotationTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         String entityText = response.getEntity().getText();
-        assertEquals(InheritAnnotationTestService2.RETURN_STRING_SUB, entityText);
+        assertEquals(InheritAnnotationTestService2.RETURN_STRING_SUB,
+                entityText);
     }
 
     public void x_test2c() throws Exception {
@@ -92,6 +101,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         String entityText = response.getEntity().getText();
-        assertEquals(InheritAnnotationTestService2.RETURN_STRING_SUB2, entityText);
+        assertEquals(InheritAnnotationTestService2.RETURN_STRING_SUB2,
+                entityText);
     }
 }

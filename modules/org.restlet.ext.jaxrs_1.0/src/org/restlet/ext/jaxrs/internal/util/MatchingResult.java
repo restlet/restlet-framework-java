@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.util;
 
 import java.util.Map;
@@ -38,6 +37,7 @@ public class MatchingResult {
     private int numberOfCapturingGroups;
 
     /**
+     * Creates a new MatchingResult
      * 
      * @param matched
      *                The matched uri part
@@ -54,14 +54,16 @@ public class MatchingResult {
     }
 
     /**
-     * @return Returns the variables found in the given {@link Path}
+     * Returns the variables found in the given &#64;{@link Path}
+     * 
+     * @return Returns the variables found in the given &#64;{@link Path}
      */
     public Map<String, String> getVariables() {
         return variables;
     }
 
     /**
-     * Starts ever with a slash
+     * Returns the final capturing group. Starts ever with a slash.
      * 
      * @return Returns the final capturing group.
      */
@@ -70,6 +72,8 @@ public class MatchingResult {
     }
 
     /**
+     * Returns the number of capturing groups.
+     * 
      * @return Returns the number of capturing groups.
      */
     public int getNumberOfCapturingGroups() {
@@ -77,7 +81,9 @@ public class MatchingResult {
     }
 
     /**
-     * @return Returns the matched uri path
+     * Returns the matched uri path.
+     * 
+     * @return Returns the matched uri path.
      */
     public String getMatched() {
         return this.matched;

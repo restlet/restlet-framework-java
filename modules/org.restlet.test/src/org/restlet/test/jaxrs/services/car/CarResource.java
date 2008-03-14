@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.car;
 
 import javax.ws.rs.GET;
@@ -23,13 +22,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
 /**
- * Diese Klasse wird von WidgetList.findWidget zuruckgegeben, wenn ein bestimmes
- * Widtget angefragt wird. Diese Klasse handelt dann die Anfragen auf diesem
- * Widget. <br>
- * In der JSR-311-Spec wird diese Klasse wird als Sub-Resource bezeichnet.
+ * This class will be returned of {@link CarListResource#findCar(int)}.
  * 
  * @author Stephan Koops
  * @see CarListResource
+ * @see EngineResource
  */
 public class CarResource {
     private int id;

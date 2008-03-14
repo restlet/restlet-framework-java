@@ -15,13 +15,12 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.ext.jaxrs.internal.todo;
 
 /**
- * Is thrown, when a method is not yet implemented and should be implemented
- * later. On the final implementation this class will be removed, because than
- * there is nothing not implemented.
+ * A NotYetImplementedException is thrown, when a method is not yet implemented
+ * and should be implemented later. On the final implementation this class will
+ * be removed, because than there is nothing not implemented.
  * 
  * @author Stephan Koops
  */

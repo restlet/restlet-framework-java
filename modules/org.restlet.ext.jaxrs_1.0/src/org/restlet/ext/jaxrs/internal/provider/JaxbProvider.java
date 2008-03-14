@@ -30,8 +30,9 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Stephan Koops
+ * Provider for JAXB objects.
  * 
+ * @author Stephan Koops
  */
 @Provider
 public class JaxbProvider extends AbstractJaxbProvider<Object> {

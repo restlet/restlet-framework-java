@@ -27,6 +27,10 @@ import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
 import org.restlet.test.jaxrs.services.path.IllegalPathService2;
 
+/**
+ * @author Stephan Koops
+ * @see RootResourceClass
+ */
 @SuppressWarnings("all")
 public class RootResourceClassTest extends TestCase {
 

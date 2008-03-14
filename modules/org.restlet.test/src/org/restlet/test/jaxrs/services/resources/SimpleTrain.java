@@ -15,7 +15,6 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-
 package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
@@ -25,10 +24,13 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import org.restlet.test.jaxrs.services.tests.SimpleTrainTest;
+
 /**
+ * One of the first test services.
  * 
  * @author Stephan Koops
- * 
+ * @see SimpleTrainTest
  */
 @Path(SimpleTrain.PATH)
 public class SimpleTrain {
@@ -53,8 +55,7 @@ public class SimpleTrain {
                     "This Constructor is not allowed, because the paramters are not correct annotated");
     }
 
-    public SimpleTrain(String x, @HeaderParam("p")
-    String p) {
+    public SimpleTrain(String x, @HeaderParam("p") String p) {
         "".equals(p);
         "".equals(x);
         if (checkForValidConstructor)
@@ -62,8 +63,7 @@ public class SimpleTrain {
                     "This Constructor is not allowed, because one of the parameters are not correct annotated");
     }
 
-    public SimpleTrain(@HeaderParam("p")
-    String p) {
+    public SimpleTrain(@HeaderParam("p") String p) {
         "".equals(p);
         // this is a valid constructor
     }
@@ -97,8 +97,7 @@ public class SimpleTrain {
     @GET
     @Path("decode/{string}")
     @ProduceMime("text/plain")
-    public String getTemplParamDecoded(@Context
-    UriInfo uriInfo) {
+    public String getTemplParamDecoded(@Context UriInfo uriInfo) {
         try {
             uriInfo.getTemplateParameters(true).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";
@@ -111,8 +110,7 @@ public class SimpleTrain {
     @GET
     @Path("encode/{string}")
     @ProduceMime("text/plain")
-    public String getTemplParamEncoded(@Context
-    UriInfo uriInfo) {
+    public String getTemplParamEncoded(@Context UriInfo uriInfo) {
         try {
             uriInfo.getTemplateParameters(false).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";

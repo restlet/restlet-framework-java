@@ -26,6 +26,7 @@ import org.restlet.test.jaxrs.services.tests.InheritAnnotationTest;
 /**
  * @author Stephan Koops
  * @see InheritAnnotationTest
+ * @see InheritAnnotationTestServiceInterface
  */
 @Path("1234")
 public class InheritAnnotationTestService2 implements
