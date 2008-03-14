@@ -29,8 +29,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.ext.jaxrs.XsltSource;
 
-// REQUESTED JSR311: where get the XSLT to convert a javax.xml.transform.Source
-// to an OutputStream?
+// REQUESTED where get XSLT convert javax.xml.transform.Source to OutputStream?
 
 /**
  * 

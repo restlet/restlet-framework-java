@@ -23,6 +23,20 @@ import org.restlet.util.Series;
 public class WrappedRequestForHttpHeaders implements
         MultivaluedMap<String, Object> {
     /**
+     * may be null, f content was not already copied from the
+     * {@link #restletResponse}.
+     */
+    private Series<Parameter> headers;
+
+    /** may be null */
+    private MultivaluedMap<String, Object> jaxRsRespHeaders;
+
+    private Logger logger;
+
+    /** null, if content was copied to the {@link #headers}. */
+    private Response restletResponse;
+
+    /**
      * 
      * @param restletResponse
      * @param jaxRsRespHeaders
@@ -38,69 +52,40 @@ public class WrappedRequestForHttpHeaders implements
         this.logger = logger;
     }
 
-    /** may be null */
-    private MultivaluedMap<String, Object> jaxRsRespHeaders;
-
-    /** null, if content was copied to the {@link #headers}. */
-    private Response restletResponse;
-
-    /**
-     * may be null, f content was not already copied from the
-     * {@link #restletResponse}.
-     */
-    private Series<Parameter> headers;
-
-    private Logger logger;
-
-    private MultivaluedMap<String, Object> getJaxRsRespHeaders() {
-        if (this.jaxRsRespHeaders == null)
-            this.jaxRsRespHeaders = new MultivaluedMapImpl<String, Object>();
-        return this.jaxRsRespHeaders;
+    public void add(String headerName, Object headerValue) {
+        throw new UnsupportedOperationException(
+                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
+        // LATER in die Masterarbeit aufnehmen
     }
 
     /**
-     * gets the Restlet headers. If the Restlet headers are not available, but
-     * the Restlet Response, the headers are copied from the Response headers.
-     * If both is not available, null is returned.
-     * 
      * @return
      */
-    private Series<Parameter> getHeaders() {
-        if (this.headers == null && restletResponse != null) {
-            this.headers = Util.copyResponseHeaders(restletResponse, logger);
-            this.restletResponse = null;
-        }
-        return this.headers;
-    }
-
-    public void add(String headerName, Object headerValue) {
-        getJaxRsRespHeaders().add(headerName, headerValue);
-    }
-
-    public Object getFirst(String headerName) {
-        if (jaxRsRespHeaders != null) {
-            Object rt = jaxRsRespHeaders.getFirst(headerName);
-            if (rt != null)
-                return rt;
-        }
+    private MultivaluedMap<String, Object> allToJaxRsHeaders() {
+        MultivaluedMap<String, Object> jaxRsRespHeaders = getJaxRsRespHeaders();
         Series<Parameter> headers = getHeaders();
-        if (headers != null)
-            return headers.getFirst(headerName).getValue();
-        return null;
-    }
-
-    public void putSingle(String headerName, Object headerValue) {
-        getJaxRsRespHeaders().putSingle(headerName, headerValue);
-        Series<Parameter> headers = getHeaders();
-        if (headers != null)
-            headers.removeAll(headerName);
+        if (headers != null) {
+            for (Parameter p : headers) {
+                String name = p.getName();
+                String value = p.getValue();
+                List<Object> values = jaxRsRespHeaders.get(name);
+                boolean contained = false;
+                if (values != null) {
+                    for (Object v : values)
+                        if (v != null && v.toString().equals(value))
+                            contained = true;
+                }
+                if (!contained)
+                    jaxRsRespHeaders.add(name, value);
+            }
+            this.headers = null;
+        }
+        return jaxRsRespHeaders;
     }
 
     public void clear() {
-        if (jaxRsRespHeaders != null)
-            jaxRsRespHeaders.clear();
-        this.headers = null;
-        this.restletResponse = null;
+        throw new UnsupportedOperationException(
+                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
     }
 
     public boolean containsKey(Object headerName) {
@@ -134,33 +119,41 @@ public class WrappedRequestForHttpHeaders implements
         return jaxRsRespHeaders.entrySet();
     }
 
-    /**
-     * @return
-     */
-    private MultivaluedMap<String, Object> allToJaxRsHeaders() {
-        MultivaluedMap<String, Object> jaxRsRespHeaders = getJaxRsRespHeaders();
-        Series<Parameter> headers = getHeaders();
-        if (headers != null) {
-            for (Parameter p : headers) {
-                String name = p.getName();
-                String value = p.getValue();
-                List<Object> values = jaxRsRespHeaders.get(name);
-                boolean contained = false;
-                if (values != null) {
-                    for (Object v : values)
-                        if (v != null && v.toString().equals(value))
-                            contained = true;
-                }
-                if (!contained)
-                    jaxRsRespHeaders.add(name, value);
-            }
-            this.headers = null;
-        }
-        return jaxRsRespHeaders;
-    }
-
     public List<Object> get(Object headerName) {
         return allToJaxRsHeaders().get(headerName);
+    }
+
+    public Object getFirst(String headerName) {
+        if (jaxRsRespHeaders != null) {
+            Object rt = jaxRsRespHeaders.getFirst(headerName);
+            if (rt != null)
+                return rt;
+        }
+        Series<Parameter> headers = getHeaders();
+        if (headers != null)
+            return headers.getFirst(headerName).getValue();
+        return null;
+    }
+
+    /**
+     * gets the Restlet headers. If the Restlet headers are not available, but
+     * the Restlet Response, the headers are copied from the Response headers.
+     * If both is not available, null is returned.
+     * 
+     * @return
+     */
+    private Series<Parameter> getHeaders() {
+        if (this.headers == null && restletResponse != null) {
+            this.headers = Util.copyResponseHeaders(restletResponse, logger);
+            this.restletResponse = null;
+        }
+        return this.headers;
+    }
+
+    private MultivaluedMap<String, Object> getJaxRsRespHeaders() {
+        if (this.jaxRsRespHeaders == null)
+            this.jaxRsRespHeaders = new MultivaluedMapImpl<String, Object>();
+        return this.jaxRsRespHeaders;
     }
 
     public boolean isEmpty() {
@@ -177,15 +170,23 @@ public class WrappedRequestForHttpHeaders implements
     }
 
     public List<Object> put(String headerName, List<Object> headerValues) {
-        return allToJaxRsHeaders().put(headerName, headerValues);
+        throw new UnsupportedOperationException(
+                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
     }
 
     public void putAll(Map<? extends String, ? extends List<Object>> t) {
-        allToJaxRsHeaders().putAll(t);
+        throw new UnsupportedOperationException(
+                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
+    }
+
+    public void putSingle(String headerName, Object headerValue) {
+        throw new UnsupportedOperationException(
+                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
     }
 
     public List<Object> remove(Object headerName) {
-        return allToJaxRsHeaders().remove(headerName);
+        throw new UnsupportedOperationException(
+                "The changing of the headers is not supported by this runtime environment, because it is not a good design");
     }
 
     public int size() {

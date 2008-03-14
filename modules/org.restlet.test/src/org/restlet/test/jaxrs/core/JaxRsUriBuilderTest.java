@@ -933,7 +933,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder.scheme("{scheme}");
         uriBuilder.userInfo("{userInfo}");
         uriBuilder.host("{host}");
-        uriBuilder.port("{port}"); // REQUESTED uriBuilder.port(String) missing
+        uriBuilder.port("{port}");
         uriBuilder.replacePath("{path1}");
         uriBuilder.path("{path2}");
         uriBuilder.replaceMatrixParams("{mp2Name}={mp2Value}");

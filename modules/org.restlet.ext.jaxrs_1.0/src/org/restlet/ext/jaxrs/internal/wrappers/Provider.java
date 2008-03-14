@@ -400,10 +400,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * any changes must be made before writing to the output stream since the
      * headers will be flushed prior to writing the response body.
      * 
-     * REQUESTED JSR311: MessageBodyWriter: the response headers MAY BE mutable?
-     * 
-     * @param t
-     *                the type to write.
+     * @param object
+     *                the object to write.
      * @param genericType
      *                The generic {@link Type} to convert to.
      * @param annotations
@@ -420,11 +418,11 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
      *      OutputStream)
      */
-    public void writeTo(T t, Type genericType, Annotation[] annotations,
+    public void writeTo(T object, Type genericType, Annotation[] annotations,
             javax.ws.rs.core.MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        writer.writeTo(t, genericType, annotations, mediaType, httpHeaders,
+        writer.writeTo(object, genericType, annotations, mediaType, httpHeaders,
                 entityStream);
     }
 }
