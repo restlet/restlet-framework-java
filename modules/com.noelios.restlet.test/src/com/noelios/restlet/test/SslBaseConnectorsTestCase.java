@@ -75,6 +75,15 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     }
 
     private String start() throws Exception {
+        System.setProperty("javax.net.ssl.keyStorePassword", System
+                .getProperty("javax.net.ssl.keyStorePassword", "testtest"));
+        System.setProperty("javax.net.ssl.trustStorePassword", System
+                .getProperty("javax.net.ssl.trustStorePassword", "testtest"));
+        System.setProperty("javax.net.ssl.keyStore", System.getProperty(
+                "javax.net.ssl.keyStore", "dummy.jks"));
+        System.setProperty("javax.net.ssl.trustStore", System.getProperty(
+                "javax.net.ssl.trustStore", "dummy.jks"));
+
         component = new Component();
         component.getContext().getParameters().add("keyPassword",
                 System.getProperty("javax.net.ssl.keyStorePassword"));
