@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.util.logging.Level;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -99,7 +100,10 @@ public class TransformRepresentation extends OutputRepresentation {
     /** The source representation to transform. */
     private Representation sourceRepresentation;
 
-    /** The transformer to be used and reused. */
+    /** The template to be used and reused. */
+    private Templates templates;
+
+    /** The transformer to be used. */
     private Transformer transformer;
 
     /** The XSLT transform sheet to apply to message entities. */
@@ -137,14 +141,14 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Returns the transformer to be used and reused. Creates a new one based on
+     * Returns the templates to be used and reused. Creates a new one based on
      * the transformSheet representation and on the URI resolver if no one
      * exists.
      * 
-     * @return The transformer to be used and reused.
+     * @return The templates to be used and reused.
      */
-    public Transformer getTransformer() throws IOException {
-        if (this.transformer == null) {
+    public Templates getTemplates() throws IOException {
+        if (this.templates == null) {
             try {
                 // Prepare the XSLT transformer documents
                 StreamSource transformSource = new StreamSource(
@@ -165,8 +169,35 @@ public class TransformRepresentation extends OutputRepresentation {
                 }
 
                 // Create a new transformer
-                this.transformer = transformerFactory
-                        .newTransformer(transformSource);
+                this.templates = transformerFactory
+                        .newTemplates(transformSource);
+            } catch (TransformerConfigurationException tce) {
+                throw new IOException("Transformer configuration exception. "
+                        + tce.getMessage());
+            }
+        }
+
+        return this.templates;
+    }
+
+    /**
+     * Returns the transformer to be used. Creates a new one based on the
+     * transformSheet representation and on the URI resolver if no one exists.
+     * The default implementation internally invoked the {@link #getTemplates()}
+     * method.
+     * 
+     * @return The transformer to be used.
+     */
+    public Transformer getTransformer() throws IOException {
+        Transformer result = this.transformer;
+
+        if (result == null) {
+            Templates templates = getTemplates();
+
+            try {
+                if (templates != null) {
+                    result = templates.newTransformer();
+                }
             } catch (TransformerConfigurationException tce) {
                 throw new IOException("Transformer configuration exception. "
                         + tce.getMessage());
@@ -177,7 +208,7 @@ public class TransformRepresentation extends OutputRepresentation {
             }
         }
 
-        return this.transformer;
+        return result;
     }
 
     /**
@@ -247,11 +278,23 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /**
+     * Sets the templates to be used and reused.
+     * 
+     * @param templates
+     *                The templates to be used and reused.
+     */
+    public void setTemplates(Templates templates) {
+        this.templates = templates;
+    }
+
+    /**
      * Sets the transformer to be used and reused.
      * 
      * @param transformer
      *                The transformer to be used and reused.
+     * @deprecated Use the {@link #setTemplates(Templates)} method instead.
      */
+    @Deprecated
     public void setTransformer(Transformer transformer) {
         this.transformer = transformer;
     }
