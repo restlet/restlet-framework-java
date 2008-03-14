@@ -21,7 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This data store fakes a database.
+ * This data store fakes a database. Writes messages on {@link System#out}.
+ * <br> 
+ * Used by {@link PersonsRootResource} and
+ * {@link PersonResource} to demonstrate database access.
  * 
  * @author Stephan Koops
  */
@@ -30,9 +33,9 @@ public class DataStore {
     private static DataStore instance = new DataStore();
 
     /**
-     * Returns the instance of the faking DataStore
+     * Returns the instance of the faking DataStore.
      * 
-     * @return
+     * @return the instance of the faking DataStore.
      */
     public static final DataStore getInstance() {
         return instance;
@@ -43,7 +46,7 @@ public class DataStore {
      * person.
      * 
      * @param personId
-     * @return
+     * @return a person with the given id
      */
     public Person loadPerson(int personId) {
         System.out.println("Load person id " + personId);
@@ -66,7 +69,7 @@ public class DataStore {
      * Fakes the creation of the given person in the database
      * 
      * @param person
-     * @return
+     * @return a faked new id of the person in the database.
      */
     public int createPerson(Person person) {
         int newId = 5; // create id.
@@ -76,9 +79,9 @@ public class DataStore {
     }
 
     /**
-     * Returns a list of all Persons (fake: returns 3 persons).
+     * Returns a list of all {@link Person}s (fake: returns 3 persons).
      * 
-     * @return
+     * @return a list of all {@link Person}s.
      */
     public List<Person> getAllPersons() {
         List<Person> persons = new ArrayList<Person>();
@@ -99,9 +102,9 @@ public class DataStore {
     }
 
     /**
-     * Updates the given person.
+     * Fakes an update of the given {@link Person}.
      * 
-     * @param personId 
+     * @param personId
      * @param person
      */
     public void updatePerson(int personId, Person person) {

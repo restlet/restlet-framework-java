@@ -28,7 +28,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 /**
- * This resource class handles a concrete Person.
+ * This resource class represents a concrete person.
  * 
  * @author Stephan Koops
  * @see Person

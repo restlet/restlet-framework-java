@@ -27,7 +27,8 @@ import javax.ws.rs.core.ApplicationConfig;
  * providers for an JAX-RS application.<br>
  * This example application configuration contains two root resource classes ({@link EasyRootResource}
  * and {@link PersonsRootResource}, see {@link #getResourceClasses()}) and no
- * provider (would be returned by {@link ApplicationConfig#getProviderClasses()}.
+ * provider (default, would be returned by
+ * {@link ApplicationConfig#getProviderClasses()}.
  * 
  * @author Stephan Koops
  * @see EasyRootResource
@@ -47,7 +48,6 @@ public class ExampleAppConfig extends ApplicationConfig {
      * @see javax.ws.rs.core.ApplicationConfig#getResourceClasses()
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Set<Class<?>> getResourceClasses() {
         Set<Class<?>> rrcs = new HashSet<Class<?>>();
         rrcs.add(EasyRootResource.class);

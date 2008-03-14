@@ -36,7 +36,7 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  * <p>
- * This resource class handles the persons.
+ * This resource class handles a list of persons.
  * </p>
  * <p>
  * No real data store is used; the data reading and creation is all faked.
@@ -52,23 +52,91 @@ import javax.ws.rs.core.UriInfo;
 public class PersonsRootResource {
 
     /**
-     * <p>
-     * Returns the persons as XML document.
-     * </p>
-     * <p>
-     * This class demonstrates a resource method: It is annotated with a HTTP
-     * method, but not with a &#64;{@link Path}.
-     * </p>
+     * @param html
+     * @param personsUri
+     */
+    private void appendCreateForm(StringBuilder html, URI personsUri) {
+        html.append("<form action=\"" + personsUri + "\" method=\"POST\">");
+        html.append("<table border=0><tr>");
+        html.append("<td>first name:</td>");
+        html.append("<td><input type=\"text\" name=\"firstname\" /></td>");
+        html.append("</tr><tr>");
+        html.append("<td>last name:</td>");
+        html.append("<td><input type=\"text\" name=\"lastname\"  /></td>");
+        html.append("</tr><tr>");
+        html.append("<td></td>");
+        html.append("<td><input type=\"submit\" value=\"create person\"></td>");
+        html.append("</tr></table>");
+        html.append("</form>");
+        html.append("</body></html>");
+    }
+
+    /**
+     * Creates a person from an HTML form.
+     * 
+     * @param form
+     *                the form, submitted by the Web Browser
+     * @param uriInfo
+     *                info about the called URI.
+     * @return the Response to return to the client.
+     */
+    @POST
+    @ConsumeMime("application/x-www-form-urlencoded")
+    public Response createPerson(MultivaluedMap<String, String> form,
+            @Context UriInfo uriInfo) {
+        Person person = new Person();
+        person.setFirstname(form.getFirst("firstname"));
+        person.setLastname(form.getFirst("lastname"));
+        String newId = String.valueOf(getDataStore().createPerson(person));
+        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+        URI location = uriBuilder.path(newId).build();
+        return Response.seeOther(location).build();
+    }
+
+    /**
+     * Creates a person from an XML person.
+     * 
+     * @param person
+     *                the person to create
+     * @param uriInfo
+     *                info about the called URI.
+     * @return the Response to return to the client.
+     */
+    @POST
+    @ConsumeMime( { "application/xml", "text/xml" })
+    public Response createPerson(Person person, @Context UriInfo uriInfo) {
+        String newId = String.valueOf(getDataStore().createPerson(person));
+        URI location = uriInfo.getRequestUriBuilder().path(newId).build();
+        return Response.created(location).build();
+    }
+
+    /**
+     * This method demonstrates a sub resource method: it s annotated with a
+     * http method (&#64;{@link GET}) and with a &#64;{@link Path}.
      * 
      * @param uriInfo
      * @return
+     * @see #getXmlList()
      */
     @GET
-    @ProduceMime( { "application/xml", "text/xml" })
-    public PersonList getXmlList() {
-        // for a good REST style links to the sub resources should be added.
-        List<Person> allPersons = getDataStore().getAllPersons();
-        return new PersonList(allPersons);
+    @ProduceMime("text/html")
+    @Path("createNew")
+    public String getCreateForm(@Context UriInfo uriInfo) {
+        List<String> parentURIs = uriInfo.getAncestorResourceURIs();
+        String segment = parentURIs.get(parentURIs.size() - 1);
+        URI parentUri = uriInfo.getBaseUriBuilder().path(segment).build();
+        StringBuilder html = new StringBuilder();
+        appendCreateForm(html, parentUri);
+        return html.toString();
+    }
+
+    /**
+     * Returns the example DataStore
+     * 
+     * @return
+     */
+    private DataStore getDataStore() {
+        return DataStore.getInstance();
     }
 
     /**
@@ -118,62 +186,24 @@ public class PersonsRootResource {
     }
 
     /**
-     * @param html
-     * @param personsUri
-     */
-    private void appendCreateForm(StringBuilder html, URI personsUri) {
-        html.append("<form action=\"" + personsUri + "\" method=\"POST\">");
-        html.append("<table border=0><tr>");
-        html.append("<td>first name:</td>");
-        html.append("<td><input type=\"text\" name=\"firstname\" /></td>");
-        html.append("</tr><tr>");
-        html.append("<td>last name:</td>");
-        html.append("<td><input type=\"text\" name=\"lastname\"  /></td>");
-        html.append("</tr><tr>");
-        html.append("<td></td>");
-        html.append("<td><input type=\"submit\" value=\"create person\"></td>");
-        html.append("</tr></table>");
-        html.append("</form>");
-        html.append("</body></html>");
-    }
-    
-    /**
+     * <p>
+     * Returns the persons as XML document.
+     * </p>
+     * <p>
+     * This class demonstrates a resource method: It is annotated with a HTTP
+     * method, but not with a &#64;{@link Path}.
+     * </p>
      * 
      * @param uriInfo
      * @return
+     * @see #getCreateForm(UriInfo)
      */
     @GET
-    @ProduceMime("text/html")
-    @Path("createNew")
-    public String getCreateForm(@Context UriInfo uriInfo) {
-        List<String> parentURIs = uriInfo.getAncestorResourceURIs();
-        String segment = parentURIs.get(parentURIs.size()-1);
-        URI parentUri = uriInfo.getBaseUriBuilder().path(segment).build();
-        StringBuilder html = new StringBuilder();
-        appendCreateForm(html, parentUri);
-        return html.toString();
-    }
-
-    /**
-     * Creates a person from an HTML form.
-     * 
-     * @param form
-     *                the form, submitted by the Web Browser
-     * @param uriInfo
-     *                info about the called URI.
-     * @return the Response to return to the client.
-     */
-    @POST
-    @ConsumeMime("application/x-www-form-urlencoded")
-    public Response createPerson(MultivaluedMap<String, String> form,
-            @Context UriInfo uriInfo) {
-        Person person = new Person();
-        person.setFirstname(form.getFirst("firstname"));
-        person.setLastname(form.getFirst("lastname"));
-        String newId = String.valueOf(getDataStore().createPerson(person));
-        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-        URI location = uriBuilder.path(newId).build();
-        return Response.seeOther(location).build();
+    @ProduceMime( { "application/xml", "text/xml" })
+    public PersonList getXmlList() {
+        // for a good REST style links to the sub resources should be added.
+        List<Person> allPersons = getDataStore().getAllPersons();
+        return new PersonList(allPersons);
     }
 
     /**
@@ -188,31 +218,5 @@ public class PersonsRootResource {
         if (!getDataStore().existPerson(personId))
             throw new WebApplicationException(404); // person not found
         return new PersonResource(personId);
-    }
-
-    /**
-     * Creates a person from an XML person.
-     * 
-     * @param person
-     *                the person to create
-     * @param uriInfo
-     *                info about the called URI.
-     * @return the Response to return to the client.
-     */
-    @POST
-    @ConsumeMime( { "application/xml", "text/xml" })
-    public Response createPerson(Person person, @Context UriInfo uriInfo) {
-        String newId = String.valueOf(getDataStore().createPerson(person));
-        URI location = uriInfo.getRequestUriBuilder().path(newId).build();
-        return Response.created(location).build();
-    }
-
-    /**
-     * Returns the example DataStore
-     * 
-     * @return
-     */
-    private DataStore getDataStore() {
-        return DataStore.getInstance();
     }
 }

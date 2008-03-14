@@ -33,7 +33,20 @@ import org.restlet.ext.jaxrs.HtmlPreferer;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 
 /**
+ * <p>
  * This class shows how to use the Restlet JAX-RS extension with access control.
+ * </p>
+ * <p>
+ * Start this class, open a browser and click <a
+ * href="http://localhost:8182/easy">easy</a> or <a
+ * href="http://localhost:8182/persons">persons</a> with one of the following
+ * user / password combinations:
+ * <ul>
+ * <li>admin / adminPW</li>
+ * <li>alice / alicesSecret</li>
+ * <li>bob / bobsSecret</li>
+ * </ul>
+ * </p>
  * 
  * @author Stephan Koops
  * @see ExampleServer for an easier example without authentification.
@@ -43,7 +56,8 @@ public class GuardedExample {
 
     /**
      * An example {@link AccessControl}. This example allows anything to user
-     * admin and only read to any other user.
+     * admin and only read to any other user. <br>
+     * This AccessControl isn't used by the resources.
      * 
      * @author Stephan Koops
      */
@@ -57,8 +71,8 @@ public class GuardedExample {
             // example: user "admin" has all roles
             if (principal.getName().equalsIgnoreCase("admin"))
                 return true;
-            // example: every authenticatd user could read 
-            if(role.equalsIgnoreCase("read"))
+            // example: every authenticatd user could read
+            if (role.equalsIgnoreCase("read"))
                 return true;
             // the normal users have no other roles.
             return false;

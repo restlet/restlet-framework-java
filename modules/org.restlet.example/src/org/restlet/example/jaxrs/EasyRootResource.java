@@ -22,7 +22,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
 /**
- * This demonstrates an easy representation.
+ * This demonstrates an very easy JAX-RS resource. It is available on relative
+ * URI "easy" (see annotation &#64;{@link Path} on this class). This resource
+ * has representations of two media types: "text/html" ({@link #getHtml()} and
+ * "text/plain").
  * 
  * @author Stephan Koops
  * @see ExampleAppConfig
@@ -31,7 +34,7 @@ import javax.ws.rs.ProduceMime;
 public class EasyRootResource {
 
     /**
-     * Returns a HTML representation.
+     * Returns a HTML representation of this resource.
      * 
      * @return the person
      */
@@ -44,7 +47,7 @@ public class EasyRootResource {
     }
 
     /**
-     * Returns a plain text representation.
+     * Returns a plain text representation of this resource.
      * 
      * @return the person
      */

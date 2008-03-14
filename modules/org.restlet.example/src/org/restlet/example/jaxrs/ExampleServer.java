@@ -26,12 +26,19 @@ import org.restlet.ext.jaxrs.HtmlPreferer;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 
 /**
+ * <p>
  * This class shows how to use the Restlet JAX-RS extension without access
  * control.
+ * </p>
+ * <p>
+ * Start this class, open a browser and click <a
+ * href="http://localhost:8182/easy">easy</a> or <a
+ * href="http://localhost:8182/persons">persons</a>.
+ * </p>
  * 
  * @author Stephan Koops
- * @see GuardedExample for an example with authentification
  * @see ExampleAppConfig
+ * @see GuardedExample for an example with authentification
  */
 public class ExampleServer {
 
