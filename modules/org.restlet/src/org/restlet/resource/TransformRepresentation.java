@@ -183,8 +183,8 @@ public class TransformRepresentation extends OutputRepresentation {
     /**
      * Returns the transformer to be used. Creates a new one based on the
      * transformSheet representation and on the URI resolver if no one exists.
-     * The default implementation internally invoked the {@link #getTemplates()}
-     * method.
+     * The default implementation internally invokes the {@link #getTemplates()}.newTransformer()
+     * method. method.
      * 
      * @return The transformer to be used.
      */
@@ -285,18 +285,6 @@ public class TransformRepresentation extends OutputRepresentation {
      */
     public void setTemplates(Templates templates) {
         this.templates = templates;
-    }
-
-    /**
-     * Sets the transformer to be used and reused.
-     * 
-     * @param transformer
-     *                The transformer to be used and reused.
-     * @deprecated Use the {@link #setTemplates(Templates)} method instead.
-     */
-    @Deprecated
-    public void setTransformer(Transformer transformer) {
-        this.transformer = transformer;
     }
 
     /**
