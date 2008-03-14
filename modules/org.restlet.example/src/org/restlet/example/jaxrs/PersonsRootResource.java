@@ -85,7 +85,8 @@ public class PersonsRootResource {
      */
     @GET
     @ProduceMime("text/html")
-    public String getHtmlList(@Context UriInfo uriInfo) {
+    public String getHtmlList(@Context
+    UriInfo uriInfo) {
         Collection<Person> persons = getDataStore().getAllPersons();
         StringBuilder html = new StringBuilder();
         html.append("<html><head></head><body>\n");
@@ -125,7 +126,7 @@ public class PersonsRootResource {
         // You can use Freemarker, Velocity or other Template engines to
         // create the HTML page.
     }
-    
+
     /**
      * 
      * @param uriInfo
@@ -134,14 +135,15 @@ public class PersonsRootResource {
     @GET
     @ProduceMime("text/hmtl")
     @Path("createNew")
-    public String getCreateForm(@Context UriInfo uriInfo)
-    {
-        // REQUESTED javadoc: rootResource wird hier gar nicht zurückgegeben. Wäre ""
-        // bei den Resourcen selber könnte man über den gleichen Index zugreifen; da macht die rrc Sinn.
+    public String getCreateForm(@Context
+    UriInfo uriInfo) {
+        // REQUESTED javadoc: rootResource wird hier gar nicht zuruckgegeben.
+        // Ware "" bei den Resourcen selber konnte man uber den gleichen Index
+        // zugreifen; da macht die rrc Sinn.
         // am Besten root resource class als letztes.
         List<URI> parentURIs = uriInfo.getAncestorResourceURIs();
         uriInfo.getAncestorResources();
-        URI segments = parentURIs.get(parentURIs.size()-1);
+        URI segments = parentURIs.get(parentURIs.size() - 1);
         URI parentUri = uriInfo.getBaseUriBuilder().uri(segments).build();
         return parentUri.toString();
     }
@@ -157,8 +159,8 @@ public class PersonsRootResource {
      */
     @POST
     @ConsumeMime("application/x-www-form-urlencoded")
-    public Response createPerson(MultivaluedMap<String, String> form,
-            @Context UriInfo uriInfo) {
+    public Response createPerson(MultivaluedMap<String, String> form, @Context
+    UriInfo uriInfo) {
         Person person = new Person();
         person.setFirstname(form.getFirst("firstname"));
         person.setLastname(form.getFirst("lastname"));
@@ -176,7 +178,8 @@ public class PersonsRootResource {
      * @return
      */
     @Path("{personId}")
-    public PersonResource onePerson(@PathParam("personId") int personId) {
+    public PersonResource onePerson(@PathParam("personId")
+    int personId) {
         if (!getDataStore().existPerson(personId))
             throw new WebApplicationException(404); // person not found
         return new PersonResource(personId);
@@ -193,7 +196,8 @@ public class PersonsRootResource {
      */
     @POST
     @ConsumeMime( { "application/xml", "text/xml" })
-    public Response createPerson(Person person, @Context UriInfo uriInfo) {
+    public Response createPerson(Person person, @Context
+    UriInfo uriInfo) {
         String newId = String.valueOf(getDataStore().createPerson(person));
         URI location = uriInfo.getRequestUriBuilder().path(newId).build();
         return Response.created(location).build();

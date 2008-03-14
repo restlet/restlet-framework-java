@@ -113,7 +113,7 @@ import org.restlet.resource.StringRepresentation;
  * LATER The class JaxRsRouter is not thread save while attach or detach
  * classes.
  * 
- * @see <a href="https://jsr311.dev.java.net/"> Java Service Request 311</a>
+ * @see <a href="https://jsr311.dev.java.net/">Java Service Request 311</a>
  *      Because the specification is just under development the link is not set
  *      to the PDF.
  * 
@@ -1343,7 +1343,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     /**
      * Returns a set with the attached root resource classes.
      * 
-     * @return
+     * @return A set with the attached root resource classes.
      */
     public Set<Class<?>> getRootResourceClasses() {
         Set<Class<?>> rrcs = new HashSet<Class<?>>();

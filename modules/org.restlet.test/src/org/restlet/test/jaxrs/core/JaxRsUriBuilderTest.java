@@ -375,7 +375,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         assertEqualsURI("http://test.domain.org/path1/path2", uriBuilder1Enc);
 
         try {
-            uriBuilder1Enc.host("test.domain .org ä");
+            uriBuilder1Enc.host("test.domain .org a");
             fail();
         } catch (IllegalArgumentException iae) {
             // good
@@ -388,7 +388,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         assertEqualsURI("http://test.domain.org/path1/path2", uriBuilder1NoE);
 
         try {
-            uriBuilder1NoE.host("test.domain .org ä");
+            uriBuilder1NoE.host("test.domain .org a");
             fail();
         } catch (IllegalArgumentException iae) {
             // good

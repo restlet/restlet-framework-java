@@ -29,7 +29,7 @@ public class Notizen {
     // LATER alle LATERs in Masterarbeit uebernehmen
 
     // TODO look for warnings in tests and put them away.
-    // gehört. Gibt es dann ne Endlosrekursion?
+    // gehort. Gibt es dann ne Endlosrekursion?
 
     // TODO inject ContextResolver and MessageBodyWorkers into providers.
 
