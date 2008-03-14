@@ -66,6 +66,7 @@ import org.restlet.ext.jaxrs.internal.provider.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
 import org.restlet.ext.jaxrs.internal.provider.JaxbProvider;
 import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
+import org.restlet.ext.jaxrs.internal.provider.StreamingOutputProvider;
 import org.restlet.ext.jaxrs.internal.provider.StringProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormFormProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormMmapProvider;
@@ -113,7 +114,7 @@ import org.restlet.resource.StringRepresentation;
  * LATER The class JaxRsRouter is not thread save while attach or detach
  * classes.
  * 
- * @see <a href="https://jsr311.dev.java.net/">Java Service Request 311</a>
+ * @see <a href="https://jsr311.dev.java.net/"> Java Service Request 311</a>
  *      Because the specification is just under development the link is not set
  *      to the PDF.
  * 
@@ -360,6 +361,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         this.addDefaultProvider(JaxbElementProvider.class);
         this.addDefaultProvider(JaxbProvider.class);
         this.addDefaultProvider(ReaderProvider.class);
+        this.addDefaultProvider(StreamingOutputProvider.class);
         this.addDefaultProvider(StringProvider.class);
         this.addDefaultProvider(WwwFormFormProvider.class);
         this.addDefaultProvider(WwwFormMmapProvider.class);
@@ -393,7 +395,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      */
     private void addProvider(Class<?> jaxRsProviderClass)
             throws IllegalArgumentException, InstantiateProviderException {
-        // TODO if not @Provider annotated, log a warning, but use it.
+        if (jaxRsProviderClass == null)
+            throw new IllegalArgumentException(
+                    "The JAX-RS provider class must not be null");
+        if (!jaxRsProviderClass
+                .isAnnotationPresent(javax.ws.rs.ext.Provider.class)) {
+            String message = "Officially a JAX-RS provider class should be annotated with @Provider";
+            getLogger().info(message);
+        }
         Provider<?> provider;
         try {
             provider = new Provider<Object>(jaxRsProviderClass);
@@ -557,7 +566,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         MatchingResult matchResult = rMatch.match(u);
         u = matchResult.getFinalCapturingGroup();
         addMrVarsToMap(matchResult, callContext);
-        return new RrcAndRemPath(tClass, u);
+        return new RrcAndRemPath(tClass, matchResult.getMatched(), u);
     }
 
     /**
@@ -610,6 +619,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             throw handleExecption(e, null, callContext,
                     "Could not create new instance of root resource class");
         }
+        Object jaxRsResObj1 = o.getJaxRsResourceObject();
+        callContext.addForAncestor(jaxRsResObj1, rrcAndRemPath.matchedUriPath);
         ResourceClass resClass = rrc;
         // Part 2
         for (;;) // (j)
@@ -648,6 +659,10 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             // (h) When Method is resource method
             if (firstMeth instanceof ResourceMethod)
                 return new ResObjAndRemPath(o, u);
+            String matchedUriPart = matchingResult.getMatched();
+            Object jaxRsResObj2 = o.getJaxRsResourceObject();
+            callContext.addForAncestor(jaxRsResObj2, matchedUriPart);
+
             // (g) and (i)
             u = matchingResult.getFinalCapturingGroup();
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
@@ -738,6 +753,11 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                 givenMediaType, accMediaTypes, httpMethod);
         MatchingResult mr = bestResourceMethod.getPathRegExp().match(u);
         addMrVarsToMap(mr, callContext);
+        String matchedUriPart = mr.getMatched();
+        if (matchedUriPart.length() > 0) {
+            Object jaxRsResObj = resObj.getJaxRsResourceObject();
+            callContext.addForAncestor(jaxRsResObj, matchedUriPart);
+        }
         return new ResObjAndMeth(resObj, bestResourceMethod);
     }
 
@@ -1273,10 +1293,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     class RrcAndRemPath {
         private RootResourceClass rrc;
 
+        private String matchedUriPath;
+
         private RemainingPath u;
 
-        RrcAndRemPath(RootResourceClass rrc, RemainingPath u) {
+        RrcAndRemPath(RootResourceClass rrc, String matchedUriPath,
+                RemainingPath u) {
             this.rrc = rrc;
+            this.matchedUriPath = matchedUriPath;
             this.u = u;
         }
     }
@@ -1343,7 +1367,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     /**
      * Returns a set with the attached root resource classes.
      * 
-     * @return A set with the attached root resource classes.
+     * @return
      */
     public Set<Class<?>> getRootResourceClasses() {
         Set<Class<?>> rrcs = new HashSet<Class<?>>();

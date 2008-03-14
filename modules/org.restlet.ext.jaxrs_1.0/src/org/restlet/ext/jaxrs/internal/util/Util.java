@@ -246,7 +246,7 @@ public class Util {
         StringBuilder stb = new StringBuilder();
         int ch;
         while ((ch = in.read()) >= 0)
-            stb.append((char)ch);
+            stb.append((char) ch);
         return stb;
     }
 
@@ -722,12 +722,13 @@ public class Util {
                         }
                     });
             if (iae != null)
-                throw new InjectException("Could not inject the " + toInject
-                        + " into field " + field + " of object " + resource,
-                        iae);
+                throw new InjectException("Could not inject the "
+                        + toInject.getClass() + " into field " + field
+                        + " of object " + resource, iae);
         } catch (RuntimeException e) {
-            throw new InjectException("Could not inject the " + toInject
-                    + " into field " + field + " of object " + resource, e);
+            throw new InjectException("Could not inject the "
+                    + toInject.getClass() + " into field " + field
+                    + " of object " + resource, e);
         }
     }
 

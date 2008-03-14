@@ -48,6 +48,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 
+import org.restlet.data.ClientInfo;
+import org.restlet.data.Conditions;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
@@ -148,6 +150,30 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * </p>
      */
     private Field[] injectFieldsContext;
+
+    /**
+     * <p>
+     * This array contains the fields in this class in which are annotated to
+     * inject an {@link CallContext}. Array is round about 10 times faster than
+     * the list.
+     * </p>
+     * <p>
+     * Must bei initiated with the other fields starting with initFields.
+     * </p>
+     */
+    private Field[] injectFieldsClientInfo;
+
+    /**
+     * <p>
+     * This array contains the fields in this class in which are annotated to
+     * inject an {@link CallContext}. Array is round about 10 times faster than
+     * the list.
+     * </p>
+     * <p>
+     * Must bei initiated with the other fields starting with initFields.
+     * </p>
+     */
+    private Field[] injectFieldsConditions;
 
     /**
      * <p>
@@ -334,7 +360,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         boolean useMethod = checkForJaxRsAnnotations(javaMethod);
         if (useMethod)
             return javaMethod;
-        // REQUESTED first superclass or first interfaces?
         Class<?> methodClass = javaMethod.getDeclaringClass();
         Class<?> superclass = methodClass.getSuperclass();
         Method scMethod = getMethodFromClass(superclass, javaMethod);
@@ -479,33 +504,42 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @throws SecurityException
      */
     private void initInjectFields() {
-        List<Field> ifcx = new ArrayList<Field>();
-        List<Field> ifcp = new ArrayList<Field>();
-        List<Field> ifhp = new ArrayList<Field>();
-        List<Field> ifmp = new ArrayList<Field>();
-        List<Field> ifpp = new ArrayList<Field>();
-        List<Field> ifqp = new ArrayList<Field>();
+        List<Field> ifContext = new ArrayList<Field>();
+        List<Field> ifClientInfo = new ArrayList<Field>();
+        List<Field> ifConditions = new ArrayList<Field>();
+        List<Field> ifCookieParam = new ArrayList<Field>();
+        List<Field> ifHeaderParam = new ArrayList<Field>();
+        List<Field> ifMatrixParam = new ArrayList<Field>();
+        List<Field> ifPathParam = new ArrayList<Field>();
+        List<Field> ifQueryParam = new ArrayList<Field>();
         for (Field field : this.jaxRsClass.getDeclaredFields()) {
             field.setAccessible(true);
-            if (field.isAnnotationPresent(Context.class))
-                ifcx.add(field);
-            if (field.isAnnotationPresent(CookieParam.class))
-                ifcp.add(field);
-            if (field.isAnnotationPresent(HeaderParam.class))
-                ifhp.add(field);
-            if (field.isAnnotationPresent(MatrixParam.class))
-                ifmp.add(field);
-            if (field.isAnnotationPresent(PathParam.class))
-                ifpp.add(field);
-            if (field.isAnnotationPresent(QueryParam.class))
-                ifqp.add(field);
+            if (field.isAnnotationPresent(Context.class)) {
+                if (field.getType().equals(ClientInfo.class))
+                    ifClientInfo.add(field);
+                else if (field.getType().equals(Conditions.class))
+                    ifConditions.add(field);
+                else
+                    ifContext.add(field);
+            } else if (field.isAnnotationPresent(CookieParam.class))
+                ifCookieParam.add(field);
+            else if (field.isAnnotationPresent(HeaderParam.class))
+                ifHeaderParam.add(field);
+            else if (field.isAnnotationPresent(MatrixParam.class))
+                ifMatrixParam.add(field);
+            else if (field.isAnnotationPresent(PathParam.class))
+                ifPathParam.add(field);
+            else if (field.isAnnotationPresent(QueryParam.class))
+                ifQueryParam.add(field);
         }
-        this.injectFieldsContext = ifcx.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsCookieParam = ifcp.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsHeaderParam = ifhp.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsMatrixParam = ifmp.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsPathParam = ifpp.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsQueryParam = ifqp.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsContext = ifContext.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsClientInfo = ifClientInfo.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsConditions = ifConditions.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsCookieParam = ifCookieParam.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsHeaderParam = ifHeaderParam.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsMatrixParam = ifMatrixParam.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsPathParam = ifPathParam.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsQueryParam = ifQueryParam.toArray(EMPTY_FIELD_ARRAY);
     }
 
     private void initResourceMethodsAndLocators(Logger logger) {
@@ -577,8 +611,15 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
         for (Field contextField : this.injectFieldsContext) {
             Util.inject(jaxRsResObj, contextField, callContext);
-            // TODO UriInfo anders.
             // TODO ContextResolver und MessageBodyWorker anders.
+        }
+        for (Field clientInfoField : this.injectFieldsClientInfo) {
+            ClientInfo clientInfo = callContext.getRequest().getClientInfo();
+            Util.inject(jaxRsResObj, clientInfoField, clientInfo);
+        }
+        for (Field conditionsField : this.injectFieldsConditions) {
+            Conditions conditions = callContext.getRequest().getConditions();
+            Util.inject(jaxRsResObj, conditionsField, conditions);
         }
         // not supported, because @*Param are only allowed for parameters.
         for (Field cpf : this.injectFieldsCookieParam) {

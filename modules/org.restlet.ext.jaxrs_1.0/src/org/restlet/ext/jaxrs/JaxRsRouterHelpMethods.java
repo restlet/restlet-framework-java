@@ -310,8 +310,6 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
             SortedMetadata<MediaType> accMediaTypes, Class<?> paramType)
             throws RequestHandledException {
         // LATER Restlet fuer throw
-        // REQUESTED what, if no MessageBodyWriter/-Reader found
-        // REQUESTED JSR-250 aus @Path in spec.
         response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
         response.setEntity(new StringRepresentation(
                 "No MessageBodyReader found to convert from java type " + paramType+" to one of the media types "

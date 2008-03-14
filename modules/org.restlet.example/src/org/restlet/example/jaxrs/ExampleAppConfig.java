@@ -32,6 +32,8 @@ import javax.ws.rs.core.ApplicationConfig;
  * @author Stephan Koops
  * @see EasyRootResource
  * @see PersonsRootResource
+ * @see ExampleServer
+ * @see GuardedExample
  */
 public class ExampleAppConfig extends ApplicationConfig {
 

@@ -254,7 +254,7 @@ public class JaxRsUriBuilderTest extends TestCase {
     public void testBuildMap() throws Exception {
         assertEqualsURI("http://localhost/abc/%7Bvar1%7D/def/%7Bvar2%7D",
                 uriBuilderWithVarsEnc);
-        Map<String, String> vars = new HashMap<String, String>();
+        Map<String, Object> vars = new HashMap<String, Object>();
         try {
             uriBuilderWithVarsEnc.build(vars);
             fail("must fail, because missing UriTemplate variables");
@@ -900,7 +900,7 @@ public class JaxRsUriBuilderTest extends TestCase {
     }
 
     private URI buildFromTemplVarsWithMap(UriBuilder uriBuilder) {
-        Map<String, String> vars = new HashMap<String, String>();
+        Map<String, Object> vars = new HashMap<String, Object>();
         vars.put("scheme", "abc");
         vars.put("userInfo", "username:password");
         vars.put("host", "www.secure.org");

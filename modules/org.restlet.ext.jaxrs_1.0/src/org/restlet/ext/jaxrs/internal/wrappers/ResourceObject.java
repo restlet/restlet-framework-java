@@ -74,7 +74,7 @@ public class ResourceObject {
     /**
      * @return Returns the wrapped JAX-RS resource object. Returns never null.
      */
-    Object getJaxRsResourceObject() {
+    public Object getJaxRsResourceObject() {
         return jaxRsResourceObject;
     }
 

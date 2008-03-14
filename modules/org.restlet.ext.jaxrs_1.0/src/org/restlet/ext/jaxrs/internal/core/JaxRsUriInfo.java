@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -33,7 +34,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
-import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
@@ -173,7 +173,7 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getAbsolutePathBuilder()
      */
     public UriBuilder getAbsolutePathBuilder() {
-    	// LATER what happens, if the Reference is invalid for the UriBuilder?
+        // LATER what happens, if the Reference is invalid for the UriBuilder?
         UriBuilder b = new JaxRsUriBuilder();
         b.encode(false);
         b.scheme(reference.getScheme(false));
@@ -188,45 +188,94 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
+     * also useable after {@link #setReadOnly()}
+     * 
+     * @param resourceObject
+     * @param newUriPart
+     * @throws URISyntaxException
+     * @see UriInfo#getAncestorResources()
+     * @see UriInfo#getAncestorResourceURIs()
+     */
+    public void addForAncestor(Object resourceObject, String newUriPart) {
+        if (resourceObject == null)
+            throw new IllegalArgumentException(
+                    "The resource object must not be null");
+        if (newUriPart == null)
+            throw new IllegalArgumentException(
+                    "The new URI part must not be null");
+        if (newUriPart.length() == 0)
+            throw new IllegalArgumentException(
+                    "The new URI part must not be empty");
+
+        StringBuilder newUri = new StringBuilder();
+
+        if (lastAncestorResourceURI != null) {
+            ancestorResources.addFirst(lastAncestorResource);
+            ancestorResourceURIs.addFirst(lastAncestorResourceURI);
+            newUri.append(lastAncestorResourceURI);
+        }
+
+        if (newUriPart.charAt(0) != '/')
+            newUri.append('/');
+        newUri.append(newUriPart);
+
+        this.lastAncestorResource = resourceObject;
+        this.lastAncestorResourceURI = newUri.toString();
+    }
+
+    private Object lastAncestorResource;
+
+    private String lastAncestorResourceURI;
+
+    private LinkedList<Object> ancestorResources = new LinkedList<Object>();
+
+    private List<Object> ancestorResourcesUnomd = Collections
+            .unmodifiableList(ancestorResources);
+
+    private LinkedList<String> ancestorResourceURIs = new LinkedList<String>();
+
+    private List<String> ancestorResourceURIsUnomd = Collections
+            .unmodifiableList(ancestorResourceURIs);
+
+    /**
      * @see javax.ws.rs.core.UriInfo#getAncestorResources()
      */
     public List<Object> getAncestorResources() {
-        // TODO UriInfo.getAncestorResources()
-        throw new NotYetImplementedException();
+        return ancestorResourcesUnomd;
     }
 
     /**
      * Get a list of URIs for ancestor resources. Each entry is a relative URI
-     * that is a partial path that matched a resource class, a sub-resource 
-     * method or a sub-resource locator. The entries are ordered according to 
+     * that is a partial path that matched a resource class, a sub-resource
+     * method or a sub-resource locator. The entries are ordered according to
      * request URI matching order, with the root resource URI first. E.g.:
      * 
-     * <pre>&#064;Path("foo")
-     *public class FooResource {
+     * <pre>
+     * &#064;Path(&quot;foo&quot;)
+     * public class FooResource {
      *  &#064;GET
      *  public String getFoo() {...}
      * 
-     *  &#064;Path("bar")
+     *  &#064;Path(&quot;bar&quot;)
      *  &#064;GET
      *  public String getFooBar() {...}
-     *}</pre>
+     * </pre>
      * 
-     * <p>A request <code>GET /foo</code> would return an empty list since
-     * <code>FooResource</code> is a root resource.</p>
+     * <p>
+     * A request <code>GET /foo</code> would return an empty list since
+     * <code>FooResource</code> is a root resource.
+     * </p>
      * 
-     * <p>A request <code>GET /foo/bar</code> would return a list with one
-     * entry: "foo".</p>
+     * <p>
+     * A request <code>GET /foo/bar</code> would return a list with one entry:
+     * "foo".
+     * </p>
      * 
      * @return a list of URIs for ancestor resources.
      * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs()
      */
-    public List<URI> getAncestorResourceURIs() {
-        // TODO UriInfo.getAncestorResourceURIs()
-        // REQUESTED return last resource as first?
-        // REQUESTED UriInfo.getAncestorResourceURIs() and getAnchestorResources()
-
-        // list should be unmodifiable
-        throw new NotYetImplementedException();
+    public List<String> getAncestorResourceURIs() {
+        return ancestorResourceURIsUnomd;
     }
 
     /**
@@ -470,7 +519,8 @@ public class JaxRsUriInfo implements UriInfo {
 
     /**
      * Sets this JaxRsUriInfo to be read only. This is the default. This method
-     * is intended to be used by {@link CallContext#setReadOnly()}.
+     * is intended to be used by {@link CallContext#setReadOnly()}. Ignored by
+     * {@link #addForAncestor(Object, String)}.
      */
     protected void setReadOnly() {
         this.readOnly = true;

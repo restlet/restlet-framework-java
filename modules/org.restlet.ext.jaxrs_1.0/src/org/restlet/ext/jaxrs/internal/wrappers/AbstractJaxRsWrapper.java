@@ -41,6 +41,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.restlet.data.ClientInfo;
+import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -315,7 +317,12 @@ public abstract class AbstractJaxRsWrapper {
         for (Annotation annotation : paramAnnotations) {
             Class<? extends Annotation> annoType = annotation.annotationType();
             if (annoType.equals(Context.class)) {
-                return callContext;
+                if (paramClass.equals(ClientInfo.class))
+                    return callContext.getRequest().getClientInfo();
+                else if (paramClass.equals(Conditions.class))
+                    return callContext.getRequest().getConditions();
+                else
+                    return callContext;
             }
             if (annoType.equals(HeaderParam.class)) {
                 return getHeaderParamValue(paramClass,

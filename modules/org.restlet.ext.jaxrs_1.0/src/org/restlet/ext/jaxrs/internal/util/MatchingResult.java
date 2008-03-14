@@ -22,13 +22,15 @@ import java.util.Map;
 
 import javax.ws.rs.Path;
 
-
 /**
  * Wraps a result of a matching of a concrete path against a path pattern.
+ * 
  * @author Stephan Koops
- *
  */
 public class MatchingResult {
+
+    private String matched;
+
     private Map<String, String> variables;
 
     private RemainingPath finalCapturingGroup;
@@ -37,12 +39,15 @@ public class MatchingResult {
 
     /**
      * 
+     * @param matched
+     *                The matched uri part
      * @param variables
      * @param finalCapturingGroup
      * @param numberOfCapturingGroups
      */
-    public MatchingResult(Map<String, String> variables,
+    public MatchingResult(String matched, Map<String, String> variables,
             String finalCapturingGroup, int numberOfCapturingGroups) {
+        this.matched = matched;
         this.variables = variables;
         this.finalCapturingGroup = new RemainingPath(finalCapturingGroup);
         this.numberOfCapturingGroups = numberOfCapturingGroups;
@@ -69,5 +74,12 @@ public class MatchingResult {
      */
     public int getNumberOfCapturingGroups() {
         return numberOfCapturingGroups;
+    }
+
+    /**
+     * @return Returns the matched uri path
+     */
+    public String getMatched() {
+        return this.matched;
     }
 }

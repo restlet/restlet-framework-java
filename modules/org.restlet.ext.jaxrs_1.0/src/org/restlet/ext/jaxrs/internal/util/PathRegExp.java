@@ -43,7 +43,7 @@ import org.restlet.util.Variable;
  */
 public class PathRegExp {
 
-    private static Resolver<String> EmptyStringVariableResolver = new Resolver<String>(){
+    private static Resolver<String> EmptyStringVariableResolver = new Resolver<String>() {
         public String resolve(String variableName) {
             return "";
         }
@@ -248,7 +248,12 @@ public class PathRegExp {
             if (!finalCapturingGroup.startsWith("/"))
                 finalCapturingGroup = "/" + finalCapturingGroup;
         }
-        return new MatchingResult(templateVars, finalCapturingGroup,
+        String matched;
+        int matchedChars = givenPath.length() - finalCapturingGroup.length();
+        if(matchedChars > 0 && givenPath.charAt(matchedChars-1) == '/')
+            matchedChars--;
+        matched = givenPath.substring(0, matchedChars); // ignore '/' at end
+        return new MatchingResult(matched, templateVars, finalCapturingGroup,
                 templateVars.size());
     }
 

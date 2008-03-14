@@ -53,19 +53,27 @@ public class JaxRsUriBuilder extends UriBuilder {
 
         private Map<String, String> retrievedValues = new HashMap<String, String>();
 
-        private String[] values;
+        private Object[] values;
 
-        IteratorVariableResolver(String[] values) {
+        IteratorVariableResolver(Object[] values) {
             this.values = values;
         }
 
         public String resolve(String variableName) {
             String varValue = retrievedValues.get(variableName);
             if (varValue == null) {
-                if (i >= values.length)
+                if (i >= values.length) {
                     throw new IllegalArgumentException(
-                            "The value given array contains not enough elements");
-                varValue = values[i];
+                            "The value given array contains not enough elements (contains "
+                                    + values.length + ", but need at least "
+                                    + (i + 1) + ")");
+                }
+                Object value = values[i];
+                if (value == null)
+                    throw new IllegalArgumentException(
+                            "The given array contains null value at position ("
+                                    + i + ")");
+                varValue = value.toString();
                 i++;
                 retrievedValues.put(variableName, varValue);
             }
@@ -194,17 +202,18 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public URI build(final Map<String, String> values)
+    public URI build(final Map<String, Object> values)
             throws IllegalArgumentException, UriBuilderException {
+        // TODO encode values
         Template template = new Template(toStringWithCheck(false));
-        return buildUri(template.format(new Resolver() {
+        return buildUri(template.format(new Resolver<String>() {
             public String resolve(String variableName) {
-                String varValue = values.get(variableName);
+                Object varValue = values.get(variableName);
                 if (varValue == null)
                     throw new IllegalArgumentException(
                             "The value Map must contain a value for all given Templet variables. The value for variable "
                                     + variableName + " is missing");
-                return varValue;
+                return varValue.toString();
             }
         }));
     }
@@ -233,10 +242,17 @@ public class JaxRsUriBuilder extends UriBuilder {
      * @see javax.ws.rs.core.UriBuilder#build(java.lang.String[])
      */
     @Override
-    public URI build(String... values) throws IllegalArgumentException,
+    @SuppressWarnings("unchecked")
+    public URI build(Object... values) throws IllegalArgumentException,
             UriBuilderException {
+        if (values.length == 1) {
+            Object value1 = values[0];
+            if (value1 instanceof Map)
+                return this.build((Map) value1);
+        }
         Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(new IteratorVariableResolver(values)));
+        // TODO encode values
     }
 
     /**
@@ -978,7 +994,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder uri(URI uri) throws IllegalArgumentException {
-        if(uri == null)
+        if (uri == null)
             throw new IllegalArgumentException("The URI must not be null");
         if (uri.getScheme() != null)
             this.scheme = uri.getScheme();

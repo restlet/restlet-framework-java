@@ -90,10 +90,6 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
-        if (!jaxRsProviderClass
-                .isAnnotationPresent(javax.ws.rs.ext.Provider.class))
-            throw new IllegalArgumentException(
-                    "A JAX-RS provider class must be annotated with @Provider");
         RootResourceClass.checkClassConcrete(jaxRsProviderClass, "provider");
         Constructor<?> providerConstructor = RootResourceClass
                 .findJaxRsConstructor(jaxRsProviderClass);
