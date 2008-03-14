@@ -23,8 +23,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.security.cert.Certificate;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -286,6 +289,17 @@ public class ServletCall extends HttpServerCall {
     @Override
     public boolean isConfidential() {
         return getRequest().isSecure();
+    }
+
+    @Override
+    public List<Certificate> getSslClientCertificates() {
+        Certificate[] certificateArray = (Certificate[]) getRequest()
+                .getAttribute("javax.servlet.request.X509Certificate");
+        if (certificateArray != null) {
+            return Arrays.asList(certificateArray);
+        } else {
+            return null;
+        }
     }
 
     /**

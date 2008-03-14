@@ -23,10 +23,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.security.cert.Certificate;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.net.ssl.SSLSession;
 
 import org.restlet.Server;
 import org.restlet.data.Encoding;
@@ -234,11 +234,11 @@ public abstract class HttpServerCall extends HttpCall {
     public abstract OutputStream getResponseEntityStream();
 
     /**
-     * Returns the SSL session if it is available and accessible.
+     * Returns the chain of client certificates, if available and accessible.
      * 
-     * @return The SSL session if it is available and accessible.
+     * @return The chain of client certificates, if available and accessible.
      */
-    public SSLSession getSslSession() {
+    public List<Certificate> getSslClientCertificates() {
         return null;
     }
 

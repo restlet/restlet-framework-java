@@ -24,7 +24,12 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.security.cert.Certificate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
@@ -197,14 +202,24 @@ public class SimpleCall extends HttpServerCall {
     }
 
     @Override
-    public SSLSession getSslSession() {
-        SSLSession result = null;
+    public List<Certificate> getSslClientCertificates() {
+        Socket socket = getSocket();
+        if (socket instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) socket;
+            SSLSession sslSession = sslSocket.getSession();
+            if (sslSession != null) {
+                try {
+                    List<Certificate> clientCertificates = Arrays
+                            .asList(sslSession.getPeerCertificates());
 
-        if (getSocket() instanceof SSLSocket) {
-            result = ((SSLSocket) getSocket()).getSession();
+                    return clientCertificates;
+                } catch (SSLPeerUnverifiedException e) {
+                    getLogger().log(Level.FINE,
+                            "Can't get the client certificates.", e);
+                }
+            }
         }
-
-        return result;
+        return null;
     }
 
     @Override

@@ -22,12 +22,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
+import java.security.cert.Certificate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
+
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 
 import org.restlet.Server;
 import org.restlet.data.Response;
@@ -194,5 +202,26 @@ public class GrizzlyServerCall extends HttpServerCall {
         }
 
         buffer.clear();
+    }
+
+    @Override
+    public List<Certificate> getSslClientCertificates() {
+        Socket socket = this.socketChannel.socket();
+        if (socket instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) socket;
+            SSLSession sslSession = sslSocket.getSession();
+            if (sslSession != null) {
+                try {
+                    List<Certificate> clientCertificates = Arrays
+                            .asList(sslSession.getPeerCertificates());
+
+                    return clientCertificates;
+                } catch (SSLPeerUnverifiedException e) {
+                    getLogger().log(Level.FINE,
+                            "Can't get the client certificates.", e);
+                }
+            }
+        }
+        return null;
     }
 }

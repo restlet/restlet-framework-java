@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- *
+ * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- *
+ * 
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -23,8 +23,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.security.cert.Certificate;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,7 +47,7 @@ import com.noelios.restlet.http.HttpServerCall;
 /**
  * Call that is used by the XDB Servlet HTTP connector. This is a downgrade
  * version to Servlet 2.2 of ServletCall class.
- *
+ * 
  * @see com.noelios.restlet.ext.servlet.ServletCall
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
@@ -56,11 +59,11 @@ public class XdbServletCall extends HttpServerCall {
     private HttpServletResponse response;
 
     /** The request headers. */
-    private Series < Parameter > requestHeaders;
+    private Series<Parameter> requestHeaders;
 
     /**
      * Constructor.
-     *
+     * 
      * @param logger
      *                The logger.
      * @param serverAddress
@@ -81,7 +84,7 @@ public class XdbServletCall extends HttpServerCall {
 
     /**
      * Constructor.
-     *
+     * 
      * @param server
      *                The parent server.
      * @param request
@@ -108,7 +111,7 @@ public class XdbServletCall extends HttpServerCall {
 
     /**
      * Returns the HTTP Servlet request.
-     *
+     * 
      * @return The HTTP Servlet request.
      */
     public HttpServletRequest getRequest() {
@@ -138,17 +141,17 @@ public class XdbServletCall extends HttpServerCall {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Series < Parameter > getRequestHeaders() {
+    public Series<Parameter> getRequestHeaders() {
         if (this.requestHeaders == null) {
             this.requestHeaders = new Form();
 
             // Copy the headers from the request object
             String headerName;
             String headerValue;
-            for (Enumeration < String > names = getRequest().getHeaderNames();
-                    names.hasMoreElements();) {
+            for (Enumeration<String> names = getRequest().getHeaderNames(); names
+                    .hasMoreElements();) {
                 headerName = names.nextElement();
-                for (Enumeration < String > values = getRequest().getHeaders(
+                for (Enumeration<String> values = getRequest().getHeaders(
                         headerName); values.hasMoreElements();) {
                     headerValue = values.nextElement();
                     this.requestHeaders.add(new Parameter(headerName,
@@ -168,7 +171,7 @@ public class XdbServletCall extends HttpServerCall {
 
     /**
      * Returns the full request URI.
-     *
+     * 
      * @return The full request URI.
      */
     @Override
@@ -184,7 +187,7 @@ public class XdbServletCall extends HttpServerCall {
 
     /**
      * Returns the HTTP Servlet response.
-     *
+     * 
      * @return The HTTP Servlet response.
      */
     public HttpServletResponse getResponse() {
@@ -199,7 +202,7 @@ public class XdbServletCall extends HttpServerCall {
 
     /**
      * Returns the response stream if it exists.
-     *
+     * 
      * @return The response stream if it exists.
      */
     @Override
@@ -228,10 +231,21 @@ public class XdbServletCall extends HttpServerCall {
         return getRequest().isSecure();
     }
 
+    @Override
+    public List<Certificate> getSslClientCertificates() {
+        Certificate[] certificateArray = (Certificate[]) getRequest()
+                .getAttribute("javax.servlet.request.X509Certificate");
+        if (certificateArray != null) {
+            return Arrays.asList(certificateArray);
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Sends the response back to the client. Commits the status, headers and
      * optional entity and send them on the network.
-     *
+     * 
      * @param response
      *                The high-level response.
      * @throws IOException
@@ -240,7 +254,7 @@ public class XdbServletCall extends HttpServerCall {
     public void sendResponse(Response response) throws IOException {
         // Add the response headers
         Parameter header;
-        for (Iterator < Parameter > iter = getResponseHeaders().iterator(); iter
+        for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
                 .hasNext();) {
             header = iter.next();
             getResponse().addHeader(header.getName(), header.getValue());

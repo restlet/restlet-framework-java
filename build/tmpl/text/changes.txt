@@ -44,6 +44,9 @@ Changes log
           binding name parameter.
         - Distributed experimental JAX-RS extension implementing the
           JSR-311 draft specification. Contributed by Stephan Koops.
+        - All HTTP server connectors now expose the client certificates
+          using the "org.restlet.https.clientCertificates" request 
+          attribute. Contributed by Bruno Harbulot.
     - Misc
         - Reformatting of the changes log. Contributed by Avi Flax.
         - All Component subclasses now use a main method that throws 
