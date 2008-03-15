@@ -28,7 +28,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Client code that can be used to test the application developped in the
+ * Client code that can be used to test the application developed in the
  * chapter 7 of the book and converted to Restlets in the chapter 13.
  * 
  * @author Jerome Louvel (contact@noelios.com)
