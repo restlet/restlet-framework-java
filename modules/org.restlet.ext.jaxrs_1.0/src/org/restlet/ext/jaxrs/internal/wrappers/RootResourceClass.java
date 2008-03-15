@@ -47,6 +47,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 
 /**
  * Instances represents a root resource class, see chapter 3 of JAX-RS
@@ -314,5 +315,13 @@ public class RootResourceClass extends ResourceClass {
             return false;
         RootResourceClass otherRootResourceClass = (RootResourceClass) anotherObject;
         return this.jaxRsClass.equals(otherRootResourceClass.jaxRsClass);
+    }
+
+    /**
+     * @return Returns the regular expression for the URI template
+     */
+    @Override
+    public PathRegExp getPathRegExp() {
+        return super.getPathRegExp();
     }
 }

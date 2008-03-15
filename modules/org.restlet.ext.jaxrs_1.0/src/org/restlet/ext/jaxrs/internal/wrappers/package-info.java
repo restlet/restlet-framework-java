@@ -21,9 +21,10 @@
  * This package contains wrappers for JAX-RS objects.
  * </p>
  * <p>
- * Note that the JAX-RS extension is under development. It could only be used
- * experimentally.
+ * This extension as well as the JAX-RS specification are currently under
+ * development. You should only use this extension for experimental purpose.
  * </p>
+ * 
  * @author Stephan Koops
  */
 package org.restlet.ext.jaxrs.internal.wrappers;

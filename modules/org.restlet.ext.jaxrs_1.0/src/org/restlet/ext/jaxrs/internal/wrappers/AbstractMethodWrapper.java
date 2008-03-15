@@ -178,6 +178,14 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
     }
 
     /**
+     * @return Returns the regular expression for the URI template
+     */
+    @Override
+    public PathRegExp getPathRegExp() {
+        return super.getPathRegExp();
+    }
+    
+    /**
      * @return Retuns the resource class
      */
     public ResourceClass getResourceClass() {
