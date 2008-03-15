@@ -27,6 +27,7 @@ import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.restlet.data.Form;
@@ -48,12 +49,6 @@ public class WwwFormMmapProvider extends
         AbstractProvider<MultivaluedMap<String, String>> {
 
     /**
-     * 
-     */
-    public WwwFormMmapProvider() {
-    }
-
-    /**
      * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#getSize(java.lang.Object)
      */
     @Override
@@ -70,12 +65,8 @@ public class WwwFormMmapProvider extends
     }
 
     /**
-     * 
-     * @param type
-     *                TODO
-     * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#writeTo(java.lang.Object,
-     *      Class, Type, Annotation[], javax.ws.rs.core.MediaType,
-     *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
      */
     @Override
     public void writeTo(MultivaluedMap<String, String> mmap, Class<?> type,

@@ -132,15 +132,8 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
     }
 
     /**
-     * @param type
-     *                TODO
-     * @param genericType
-     *                The generic {@link Type} to convert to.
-     * @param annotations
-     *                the annotations of the artefact to convert to
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.OutputStream)
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
      */
     public abstract void writeTo(T object, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,

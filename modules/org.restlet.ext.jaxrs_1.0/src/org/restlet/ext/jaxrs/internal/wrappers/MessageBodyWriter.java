@@ -87,7 +87,7 @@ public interface MessageBodyWriter<T> {
      * @param object
      *                the type to write.
      * @param type
-     *                TODO
+     *                the class of the object
      * @param genericType
      *                The generic {@link Type} to convert to.
      * @param annotations
@@ -100,7 +100,7 @@ public interface MessageBodyWriter<T> {
      *                the {@link OutputStream} for the HTTP entity.
      * @throws java.io.IOException
      *                 if an IO error arises
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Type,
+     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Class, Type,
      *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
      *      OutputStream)
      */

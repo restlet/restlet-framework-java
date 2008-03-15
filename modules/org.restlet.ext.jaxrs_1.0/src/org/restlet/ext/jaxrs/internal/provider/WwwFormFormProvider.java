@@ -62,7 +62,6 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
     }
 
     /**
-     * @param type TODO
      * @see AbstractProvider#writeTo(Object, Class, Type, Annotation[],
      *      MediaType, MultivaluedMap, OutputStream)
      */
@@ -75,7 +74,6 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
     }
 
     /**
-     * 
      * @see AbstractProvider#readFrom(Class, Type, MediaType, Annotation[],
      *      MultivaluedMap, InputStream)
      */

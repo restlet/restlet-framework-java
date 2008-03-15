@@ -49,7 +49,6 @@ public class InjectionTestService2 {
     
     // REQUESTED allow? @HeaderParam("host") private String host; also @QueryParam
     // and so on. @PathParam ist auch sinvoll, wenn Path z.B. ne id enthaelt.
-    // TODO 
     
     @GET
     @ProduceMime("text/plain")

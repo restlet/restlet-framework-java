@@ -176,7 +176,7 @@ public class PersonsRootResource {
         // link to the page to create a new person
         html.append("<a href=\"");
         html.append(uriInfo.getAbsolutePathBuilder().path("createNew").build());
-        html.append("\">create new</a>");
+        html.append("\">create new person</a>");
         return html.toString();
         // You can use Freemarker, Velocity or other Template engines to
         // create the HTML page.
