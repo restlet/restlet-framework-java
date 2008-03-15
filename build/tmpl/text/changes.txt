@@ -49,6 +49,8 @@ Changes log
         - All HTTP server connectors now expose the client certificates
           using the "org.restlet.https.clientCertificates" request 
           attribute. Contributed by Bruno Harbulot.
+        - Updated Java Activation Framework to version 1.1.1.
+        - Updated JavaMail library to version 1.4.1.
     - Misc
         - Reformatting of the changes log. Contributed by Avi Flax.
         - All Component subclasses now use a main method that throws 
