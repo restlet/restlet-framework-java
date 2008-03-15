@@ -18,7 +18,6 @@
 package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -84,7 +83,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @return true, if the given accessible object is annotated with any
      *         JAX-RS-Annotation.
      */
-    static boolean checkForJaxRsAnnotations(AccessibleObject javaMethod) {
+    static boolean checkForJaxRsAnnotations(Method javaMethod) {
         for (Annotation annotation : javaMethod.getAnnotations()) {
             Class<? extends Annotation> annoType = annotation.annotationType();
             if (annoType.getName().startsWith(JAX_RS_PACKAGE_PREFIX))
@@ -520,15 +519,15 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                     ifConditions.add(field);
                 else
                     ifContext.add(field);
-            } else if (field.isAnnotationPresent(CookieParam.class))
-                ifCookieParam.add(field);
-            else if (field.isAnnotationPresent(HeaderParam.class))
-                ifHeaderParam.add(field);
-            else if (field.isAnnotationPresent(MatrixParam.class))
-                ifMatrixParam.add(field);
-            else if (field.isAnnotationPresent(PathParam.class))
+            } else if (Util.isAnnotationPresentExtended(field, PathParam.class))
                 ifPathParam.add(field);
-            else if (field.isAnnotationPresent(QueryParam.class))
+            else if (Util.isAnnotationPresentExtended(field, CookieParam.class))
+                ifCookieParam.add(field);
+            else if (Util.isAnnotationPresentExtended(field, HeaderParam.class))
+                ifHeaderParam.add(field);
+            else if (Util.isAnnotationPresentExtended(field, MatrixParam.class))
+                ifMatrixParam.add(field);
+            else if (Util.isAnnotationPresentExtended(field, QueryParam.class))
                 ifQueryParam.add(field);
         }
         this.injectFieldsContext = ifContext.toArray(EMPTY_FIELD_ARRAY);
@@ -620,7 +619,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             Conditions conditions = callContext.getRequest().getConditions();
             Util.inject(jaxRsResObj, conditionsField, conditions);
         }
-        // not supported, because @*Param are only allowed for parameters.
         for (Field cpf : this.injectFieldsCookieParam) {
             CookieParam headerParam = cpf.getAnnotation(CookieParam.class);
             DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);

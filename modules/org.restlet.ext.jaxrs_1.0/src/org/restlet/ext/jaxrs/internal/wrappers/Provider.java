@@ -399,9 +399,6 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * Write a type to an HTTP response. The response header map is mutable but
      * any changes must be made before writing to the output stream since the
      * headers will be flushed prior to writing the response body.
-     * 
-     * @param object
-     *                the object to write.
      * @param genericType
      *                The generic {@link Type} to convert to.
      * @param annotations
@@ -412,17 +409,20 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                a mutable map of the HTTP response headers.
      * @param entityStream
      *                the {@link OutputStream} for the HTTP entity.
+     * @param object
+     *                the object to write.
+     * 
      * @throws java.io.IOException
      *                 if an IO error arises
      * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Type,
      *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
      *      OutputStream)
      */
-    public void writeTo(T object, Type genericType, Annotation[] annotations,
+    public void writeTo(T object, Class<?> type, Type genericType,
+            Annotation[] annotations,
             javax.ws.rs.core.MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
-        writer.writeTo(object, genericType, annotations, mediaType, httpHeaders,
-                entityStream);
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
+        writer.writeTo(object, type, genericType, annotations,
+                mediaType, httpHeaders, entityStream);
     }
 }

@@ -122,8 +122,7 @@ public class PersonsRootResource {
     @ProduceMime("text/html")
     @Path("createNew")
     public String getCreateForm(@Context UriInfo uriInfo) {
-        List<String> parentURIs = uriInfo.getAncestorResourceURIs();
-        String segment = parentURIs.get(parentURIs.size() - 1);
+        String segment = uriInfo.getAncestorResourceURIs().get(0);
         URI parentUri = uriInfo.getBaseUriBuilder().path(segment).build();
         StringBuilder html = new StringBuilder();
         appendCreateForm(html, parentUri);
@@ -173,13 +172,11 @@ public class PersonsRootResource {
             html.append("</li>\n");
         }
         html.append("</ul>\n");
+        
+        // link to the page to create a new person
         html.append("<a href=\"");
         html.append(uriInfo.getAbsolutePathBuilder().path("createNew").build());
         html.append("\">create new</a>");
-
-        // create person form
-        URI resourceUri = uriInfo.getAbsolutePath();
-        appendCreateForm(html, resourceUri);
         return html.toString();
         // You can use Freemarker, Velocity or other Template engines to
         // create the HTML page.

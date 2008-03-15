@@ -47,8 +47,7 @@ public class CrazyTypeProvider implements MessageBodyWriter<Person> {
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
-     *      Annotation[])
+     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
      */
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
@@ -56,10 +55,10 @@ public class CrazyTypeProvider implements MessageBodyWriter<Person> {
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Type,
-     *      Annotation[], MediaType, MultivaluedMap, OutputStream)
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
      */
-    public void writeTo(Person person, Type genericType,
+    public void writeTo(Person person, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> responseHeaders,
             OutputStream entityStream) throws IOException {
@@ -82,7 +81,7 @@ public class CrazyTypeProvider implements MessageBodyWriter<Person> {
             entityStream.write("\nNo contentType!".getBytes());
         }
         List<Object> contentTypes = responseHeaders.get("Content-Type");
-        for(Object ct : contentTypes) {
+        for (Object ct : contentTypes) {
             entityStream.write("\ncontentType List contains ".getBytes());
             entityStream.write(ct.toString().getBytes());
         }

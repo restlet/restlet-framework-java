@@ -73,8 +73,9 @@ public class FileProvider extends AbstractProvider<File> {
     }
 
     @Override
-    public void writeTo(File file, Type genericType, Annotation[] annotations,
-            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+    public void writeTo(File file, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         InputStream inputStream = new FileInputStream(file);
         copyAndCloseStream(inputStream, entityStream);

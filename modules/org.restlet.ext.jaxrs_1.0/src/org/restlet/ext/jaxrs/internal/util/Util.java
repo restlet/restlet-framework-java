@@ -20,6 +20,9 @@ package org.restlet.ext.jaxrs.internal.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -777,6 +780,31 @@ public class Util {
                     "Error while invoking post construct method " + javaMethod,
                     cause);
         }
+    }
+
+    /**
+     * Checks, if an annotation with the same name as the given annotation is
+     * available, with ignoring the package name.<br>
+     * Example: a call of
+     * <code>isAnnotationPresent(anyField, {@link javax.ws.rs.HeaderParam}.class)</code>
+     * returns also true, if the element is annotated with
+     * {@link org.restlet.ext.jaxrs.HeaderParam}
+     * 
+     * @param field
+     * @param annotation
+     * @return Returns true, if an annotation with the same name as the given
+     *         annotation class is available; ignores the package name
+     * @see AccessibleObject#isAnnotationPresent(Class)
+     */
+    public static boolean isAnnotationPresentExtended(AnnotatedElement field,
+            Class<?> annotation) {
+        String annoName = annotation.getName();
+        String suffix = annoName.substring(annoName.lastIndexOf('.'));
+        for (Annotation anno : field.getDeclaredAnnotations()) {
+            if (anno.annotationType().getName().endsWith(suffix))
+                return true;
+        }
+        return false;
     }
 
     /**

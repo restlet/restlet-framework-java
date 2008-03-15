@@ -178,7 +178,13 @@ public class XsltProvider implements MessageBodyWriter<Source>,
         return new StreamSource(entityStream);
     }
 
-    public void writeTo(Source source, Type genericType,
+    /**
+     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
+     *      java.lang.Class, java.lang.reflect.Type,
+     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType,
+     *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+     */
+    public void writeTo(Source source, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {

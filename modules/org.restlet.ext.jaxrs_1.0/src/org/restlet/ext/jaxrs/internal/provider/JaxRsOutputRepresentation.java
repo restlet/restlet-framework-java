@@ -85,8 +85,8 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        this.mbw.writeTo(object, genericType, annotations, Converter
-                .toJaxRsMediaType(getMediaType(), null), httpHeaders,
+        this.mbw.writeTo(object, object.getClass(), genericType, annotations,
+                Converter.toJaxRsMediaType(getMediaType(), null), httpHeaders,
                 outputStream);
     }
 }

@@ -70,7 +70,7 @@ public class ReaderProvider extends AbstractProvider<Reader> {
      *      MultivaluedMap, OutputStream)
      */
     @Override
-    public void writeTo(Reader reader, Type genericType,
+    public void writeTo(Reader reader, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {

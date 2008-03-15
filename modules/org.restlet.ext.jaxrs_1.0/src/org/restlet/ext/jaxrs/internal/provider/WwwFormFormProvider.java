@@ -46,12 +46,6 @@ import org.restlet.resource.Representation;
 public class WwwFormFormProvider extends AbstractProvider<Form> {
 
     /**
-     * 
-     */
-    public WwwFormFormProvider() {
-    }
-
-    /**
      * @see AbstractProvider#getSize(java.lang.Object)
      */
     @Override
@@ -68,13 +62,14 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
     }
 
     /**
-     * @see AbstractProvider#writeTo(Object, Type, Annotation[], MediaType,
-     *      MultivaluedMap, OutputStream)
+     * @param type TODO
+     * @see AbstractProvider#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
      */
     @Override
-    public void writeTo(Form form, Type genericType, Annotation[] annotations,
-            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(Form form, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         Representation formRepr = form.getWebRepresentation();
         super.copyAndCloseStream(formRepr.getStream(), entityStream);
     }

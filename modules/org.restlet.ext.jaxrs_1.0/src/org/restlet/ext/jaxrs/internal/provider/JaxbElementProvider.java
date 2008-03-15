@@ -108,12 +108,12 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#writeTo(Object,
-     *      Type, Annotation[], MediaType, MultivaluedMap, OutputStream)
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
      */
     @Override
-    public void writeTo(JAXBElement<?> jaxbElement, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
+    public void writeTo(JAXBElement<?> jaxbElement, Class<?> type,
+            Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpResponseHeaders,
             OutputStream entityStream) throws IOException {
         marshal(jaxbElement.getValue(), entityStream);

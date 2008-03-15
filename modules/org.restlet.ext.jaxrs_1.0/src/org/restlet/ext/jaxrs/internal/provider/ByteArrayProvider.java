@@ -63,12 +63,14 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
     }
 
     /**
+     * @param type
+     *                TODO
      * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
      *      java.io.OutputStream)
      */
     @Override
-    public void writeTo(byte[] data, Type genericType,
+    public void writeTo(byte[] data, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {

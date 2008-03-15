@@ -132,6 +132,8 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
     }
 
     /**
+     * @param type
+     *                TODO
      * @param genericType
      *                The generic {@link Type} to convert to.
      * @param annotations
@@ -140,7 +142,7 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
      *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
      *      java.io.OutputStream)
      */
-    public abstract void writeTo(T t, Type genericType,
+    public abstract void writeTo(T object, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException;

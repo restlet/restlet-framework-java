@@ -49,7 +49,21 @@ public class JaxRsUriInfo implements UriInfo {
 
     private static Logger logger = Logger.getLogger("JaxRsUriInfo.unexpected");
 
+    private LinkedList<Object> ancestorResources = new LinkedList<Object>();
+
+    private List<Object> ancestorResourcesUnomd = Collections
+            .unmodifiableList(ancestorResources);
+
+    private LinkedList<String> ancestorResourceURIs = new LinkedList<String>();
+
+    private List<String> ancestorResourceURIsUnomd = Collections
+            .unmodifiableList(ancestorResourceURIs);
+
     private String baseUri;
+
+    private Object lastAncestorResource;
+
+    private String lastAncestorResourceURI;
 
     private List<PathSegment> pathSegmentsDecoded = null;
 
@@ -103,6 +117,42 @@ public class JaxRsUriInfo implements UriInfo {
                     "The reference must contains a baseRef");
         this.reference = reference;
         this.readOnly = readOnly;
+    }
+
+    /**
+     * also useable after {@link #setReadOnly()}
+     * 
+     * @param resourceObject
+     * @param newUriPart
+     * @throws URISyntaxException
+     * @see UriInfo#getAncestorResources()
+     * @see UriInfo#getAncestorResourceURIs()
+     */
+    public void addForAncestor(Object resourceObject, String newUriPart) {
+        if (resourceObject == null)
+            throw new IllegalArgumentException(
+                    "The resource object must not be null");
+        if (newUriPart == null)
+            throw new IllegalArgumentException(
+                    "The new URI part must not be null");
+        if (newUriPart.length() == 0)
+            throw new IllegalArgumentException(
+                    "The new URI part must not be empty");
+
+        StringBuilder newUri = new StringBuilder();
+
+        if (lastAncestorResourceURI != null) {
+            ancestorResources.addFirst(lastAncestorResource);
+            ancestorResourceURIs.addFirst(lastAncestorResourceURI);
+            newUri.append(lastAncestorResourceURI);
+        }
+
+        if (newUriPart.charAt(0) != '/')
+            newUri.append('/');
+        newUri.append(newUriPart);
+
+        this.lastAncestorResource = resourceObject;
+        this.lastAncestorResourceURI = newUri.toString();
     }
 
     /**
@@ -184,56 +234,6 @@ public class JaxRsUriInfo implements UriInfo {
         b.encode(true);
         return b;
     }
-
-    /**
-     * also useable after {@link #setReadOnly()}
-     * 
-     * @param resourceObject
-     * @param newUriPart
-     * @throws URISyntaxException
-     * @see UriInfo#getAncestorResources()
-     * @see UriInfo#getAncestorResourceURIs()
-     */
-    public void addForAncestor(Object resourceObject, String newUriPart) {
-        if (resourceObject == null)
-            throw new IllegalArgumentException(
-                    "The resource object must not be null");
-        if (newUriPart == null)
-            throw new IllegalArgumentException(
-                    "The new URI part must not be null");
-        if (newUriPart.length() == 0)
-            throw new IllegalArgumentException(
-                    "The new URI part must not be empty");
-
-        StringBuilder newUri = new StringBuilder();
-
-        if (lastAncestorResourceURI != null) {
-            ancestorResources.addFirst(lastAncestorResource);
-            ancestorResourceURIs.addFirst(lastAncestorResourceURI);
-            newUri.append(lastAncestorResourceURI);
-        }
-
-        if (newUriPart.charAt(0) != '/')
-            newUri.append('/');
-        newUri.append(newUriPart);
-
-        this.lastAncestorResource = resourceObject;
-        this.lastAncestorResourceURI = newUri.toString();
-    }
-
-    private Object lastAncestorResource;
-
-    private String lastAncestorResourceURI;
-
-    private LinkedList<Object> ancestorResources = new LinkedList<Object>();
-
-    private List<Object> ancestorResourcesUnomd = Collections
-            .unmodifiableList(ancestorResources);
-
-    private LinkedList<String> ancestorResourceURIs = new LinkedList<String>();
-
-    private List<String> ancestorResourceURIsUnomd = Collections
-            .unmodifiableList(ancestorResourceURIs);
 
     /**
      * @see javax.ws.rs.core.UriInfo#getAncestorResources()

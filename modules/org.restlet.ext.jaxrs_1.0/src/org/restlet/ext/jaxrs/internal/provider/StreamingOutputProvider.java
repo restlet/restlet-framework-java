@@ -56,7 +56,7 @@ public class StreamingOutputProvider implements
      * @see MessageBodyWriter#writeTo(Object, Type, Annotation[], MediaType,
      *      MultivaluedMap, OutputStream)
      */
-    public void writeTo(StreamingOutput so, Type genericType,
+    public void writeTo(StreamingOutput so, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {

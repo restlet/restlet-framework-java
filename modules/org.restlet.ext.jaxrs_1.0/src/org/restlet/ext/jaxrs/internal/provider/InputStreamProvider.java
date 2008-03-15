@@ -67,9 +67,13 @@ public class InputStreamProvider extends AbstractProvider<InputStream> {
         return InputStream.class;
     }
 
+    /**
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
+     */
     @Override
-    public void writeTo(InputStream inputStream, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
+    public void writeTo(InputStream inputStream, Class<?> type,
+            Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         copyAndCloseStream(inputStream, entityStream);

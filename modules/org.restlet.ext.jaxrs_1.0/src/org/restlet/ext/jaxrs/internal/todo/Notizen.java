@@ -40,4 +40,7 @@ public class Notizen {
     // specifies a character set that is unsupported.
 
     // LATER Constructor-Nutzung ist inkompatibel
+    
+    // TODO JaxRsComponent and/or JaxRsApplication
+    // http://restlet.tigris.org/issues/show_bug.cgi?id=464
 }

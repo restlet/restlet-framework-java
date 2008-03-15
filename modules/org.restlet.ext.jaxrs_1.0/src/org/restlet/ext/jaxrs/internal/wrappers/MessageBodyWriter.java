@@ -31,7 +31,8 @@ import org.restlet.data.MediaType;
  * Interface to access a wrapped a {@link javax.ws.rs.ext.MessageBodyWriter}
  * 
  * @author Stephan Koops
- * @param <T> the java type to convert.
+ * @param <T>
+ *                the java type to convert.
  */
 public interface MessageBodyWriter<T> {
 
@@ -83,8 +84,10 @@ public interface MessageBodyWriter<T> {
      * any changes must be made before writing to the output stream since the
      * headers will be flushed prior to writing the response body.
      * 
-     * @param t
+     * @param object
      *                the type to write.
+     * @param type
+     *                TODO
      * @param genericType
      *                The generic {@link Type} to convert to.
      * @param annotations
@@ -101,8 +104,8 @@ public interface MessageBodyWriter<T> {
      *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
      *      OutputStream)
      */
-    public void writeTo(T t, Type genericType, Annotation[] annotations,
-            javax.ws.rs.core.MediaType mediaType,
+    public void writeTo(T object, Class<?> type, Type genericType,
+            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException;
 }

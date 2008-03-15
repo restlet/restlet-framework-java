@@ -70,11 +70,11 @@ public class StringProvider extends AbstractProvider<CharSequence> {
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Type,
+     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Class, Type,
      *      Annotation[], MediaType, MultivaluedMap, OutputStream)
      */
     @Override
-    public void writeTo(CharSequence cs, Type genericType,
+    public void writeTo(CharSequence cs, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {

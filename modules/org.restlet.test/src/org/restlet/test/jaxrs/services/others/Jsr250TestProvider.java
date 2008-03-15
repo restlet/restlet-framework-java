@@ -67,7 +67,7 @@ public class Jsr250TestProvider implements MessageBodyWriter<Boolean> {
     }
 
     public long getSize(Boolean t) {
-        if(t == null || t.booleanValue())
+        if (t == null || t.booleanValue())
             return 4;
         return 5;
     }
@@ -77,8 +77,9 @@ public class Jsr250TestProvider implements MessageBodyWriter<Boolean> {
         return Boolean.class.isAssignableFrom(type);
     }
 
-    public void writeTo(Boolean t, Type genericType, Annotation[] annotations,
-            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders,
+    public void writeTo(Boolean t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         entityStream.write("value: ".getBytes());
         entityStream.write(String.valueOf(t).getBytes());

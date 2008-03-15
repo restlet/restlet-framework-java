@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -70,12 +71,11 @@ public class JaxbProvider extends AbstractJaxbProvider<Object> {
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#writeTo(java.lang.Object,
-     *      Type, Annotation[], javax.ws.rs.core.MediaType,
-     *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
      */
     @Override
-    public void writeTo(Object object, Type genericType,
+    public void writeTo(Object object, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpResponseHeaders,
             OutputStream entityStream) throws IOException {

@@ -56,7 +56,7 @@ public class DataSourceProvider extends AbstractProvider<DataSource> {
     }
 
     @Override
-    public void writeTo(DataSource dataSource, Type genericType,
+    public void writeTo(DataSource dataSource, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
