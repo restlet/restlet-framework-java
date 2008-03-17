@@ -51,6 +51,93 @@ import com.noelios.restlet.util.HeaderReader;
  */
 public abstract class HttpClientCall extends HttpCall {
     /**
+     * Copies entity headers into a response and ensures that a non null
+     * representation is returned when at least one entity header is present.
+     * 
+     * @param responseHeaders
+     *                The headers to copy.
+     * @param representation
+     *                The Representation to update.
+     * @return a representation with the entity headers of the response or null
+     *         if no representation has been provided and the response has not
+     *         sent any entity header.
+     * @throws NumberFormatException
+     * @see org.restlet.util.Engine#copyResponseHeaders(Iterable, Response,
+     *      Logger)
+     * @see HttpClientConverter#copyResponseTransportHeaders(Iterable, Response,
+     *      Logger)
+     */
+    public static Representation copyResponseEntityHeaders(
+            Iterable<Parameter> responseHeaders, Representation representation)
+            throws NumberFormatException {
+        Representation result = (representation == null) ? Representation
+                .createEmpty() : representation;
+        boolean entityHeaderFound = false;
+
+        for (Parameter header : responseHeaders) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_TYPE)) {
+                ContentType contentType = new ContentType(header.getValue());
+                result.setMediaType(contentType.getMediaType());
+                result.setCharacterSet(contentType.getCharacterSet());
+                entityHeaderFound = true;
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_LENGTH)) {
+                result.setSize(Long.parseLong(header.getValue()));
+                entityHeaderFound = true;
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_EXPIRES)) {
+                entityHeaderFound = true;
+                result.setExpirationDate(parseDate(header.getValue(), false));
+                entityHeaderFound = true;
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_ENCODING)) {
+                HeaderReader hr = new HeaderReader(header.getValue());
+                String value = hr.readValue();
+                while (value != null) {
+                    Encoding encoding = new Encoding(value);
+                    if (!encoding.equals(Encoding.IDENTITY)) {
+                        result.getEncodings().add(encoding);
+                    }
+                    value = hr.readValue();
+                }
+                entityHeaderFound = true;
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_LANGUAGE)) {
+                HeaderReader hr = new HeaderReader(header.getValue());
+                String value = hr.readValue();
+                while (value != null) {
+                    result.getLanguages().add(new Language(value));
+                    value = hr.readValue();
+                }
+                entityHeaderFound = true;
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_LAST_MODIFIED)) {
+                result.setModificationDate(parseDate(header.getValue(), false));
+                entityHeaderFound = true;
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_ETAG)) {
+                result.setTag(Tag.parse(header.getValue()));
+                entityHeaderFound = true;
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_LOCATION)) {
+                result.setIdentifier(header.getValue());
+                entityHeaderFound = true;
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_DISPOSITION)) {
+                result.setDownloadName(parseContentDisposition(header
+                        .getValue()));
+                entityHeaderFound = true;
+            }
+        }
+
+        if (!entityHeaderFound) {
+            return null;
+        }
+        return result;
+    }
+
+    /**
      * Returns the local IP address or 127.0.0.1 if the resolution fails.
      * 
      * @return The local IP address or 127.0.0.1 if the resolution fails.
@@ -61,6 +148,32 @@ public abstract class HttpClientCall extends HttpCall {
         } catch (UnknownHostException e) {
             return "127.0.0.1";
         }
+    }
+
+    /**
+     * Parse the Content-Disposition header value
+     * 
+     * @param value
+     *                Content-disposition header
+     * @return Filename
+     */
+    public static String parseContentDisposition(String value) {
+        if (value != null) {
+            String key = "FILENAME=\"";
+            int index = value.toUpperCase().indexOf(key);
+            if (index > 0) {
+                return value
+                        .substring(index + key.length(), value.length() - 1);
+            } else {
+                key = "FILENAME=";
+                index = value.toUpperCase().indexOf(key);
+                if (index > 0) {
+                    return value
+                            .substring(index + key.length(), value.length());
+                }
+            }
+        }
+        return null;
     }
 
     /** The parent HTTP client helper. */
@@ -182,93 +295,6 @@ public abstract class HttpClientCall extends HttpCall {
     }
 
     /**
-     * Copies entity headers into a response and ensures that a non null
-     * representation is returned when at least one entity header is present.
-     * 
-     * @param responseHeaders
-     *                The headers to copy.
-     * @param representation
-     *                The Representation to update.
-     * @return a representation with the entity headers of the response or null
-     *         if no representation has been provided and the response has not
-     *         sent any entity header.
-     * @throws NumberFormatException
-     * @see org.restlet.util.Engine#copyResponseHeaders(Iterable, Response,
-     *      Logger)
-     * @see HttpClientConverter#copyResponseTransportHeaders(Iterable, Response,
-     *      Logger)
-     */
-    public static Representation copyResponseEntityHeaders(
-            Iterable<Parameter> responseHeaders, Representation representation)
-            throws NumberFormatException {
-        Representation result = (representation == null) ? Representation
-                .createEmpty() : representation;
-        boolean entityHeaderFound = false;
-
-        for (Parameter header : responseHeaders) {
-            if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_TYPE)) {
-                ContentType contentType = new ContentType(header.getValue());
-                result.setMediaType(contentType.getMediaType());
-                result.setCharacterSet(contentType.getCharacterSet());
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_LENGTH)) {
-                result.setSize(Long.parseLong(header.getValue()));
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_EXPIRES)) {
-                entityHeaderFound = true;
-                result.setExpirationDate(parseDate(header.getValue(), false));
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_ENCODING)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-                while (value != null) {
-                    Encoding encoding = new Encoding(value);
-                    if (!encoding.equals(Encoding.IDENTITY)) {
-                        result.getEncodings().add(encoding);
-                    }
-                    value = hr.readValue();
-                }
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_LANGUAGE)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
-                String value = hr.readValue();
-                while (value != null) {
-                    result.getLanguages().add(new Language(value));
-                    value = hr.readValue();
-                }
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_LAST_MODIFIED)) {
-                result.setModificationDate(parseDate(header.getValue(), false));
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_ETAG)) {
-                result.setTag(Tag.parse(header.getValue()));
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_LOCATION)) {
-                result.setIdentifier(header.getValue());
-                entityHeaderFound = true;
-            } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_DISPOSITION)) {
-                result.setDownloadName(parseContentDisposition(header
-                        .getValue()));
-                entityHeaderFound = true;
-            }
-        }
-
-        if (!entityHeaderFound) {
-            return null;
-        }
-        return result;
-    }
-
-    /**
      * Returns the response channel if it exists.
      * 
      * @param size
@@ -318,30 +344,16 @@ public abstract class HttpClientCall extends HttpCall {
         return result;
     }
 
-    /**
-     * Parse the Content-Disposition header value
-     * 
-     * @param value
-     *                Content-disposition header
-     * @return Filename
-     */
-    public static String parseContentDisposition(String value) {
-        if (value != null) {
-            String key = "FILENAME=\"";
-            int index = value.toUpperCase().indexOf(key);
-            if (index > 0) {
-                return value
-                        .substring(index + key.length(), value.length() - 1);
-            } else {
-                key = "FILENAME=";
-                index = value.toUpperCase().indexOf(key);
-                if (index > 0) {
-                    return value
-                            .substring(index + key.length(), value.length());
-                }
-            }
-        }
-        return null;
+    @Override
+    protected boolean isClientKeepAlive() {
+        return true;
+    }
+
+    @Override
+    protected boolean isServerKeepAlive() {
+        String header = getResponseHeaders().getFirstValue(
+                HttpConstants.HEADER_CONNECTION, true);
+        return (header == null) || !header.equalsIgnoreCase("close");
     }
 
     /**

@@ -63,7 +63,19 @@ public class CallTestCase extends RestletTestCase {
      * @return A connector call instance.
      */
     protected HttpCall getHttpCall() {
-        return new HttpCall();
+        return new HttpCall() {
+
+            @Override
+            protected boolean isClientKeepAlive() {
+                return false;
+            }
+
+            @Override
+            protected boolean isServerKeepAlive() {
+                return false;
+            }
+
+        };
     }
 
     /**

@@ -90,7 +90,6 @@ public class RestletFrameworkServlet extends FrameworkServlet {
     protected void doService(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
         this.converter.service(request, response);
-        this.targetRestletBeanName = DEFAULT_TARGET_RESTLET_BEAN_NAME;
     }
 
     /**
@@ -109,7 +108,8 @@ public class RestletFrameworkServlet extends FrameworkServlet {
      * @return The bean name.
      */
     public String getTargetRestletBeanName() {
-        return this.targetRestletBeanName;
+        return (targetRestletBeanName == null) ? DEFAULT_TARGET_RESTLET_BEAN_NAME
+                : targetRestletBeanName;
     }
 
     @Override

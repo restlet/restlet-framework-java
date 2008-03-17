@@ -36,7 +36,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class HttpCall {
+public abstract class HttpCall {
 
     /**
      * Formats a date as a header string.
@@ -306,6 +306,13 @@ public class HttpCall {
     }
 
     /**
+     * Indicates if the client wants a persistent connection.
+     * 
+     * @return True if the client wants a persistent connection.
+     */
+    protected abstract boolean isClientKeepAlive();
+
+    /**
      * Indicates if the confidentiality of the call is ensured (ex: via SSL).
      * 
      * @return True if the confidentiality of the call is ensured (ex: via SSL).
@@ -315,23 +322,24 @@ public class HttpCall {
     }
 
     /**
+     * Indicates if both the client and the server want a persistent connection.
+     * 
+     * @return True if the connection should be kept alive after the call
+     *         processing.
+     */
+    protected boolean isKeepAlive() {
+        return isClientKeepAlive() && isServerKeepAlive();
+    }
+
+    /**
      * Indicates if the request entity is chunked.
      * 
      * @return True if the request entity is chunked.
      */
     protected boolean isRequestChunked() {
-        boolean result = false;
-
-        for (Parameter header : getRequestHeaders()) {
-            if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
-                if (header.getValue().equalsIgnoreCase("chunked")) {
-                    result = true;
-                }
-            }
-        }
-
-        return result;
+        String header = getRequestHeaders().getFirstValue(
+                HttpConstants.HEADER_TRANSFER_ENCODING, true);
+        return (header != null) && header.equalsIgnoreCase("chunked");
     }
 
     /**
@@ -340,19 +348,17 @@ public class HttpCall {
      * @return True if the response entity is chunked.
      */
     protected boolean isResponseChunked() {
-        boolean result = false;
-
-        for (Parameter header : getResponseHeaders()) {
-            if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_TRANSFER_ENCODING)) {
-                if (header.getValue().equalsIgnoreCase("chunked")) {
-                    result = true;
-                }
-            }
-        }
-
-        return result;
+        String header = getResponseHeaders().getFirstValue(
+                HttpConstants.HEADER_TRANSFER_ENCODING, true);
+        return (header != null) && header.equalsIgnoreCase("chunked");
     }
+
+    /**
+     * Indicates if the server wants a persistent connection.
+     * 
+     * @return True if the server wants a persistent connection.
+     */
+    protected abstract boolean isServerKeepAlive();
 
     /**
      * Sets the client address.

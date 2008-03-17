@@ -45,7 +45,7 @@ public class StreamServerCall extends HttpServerCall {
 
     /** The response output stream. */
     private final OutputStream responseStream;
-    
+
     /** The connecting user */
     private final Socket socket;
 
@@ -75,7 +75,7 @@ public class StreamServerCall extends HttpServerCall {
                     ioe);
         }
     }
-    
+
     @Override
     public String getClientAddress() {
         return socket.getInetAddress().getHostAddress();
@@ -130,6 +130,11 @@ public class StreamServerCall extends HttpServerCall {
 
     private OutputStream getResponseStream() {
         return responseStream;
+    }
+
+    @Override
+    protected boolean isServerKeepAlive() {
+        return false;
     }
 
     @Override

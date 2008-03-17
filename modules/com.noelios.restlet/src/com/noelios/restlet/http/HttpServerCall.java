@@ -242,6 +242,18 @@ public abstract class HttpServerCall extends HttpCall {
         return null;
     }
 
+    @Override
+    protected boolean isClientKeepAlive() {
+        String header = getRequestHeaders().getFirstValue(
+                HttpConstants.HEADER_CONNECTION, true);
+        return (header == null) || !header.equalsIgnoreCase("close");
+    }
+
+    @Override
+    protected boolean isServerKeepAlive() {
+        return true;
+    }
+
     /**
      * Parses the "host" header to set the server host and port properties.
      */
@@ -440,8 +452,8 @@ public abstract class HttpServerCall extends HttpCall {
         headStream.write(10); // LF
 
         // We don't support persistent connections yet
-        getResponseHeaders()
-                .set(HttpConstants.HEADER_CONNECTION, "close", true);
+        getResponseHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
+                isServerKeepAlive());
 
         // Write the response headers
         for (Parameter header : getResponseHeaders()) {

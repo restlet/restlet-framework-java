@@ -14,6 +14,8 @@ Changes log
         - The AWS authentication wasn't properly detected by the
           engine. Reported by Steve Loughran.
         - Fixed directory redirections in DirectoryResource class.
+        - Fixed NPE in RestletFrameworkServlet. Reported by Yuri de Wit
+          and fixed by Rhett Sutphin.
     - API Enhancements
         - Made the org.restlet.util.Resolver generic and used it in 
           Guard to allow the user to provide a secret resolver without

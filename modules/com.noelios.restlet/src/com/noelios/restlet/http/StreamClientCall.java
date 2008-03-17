@@ -124,6 +124,11 @@ public class StreamClientCall extends HttpClientCall {
         return this.responseStream;
     }
 
+    @Override
+    protected boolean isClientKeepAlive() {
+        return false;
+    }
+
     /**
      * Parses the HTTP response.
      * 
@@ -227,7 +232,7 @@ public class StreamClientCall extends HttpClientCall {
 
             // We don't support persistent connections yet
             getRequestHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
-                    true);
+                    isClientKeepAlive());
 
             // Prepare the host header
             String host = hostDomain;
@@ -246,7 +251,7 @@ public class StreamClientCall extends HttpClientCall {
 
             // Write the request body
             result = super.sendRequest(request);
-            
+
             if (result.equals(Status.CONNECTOR_ERROR_COMMUNICATION)) {
                 return result;
             }
