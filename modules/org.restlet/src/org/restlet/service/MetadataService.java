@@ -198,7 +198,7 @@ public class MetadataService {
         addExtension("tex", MediaType.APPLICATION_TEX);
         addExtension("tif", MediaType.IMAGE_TIFF);
         addExtension("tiff", MediaType.IMAGE_TIFF);
-        addExtension("txt", MediaType.TEXT_PLAIN);
+        addExtension("txt", MediaType.TEXT_PLAIN, true);
         addExtension("ulw", MediaType.AUDIO_BASIC);
         addExtension("vrml", MediaType.MODEL_VRML);
         addExtension("vxml", MediaType.APPLICATION_VOICEXML);

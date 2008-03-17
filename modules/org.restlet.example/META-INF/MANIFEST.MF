@@ -5,8 +5,8 @@ Bundle-SymbolicName: org.restlet.example
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
 Export-Package: org.restlet.example
-Require-Bundle: com.db4o;visibility:=reexport,
- com.noelios.restlet,
+Require-Bundle: com.noelios.restlet,
  org.restlet.ext.json;visibility:=reexport,
  org.restlet.ext.jaxrs;visibility:=reexport,
- org.junit4
+ org.junit4,
+ com.db4o

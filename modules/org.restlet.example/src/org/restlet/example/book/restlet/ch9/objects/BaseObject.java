@@ -19,35 +19,20 @@
 package org.restlet.example.book.restlet.ch9.objects;
 
 /**
- * User account.
+ * Base class that supports common behaviours or attributes shared by domain
+ * objects.
  * 
  */
-public class User extends BaseObject {
-    /** Is the user an administrator? */
-    private boolean administrator;
+public class BaseObject {
+    /** Identifiant. */
+    private String id;
 
-    /** Name of the user. */
-    private String name;
-
-    public User() {
-        super();
-        this.administrator = false;
+    public String getId() {
+        return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public boolean isAdministrator() {
-        return administrator;
-    }
-
-    public void setAdministrator(boolean administrator) {
-        this.administrator = administrator;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
 }
