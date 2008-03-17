@@ -68,28 +68,69 @@ public class MetadataService {
      * <br>
      * The list of media type extensions:<br>
      * <ul>
-     * <li>atom: Atom syndication documents</li>
+     * <li>ai: PostScript document</li>
+     * <li>atom: Atom syndication document</li>
+     * <li>au: AU audio file</li>
+     * <li>bin: Binary file</li>
+     * <li>bmp: Bitmap graphics</li>
+     * <li>class: Java bytecode</li>
      * <li>css: CSS stylesheet</li>
+     * <li>dib: Device-Independent Bitmap Graphics</li>
      * <li>doc: Microsoft Word document</li>
+     * <li>dtd: XML Document Type Definition</li>
+     * <li>eps: Encapsulated PostScript</li>
+     * <li>exe: Executable File (Microsoft Corporation)</li>
      * <li>gif: GIF image</li>
-     * <li>html: HTML document</li>
+     * <li>hqx: BinHex 4 Compressed Archive (Macintosh)</li>
+     * <li>htm, html: HTML document</li>
      * <li>ico: Windows icon (Favicon)</li>
-     * <li>jpeg, jpg: JPEG image</li>
+     * <li>jad: Java Application Descriptor file</li>
+     * <li>jar: Java Archive</li>
+     * <li>java: Java source code</li>
+     * <li>jnlp: Java Web start launch file</li>
+     * <li>jpe, jpeg, jpg: JPEG image</li>
      * <li>js: JavaScript document</li>
+     * <li>jsf: Java Server Faces file</li>
      * <li>json: JavaScript Object Notation document</li>
+     * <li>kar: Karaoke MIDI file</li>
+     * <li>latex: LaTeX document</li>
+     * <li>man: Manual file</li>
+     * <li>mathml: Mathml XML document</li>
+     * <li>mid, midi: MIDI Audio</li>
+     * <li>mov, qt: QuickTime video clip (Apple Computer, Inc.)</li>
+     * <li>mp2, mp3: MPEG Audio Stream file</li>
+     * <li>mp4: MPEG-4 video file</li>
+     * <li>mpe, mpeg, mpg: MPEG video clip</li>
      * <li>pdf: Adobe PDF document</li>
      * <li>png: PNG image</li>
-     * <li>ppt: Microsoft Powerpoint document</li>
+     * <li>pps, ppt: Microsoft Powerpoint document</li>
+     * <li>ps: PostScript document</li>
      * <li>rdf: Description Framework document</li>
      * <li>rnc: Relax NG Schema document, Compact syntax</li>
      * <li>rng: Relax NG Schema document, XML syntax</li>
+     * <li>rss: RSS file</li>
      * <li>rtf: Rich Text Format document</li>
+     * <li>sit: StuffIt compressed archive file</li>
+     * <li>snd: Amiga sound</li>
+     * <li>svg: Scalable Vector Graphics file</li>
+     * <li>swf: Flash file (Adobe Systems Inc.)</li>
+     * <li>tar: Tape Archive file</li>
+     * <li>tex: Tex file</li>
+     * <li>tif, tiff: Tagged Image Format File</li>
      * <li>txt: Plain text</li>
      * <li>swf: Shockwave Flash object</li>
+     * <li>ulw: MU-LAW (US telephony format)</li>
+     * <li>vrml: Virtual Reality Modeling Language file</li>
+     * <li>vxml: VoiceXML source file</li>
      * <li>wadl: Web Application Description Language document</li>
-     * <li>xhtml: XHTML document</li>
+     * <li>wav: Waveform audio</li>
+     * <li>wrl: plain text VRML file </li>
+     * <li>xht, xhtml: XHTML document</li>
      * <li>xml: XML document</li>
      * <li>xsd: W3C XML Schema document</li>
+     * <li>xslt: XSL Transform file</li>
+     * <li>xul: XML User Interface Language file</li>
+     * <li>z: UNIX compressed archive file</li>
      * <li>zip: Zip archive</li>
      * </ul>
      */
@@ -98,31 +139,81 @@ public class MetadataService {
         addExtension("es", Language.SPANISH);
         addExtension("fr", Language.FRENCH);
 
+        addExtension("ai", MediaType.APPLICATION_POSTSCRIPT);
         addExtension("atom", MediaType.APPLICATION_ATOM_XML);
+        addExtension("au", MediaType.AUDIO_BASIC);
+        addExtension("bin", MediaType.APPLICATION_OCTET_STREAM);
+        addExtension("bmp", MediaType.IMAGE_BMP);
+        addExtension("class", MediaType.APPLICATION_JAVA);
         addExtension("css", MediaType.TEXT_CSS);
+        addExtension("dib", MediaType.IMAGE_BMP);
         addExtension("doc", MediaType.APPLICATION_WORD);
+        addExtension("dtd", MediaType.APPLICATION_XML_DTD);
+        addExtension("eps", MediaType.APPLICATION_POSTSCRIPT);
+        addExtension("exe", MediaType.APPLICATION_OCTET_STREAM);
         addExtension("gif", MediaType.IMAGE_GIF);
+        addExtension("hqx", MediaType.APPLICATION_MAC_BINHEX40);
+        addExtension("htm", MediaType.TEXT_HTML);
         addExtension("html", MediaType.TEXT_HTML);
         addExtension("ico", MediaType.IMAGE_ICON);
+        addExtension("jad", MediaType.TEXT_J2ME_APP_DESCRIPTOR);
+        addExtension("jar", MediaType.APPLICATION_JAVA_ARCHIVE);
+        addExtension("java", MediaType.TEXT_PLAIN);
+        addExtension("jnlp", MediaType.APPLICATION_JNLP);
+        addExtension("jpe", MediaType.IMAGE_JPEG);
         addExtension("jpeg", MediaType.IMAGE_JPEG);
         addExtension("jpg", MediaType.IMAGE_JPEG);
         addExtension("js", MediaType.APPLICATION_JAVASCRIPT);
+        addExtension("jsf", MediaType.TEXT_PLAIN);
         addExtension("json", MediaType.APPLICATION_JSON);
+        addExtension("kar", MediaType.AUDIO_MIDI);
+        addExtension("latex", MediaType.APPLICATION_LATEX);
+        addExtension("man", MediaType.APPLICATION_TROFF_MAN);
+        addExtension("mathml", MediaType.APPLICATION_MATHML_XML);
+        addExtension("mid", MediaType.AUDIO_MIDI);
+        addExtension("midi", MediaType.AUDIO_MIDI);
+        addExtension("mov", MediaType.VIDEO_QUICKTIME);
+        addExtension("mp2", MediaType.AUDIO_MPEG);
+        addExtension("mp3", MediaType.AUDIO_MPEG);
+        addExtension("mp4", MediaType.VIDEO_MP4);
+        addExtension("mpe", MediaType.VIDEO_MPEG);
+        addExtension("mpeg", MediaType.VIDEO_MPEG);
+        addExtension("mpg", MediaType.VIDEO_MPEG);
         addExtension("pdf", MediaType.APPLICATION_PDF);
         addExtension("png", MediaType.IMAGE_PNG);
+        addExtension("pps", MediaType.APPLICATION_POWERPOINT);
         addExtension("ppt", MediaType.APPLICATION_POWERPOINT);
+        addExtension("ps", MediaType.APPLICATION_POSTSCRIPT);
+        addExtension("qt", MediaType.VIDEO_QUICKTIME);
         addExtension("rdf", MediaType.APPLICATION_RDF_XML);
         addExtension("rnc", MediaType.APPLICATION_RELAXNG_COMPACT);
         addExtension("rng", MediaType.APPLICATION_RELAXNG_XML);
         addExtension("rss", MediaType.APPLICATION_RSS_XML);
         addExtension("rtf", MediaType.APPLICATION_RTF);
-        addExtension("txt", MediaType.TEXT_PLAIN);
+        addExtension("sit", MediaType.APPLICATION_STUFFIT);
+        addExtension("snd", MediaType.AUDIO_BASIC);
         addExtension("svg", MediaType.IMAGE_SVG);
         addExtension("swf", MediaType.APPLICATION_FLASH);
+        addExtension("tar", MediaType.APPLICATION_TAR);
+        addExtension("tex", MediaType.APPLICATION_TEX);
+        addExtension("tif", MediaType.IMAGE_TIFF);
+        addExtension("tiff", MediaType.IMAGE_TIFF);
+        addExtension("txt", MediaType.TEXT_PLAIN);
+        addExtension("ulw", MediaType.AUDIO_BASIC);
+        addExtension("vrml", MediaType.MODEL_VRML);
+        addExtension("vxml", MediaType.APPLICATION_VOICEXML);
+        addExtension("wav", MediaType.AUDIO_WAV);
         addExtension("wadl", MediaType.APPLICATION_WADL_XML);
+        addExtension("wrl", MediaType.MODEL_VRML);
+        addExtension("xht", MediaType.APPLICATION_XHTML_XML);
         addExtension("xhtml", MediaType.APPLICATION_XHTML_XML);
+        addExtension("xls", MediaType.APPLICATION_EXCEL);
         addExtension("xml", MediaType.TEXT_XML);
+        addExtension("xml", MediaType.APPLICATION_XML);
         addExtension("xsd", MediaType.APPLICATION_W3C_SCHEMA_XML);
+        addExtension("xslt", MediaType.APPLICATION_W3C_XSLT);
+        addExtension("xul", MediaType.APPLICATION_XUL);
+        addExtension("z", MediaType.APPLICATION_COMPRESS);
         addExtension("zip", MediaType.APPLICATION_ZIP);
     }
 

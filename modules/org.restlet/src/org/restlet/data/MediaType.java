@@ -52,6 +52,9 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_CAB = register(
             "application/vnd.ms-cab-compressed", "Microsoft Cabinet archive");
 
+    public static final MediaType APPLICATION_COMPRESS = register(
+            "application/x-compress", "Compressed filed");
+
     public static final MediaType APPLICATION_EXCEL = register(
             "application/vnd.ms-excel", "Microsoft Excel document");
 
@@ -67,6 +70,9 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_HTTP_COOKIES = register(
             "application/x-http-cookies", "HTTP cookies");
 
+    public static final MediaType APPLICATION_JAVA = register(
+            "application/java", "Java class");
+
     public static final MediaType APPLICATION_JAVA_ARCHIVE = register(
             "application/java-archive", "Java archive");
 
@@ -76,11 +82,23 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_JAVASCRIPT = register(
             "application/x-javascript", "Javascript document");
 
+    public static final MediaType APPLICATION_JNLP = register(
+            "application/x-java-jnlp-file", "JNLP");
+
     public static final MediaType APPLICATION_JSON = register(
             "application/json", "JavaScript Object Notation document");
 
     public static final MediaType APPLICATION_OCTET_STREAM = register(
             "application/octet-stream", "Raw octet stream");
+
+    public static final MediaType APPLICATION_LATEX = register(
+            "application/x-latex", "LaTeX");
+
+    public static final MediaType APPLICATION_MAC_BINHEX40 = register(
+            "application/mac-binhex40", "Mac binhex40");
+
+    public static final MediaType APPLICATION_MATHML_XML = register(
+            "application/mathml+xml", "Mathml XML document");
 
     public static final MediaType APPLICATION_PDF = register("application/pdf",
             "Adobe PDF document");
@@ -118,8 +136,20 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_TAR = register(
             "application/x-tar", "Tar archive");
 
+    public static final MediaType APPLICATION_TEX = register(
+            "application/x-tex", "Tex file");
+
+    public static final MediaType APPLICATION_TROFF_MAN = register(
+            "application/x-troff-man", "LaTeX");
+
+    public static final MediaType APPLICATION_VOICEXML = register(
+            "application/voicexml+xml", "VoiceXML");
+
     public static final MediaType APPLICATION_W3C_SCHEMA_XML = register(
             "application/x-xsd+xml", "W3C XML Schema document");
+
+    public static final MediaType APPLICATION_W3C_XSLT = register(
+            "application/xsd+xml", "W3C XSLT Stylesheet");
 
     public static final MediaType APPLICATION_WADL_XML = register(
             "application/vnd.sun.wadl+xml",
@@ -137,10 +167,22 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_XML = register("application/xml",
             "XML document");
 
+    public static final MediaType APPLICATION_XML_DTD = register(
+            "application/xml-dtd", "XML DTD");
+
+    public static final MediaType APPLICATION_XUL = register(
+            "application/vnd.mozilla.xul+xml", "XUL document");
+
     public static final MediaType APPLICATION_ZIP = register("application/zip",
             "Zip archive");
 
     public static final MediaType AUDIO_ALL = register("audio/*", "All audios");
+
+    public static final MediaType AUDIO_BASIC = register("audio/basic",
+            "AU audio");
+
+    public static final MediaType AUDIO_MIDI = register("audio/midi",
+            "MIDI audio");
 
     public static final MediaType AUDIO_MPEG = register("audio/mpeg",
             "MPEG audio (MP3)");
@@ -169,10 +211,15 @@ public final class MediaType extends Metadata {
     public static final MediaType IMAGE_SVG = register("image/svg+xml",
             "Scalable Vector Graphics");
 
+    public static final MediaType IMAGE_TIFF = register("image/tiff",
+            "TIFF image");
+
     public static final MediaType MESSAGE_ALL = register("message/*",
             "All messages");
 
     public static final MediaType MODEL_ALL = register("model/*", "All models");
+
+    public static final MediaType MODEL_VRML = register("model/vrml", "VRML");
 
     public static final MediaType MULTIPART_ALL = register("multipart/*",
             "All multipart data");
@@ -194,6 +241,9 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_JAVASCRIPT = register("text/javascript",
             "Javascript document");
 
+    public static final MediaType TEXT_J2ME_APP_DESCRIPTOR = register(
+            "text/vnd.sun.j2me.app-descriptor", "J2ME Application Descriptor");
+
     public static final MediaType TEXT_PLAIN = register("text/plain",
             "Plain text");
 
@@ -214,6 +264,9 @@ public final class MediaType extends Metadata {
 
     public static final MediaType VIDEO_MPEG = register("video/mpeg",
             "MPEG video");
+
+    public static final MediaType VIDEO_MP4 = register("video/mp4",
+            "MPEG-4 video");
 
     public static final MediaType VIDEO_QUICKTIME = register("video/quicktime",
             "Quicktime video");
