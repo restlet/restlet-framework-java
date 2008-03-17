@@ -287,7 +287,7 @@ public abstract class HttpClientCall extends HttpCall {
     public abstract InputStream getResponseEntityStream(long size);
 
     /**
-     * Checks if the given input stream really containes bytes to be read. If
+     * Checks if the given input stream really contains bytes to be read. If
      * so, returns the inputStream otherwise returns null.
      * 
      * @param inputStream
