@@ -46,6 +46,9 @@ import org.restlet.data.Protocol;
  *         &lt;/property&gt;
  * &lt;/bean&gt;
  * 
+ * &lt;bean id=&quot;component.context&quot;
+ *         class=&quot;org.springframework.beans.factory.config.PropertyPathFactoryBean&quot; /&gt;
+ * 
  * &lt;bean id=&quot;server&quot; class=&quot;org.restlet.ext.spring.SpringServer&quot;&gt;
  *         &lt;constructor-arg value=&quot;http&quot; /&gt;
  *         &lt;constructor-arg value=&quot;8182&quot; /&gt;

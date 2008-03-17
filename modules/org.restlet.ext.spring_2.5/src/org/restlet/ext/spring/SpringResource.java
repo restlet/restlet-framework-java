@@ -25,7 +25,7 @@ import org.restlet.resource.Representation;
 import org.springframework.core.io.AbstractResource;
 
 /**
- * Spring Resource based on a Restlet Representation. Do not get confused,
+ * Spring Resource based on a Restlet Representation. DON'T GET CONFUSED,
  * Spring's notion of Resource is different from Restlet's one, actually it's
  * closer to Restlet's Representations.
  * 
