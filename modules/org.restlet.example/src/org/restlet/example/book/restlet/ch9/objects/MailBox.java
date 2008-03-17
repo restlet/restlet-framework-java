@@ -4,6 +4,7 @@ import java.util.List;
 
 /**
  * Mailbox.
+ * 
  */
 public class MailBox {
     /** List of contacts of the mailbox. */

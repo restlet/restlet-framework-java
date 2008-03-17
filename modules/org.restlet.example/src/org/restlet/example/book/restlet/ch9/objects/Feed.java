@@ -5,6 +5,7 @@ import java.util.Set;
 
 /**
  * Feed seen as a list of mails having their tags in a defined set.
+ * 
  */
 public class Feed {
     /** List of mails of the feed. */

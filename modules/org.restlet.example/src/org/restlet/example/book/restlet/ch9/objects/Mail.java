@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  * Mail exchanged between a sender and receivers.
+ * 
  */
 public class Mail {
     /** Textual message of the mail. */

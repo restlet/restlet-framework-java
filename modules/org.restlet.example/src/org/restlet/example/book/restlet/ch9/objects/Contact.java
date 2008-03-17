@@ -2,6 +2,7 @@ package org.restlet.example.book.restlet.ch9.objects;
 
 /**
  * Contact of a mail box owner.
+ * 
  */
 public class Contact {
     /** Mail address of the contact. */

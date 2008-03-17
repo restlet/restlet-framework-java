@@ -1,7 +1,8 @@
 package org.restlet.example.book.restlet.ch9.objects;
 
 /**
- * USer account.
+ * User account.
+ * 
  */
 public class User {
     /** Is the user an administrator? */

@@ -1,9 +1,11 @@
 package org.restlet.example.book.restlet.ch9.objects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Mail application that manages a set of mailboxes.
+ * 
  */
 public class MailRoot {
     /** Mail boxes managed by the application. */
@@ -11,6 +13,12 @@ public class MailRoot {
 
     /** Users managed by the application. */
     private List<User> users;
+
+    public MailRoot() {
+        super();
+        this.mailBoxes = new ArrayList<MailBox>();
+        this.users = new ArrayList<User>();
+    }
 
     public List<MailBox> getMailBoxes() {
         return mailBoxes;
