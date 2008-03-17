@@ -71,7 +71,7 @@ Changes log
           and remove duplicatations.
         - Added SSL unit test contributed by Bruno Harbulot.
         - Completed the list of known media-types with Tomcat's 
-          entries. Reported by Alex Milowski.
+          entries. Reported and contributed by Alex Milowski.
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed
         - Fixed NPE in Connector class. Reported by Rob Heittman and
