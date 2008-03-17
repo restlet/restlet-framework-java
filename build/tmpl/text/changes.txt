@@ -55,6 +55,8 @@ Changes log
         - Updated JavaMail library to version 1.4.1.
         - Removed the SpringApplication class as an XML configuration
           alternative is now documented. 
+        - Updated db4o to version 7.2 with transparent activation 
+          and update.
     - Misc
         - Reformatting of the changes log. Contributed by Avi Flax.
         - All Component subclasses now use a main method that throws 
