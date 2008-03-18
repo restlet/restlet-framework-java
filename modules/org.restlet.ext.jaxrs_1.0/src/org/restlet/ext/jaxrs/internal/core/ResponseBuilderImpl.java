@@ -400,7 +400,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder variants(List<Variant> variants) {
-
+        // LATER add entity header with further information
         Set<String> encodings = new HashSet<String>();
         Set<String> languages = new HashSet<String>();
         Set<MediaType> mediaTypes = new HashSet<MediaType>();
