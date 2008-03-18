@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import junit.framework.AssertionFailedError;
@@ -243,6 +244,19 @@ public class JaxRsUriBuilderTest extends TestCase {
     public void testBuild() throws Exception {
         assertEquals(URI_1, uriBuilder1Enc.build());
         assertEquals(URI_1, uriBuilder1NoE.build());
+
+        try {
+            uriBuilderWithVarsEnc.build();
+            fail("must fail, because vars are required");
+        } catch (UriBuilderException ube) {
+            // wonderful
+        }
+        try {
+            uriBuilderWithVarsNoE.build();
+            fail("must fail, because vars are required");
+        } catch (UriBuilderException ube) {
+            // wonderful
+        }
     }
 
     /**
@@ -250,8 +264,6 @@ public class JaxRsUriBuilderTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#build(java.util.Map)}.
      */
     public void testBuildMap() throws Exception {
-        assertEqualsURI("http://localhost/abc/%7Bvar1%7D/def/%7Bvar2%7D",
-                uriBuilderWithVarsEnc);
         Map<String, Object> vars = new HashMap<String, Object>();
         try {
             uriBuilderWithVarsEnc.build(vars);
@@ -272,6 +284,16 @@ public class JaxRsUriBuilderTest extends TestCase {
         vars.put("var3", "789");
         assertEqualsURI("http://localhost/abc/123/def/456",
                 uriBuilderWithVarsEnc.build(vars));
+
+        vars.put("var2", " ");
+        assertEqualsURI("http://localhost/abc/123/def/%20",
+                uriBuilderWithVarsEnc.build(vars));
+
+        try {
+            uriBuilderWithVarsNoE.build(vars);
+        } catch (IllegalArgumentException iae) {
+            // wonderful
+        }
     }
 
     /**
@@ -310,8 +332,8 @@ public class JaxRsUriBuilderTest extends TestCase {
      */
     public void testClone() {
         assertEquals(uriBuilder1Enc.build(), uriBuilder1Enc.clone().build());
-        URI clonedEncWithVars = uriBuilderWithVarsEnc.clone().build();
-        assertEquals(uriBuilderWithVarsEnc.build(), clonedEncWithVars);
+        URI clonedEncWithVars = uriBuilder1NoE.clone().build();
+        assertEquals(uriBuilder1NoE.build(), clonedEncWithVars);
     }
 
     /**
