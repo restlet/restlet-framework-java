@@ -1368,9 +1368,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     /**
-     * Returns a set with the attached root resource classes.
+     * Returns an unmodifiable set with the attached root resource classes.
      * 
-     * @return
+     * @return an unmodifiable set with the attached root resource classes.
      */
     public Set<Class<?>> getRootResourceClasses() {
         Set<Class<?>> rrcs = new HashSet<Class<?>>();
@@ -1407,5 +1407,15 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     @Deprecated
     public WrapperFactory getWrapperFactory() {
         return wrapperFactory;
+    }
+
+    /**
+     * @return
+     */
+    public List<String> getRootUris() {
+        List<String> uris = new ArrayList<String>();
+        for(RootResourceClass rrc : this.rootResourceClasses)
+            uris.add(rrc.getPathRegExp().getPathPattern());
+        return Collections.unmodifiableList(uris);
     }
 }
