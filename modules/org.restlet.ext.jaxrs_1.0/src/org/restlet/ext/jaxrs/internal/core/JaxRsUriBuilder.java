@@ -74,6 +74,7 @@ public class JaxRsUriBuilder extends UriBuilder {
                             "The given array contains null value at position ("
                                     + i + ")");
                 varValue = value.toString();
+                varValue = EncodeOrCheck.all(varValue, encode);
                 i++;
                 retrievedValues.put(variableName, varValue);
             }
@@ -178,7 +179,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public URI build() throws UriBuilderException {
-        Template template = new Template(toStringWithCheck(true));
+        Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(NO_VAR_RESOLVER));
     }
 
@@ -204,7 +205,6 @@ public class JaxRsUriBuilder extends UriBuilder {
     @SuppressWarnings("unchecked")
     public URI build(final Map<String, Object> values)
             throws IllegalArgumentException, UriBuilderException {
-        // TODO encode values
         Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(new Resolver<String>() {
             public String resolve(String variableName) {
@@ -213,7 +213,7 @@ public class JaxRsUriBuilder extends UriBuilder {
                     throw new IllegalArgumentException(
                             "The value Map must contain a value for all given Templet variables. The value for variable "
                                     + variableName + " is missing");
-                return varValue.toString();
+                return EncodeOrCheck.all(varValue.toString(), encode);
             }
         }));
     }
@@ -252,7 +252,6 @@ public class JaxRsUriBuilder extends UriBuilder {
         }
         Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(new IteratorVariableResolver(values)));
-        // TODO encode values
     }
 
     /**

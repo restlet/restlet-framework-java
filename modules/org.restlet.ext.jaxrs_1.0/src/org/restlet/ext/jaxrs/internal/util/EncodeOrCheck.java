@@ -532,4 +532,29 @@ public class EncodeOrCheck {
         return stb;
         // LATER userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
     }
+
+    /**
+     * @param string
+     * @param encode
+     * @return
+     */
+    public static String all(CharSequence string, boolean encode) {
+        int length = string.length();
+        StringBuilder stb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            char c = string.charAt(i);
+            if (Reference.isValid(c))
+                stb.append(c);
+            else if (c == '%') {
+                if (encode)
+                    toHex(c, stb);
+                else {
+                    checkForHexDigitAndAppend(string, i, stb);
+                    i += 2;
+                }
+            } else
+                toHexOrReject(c, stb, encode);
+        }
+        return stb.toString();
+    }
 }
