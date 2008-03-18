@@ -2,6 +2,8 @@ package org.restlet.resource;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.xml.transform.Source;
@@ -97,14 +99,17 @@ public class TransformRepresentation extends OutputRepresentation {
         }
     }
 
+    /** The JAXP transformer output properties. */
+    private Map<String, String> outputProperties;
+
+    /** The JAXP transformer parameters. */
+    private Map<String, Object> parameters;
+
     /** The source representation to transform. */
     private Representation sourceRepresentation;
 
     /** The template to be used and reused. */
     private Templates templates;
-
-    /** The transformer to be used. */
-    private Transformer transformer;
 
     /** The XSLT transform sheet to apply to message entities. */
     private Representation transformSheet;
@@ -113,7 +118,8 @@ public class TransformRepresentation extends OutputRepresentation {
     private URIResolver uriResolver;
 
     /**
-     * Constructor.
+     * Constructor. Note that a default URI resolver will be created based on
+     * the given context.
      * 
      * @param context
      *                The parent context.
@@ -124,11 +130,92 @@ public class TransformRepresentation extends OutputRepresentation {
      */
     public TransformRepresentation(Context context, Representation source,
             Representation transformSheet) {
+        this((context == null) ? null : new ContextResolver(context), source,
+                transformSheet);
+    }
+
+    /**
+     * Default constructor.
+     * 
+     * @param source
+     *                The source representation to transform.
+     * @param transformSheet
+     *                The XSLT transform sheet to apply.
+     */
+    public TransformRepresentation(Representation source,
+            Representation transformSheet) {
+        this((URIResolver) null, source, transformSheet);
+    }
+
+    /**
+     * Constructor. Note that a default URI resolver will be created based on
+     * the given context.
+     * 
+     * @param uriResolver
+     *                The JAXP URI resolver.
+     * @param source
+     *                The source representation to transform.
+     * @param transformSheet
+     *                The XSLT transform sheet to apply.
+     */
+    public TransformRepresentation(URIResolver uriResolver,
+            Representation source, Representation transformSheet) {
+        this(uriResolver, source, transformSheet, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param uriResolver
+     *                The optional JAXP URI resolver.
+     * @param source
+     *                The source representation to transform.
+     * @param templates
+     *                The precompiled JAXP template.
+     */
+    private TransformRepresentation(URIResolver uriResolver,
+            Representation source, Representation transformSheet,
+            Templates templates) {
         super(null);
         this.sourceRepresentation = source;
+        this.templates = templates;
         this.transformSheet = transformSheet;
-        this.uriResolver = (context == null) ? null : new ContextResolver(
-                context);
+        this.uriResolver = uriResolver;
+        this.parameters = new HashMap<String, Object>();
+        this.outputProperties = new HashMap<String, String>();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param uriResolver
+     *                The optional JAXP URI resolver.
+     * @param source
+     *                The source representation to transform.
+     * @param templates
+     *                The precompiled JAXP template.
+     */
+    public TransformRepresentation(URIResolver uriResolver,
+            Representation source, Templates templates) {
+        this(uriResolver, source, null, templates);
+    }
+
+    /**
+     * Returns the modifiable map of JAXP transformer output properties.
+     * 
+     * @return The JAXP transformer output properties.
+     */
+    public Map<String, String> getOutputProperties() {
+        return this.outputProperties;
+    }
+
+    /**
+     * Returns the modiable map of JAXP transformer parameters.
+     * 
+     * @return The JAXP transformer parameters.
+     */
+    public Map<String, Object> getParameters() {
+        return this.parameters;
     }
 
     /**
@@ -141,9 +228,9 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Returns the templates to be used and reused. Creates a new one based on
-     * the transformSheet representation and on the URI resolver if no one
-     * exists.
+     * Returns the templates to be used and reused. If no one exists, it creates
+     * a new one based on the transformSheet representation and on the URI
+     * resolver.
      * 
      * @return The templates to be used and reused.
      */
@@ -181,31 +268,42 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Returns the transformer to be used. Creates a new one based on the
-     * transformSheet representation and on the URI resolver if no one exists.
-     * The default implementation internally invokes the {@link #getTemplates()}.newTransformer()
-     * method. method.
+     * Returns a new transformer to be used. Creation is based on the
+     * {@link #getTemplates()}.newTransformer() method.
      * 
-     * @return The transformer to be used.
+     * @return The new transformer to be used.
      */
     public Transformer getTransformer() throws IOException {
-        Transformer result = this.transformer;
+        Transformer result = null;
 
-        if (result == null) {
+        try {
             Templates templates = getTemplates();
 
-            try {
-                if (templates != null) {
-                    result = templates.newTransformer();
+            if (templates != null) {
+                result = templates.newTransformer();
+
+                if (this.uriResolver != null) {
+                    result.setURIResolver(getUriResolver());
                 }
-            } catch (TransformerConfigurationException tce) {
-                throw new IOException("Transformer configuration exception. "
-                        + tce.getMessage());
-            } catch (TransformerFactoryConfigurationError tfce) {
-                throw new IOException(
-                        "Transformer factory configuration exception. "
-                                + tfce.getMessage());
+
+                // Set the parameters
+                for (String name : getParameters().keySet()) {
+                    result.setParameter(name, getParameters().get(name));
+                }
+
+                // Set the output properties
+                for (String name : getOutputProperties().keySet()) {
+                    result.setOutputProperty(name, getOutputProperties().get(
+                            name));
+                }
             }
+        } catch (TransformerConfigurationException tce) {
+            throw new IOException("Transformer configuration exception. "
+                    + tce.getMessage());
+        } catch (TransformerFactoryConfigurationError tfce) {
+            throw new IOException(
+                    "Transformer factory configuration exception. "
+                            + tfce.getMessage());
         }
 
         return result;
@@ -251,8 +349,8 @@ public class TransformRepresentation extends OutputRepresentation {
             this.sourceRepresentation = null;
         }
 
-        if (this.transformer != null) {
-            this.transformer = null;
+        if (this.templates != null) {
+            this.templates = null;
         }
 
         if (this.transformSheet != null) {
@@ -265,6 +363,26 @@ public class TransformRepresentation extends OutputRepresentation {
         }
 
         super.release();
+    }
+
+    /**
+     * Sets the modifiable map of JAXP transformer output properties.
+     * 
+     * @param outputProperties
+     *                The JAXP transformer output properties.
+     */
+    public void setOutputProperties(Map<String, String> outputProperties) {
+        this.outputProperties = outputProperties;
+    }
+
+    /**
+     * Sets the JAXP transformer parameters.
+     * 
+     * @param parameters
+     *                The JAXP transformer parameters.
+     */
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
     }
 
     /**

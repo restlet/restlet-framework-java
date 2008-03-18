@@ -61,7 +61,7 @@ public class TransformerTestCase extends TestCase {
     public static void main(String[] args) {
         try {
             new TransformerTestCase().testTransform();
-            new TransformerTestCase().testParallelTransform();
+            new TransformerTestCase().parallelTestTransform();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -85,7 +85,13 @@ public class TransformerTestCase extends TestCase {
                     + "</xsl:template>" + "</xsl:transform>",
             MediaType.TEXT_XML);
 
-    public void testParallelTransform() throws Exception {
+    /**
+     * This was removed from the automatically tested method because it is too
+     * consuming.
+     * 
+     * @throws Exception
+     */
+    public void parallelTestTransform() throws Exception {
         Component comp = new Component();
         final TransformRepresentation tr = new TransformRepresentation(comp
                 .getContext(), source, xslt);

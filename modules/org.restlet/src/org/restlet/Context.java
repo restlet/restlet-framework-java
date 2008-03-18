@@ -43,14 +43,35 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Context {
+    private static ThreadLocal<Context> CURRENT = new ThreadLocal<Context>();
+
+    /**
+     * Returns the context associated to the current thread.
+     * 
+     * @return The context associated to the current thread.
+     */
+    public static Context getCurrent() {
+        return CURRENT.get();
+    }
+
+    /**
+     * Sets the context to associated with the current thread.
+     * 
+     * @param context
+     *                The thread's context.
+     */
+    public static void setCurrent(Context context) {
+        CURRENT.set(context);
+    }
+
     /** The modifiable attributes map. */
     private volatile ConcurrentMap<String, Object> attributes;
 
-    /** The modifiable series of parameters. */
-    private volatile Series<Parameter> parameters;
-
     /** The logger instance to use. */
     private volatile Logger logger;
+
+    /** The modifiable series of parameters. */
+    private volatile Series<Parameter> parameters;
 
     /**
      * Constructor. Writes log messages to "org.restlet".
@@ -121,21 +142,6 @@ public class Context {
 
     /**
      * Returns a request dispatcher to available client connectors. When you ask
-     * the dispatcher to handle a request, it will automatically select the best
-     * client connector for your request, based on the request.protocol property
-     * or on the resource URI's scheme. This call is blocking and will return an
-     * updated response object.
-     * 
-     * @return A request dispatcher to virtual hosts of the local component.
-     * @deprecated Use getClientDispatcher() instead.
-     */
-    @Deprecated
-    public Uniform getDispatcher() {
-        return getClientDispatcher();
-    }
-
-    /**
-     * Returns a request dispatcher to available client connectors. When you ask
      * the dispatcher to handle a request, it will automatically select the
      * appropriate client connector for your request, based on the
      * request.protocol property or on the resource URI's scheme. This call is
@@ -148,19 +154,18 @@ public class Context {
     }
 
     /**
-     * Returns a request dispatcher to component's virtual hosts. This is mostly
-     * useful for application that want to optimize calls to other applications
-     * hosted in the same component or to the application itself.<br>
-     * <br>
-     * The processing is the same as what would have been done if the request
-     * came from one of the component's server connectors. It first must match
-     * one of the registered virtual hosts. Then it can be routed to one of the
-     * attaced Restlets, typically an Application.
+     * Returns a request dispatcher to available client connectors. When you ask
+     * the dispatcher to handle a request, it will automatically select the best
+     * client connector for your request, based on the request.protocol property
+     * or on the resource URI's scheme. This call is blocking and will return an
+     * updated response object.
      * 
-     * @return A request dispatcher to the server connectors' router.
+     * @return A request dispatcher to virtual hosts of the local component.
+     * @deprecated Use getClientDispatcher() instead.
      */
-    public Uniform getServerDispatcher() {
-        return null;
+    @Deprecated
+    public Uniform getDispatcher() {
+        return getClientDispatcher();
     }
 
     /**
@@ -183,6 +188,22 @@ public class Context {
      */
     public Series<Parameter> getParameters() {
         return this.parameters;
+    }
+
+    /**
+     * Returns a request dispatcher to component's virtual hosts. This is mostly
+     * useful for application that want to optimize calls to other applications
+     * hosted in the same component or to the application itself.<br>
+     * <br>
+     * The processing is the same as what would have been done if the request
+     * came from one of the component's server connectors. It first must match
+     * one of the registered virtual hosts. Then it can be routed to one of the
+     * attaced Restlets, typically an Application.
+     * 
+     * @return A request dispatcher to the server connectors' router.
+     */
+    public Uniform getServerDispatcher() {
+        return null;
     }
 
     /**

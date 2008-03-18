@@ -21,6 +21,7 @@ package org.restlet.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.restlet.test.jaxrs.AllJaxRsTests;
 import org.restlet.test.spring.AllSpringTests;
 
 /**
@@ -46,8 +47,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(MediaTypeTestCase.class);
         addTestSuite(RedirectTestCase.class);
         addTestSuite(ReferenceTestCase.class);
-        // Temporarily removed.
-        // addTestSuite(ResolvingTransformerTestCase.class);
+        addTestSuite(ResolvingTransformerTestCase.class);
         addTestSuite(ResourceTestCase.class);
         addTestSuite(RestartTestCase.class);
         addTestSuite(RiapTestCase.class);
@@ -55,13 +55,11 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(SpringTestCase.class);
         addTestSuite(StatusTestCase.class);
         addTestSuite(TemplateTestCase.class);
-        // Temporarily removed.
-        // addTestSuite(TransformerTestCase.class);
+        addTestSuite(TransformerTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
 
-        // Temporarily removed.
-        // addTest(AllJaxRsTests.suite());
+        addTest(AllJaxRsTests.suite());
         addTest(AllSpringTests.suite());
     }
 

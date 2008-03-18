@@ -34,7 +34,21 @@ Changes log
           have an additional method taking a 'decode' parameter. 
           Suggested by Paul J. Lucas.
         - TransformRepresentation can now be reused multiple times by 
-          multiple threads in parallel. Contributed by Marc Portier.         
+          multiple threads in parallel. Contributed by Marc Portier.
+        - Parameters and output properties can now be set on the 
+          TransformRepresentation and are automatically passed to the 
+          created JAXP Transformers. Suggested by Marc Portier and
+          Joe Nellis.
+        - Added new constructors to TransformRepresentation making the
+          creation of the internal URI resolver optional and allowing
+          to pass a JAXP Templates precompiled instance directly.
+          Suggested by Joe Nellis. 
+        - Added Context.getCurrent() and setCurrent(..) static methods
+          based on a thread local variable. The static property is also
+          updated when Component and Application instances are handling
+          a call. This can be useful to get access to the context even
+          when it isn't possible to manually pass it down the call 
+          stack.          
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.
@@ -78,6 +92,10 @@ Changes log
         - Added SSL unit test contributed by Bruno Harbulot.
         - Completed the list of known media-types with Tomcat's 
           entries. Reported and contributed by Alex Milowski.
+        - The engine can now registers an URLStreamHandlerFactory 
+          adapter on the java.net.URL class that is based on the 
+          current context as retrieved via Context.getCurrent() 
+          method. 
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed
         - Fixed NPE in Connector class. Reported by Rob Heittman and

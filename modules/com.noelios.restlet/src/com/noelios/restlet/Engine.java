@@ -20,8 +20,12 @@ package com.noelios.restlet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -1037,6 +1041,62 @@ public class Engine extends org.restlet.util.Engine {
      */
     public void registerServerHelper(ServerHelper helper) {
         getRegisteredServers().add(helper);
+    }
+
+    /**
+     * Registers a factory that is used by the URL class to create the
+     * {@link URLConnection} instances when the {@link URL#openConnection()} or
+     * {@link URL#openStream()} methods are invoked.
+     * <p>
+     * The implementation is based on the client dispatcher of the current
+     * context, as provided by {@link Context#getCurrent()} method.
+     */
+    public void registerUrlFactory() {
+        // Set up an URLStreamHandlerFactory for
+        // proper creation of java.net.URL instances
+        URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
+            public URLStreamHandler createURLStreamHandler(String protocol) {
+                URLStreamHandler result = new URLStreamHandler() {
+
+                    @Override
+                    protected URLConnection openConnection(URL url)
+                            throws IOException {
+                        return new URLConnection(url) {
+
+                            @Override
+                            public void connect() throws IOException {
+                            }
+
+                            @Override
+                            public InputStream getInputStream()
+                                    throws IOException {
+                                InputStream result = null;
+
+                                // Retrieve the current context
+                                Context context = Context.getCurrent();
+
+                                if (context != null) {
+                                    Response response = context
+                                            .getClientDispatcher().get(
+                                                    url.toString());
+
+                                    if (response.getStatus().isSuccess()) {
+                                        result = response.getEntity()
+                                                .getStream();
+                                    }
+                                }
+
+                                return result;
+                            }
+                        };
+                    }
+
+                };
+
+                return result;
+            }
+
+        });
     }
 
     /**

@@ -30,6 +30,8 @@ import org.restlet.Route;
 import org.restlet.Server;
 import org.restlet.VirtualHost;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 import com.noelios.restlet.ChainHelper;
 import com.noelios.restlet.StatusFilter;
@@ -175,6 +177,25 @@ public class ComponentHelper extends ChainHelper<Component> {
     }
 
     @Override
+    public void handle(Request request, Response response) {
+        // Associate the context to the current thread
+        Context.setCurrent(getContext());
+
+        // Actually handle call
+        super.handle(request, response);
+    }
+
+    /**
+     * Sets the internal server router.
+     * 
+     * @param serverRouter
+     *                The internal host router.
+     */
+    public void setServerRouter(ServerRouter serverRouter) {
+        this.serverRouter = serverRouter;
+    }
+
+    @Override
     public synchronized void start() throws Exception {
         // Checking if all applications have proper connectors
         boolean success = checkVirtualHost(getHelped().getDefaultHost());
@@ -246,16 +267,6 @@ public class ComponentHelper extends ChainHelper<Component> {
         if (oldRouter != null) {
             oldRouter.stop();
         }
-    }
-
-    /**
-     * Sets the internal server router.
-     * 
-     * @param serverRouter
-     *                The internal host router.
-     */
-    public void setServerRouter(ServerRouter serverRouter) {
-        this.serverRouter = serverRouter;
     }
 
 }
