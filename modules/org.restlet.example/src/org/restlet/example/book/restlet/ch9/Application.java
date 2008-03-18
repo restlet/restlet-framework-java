@@ -48,13 +48,13 @@ public class Application extends org.restlet.Application {
     }
 
     /** Db4o object container. */
-    private ObjectContainer container;
+    private ObjectContainer db4oContainer;
 
     public Application() {
         /** Open and keep the db4o object container. */
         Configuration config = Db4o.configure();
         config.updateDepth(2);
-        this.container = Db4o.openFile(System.getProperty("user.home")
+        this.db4oContainer = Db4o.openFile(System.getProperty("user.home")
                 + File.separator + "rmep.dbo");
     }
 
@@ -71,7 +71,6 @@ public class Application extends org.restlet.Application {
         // Add a route for a MailBox resource
         router.attach("/mailboxes/{mailboxId}", MailBoxResource.class);
 
-
         return router;
     }
 
@@ -80,8 +79,8 @@ public class Application extends org.restlet.Application {
      * 
      * @return the database container.
      */
-    public ObjectContainer getContainer() {
-        return this.container;
+    public ObjectContainer getDb4oContainer() {
+        return this.db4oContainer;
     }
 
 }

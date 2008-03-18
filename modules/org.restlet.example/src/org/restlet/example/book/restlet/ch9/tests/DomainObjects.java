@@ -18,6 +18,7 @@
 
 package org.restlet.example.book.restlet.ch9.tests;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -161,8 +162,8 @@ public class DomainObjects {
         Mail mail = new Mail();
         mail.setId(Integer.toString(mailSequence++));
         mail.setSender(sender);
-        mail.setPrimaryRecipients(recipients.subList(0, (Integer.parseInt(mail.getId()))
-                % recipients.size()+1));
+        mail.setPrimaryRecipients(new ArrayList<Contact>(recipients.subList(0,
+                (Integer.parseInt(mail.getId())) % recipients.size() + 1)));
         mail.setMessage("Cheers -" + sender.getName());
         mail.setSendingDate(new Date());
         mail.setSubject("Hello!");
@@ -171,8 +172,8 @@ public class DomainObjects {
         mail.setStatus(mailStatuses[(Integer.parseInt(mail.getId()))
                 % mailStatuses.length]);
         // Set the list of tags according to the mail identifiant.
-        mail.setTags(mailTags.subList(0, (Integer.parseInt(mail.getId()))
-                % (mailTags.size() + 1)));
+        mail.setTags(new ArrayList<String>(mailTags.subList(0, (Integer.parseInt(mail.getId()))
+                % (mailTags.size() + 1))));
 
         // Add the mail to the appropriate feed.
         if (!mail.getTags().isEmpty()) {
