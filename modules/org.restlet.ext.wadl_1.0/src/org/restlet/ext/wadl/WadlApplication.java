@@ -35,8 +35,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * Application that can automatically configure itself given a WADL description
- * document.<br>
+ * WADL configured application. Can automatically configure itself given a WADL
+ * description document.<br>
  * <br>
  * It creates a root router and for each resource found in the WADL document, it
  * tries to attach a Restlet Resource class to the router using its WADL path.<br>

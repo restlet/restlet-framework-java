@@ -29,7 +29,8 @@ import org.restlet.data.Status;
 
 /**
  * Router that collects calls from all server connectors and dispatches them to
- * the appropriate host routers for dispatching to the user applications.
+ * the appropriate host routers. The host routers then dispatch them to the user
+ * applications.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

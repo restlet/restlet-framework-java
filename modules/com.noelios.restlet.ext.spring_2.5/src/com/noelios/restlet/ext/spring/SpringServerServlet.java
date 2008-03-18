@@ -32,9 +32,10 @@ import com.noelios.restlet.ext.servlet.ServletContextAdapter;
 import com.noelios.restlet.ext.servlet.ServletWarClient;
 
 /**
- * This class is similar to the ServerServlet, but instead of creating the used
- * Restlet Application and Restlet Component, it lookups them up from the
- * SpringContext which is found in the ServletContext.
+ * Spring specific ServerServlet adapter. This class is similar to the
+ * ServerServlet, but instead of creating the used Restlet Application and
+ * Restlet Component, it lookups them up from the SpringContext which is found
+ * in the ServletContext.
  * 
  * If the Application or Component beans can't be found, the default behavior of
  * the parent class is used.

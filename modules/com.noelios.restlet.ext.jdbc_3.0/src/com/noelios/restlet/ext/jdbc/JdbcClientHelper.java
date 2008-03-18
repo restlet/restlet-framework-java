@@ -55,20 +55,19 @@ import com.noelios.restlet.ClientHelper;
 import com.noelios.restlet.Engine;
 
 /**
- * Client connector to a JDBC database.<br>
- * To send a request to the server, create a new instance of a client supporting
- * the JDBC Protocol and invoke the handle() method.<br>
- * Alternatively, you can create a new Call with the JDBC URI as the resource
- * reference and use an XML request as the entity.<br>
- * <br>
+ * Client connector to a JDBC database. To send a request to the server, create
+ * a new instance of a client supporting the JDBC Protocol and invoke the
+ * handle() method. Alternatively, you can create a new Call with the JDBC URI
+ * as the resource reference and use an XML request as the entity.
+ * <p>
  * Database connections are optionally pooled using Apache Commons DBCP. In this
  * case, a different connection pool is created for each unique combination of
- * JDBC URI and connection properties.<br>
- * <br>
+ * JDBC URI and connection properties.
+ * <p>
  * Do not forget to register your JDBC drivers before using this client. See <a
  * href="http://java.sun.com/j2se/1.5.0/docs/api/java/sql/DriverManager.html">
- * JDBC DriverManager API</a> for details<br>
- * <br>
+ * JDBC DriverManager API</a> for details.
+ * <p>
  * Sample XML request:<br>
  * <br>
  * {@code <?xml version="1.0" encoding="ISO-8859-1" ?>}<br>
@@ -87,11 +86,10 @@ import com.noelios.restlet.Engine;
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>UPDATE myTable SET myField1="value1" </statement>}<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>SELECT msField1, myField2 FROM myTable</statement>}<br>
  * &nbsp;&nbsp;{@code </body>}<br>
- * {@code </request>}<br>
- * <br>
- * Several SQL Statements can be specified.<br>
- * A RowSetRepresentation of the last correctly executed SQL request is returned
- * to the Client.
+ * {@code </request>}
+ * <p>
+ * Several SQL Statements can be specified. A RowSetRepresentation of the last
+ * correctly executed SQL request is returned to the Client.
  * 
  * @see com.noelios.restlet.ext.jdbc.RowSetRepresentation
  * 

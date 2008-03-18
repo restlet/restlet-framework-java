@@ -25,9 +25,9 @@ import org.restlet.Context;
 import org.restlet.Uniform;
 
 /**
- * Context allowing access to the component's connectors, reusing the Servlet's
- * logging mechanism and adding the Servlet's initialization parameters to the
- * context's parameters.
+ * Exposes a Servlet context as a Restlet one. Context allowing access to the
+ * component's connectors, reusing the Servlet's logging mechanism and adding
+ * the Servlet's initialization parameters to the context's parameters.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
