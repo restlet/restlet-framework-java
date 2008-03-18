@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2008 Noelios Consulting.
- *
+ * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- *
+ * 
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -44,17 +44,14 @@ import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.service.MetadataService;
 
-
 /**
- * Local client connector based on a XMLDB repository.
- * WARs are deployed at XMLDB repository using this directory layout
- * /home/[SCHEMA]/wars/[AppName]/
- * where SCHEMA: is a database user, for example SCOTT
- *      AppName: is a Servlet Name configured with XdbServerServlet adapter
- * Note:
- *   For Servlet running with PUBLIC grants run with an effective user ANONYMOUS
- * so WARs deployment will be located at /home/ANONYMOUS/wars
- *
+ * Local client connector based on a XMLDB repository. WARs are deployed at
+ * XMLDB repository using this directory layout /home/[SCHEMA]/wars/[AppName]/
+ * where SCHEMA: is a database user, for example SCOTT AppName: is a Servlet
+ * Name configured with XdbServerServlet adapter Note: For Servlet running with
+ * PUBLIC grants run with an effective user ANONYMOUS so WARs deployment will be
+ * located at /home/ANONYMOUS/wars
+ * 
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
 public class XdbServletWarClientHelper extends WarClientHelper {
@@ -64,10 +61,8 @@ public class XdbServletWarClientHelper extends WarClientHelper {
     private static final String BASE_DIR = "/home/";
 
     /**
-     * XMLDB directory appended to connectedUser where WARs are deployed
-     * final directory for WARs will be:
-     * /home/SCOTT/wars/HelloRestlet/
-     * for example.
+     * XMLDB directory appended to connectedUser where WARs are deployed final
+     * directory for WARs will be: /home/SCOTT/wars/HelloRestlet/ for example.
      */
     private static final String DEPLOY_DIR = "/wars/";
 
@@ -76,8 +71,8 @@ public class XdbServletWarClientHelper extends WarClientHelper {
 
     /**
      * Efective user who is running XdbServerServlet for example SCOTT or
-     * ANONYMOUS if is a Servlet running with PUBLIC grants
-     * (no http auhtorization is required)
+     * ANONYMOUS if is a Servlet running with PUBLIC grants (no http
+     * auhtorization is required)
      */
     private volatile String connectedUser;
 
@@ -88,7 +83,7 @@ public class XdbServletWarClientHelper extends WarClientHelper {
 
     /**
      * Constructor.
-     *
+     * 
      * @param client
      *                The client to help.
      * @param config
@@ -97,7 +92,7 @@ public class XdbServletWarClientHelper extends WarClientHelper {
      *                The JDBC Connection
      */
     public XdbServletWarClientHelper(Client client, ServletConfig config,
-                                     Connection conn) {
+            Connection conn) {
         super(client);
         this.config = config;
         this.conn = conn;
@@ -105,7 +100,7 @@ public class XdbServletWarClientHelper extends WarClientHelper {
 
     /**
      * Returns the Servlet Config.
-     *
+     * 
      * @return The Servlet Config.
      */
     public ServletConfig getConfig() {
@@ -117,29 +112,24 @@ public class XdbServletWarClientHelper extends WarClientHelper {
     protected void handleWar(Request request, Response response) {
         PreparedStatement stmt = null;
         ResultSet rset = null;
-        if (request.getMethod().equals(Method.GET) 
-            || request.getMethod().equals(Method.HEAD)) {
+        if (request.getMethod().equals(Method.GET)
+                || request.getMethod().equals(Method.HEAD)) {
             String basePath = request.getResourceRef().getPath();
             int lastSlashIndex = basePath.lastIndexOf('/');
-            String entry =
-                (lastSlashIndex == -1) 
-                ? basePath : basePath.substring(lastSlashIndex + 1);
+            String entry = (lastSlashIndex == -1) ? basePath : basePath
+                    .substring(lastSlashIndex + 1);
             Representation output = null;
-            String xdbResPath =
-                BASE_DIR
-                + connectedUser
-                + DEPLOY_DIR
-                + this.config.getServletName()
-                + basePath;
+            String xdbResPath = BASE_DIR + connectedUser + DEPLOY_DIR
+                    + this.config.getServletName() + basePath;
 
             if (basePath.endsWith("/")) {
                 // Return the directory listing
                 try {
-                    stmt = conn.prepareStatement(
-                    "SELECT path(1),extractValue(res,'/Resource/@Container') "
-                    + "FROM resource_view WHERE under_path(res,1,?,1 ) = 1");
-                    this.getLogger().info("looking resources at: "
-                                          + xdbResPath);
+                    stmt = conn
+                            .prepareStatement("SELECT path(1),extractValue(res,'/Resource/@Container') "
+                                    + "FROM resource_view WHERE under_path(res,1,?,1 ) = 1");
+                    this.getLogger()
+                            .info("looking resources at: " + xdbResPath);
                     stmt.setString(1, xdbResPath);
                     rset = stmt.executeQuery();
                     if (rset.next()) {
@@ -148,10 +138,10 @@ public class XdbServletWarClientHelper extends WarClientHelper {
 
                         while (rset.next()) {
                             entry = rset.getString(1)
-                                    + (("true".equalsIgnoreCase(rset.getString(2)))
-                                    ? "/" : "");
-                            this.getLogger().info("Reference: " + basePath
-                                                  + entry);
+                                    + (("true".equalsIgnoreCase(rset
+                                            .getString(2))) ? "/" : "");
+                            this.getLogger().info(
+                                    "Reference: " + basePath + entry);
                             rl.add(new Reference(basePath + entry));
                         }
 
@@ -159,10 +149,10 @@ public class XdbServletWarClientHelper extends WarClientHelper {
                     }
                 } catch (SQLException sqe) {
                     this.getLogger().throwing("XdbServletWarClientHelper",
-                                              "handleWar", sqe);
+                            "handleWar", sqe);
                     throw new RuntimeException(
-                             "Exception querying resource_view - xdbResPath: "
-                             + xdbResPath, sqe);
+                            "Exception querying resource_view - xdbResPath: "
+                                    + xdbResPath, sqe);
                 } finally {
                     XdbServerServlet.closeDbResources(stmt, rset);
                 }
@@ -170,23 +160,22 @@ public class XdbServletWarClientHelper extends WarClientHelper {
                 // Return the entry content
                 try {
                     InputStream is = null;
-                    stmt = conn.prepareStatement(
-                      "select xdburitype(?).getBlob(),"
-                      + "xdburitype(?).getContentType() " + "from dual");
+                    stmt = conn
+                            .prepareStatement("select xdburitype(?).getBlob(),"
+                                    + "xdburitype(?).getContentType() "
+                                    + "from dual");
                     stmt.setString(1, xdbResPath);
                     stmt.setString(2, xdbResPath);
-                    this.getLogger().info("looking resources at: "
-                                          + xdbResPath);
+                    this.getLogger()
+                            .info("looking resources at: " + xdbResPath);
                     rset = stmt.executeQuery();
                     if (rset.next()) {
                         Blob blob = (Blob) rset.getObject(1);
                         String mediaType = rset.getString(2);
                         is = blob.getBinaryStream();
-                        MetadataService metadataService =
-                            getMetadataService(request);
-                        output =
-                                new InputRepresentation(is,
-                                        metadataService.getDefaultMediaType());
+                        MetadataService metadataService = getMetadataService(request);
+                        output = new InputRepresentation(is, metadataService
+                                .getDefaultMediaType());
                         output.setIdentifier(request.getResourceRef());
                         updateMetadata(metadataService, entry, output);
 
@@ -199,10 +188,10 @@ public class XdbServletWarClientHelper extends WarClientHelper {
                     }
                 } catch (SQLException sqe) {
                     this.getLogger().throwing("XdbServletWarClientHelper",
-                                              "handleWar", sqe);
+                            "handleWar", sqe);
                     throw new RuntimeException(
-                   "Exception querying xdburitype(?).getBlob() - xdbResPath: "
-                   + xdbResPath, sqe);
+                            "Exception querying xdburitype(?).getBlob() - xdbResPath: "
+                                    + xdbResPath, sqe);
                 } finally {
                     XdbServerServlet.closeDbResources(stmt, rset);
                 }
@@ -232,10 +221,10 @@ public class XdbServletWarClientHelper extends WarClientHelper {
             }
             this.getLogger().info("efective user is: " + connectedUser);
         } catch (SQLException sqe) {
-            this.getLogger().throwing("XdbServletWarClientHelper", "start",
-                                      sqe);
+            this.getLogger()
+                    .throwing("XdbServletWarClientHelper", "start", sqe);
             throw new RuntimeException("Exception querying USER from dual ",
-                                       sqe);
+                    sqe);
         } finally {
             XdbServerServlet.closeDbResources(stmt, rset);
         }
