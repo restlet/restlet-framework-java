@@ -564,24 +564,28 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         PathRegExp rMatch = tClass.getPathRegExp();
         MatchingResult matchResult = rMatch.match(u);
         u = matchResult.getFinalCapturingGroup();
-        addMrVarsToMap(matchResult, callContext);
+        addTemplVarsToMap(matchResult, callContext);
         return new RrcAndRemPath(tClass, matchResult.getMatched(), u);
     }
 
     /**
+     * Adds the matched template parameters to the {@link CallContext}.
+     * 
      * @param matchResult
      * @param callContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
      */
-    private void addMrVarsToMap(MatchingResult matchResult,
+    private void addTemplVarsToMap(MatchingResult matchResult,
             CallContext callContext) {
         Map<String, String> variables = matchResult.getVariables();
         for (Map.Entry<String, String> varEntry : variables.entrySet()) {
             String key = varEntry.getKey();
             String value = varEntry.getValue();
             callContext.addTemplParamsEnc(key, value);
+            // REQUEST how two handle @PathParam?
+            // check full path?
         }
     }
 
@@ -653,7 +657,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             rMatch = firstMeth.getPathRegExp();
             MatchingResult matchingResult = rMatch.match(u);
 
-            addMrVarsToMap(matchingResult, callContext);
+            addTemplVarsToMap(matchingResult, callContext);
 
             // (h) When Method is resource method
             if (firstMeth instanceof ResourceMethod)
@@ -751,7 +755,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         ResourceMethod bestResourceMethod = getBestMethod(resourceMethods,
                 givenMediaType, accMediaTypes, httpMethod);
         MatchingResult mr = bestResourceMethod.getPathRegExp().match(u);
-        addMrVarsToMap(mr, callContext);
+        addTemplVarsToMap(mr, callContext);
         String matchedUriPart = mr.getMatched();
         if (matchedUriPart.length() > 0) {
             Object jaxRsResObj = resObj.getJaxRsResourceObject();

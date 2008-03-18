@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +56,7 @@ import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.AccessControl;
 import org.restlet.ext.jaxrs.ThrowExcAccessControl;
 import org.restlet.ext.jaxrs.internal.util.Converter;
+import org.restlet.ext.jaxrs.internal.util.EmptyIterator;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
@@ -550,6 +552,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @return
      */
     public String getLastMatrixParamEnc(MatrixParam matrixParamAnnot) {
+        // REQUEST Matrix-Parameters only for current PathSegment?
         String mpName = matrixParamAnnot.value();
         List<PathSegment> pathSegments = getPathSegments(false);
         for (int i = pathSegments.size() - 1; i >= 0; i--) {
@@ -558,7 +561,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
                     mpName);
             if (mpValues != null && !mpValues.isEmpty()) {
                 String result = Util.getLastElement(mpValues);
-                if(result == null)
+                if (result == null)
                     return "";
                 return result;
             }
@@ -572,5 +575,24 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
     @Override
     public void setReadOnly() {
         super.setReadOnly();
+    }
+
+    // REQUEST support http://www.example.org/;mp=jf;asf=sdf and its MatrParams?
+    // PathSegment for matrix params does not exist. How handle this?
+
+    /**
+     * @param matrixParamAnnot
+     * @return
+     */
+    public Iterator<String> matrixParamEncIter(MatrixParam matrixParamAnnot) {
+        PathSegment lastPathSegment = Util
+                .getLastElement(getPathSegments(false));
+        String mpName = matrixParamAnnot.value();
+        MultivaluedMap<String, String> matrixParameters;
+        matrixParameters = lastPathSegment.getMatrixParameters();
+        List<String> mpValues = matrixParameters.get(mpName);
+        if(mpValues == null)
+            return EmptyIterator.get();
+        return mpValues.iterator();
     }
 }

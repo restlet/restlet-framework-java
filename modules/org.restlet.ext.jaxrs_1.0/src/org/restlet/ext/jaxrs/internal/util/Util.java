@@ -478,6 +478,22 @@ public class Util {
     }
 
     /**
+     * @param coll
+     * @param <A>
+     * @return Returns the first Element of the collection
+     * @throws IndexOutOfBoundsException
+     *                 If the list is empty
+     */
+    public static <A> A getFirstElement(Iterable<A> coll)
+            throws IndexOutOfBoundsException {
+        if (coll instanceof LinkedList)
+            return ((LinkedList<A>) coll).getFirst();
+        if (coll instanceof List)
+            return ((List<A>) coll).get(0);
+        return coll.iterator().next();
+    }
+
+    /**
      * @param list
      * @param <A>
      * @return Returns the first Element of the collection
@@ -492,6 +508,34 @@ public class Util {
         if (list instanceof LinkedList)
             return ((LinkedList<A>) list).getFirst();
         return list.get(0);
+    }
+
+    /**
+     * @param coll
+     * @param <A>
+     * @return Returns the first Element of the collection
+     * @throws IndexOutOfBoundsException
+     *                 If the list is empty
+     */
+    public static <A> A getFirstElementOrNull(Iterable<A> coll)
+            throws IndexOutOfBoundsException {
+        if (coll instanceof LinkedList) {
+            LinkedList<A> linkedList = ((LinkedList<A>) coll);
+            if (linkedList.isEmpty())
+                return null;
+            return linkedList.getFirst();
+        }
+        if (coll instanceof List) {
+            List<A> list = ((List<A>) coll);
+            if (list.isEmpty())
+                return null;
+            return list.get(0);
+        }
+        if (coll instanceof Collection) {
+            if (((Collection<A>) coll).isEmpty())
+                return null;
+        }
+        return coll.iterator().next();
     }
 
     /**
@@ -588,6 +632,43 @@ public class Util {
     }
 
     /**
+     * @param iterable
+     * @param <A>
+     * @return Returns the last Element of the {@link Iterable}
+     * @throws IndexOutOfBoundsException
+     *                 If the {@link Iterable} is a {@link List} and its is
+     *                 empty.
+     * @throws NoSuchElementException
+     *                 If the {@link Iterable} is empty and the {@link Iterable}
+     *                 is not a {@link List}.
+     */
+    public static <A> A getLastElement(Iterable<A> iterable)
+            throws IndexOutOfBoundsException, NoSuchElementException {
+        if (iterable instanceof LinkedList)
+            return ((LinkedList<A>) iterable).getLast();
+        if (iterable instanceof List) {
+            List<A> list = ((List<A>) iterable);
+            return list.get(list.size() - 1);
+        }
+        return getLastElement(iterable.iterator());
+    }
+
+    /**
+     * @param iter
+     * @param <A>
+     * @return Returns the last Element of the {@link Iterator}.
+     * @throws NoSuchElementException
+     *                 If the {@link Iterator} is empty.
+     */
+    public static <A> A getLastElement(Iterator<A> iter)
+            throws NoSuchElementException {
+        A e = iter.next();
+        while (iter.hasNext())
+            e = iter.next();
+        return e;
+    }
+
+    /**
      * @param list
      * @param <A>
      * @return Returns the last Element of the list
@@ -599,6 +680,48 @@ public class Util {
         if (list instanceof LinkedList)
             return ((LinkedList<A>) list).getLast();
         return list.get(list.size() - 1);
+    }
+
+    /**
+     * Returns the last element of the given Iterable, or null, if it is empty.
+     * 
+     * @param iterable
+     * @param <A>
+     * @return Returns the last Element of the {@link Iterable}, or null if it
+     *         is empty.
+     */
+    public static <A> A getLastElementOrNull(Iterable<A> iterable) {
+        if (iterable instanceof LinkedList) {
+            LinkedList<A> linkedList = ((LinkedList<A>) iterable);
+            if (linkedList.isEmpty())
+                return null;
+            return linkedList.getLast();
+        }
+        if (iterable instanceof List) {
+            List<A> list = ((List<A>) iterable);
+            if (list.isEmpty())
+                return null;
+            return list.get(list.size() - 1);
+        }
+        if (iterable instanceof Collection) {
+            if (((Collection<A>) iterable).isEmpty())
+                return null;
+        }
+        return getLastElementOrNull(iterable.iterator());
+    }
+
+    /**
+     * @param iter
+     * @param <A>
+     * @return Returns the last Element of the {@link Iterator}.
+     * @throws NoSuchElementException
+     *                 If the {@link Iterator} is empty.
+     */
+    public static <A> A getLastElementOrNull(Iterator<A> iter) {
+        A e = null;
+        while (iter.hasNext())
+            e = iter.next();
+        return e;
     }
 
     /**

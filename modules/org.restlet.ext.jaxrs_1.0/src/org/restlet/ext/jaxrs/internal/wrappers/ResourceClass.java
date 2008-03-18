@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -623,41 +624,47 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             CookieParam headerParam = cpf.getAnnotation(CookieParam.class);
             DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
             Class<?> convTo = cpf.getType();
-            Object value = getCookieParamValue(convTo, headerParam,
-                    defaultValue, callContext);
+            Type paramGenericType = cpf.getGenericType();
+            Object value = getCookieParamValue(convTo, paramGenericType,
+                    headerParam, defaultValue, callContext);
             Util.inject(jaxRsResObj, cpf, value);
         }
         for (Field hpf : this.injectFieldsHeaderParam) {
             HeaderParam headerParam = hpf.getAnnotation(HeaderParam.class);
             DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
             Class<?> convTo = hpf.getType();
-            Object value = getHeaderParamValue(convTo, headerParam,
-                    defaultValue, callContext);
+            Type paramGenericType = hpf.getGenericType();
+            Object value = getHeaderParamValue(convTo, paramGenericType,
+                    headerParam, defaultValue, callContext);
             Util.inject(jaxRsResObj, hpf, value);
         }
-        for (Field hpf : this.injectFieldsMatrixParam) {
-            MatrixParam headerParam = hpf.getAnnotation(MatrixParam.class);
-            DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = hpf.getType();
-            Object value = getMatrixParamValue(convTo, headerParam,
-                    leaveEncoded, defaultValue, callContext);
-            Util.inject(jaxRsResObj, hpf, value);
+        for (Field mpf : this.injectFieldsMatrixParam) {
+            MatrixParam headerParam = mpf.getAnnotation(MatrixParam.class);
+            DefaultValue defaultValue = mpf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = mpf.getType();
+            Type paramGenericType = mpf.getGenericType();
+            Object value = getMatrixParamValue(convTo, paramGenericType,
+                    headerParam, leaveEncoded, defaultValue, callContext);
+            Util.inject(jaxRsResObj, mpf, value);
         }
-        for (Field hpf : this.injectFieldsPathParam) {
-            PathParam headerParam = hpf.getAnnotation(PathParam.class);
-            DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = hpf.getType();
-            Object value = getPathParamValue(convTo, headerParam, leaveEncoded,
-                    defaultValue, callContext);
-            Util.inject(jaxRsResObj, hpf, value);
+        for (Field ppf : this.injectFieldsPathParam) {
+            PathParam headerParam = ppf.getAnnotation(PathParam.class);
+            DefaultValue defaultValue = ppf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = ppf.getType();
+            Type paramGenericType = ppf.getGenericType();
+            Object value = getPathParamValue(convTo, paramGenericType,
+                    headerParam, leaveEncoded, defaultValue, callContext);
+            Util.inject(jaxRsResObj, ppf, value);
         }
-        for (Field hpf : this.injectFieldsQueryParam) {
-            QueryParam headerParam = hpf.getAnnotation(QueryParam.class);
-            DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = hpf.getType();
-            Object value = getQueryParamValue(convTo, headerParam,
-                    defaultValue, callContext, Logger.getAnonymousLogger());
-            Util.inject(jaxRsResObj, hpf, value);
+        for (Field cpf : this.injectFieldsQueryParam) {
+            QueryParam headerParam = cpf.getAnnotation(QueryParam.class);
+            DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = cpf.getType();
+            Type paramGenericType = cpf.getGenericType();
+            Object value = getQueryParamValue(convTo, paramGenericType,
+                    headerParam, defaultValue, callContext, Logger
+                            .getAnonymousLogger());
+            Util.inject(jaxRsResObj, cpf, value);
         }
         // invoke @PostConstruct annotated method
         try {

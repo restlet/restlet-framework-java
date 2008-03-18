@@ -37,6 +37,11 @@ public class MatrixParamTest extends JaxRsTestCase {
         return MatrixParamTestService.class;
     }
 
+    public void testWithoutPath() throws Exception {
+        checkBothGiven("");
+        checkOneGiven("");
+    }
+    
     public void testA() throws IOException {
         checkBothGiven("a");
         checkOneGiven("a");

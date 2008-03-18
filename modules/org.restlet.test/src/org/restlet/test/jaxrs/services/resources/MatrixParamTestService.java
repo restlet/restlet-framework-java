@@ -41,6 +41,13 @@ public class MatrixParamTestService {
 
     @GET
     @ProduceMime("text/plain")
+    public String get(@MatrixParam("firstname") String firstname,
+            @MatrixParam("lastname") String lastname) {
+        return firstname + " " + lastname;
+    }
+    
+    @GET
+    @ProduceMime("text/plain")
     @Path("a")
     public String getA(@MatrixParam("firstname") String firstname,
             @MatrixParam("lastname") String lastname) {

@@ -60,6 +60,7 @@ public class HttpHeaderTest extends JaxRsTestCase {
         Util.getHttpHeaders(request).add(
                 HttpHeaderTestService.TEST_HEADER_NAME.toLowerCase(), "abc");
         response = client.handle(request);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc", response.getEntity().getText());
 
@@ -133,6 +134,7 @@ public class HttpHeaderTest extends JaxRsTestCase {
 
     public void testHttpHeadersCaseInsensitive() {
         Response response = get("header2");
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 

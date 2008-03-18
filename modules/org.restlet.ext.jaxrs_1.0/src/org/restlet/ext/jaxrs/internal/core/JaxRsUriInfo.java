@@ -135,19 +135,19 @@ public class JaxRsUriInfo implements UriInfo {
         if (newUriPart == null)
             throw new IllegalArgumentException(
                     "The new URI part must not be null");
-        if (newUriPart.length() == 0)
-            throw new IllegalArgumentException(
-                    "The new URI part must not be empty");
 
         StringBuilder newUri = new StringBuilder();
 
         if (lastAncestorResourceURI != null) {
+            if (newUriPart.length() == 0)
+                throw new IllegalArgumentException(
+                        "The new URI part must not be empty");
             ancestorResources.addFirst(lastAncestorResource);
             ancestorResourceURIs.addFirst(lastAncestorResourceURI);
             newUri.append(lastAncestorResourceURI);
         }
 
-        if (newUriPart.charAt(0) != '/')
+        if (newUriPart.length() == 0 || newUriPart.charAt(0) != '/')
             newUri.append('/');
         newUri.append(newUriPart);
 

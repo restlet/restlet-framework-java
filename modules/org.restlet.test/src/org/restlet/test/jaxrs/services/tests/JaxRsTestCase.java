@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.Path;
@@ -38,6 +40,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
@@ -57,6 +60,7 @@ import org.restlet.test.jaxrs.server.DirectServerWrapperFactory;
 import org.restlet.test.jaxrs.server.RestletServerWrapperFactory;
 import org.restlet.test.jaxrs.server.ServerWrapper;
 import org.restlet.test.jaxrs.server.ServerWrapperFactory;
+import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
@@ -127,6 +131,53 @@ public abstract class JaxRsTestCase extends TestCase {
         expected = Converter.getMediaTypeWithoutParams(expected);
         actual = Converter.getMediaTypeWithoutParams(actual);
         assertEquals(expected, actual);
+    }
+
+    /**
+     * Some features are not ready and should only tested on the workspace of
+     * the JAX-RS implementor, and if the actual date is after a given date.
+     * This method checks this.
+     * 
+     * Year is 2008
+     * 
+     * @param dayOfMonth
+     *                1-31
+     * @param month
+     *                1-12
+     * @return true, if this workspace seems not to be JAX-RS implementors
+     *         workspace.
+     */
+    public static boolean jaxRxImplementorCheck(int dayOfMonth, int month) {
+        return jaxRxImplementorCheck(dayOfMonth, month, 2008);
+    }
+
+    /**
+     * @param dayOfMonth
+     *                1-31
+     * @param month
+     *                1-12
+     * @param year
+     *                e.g. 2008
+     * @return true, if this workspace seems not to be JAX-RS implementors
+     *         workspace.
+     * @see #jaxRxImplementorAndAfter(int, int)
+     */
+    public static boolean jaxRxImplementorCheck(int dayOfMonth, int month,
+            int year) {
+        Date afterDate = new Date(year - 1900, month - 1, dayOfMonth);
+        if (new Date().after(afterDate)) {
+            String userHome = System.getProperty("user.home");
+            if (userHome == null)
+                return true;
+            if (userHome.equals("C:\\Dokumente und Einstellungen\\Stephan")) {
+                String javaClassPath = System.getProperty("java.class.path");
+                if (javaClassPath == null)
+                    return true;
+                if (javaClassPath.startsWith("D:\\eclipse-workspaces\\Mastera"))
+                    return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -245,7 +296,7 @@ public abstract class JaxRsTestCase extends TestCase {
             ChallengeResponse challengeResponse) {
         Reference reference = createReference(klasse, subPath);
         return accessServer(httpMethod, reference, accMediaTypes,
-                challengeResponse, null, null);
+                challengeResponse, null, null, null);
     }
 
     /**
@@ -276,19 +327,23 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     protected Response accessServer(Method httpMethod, Reference reference) {
-        return accessServer(httpMethod, reference, null, null, null, null);
+        return accessServer(httpMethod, reference, null, null, null, null, null);
     }
 
     @SuppressWarnings("unchecked")
     private Response accessServer(Method httpMethod, Reference reference,
             Collection accMediaTypes, ChallengeResponse challengeResponse,
-            Representation entity, Cookie cookie) {
+            Representation entity, Collection<Cookie> addCookies,
+            Collection<Parameter> addHeaders) {
         Request request = new Request(httpMethod, reference);
         addAcceptedMediaTypes(request, accMediaTypes);
         request.setChallengeResponse(challengeResponse);
         request.setEntity(entity);
-        if (cookie != null)
-            request.getCookies().add(cookie);
+        if (addCookies != null)
+            request.getCookies().addAll(addCookies);
+        if (addHeaders != null) {
+            Util.getHttpHeaders(request).addAll(addHeaders);
+        }
         return accessServer(request);
     }
 
@@ -402,7 +457,7 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     public Response get(Reference reference) {
-        if(reference.getBaseRef() == null)
+        if (reference.getBaseRef() == null)
             reference.setBaseRef(reference.getHostIdentifier());
         return accessServer(Method.GET, reference);
     }
@@ -433,7 +488,17 @@ public abstract class JaxRsTestCase extends TestCase {
 
     public Response get(String subPath, Cookie cookie) {
         return accessServer(Method.GET, createReference(getRootResourceClass(),
-                subPath), null, null, null, cookie);
+                subPath), null, null, null, TestUtils.createList(cookie), null);
+    }
+
+    public Response getWithCookies(String subPath, Collection<Cookie> cookies) {
+        return accessServer(Method.GET, createReference(getRootResourceClass(),
+                subPath), null, null, null, cookies, null);
+    }
+
+    public Response getWithHeaders(String subPath, Collection<Parameter> headers) {
+        return accessServer(Method.GET, createReference(getRootResourceClass(),
+                subPath), null, null, null, null, headers);
     }
 
     public Response get(String subPath, MediaType accMediaType) {
@@ -514,7 +579,7 @@ public abstract class JaxRsTestCase extends TestCase {
     public Response post(String subPath, Representation entity,
             ChallengeResponse cr) {
         return accessServer(Method.POST, createReference(
-                getRootResourceClass(), subPath), null, cr, entity, null);
+                getRootResourceClass(), subPath), null, cr, entity, null, null);
     }
 
     @SuppressWarnings("unchecked")
@@ -522,7 +587,7 @@ public abstract class JaxRsTestCase extends TestCase {
             Collection accMediaTypes, ChallengeResponse challengeResponse) {
         return accessServer(Method.POST, createReference(
                 getRootResourceClass(), subPath), accMediaTypes,
-                challengeResponse, entity, null);
+                challengeResponse, entity, null, null);
     }
 
     public Response put(String subPath, Conditions conditions) {
