@@ -29,9 +29,6 @@ public class Contact extends BaseObject {
     /** Name of the contact. */
     private String name;
 
-    /** Nickname of the contact. */
-    private String nickname;
-
     public String getMailAddress() {
         return mailAddress;
     }
@@ -40,20 +37,12 @@ public class Contact extends BaseObject {
         return name;
     }
 
-    public String getNickname() {
-        return nickname;
-    }
-
     public void setMailAddress(String mailAddress) {
         this.mailAddress = mailAddress;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
     }
 
 }
