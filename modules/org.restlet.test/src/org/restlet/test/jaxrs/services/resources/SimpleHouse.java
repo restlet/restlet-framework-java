@@ -43,4 +43,17 @@ public class SimpleHouse {
     public String getPlainText() {
         return RERP_PLAIN_TEXT;
     }
+    
+    @GET
+    @Path("null")
+    public Object getNull() {
+        return null;
+    }
+    
+    @GET
+    @Path("nullWithMediaType")
+    @ProduceMime("text/plain")
+    public Object getNullWithMediaType() {
+        return null;
+    }
 }

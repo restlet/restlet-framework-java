@@ -63,7 +63,7 @@ public class ListParamService {
     }
 
     @GET
-    @Path("path/{p}/{p2}/{pp}/{pp2}")
+    @Path("path/{p}/{p}/{pp}/{pp}")
     @ProduceMime("text/plain")
     public String getPath(@PathParam("p") String p, 
             @PathParam("pp") SortedSet<String> pp) {
@@ -76,5 +76,17 @@ public class ListParamService {
     public String getQuery(@QueryParam("q") String q, 
             @QueryParam("qq") List<String> qq) {
         return "q=" + q + "\nqq="+qq;
+    }
+    
+    //@Path("{other}")
+    public ListParamService getOther() {
+        return new ListParamService();
+    }
+    
+    @GET
+    @ProduceMime("text/plain")
+    public String getZ(@PathParam("other") String other, 
+            @PathParam("other") List<String> others) {
+        return "other="+other+"\nothers="+others;
     }
 }

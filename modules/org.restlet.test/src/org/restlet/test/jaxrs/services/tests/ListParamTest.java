@@ -40,6 +40,8 @@ public class ListParamTest extends JaxRsTestCase {
         return ListParamService.class;
     }
 
+    // TESTEN also on List<String> check @DefaultValue and @Encode
+    
     public void testCookieParams() throws IOException {
         List<Cookie> cookies = new ArrayList<Cookie>();
         cookies.add(new Cookie("c", "c1"));
@@ -72,19 +74,31 @@ public class ListParamTest extends JaxRsTestCase {
         }
     }
 
-    public void _testMatrixParams() throws IOException {
-        // TESTEN MatrixParam: List<String>
+    // TESTEN werden Matrix-Parameter voriger path segments beruecksichtigt?
+    // (Email von Marc Hadley 18.3.)
+    
+    public void testMatrixParams() throws IOException {
         Response response = get("matrix;m=m1;m=m2;mm=mm1;mm=mm2");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
+        String[] entity = response.getEntity().getText().split("\n");
+        String m = entity[0];
+        String mm = entity[1];
         try {
-            assertEquals("m=m1\nmm=[mm1, mm2]", entity);
+            // REQUESTED ;m=1;m=2 -> @MatrixParam("m") = ?
+            assertEquals("m=m1", m);
         } catch (AssertionFailedError afe) {
-            assertEquals("m=m1\nmm=[mm2, mm1]", entity);
+            assertEquals("m=m2", m);
+        }
+        try {
+            assertEquals("mm=[mm1, mm2]", mm);
+        } catch (AssertionFailedError afe) {
+            assertEquals("mm=[mm2, mm1]", mm);
         }
     }
 
-    public void _testPathParams() throws IOException {
+    public void testPathParams() throws IOException {
+        if(jaxRxImplementorCheck(1, 4))
+            return;
         Response response = get("path/p1/p2/pp1/pp2");
         checkPathParam(response);
 

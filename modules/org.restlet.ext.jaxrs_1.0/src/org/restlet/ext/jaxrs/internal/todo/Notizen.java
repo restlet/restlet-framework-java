@@ -41,6 +41,7 @@ public class Notizen {
 
     // LATER Constructor-Nutzung ist inkompatibel
     
-    // TODO JaxRsComponent and JaxRsApplication
+    // TODO JaxRsComponent
     // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc17
+    // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc19
 }

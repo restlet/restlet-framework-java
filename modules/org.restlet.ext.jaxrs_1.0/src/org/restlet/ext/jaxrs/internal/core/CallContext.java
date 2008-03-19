@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.ws.rs.MatrixParam;
@@ -56,7 +57,6 @@ import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.AccessControl;
 import org.restlet.ext.jaxrs.ThrowExcAccessControl;
 import org.restlet.ext.jaxrs.internal.util.Converter;
-import org.restlet.ext.jaxrs.internal.util.EmptyIterator;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
@@ -552,7 +552,6 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @return
      */
     public String getLastMatrixParamEnc(MatrixParam matrixParamAnnot) {
-        // REQUEST Matrix-Parameters only for current PathSegment?
         String mpName = matrixParamAnnot.value();
         List<PathSegment> pathSegments = getPathSegments(false);
         for (int i = pathSegments.size() - 1; i >= 0; i--) {
@@ -585,14 +584,74 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @return
      */
     public Iterator<String> matrixParamEncIter(MatrixParam matrixParamAnnot) {
-        PathSegment lastPathSegment = Util
-                .getLastElement(getPathSegments(false));
         String mpName = matrixParamAnnot.value();
-        MultivaluedMap<String, String> matrixParameters;
-        matrixParameters = lastPathSegment.getMatrixParameters();
-        List<String> mpValues = matrixParameters.get(mpName);
-        if(mpValues == null)
-            return EmptyIterator.get();
-        return mpValues.iterator();
+        return new MatrixParamEncIter(mpName, getPathSegments(false));
+    }
+
+    /**
+     * Iterator to return the values for a matrix parameter.
+     * 
+     * @author Stephan Koops
+     */
+    private static class MatrixParamEncIter implements Iterator<String> {
+
+        private Iterator<PathSegment> pathSegmentIter;
+
+        /** Iterates over the matrix parameters of one path segment */
+        private Iterator<Map.Entry<String, List<String>>> matrixParamIter;
+
+        private String mpName;
+
+        private Iterator<String> mpValueIter;
+
+        private String nextMpValue;
+
+        MatrixParamEncIter(String mpName, List<PathSegment> pathSegmentsEnc) {
+            this.pathSegmentIter = pathSegmentsEnc.iterator();
+            this.mpName = mpName;
+        }
+
+        /**
+         * @see java.util.Iterator#hasNext()
+         */
+        public boolean hasNext() {
+            if (nextMpValue != null)
+                return true;
+            while (mpValueIter != null && mpValueIter.hasNext()) {
+                this.nextMpValue = mpValueIter.next();
+                return true;
+            }
+            while (matrixParamIter != null && matrixParamIter.hasNext()) {
+                Map.Entry<String, List<String>> entry = matrixParamIter.next();
+                if (entry.getKey().equals(mpName)) {
+                    this.mpValueIter = entry.getValue().iterator();
+                    return this.hasNext();
+                }
+            }
+            while (pathSegmentIter.hasNext()) {
+                this.matrixParamIter = pathSegmentIter.next()
+                        .getMatrixParameters().entrySet().iterator();
+                return this.hasNext();
+            }
+            return false;
+        }
+
+        /**
+         * @see java.util.Iterator#next()
+         */
+        public String next() {
+            if (!this.hasNext())
+                throw new NoSuchElementException();
+            String nextMpValue = this.nextMpValue;
+            this.nextMpValue = null;
+            return nextMpValue;
+        }
+
+        /**
+         * @see java.util.Iterator#remove()
+         */
+        public void remove() {
+            throw new UnsupportedOperationException("unmodifiable");
+        }
     }
 }

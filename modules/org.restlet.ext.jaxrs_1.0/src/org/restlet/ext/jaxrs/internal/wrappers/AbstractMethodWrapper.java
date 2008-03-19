@@ -159,9 +159,20 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * Returns the generic return type of the wrapped method.
      * 
      * @return the generic return type of the wrapped method.
+     * @see Method#getGenericReturnType()
      */
     public Type getGenericReturnType() {
         return executeMethod.getGenericReturnType();
+    }
+
+    /**
+     * Returns the return type of the wrapped method.
+     * 
+     * @return the return type of the wrapped method.
+     * @see Method#getReturnType()
+     */
+    public Class<? extends Object> getReturnType() {
+        return executeMethod.getReturnType();
     }
 
     /**
