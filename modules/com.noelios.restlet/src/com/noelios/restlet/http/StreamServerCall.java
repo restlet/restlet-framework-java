@@ -46,6 +46,9 @@ public class StreamServerCall extends HttpServerCall {
     /** The response output stream. */
     private final OutputStream responseStream;
 
+    /** The response entity output stream. */
+    private OutputStream responseEntityStream;
+
     /** The connecting user */
     private final Socket socket;
 
@@ -66,6 +69,7 @@ public class StreamServerCall extends HttpServerCall {
         super(server);
         this.requestStream = requestStream;
         this.responseStream = responseStream;
+        this.responseEntityStream = null;
         this.socket = socket;
 
         try {
@@ -121,11 +125,21 @@ public class StreamServerCall extends HttpServerCall {
 
     @Override
     public OutputStream getResponseEntityStream() {
-        if (isResponseChunked()) {
-            return new ChunkedOutputStream(getResponseStream());
-        } else {
-            return new KeepAliveOutputStream(getResponseStream());
+        if (responseEntityStream == null) {
+            if (isResponseChunked() && isKeepAlive()) {
+                responseEntityStream = new ChunkedOutputStream(
+                        new KeepAliveOutputStream(getResponseStream()));
+            } else if (isResponseChunked()) {
+                responseEntityStream = new ChunkedOutputStream(
+                        getResponseStream());
+            } else if (isKeepAlive()) {
+                responseEntityStream = new KeepAliveOutputStream(
+                        getResponseStream());
+            } else {
+                responseEntityStream = getResponseStream();
+            }
         }
+        return responseEntityStream;
     }
 
     private OutputStream getResponseStream() {
