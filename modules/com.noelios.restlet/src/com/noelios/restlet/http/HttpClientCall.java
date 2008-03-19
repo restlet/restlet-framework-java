@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -260,24 +261,26 @@ public abstract class HttpClientCall extends HttpCall {
             }
         }
 
-        // if (!getMethod().equals(Method.HEAD.getName())
-        // && !response.getStatus().isInformational()
-        // && !response.getStatus()
-        // .equals(Status.REDIRECTION_NOT_MODIFIED)
-        // && !response.getStatus().equals(Status.SUCCESS_NO_CONTENT)
-        // && !response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)
-        // && !response.getStatus().equals(Status.SUCCESS_PARTIAL_CONTENT)) {
-        InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
-        ReadableByteChannel channel = getResponseEntityChannel(size);
+        if (!getMethod().equals(Method.HEAD.getName())
+                && !response.getStatus().isInformational()
+                && !response.getStatus()
+                        .equals(Status.REDIRECTION_NOT_MODIFIED)
+                && !response.getStatus().equals(Status.SUCCESS_NO_CONTENT)
+                && !response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)
+                && !response.getStatus().equals(Status.SUCCESS_PARTIAL_CONTENT)) {
+            // Make sure that an InputRepresentation will not be instantiated
+            // while the stream is closed.
+            InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
+            ReadableByteChannel channel = getResponseEntityChannel(size);
 
-        if (stream != null) {
-            result = new InputRepresentation(stream, null);
-        } else if (channel != null) {
-            result = new ReadableRepresentation(channel, null);
-            // } else {
-            // result = new EmptyRepresentation();
+            if (stream != null) {
+                result = new InputRepresentation(stream, null);
+            } else if (channel != null) {
+                result = new ReadableRepresentation(channel, null);
+                // } else {
+                // result = new EmptyRepresentation();
+            }
         }
-        // }
 
         result = copyResponseEntityHeaders(responseHeaders, result);
         if (result != null) {
@@ -313,8 +316,8 @@ public abstract class HttpClientCall extends HttpCall {
     public abstract InputStream getResponseEntityStream(long size);
 
     /**
-     * Checks if the given input stream really contains bytes to be read. If
-     * so, returns the inputStream otherwise returns null.
+     * Checks if the given input stream really contains bytes to be read. If so,
+     * returns the inputStream otherwise returns null.
      * 
      * @param inputStream
      *                the inputStream to check.
@@ -338,6 +341,7 @@ public abstract class HttpClientCall extends HttpCall {
                     }
                 }
             } catch (IOException e) {
+                getLogger().finer("End of response entity stream.");
             }
         }
 
