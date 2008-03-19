@@ -45,6 +45,9 @@ public class StreamClientCall extends HttpClientCall {
     /** The request output stream. */
     private OutputStream requestStream;
 
+    /** The request entity output stream. */
+    private OutputStream requestEntityStream;
+
     /** The response input stream. */
     private InputStream responseStream;
 
@@ -87,11 +90,23 @@ public class StreamClientCall extends HttpClientCall {
 
     @Override
     public OutputStream getRequestEntityStream() {
-        if (isRequestChunked()) {
-            return new ChunkedOutputStream(getRequestHeadStream());
-        } else {
-            return new KeepAliveOutputStream(getRequestHeadStream());
+        if (requestEntityStream == null) {
+            if (isRequestChunked() && isKeepAlive()) {
+                requestEntityStream = new ChunkedOutputStream(
+                        new KeepAliveOutputStream(getRequestHeadStream()));
+            } else if (isRequestChunked()) {
+                requestEntityStream = new ChunkedOutputStream(
+                        getRequestHeadStream());
+            } else if (isKeepAlive()) {
+                requestEntityStream = new KeepAliveOutputStream(
+                        getRequestHeadStream());
+            } else {
+                requestEntityStream = new KeepAliveOutputStream(
+                        getRequestHeadStream());
+            }
         }
+
+        return requestEntityStream;
     }
 
     @Override
