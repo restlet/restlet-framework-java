@@ -16,6 +16,10 @@ Changes log
 [Enhancements]
  - Updated Jetty to version 6.1.8.
 
+[Other changes] 
+ - Added condition on javadocs flag for the stage-classic task in the Ant 
+   build script. reported by Kevin Conaway.
+
 1.0.8 (2008-02-29)
 [Bugs fixed]
  - Fixed Spring XML loading issue related to validation in SpringContext class.

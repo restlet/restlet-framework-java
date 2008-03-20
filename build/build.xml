@@ -47,6 +47,102 @@
 
    <!-- Module properties -->
    <property file="modules.properties" />
+
+   <!-- Create the time stamp -->
+   <tstamp>
+      <format property="release-date" pattern="yyyy-MM-dd" />
+   </tstamp>
+
+   <condition property="ant-old">
+      <not>
+         <contains string="${ant.version}" substring="Ant version 1.7"/>
+      </not>
+   </condition>
+
+   <!-- Set the property that will enable the Weave target -->
+   <condition property="do-backport">
+      <istrue value="${backport}" />
+   </condition>
+   <condition property="custombootclasspath" value="${backportbootclasspath}" else="${defaultbootclasspath}">
+      <istrue value="${backport}" />
+   </condition>
+
+   <!-- Set the property that will enable the Javadoc target -->
+   <condition property="do-javadoc">
+      <istrue value="${javadoc}" />
+   </condition>
+   
+   <!-- Set the property that will enable the FindBugs target -->
+   <condition property="do-findbugs">
+      <istrue value="${findbugs}" />
+   </condition>
+   
+   <!-- Set the property that will enable the CheckStyle target -->
+   <condition property="do-checkstyle">
+      <istrue value="${checkstyle}" />
+   </condition>
+
+   <!-- Set the property that will enable the Nsis target -->
+   <condition property="do-nsis">
+      <istrue value="${nsis}" />
+   </condition>
+
+   <!-- Set the property that will enable the stage-maven target -->
+   <condition property="do-maven">
+      <istrue value="${maven}" />
+   </condition>
+
+   <!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
+   <condition property="exclude-packages" value="">
+      <isfalse value="${javadoc-hide}" />
+   </condition>
+   <condition property="exclude-packages" value="**.internal.*">
+      <istrue value="${javadoc-hide}" />
+   </condition>
+
+   <!-- Set the debug level property -->
+   <condition property="debuglevel" value="source,lines,vars">
+      <and>
+         <istrue value="${debug-source}" />
+         <istrue value="${debug-lines}" />
+         <istrue value="${debug-vars}" />
+      </and>
+   </condition>
+   <condition property="debuglevel" value="source,lines">
+      <and>
+         <istrue value="${debug-source}" />
+         <istrue value="${debug-lines}" />
+         <isfalse value="${debug-vars}" />
+      </and>
+   </condition>
+   <condition property="debuglevel" value="source,vars">
+      <and>
+         <istrue value="${debug-source}" />
+         <isfalse value="${debug-lines}" />
+         <istrue value="${debug-vars}" />
+      </and>
+   </condition>
+   <condition property="debuglevel" value="lines,vars">
+      <and>
+         <isfalse value="${debug-source}" />
+         <istrue value="${debug-lines}" />
+         <istrue value="${debug-vars}" />
+      </and>
+   </condition>
+   <condition property="debuglevel" value="lines">
+      <and>
+         <isfalse value="${debug-source}" />
+         <istrue value="${debug-lines}" />
+         <isfalse value="${debug-vars}" />
+      </and>
+   </condition>
+   <condition property="debuglevel" value="vars">
+      <and>
+         <isfalse value="${debug-source}" />
+         <isfalse value="${debug-lines}" />
+         <istrue value="${debug-vars}" />
+      </and>
+   </condition>
    
    <!-- ======================= -->
    <!-- ===  Paths setting  === -->
@@ -581,104 +677,6 @@
    <!-- GENERAL targets -->
    <target name="build" depends="generate, verify, integrate, stage, package" description="Full build." />
    <target name="rebuild" depends="clean, generate, verify, integrate, stage, package" description="Full build from scratch." />
-   
-   <target name="init" description="Initialize some properties.">
-      <!-- Create the time stamp -->
-      <tstamp>
-         <format property="release-date" pattern="yyyy-MM-dd" />
-      </tstamp>
-
-      <condition property="ant-old">
-         <not>
-            <contains string="${ant.version}" substring="Ant version 1.7"/>
-         </not>
-      </condition>
-
-      <!-- Set the property that will enable the Weave target -->
-      <condition property="do-backport">
-         <istrue value="${backport}" />
-      </condition>
-      <condition property="custombootclasspath" value="${backportbootclasspath}" else="${defaultbootclasspath}">
-         <istrue value="${backport}" />
-      </condition>
-
-      <!-- Set the property that will enable the Javadoc target -->
-      <condition property="do-javadoc">
-         <istrue value="${javadoc}" />
-      </condition>
-      
-      <!-- Set the property that will enable the FindBugs target -->
-      <condition property="do-findbugs">
-         <istrue value="${findbugs}" />
-      </condition>
-      
-      <!-- Set the property that will enable the CheckStyle target -->
-      <condition property="do-checkstyle">
-         <istrue value="${checkstyle}" />
-      </condition>
-
-      <!-- Set the property that will enable the Nsis target -->
-      <condition property="do-nsis">
-         <istrue value="${nsis}" />
-      </condition>
-
-      <!-- Set the property that will enable the stage-maven target -->
-      <condition property="do-maven">
-         <istrue value="${maven}" />
-      </condition>
-
-      <!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
-      <condition property="exclude-packages" value="">
-         <isfalse value="${javadoc-hide}" />
-      </condition>
-      <condition property="exclude-packages" value="**.internal.*">
-         <istrue value="${javadoc-hide}" />
-      </condition>
-
-      <!-- Set the debug level property -->
-      <condition property="debuglevel" value="source,lines,vars">
-         <and>
-            <istrue value="${debug-source}" />
-            <istrue value="${debug-lines}" />
-            <istrue value="${debug-vars}" />
-         </and>
-      </condition>
-      <condition property="debuglevel" value="source,lines">
-         <and>
-            <istrue value="${debug-source}" />
-            <istrue value="${debug-lines}" />
-            <isfalse value="${debug-vars}" />
-         </and>
-      </condition>
-      <condition property="debuglevel" value="source,vars">
-         <and>
-            <istrue value="${debug-source}" />
-            <isfalse value="${debug-lines}" />
-            <istrue value="${debug-vars}" />
-         </and>
-      </condition>
-      <condition property="debuglevel" value="lines,vars">
-         <and>
-            <isfalse value="${debug-source}" />
-            <istrue value="${debug-lines}" />
-            <istrue value="${debug-vars}" />
-         </and>
-      </condition>
-      <condition property="debuglevel" value="lines">
-         <and>
-            <isfalse value="${debug-source}" />
-            <istrue value="${debug-lines}" />
-            <isfalse value="${debug-vars}" />
-         </and>
-      </condition>
-      <condition property="debuglevel" value="vars">
-         <and>
-            <isfalse value="${debug-source}" />
-            <isfalse value="${debug-lines}" />
-            <istrue value="${debug-vars}" />
-         </and>
-      </condition>
-   </target>
 
    <!-- CLEAN target -->
    <target name="clean" depends="clean-temp, clean-dist" description="Clean the staging area." />
@@ -704,7 +702,7 @@
    <!-- GENERATE target -->
    <target name="generate" depends="generate-classes, generate-backport, generate-templates, generate-javadocs" description="Generate files." />
       
-   <target name="generate-templates" depends="init" description="Generate template-based files.">
+   <target name="generate-templates" description="Generate template-based files.">
       <!-- Generate the Changes file -->
       <copy file="${tmpl}/text/changes.txt" todir="${docs}" overwrite="true" />
       <replace file="${docs}/changes.txt" token="@release-date@" value="${release-date}" />
@@ -763,7 +761,7 @@
    </target>
    
    <!-- COMPILE target -->
-   <target name="generate-classes" depends="init" description="Compile the Java source files.">
+   <target name="generate-classes" description="Compile the Java source files.">
       <mkdir dir="${classes}" />
       <copy todir="${mod}" overwrite="true">
          <fileset dir="../modules" />
@@ -941,7 +939,7 @@
    <!-- VERIFY target -->
    <target name="verify" depends="verify-ant, verify-tests, verify-findbugs, verify-checkstyle" description="Verify build." />
    
-   <target name="verify-ant" if="ant-old" depends="init" description="Check the Ant version for potential issues with JUnit.">
+   <target name="verify-ant" if="ant-old" description="Check the Ant version for potential issues with JUnit.">
       <echo message="For easier integration with JUnit, we recommand usage of Ant 1.7."/>
       <echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory."/>
       <echo message="Current version: ${ant.version}"/>
@@ -964,7 +962,7 @@
       </junit>
    </target>
   
-   <target name="verify-findbugs" depends="init" if="do-findbugs" description="Attempts to find bugs.">
+   <target name="verify-findbugs" if="do-findbugs" description="Attempts to find bugs.">
       <mkdir dir="${temp}/findbugs" />
       <findbugsModule name="api" /> 
       <findbugsModule name="ri" />
@@ -985,7 +983,7 @@
       <findbugsModule name="example" />
    </target>
      
-   <target name="verify-checkstyle" depends="init" if="do-checkstyle" description="Check the style of the code.">
+   <target name="verify-checkstyle" if="do-checkstyle" description="Check the style of the code.">
       <mkdir dir="${temp}/checkstyle" />
       <checkstyleModule name="api" /> 
       <checkstyleModule name="ri" />
@@ -1030,15 +1028,20 @@
       </copy>
 
       <!-- Copy the Javadoc -->
-      <copy todir="${dist-classic}/docs/api">
-         <fileset dir="${docs-api}" />
-      </copy>
-      <copy todir="${dist-classic}/docs/ext">
-         <fileset dir="${docs-ext}" />
-      </copy>
-      <copy todir="${dist-classic}/docs/nre">
-         <fileset dir="${docs-nre}" />
-      </copy>
+      <if>
+         <istrue value="${do-javadoc}" />
+         <then>
+            <copy todir="${dist-classic}/docs/api">
+               <fileset dir="${docs-api}" />
+            </copy>
+            <copy todir="${dist-classic}/docs/ext">
+               <fileset dir="${docs-ext}" />
+            </copy>
+            <copy todir="${dist-classic}/docs/nre">
+               <fileset dir="${docs-nre}" />
+            </copy>
+         </then>
+      </if>
 
       <!-- Copy text notes -->
       <copy file="${docs}/changes.txt" tofile="${dist-classic}/changes.txt" />
@@ -1106,7 +1109,7 @@
    <target name="stage-maven" depends="stage-maven-2" if="do-maven" description="Generate the maven distributions."/>
    
    <!-- STAGE-MAVEN-2 target -->
-   <target name="stage-maven-2" depends="init" if="do-nsis" description="Generate the maven-2.x distributions.">
+   <target name="stage-maven-2" if="do-nsis" description="Generate the maven-2.x distributions.">
       <delete dir="${dist-maven2}" verbose="false" quiet="true" includeEmptyDirs="true" />
       <maven2Module name="api"/>
       <maven2Module name="ri"/>
@@ -1143,7 +1146,7 @@
    </target>
 
    <!-- PACKAGE-NSIS target (generation of Windows installer) -->
-   <target name="package-classic-nsis" depends="init" if="do-nsis" description="Generate the windows installer for the classic distribution.">
+   <target name="package-classic-nsis" if="do-nsis" description="Generate the windows installer for the classic distribution.">
       <nsis path="${nsis-makensis-path}" script="${temp}/setup.nsi" verbosity="2" uninstallfilelist="${dist-classic}/uninstall.log">
          <fileset dir="${dist-classic}" includes="**/*" />
       </nsis>
