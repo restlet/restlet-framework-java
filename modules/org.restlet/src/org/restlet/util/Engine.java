@@ -332,9 +332,12 @@ public abstract class Engine {
      * 
      * @param client
      *                The client to help.
+     * @param helperClass
+     *                Optional helper class name.
      * @return The new helper.
      */
-    public abstract Helper<Client> createHelper(Client client);
+    public abstract Helper<Client> createHelper(Client client,
+            String helperClass);
 
     /**
      * Creates a new helper for a given component.
@@ -350,9 +353,12 @@ public abstract class Engine {
      * 
      * @param server
      *                The server to help.
+     * @param helperClass
+     *                Optional helper class name.
      * @return The new helper.
      */
-    public abstract Helper<Server> createHelper(Server server);
+    public abstract Helper<Server> createHelper(Server server,
+            String helperClass);
 
     /**
      * Formats the given Cookie to a String

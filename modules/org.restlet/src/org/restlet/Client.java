@@ -46,11 +46,26 @@ public class Client extends Connector {
      *                The connector protocols.
      */
     public Client(Context context, List<Protocol> protocols) {
+        this(context, protocols, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *                The context.
+     * @param protocols
+     *                The connector protocols.
+     * @param helperClass
+     *                Optional helper class name.
+     */
+    public Client(Context context, List<Protocol> protocols, String helperClass) {
         super(context, protocols);
 
         if ((protocols != null) && (protocols.size() > 0)) {
             if (Engine.getInstance() != null) {
-                this.helper = Engine.getInstance().createHelper(this);
+                this.helper = Engine.getInstance().createHelper(this,
+                        helperClass);
             }
         }
     }
@@ -64,7 +79,7 @@ public class Client extends Connector {
      *                The connector protocol.
      */
     public Client(Context context, Protocol protocol) {
-        this(context, (protocol == null) ? null : Arrays.asList(protocol));
+        this(context, (protocol == null) ? null : Arrays.asList(protocol), null);
     }
 
     /**
@@ -74,7 +89,7 @@ public class Client extends Connector {
      *                The connector protocols.
      */
     public Client(List<Protocol> protocols) {
-        this(null, protocols);
+        this(null, protocols, null);
     }
 
     /**

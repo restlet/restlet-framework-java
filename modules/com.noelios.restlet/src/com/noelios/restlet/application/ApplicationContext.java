@@ -24,7 +24,6 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Uniform;
-import org.restlet.data.Protocol;
 
 /**
  * Context based on a parent component's context but dedicated to an
@@ -69,7 +68,7 @@ public class ApplicationContext extends Context {
         this.serverDispatcher = (getParentContext() != null) ? getParentContext()
                 .getServerDispatcher()
                 : null;
-        this.warClient = new Client(Protocol.WAR);
+        // this.warClient = new Client(Protocol.WAR);
 
         // Set the application as an attribute for usage by other services
         // like the ConnectorService

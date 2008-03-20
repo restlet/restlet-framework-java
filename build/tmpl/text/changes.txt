@@ -49,6 +49,9 @@ Changes log
           a call. This can be useful to get access to the context even
           when it isn't possible to manually pass it down the call 
           stack. 
+        - Added a new constructor to Client and Server allowing to 
+          specify the class name of the connector to use. Suggested by
+          Dan Diephouse.
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.

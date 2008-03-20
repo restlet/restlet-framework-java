@@ -83,13 +83,36 @@ public class Server extends Connector {
      */
     public Server(Context context, List<Protocol> protocols, String address,
             int port, Restlet target) {
+        this(context, protocols, address, port, target, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *                The context.
+     * @param protocols
+     *                The connector protocols.
+     * @param address
+     *                The optional listening IP address (useful if multiple IP
+     *                addresses available). You can also use a domain name as an
+     *                alias for the IP address to listen to.
+     * @param port
+     *                The listening port.
+     * @param target
+     *                The target Restlet.
+     * @param helperClass
+     *                Optional helper class name.
+     */
+    public Server(Context context, List<Protocol> protocols, String address,
+            int port, Restlet target, String helperClass) {
         super(context, protocols);
         this.address = address;
         this.port = port;
         this.target = target;
 
         if (Engine.getInstance() != null) {
-            this.helper = Engine.getInstance().createHelper(this);
+            this.helper = Engine.getInstance().createHelper(this, helperClass);
         }
     }
 

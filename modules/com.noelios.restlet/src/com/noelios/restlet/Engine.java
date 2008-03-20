@@ -299,7 +299,7 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     @Override
-    public ClientHelper createHelper(Client client) {
+    public ClientHelper createHelper(Client client, String helperClass) {
         ClientHelper result = null;
 
         if (client.getProtocols().size() > 0) {
@@ -309,15 +309,19 @@ public class Engine extends org.restlet.util.Engine {
                 connector = iter.next();
 
                 if (connector.getProtocols().containsAll(client.getProtocols())) {
-                    try {
-                        result = connector.getClass().getConstructor(
-                                Client.class).newInstance(client);
-                    } catch (Exception e) {
-                        logger
-                                .log(
-                                        Level.SEVERE,
-                                        "Exception while instantiation the client connector.",
-                                        e);
+                    if ((helperClass == null)
+                            || connector.getClass().getCanonicalName().equals(
+                                    helperClass)) {
+                        try {
+                            result = connector.getClass().getConstructor(
+                                    Client.class).newInstance(client);
+                        } catch (Exception e) {
+                            logger
+                                    .log(
+                                            Level.SEVERE,
+                                            "Exception while instantiation the client connector.",
+                                            e);
+                        }
                     }
                 }
             }
@@ -348,7 +352,7 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     @Override
-    public ServerHelper createHelper(Server server) {
+    public ServerHelper createHelper(Server server, String helperClass) {
         ServerHelper result = null;
 
         if (server.getProtocols().size() > 0) {
@@ -357,16 +361,21 @@ public class Engine extends org.restlet.util.Engine {
                     .iterator(); (result == null) && iter.hasNext();) {
                 connector = iter.next();
 
-                if (connector.getProtocols().containsAll(server.getProtocols())) {
-                    try {
-                        result = connector.getClass().getConstructor(
-                                Server.class).newInstance(server);
-                    } catch (Exception e) {
-                        logger
-                                .log(
-                                        Level.SEVERE,
-                                        "Exception while instantiation the server connector.",
-                                        e);
+                if ((helperClass == null)
+                        || connector.getClass().getCanonicalName().equals(
+                                helperClass)) {
+                    if (connector.getProtocols().containsAll(
+                            server.getProtocols())) {
+                        try {
+                            result = connector.getClass().getConstructor(
+                                    Server.class).newInstance(server);
+                        } catch (Exception e) {
+                            logger
+                                    .log(
+                                            Level.SEVERE,
+                                            "Exception while instantiation the server connector.",
+                                            e);
+                        }
                     }
                 }
             }
