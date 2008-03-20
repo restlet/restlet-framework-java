@@ -223,6 +223,19 @@ public class SimpleCall extends HttpServerCall {
     }
 
     @Override
+    public String getSslCipherSuite() {
+        Socket socket = getSocket();
+        if (socket instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) socket;
+            SSLSession sslSession = sslSocket.getSession();
+            if (sslSession != null) {
+                return sslSession.getCipherSuite();
+            }
+        }
+        return null;
+    }
+
+    @Override
     public String getVersion() {
         return request.getMajor() + "." + request.getMinor();
     }

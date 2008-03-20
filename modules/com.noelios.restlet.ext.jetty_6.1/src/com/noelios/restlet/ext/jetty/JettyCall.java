@@ -220,6 +220,22 @@ public class JettyCall extends HttpServerCall {
     }
 
     @Override
+    public String getSslCipherSuite() {
+        return (String) getConnection().getRequest().getAttribute(
+                "javax.servlet.request.cipher_suite");
+    }
+
+    @Override
+    public Integer getSslKeySize() {
+        Integer keySize = (Integer) getConnection().getRequest().getAttribute(
+                "javax.servlet.request.key_size");
+        if (keySize == null) {
+            keySize = super.getSslKeySize();
+        }
+        return keySize;
+    }
+
+    @Override
     public void sendResponse(Response response) throws IOException {
         // Add call headers
         Parameter header;

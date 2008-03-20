@@ -224,4 +224,17 @@ public class GrizzlyServerCall extends HttpServerCall {
         }
         return null;
     }
+
+    @Override
+    public String getSslCipherSuite() {
+        Socket socket = this.socketChannel.socket();
+        if (socket instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) socket;
+            SSLSession sslSession = sslSocket.getSession();
+            if (sslSession != null) {
+                return sslSession.getCipherSuite();
+            }
+        }
+        return null;
+    }
 }

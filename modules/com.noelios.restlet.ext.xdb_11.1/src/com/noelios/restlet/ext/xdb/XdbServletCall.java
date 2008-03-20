@@ -242,6 +242,22 @@ public class XdbServletCall extends HttpServerCall {
         }
     }
 
+    @Override
+    public String getSslCipherSuite() {
+        return (String) getRequest().getAttribute(
+                "javax.servlet.request.cipher_suite");
+    }
+
+    @Override
+    public Integer getSslKeySize() {
+        Integer keySize = (Integer) getRequest().getAttribute(
+                "javax.servlet.request.key_size");
+        if (keySize == null) {
+            keySize = super.getSslKeySize();
+        }
+        return keySize;
+    }
+
     /**
      * Sends the response back to the client. Commits the status, headers and
      * optional entity and send them on the network.

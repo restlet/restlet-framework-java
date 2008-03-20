@@ -28,8 +28,10 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -69,9 +71,11 @@ public class StreamServerHelper extends HttpServerHelper {
         super.start();
         getLogger().info("Starting the internal HTTP server");
 
+        ThreadFactory factory = new LoggingThreadFactory(getLogger());
+
         // Configure the thread services
-        handlerService = Executors.newFixedThreadPool(10);
-        listenerService = Executors.newSingleThreadExecutor();
+        handlerService = Executors.newFixedThreadPool(10, factory);
+        listenerService = Executors.newSingleThreadExecutor(factory);
 
         // Create the server socket
         serverSocketChannel = createServerSocket();
@@ -256,12 +260,42 @@ public class StreamServerHelper extends HttpServerHelper {
                                 client.socket()));
                     }
                 } catch (ClosedByInterruptException ex) {
+                    helper.getLogger().log(Level.WARNING,
+                            "ServerSocket channel was closed by interrupt", ex);
                     break;
                 } catch (IOException ex) {
                     helper.getLogger().log(Level.WARNING,
                             "Unexpected error while accepting new connection",
                             ex);
                 }
+            }
+        }
+    }
+
+    /**
+     * Thread factory that logs uncaught exceptions thrown by the created
+     * threads.
+     */
+    private static class LoggingThreadFactory implements ThreadFactory {
+
+        private final Logger logger;
+
+        public LoggingThreadFactory(Logger logger) {
+            this.logger = logger;
+        }
+
+        public Thread newThread(Runnable r) {
+            Thread result = new Thread(r);
+            result.setUncaughtExceptionHandler(new LoggingExceptionHandler());
+            return result;
+        }
+
+        private class LoggingExceptionHandler implements
+                Thread.UncaughtExceptionHandler {
+
+            public void uncaughtException(Thread t, Throwable ex) {
+                logger.log(Level.SEVERE, "Thread: " + t.getName()
+                        + " terminated with exception: " + ex.getMessage(), ex);
             }
         }
     }

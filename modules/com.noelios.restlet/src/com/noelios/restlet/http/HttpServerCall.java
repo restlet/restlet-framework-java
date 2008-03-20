@@ -25,6 +25,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -234,12 +235,43 @@ public abstract class HttpServerCall extends HttpCall {
     public abstract OutputStream getResponseEntityStream();
 
     /**
+     * Returns the SSL Cipher Suite, if available and accessible.
+     * 
+     * @return The SSL Cipher Suite, if available and accessible.
+     */
+    public String getSslCipherSuite() {
+        return null;
+    }
+
+    /**
      * Returns the chain of client certificates, if available and accessible.
      * 
      * @return The chain of client certificates, if available and accessible.
      */
     public List<Certificate> getSslClientCertificates() {
         return null;
+    }
+
+    /**
+     * Returns the SSL key size, if available and accessible.
+     * 
+     * @return The SSL key size, if available and accessible.
+     */
+    public Integer getSslKeySize() {
+        Integer keySize = null;
+        String sslCipherSuite = getSslCipherSuite();
+        if (sslCipherSuite != null) {
+            StringTokenizer st = new StringTokenizer(sslCipherSuite, "_");
+            while (st.hasMoreTokens()) {
+                try {
+                    keySize = Integer.valueOf(st.nextToken());
+                    break;
+                } catch (NumberFormatException e) {
+                    // Tokens that are not integers are ignored.
+                }
+            }
+        }
+        return keySize;
     }
 
     @Override

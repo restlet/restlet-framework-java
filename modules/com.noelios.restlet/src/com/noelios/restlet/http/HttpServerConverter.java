@@ -422,8 +422,21 @@ public class HttpServerConverter extends HttpConverter {
                     .getSslClientCertificates();
             if (clientCertificates != null) {
                 result.getAttributes().put(
-                        HttpConstants.ATTRIBUTE_CLIENT_CERTIFICATES,
+                        HttpConstants.ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES,
                         clientCertificates);
+            }
+
+            String cipherSuite = httpCall.getSslCipherSuite();
+            if (cipherSuite != null) {
+                result.getAttributes()
+                        .put(HttpConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
+                                cipherSuite);
+            }
+
+            Integer keySize = httpCall.getSslKeySize();
+            if (keySize != null) {
+                result.getAttributes().put(
+                        HttpConstants.ATTRIBUTE_HTTPS_KEY_SIZE, keySize);
             }
         }
 

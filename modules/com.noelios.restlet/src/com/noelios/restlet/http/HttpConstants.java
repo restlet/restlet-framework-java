@@ -240,5 +240,9 @@ public final class HttpConstants {
 
     public static final String ATTRIBUTE_VERSION = "org.restlet.http.version";
 
-    public static final String ATTRIBUTE_CLIENT_CERTIFICATES = "org.restlet.https.clientCertificates";
+    public static final String ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES = "org.restlet.https.clientCertificates";
+
+    public static final String ATTRIBUTE_HTTPS_CIPHER_SUITE = "org.restlet.https.cipherSuite";
+
+    public static final String ATTRIBUTE_HTTPS_KEY_SIZE = "org.restlet.https.keySize";
 }

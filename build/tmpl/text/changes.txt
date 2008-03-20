@@ -48,7 +48,7 @@ Changes log
           updated when Component and Application instances are handling
           a call. This can be useful to get access to the context even
           when it isn't possible to manually pass it down the call 
-          stack.          
+          stack. 
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.
@@ -71,6 +71,11 @@ Changes log
           alternative is now documented. 
         - Updated db4o to version 7.2 with transparent activation 
           and update.
+        - Improve logging for internal HTTP server when created thread
+          throw uncaught exceptions. Contributed by Kevin Conaway.
+        - HTTPS server connectors expose new attributes related 
+          to SSL: "org.restlet.https.cipherSuite" and 
+          "org.restlet.https.keySize". Contributed by Bruno Harbulot.
     - Misc
         - Reformatting of the changes log. Contributed by Avi Flax.
         - All Component subclasses now use a main method that throws 
