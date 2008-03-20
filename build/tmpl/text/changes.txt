@@ -1,4 +1,4 @@
-   
+﻿   
 ===========
 Changes log  
 ===========
@@ -101,6 +101,8 @@ Changes log
           adapter on the java.net.URL class that is based on the 
           current context as retrieved via Context.getCurrent() 
           method. 
+        - Added condition on javadocs flag for the stage-classic task 
+          in the Ant build script. reported by Kevin Conaway.
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed
         - Fixed NPE in Connector class. Reported by Rob Heittman and
