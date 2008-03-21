@@ -1,13 +1,14 @@
 <#include "/header.ftl"/>
 <#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-   <h2 class="welcome">
-      Hello ${currentUser.firstName} ${currentUser.lastName}
-   </h2>
+</#global>
+<#global menu>
 
-  <div>
-     <a class="welcome" href="${rootRef}/mailboxes">Mailboxes</a>
-     <a class="welcome" href="${rootRef}/users">Users</a>
-  </div>
+            <div>
+               <h3 class="menu"><a href="${rootRef}/mailboxes">My mailboxes</a></h3>
+            </div>
+            <div>
+               <h3 class="menu"><a href="${rootRef}/users">My account<a/></h3>
+            </div>
 </#global>
 <#include "/footer.ftl"/>
