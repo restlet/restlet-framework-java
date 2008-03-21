@@ -73,9 +73,9 @@ public class ContactResource extends BaseResource {
 
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDAOFactory().getContactDAO().deleteContact(contact);
-        // TODO revenir à la première page de l'application
-        getResponse().redirectSeeOther("");
+        getDAOFactory().getMailboxDAO().deleteContact(mailbox, contact);
+        getResponse().redirectSeeOther(
+                getRequest().getResourceRef().getParentRef());
     }
 
     @Override
@@ -85,6 +85,7 @@ public class ContactResource extends BaseResource {
         dataModel.put("mailbox", mailbox);
         dataModel.put("contact", contact);
         dataModel.put("resourceRef", getRequest().getResourceRef());
+        dataModel.put("rootRef", getRequest().getRootRef());
 
         TemplateRepresentation representation = new TemplateRepresentation(
                 "contact.html", getFmcConfiguration(), dataModel, variant
@@ -100,7 +101,7 @@ public class ContactResource extends BaseResource {
         contact.setMailAddress(form.getFirstValue("mailAddress"));
         contact.setName(form.getFirstValue("name"));
 
-        getDAOFactory().getContactDAO().updateContact(contact);
+        getDAOFactory().getMailboxDAO().updateContact(mailbox, contact);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 

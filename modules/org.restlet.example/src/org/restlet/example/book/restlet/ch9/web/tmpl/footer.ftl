@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <title>${title}</title>
-      <link rel="stylesheet" type="text/css" href='${stylesheet}' title="Main CSS stylesheet" />
+      <link rel="stylesheet" type="text/css" href='${rootRef}/${stylesheet}' title="Main CSS stylesheet" />
       ${feedHeader}
    </head>
    <body>

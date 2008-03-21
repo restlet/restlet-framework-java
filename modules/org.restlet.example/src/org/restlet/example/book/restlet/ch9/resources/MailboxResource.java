@@ -64,16 +64,18 @@ public class MailboxResource extends BaseResource {
     @Override
     public void removeRepresentations() throws ResourceException {
         getDAOFactory().getMailboxDAO().deleteMailbox(mailbox);
-        // TODO revenir à la première page de l'application
-        getResponse().redirectSeeOther("");
+        getResponse().redirectSeeOther(
+                getRequest().getResourceRef().getParentRef());
     }
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();
+        System.out.println(getRequest().getRootRef());
         dataModel.put("currentUser", getCurrentUser());
         dataModel.put("mailbox", mailbox);
         dataModel.put("resourceRef", getRequest().getResourceRef());
+        dataModel.put("rootRef", getRequest().getRootRef());
 
         TemplateRepresentation representation = new TemplateRepresentation(
                 "mailbox.html", getFmcConfiguration(), dataModel, variant

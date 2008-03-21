@@ -88,6 +88,7 @@ public class MailboxesResource extends BaseResource {
         dataModel.put("mailboxes", mailboxes);
         dataModel.put("users", users);
         dataModel.put("resourceRef", getRequest().getResourceRef());
+        dataModel.put("rootRef", getRequest().getRootRef());
 
         TemplateRepresentation representation = new TemplateRepresentation(
                 "mailboxes.html", getFmcConfiguration(), dataModel, variant

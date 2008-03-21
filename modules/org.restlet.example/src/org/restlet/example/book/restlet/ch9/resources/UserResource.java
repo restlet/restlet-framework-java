@@ -70,8 +70,8 @@ public class UserResource extends BaseResource {
     @Override
     public void removeRepresentations() throws ResourceException {
         getDAOFactory().getUserDAO().deleteUser(user);
-        // TODO revenir à la première page de l'application
-        getResponse().redirectSeeOther("");
+        getResponse().redirectSeeOther(
+                getRequest().getResourceRef().getParentRef());
     }
 
     @Override
@@ -81,6 +81,7 @@ public class UserResource extends BaseResource {
         dataModel.put("user", user);
         dataModel.put("mailboxes", mailboxes);
         dataModel.put("resourceRef", getRequest().getResourceRef());
+        dataModel.put("rootRef", getRequest().getRootRef());
 
         TemplateRepresentation representation = new TemplateRepresentation(
                 "user.html", getFmcConfiguration(), dataModel, variant

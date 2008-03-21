@@ -98,14 +98,19 @@ public class Application extends org.restlet.Application {
         // Add a route for the MailRoot resource
         router.attachDefault(MailRootResource.class);
 
-        Directory directory = new Directory(
+        Directory imgDirectory = new Directory(
                 getContext(),
                 LocalReference
                         .createFileReference("D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch9\\web\\images"));
-        directory.setIndexName(null);
-        directory.setListingAllowed(true);
-        // Add a route for a Mailboxes resource
-        router.attach("/images", directory);
+        // Add a route for the image resources
+        router.attach("/images", imgDirectory);
+
+        Directory cssDirectory = new Directory(
+                getContext(),
+                LocalReference
+                        .createFileReference("D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch9\\web\\stylesheets"));
+        // Add a route for the CSS resources
+        router.attach("/stylesheets", cssDirectory);
 
         // Add a route for a Mailboxes resource
         router.attach("/mailboxes", MailboxesResource.class);

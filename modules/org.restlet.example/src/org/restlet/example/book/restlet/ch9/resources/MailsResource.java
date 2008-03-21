@@ -63,7 +63,7 @@ public class MailsResource extends BaseResource {
         Mail mail = new Mail();
         mail.setSender(getCurrentUser());
         mail.setStatus(Mail.STATUS_DRAFT);
-        mail = getDAOFactory().getMailDAO().createMail(mail);
+        mail = getDAOFactory().getMailboxDAO().createMail(mailbox, mail);
         Reference mailRef = new Reference(getRequest().getResourceRef(), mail
                 .getId());
         getResponse().redirectSeeOther(mailRef);
@@ -81,6 +81,7 @@ public class MailsResource extends BaseResource {
         dataModel.put("mailbox", mailbox);
         dataModel.put("mails", mails);
         dataModel.put("resourceRef", getRequest().getResourceRef());
+        dataModel.put("rootRef", getRequest().getRootRef());
 
         TemplateRepresentation representation = new TemplateRepresentation(
                 "mails.html", getFmcConfiguration(), dataModel, variant

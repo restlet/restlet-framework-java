@@ -1,8 +1,6 @@
 <#include "/header.ftl"/>
 <#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-   <h1>RMEP - REST Mail Exchange Protocol</h1>
-
 	<#list users as user> 
 		<a href="${resourceRef}/${user.id}">${user.firstName} ${user.lastName}</a>
 	</#list>

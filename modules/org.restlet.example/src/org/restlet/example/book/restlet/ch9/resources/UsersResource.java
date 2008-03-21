@@ -86,7 +86,8 @@ public class UsersResource extends BaseResource {
         dataModel.put("currentUser", getCurrentUser());
         dataModel.put("users", users);
         dataModel.put("resourceRef", getRequest().getResourceRef());
-
+        dataModel.put("rootRef", getRequest().getRootRef());
+        
         TemplateRepresentation representation = new TemplateRepresentation(
                 "users.html", getFmcConfiguration(), dataModel, variant
                         .getMediaType());

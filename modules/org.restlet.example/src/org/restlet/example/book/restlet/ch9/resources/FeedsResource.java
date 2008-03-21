@@ -61,7 +61,7 @@ public class FeedsResource extends BaseResource {
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
         Feed Feed = new Feed();
-        Feed = getDAOFactory().getFeedDAO().createFeed(Feed);
+        Feed = getDAOFactory().getMailboxDAO().createFeed(mailbox, Feed);
         Reference feedRef = new Reference(getRequest().getResourceRef(), Feed
                 .getId());
         getResponse().redirectSeeOther(feedRef);
@@ -79,6 +79,7 @@ public class FeedsResource extends BaseResource {
         dataModel.put("mailbox", mailbox);
         dataModel.put("feeds", feeds);
         dataModel.put("resourceRef", getRequest().getResourceRef());
+        dataModel.put("rootRef", getRequest().getRootRef());
 
         TemplateRepresentation representation = new TemplateRepresentation(
                 "feeds.html", getFmcConfiguration(), dataModel, variant

@@ -74,9 +74,9 @@ public class FeedResource extends BaseResource {
 
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDAOFactory().getFeedDAO().deleteFeed(feed);
-        // TODO revenir à la première page de l'application
-        getResponse().redirectSeeOther("");
+        getDAOFactory().getMailboxDAO().deleteFeed(mailbox, feed);
+        getResponse().redirectSeeOther(
+                getRequest().getResourceRef().getParentRef());
     }
 
     @Override
@@ -86,6 +86,7 @@ public class FeedResource extends BaseResource {
         dataModel.put("mailbox", mailbox);
         dataModel.put("feed", feed);
         dataModel.put("resourceRef", getRequest().getResourceRef());
+        dataModel.put("rootRef", getRequest().getRootRef());
 
         Representation representation = null;
         MediaType mediaType = variant.getMediaType();
@@ -107,7 +108,7 @@ public class FeedResource extends BaseResource {
         // TODO comment gérer les tags?
         // feed.setTags(form.getFirstValue("tags"));
 
-        getDAOFactory().getFeedDAO().updateFeed(feed);
+        getDAOFactory().getMailboxDAO().updateFeed(mailbox, feed);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 

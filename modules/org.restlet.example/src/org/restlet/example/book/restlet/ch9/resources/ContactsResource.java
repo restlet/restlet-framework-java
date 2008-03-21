@@ -61,12 +61,13 @@ public class ContactsResource extends BaseResource {
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form();
+        Form form = new Form(entity);
         Contact contact = new Contact();
         contact.setMailAddress(form.getFirstValue("mailAddress"));
         contact.setName(form.getFirstValue("name"));
 
-        contact = getDAOFactory().getContactDAO().createContact(contact);
+        contact = getDAOFactory().getMailboxDAO().createContact(mailbox,
+                contact);
         Reference contactRef = new Reference(getRequest().getResourceRef(),
                 contact.getId());
         getResponse().redirectSeeOther(contactRef);
@@ -84,6 +85,7 @@ public class ContactsResource extends BaseResource {
         dataModel.put("mailbox", mailbox);
         dataModel.put("contacts", contacts);
         dataModel.put("resourceRef", getRequest().getResourceRef());
+        dataModel.put("rootRef", getRequest().getRootRef());
 
         TemplateRepresentation representation = new TemplateRepresentation(
                 "contacts.html", getFmcConfiguration(), dataModel, variant

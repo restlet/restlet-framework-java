@@ -72,9 +72,9 @@ public class MailResource extends BaseResource {
 
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDAOFactory().getMailDAO().deleteMail(mail);
-        // TODO revenir à la première page de l'application
-        getResponse().redirectSeeOther("");
+        getDAOFactory().getMailboxDAO().deleteMail(mailbox, mail);
+        getResponse().redirectSeeOther(
+                getRequest().getResourceRef().getParentRef());
     }
 
     @Override
@@ -84,6 +84,7 @@ public class MailResource extends BaseResource {
         dataModel.put("mailbox", mailbox);
         dataModel.put("mail", mail);
         dataModel.put("resourceRef", getRequest().getResourceRef());
+        dataModel.put("rootRef", getRequest().getRootRef());
 
         TemplateRepresentation representation = new TemplateRepresentation(
                 "mail.html", getFmcConfiguration(), dataModel, variant
@@ -106,7 +107,7 @@ public class MailResource extends BaseResource {
         // TODO comment gérer les tags?
         // mail.setTags(form.getFirstValue("tags"));
 
-        getDAOFactory().getMailDAO().updateMail(mail);
+        getDAOFactory().getMailboxDAO().updateMail(mailbox, mail);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 
