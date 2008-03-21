@@ -147,7 +147,7 @@ public class Application extends org.restlet.Application {
         // Add a route for a User resource
         router.attach("/users/{userId}", UserResource.class);
 
-        // Securize the whole application.
+        // Secure the whole application.
         guard.setNext(router);
         return guard;
     }
