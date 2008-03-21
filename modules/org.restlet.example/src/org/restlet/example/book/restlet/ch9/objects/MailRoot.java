@@ -22,32 +22,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mail application that manages a set of mailboxes.
+ * Root object that manages a set of mailboxes and users.
  * 
  */
 public class MailRoot extends BaseObject {
+    
     /** Mail boxes managed by the application. */
-    private List<MailBox> mailBoxes;
+    private List<Mailbox> mailboxes;
 
     /** Users managed by the application. */
     private List<User> users;
 
     public MailRoot() {
         super();
-        this.mailBoxes = new ArrayList<MailBox>();
+        this.mailboxes = new ArrayList<Mailbox>();
         this.users = new ArrayList<User>();
     }
 
-    public List<MailBox> getMailBoxes() {
-        return mailBoxes;
+    public List<Mailbox> getMailboxes() {
+        return mailboxes;
     }
 
     public List<User> getUsers() {
         return users;
     }
 
-    public void setMailBoxes(List<MailBox> mailBoxes) {
-        this.mailBoxes = mailBoxes;
+    public void setMailboxes(List<Mailbox> mailboxes) {
+        this.mailboxes = mailboxes;
     }
 
     public void setUsers(List<User> users) {

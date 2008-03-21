@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mailbox.
+ * Mailbox seen as a list of mails, contacts and feeds.
  * 
  */
-public class MailBox extends BaseObject {
+public class Mailbox extends BaseObject {
+
     /** List of contacts of the mailbox. */
     private List<Contact> contacts;
 
@@ -35,42 +36,53 @@ public class MailBox extends BaseObject {
     /** List of mails of the mailbox. */
     private List<Mail> mails;
 
-    public MailBox() {
+    /** Nickname of the mailbox. */
+    private String nickname;
+
+    /** Owner of the mailbox. */
+    private User owner;
+
+    public Mailbox() {
         super();
         this.contacts = new ArrayList<Contact>();
         this.feeds = new ArrayList<Feed>();
         this.mails = new ArrayList<Mail>();
     }
 
-    /** Owner of the mailbox. */
-    private User owner;
-
     public List<Contact> getContacts() {
         return contacts;
-    }
-
-    public void setContacts(List<Contact> contacts) {
-        this.contacts = contacts;
     }
 
     public List<Feed> getFeeds() {
         return feeds;
     }
 
-    public void setFeeds(List<Feed> feeds) {
-        this.feeds = feeds;
-    }
-
     public List<Mail> getMails() {
         return mails;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setContacts(List<Contact> contacts) {
+        this.contacts = contacts;
+    }
+
+    public void setFeeds(List<Feed> feeds) {
+        this.feeds = feeds;
     }
 
     public void setMails(List<Mail> mails) {
         this.mails = mails;
     }
 
-    public User getOwner() {
-        return owner;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public void setOwner(User owner) {

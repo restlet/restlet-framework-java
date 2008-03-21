@@ -18,10 +18,18 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.restlet.ch9.objects.Mail;
+import org.restlet.example.book.restlet.ch9.objects.Mailbox;
+import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -32,16 +40,33 @@ import org.restlet.resource.Variant;
  */
 public class MailsResource extends BaseResource {
 
+    /** The container of the list of mails. */
+    private Mailbox mailbox;
+
+    /** The list of mails. */
+    private List<Mail> mails;
+
     public MailsResource(Context context, Request request, Response response) {
         super(context, request, response);
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
+        String mailboxId = (String) request.getAttributes().get("mailboxId");
+        mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
+
+        if (mailbox != null) {
+            getVariants().add(new Variant(MediaType.TEXT_HTML));
+            mails = mailbox.getMails();
+        }
     }
 
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
-        // TODO Auto-generated method stub
-        super.acceptRepresentation(entity);
+        Mail mail = new Mail();
+        mail.setSender(getCurrentUser());
+        mail.setStatus(Mail.STATUS_DRAFT);
+        mail = getDAOFactory().getMailDAO().createMail(mail);
+        Reference mailRef = new Reference(getRequest().getResourceRef(), mail
+                .getId());
+        getResponse().redirectSeeOther(mailRef);
     }
 
     @Override
@@ -51,7 +76,16 @@ public class MailsResource extends BaseResource {
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        // TODO Auto-generated method stub
-        return super.represent(variant);
+        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        dataModel.put("currentUser", getCurrentUser());
+        dataModel.put("mailbox", mailbox);
+        dataModel.put("mails", mails);
+        dataModel.put("resourceRef", getRequest().getResourceRef());
+
+        TemplateRepresentation representation = new TemplateRepresentation(
+                "mails.html", getFmcConfiguration(), dataModel, variant
+                        .getMediaType());
+
+        return representation;
     }
 }

@@ -1,0 +1,39 @@
+<#include "/header.ftl"/>
+<#global title="Restlet - Lightweight REST framework for Java" />
+<#global content>
+   <h1>Lightweight REST framework for Java</h1>
+
+   <h2 class="welcome">
+      Do you want to embrace the architecture of the Web and benefit from its
+      simplicity and scalability? Leverage our innovative REST engine and start
+      blending your Web Sites and Web Services into uniform Web Applications!
+   </h2>
+
+   <table cellspacing="25" width="600">
+      <tr>
+         <td style="width: 25%" align="center">
+            <a class="welcome" href="about/"><img src="/images/icons/100/discover.png" alt="Discover"/></a><br/>
+            <a class="welcome" href="about/">Discover</a>
+         </td>
+         <td style="width: 25%" align="center">
+            <a class="welcome" href="downloads/"><img src="/images/icons/100/download.png" alt="Download"/></a><br/>
+            <a class="welcome" href="downloads/">Download</a>
+         </td>
+         <td style="width: 25%" align="center">
+            <a class="welcome" href="documentation/"><img src="/images/icons/100/documentation.png" alt="Learn"/></a><br/>
+            <a class="welcome" href="documentation/">Learn</a>
+         </td>
+         <td style="width: 25%" align="center">
+            <a class="welcome" href="community/"><img src="/images/icons/100/community.png" alt="Participate"/></a><br/>
+            <a class="welcome" href="community/">Participate</a>
+         </td>
+      </tr>
+   </table>
+   <hr style="width:100%;margin-bottom:25px"/>
+   <div style="margin-right:auto;margin-left:auto;font-size:1.4em; text-align: center" >
+      <a href="/about/news">Latest news</a>
+      <a href="http://blog.noelios.com/feed/?cat=15314"><img src="/images/icons/16/feed-icon" alt="Syndication feed" style="margin:5px"/></a>
+   </div>
+   ${feed_restlet}
+</#global>
+<#include "/footer.ftl"/>

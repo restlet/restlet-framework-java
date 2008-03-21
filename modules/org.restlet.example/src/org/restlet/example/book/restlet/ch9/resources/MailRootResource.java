@@ -18,10 +18,14 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -39,8 +43,13 @@ public class MailRootResource extends BaseResource {
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        // TODO Auto-generated method stub
-        return super.represent(variant);
+        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        dataModel.put("currentUser", getCurrentUser());
+        TemplateRepresentation representation = new TemplateRepresentation(
+                "mailRoot.html", getFmcConfiguration(), dataModel, variant
+                        .getMediaType());
+
+        return representation;
     }
 
 }

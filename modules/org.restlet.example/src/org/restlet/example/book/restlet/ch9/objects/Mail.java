@@ -41,11 +41,8 @@ public class Mail extends BaseObject {
     /** Textual message of the mail. */
     private String message;
 
-    /** List of primary recipients of the mail. */
-    private List<Contact> primaryRecipients;
-
-    /** List of secondary recipients of the mail. */
-    private List<Contact> secondaryRecipients;
+    /** List of recipients of the mail. */
+    private List<Contact> recipients;
 
     /** Sender of the mail. */
     private User sender;
@@ -64,8 +61,7 @@ public class Mail extends BaseObject {
 
     public Mail() {
         super();
-        this.primaryRecipients = new ArrayList<Contact>();
-        this.secondaryRecipients = new ArrayList<Contact>();
+        this.recipients = new ArrayList<Contact>();
         this.tags = new ArrayList<String>();
     }
 
@@ -73,12 +69,8 @@ public class Mail extends BaseObject {
         return message;
     }
 
-    public List<Contact> getPrimaryRecipients() {
-        return primaryRecipients;
-    }
-
-    public List<Contact> getSecondaryRecipients() {
-        return secondaryRecipients;
+    public List<Contact> getRecipients() {
+        return recipients;
     }
 
     public User getSender() {
@@ -105,12 +97,8 @@ public class Mail extends BaseObject {
         this.message = message;
     }
 
-    public void setPrimaryRecipients(List<Contact> primaryRecipients) {
-        this.primaryRecipients = primaryRecipients;
-    }
-
-    public void setSecondaryRecipients(List<Contact> secondaryRecipients) {
-        this.secondaryRecipients = secondaryRecipients;
+    public void setRecipients(List<Contact> recipients) {
+        this.recipients = recipients;
     }
 
     public void setSender(User sender) {

@@ -1,0 +1,34 @@
+<#include "/header.ftl"/> <#global title="RMEP - REST Mail Exchange
+Protocol" /> <#global content>
+<h1>RMEP - REST Mail Exchange Protocol</h1>
+
+<form action="${resourceRef}" method="POST">
+	<table>
+		<tr>
+			<td>First name:</td>
+			<td><input type="text" name="firstName" value="${user.firstName}"></td>
+		</tr>
+		<tr>
+			<td>Last name:</td>
+			<td><input type="text" name="lastName" value="${user.lastName}"></td>
+		</tr>
+		<tr>
+			<td>Login:</td>
+			<td><input type="text" name="login" value="${user.login}"></td>
+		</tr>
+		<tr>
+			<td>Password:</td>
+			<td><input type="text" name="password" value="${user.password}"></td>
+		</tr>
+		<tr>
+			<td>Administrator?</td>
+			<td><#if user.administrator>yes<#else>no</#if></td>
+		</tr>
+	</table>
+	<input type="submit" name="updateUser" title="Submit modifications to the user" value="Update" onClick="this.form.action='${resourceRef}?method=put'">
+	<input type="button" name="deleteUser" title="Delete the user" value="Delete" onClick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+</form>
+<#list mailboxes as mailbox>
+	<a href="http://localhost:8585/rmep/mailboxes/${mailbox.id}" >${mailbox.nickname}</a>
+</#list>
+</#global> <#include "/footer.ftl"/>

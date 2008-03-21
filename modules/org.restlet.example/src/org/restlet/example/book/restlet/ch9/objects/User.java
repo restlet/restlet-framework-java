@@ -23,19 +23,41 @@ package org.restlet.example.book.restlet.ch9.objects;
  * 
  */
 public class User extends BaseObject {
+    
     /** Is the user an administrator? */
     private boolean administrator;
 
-    /** Name of the user. */
-    private String name;
+    /** First name of the user. */
+    private String firstName;
+
+    /** Last name of the user. */
+    private String lastName;
+
+    /** Login of the user. */
+    private String login;
+
+    /** Password of the user. */
+    private String password;
 
     public User() {
         super();
         this.administrator = false;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public boolean isAdministrator() {
@@ -46,8 +68,20 @@ public class User extends BaseObject {
         this.administrator = administrator;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 }

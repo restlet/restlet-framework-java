@@ -1,0 +1,42 @@
+<#include "/header.ftl"/>
+<#global title="RMEP - REST Mail Exchange Protocol" />
+<#global content>
+   <h1>RMEP - REST Mail Exchange Protocol</h1>
+
+<table>
+	<tr>
+		<td>Mailbox's name</td>
+		<td>Mailbox's owner</td>
+	</tr>
+	<#list mailboxes as mailbox> 
+	<tr>
+		<td><a href="${resourceRef}/${mailbox.id}">${mailbox.nickname}</a></td>
+		<td><a href="${resourceRef}/${mailbox.id}">${mailbox.owner.firstName} ${mailbox.owner.lastName}</a></td>
+	</tr>
+	</#list>
+</table>
+<#if currentUser.administrator>
+    <form action="${resourceRef}" method="POST">
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text" name="nickname"></td>
+			</tr>
+			<tr>
+				<td>Owner:</td>
+				<td>
+					<select name="ownerId">
+						<option value="">Choose the mailbox's owner</option>
+	<#list users as user> 
+						<option value="${user.id}">${user.firstName} ${user.lastName}</option>
+	</#list> 
+					</select>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" name="createMailbox" title="Create a new mailbox" value="Create a new mailbox">
+    </form>
+</#if>
+
+</#global>
+<#include "/footer.ftl"/>

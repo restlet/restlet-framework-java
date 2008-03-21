@@ -26,14 +26,13 @@ import java.util.List;
 import org.restlet.example.book.restlet.ch9.objects.Contact;
 import org.restlet.example.book.restlet.ch9.objects.Feed;
 import org.restlet.example.book.restlet.ch9.objects.Mail;
-import org.restlet.example.book.restlet.ch9.objects.MailBox;
+import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.example.book.restlet.ch9.objects.MailRoot;
 import org.restlet.example.book.restlet.ch9.objects.User;
 
 public class DomainObjects {
     public static void main(String[] args) {
         DomainObjects dom = new DomainObjects();
-        System.out.println(dom);
     }
 
     /** Root object at the top of the hierarchy. */
@@ -72,20 +71,20 @@ public class DomainObjects {
         // Add two users.
         User user = new User();
         user.setId("agathe_zeblues");
-        user.setName("Agathe Zeblues");
+        user.setFirstName("Agathe Zeblues");
         user.setAdministrator(false);
         mailRoot.getUsers().add(user);
 
         User admin = new User();
         admin.setId("admin");
-        admin.setName("admin");
+        admin.setFirstName("admin");
         admin.setAdministrator(true);
         mailRoot.getUsers().add(admin);
 
         // Add three mailboxes
-        mailRoot.getMailBoxes().add(createMailBox(user));
-        mailRoot.getMailBoxes().add(createMailBox(user));
-        mailRoot.getMailBoxes().add(createMailBox(admin));
+        mailRoot.getMailboxes().add(createMailbox(user));
+        mailRoot.getMailboxes().add(createMailbox(user));
+        mailRoot.getMailboxes().add(createMailbox(admin));
     }
 
     /**
@@ -95,28 +94,28 @@ public class DomainObjects {
      *                user that owns this mail box.
      * @return A new mailbox.
      */
-    private MailBox createMailBox(User owner) {
-        MailBox mailBox = new MailBox();
-        mailBox.setId(Integer.toString(mailboxSequence++));
-        mailBox.setOwner(owner);
+    private Mailbox createMailbox(User owner) {
+        Mailbox mailbox = new Mailbox();
+        mailbox.setId(Integer.toString(mailboxSequence++));
+        mailbox.setOwner(owner);
 
         // Create one feed
-        int index = Integer.parseInt(mailBox.getId()) % (mailTags.size());
-        mailBox.getFeeds().add(createFeed(Arrays.asList(mailTags.get(index))));
+        int index = Integer.parseInt(mailbox.getId()) % (mailTags.size());
+        mailbox.getFeeds().add(createFeed(Arrays.asList(mailTags.get(index))));
 
         // Create several contacts
         for (int i = 0; i < mailboxSequence; i++) {
-            mailBox.getContacts().add(createContact());
+            mailbox.getContacts().add(createContact());
         }
 
         for (int i = 0; i < mailboxSequence; i++) {
-            mailBox.getMails()
+            mailbox.getMails()
                     .add(
-                            createMail(owner, mailBox.getContacts(), mailBox
+                            createMail(owner, mailbox.getContacts(), mailbox
                                     .getFeeds()));
         }
 
-        return mailBox;
+        return mailbox;
     }
 
     /**
@@ -162,9 +161,9 @@ public class DomainObjects {
         Mail mail = new Mail();
         mail.setId(Integer.toString(mailSequence++));
         mail.setSender(sender);
-        mail.setPrimaryRecipients(new ArrayList<Contact>(recipients.subList(0,
+        mail.setRecipients(new ArrayList<Contact>(recipients.subList(0,
                 (Integer.parseInt(mail.getId())) % recipients.size() + 1)));
-        mail.setMessage("Cheers -" + sender.getName());
+        mail.setMessage("Cheers -" + sender.getFirstName());
         mail.setSendingDate(new Date());
         mail.setSubject("Hello!");
 
@@ -172,7 +171,8 @@ public class DomainObjects {
         mail.setStatus(mailStatuses[(Integer.parseInt(mail.getId()))
                 % mailStatuses.length]);
         // Set the list of tags according to the mail identifiant.
-        mail.setTags(new ArrayList<String>(mailTags.subList(0, (Integer.parseInt(mail.getId()))
+        mail.setTags(new ArrayList<String>(mailTags.subList(0, (Integer
+                .parseInt(mail.getId()))
                 % (mailTags.size() + 1))));
 
         // Add the mail to the appropriate feed.

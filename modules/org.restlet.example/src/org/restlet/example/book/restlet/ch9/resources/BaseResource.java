@@ -22,9 +22,12 @@ import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch9.Application;
+import org.restlet.example.book.restlet.ch9.RmepGuard;
+import org.restlet.example.book.restlet.ch9.dao.DAOFactory;
+import org.restlet.example.book.restlet.ch9.objects.User;
 import org.restlet.resource.Resource;
 
-import com.db4o.ObjectContainer;
+import freemarker.template.Configuration;
 
 /**
  * Base resource class that supports common behaviours or attributes shared by
@@ -37,9 +40,33 @@ public class BaseResource extends Resource {
         super(context, request, response);
     }
 
-    public ObjectContainer getDb4oContainer() {
+    /**
+     * Gives access to Data Access Objects.
+     * 
+     * @return a DAO factory.
+     */
+    public DAOFactory getDAOFactory() {
         Application application = (Application) getApplication();
-        return application.getDb4oContainer();
+        return application.getDAOFactory();
+    }
+
+    /**
+     * Returns the Freemarker's configuration object.
+     * 
+     * @return the Freemarker's configuration object.
+     */
+    public Configuration getFmcConfiguration() {
+        Application application = (Application) getApplication();
+        return application.getFmc();
+    }
+
+    /**
+     * Returns a User object representing the current user connected.
+     * 
+     * @return the current user connected.
+     */
+    public User getCurrentUser() {
+        return (User) getRequest().getAttributes().get(RmepGuard.CURRENT_USER);
     }
 
 }

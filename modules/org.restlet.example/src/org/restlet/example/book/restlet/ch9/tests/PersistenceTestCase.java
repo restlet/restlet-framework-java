@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 
 import org.restlet.example.book.restlet.ch9.objects.Contact;
 import org.restlet.example.book.restlet.ch9.objects.Mail;
-import org.restlet.example.book.restlet.ch9.objects.MailBox;
+import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.example.book.restlet.ch9.objects.MailRoot;
 import org.restlet.example.book.restlet.ch9.objects.User;
 
@@ -64,115 +64,115 @@ public class PersistenceTestCase extends TestCase {
         super.tearDown();
     }
 
-    public void testMailBoxes() {
-        assertEquals(mailRoot.getMailBoxes().size(), 3);
-        assertEquals(mailRoot.getMailBoxes().get(0).getOwner(), mailRoot
+    public void testMailboxes() {
+        assertEquals(mailRoot.getMailboxes().size(), 3);
+        assertEquals(mailRoot.getMailboxes().get(0).getOwner(), mailRoot
                 .getUsers().get(0));
-        assertTrue(mailRoot.getMailBoxes().get(2).getOwner().isAdministrator());
+        assertTrue(mailRoot.getMailboxes().get(2).getOwner().isAdministrator());
     }
 
-    public void testMailBox1() {
-        // Test first MailBox
-        MailBox mailBox = mailRoot.getMailBoxes().get(0);
-        assertEquals(mailBox.getContacts().size(), 2);
-        assertEquals(mailBox.getContacts().get(1).getName(), "contact-2");
-        assertEquals(mailBox.getMails().size(), 2);
+    public void testMailbox1() {
+        // Test first Mailbox
+        Mailbox mailbox = mailRoot.getMailboxes().get(0);
+        assertEquals(mailbox.getContacts().size(), 2);
+        assertEquals(mailbox.getContacts().get(1).getName(), "contact-2");
+        assertEquals(mailbox.getMails().size(), 2);
 
-        assertEquals(mailBox.getMails().get(0).getSender(), mailRoot.getUsers()
+        assertEquals(mailbox.getMails().get(0).getSender(), mailRoot.getUsers()
                 .get(0));
-        assertEquals(mailBox.getMails().get(1).getSender(), mailRoot.getUsers()
+        assertEquals(mailbox.getMails().get(1).getSender(), mailRoot.getUsers()
                 .get(0));
-        assertEquals(mailBox.getMails().get(0).getTags().get(0), "tag1");
-        assertEquals(mailBox.getMails().get(1).getTags().size(), 2);
+        assertEquals(mailbox.getMails().get(0).getTags().get(0), "tag1");
+        assertEquals(mailbox.getMails().get(1).getTags().size(), 2);
 
-        assertEquals(mailBox.getFeeds().get(0).getTags().get(0), "tag2");
-        assertEquals(mailBox.getMails().get(1).getTags().get(1), "tag2");
+        assertEquals(mailbox.getFeeds().get(0).getTags().get(0), "tag2");
+        assertEquals(mailbox.getMails().get(1).getTags().get(1), "tag2");
         // The unique feed of the first mail box does not contain the first
         // mail.
-        assertFalse(mailBox.getFeeds().get(0).getMails().contains(
-                mailBox.getMails().get(0)));
-        assertTrue(mailBox.getFeeds().get(0).getMails().contains(
-                mailBox.getMails().get(1)));
+        assertFalse(mailbox.getFeeds().get(0).getMails().contains(
+                mailbox.getMails().get(0)));
+        assertTrue(mailbox.getFeeds().get(0).getMails().contains(
+                mailbox.getMails().get(1)));
 
-        assertEquals(mailBox.getMails().get(0).getPrimaryRecipients().get(0),
-                mailBox.getContacts().get(0));
-        assertEquals(mailBox.getMails().get(0).getPrimaryRecipients().get(1),
-                mailBox.getContacts().get(1));
+        assertEquals(mailbox.getMails().get(0).getRecipients().get(0), mailbox
+                .getContacts().get(0));
+        assertEquals(mailbox.getMails().get(0).getRecipients().get(1), mailbox
+                .getContacts().get(1));
     }
 
-    public void testMailBox2() {
-        // Test second MailBox
-        MailBox mailBox = mailRoot.getMailBoxes().get(1);
-        assertEquals(mailBox.getContacts().size(), 3);
-        assertEquals(mailBox.getContacts().get(1).getName(), "contact-4");
-        assertEquals(mailBox.getMails().size(), 3);
+    public void testMailbox2() {
+        // Test second Mailbox
+        Mailbox mailbox = mailRoot.getMailboxes().get(1);
+        assertEquals(mailbox.getContacts().size(), 3);
+        assertEquals(mailbox.getContacts().get(1).getName(), "contact-4");
+        assertEquals(mailbox.getMails().size(), 3);
 
-        assertEquals(mailBox.getMails().get(0).getSender(), mailRoot.getUsers()
+        assertEquals(mailbox.getMails().get(0).getSender(), mailRoot.getUsers()
                 .get(0));
-        assertEquals(mailBox.getMails().get(1).getSender(), mailRoot.getUsers()
+        assertEquals(mailbox.getMails().get(1).getSender(), mailRoot.getUsers()
                 .get(0));
 
-        assertEquals(mailBox.getMails().get(0).getTags().get(0), "tag1");
-        assertTrue(mailBox.getMails().get(1).getTags().isEmpty());
+        assertEquals(mailbox.getMails().get(0).getTags().get(0), "tag1");
+        assertTrue(mailbox.getMails().get(1).getTags().isEmpty());
 
-        assertEquals(mailBox.getFeeds().get(0).getTags().get(0), "tag3");
-        assertEquals(mailBox.getFeeds().get(0).getMails().size(), 1);
-        assertTrue(mailBox.getMails().get(1).getTags().isEmpty());
+        assertEquals(mailbox.getFeeds().get(0).getTags().get(0), "tag3");
+        assertEquals(mailbox.getFeeds().get(0).getMails().size(), 1);
+        assertTrue(mailbox.getMails().get(1).getTags().isEmpty());
         // The unique feed of the second mail box contains the first
         // mail.
-        assertTrue(mailBox.getFeeds().get(0).getMails().contains(
-                mailBox.getMails().get(0)));
-        assertFalse(mailBox.getFeeds().get(0).getMails().contains(
-                mailBox.getMails().get(1)));
+        assertTrue(mailbox.getFeeds().get(0).getMails().contains(
+                mailbox.getMails().get(0)));
+        assertFalse(mailbox.getFeeds().get(0).getMails().contains(
+                mailbox.getMails().get(1)));
 
-        assertEquals(mailBox.getMails().get(0).getPrimaryRecipients().size(), 1);
-        assertEquals(mailBox.getMails().get(1).getPrimaryRecipients().size(), 2);
-        assertEquals(mailBox.getMails().get(0).getPrimaryRecipients().get(0),
-                mailBox.getContacts().get(0));
-        assertEquals(mailBox.getMails().get(1).getPrimaryRecipients().get(1),
-                mailBox.getContacts().get(1));
+        assertEquals(mailbox.getMails().get(0).getRecipients().size(), 1);
+        assertEquals(mailbox.getMails().get(1).getRecipients().size(), 2);
+        assertEquals(mailbox.getMails().get(0).getRecipients().get(0), mailbox
+                .getContacts().get(0));
+        assertEquals(mailbox.getMails().get(1).getRecipients().get(1), mailbox
+                .getContacts().get(1));
     }
 
-    public void testMailBox3() {
-        // Test third MailBox
-        MailBox mailBox = mailRoot.getMailBoxes().get(2);
+    public void testMailbox3() {
+        // Test third Mailbox
+        Mailbox mailbox = mailRoot.getMailboxes().get(2);
 
-        assertEquals(mailBox.getContacts().size(), 4);
-        assertEquals(mailBox.getContacts().get(1).getName(), "contact-7");
-        assertEquals(mailBox.getMails().size(), 4);
+        assertEquals(mailbox.getContacts().size(), 4);
+        assertEquals(mailbox.getContacts().get(1).getName(), "contact-7");
+        assertEquals(mailbox.getMails().size(), 4);
 
-        assertEquals(mailBox.getMails().get(0).getSender(), mailRoot.getUsers()
+        assertEquals(mailbox.getMails().get(0).getSender(), mailRoot.getUsers()
                 .get(1));
-        assertEquals(mailBox.getMails().get(1).getSender(), mailRoot.getUsers()
+        assertEquals(mailbox.getMails().get(1).getSender(), mailRoot.getUsers()
                 .get(1));
-        assertEquals(mailBox.getMails().get(3).getSender(), mailRoot.getUsers()
+        assertEquals(mailbox.getMails().get(3).getSender(), mailRoot.getUsers()
                 .get(1));
 
-        assertEquals(mailBox.getMails().get(0).getTags().get(0), "tag1");
-        assertEquals(mailBox.getMails().get(0).getTags().get(1), "tag2");
-        assertEquals(mailBox.getMails().get(1).getTags().get(2), "tag3");
-        assertTrue(mailBox.getMails().get(2).getTags().isEmpty());
+        assertEquals(mailbox.getMails().get(0).getTags().get(0), "tag1");
+        assertEquals(mailbox.getMails().get(0).getTags().get(1), "tag2");
+        assertEquals(mailbox.getMails().get(1).getTags().get(2), "tag3");
+        assertTrue(mailbox.getMails().get(2).getTags().isEmpty());
 
-        assertEquals(mailBox.getFeeds().get(0).getTags().get(0), "tag1");
-        assertEquals(mailBox.getFeeds().get(0).getMails().size(), 3);
+        assertEquals(mailbox.getFeeds().get(0).getTags().get(0), "tag1");
+        assertEquals(mailbox.getFeeds().get(0).getMails().size(), 3);
         // The unique feed of the third mail box does not contain the second
         // mail.
-        assertTrue(mailBox.getFeeds().get(0).getMails().contains(
-                mailBox.getMails().get(0)));
-        assertTrue(mailBox.getFeeds().get(0).getMails().contains(
-                mailBox.getMails().get(1)));
-        assertFalse(mailBox.getFeeds().get(0).getMails().contains(
-                mailBox.getMails().get(2)));
-        assertTrue(mailBox.getFeeds().get(0).getMails().contains(
-                mailBox.getMails().get(3)));
+        assertTrue(mailbox.getFeeds().get(0).getMails().contains(
+                mailbox.getMails().get(0)));
+        assertTrue(mailbox.getFeeds().get(0).getMails().contains(
+                mailbox.getMails().get(1)));
+        assertFalse(mailbox.getFeeds().get(0).getMails().contains(
+                mailbox.getMails().get(2)));
+        assertTrue(mailbox.getFeeds().get(0).getMails().contains(
+                mailbox.getMails().get(3)));
 
-        assertEquals(mailBox.getMails().get(1).getPrimaryRecipients().size(), 4);
-        assertEquals(mailBox.getMails().get(1).getPrimaryRecipients().get(3),
-                mailBox.getContacts().get(3));
+        assertEquals(mailbox.getMails().get(1).getRecipients().size(), 4);
+        assertEquals(mailbox.getMails().get(1).getRecipients().get(3), mailbox
+                .getContacts().get(3));
     }
 
     public void testDB1() {
-        MailBox mailBox = mailRoot.getMailBoxes().get(2);
+        Mailbox mailbox = mailRoot.getMailboxes().get(2);
 
         // Get the unique administrator of the db.
         User proto = new User();
@@ -181,9 +181,9 @@ public class PersistenceTestCase extends TestCase {
         ObjectSet<User> result = objectContainer.queryByExample(proto);
         assertEquals(result.size(), 1);
 
-        mailBox.getOwner().setAdministrator(false);
+        mailbox.getOwner().setAdministrator(false);
 
-        objectContainer.store(mailBox.getOwner());
+        objectContainer.store(mailbox.getOwner());
         objectContainer.commit();
         result = objectContainer.queryByExample(proto);
 
@@ -198,7 +198,7 @@ public class PersistenceTestCase extends TestCase {
             @Override
             public boolean match(Mail mail) {
                 boolean found = false;
-                for (Contact contact : mail.getPrimaryRecipients()) {
+                for (Contact contact : mail.getRecipients()) {
                     if ("contact-5".equals(contact.getName())) {
                         found = true;
                         break;
@@ -208,12 +208,12 @@ public class PersistenceTestCase extends TestCase {
                 return found;
             }
         };
-        // Set a MailBox predicate for future research.
-        Predicate<MailBox> mailboxByContactNamePredicate = new Predicate<MailBox>() {
+        // Set a Mailbox predicate for future research.
+        Predicate<Mailbox> mailboxByContactNamePredicate = new Predicate<Mailbox>() {
             @Override
-            public boolean match(MailBox mailBox) {
+            public boolean match(Mailbox mailbox) {
                 boolean found = false;
-                for (Contact contact : mailBox.getContacts()) {
+                for (Contact contact : mailbox.getContacts()) {
                     if ("contact-5".equals(contact.getName())) {
                         found = true;
                         break;
@@ -229,7 +229,7 @@ public class PersistenceTestCase extends TestCase {
         // Set of mails resulting from a request
         ObjectSet<Mail> mailList;
         // Set of mailboxess resulting from a request
-        ObjectSet<MailBox> mailBoxList;
+        ObjectSet<Mailbox> mailboxList;
 
         // Search contact by name.
         contactProto.setName("contact-4");
@@ -250,33 +250,33 @@ public class PersistenceTestCase extends TestCase {
         mailList = objectContainer.query(mailByContactNamePredicate);
         assertEquals(mailList.size(), 2);
 
-        mailBoxList = objectContainer.query(mailboxByContactNamePredicate);
-        assertEquals(mailBoxList.size(), 1);
+        mailboxList = objectContainer.query(mailboxByContactNamePredicate);
+        assertEquals(mailboxList.size(), 1);
 
         // Look for "contact-5" (2 contacts) and delete them.
         contactProto.setName("contact-5");
         contactList = objectContainer.queryByExample(contactProto);
         for (Contact contact2 : contactList) {
-            for (MailBox mailBox : mailBoxList) {
+            for (Mailbox mailbox : mailboxList) {
                 boolean found = false;
-                for (int i = 0; i < mailBox.getContacts().size() && !found; i++) {
-                    Contact contact3 = mailBox.getContacts().get(i);
+                for (int i = 0; i < mailbox.getContacts().size() && !found; i++) {
+                    Contact contact3 = mailbox.getContacts().get(i);
                     if (contact2.getId().equals(contact3.getId())) {
-                        mailBox.getContacts().remove(i);
+                        mailbox.getContacts().remove(i);
                         found = true;
                     }
                 }
-                objectContainer.store(mailBox);
+                objectContainer.store(mailbox);
             }
             for (Mail mail : mailList) {
                 List<Contact> list = new ArrayList<Contact>();
-                for (int i = 0; i < mail.getPrimaryRecipients().size(); i++) {
-                    Contact contact3 = mail.getPrimaryRecipients().get(i);
+                for (int i = 0; i < mail.getRecipients().size(); i++) {
+                    Contact contact3 = mail.getRecipients().get(i);
                     if (!contact2.getId().equals(contact3.getId())) {
                         list.add(contact3);
                     }
                 }
-                mail.setPrimaryRecipients(list);
+                mail.setRecipients(list);
                 objectContainer.store(mail);
             }
 
@@ -288,8 +288,8 @@ public class PersistenceTestCase extends TestCase {
         contactList = objectContainer.queryByExample(contactProto);
         assertTrue(contactList.isEmpty());
 
-        mailBoxList = objectContainer.query(mailboxByContactNamePredicate);
-        assertTrue(mailBoxList.isEmpty());
+        mailboxList = objectContainer.query(mailboxByContactNamePredicate);
+        assertTrue(mailboxList.isEmpty());
 
         mailList = objectContainer.query(mailByContactNamePredicate);
         assertTrue(mailList.isEmpty());

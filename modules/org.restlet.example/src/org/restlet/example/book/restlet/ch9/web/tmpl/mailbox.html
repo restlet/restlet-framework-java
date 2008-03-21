@@ -1,0 +1,47 @@
+<#include "/header.ftl"/>
+<#global title="RMEP - REST Mail Exchange Protocol" />
+<#global content>
+   <h1>RMEP - REST Mail Exchange Protocol</h1>
+
+<form action="${resourceRef}" method="POST">
+	<table>
+		<tr>
+			<td>Nickname:</td>
+			<td><input type="text" name="nickname" value="${mailbox.nickname}"></td>
+		</tr>
+	</table>
+	<input type="submit" name="updateMailbox" title="Submit modifications to the mailbox" value="Update" onClick="this.form.action='${resourceRef}?method=put'">
+	<input type="button" name="deleteMailbox" title="Delete the mailbox" value="Delete" onClick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+</form>
+<table>
+	<tr>
+		<td>Mails</td>
+	</tr>
+	<#list mailbox.mails as mail> 
+	<tr>
+		<td><a href="${resourceRef}/${mailbox.id}/mails/${mail.id}">${mail.subject}</a></td>
+	</tr>
+	</#list> 
+</table>
+<table>
+	<tr>
+		<td>Contacts</td>
+	</tr>
+	<#list mailbox.contacts as contact> 
+	<tr>
+		<td><a href="${resourceRef}/${mailbox.id}/contacts/${contact.id}">${contact.name}</a></td>
+	</tr>
+	</#list> 
+</table>
+<table>
+	<tr>
+		<td>Feeds</td>
+	</tr>
+	<#list mailbox.feeds as feed> 
+	<tr>
+		<td><a href="${resourceRef}/${mailbox.id}/feeds/${feed.id}">${feed.nickname}</a></td>
+	</tr>
+	</#list> 
+</table>
+</#global>
+<#include "/footer.ftl"/>

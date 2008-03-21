@@ -18,10 +18,17 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.restlet.ch9.objects.Mail;
+import org.restlet.example.book.restlet.ch9.objects.Mailbox;
+import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -32,9 +39,25 @@ import org.restlet.resource.Variant;
  */
 public class MailResource extends BaseResource {
 
+    /** The mail represented by this resource. */
+    private Mail mail;
+
+    /** The container of this mail. */
+    private Mailbox mailbox;
+
     public MailResource(Context context, Request request, Response response) {
         super(context, request, response);
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
+        String mailboxId = (String) request.getAttributes().get("mailboxId");
+        mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
+
+        if (mailbox != null) {
+            String mailId = (String) request.getAttributes().get("mailId");
+            mail = getDAOFactory().getMailDAO().getMailById(mailId);
+
+            if (mail != null) {
+                getVariants().add(new Variant(MediaType.TEXT_HTML));
+            }
+        }
     }
 
     @Override
@@ -49,21 +72,42 @@ public class MailResource extends BaseResource {
 
     @Override
     public void removeRepresentations() throws ResourceException {
-        // TODO Auto-generated method stub
-        super.removeRepresentations();
+        getDAOFactory().getMailDAO().deleteMail(mail);
+        // TODO revenir à la première page de l'application
+        getResponse().redirectSeeOther("");
     }
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        // TODO Auto-generated method stub
-        return super.represent(variant);
+        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        dataModel.put("currentUser", getCurrentUser());
+        dataModel.put("mailbox", mailbox);
+        dataModel.put("mail", mail);
+        dataModel.put("resourceRef", getRequest().getResourceRef());
+
+        TemplateRepresentation representation = new TemplateRepresentation(
+                "mail.html", getFmcConfiguration(), dataModel, variant
+                        .getMediaType());
+
+        return representation;
     }
 
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {
-        // TODO Auto-generated method stub
-        super.storeRepresentation(entity);
+        Form form = new Form(entity);
+        mail.setMessage(form.getFirstValue("message"));
+        // TODO comment figurer la liste des destinataires?
+        // mail.setRecipients(form.getFirstValue("recipients"));
+        // TODO comment gérer le statut? + la date d'envoi?
+        mail.setStatus(form.getFirstValue("status"));
+        // TODO comment gérer le statut?
+        mail.setSubject(form.getFirstValue("subject"));
+        // TODO comment gérer les tags?
+        // mail.setTags(form.getFirstValue("tags"));
+
+        getDAOFactory().getMailDAO().updateMail(mail);
+        getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 
 }

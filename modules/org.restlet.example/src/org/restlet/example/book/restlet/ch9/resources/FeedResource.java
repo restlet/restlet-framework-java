@@ -18,10 +18,17 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.restlet.ch9.objects.Feed;
+import org.restlet.example.book.restlet.ch9.objects.Mailbox;
+import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -32,9 +39,27 @@ import org.restlet.resource.Variant;
  */
 public class FeedResource extends BaseResource {
 
+    /** The feed represented by this resource. */
+    private Feed feed;
+
+    /** The container of this mail. */
+    private Mailbox mailbox;
+
     public FeedResource(Context context, Request request, Response response) {
         super(context, request, response);
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
+        String mailboxId = (String) request.getAttributes().get("mailboxId");
+        mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
+
+        if (mailbox != null) {
+            String feedId = (String) request.getAttributes().get("feedId");
+            feed = getDAOFactory().getFeedDAO().getFeedById(feedId);
+
+            if (feed != null) {
+                getVariants().add(new Variant(MediaType.TEXT_HTML));
+                getVariants().add(new Variant(MediaType.APPLICATION_ATOM_XML));
+            }
+        }
+
     }
 
     @Override
@@ -49,21 +74,41 @@ public class FeedResource extends BaseResource {
 
     @Override
     public void removeRepresentations() throws ResourceException {
-        // TODO Auto-generated method stub
-        super.removeRepresentations();
+        getDAOFactory().getFeedDAO().deleteFeed(feed);
+        // TODO revenir à la première page de l'application
+        getResponse().redirectSeeOther("");
     }
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        // TODO Auto-generated method stub
-        return super.represent(variant);
+        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        dataModel.put("currentUser", getCurrentUser());
+        dataModel.put("mailbox", mailbox);
+        dataModel.put("feed", feed);
+        dataModel.put("resourceRef", getRequest().getResourceRef());
+
+        Representation representation = null;
+        MediaType mediaType = variant.getMediaType();
+        if (MediaType.TEXT_HTML.equals(mediaType)) {
+            representation = new TemplateRepresentation("feed.html",
+                    getFmcConfiguration(), dataModel, variant.getMediaType());
+        } else if (MediaType.APPLICATION_ATOM_XML.equals(mediaType)) {
+//      <link rel="alternate"  type="application/rss+xml" href="http://blog.noelios.com/feed/?cat=15314" title="Restlet latest news" />
+        }
+
+        return representation;
     }
 
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {
-        // TODO Auto-generated method stub
-        super.storeRepresentation(entity);
+        Form form = new Form(entity);
+        feed.setNickname(form.getFirstValue("nickname"));
+        // TODO comment gérer les tags?
+        // feed.setTags(form.getFirstValue("tags"));
+
+        getDAOFactory().getFeedDAO().updateFeed(feed);
+        getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 
 }

@@ -18,10 +18,18 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.restlet.ch9.objects.Mailbox;
+import org.restlet.example.book.restlet.ch9.objects.User;
+import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -31,9 +39,22 @@ import org.restlet.resource.Variant;
  * 
  */
 public class UserResource extends BaseResource {
+
+    /** The user represented by this resource. */
+    private User user;
+
+    /** The list of mailboxes owned by this user. */
+    private List<Mailbox> mailboxes;
+
     public UserResource(Context context, Request request, Response response) {
         super(context, request, response);
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
+        String userId = (String) request.getAttributes().get("userId");
+        user = getDAOFactory().getUserDAO().getUserById(userId);
+
+        if (user != null) {
+            getVariants().add(new Variant(MediaType.TEXT_HTML));
+            mailboxes = getDAOFactory().getUserDAO().getMailboxes(user);
+        }
     }
 
     @Override
@@ -48,21 +69,39 @@ public class UserResource extends BaseResource {
 
     @Override
     public void removeRepresentations() throws ResourceException {
-        // TODO Auto-generated method stub
-        super.removeRepresentations();
+        getDAOFactory().getUserDAO().deleteUser(user);
+        // TODO revenir à la première page de l'application
+        getResponse().redirectSeeOther("");
     }
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        // TODO Auto-generated method stub
-        return super.represent(variant);
+        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        dataModel.put("currentUser", getCurrentUser());
+        dataModel.put("user", user);
+        dataModel.put("mailboxes", mailboxes);
+        dataModel.put("resourceRef", getRequest().getResourceRef());
+
+        TemplateRepresentation representation = new TemplateRepresentation(
+                "user.html", getFmcConfiguration(), dataModel, variant
+                        .getMediaType());
+
+        return representation;
     }
 
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {
-        // TODO Auto-generated method stub
-        super.storeRepresentation(entity);
+        Form form = new Form(entity);
+        user
+                .setAdministrator(form.getFirstValue("administrator") == null ? user
+                        .isAdministrator()
+                        : true);
+        user.setFirstName(form.getFirstValue("firstName"));
+        user.setLastName(form.getFirstValue("lastName"));
+        user.setLogin(form.getFirstValue("login"));
+        user.setPassword(form.getFirstValue("password"));
+        getDAOFactory().getUserDAO().updateUser(user);
+        getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
-
 }

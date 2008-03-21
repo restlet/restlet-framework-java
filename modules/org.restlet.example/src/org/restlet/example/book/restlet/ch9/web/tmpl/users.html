@@ -1,0 +1,37 @@
+<#include "/header.ftl"/>
+<#global title="RMEP - REST Mail Exchange Protocol" />
+<#global content>
+   <h1>RMEP - REST Mail Exchange Protocol</h1>
+
+	<#list users as user> 
+		<a href="${resourceRef}/${user.id}">${user.firstName} ${user.lastName}</a>
+	</#list>
+<#if currentUser.administrator>
+    <form action="${resourceRef}" method="POST">
+		<table>
+			<tr>
+				<td>First name:</td>
+				<td><input type="text" name="firstName"></td>
+			</tr>
+			<tr>
+				<td>Last name:</td>
+				<td><input type="text" name="lastName"></td>
+			</tr>
+			<tr>
+				<td>Login:</td>
+				<td><input type="text" name="login"></td>
+			</tr>
+			<tr>
+				<td>Password:</td>
+				<td><input type="text" name="password"></td>
+			</tr>
+			<tr>
+				<td>Administrator?</td>
+				<td><input type="checkbox" name="administrator"></td>
+			</tr>
+		</table>
+		<input type="submit" name="createUser" title="Create a new User" value="Create a new User">
+    </form>
+</#if>
+</#global>
+<#include "/footer.ftl"/>
