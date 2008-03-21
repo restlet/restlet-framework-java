@@ -108,7 +108,7 @@ public class MailResource extends BaseResource {
                 String tag = iterator.next();
                 builder.append(tag);
                 if (iterator.hasNext()) {
-                    builder.append(", ");
+                    builder.append(" ");
                 }
             }
             dataModel.put("tags", builder.toString());

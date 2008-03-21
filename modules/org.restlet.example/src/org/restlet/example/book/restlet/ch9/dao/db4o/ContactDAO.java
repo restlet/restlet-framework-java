@@ -9,14 +9,10 @@ import com.db4o.ObjectSet;
  * DAO that manages the persistence of Contact objects.
  * 
  */
-public class ContactDAO {
-
-    /** Db4o object container. */
-    private ObjectContainer objectContainer;
+public class ContactDAO extends Db4oDAO {
 
     public ContactDAO(ObjectContainer objectContainer) {
-        super();
-        this.objectContainer = objectContainer;
+        super(objectContainer);
     }
 
     /**

@@ -18,8 +18,10 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -29,6 +31,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch9.objects.Feed;
+import org.restlet.example.book.restlet.ch9.objects.Mail;
 import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
@@ -44,6 +47,9 @@ public class FeedResource extends BaseResource {
     /** The feed represented by this resource. */
     private Feed feed;
 
+    /** The list of mails tagged by this feed. */
+    private List<Mail> mails;
+
     /** The parent mailbox. */
     private Mailbox mailbox;
 
@@ -57,6 +63,15 @@ public class FeedResource extends BaseResource {
             feed = getDAOFactory().getFeedDAO().getFeedById(feedId);
 
             if (feed != null) {
+                mails = new ArrayList<Mail>();
+                if (feed.getTags() != null) {
+                    for (Mail mail : mailbox.getMails()) {
+                        if (mail.getTags() != null
+                                && mail.getTags().containsAll(feed.getTags())) {
+                            mails.add(mail);
+                        }
+                    }
+                }
                 getVariants().add(new Variant(MediaType.TEXT_HTML));
                 getVariants().add(new Variant(MediaType.APPLICATION_ATOM_XML));
             }
@@ -87,6 +102,7 @@ public class FeedResource extends BaseResource {
         dataModel.put("currentUser", getCurrentUser());
         dataModel.put("mailbox", mailbox);
         dataModel.put("feed", feed);
+        dataModel.put("mails", mails);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
@@ -97,7 +113,7 @@ public class FeedResource extends BaseResource {
                 String tag = iterator.next();
                 builder.append(tag);
                 if (iterator.hasNext()) {
-                    builder.append(", ");
+                    builder.append(" ");
                 }
             }
             dataModel.put("tags", builder.toString());
@@ -106,12 +122,21 @@ public class FeedResource extends BaseResource {
         Representation representation = null;
         MediaType mediaType = variant.getMediaType();
         if (MediaType.TEXT_HTML.equals(mediaType)) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("<link ");
+            builder.append("rel=\"alternate\" ");
+            builder.append("type=\"application/rss+xml\" ");
+            builder.append("href=\"");
+            builder.append(getRequest().getResourceRef());
+            builder.append("\" ");
+            builder.append("title=\"Test feed\"");
+            builder.append("/>");
+            dataModel.put("feedHeader", builder.toString());
+
             representation = new TemplateRepresentation("feed.html",
                     getFmcConfiguration(), dataModel, variant.getMediaType());
         } else if (MediaType.APPLICATION_ATOM_XML.equals(mediaType)) {
-            // <link rel="alternate" type="application/rss+xml"
-            // href="http://blog.noelios.com/feed/?cat=15314" title="Restlet
-            // latest news" />
+
         }
 
         return representation;

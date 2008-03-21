@@ -9,14 +9,10 @@ import com.db4o.ObjectSet;
  * DAO that manages the persistence of Feed objects.
  * 
  */
-public class FeedDAO {
-
-    /** Db4o object container. */
-    private ObjectContainer objectContainer;
+public class FeedDAO extends Db4oDAO {
 
     public FeedDAO(ObjectContainer objectContainer) {
-        super();
-        this.objectContainer = objectContainer;
+        super(objectContainer);
     }
 
     /**

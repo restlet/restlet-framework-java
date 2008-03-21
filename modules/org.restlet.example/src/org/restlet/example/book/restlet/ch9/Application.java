@@ -71,6 +71,7 @@ public class Application extends org.restlet.Application {
         /** Open and keep the db4o object container. */
         Configuration config = Db4o.configure();
         config.updateDepth(2);
+        config.activationDepth(10);
         this.daoFactory = new DAOFactory(Db4o.openFile(System
                 .getProperty("user.home")
                 + File.separator + "rmep.dbo"));

@@ -9,11 +9,23 @@
 		</tr>
 		<tr>
 			<td>tags</td>
-			<td><input type="text" name="tags" value="${tags}"></td>
+			<td><input type="text" name="tags" value="${tags!""}"></td>
 		</tr>
 	</table>
 	<input type="submit" name="updateFeed" title="Submit modifications to the feed" value="Update" onClick="this.form.action='${resourceRef}?method=put'">
 	<input type="button" name="deleteFeed" title="Delete the feed" value="Delete" onClick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
 </form>
+
+<table>
+	<tr>
+		<td>Mails</td>
+	</tr>
+	<#list mails as mail> 
+	<tr>
+		<td><a href="${rootRef}/mailboxes/${mailbox.id}/mails/${mail.id}">${mail.subject}</a></td>
+	</tr>
+	</#list> 
+</table>
+
 </#global>
 <#include "/footer.ftl"/>

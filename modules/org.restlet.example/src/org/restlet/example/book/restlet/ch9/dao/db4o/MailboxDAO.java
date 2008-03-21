@@ -16,14 +16,10 @@ import com.db4o.ObjectSet;
  * DAO that manages the persistence of Mailbox objects.
  * 
  */
-public class MailboxDAO {
-
-    /** Db4o object container. */
-    private ObjectContainer objectContainer;
+public class MailboxDAO extends Db4oDAO {
 
     public MailboxDAO(ObjectContainer objectContainer) {
-        super();
-        this.objectContainer = objectContainer;
+        super(objectContainer);
     }
 
     /**

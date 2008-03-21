@@ -15,14 +15,10 @@ import com.db4o.query.Predicate;
  * DAO that manages the persistence of User objects.
  * 
  */
-public class UserDAO {
-
-    /** Db4o object container. */
-    private ObjectContainer objectContainer;
+public class UserDAO extends Db4oDAO {
 
     public UserDAO(ObjectContainer objectContainer) {
-        super();
-        this.objectContainer = objectContainer;
+        super(objectContainer);
     }
 
     /**
