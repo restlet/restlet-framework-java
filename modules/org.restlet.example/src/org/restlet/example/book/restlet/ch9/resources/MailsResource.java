@@ -40,7 +40,7 @@ import org.restlet.resource.Variant;
  */
 public class MailsResource extends BaseResource {
 
-    /** The container of the list of mails. */
+    /** The parent mailbox. */
     private Mailbox mailbox;
 
     /** The list of mails. */

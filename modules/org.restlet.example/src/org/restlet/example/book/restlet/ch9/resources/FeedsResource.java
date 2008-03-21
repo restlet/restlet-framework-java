@@ -40,10 +40,10 @@ import org.restlet.resource.Variant;
  */
 public class FeedsResource extends BaseResource {
 
-    /** The container of the list of feeds. */
+    /** The parent mailbox. */
     private Mailbox mailbox;
 
-    /** The list of mails. */
+    /** The list of feeds. */
     private List<Feed> feeds;
 
     public FeedsResource(Context context, Request request, Response response) {

@@ -42,7 +42,7 @@ public class ContactResource extends BaseResource {
     /** The contact represented by this resource. */
     private Contact contact;
 
-    /** The container of this mail. */
+    /** The parent mailbox. */
     private Mailbox mailbox;
 
     public ContactResource(Context context, Request request, Response response) {

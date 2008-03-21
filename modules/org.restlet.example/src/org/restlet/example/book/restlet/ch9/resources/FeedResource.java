@@ -42,7 +42,7 @@ public class FeedResource extends BaseResource {
     /** The feed represented by this resource. */
     private Feed feed;
 
-    /** The container of this mail. */
+    /** The parent mailbox. */
     private Mailbox mailbox;
 
     public FeedResource(Context context, Request request, Response response) {

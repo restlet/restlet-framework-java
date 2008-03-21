@@ -41,10 +41,10 @@ import org.restlet.resource.Variant;
  */
 public class ContactsResource extends BaseResource {
 
-    /** The container of the list of contacts. */
+    /** The parent mailbox. */
     private Mailbox mailbox;
 
-    /** The list of mails. */
+    /** The list of contacts. */
     private List<Contact> contacts;
 
     public ContactsResource(Context context, Request request, Response response) {

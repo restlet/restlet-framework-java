@@ -42,7 +42,7 @@ public class MailResource extends BaseResource {
     /** The mail represented by this resource. */
     private Mail mail;
 
-    /** The container of this mail. */
+    /** The parent mailbox. */
     private Mailbox mailbox;
 
     public MailResource(Context context, Request request, Response response) {
