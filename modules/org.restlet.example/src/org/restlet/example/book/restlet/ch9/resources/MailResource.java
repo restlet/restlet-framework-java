@@ -18,6 +18,10 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -26,6 +30,7 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.restlet.ch9.objects.Contact;
 import org.restlet.example.book.restlet.ch9.objects.Mail;
 import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.ext.freemarker.TemplateRepresentation;
@@ -82,7 +87,42 @@ public class MailResource extends BaseResource {
         Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
         dataModel.put("mailbox", mailbox);
+
+        // TODO ameliorer ceci.
+        if (mail.getRecipients() != null) {
+            StringBuilder builder = new StringBuilder();
+            for (Iterator<Contact> iterator = mail.getRecipients().iterator(); iterator
+                    .hasNext();) {
+                Contact contact = iterator.next();
+                builder.append(contact.getName());
+                if (iterator.hasNext()) {
+                    builder.append(", ");
+                }
+            }
+            dataModel.put("recipients", builder.toString());
+        }
+        if (mail.getTags() != null) {
+            StringBuilder builder = new StringBuilder();
+            for (Iterator<String> iterator = mail.getTags().iterator(); iterator
+                    .hasNext();) {
+                String tag = iterator.next();
+                builder.append(tag);
+                if (iterator.hasNext()) {
+                    builder.append(", ");
+                }
+            }
+            dataModel.put("tags", builder.toString());
+        }
         dataModel.put("mail", mail);
+
+        List<String> statuses = new ArrayList<String>();
+        statuses.add(Mail.STATUS_SENDING);
+        statuses.add(Mail.STATUS_DRAFT);
+        statuses.add(Mail.STATUS_SENT);
+        statuses.add(Mail.STATUS_RECEIVING);
+        statuses.add(Mail.STATUS_RECEIVED);
+        dataModel.put("statuses", statuses);
+
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
@@ -97,15 +137,21 @@ public class MailResource extends BaseResource {
     public void storeRepresentation(Representation entity)
             throws ResourceException {
         Form form = new Form(entity);
+        mail.setSubject(form.getFirstValue("subject"));
         mail.setMessage(form.getFirstValue("message"));
-        // TODO comment figurer la liste des destinataires?
-        // mail.setRecipients(form.getFirstValue("recipients"));
         // TODO comment gérer le statut? + la date d'envoi?
         mail.setStatus(form.getFirstValue("status"));
-        // TODO comment gérer le statut?
-        mail.setSubject(form.getFirstValue("subject"));
-        // TODO comment gérer les tags?
-        // mail.setTags(form.getFirstValue("tags"));
+
+        String[] recipientsArray = form.getFirstValue("recipients").split(", ");
+        List<Contact> recipients = new ArrayList<Contact>();
+        for (int i = 0; i < recipientsArray.length; i++) {
+            String string = recipientsArray[i];
+            Contact contact = new Contact();
+            contact.setName(string);
+            recipients.add(contact);
+        }
+        mail.setRecipients(recipients);
+        mail.setTags(Arrays.asList(form.getFirstValue("tags").split(" ")));
 
         getDAOFactory().getMailboxDAO().updateMail(mailbox, mail);
         getResponse().redirectSeeOther(getRequest().getResourceRef());

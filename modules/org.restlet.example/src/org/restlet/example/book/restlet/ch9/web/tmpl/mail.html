@@ -1,6 +1,37 @@
 <#include "/header.ftl"/>
 <#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-
+<form action="${resourceRef}?method=put" method="POST">
+	<table>
+		<tr>
+			<td>Subject:</td>
+			<td><input type="text" name="subject" value="${mail.subject!"(no subject)"}"></td>
+		</tr>
+		<tr>
+			<td>Status:</td>
+			<td>
+				<select name="status">
+	<#list statuses as status> 
+					<option value="${status}" <#if status==mail.status>selected</#if>>${status}</option>
+	</#list> 
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Recipients:</td>
+			<td><input type="text" name="recipients" value="${recipients!""}"></td>
+		</tr>
+		<tr>
+			<td>Body:</td>
+			<td><textarea name="message">${mail.message!""}</textarea></td>
+		</tr>
+		<tr>
+			<td>Tags:</td>
+			<td><input type="text" name="tags" value="${tags!""}"></td>
+		</tr>
+	</table>
+	<input type="submit" name="updateMail" title="Submit modifications to the mail" value="Update" onClick="this.form.action='${resourceRef}?method=put'">
+	<input type="button" name="deleteMail" title="Delete the mail" value="Delete" onClick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+</form>
 </#global>
 <#include "/footer.ftl"/>

@@ -1,6 +1,19 @@
 <#include "/header.ftl"/>
 <#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-
+<form action="${resourceRef}?method=put" method="POST">
+	<table>
+		<tr>
+			<td>Name:</td>
+			<td><input type="text" name="nickname" value="${feed.nickname}"></td>
+		</tr>
+		<tr>
+			<td>tags</td>
+			<td><input type="text" name="tags" value="${tags}"></td>
+		</tr>
+	</table>
+	<input type="submit" name="updateFeed" title="Submit modifications to the feed" value="Update" onClick="this.form.action='${resourceRef}?method=put'">
+	<input type="button" name="deleteFeed" title="Delete the feed" value="Delete" onClick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+</form>
 </#global>
 <#include "/footer.ftl"/>

@@ -1,6 +1,28 @@
 <#include "/header.ftl"/>
 <#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-
+<table>
+	<tr>
+		<td>Feeds</td>
+	</tr>
+<#list feeds as feed> 
+	<tr>
+		<td><a href="${resourceRef}/${feed.id}">${feed.nickname}</a></td>
+	</tr>
+</#list>
+</table>
+<form action="${resourceRef}" method="POST">
+	<table>
+		<tr>
+			<td>Name:</td>
+			<td><input type="text" name="nickname"></td>
+		</tr>
+		<tr>
+			<td>tags</td>
+			<td><input type="text" name="tags"></td>
+		</tr>
+	</table>
+	<input type="submit" name="createFeed" title="Create a new Feed" value="Create a new Feed">
+</form>
 </#global>
 <#include "/footer.ftl"/>

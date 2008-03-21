@@ -10,7 +10,7 @@
       <div id="layout">
          <div id="header">
             <h1>
-            	<a href="/"><img src="/rmep/images/rmep" alt="Logo RMEP" /></a>
+            	<a href="${rootRef}"><img src="/rmep/images/rmep" alt="Logo RMEP" /></a>
             	RMEP - REST Mail Exchange Protocol
             </h1>
          </div>

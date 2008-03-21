@@ -18,11 +18,13 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -60,9 +62,12 @@ public class FeedsResource extends BaseResource {
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
-        Feed Feed = new Feed();
-        Feed = getDAOFactory().getMailboxDAO().createFeed(mailbox, Feed);
-        Reference feedRef = new Reference(getRequest().getResourceRef(), Feed
+        Form form = new Form(entity);
+        Feed feed = new Feed();
+        feed.setNickname(form.getFirstValue("nickname"));
+        feed.setTags(Arrays.asList(form.getFirstValue("tags").split(" ")));
+        feed = getDAOFactory().getMailboxDAO().createFeed(mailbox, feed);
+        Reference feedRef = new Reference(getRequest().getResourceRef(), feed
                 .getId());
         getResponse().redirectSeeOther(feedRef);
     }

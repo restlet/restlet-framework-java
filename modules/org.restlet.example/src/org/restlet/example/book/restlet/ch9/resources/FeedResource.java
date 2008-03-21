@@ -18,6 +18,8 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -88,13 +90,28 @@ public class FeedResource extends BaseResource {
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
+        if (feed.getTags() != null) {
+            StringBuilder builder = new StringBuilder();
+            for (Iterator<String> iterator = feed.getTags().iterator(); iterator
+                    .hasNext();) {
+                String tag = iterator.next();
+                builder.append(tag);
+                if (iterator.hasNext()) {
+                    builder.append(", ");
+                }
+            }
+            dataModel.put("tags", builder.toString());
+        }
+
         Representation representation = null;
         MediaType mediaType = variant.getMediaType();
         if (MediaType.TEXT_HTML.equals(mediaType)) {
             representation = new TemplateRepresentation("feed.html",
                     getFmcConfiguration(), dataModel, variant.getMediaType());
         } else if (MediaType.APPLICATION_ATOM_XML.equals(mediaType)) {
-//      <link rel="alternate"  type="application/rss+xml" href="http://blog.noelios.com/feed/?cat=15314" title="Restlet latest news" />
+            // <link rel="alternate" type="application/rss+xml"
+            // href="http://blog.noelios.com/feed/?cat=15314" title="Restlet
+            // latest news" />
         }
 
         return representation;
@@ -105,8 +122,7 @@ public class FeedResource extends BaseResource {
             throws ResourceException {
         Form form = new Form(entity);
         feed.setNickname(form.getFirstValue("nickname"));
-        // TODO comment gérer les tags?
-        // feed.setTags(form.getFirstValue("tags"));
+        feed.setTags(Arrays.asList(form.getFirstValue("tags").split(" ")));
 
         getDAOFactory().getMailboxDAO().updateFeed(mailbox, feed);
         getResponse().redirectSeeOther(getRequest().getResourceRef());

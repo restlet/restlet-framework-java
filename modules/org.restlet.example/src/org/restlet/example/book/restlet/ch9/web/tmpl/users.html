@@ -1,9 +1,16 @@
 <#include "/header.ftl"/>
 <#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-	<#list users as user> 
-		<a href="${resourceRef}/${user.id}">${user.firstName} ${user.lastName}</a>
-	</#list>
+<table>
+	<tr>
+		<td>Users</td>
+	</tr>
+<#list users as user> 
+	<tr>
+		<td><a href="${resourceRef}/${user.id}">${user.firstName} ${user.lastName}</a></td>
+	</tr>
+</#list>
+</table>
 <#if currentUser.administrator>
     <form action="${resourceRef}" method="POST">
 		<table>

@@ -57,8 +57,19 @@ public class MailboxResource extends BaseResource {
     }
 
     @Override
+    public boolean allowPost() {
+        return true;
+    }
+
+    @Override
     public boolean allowPut() {
         return true;
+    }
+
+    @Override
+    public void acceptRepresentation(Representation entity)
+            throws ResourceException {
+        // TODO reception of a new mail.
     }
 
     @Override

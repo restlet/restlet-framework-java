@@ -1,6 +1,42 @@
 <#include "/header.ftl"/>
 <#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-
+<table>
+	<tr>
+		<td></td>
+		<td>From</td>
+		<td>Subject</td>
+		<td>Status</td>
+	</tr>
+<#list mails as mail> 
+	<tr>
+		<td><a href="${resourceRef}/${mail.id}">=></a></td>
+		<td>${mail.sender.firstName} ${mail.sender.lastName}</td>
+		<td>${mail.subject!""}</td>
+		<td>${mail.status}</td>
+	</tr>
+</#list>
+</table>
+<form action="${resourceRef}" method="POST">
+	<table>
+		<tr>
+			<td>Subject:</td>
+			<td><input type="text" name="subject"></td>
+		</tr>
+		<tr>
+			<td>recipients</td>
+			<td><input type="text" name="recipients"></td>
+		</tr>
+		<tr>
+			<td>Body</td>
+			<td><textarea name="message"></textarea></td>
+		</tr>
+		<tr>
+			<td>tags</td>
+			<td><input type="text" name="tags"></td>
+		</tr>
+	</table>
+	<input type="submit" name="createMail" title="Create a new Mail" value="Create a new Mail">
+</form>
 </#global>
 <#include "/footer.ftl"/>

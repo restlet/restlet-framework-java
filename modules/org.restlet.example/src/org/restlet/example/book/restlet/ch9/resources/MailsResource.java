@@ -18,15 +18,19 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.restlet.ch9.objects.Contact;
 import org.restlet.example.book.restlet.ch9.objects.Mail;
 import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.ext.freemarker.TemplateRepresentation;
@@ -60,9 +64,26 @@ public class MailsResource extends BaseResource {
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
+        Form form = new Form(entity);
+
         Mail mail = new Mail();
         mail.setSender(getCurrentUser());
         mail.setStatus(Mail.STATUS_DRAFT);
+        mail.setSubject(form.getFirstValue("subject"));
+        mail.setMessage(form.getFirstValue("message"));
+
+        String[] recipientsArray = form.getFirstValue("recipients").split(" ");
+        List<Contact> recipients = new ArrayList<Contact>();
+        for (int i = 0; i < recipientsArray.length; i++) {
+            String string = recipientsArray[i];
+            Contact contact = new Contact();
+            contact.setName(string);
+            recipients.add(contact);
+        }
+        mail.setRecipients(recipients);
+        mail
+                .setTags(Arrays.asList(form.getFirstValue("tags").split(
+                        " ")));
         mail = getDAOFactory().getMailboxDAO().createMail(mailbox, mail);
         Reference mailRef = new Reference(getRequest().getResourceRef(), mail
                 .getId());
