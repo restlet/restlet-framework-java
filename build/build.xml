@@ -9,8 +9,24 @@
    <!-- ===  Properties setting  === -->
    <!-- ============================ -->
 
-   <!-- Load system specific paths -->
+   <!-- Load default properties -->
    <property file="build.properties" />
+
+   <!-- Load system specific properties -->
+   <property file="custom.properties" />
+
+   <!-- Boot classpath propertiesLoad system specific paths -->
+   <pathconvert property="defaultbootclasspath">
+      <path path="${sun.boot.class.path}"/>
+   </pathconvert>
+
+   <pathconvert property="backportbootclasspath">
+      <path>
+         <pathelement location="tools/retrotranslator/rowset.jar"/>
+         <pathelement location="tools/retrotranslator/xerces.jar"/>
+      </path>
+      <path path="${sun.boot.class.path}"/>
+   </pathconvert>
 
    <!-- General properties -->
    <property name="author" value="Jerome Louvel" />
@@ -63,6 +79,7 @@
    <condition property="do-backport">
       <istrue value="${backport}" />
    </condition>
+	
    <condition property="custombootclasspath" value="${backportbootclasspath}" else="${defaultbootclasspath}">
       <istrue value="${backport}" />
    </condition>
@@ -480,17 +497,6 @@
    <path id="ant-contrib.path">
       <fileset dir="tools/ant-contrib" includes="**/*.jar" />
    </path>
-   
-   <pathconvert property="defaultbootclasspath">
-      <path path="${sun.boot.class.path}"/>
-   </pathconvert>
-   <pathconvert property="backportbootclasspath">
-      <path>
-         <pathelement location="tools/retrotranslator/rowset.jar"/>
-         <pathelement location="tools/retrotranslator/xerces.jar"/>
-      </path>
-      <path path="${sun.boot.class.path}"/>
-   </pathconvert>
    
    <!-- =================== -->
    <!-- ===  Ant Tasks  === -->

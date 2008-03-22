@@ -260,7 +260,7 @@ public class StreamServerHelper extends HttpServerHelper {
                                 client.socket()));
                     }
                 } catch (ClosedByInterruptException ex) {
-                    helper.getLogger().log(Level.WARNING,
+                    helper.getLogger().log(Level.FINE,
                             "ServerSocket channel was closed by interrupt", ex);
                     break;
                 } catch (IOException ex) {
