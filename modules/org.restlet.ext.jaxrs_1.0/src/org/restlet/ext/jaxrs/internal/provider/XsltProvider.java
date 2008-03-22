@@ -46,7 +46,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.ext.jaxrs.XsltSource;
 
-// REQUESTED where get XSLT convert javax.xml.transform.Source to OutputStream?
+// REQUEST again: where get XSLT for javax.xml.transform.Source to OutputStream?
 
 /**
  * JAX-RS Provider to convert a {@link Source} to an object and vice versa.

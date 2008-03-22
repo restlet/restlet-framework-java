@@ -109,13 +109,13 @@ import org.restlet.resource.StringRepresentation;
  * request and in other situations are moved to that super class. So this class
  * contains only the real logic code and is more well arranged. </li>
  * </ul>
- * 
+ * <p>
  * LATER The class JaxRsRouter is not thread save while attach or detach
  * classes.
- * 
- * @see <a href="https://jsr311.dev.java.net/"> Java Service Request 311</a>
- *      Because the specification is just under development the link is not set
- *      to the PDF.
+ * </p>
+ * For further information see <a href="https://jsr311.dev.java.net/">Java
+ * Service Request 311</a>. Because the specification is just under development
+ * the link is not set to the PDF.
  * 
  * @author Stephan Koops
  */
@@ -339,6 +339,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                     + " is annotated with an illegal path: " + e.getPath()
                     + ". (" + e.getMessage() + ")", e);
         }
+        // LATER use CopyOnWriteList
         PathRegExp uriTempl = newRrc.getPathRegExp();
         for (RootResourceClass rrc : this.rootResourceClasses) {
             if (rrc.getJaxRsClass().equals(rootResourceClass))
@@ -399,8 +400,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
                     "The JAX-RS provider class must not be null");
         if (!jaxRsProviderClass
                 .isAnnotationPresent(javax.ws.rs.ext.Provider.class)) {
-            String message = "Officially a JAX-RS provider class should be annotated with @Provider";
-            getLogger().info(message);
+            String message = "Officially a JAX-RS provider class must be annotated with @javax.ws.rs.ext.Provider";
+            getLogger().config(message);
         }
         Provider<?> provider;
         try {
@@ -584,8 +585,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             String key = varEntry.getKey();
             String value = varEntry.getValue();
             callContext.addTemplParamsEnc(key, value);
-            // REQUEST how two handle @PathParam?
-            // check full path?
         }
     }
 
@@ -1173,8 +1172,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         if (entity instanceof Representation)
             return (Representation) entity;
         if (entity == null)
-            return null;
+            return null; // REQUESTED what to, if resource method returns
+        // null?
         Class<? extends Object> entityClass = entity.getClass();
+        // Class<? extends Object> returnType = null;
+        // if(entity != null)
+        // returnType = entity.getClass();
+        // else if (resourceMethod != null)
+        // returnType = resourceMethod.getReturnType();
         Type genericReturnType = null;
         Annotation[] methodAnnotations = null;
         if (resourceMethod != null) { // is default
@@ -1410,12 +1415,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     }
 
     /**
-     * @return
+     * Returns a Collection with all root uris attached to this JaxRsRouter.
+     * 
+     * @return a Collection with all root uris attached to this JaxRsRouter.
      */
-    public List<String> getRootUris() {
+    public Collection<String> getRootUris() {
         List<String> uris = new ArrayList<String>();
-        for(RootResourceClass rrc : this.rootResourceClasses)
+        for (RootResourceClass rrc : this.rootResourceClasses)
             uris.add(rrc.getPathRegExp().getPathPattern());
-        return Collections.unmodifiableList(uris);
+        return Collections.unmodifiableCollection(uris);
     }
 }

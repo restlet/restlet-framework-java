@@ -17,7 +17,9 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -26,6 +28,7 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.XsltSource;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
@@ -268,11 +271,18 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testXmlTransformGet() throws Exception {
-        // TODO: Fix issue with access to greeting.xsl no working from Ant (use classpath instead)
-        // Response response = get("xslt?text=Hello%20World");
-        // sysOutEntityIfError(response);
-        // assertEquals(Status.SUCCESS_OK, response.getStatus());
-        // System.out.println(response.getEntity().getText());
+        Method xsltGet = ProviderTestService.class.getMethod("xsltGet",
+                String.class);
+        XsltSource xsltSourceAnn = xsltGet.getAnnotation(XsltSource.class);
+        File xsltSource = new File(xsltSourceAnn.value());
+        if (!xsltSource.exists()) {
+            System.out.println("ignore testXmlTransformGet()");
+            return;
+        }
+        Response response = get("xslt?text=Hello%20World");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        System.out.println(response.getEntity().getText());
     }
 
     public void testXmlTransformPost() throws Exception {

@@ -296,6 +296,7 @@ public abstract class AbstractJaxRsWrapper {
             throws ConvertParameterException {
         Series<Cookie> cookies = callContext.getRequest().getCookies();
         String cookieName = cookieParam.value();
+        // TODO jawax.ws.rs.Cookie also allowed on @CookieParam
         return convertParamValuesFromParam(paramClass, paramGenericType,
                 new ParamValueIter((Series) cookies.subList(cookieName)),
                 getValue(cookies.getFirst(cookieName)), defaultValue, true);
@@ -355,7 +356,7 @@ public abstract class AbstractJaxRsWrapper {
         return convertParamValuesFromParam(paramClass, paramGenericType,
                 new ParamValueIter(httpHeaders.subList(headerName, true)),
                 getValue(httpHeaders.getFirst(headerName, true)), defaultValue,
-                false);
+                true);
     }
 
     /**
@@ -512,8 +513,33 @@ public abstract class AbstractJaxRsWrapper {
                 if (annotRequired)
                     throw ionae;
                 annotRequired = true;
+                // TODO check, if the result could be read multiple (i.e. in
+                // some sub resource locators and again in the resource method
+                // or double in the resource method.
+                // if yes, save converted Representation to CallContext,
+                // (not possible e.g. for InputStream and Reader)
                 arg = convertRepresentation(callContext, paramType,
                         paramGenericType, paramAnnotations, jaxRsRouter);
+                // TODO convert representation before first access, because
+                // MessageBodyReader may change headers.
+                // This is another argument against changing the headers in an
+                // EntityProvider. If the entity is not needed (e.g.
+                // Precondition failed), the MessageBodyReader s not required to
+                // be called and does not need time for the conversion
+                // TODO ensure read full MessageBody or Representation.release()
+                // REQUEST can we add a method if a MessageBodyReader and/or
+                // writer will possibly change the headers:
+                // enum MessageBodyReader.Header.CHANGED, READ, NOT_NEEDED
+                // if it is not needed, null could be given for the headers
+                // instead of a Map.
+                // Same for MessageBodyWriter: Headers could be written before
+                // writeTo starts: The headers could be sent to client, while
+                // JAX-RS runtime environment is working between header writing
+                // and body writing.
+                // REQUEST Request.getEntity: could convert entity if needed. If
+                // the entity is not required (e.g. prec failed) it could be not
+                // converted, if no headers are needed. (The last is the case in
+                // the most cases, I think.)
             }
             args[i] = arg;
         }
@@ -588,9 +614,9 @@ public abstract class AbstractJaxRsWrapper {
             throws ConvertParameterException {
         // TODO Path-Param: List<String>
         // TODO @PathParam("x") PathSegment allowed
-        // REQUEST What do @PathParam-value means, if it should be PathSegment?
+        // REQUESTED What do @PathParam-value means, if should be PathSegment?
         // allow without? ignore it?
-        if(paramGenericType == null)
+        if (paramGenericType == null)
             "".toString();
         String pathParamValue = callContext.getLastTemplParamEnc(pathParam);
         return convertParamValueFromParam(paramClass, pathParamValue,

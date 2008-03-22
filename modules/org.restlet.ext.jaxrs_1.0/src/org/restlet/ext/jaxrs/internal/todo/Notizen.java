@@ -44,4 +44,7 @@ public class Notizen {
     // TODO JaxRsComponent
     // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc17
     // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc19
+    
+    // TODO @Context and so on only in objects created by the runtime.
+    // support and warn about this.
 }
