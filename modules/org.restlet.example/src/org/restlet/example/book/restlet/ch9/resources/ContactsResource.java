@@ -47,10 +47,17 @@ public class ContactsResource extends BaseResource {
     /** The list of contacts. */
     private List<Contact> contacts;
 
+    /**
+     * The list of all mailboxes hosted on this server. It helps for the
+     * creation of contacts.
+     */
+    private List<Mailbox> hostedMailboxes;
+
     public ContactsResource(Context context, Request request, Response response) {
         super(context, request, response);
         String mailboxId = (String) request.getAttributes().get("mailboxId");
         mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
+        hostedMailboxes = getDAOFactory().getMailboxDAO().getMailboxes();
 
         if (mailbox != null) {
             getVariants().add(new Variant(MediaType.TEXT_HTML));
@@ -86,6 +93,7 @@ public class ContactsResource extends BaseResource {
         dataModel.put("contacts", contacts);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
+        dataModel.put("hostedMailboxes", hostedMailboxes);
 
         TemplateRepresentation representation = new TemplateRepresentation(
                 "contacts.html", getFmcConfiguration(), dataModel, variant

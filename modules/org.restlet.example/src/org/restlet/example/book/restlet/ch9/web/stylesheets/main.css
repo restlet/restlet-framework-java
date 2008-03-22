@@ -8,8 +8,11 @@ img {border: none}
 th {padding: 2px;background-color: #555753; color:white; font-weight: bold}
 td {padding: 2px}
 select {padding:1px;}
-/* container */
 
+/* error messages */
+.error {color:red; border: 1px solid red; padding: 2px; margin-bottom: 10px}
+
+/* container */
 #container {
 position:relative; width:700px; margin:0 auto; font:90% "Times New Roman", Times, serif; text-align:left; 
 background:#ffffff}
@@ -36,6 +39,10 @@ background:#ffffff}
 #content a:link, #content a:visited {color:#292f33; text-decoration:none; background:transparent; border-bottom:1px solid #292f33}
 #content a:hover, #content a:focus {color:#3c4246; text-decoration:none; background:transparent; border-bottom:2px solid #3c4246}
 #content a:active {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}
+
+/* mailbox */
+#mailbox {position:relative; top:0px; left:0px; width:460px; }
+#mailbox {color:#cc0000; letter-spacing:1px; word-spacing:5px; text-align: left; font-weight: bold; border-bottom:1px solid #cc0000; margin-bottom:10px}
 
 /* menu */
 #menu {position:absolute; top:180px; left:0; width:150px; font:100% "Trebuchet MS", "Lucida Sans", Arial, Helvetica, sans-serif; text-align:center ; border-right: 1px solid black}

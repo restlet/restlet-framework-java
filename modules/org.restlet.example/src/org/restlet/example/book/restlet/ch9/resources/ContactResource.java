@@ -18,6 +18,7 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -45,11 +46,17 @@ public class ContactResource extends BaseResource {
     /** The parent mailbox. */
     private Mailbox mailbox;
 
+    /**
+     * The list of all mailboxes hosted on this server. It helps for the
+     * creation of contacts.
+     */
+    private List<Mailbox> hostedMailboxes;
+    
     public ContactResource(Context context, Request request, Response response) {
         super(context, request, response);
         String mailboxId = (String) request.getAttributes().get("mailboxId");
         mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
-
+        hostedMailboxes = getDAOFactory().getMailboxDAO().getMailboxes();
         if (mailbox != null) {
             String contactId = (String) request.getAttributes()
                     .get("contactId");
@@ -86,6 +93,7 @@ public class ContactResource extends BaseResource {
         dataModel.put("contact", contact);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
+        dataModel.put("hostedMailboxes", hostedMailboxes);
 
         TemplateRepresentation representation = new TemplateRepresentation(
                 "contact.html", getFmcConfiguration(), dataModel, variant

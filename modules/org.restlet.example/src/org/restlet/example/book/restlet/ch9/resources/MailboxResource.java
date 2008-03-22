@@ -24,13 +24,17 @@ import java.util.TreeMap;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.restlet.ch9.objects.Contact;
+import org.restlet.example.book.restlet.ch9.objects.Mail;
 import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+import org.restlet.util.Series;
 
 /**
  * Resource for a mailbox.
@@ -69,7 +73,24 @@ public class MailboxResource extends BaseResource {
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
-        // TODO reception of a new mail.
+        Form form = new Form(entity);
+        Mail mail = new Mail();
+        mail.setStatus(Mail.STATUS_RECEIVED);
+        // TODO changer le sender en Contact?
+        // Ici boucler sur la liste des contacts et voir si par hasard, le
+        // contact existerait.
+        form.getFirstValue("senderAddress");
+        form.getFirstValue("senderName");
+
+        mail.setMessage(form.getFirstValue("message"));
+        mail.setSubject(form.getFirstValue("subject"));
+        // form2.add("sendingDate", mail.getSendingDate().toString());
+        Series<Parameter> recipients = form.subList("recipient");
+        for (Contact recipient : mail.getRecipients()) {
+            // TODO ajouter les contacts ou juste les adresses.
+            // form2.add("recipient", recipient.getMailAddress());
+        }
+        //getDAOFactory().getMailboxDAO().createMail(mailbox, mail);
     }
 
     @Override
@@ -82,7 +103,6 @@ public class MailboxResource extends BaseResource {
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();
-        System.out.println(getRequest().getRootRef());
         dataModel.put("currentUser", getCurrentUser());
         dataModel.put("mailbox", mailbox);
         dataModel.put("resourceRef", getRequest().getResourceRef());

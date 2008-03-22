@@ -20,14 +20,20 @@ package org.restlet.example.book.restlet.ch9.resources;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch9.objects.Contact;
@@ -102,9 +108,9 @@ public class MailResource extends BaseResource {
     public void storeRepresentation(Representation entity)
             throws ResourceException {
         Form form = new Form(entity);
+
         mail.setSubject(form.getFirstValue("subject"));
         mail.setMessage(form.getFirstValue("message"));
-        // TODO comment gérer le statut? + la date d'envoi?
         mail.setStatus(form.getFirstValue("status"));
 
         if (form.getFirstValue("recipients") != null) {
@@ -129,7 +135,83 @@ public class MailResource extends BaseResource {
         }
 
         getDAOFactory().getMailboxDAO().updateMail(mailbox, mail);
-        getResponse().redirectSeeOther(getRequest().getResourceRef());
-    }
 
+        // Detect if the mail is to be sent.
+        if (Mail.STATUS_SENDING.equalsIgnoreCase(mail.getStatus())) {
+            mail.setSendingDate(new Date());
+            // Loop on the list of recipients and post to their mailbox.
+            boolean success = true;
+            if (mail.getRecipients() != null) {
+                Client client = new Client(Protocol.HTTP);
+                Form form2 = new Form();
+                form2.add("status", Mail.STATUS_RECEIVING);
+                form2.add("senderAddress", getRequest().getRootRef()
+                        + "/mailboxes/" + mailbox.getId());
+                form2.add("senderName", getCurrentUser().getFirstName() + " "
+                        + getCurrentUser().getLastName());
+
+                form2.add("subject", mail.getSubject());
+                form2.add("message", mail.getMessage());
+                form2.add("sendingDate", mail.getSendingDate().toString());
+                for (Contact recipient : mail.getRecipients()) {
+                    form2.add("recipient", recipient.getMailAddress());
+                }
+
+                // Send the mail to every recipient
+                StringBuilder builder = new StringBuilder();
+                Response response;
+                // TODO on ne devrait pas avoir à le faire!!
+                // Add the client authentication to the call
+                Request request = new Request();
+                request.setMethod(Method.POST);
+                request.setEntity(form2.getWebRepresentation());
+                ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
+                ChallengeResponse authentication = new ChallengeResponse(
+                        scheme, getCurrentUser().getLogin(), getCurrentUser()
+                                .getPassword());
+                request.setChallengeResponse(authentication);
+
+                for (Contact contact : mail.getRecipients()) {
+                    request.setResourceRef(contact.getMailAddress());
+                    response = client.handle(request);
+                    // Error when sending the mail.
+                    if (!response.getStatus().isSuccess()) {
+                        success = false;
+                        builder.append(contact.getName());
+                        builder.append("\t");
+                        builder.append(response.getStatus());
+                    }
+                }
+                if (success) {
+                    // if the mail has been successfully sent to every
+                    // recipient.
+                    mail.setStatus(Mail.STATUS_SENT);
+                    getDAOFactory().getMailboxDAO().updateMail(mailbox, mail);
+                    getResponse().redirectSeeOther(
+                            getRequest().getResourceRef());
+                } else {
+                    Map<String, Object> dataModel = new TreeMap<String, Object>();
+                    dataModel.put("currentUser", getCurrentUser());
+                    dataModel.put("mailbox", mailbox);
+                    dataModel.put("mail", mail);
+                    dataModel.put("resourceRef", getRequest().getResourceRef());
+                    dataModel.put("rootRef", getRequest().getRootRef());
+                    dataModel.put("message", builder.toString());
+                    TemplateRepresentation representation = new TemplateRepresentation(
+                            "mailSendingError.html", getFmcConfiguration(),
+                            dataModel, MediaType.TEXT_HTML);
+
+                    getResponse().setEntity(representation);
+                }
+            } else {
+                // Still a draft
+                mail.setStatus(Mail.STATUS_DRAFT);
+                getDAOFactory().getMailboxDAO().updateMail(mailbox, mail);
+                getResponse().redirectSeeOther(getRequest().getResourceRef());
+            }
+        } else {
+            getResponse().redirectSeeOther(getRequest().getResourceRef());
+        }
+
+    }
 }

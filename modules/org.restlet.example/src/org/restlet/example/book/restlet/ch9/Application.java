@@ -54,6 +54,7 @@ public class Application extends org.restlet.Application {
         Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8585);
         component.getClients().add(Protocol.FILE);
+        component.getClients().add(Protocol.HTTP);
         // Attach the application to the default host and start it
         component.getDefaultHost().attach("/rmep",
                 new Application(component.getContext()));
@@ -68,6 +69,10 @@ public class Application extends org.restlet.Application {
 
     public Application(Context context) {
         super(context);
+        // List of protocols required by the application.
+        this.getConnectorService().getClientProtocols().add(Protocol.FILE);
+        this.getConnectorService().getClientProtocols().add(Protocol.HTTP);
+
         /** Open and keep the db4o object container. */
         Configuration config = Db4o.configure();
         config.updateDepth(2);

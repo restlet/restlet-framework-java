@@ -18,8 +18,6 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,7 +28,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.example.book.restlet.ch9.objects.Contact;
 import org.restlet.example.book.restlet.ch9.objects.Mail;
 import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.ext.freemarker.TemplateRepresentation;

@@ -20,6 +20,12 @@
 <#global content>
 <div id="mailbox">Mailbox ${mailbox.nickname}</div>
 
+<div class="error">
+	<h4>Error when sending the mail.</h4>
+	<p>${message}</p>
+	<p>Try send it again.</p>
+</div>
+
 <div>
 	<h4>Update a mail.</h4>
 	<form action="${resourceRef}?method=put" method="POST">
