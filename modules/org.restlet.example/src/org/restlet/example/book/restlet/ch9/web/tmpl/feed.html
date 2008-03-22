@@ -10,11 +10,11 @@
 			</tr>
 			<tr>
 				<td>tags</td>
-				<td><input type="text" name="tags" value="${tags!""}"></td>
+				<td><input type="text" name="tags" value="<@listTags tagList=feed.tags![] />"></td>
 			</tr>
 		</table>
-		<input type="submit" name="updateFeed" title="Submit modifications to the feed" value="Update" onClick="this.form.action='${resourceRef}?method=put'">
-		<input type="button" name="deleteFeed" title="Delete the feed" value="Delete" onClick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+		<input type="submit" name="updateFeed" title="Submit modifications to the feed" value="Update" onclick="this.form.action='${resourceRef}?method=put'">
+		<input type="button" name="deleteFeed" title="Delete the feed" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
 	</form>
 </div>
 

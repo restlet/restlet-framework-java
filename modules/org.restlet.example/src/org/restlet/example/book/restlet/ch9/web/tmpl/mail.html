@@ -1,4 +1,22 @@
 <#include "/header.ftl"/>
+<#macro selectRecipients contactsList mailContacts>
+	<select name="recipients" multiple="multiple" size="2">
+	<#list contactsList as contact>
+		<#local found = 0>
+		<#list mailContacts as mailContact>
+			<#if contact.id==mailContact.id!"">
+				<#local found = 1>
+				<#break>
+			</#if>
+		</#list>
+		<#if found=1>
+		<option value="${contact.id}" selected>${contact.name}</option>
+		<#else>
+		<option value="${contact.id}">${contact.name}</option>
+		</#if>
+	</#list>
+	</select>
+</#macro>
 <#global content>
 <div>
 	<h4>Update a mail.</h4>
@@ -10,33 +28,25 @@
 			</tr>
 			<tr>
 				<td>Status:</td>
-				<td>
-					<select name="status">
-		<#list statuses as status> 
-			<#if status==mail.status>
-				<option value="${status}" selected>${status}</option>
-			</#else>
-				<option value="${status}">${status}</option>
-			</#if>
-		</#list> 
-					</select>
+				<td><input type="text" name="status" value="${mail.status}" readonly="readonly"></select>
 				</td>
 			</tr>
 			<tr>
 				<td>Recipients:</td>
-				<td><input type="text" name="recipients" value="${recipients!""}"></td>
+				<td><@selectRecipients contactsList=mailbox.contacts![] mailContacts=mail.recipients![] /></td>
 			</tr>
 			<tr>
 				<td>Body:</td>
-				<td><textarea name="message">${mail.message!""}</textarea></td>
+				<td><textarea name="message" cols="50" rows="10">${mail.message!""}</textarea></td>
 			</tr>
 			<tr>
 				<td>Tags:</td>
-				<td><input type="text" name="tags" value="${tags!""}"></td>
+				<td><input type="text" name="tags" value="<@listTags tagList=mail.tags![] />"></td>
 			</tr>
 		</table>
-		<input type="submit" name="updateMail" title="Submit modifications to the mail" value="Update" onClick="this.form.action='${resourceRef}?method=put'">
-		<input type="button" name="deleteMail" title="Delete the mail" value="Delete" onClick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+		<input type="submit" name="updateMail" title="Submit modifications to the mail" value="Update" onclick="this.form.action='${resourceRef}?method=put'">
+		<input type="submit" name="updateMail" title="Submit modifications then send the mail" value="Send" onclick="this.form.status.value='sending';this.form.action='${resourceRef}?method=put';this.form.submit();">
+		<input type="button" name="deleteMail" title="Delete the mail" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
 	</form>
 </div>
 </#global>

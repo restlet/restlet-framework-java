@@ -20,7 +20,6 @@ package org.restlet.example.book.restlet.ch9.resources;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -106,19 +105,6 @@ public class FeedResource extends BaseResource {
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
-        if (feed.getTags() != null) {
-            StringBuilder builder = new StringBuilder();
-            for (Iterator<String> iterator = feed.getTags().iterator(); iterator
-                    .hasNext();) {
-                String tag = iterator.next();
-                builder.append(tag);
-                if (iterator.hasNext()) {
-                    builder.append(" ");
-                }
-            }
-            dataModel.put("tags", builder.toString());
-        }
-
         Representation representation = null;
         MediaType mediaType = variant.getMediaType();
         if (MediaType.TEXT_HTML.equals(mediaType)) {
@@ -147,7 +133,12 @@ public class FeedResource extends BaseResource {
             throws ResourceException {
         Form form = new Form(entity);
         feed.setNickname(form.getFirstValue("nickname"));
-        feed.setTags(Arrays.asList(form.getFirstValue("tags").split(" ")));
+        if (form.getFirstValue("tags") != null) {
+            feed.setTags(new ArrayList<String>(Arrays.asList(form
+                    .getFirstValue("tags").split(" "))));
+        } else {
+            feed.setTags(null);
+        }
 
         getDAOFactory().getMailboxDAO().updateFeed(mailbox, feed);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
