@@ -1,10 +1,12 @@
 
 /* general */
-* {margin:0; border:0; padding:0}
+* {margin:0; padding:0}
 
 html, body {width:100%; height:100%; text-align:center; color:#2e3436; background:#ffffff url(../images/back.gif) repeat-x 0 0}
 acronym {text-decoration:none; font-weight:bold; font-style:normal; cursor:help}
-
+img {border: none}
+th {padding: 2px;background-color: #555753; color:white; font-weight: bold}
+table td {padding: 2px}
 /* container */
 
 #container {
@@ -13,10 +15,6 @@ background:#ffffff}
 
 #container p {margin:10px 20px 0; line-height:140%; text-align:justify}
 #container p.p1 {text-indent:20px}
-
-#container a:link, #container a:visited {color:#292f33; text-decoration:none; background:transparent; border-bottom:1px solid #292f33}
-#container a:hover, #container a:focus {color:#3c4246; text-decoration:none; background:transparent; border-bottom:2px solid #3c4246}
-#container a:active {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}
 
 /* Logo RMEP */
 #logoRmep {position:relative; width:700px; height:150px; background:#d3d7cf}
@@ -33,11 +31,18 @@ background:#ffffff}
 #hello {color:#f57900; letter-spacing:1px; word-spacing:5px; text-align: right; font-weight: bold; border-bottom:1px solid #f57900}
 
 /* content */
-#content {position:relative; top:20px; left:240px; width:480px}
+#content {position:relative; top:20px; left:170px; width:530px}
+#content a:link, #content a:visited {color:#292f33; text-decoration:none; background:transparent; border-bottom:1px solid #292f33}
+#content a:hover, #content a:focus {color:#3c4246; text-decoration:none; background:transparent; border-bottom:2px solid #3c4246}
+#content a:active {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}
 
 /* menu */
-#menu {position:absolute; top:180px; left:0; width:200px; font:100% "Trebuchet MS", "Lucida Sans", Arial, Helvetica, sans-serif; text-align:center ; border-right: 1px solid black}
-#menu h3{float:left; clear:left; width:200px; height:40px; overflow:hidden}
-#menu a {display:block; color: #3465a4}
+#menu {position:absolute; top:180px; left:0; width:150px; font:100% "Trebuchet MS", "Lucida Sans", Arial, Helvetica, sans-serif; text-align:center ; border-right: 1px solid black}
+#menu h3, #menu li {float:left; clear:left; width:150px; height:40px; overflow:hidden}
+#menu li {list-style:none; color:#885c2f}
 
-img {border: none;}
+
+#menu a {display:block; color: #3465a4}
+#menu a:link, #menu a:visited {color:#292f33; text-decoration:none; background:transparent; border-bottom:1px solid #292f33}
+#menu a:hover, #menu a:focus {color:#3c4246; text-decoration:none; background:transparent; border-bottom:2px solid #3c4246}
+#menu a:active {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}

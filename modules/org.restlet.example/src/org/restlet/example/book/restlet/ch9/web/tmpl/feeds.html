@@ -1,28 +1,48 @@
 <#include "/header.ftl"/>
-<#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-<table>
-	<tr>
-		<td>Feeds</td>
-	</tr>
-<#list feeds as feed> 
-	<tr>
-		<td><a href="${resourceRef}/${feed.id}">${feed.nickname}</a></td>
-	</tr>
-</#list>
-</table>
-<form action="${resourceRef}" method="POST">
+<div style="float: left">
+	<h4>List of feeds.</h4>
 	<table>
 		<tr>
-			<td>Name:</td>
-			<td><input type="text" name="nickname"></td>
+			<th>Name</th>
 		</tr>
+	<#list feeds as feed> 
 		<tr>
-			<td>tags</td>
-			<td><input type="text" name="tags"></td>
+			<td><a href="${resourceRef}/${feed.id}">${feed.nickname}</a></td>
 		</tr>
+	</#list>
 	</table>
-	<input type="submit" name="createFeed" title="Create a new Feed" value="Create a new Feed">
-</form>
+</div>
+
+<div style="width:200px; float: right">
+	<h4>Create a new feed.</h4>
+	<form action="${resourceRef}" method="POST">
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text" name="nickname"></td>
+			</tr>
+			<tr>
+				<td>tags</td>
+				<td><input type="text" name="tags"></td>
+			</tr>
+		</table>
+		<input type="submit" name="createFeed" title="Create a new Feed" value="Create">
+	</form>
+</div>
+</#global>
+
+<#global menu>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/mailboxes">My mailboxes</a></h3>
+      <ul>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/mails" title="My mails">My mails</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/contacts" title="My contacts">My contacts</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/feeds" title="My feeds">My feeds</a>&nbsp;</li>
+      </ul>
+   </div>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/users">My account<a/></h3>
+   </div>
 </#global>
 <#include "/footer.ftl"/>

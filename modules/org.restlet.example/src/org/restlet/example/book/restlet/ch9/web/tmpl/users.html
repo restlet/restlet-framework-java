@@ -1,17 +1,22 @@
 <#include "/header.ftl"/>
-<#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-<table>
-	<tr>
-		<td>Users</td>
-	</tr>
-<#list users as user> 
-	<tr>
-		<td><a href="${resourceRef}/${user.id}">${user.firstName} ${user.lastName}</a></td>
-	</tr>
-</#list>
-</table>
+<div style="float: left">
+	<h4>List of users.</h4>
+	<table>
+		<tr>
+			<th>User</th>
+		</tr>
+	<#list users as user> 
+		<tr>
+			<td><a href="${resourceRef}/${user.id}">${user.firstName} ${user.lastName}</a></td>
+		</tr>
+	</#list>
+	</table>
+</div>
+
 <#if currentUser.administrator>
+<div style="width:200px; float: right">
+	<h4>Create a new user.</h4>
     <form action="${resourceRef}" method="POST">
 		<table>
 			<tr>
@@ -35,8 +40,23 @@
 				<td><input type="checkbox" name="administrator"></td>
 			</tr>
 		</table>
-		<input type="submit" name="createUser" title="Create a new User" value="Create a new User">
+		<input type="submit" name="createUser" title="Create a new User" value="Create">
     </form>
+</div>
 </#if>
+</#global>
+
+<#global menu>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/mailboxes">My mailboxes</a></h3>
+      <ul>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/mails" title="My mails">My mails</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/contacts" title="My contacts">My contacts</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/feeds" title="My feeds">My feeds</a>&nbsp;</li>
+      </ul>
+   </div>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/users">My account<a/></h3>
+   </div>
 </#global>
 <#include "/footer.ftl"/>

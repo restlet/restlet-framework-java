@@ -70,20 +70,6 @@ public class MailsResource extends BaseResource {
         mail.setSender(getCurrentUser());
         mail.setStatus(Mail.STATUS_DRAFT);
         mail.setSubject(form.getFirstValue("subject"));
-        mail.setMessage(form.getFirstValue("message"));
-
-        String[] recipientsArray = form.getFirstValue("recipients").split(" ");
-        List<Contact> recipients = new ArrayList<Contact>();
-        for (int i = 0; i < recipientsArray.length; i++) {
-            String string = recipientsArray[i];
-            Contact contact = new Contact();
-            contact.setName(string);
-            recipients.add(contact);
-        }
-        mail.setRecipients(recipients);
-        mail
-                .setTags(Arrays.asList(form.getFirstValue("tags").split(
-                        " ")));
         mail = getDAOFactory().getMailboxDAO().createMail(mailbox, mail);
         Reference mailRef = new Reference(getRequest().getResourceRef(), mail
                 .getId());

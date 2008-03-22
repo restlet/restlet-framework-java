@@ -1,19 +1,35 @@
 <#include "/header.ftl"/>
-<#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-<form action="${resourceRef}?method=put" method="POST">
-	<table>
-		<tr>
-			<td>Name:</td>
-			<td><input type="text" name="name" value="${contact.name}"></td>
-		</tr>
-		<tr>
-			<td>Mailbox's address:</td>
-			<td><input type="text" name="mailAddress" value="${contact.mailAddress}"></td>
-		</tr>
-	</table>
-	<input type="submit" name="updateContact" title="Submit modifications to the contact" value="Update" onClick="this.form.action='${resourceRef}?method=put'">
-	<input type="button" name="deleteContact" title="Delete the contact" value="Delete" onClick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
-</form>
+<div>
+	<h4>Update my contact.</h4>
+	<form action="${resourceRef}?method=put" method="POST">
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text" name="name" value="${contact.name}"></td>
+			</tr>
+			<tr>
+				<td>Mailbox's address:</td>
+				<td><input type="text" name="mailAddress" value="${contact.mailAddress}"></td>
+			</tr>
+		</table>
+		<input type="submit" name="updateContact" title="Submit modifications to the contact" value="Update" onClick="this.form.action='${resourceRef}?method=put'">
+		<input type="button" name="deleteContact" title="Delete the contact" value="Delete" onClick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+	</form>
+</div>
+</#global>
+
+<#global menu>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/mailboxes">My mailboxes</a></h3>
+      <ul>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/mails" title="My mails">My mails</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/contacts" title="My contacts">My contacts</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/feeds" title="My feeds">My feeds</a>&nbsp;</li>
+      </ul>
+   </div>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/users">My account<a/></h3>
+   </div>
 </#global>
 <#include "/footer.ftl"/>

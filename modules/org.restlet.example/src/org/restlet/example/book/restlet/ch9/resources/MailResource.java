@@ -116,8 +116,8 @@ public class MailResource extends BaseResource {
         dataModel.put("mail", mail);
 
         List<String> statuses = new ArrayList<String>();
-        statuses.add(Mail.STATUS_SENDING);
         statuses.add(Mail.STATUS_DRAFT);
+        statuses.add(Mail.STATUS_SENDING);
         statuses.add(Mail.STATUS_SENT);
         statuses.add(Mail.STATUS_RECEIVING);
         statuses.add(Mail.STATUS_RECEIVED);

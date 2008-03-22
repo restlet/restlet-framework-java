@@ -1,19 +1,21 @@
 <#include "/header.ftl"/>
-<#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-
-<table>
-	<tr>
-		<td>Contacts</td>
-	</tr>
+<div style="float: left">
+	<h4>List of contacts.</h4>
+	<table>
+		<tr>
+			<th>Name</th>
+		</tr>
 <#list contacts as contact>
-	<tr>
-		<td><a href="${resourceRef}/${contact.id}">${contact.name}</a></td>
-	</tr>
+		<tr>
+			<td><a href="${resourceRef}/${contact.id}">${contact.name}</a></td>
+		</tr>
 </#list>
-</table>
+	</table>
+</div>
 
-
+<div style="width:200px; float: right">
+	<h4>Create a new contact.</h4>
     <form action="${resourceRef}" method="POST">
 		<table>
 			<tr>
@@ -25,7 +27,22 @@
 				<td><input type="text" name="mailAddress"></td>
 			</tr>
 		</table>
-		<input type="submit" name="createContact" title="Create a new contact" value="Create a new contact">
+		<input type="submit" name="createContact" title="Create a new contact" value="Create">
     </form>
+</div>
+</#global>
+
+<#global menu>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/mailboxes">My mailboxes</a></h3>
+      <ul>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/mails" title="My mails">My mails</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/contacts" title="My contacts">My contacts</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/feeds" title="My feeds">My feeds</a>&nbsp;</li>
+      </ul>
+   </div>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/users">My account<a/></h3>
+   </div>
 </#global>
 <#include "/footer.ftl"/>

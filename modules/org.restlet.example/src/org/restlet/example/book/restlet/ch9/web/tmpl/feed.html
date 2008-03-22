@@ -1,31 +1,49 @@
 <#include "/header.ftl"/>
-<#global title="RMEP - REST Mail Exchange Protocol" />
 <#global content>
-<form action="${resourceRef}?method=put" method="POST">
+<div>
+	<h4>Update my feed.</h4>
+	<form action="${resourceRef}?method=put" method="POST">
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text" name="nickname" value="${feed.nickname}"></td>
+			</tr>
+			<tr>
+				<td>tags</td>
+				<td><input type="text" name="tags" value="${tags!""}"></td>
+			</tr>
+		</table>
+		<input type="submit" name="updateFeed" title="Submit modifications to the feed" value="Update" onClick="this.form.action='${resourceRef}?method=put'">
+		<input type="button" name="deleteFeed" title="Delete the feed" value="Delete" onClick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+	</form>
+</div>
+
+<div>
+	<h4>List of mails</h4>
 	<table>
 		<tr>
-			<td>Name:</td>
-			<td><input type="text" name="nickname" value="${feed.nickname}"></td>
+			<th>Mails</th>
 		</tr>
+		<#list mails as mail> 
 		<tr>
-			<td>tags</td>
-			<td><input type="text" name="tags" value="${tags!""}"></td>
+			<td><a href="${rootRef}/mailboxes/${mailbox.id}/mails/${mail.id}">${mail.subject}</a></td>
 		</tr>
+		</#list> 
 	</table>
-	<input type="submit" name="updateFeed" title="Submit modifications to the feed" value="Update" onClick="this.form.action='${resourceRef}?method=put'">
-	<input type="button" name="deleteFeed" title="Delete the feed" value="Delete" onClick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
-</form>
+</div>
+</#global>
 
-<table>
-	<tr>
-		<td>Mails</td>
-	</tr>
-	<#list mails as mail> 
-	<tr>
-		<td><a href="${rootRef}/mailboxes/${mailbox.id}/mails/${mail.id}">${mail.subject}</a></td>
-	</tr>
-	</#list> 
-</table>
-
+<#global menu>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/mailboxes">My mailboxes</a></h3>
+      <ul>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/mails" title="My mails">My mails</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/contacts" title="My contacts">My contacts</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/feeds" title="My feeds">My feeds</a>&nbsp;</li>
+      </ul>
+   </div>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/users">My account<a/></h3>
+   </div>
 </#global>
 <#include "/footer.ftl"/>
