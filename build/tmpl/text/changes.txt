@@ -1,4 +1,4 @@
-﻿   
+   
 ===========
 Changes log  
 ===========
@@ -106,6 +106,8 @@ Changes log
           method. 
         - Added condition on javadocs flag for the stage-classic task 
           in the Ant build script. reported by Kevin Conaway.
+        - Changed licensing scheme to a choice between CDDL 1.0, LGPL
+          3.0 or LGPL 2.1.
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed
         - Fixed NPE in Connector class. Reported by Rob Heittman and
