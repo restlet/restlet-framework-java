@@ -9,11 +9,11 @@
    <!-- ===  Properties setting  === -->
    <!-- ============================ -->
 
-   <!-- Load default properties -->
-   <property file="build.properties" />
-
    <!-- Load system specific properties -->
    <property file="custom.properties" />
+
+   <!-- Load default properties -->
+   <property file="build.properties" />
 
    <!-- Boot classpath propertiesLoad system specific paths -->
    <pathconvert property="defaultbootclasspath">
