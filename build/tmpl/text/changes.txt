@@ -52,6 +52,8 @@ Changes log
         - Added a new constructor to Client and Server allowing to 
           specify the class name of the connector to use. Suggested by
           Dan Diephouse.
+        - Added a "getValuesArray(String name):String[]" method on the
+          Series class. Suggested by Paul J. Lucas.
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.

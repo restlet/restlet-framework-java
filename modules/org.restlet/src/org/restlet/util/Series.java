@@ -345,6 +345,25 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     }
 
     /**
+     * Returns an array of all the values associated to the given parameter
+     * name.
+     * 
+     * @param name
+     *                The parameter name to match.
+     * @return The array of values.
+     */
+    public String[] getValuesArray(String name) {
+        List<E> params = subList(name);
+        String[] result = new String[params.size()];
+
+        for (int i = 0; i < params.size(); i++) {
+            result[i] = params.get(i).getValue();
+        }
+
+        return result;
+    }
+
+    /**
      * Removes all the parameters with a given name.
      * 
      * @param name
