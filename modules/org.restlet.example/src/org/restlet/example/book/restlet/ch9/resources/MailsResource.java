@@ -18,6 +18,8 @@
 
 package org.restlet.example.book.restlet.ch9.resources;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,6 +27,7 @@ import java.util.TreeMap;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch9.objects.Contact;
@@ -52,7 +55,7 @@ public class MailsResource extends BaseResource {
         // Get the parent mailbox thanks to its ID taken from the resource's
         // URI.
         String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
+        mailbox = getDataFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             mails = mailbox.getMails();
@@ -70,9 +73,6 @@ public class MailsResource extends BaseResource {
 
         Mail mail = new Mail();
         mail.setStatus(Mail.STATUS_DRAFT);
-        // TODO prolonger la réflexion sur ce point.
-        // Faut il créer un contact par défaut représentant l'utilisateur
-        // courant?
         Contact sender = new Contact();
         sender.setName(getCurrentUser().getFirstName() + " "
                 + getCurrentUser().getLastName());
@@ -80,7 +80,30 @@ public class MailsResource extends BaseResource {
                 + "/mailboxes/" + mailbox.getId());
         mail.setSender(sender);
         mail.setSubject(form.getFirstValue("subject"));
-        mail = getDAOFactory().getMailboxDAO().createMail(mailbox, mail);
+        mail.setMessage(form.getFirstValue("message"));
+
+        if (form.getFirstValue("recipients") != null) {
+            List<Contact> recipients = new ArrayList<Contact>();
+            for (Parameter parameter : form.subList("recipients")) {
+                for (Contact contact : mailbox.getContacts()) {
+                    if (contact.getId().equals(parameter.getValue())) {
+                        recipients.add(contact);
+                    }
+                }
+            }
+            mail.setRecipients(recipients);
+        } else {
+            mail.setRecipients(null);
+        }
+
+        if (form.getFirstValue("tags") != null) {
+            mail.setTags(new ArrayList<String>(Arrays.asList(form
+                    .getFirstValue("tags").split(" "))));
+        } else {
+            mail.setTags(null);
+        }
+
+        mail = getDataFacade().createMail(mailbox, mail);
 
         getResponse().redirectSeeOther(
                 getChildReference(getRequest().getResourceRef(), mail.getId()));

@@ -24,7 +24,8 @@ package org.restlet.example.book.restlet.ch9.objects;
  * 
  */
 public class BaseObject {
-    /** Identifiant. */
+
+    /** String value that identifies one object. */
     private String id;
 
     public String getId() {

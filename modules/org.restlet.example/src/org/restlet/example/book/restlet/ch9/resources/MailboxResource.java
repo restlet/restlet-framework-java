@@ -48,7 +48,7 @@ public class MailboxResource extends BaseResource {
     public MailboxResource(Context context, Request request, Response response) {
         super(context, request, response);
         String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
+        mailbox = getDataFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             getVariants().add(new Variant(MediaType.TEXT_HTML));
@@ -85,12 +85,12 @@ public class MailboxResource extends BaseResource {
         String senderAddress = form.getFirstValue("senderAddress");
         String senderName = form.getFirstValue("senderName");
 
-        Contact contact = lookForContact(senderAddress, mailbox);
+        Contact contact = getDataFacade()
+                .lookForContact(senderAddress, mailbox);
         if (contact == null) {
             contact = new Contact();
             contact.setMailAddress(senderAddress);
             contact.setName(senderName);
-            getDAOFactory().getMailboxDAO().createContact(mailbox, contact);
         }
         mail.setSender(contact);
 
@@ -99,38 +99,18 @@ public class MailboxResource extends BaseResource {
         // form2.add("sendingDate", mail.getSendingDate().toString());
         Series<Parameter> recipients = form.subList("recipient");
         for (Parameter recipient : recipients) {
-            contact = lookForContact(recipient.getValue(), mailbox);
+            contact = getDataFacade().lookForContact(recipient.getValue(),
+                    mailbox);
             if (contact == null) {
                 contact = new Contact();
-                contact.setMailAddress(recipient.getValue());
-                // TODO attention, il faut coordonner adresse et nom de contact.
-                // contact.setName(senderName);
-                getDAOFactory().getMailboxDAO().createContact(mailbox, contact);
+                String[] recipientValues = ((String) recipient.getValue())
+                        .split("\\$");
+                contact.setMailAddress(recipientValues[0]);
+                contact.setName(recipientValues[1]);
             }
             mail.getRecipients().add(contact);
         }
-        getDAOFactory().getMailboxDAO().createMail(mailbox, mail);
-    }
-
-    /**
-     * Returns the contact from a mailbox's list of contacts according to a
-     * given mail address.
-     * 
-     * @param mailboxAddress
-     *                The mail address to check.
-     * @param mailbox
-     *                The mailbox that contains the list of contacts
-     * @return null if the contact is not found, the contact otherwise.
-     */
-    private Contact lookForContact(String mailboxAddress, Mailbox mailbox) {
-        Contact contact = null;
-        for (Contact item : mailbox.getContacts()) {
-            if (item.getMailAddress().equals(mailboxAddress)) {
-                contact = item;
-                break;
-            }
-        }
-        return contact;
+        getDataFacade().createMail(mailbox, mail);
     }
 
     /**
@@ -138,7 +118,7 @@ public class MailboxResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDAOFactory().getMailboxDAO().deleteMailbox(mailbox);
+        getDataFacade().deleteMailbox(mailbox);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -169,8 +149,9 @@ public class MailboxResource extends BaseResource {
             throws ResourceException {
         Form form = new Form(entity);
         mailbox.setNickname(form.getFirstValue("nickname"));
+        mailbox.setSenderName(form.getFirstValue("senderName"));
 
-        getDAOFactory().getMailboxDAO().updateMailbox(mailbox);
+        getDataFacade().updateMailbox(mailbox);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 

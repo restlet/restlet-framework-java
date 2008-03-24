@@ -57,16 +57,15 @@ public class ContactResource extends BaseResource {
         // Get the contact and its parent mailbox thanks to their IDs taken from
         // the resource's URI.
         String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
+        mailbox = getDataFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             String contactId = (String) request.getAttributes()
                     .get("contactId");
-            contact = getDAOFactory().getContactDAO().getContactById(contactId);
+            contact = getDataFacade().getContactById(contactId);
 
             if (contact != null) {
-                hostedMailboxes = getDAOFactory().getMailboxDAO()
-                        .getMailboxes();
+                hostedMailboxes = getDataFacade().getMailboxes();
                 getVariants().add(new Variant(MediaType.TEXT_HTML));
             }
         }
@@ -87,7 +86,7 @@ public class ContactResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDAOFactory().getMailboxDAO().deleteContact(mailbox, contact);
+        getDataFacade().deleteContact(mailbox, contact);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -122,7 +121,7 @@ public class ContactResource extends BaseResource {
         contact.setMailAddress(form.getFirstValue("mailAddress"));
         contact.setName(form.getFirstValue("name"));
 
-        getDAOFactory().getMailboxDAO().updateContact(mailbox, contact);
+        getDataFacade().updateContact(mailbox, contact);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 

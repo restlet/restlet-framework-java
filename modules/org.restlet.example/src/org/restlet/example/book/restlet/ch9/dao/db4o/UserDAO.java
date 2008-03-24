@@ -62,7 +62,7 @@ public class UserDAO extends Db4oDAO {
      * Get a user by its login and password.
      * 
      * @param login
-     *                the user's identifiant.
+     *                the user's id.
      * @param password
      *                the user's password.
      * @return a User object or null if no user has been found.
@@ -76,10 +76,10 @@ public class UserDAO extends Db4oDAO {
     }
 
     /**
-     * Get a user by its identifiant.
+     * Get a user by its id.
      * 
      * @param userId
-     *                the user's identifiant.
+     *                the user's id.
      * @return a User object or null if no user has been found.
      */
     public User getUserById(String userId) {
@@ -115,6 +115,8 @@ public class UserDAO extends Db4oDAO {
     public List<User> getUsers() {
         // Get all users
         Predicate<User> predicate = new Predicate<User>() {
+            static final long serialVersionUID = 1l;
+
             @Override
             public boolean match(User arg0) {
                 return true;
@@ -122,6 +124,8 @@ public class UserDAO extends Db4oDAO {
         };
         // Sort by last name
         QueryComparator<User> comparator = new QueryComparator<User>() {
+            static final long serialVersionUID = 1l;
+
             public int compare(User arg0, User arg1) {
                 return arg0.getLastName().compareToIgnoreCase(
                         arg1.getLastName());
@@ -166,6 +170,8 @@ public class UserDAO extends Db4oDAO {
     public List<Mailbox> getMailboxes(User user) {
         final String userId = user.getId();
         Predicate<Mailbox> predicate = new Predicate<Mailbox>() {
+            static final long serialVersionUID = 1l;
+
             @Override
             public boolean match(Mailbox mailbox) {
                 return mailbox.getOwner().getId().equals(userId);

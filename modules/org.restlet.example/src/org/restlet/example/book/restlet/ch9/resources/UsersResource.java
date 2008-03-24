@@ -45,9 +45,9 @@ public class UsersResource extends BaseResource {
 
     public UsersResource(Context context, Request request, Response response) {
         super(context, request, response);
-        
+
         if (getCurrentUser().isAdministrator()) {
-            users = getDAOFactory().getUserDAO().getUsers();
+            users = getDataFacade().getUsers();
         } else {
             users = new ArrayList<User>();
             users.add(getCurrentUser());
@@ -72,7 +72,7 @@ public class UsersResource extends BaseResource {
                 .setAdministrator((form.getFirstValue("administrator") == null ? false
                         : true));
 
-        user = getDAOFactory().getUserDAO().createUser(user);
+        user = getDataFacade().createUser(user);
 
         getResponse().redirectSeeOther(
                 getChildReference(getRequest().getResourceRef(), user.getId()));

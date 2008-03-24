@@ -29,6 +29,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.example.book.restlet.ch9.dao.DAOFactory;
+import org.restlet.example.book.restlet.ch9.data.DataFacade;
 import org.restlet.example.book.restlet.ch9.resources.ContactResource;
 import org.restlet.example.book.restlet.ch9.resources.ContactsResource;
 import org.restlet.example.book.restlet.ch9.resources.FeedResource;
@@ -61,8 +62,8 @@ public class Application extends org.restlet.Application {
         component.start();
     }
 
-    /** DAO objects factory. */
-    private DAOFactory daoFactory;
+    /** Facade object for all access to data. */
+    private DataFacade dataFacade;
 
     /** Freemarker configuration object. */
     private freemarker.template.Configuration fmc;
@@ -77,11 +78,11 @@ public class Application extends org.restlet.Application {
         Configuration config = Db4o.configure();
         config.updateDepth(2);
         config.activationDepth(10);
-        this.daoFactory = new DAOFactory(Db4o.openFile(System
+        dataFacade = new DataFacade(new DAOFactory(Db4o.openFile(System
                 .getProperty("user.home")
-                + File.separator + "rmep.dbo"));
+                + File.separator + "rmep.dbo")));
         // Check that at least one administrator exists in the database.
-        this.daoFactory.getUserDAO().initAdmin();
+        this.dataFacade.initAdmin();
 
         try {
             File templateDir = new File(
@@ -99,7 +100,7 @@ public class Application extends org.restlet.Application {
         Router router = new Router(getContext());
 
         RmepGuard guard = new RmepGuard(getContext(),
-                ChallengeScheme.HTTP_BASIC, "rmep", daoFactory);
+                ChallengeScheme.HTTP_BASIC, "rmep", dataFacade);
 
         // Add a route for the MailRoot resource
         router.attachDefault(MailRootResource.class);
@@ -129,7 +130,7 @@ public class Application extends org.restlet.Application {
 
         // Guard that will secure any access to a single mailbox.
         RmepMailboxGuard mailboxGuard = new RmepMailboxGuard(getContext(),
-                ChallengeScheme.HTTP_BASIC, "rmep", daoFactory);
+                ChallengeScheme.HTTP_BASIC, "rmep", dataFacade);
 
         // Add a route for a Mailbox resource
         router.attach("/mailboxes/{mailboxId}", mailboxGuard);
@@ -166,12 +167,12 @@ public class Application extends org.restlet.Application {
     }
 
     /**
-     * Returns the DAO factory.
+     * Returns the data facade.
      * 
-     * @return the DAO factory.
+     * @return the data facade.
      */
-    public DAOFactory getDAOFactory() {
-        return this.daoFactory;
+    public DataFacade getDataFacade() {
+        return this.dataFacade;
     }
 
     /**

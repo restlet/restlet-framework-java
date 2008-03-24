@@ -57,11 +57,11 @@ public class FeedResource extends BaseResource {
         // Get the feed and its parent mailbox thanks to their IDs taken from
         // the resource's URI.
         String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
+        mailbox = getDataFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             String feedId = (String) request.getAttributes().get("feedId");
-            feed = getDAOFactory().getFeedDAO().getFeedById(feedId);
+            feed = getDataFacade().getFeedById(feedId);
 
             if (feed != null) {
                 // Look for the list of tagged mails.
@@ -98,7 +98,7 @@ public class FeedResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDAOFactory().getMailboxDAO().deleteFeed(mailbox, feed);
+        getDataFacade().deleteFeed(mailbox, feed);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -154,7 +154,7 @@ public class FeedResource extends BaseResource {
             feed.setTags(null);
         }
 
-        getDAOFactory().getMailboxDAO().updateFeed(mailbox, feed);
+        getDataFacade().updateFeed(mailbox, feed);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 

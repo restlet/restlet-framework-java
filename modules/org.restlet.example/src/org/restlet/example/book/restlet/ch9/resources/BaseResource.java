@@ -24,7 +24,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch9.Application;
 import org.restlet.example.book.restlet.ch9.RmepGuard;
-import org.restlet.example.book.restlet.ch9.dao.DAOFactory;
+import org.restlet.example.book.restlet.ch9.data.DataFacade;
 import org.restlet.example.book.restlet.ch9.objects.User;
 import org.restlet.resource.Resource;
 
@@ -42,13 +42,13 @@ public class BaseResource extends Resource {
     }
 
     /**
-     * Gives access to Data Access Objects.
+     * Gives access to Data.
      * 
-     * @return a DAO factory.
+     * @return a data facade.
      */
-    protected DAOFactory getDAOFactory() {
+    protected DataFacade getDataFacade() {
         Application application = (Application) getApplication();
-        return application.getDAOFactory();
+        return application.getDataFacade();
     }
 
     /**
@@ -71,13 +71,13 @@ public class BaseResource extends Resource {
     }
 
     /**
-     * Returns the reference of a resource according to its identifiant and the
-     * reference of its "parent".
+     * Returns the reference of a resource according to its id and the reference
+     * of its "parent".
      * 
      * @param parentRef
      *                parent reference.
      * @param childId
-     *                identifiant of this resource
+     *                id of this resource
      * @return the reference object of the child resource.
      */
     protected Reference getChildReference(Reference parentRef, String childId) {

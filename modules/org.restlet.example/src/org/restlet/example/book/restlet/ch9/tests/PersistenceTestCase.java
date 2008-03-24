@@ -8,8 +8,8 @@ import junit.framework.TestCase;
 
 import org.restlet.example.book.restlet.ch9.objects.Contact;
 import org.restlet.example.book.restlet.ch9.objects.Mail;
-import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.example.book.restlet.ch9.objects.MailRoot;
+import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.example.book.restlet.ch9.objects.User;
 
 import com.db4o.Db4o;
@@ -179,6 +179,8 @@ public class PersistenceTestCase extends TestCase {
         Contact contactProto = new Contact();
         // Set a Mail predicate for future research.
         Predicate<Mail> mailByContactNamePredicate = new Predicate<Mail>() {
+            static final long serialVersionUID = 1l;
+
             @Override
             public boolean match(Mail mail) {
                 boolean found = false;
@@ -194,6 +196,8 @@ public class PersistenceTestCase extends TestCase {
         };
         // Set a Mailbox predicate for future research.
         Predicate<Mailbox> mailboxByContactNamePredicate = new Predicate<Mailbox>() {
+            static final long serialVersionUID = 1l;
+
             @Override
             public boolean match(Mailbox mailbox) {
                 boolean found = false;

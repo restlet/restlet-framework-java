@@ -42,6 +42,9 @@ public class Mailbox extends BaseObject {
     /** Owner of the mailbox. */
     private User owner;
 
+    /** Identity of the sender. */
+    private String senderName;
+
     public Mailbox() {
         super();
         this.contacts = new ArrayList<Contact>();
@@ -69,6 +72,10 @@ public class Mailbox extends BaseObject {
         return owner;
     }
 
+    public String getSenderName() {
+        return senderName;
+    }
+
     public void setContacts(List<Contact> contacts) {
         this.contacts = contacts;
     }
@@ -87,6 +94,10 @@ public class Mailbox extends BaseObject {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
 }

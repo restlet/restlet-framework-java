@@ -59,11 +59,11 @@ public class MailResource extends BaseResource {
     public MailResource(Context context, Request request, Response response) {
         super(context, request, response);
         String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
+        mailbox = getDataFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             String mailId = (String) request.getAttributes().get("mailId");
-            mail = getDAOFactory().getMailDAO().getMailById(mailId);
+            mail = getDataFacade().getMailById(mailId);
 
             if (mail != null) {
                 getVariants().add(new Variant(MediaType.TEXT_HTML));
@@ -86,7 +86,7 @@ public class MailResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDAOFactory().getMailboxDAO().deleteMail(mailbox, mail);
+        getDataFacade().deleteMail(mailbox, mail);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -100,6 +100,18 @@ public class MailResource extends BaseResource {
         dataModel.put("currentUser", getCurrentUser());
         dataModel.put("mailbox", mailbox);
         dataModel.put("mail", mail);
+
+        List<Contact> contacts = new ArrayList<Contact>();
+        contacts.addAll(mailbox.getContacts());
+        if (mail.getRecipients() != null) {
+            for (Contact contact : mail.getRecipients()) {
+                if (contact.getId() == null) {
+                    contacts.add(contact);
+                }
+            }
+        }
+        dataModel.put("contacts", contacts);
+
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
@@ -118,33 +130,21 @@ public class MailResource extends BaseResource {
     public void storeRepresentation(Representation entity)
             throws ResourceException {
         Form form = new Form(entity);
+        List<String> mailAddresses = new ArrayList<String>();
 
-        mail.setSubject(form.getFirstValue("subject"));
-        mail.setMessage(form.getFirstValue("message"));
-        mail.setStatus(form.getFirstValue("status"));
-
-        if (form.getFirstValue("recipients") != null) {
-            List<Contact> recipients = new ArrayList<Contact>();
-            for (Parameter parameter : form.subList("recipients")) {
-                for (Contact contact : mailbox.getContacts()) {
-                    if (contact.getId().equals(parameter.getValue())) {
-                        recipients.add(contact);
-                    }
-                }
-            }
-            mail.setRecipients(recipients);
-        } else {
-            mail.setRecipients(null);
+        for (Parameter parameter : form.subList("recipients")) {
+            mailAddresses.add(parameter.getValue());
         }
 
+        List<String> tags = null;
         if (form.getFirstValue("tags") != null) {
-            mail.setTags(new ArrayList<String>(Arrays.asList(form
-                    .getFirstValue("tags").split(" "))));
-        } else {
-            mail.setTags(null);
+            tags = new ArrayList<String>(Arrays.asList(form.getFirstValue(
+                    "tags").split(" ")));
         }
 
-        getDAOFactory().getMailboxDAO().updateMail(mailbox, mail);
+        getDataFacade().updateMail(mailbox, mail, form.getFirstValue("status"),
+                form.getFirstValue("subject"), form.getFirstValue("message"),
+                mailAddresses, tags);
 
         // Detect if the mail is to be sent.
         if (Mail.STATUS_SENDING.equalsIgnoreCase(mail.getStatus())) {
@@ -157,24 +157,25 @@ public class MailResource extends BaseResource {
                 form2.add("status", Mail.STATUS_RECEIVING);
                 form2.add("senderAddress", getRequest().getRootRef()
                         + "/mailboxes/" + mailbox.getId());
-                form2.add("senderName", getCurrentUser().getFirstName() + " "
-                        + getCurrentUser().getLastName());
+                form2.add("senderName", mailbox.getSenderName());
 
                 form2.add("subject", mail.getSubject());
                 form2.add("message", mail.getMessage());
                 form2.add("sendingDate", mail.getSendingDate().toString());
                 for (Contact recipient : mail.getRecipients()) {
-                    form2.add("recipient", recipient.getMailAddress());
+                    form2.add("recipient", recipient.getMailAddress() + "$"
+                            + recipient.getName());
                 }
 
                 // Send the mail to every recipient
                 StringBuilder builder = new StringBuilder();
                 Response response;
-                // TODO on ne devrait pas avoir à le faire!!
-                // Add the client authentication to the call
                 Request request = new Request();
                 request.setMethod(Method.POST);
                 request.setEntity(form2.getWebRepresentation());
+
+                // TODO on ne devrait pas avoir à le faire!!
+                // Add the client authentication to the call
                 ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
                 ChallengeResponse authentication = new ChallengeResponse(
                         scheme, getCurrentUser().getLogin(), getCurrentUser()
@@ -196,7 +197,7 @@ public class MailResource extends BaseResource {
                     // if the mail has been successfully sent to every
                     // recipient.
                     mail.setStatus(Mail.STATUS_SENT);
-                    getDAOFactory().getMailboxDAO().updateMail(mailbox, mail);
+                    getDataFacade().updateMail(mailbox, mail);
                     getResponse().redirectSeeOther(
                             getRequest().getResourceRef());
                 } else {
@@ -217,7 +218,7 @@ public class MailResource extends BaseResource {
             } else {
                 // Still a draft
                 mail.setStatus(Mail.STATUS_DRAFT);
-                getDAOFactory().getMailboxDAO().updateMail(mailbox, mail);
+                getDataFacade().updateMail(mailbox, mail);
                 getResponse().redirectSeeOther(getRequest().getResourceRef());
             }
         } else {

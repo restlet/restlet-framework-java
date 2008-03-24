@@ -26,14 +26,11 @@ import java.util.List;
 import org.restlet.example.book.restlet.ch9.objects.Contact;
 import org.restlet.example.book.restlet.ch9.objects.Feed;
 import org.restlet.example.book.restlet.ch9.objects.Mail;
-import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.example.book.restlet.ch9.objects.MailRoot;
+import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.example.book.restlet.ch9.objects.User;
 
 public class DomainObjects {
-    public static void main(String[] args) {
-        DomainObjects dom = new DomainObjects();
-    }
 
     /** Root object at the top of the hierarchy. */
     private MailRoot mailRoot;
@@ -166,10 +163,10 @@ public class DomainObjects {
         mail.setSendingDate(new Date());
         mail.setSubject("Hello!");
 
-        // Set the status according to the mail identifiant.
+        // Set the status according to the mail id.
         mail.setStatus(mailStatuses[(Integer.parseInt(mail.getId()))
                 % mailStatuses.length]);
-        // Set the list of tags according to the mail identifiant.
+        // Set the list of tags according to the mail id.
         mail.setTags(new ArrayList<String>(mailTags.subList(0, (Integer
                 .parseInt(mail.getId()))
                 % (mailTags.size() + 1))));

@@ -27,7 +27,6 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.example.book.restlet.ch9.objects.Contact;
 import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.example.book.restlet.ch9.objects.User;
 import org.restlet.ext.freemarker.TemplateRepresentation;
@@ -49,13 +48,12 @@ public class MailboxesResource extends BaseResource {
 
     public MailboxesResource(Context context, Request request, Response response) {
         super(context, request, response);
-        
+
         if (getCurrentUser().isAdministrator()) {
-            mailboxes = getDAOFactory().getMailboxDAO().getMailboxes();
-            users = getDAOFactory().getUserDAO().getUsers();
+            mailboxes = getDataFacade().getMailboxes();
+            users = getDataFacade().getUsers();
         } else {
-            mailboxes = getDAOFactory().getUserDAO().getMailboxes(
-                    getCurrentUser());
+            mailboxes = getDataFacade().getMailboxes(getCurrentUser());
         }
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
@@ -70,23 +68,12 @@ public class MailboxesResource extends BaseResource {
 
         Mailbox mailbox = new Mailbox();
         mailbox.setNickname(form.getFirstValue("nickname"));
-        User owner = getDAOFactory().getUserDAO().getUserById(
-                form.getFirstValue("ownerId"));
+        User owner = getDataFacade().getUserById(form.getFirstValue("ownerId"));
         mailbox.setOwner(owner);
+        mailbox.setSenderName(owner.getFirstName() + " " + owner.getLastName());
+        mailbox = getDataFacade().createMailbox(mailbox);
 
-        mailbox = getDAOFactory().getMailboxDAO().createMailbox(mailbox);
-
-        // TODO approfondir
-        // Add the owner as contact
-        Contact contact = new Contact();
-        contact.setMailAddress(getRequest().getRootRef().getIdentifier()
-                + "/mailboxes/" + mailbox.getId());
-        contact.setName(owner.getFirstName() + " " + owner.getLastName());
-        getDAOFactory().getMailboxDAO().createContact(mailbox, contact);
-
-        getResponse().redirectSeeOther(
-                getChildReference(getRequest().getResourceRef(), mailbox
-                        .getId()));
+        getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 
     @Override

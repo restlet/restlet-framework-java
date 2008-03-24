@@ -1,5 +1,7 @@
 package org.restlet.example.book.restlet.ch9.dao.db4o;
 
+import java.util.Date;
+
 import org.restlet.example.book.restlet.ch9.objects.Feed;
 
 import com.db4o.ObjectContainer;
@@ -16,10 +18,25 @@ public class FeedDAO extends Db4oDAO {
     }
 
     /**
-     * Get a feed by its identifiant.
+     * Add a new Feed object in the database.
+     * 
+     * @param feed
+     *                new Feed object to be added.
+     * @return the feed object completed with its identfiant.
+     */
+    public Feed createFeed(Feed feed) {
+        feed.setId(Long.toString(new Date().getTime()));
+        objectContainer.store(feed);
+        objectContainer.commit();
+
+        return feed;
+    }
+
+    /**
+     * Get a feed by its id.
      * 
      * @param feedId
-     *                the feed's identifiant.
+     *                the feed's id.
      * @return a Feed object or null if no feed has been found.
      */
     public Feed getFeedById(String feedId) {
@@ -45,6 +62,30 @@ public class FeedDAO extends Db4oDAO {
         }
 
         return feed;
+    }
+
+    /**
+     * Update a feed.
+     * 
+     * @param mailbox
+     *                the parent mailbox.
+     * @param feed
+     *                the feed to be updated.
+     */
+    public void updateFeed(Feed feed) {
+        objectContainer.store(feed);
+        objectContainer.commit();
+    }
+
+    /**
+     * Delete a feed.
+     * 
+     * @param feed
+     *                the feed to be deleted.
+     */
+    public void deleteFeed(Feed feed) {
+        objectContainer.delete(feed);
+        objectContainer.commit();
     }
 
 }

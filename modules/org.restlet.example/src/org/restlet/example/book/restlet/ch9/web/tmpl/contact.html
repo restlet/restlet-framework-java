@@ -6,14 +6,14 @@
 <div>
 	<h4>Update my contact.</h4>
 	<form action="${resourceRef}?method=put" method="POST">
-		<table>
+		<table width="100%">
 			<tr>
-				<td>Name:</td>
-				<td><input type="text" name="name" value="${contact.name}"></td>
+				<td width="20%">Name:</td>
+				<td width="80%"><input type="text" name="name" value="${contact.name}"></td>
 			</tr>
 			<tr>
 				<td>Mailbox's address:</td>
-				<td><input type="text" name="mailAddress" value="${contact.mailAddress}"></td>
+				<td><input type="text" name="mailAddress" value="${contact.mailAddress}" size="60"></td>
 			</tr>
 			<tr>
 				<td>Choose one of the hosted mailboxes:</td>

@@ -5,10 +5,14 @@
 <div>
 	<h4>Update my mailbox.</h4>
 	<form action="${resourceRef}?method=put" method="POST">
-		<table>
+		<table width="100%">
 			<tr>
-				<td>Nickname:</td>
-				<td><input type="text" name="nickname" value="${mailbox.nickname}"></td>
+				<td width="20%">Nickname:</td>
+				<td width="80%"><input type="text" name="nickname" value="${mailbox.nickname}"></td>
+			</tr>
+			<tr>
+				<td>Reply to name:</td>
+				<td><input type="text" name="senderName" value="${mailbox.senderName}"></td>
 			</tr>
 		</table>
 		<input type="submit" name="updateMailbox" title="Submit modifications to the mailbox" value="Update" onclick="this.form.action='${resourceRef}?method=put'">

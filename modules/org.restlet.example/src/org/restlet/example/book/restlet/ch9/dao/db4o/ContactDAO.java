@@ -1,5 +1,7 @@
 package org.restlet.example.book.restlet.ch9.dao.db4o;
 
+import java.util.Date;
+
 import org.restlet.example.book.restlet.ch9.objects.Contact;
 
 import com.db4o.ObjectContainer;
@@ -16,10 +18,25 @@ public class ContactDAO extends Db4oDAO {
     }
 
     /**
-     * Get a contact by its identifiant.
+     * Add a new Contact object in the database.
+     * 
+     * @param contact
+     *                new Contact object to be added.
+     * @return the contact object completed with its identfiant.
+     */
+    public Contact createContact(Contact contact) {
+        contact.setId(Long.toString(new Date().getTime()));
+        objectContainer.store(contact);
+        objectContainer.commit();
+
+        return contact;
+    }
+
+    /**
+     * Get a contact by its id.
      * 
      * @param contactId
-     *                the contact's identifiant.
+     *                the contact's id.
      * @return a Contact object or null if no contact has been found.
      */
     public Contact getContactById(String contactId) {
@@ -45,6 +62,30 @@ public class ContactDAO extends Db4oDAO {
         }
 
         return contact;
+    }
+
+    /**
+     * Update a contact.
+     * 
+     * @param mailbox
+     *                the parent mailbox.
+     * @param contact
+     *                the contact to be update.
+     */
+    public void updateContact(Contact contact) {
+        objectContainer.store(contact);
+        objectContainer.commit();
+    }
+
+    /**
+     * Delete a contact.
+     * 
+     * @param contact
+     *                the contact to be deleted.
+     */
+    public void deleteContact(Contact contact) {
+        objectContainer.delete(contact);
+        objectContainer.commit();
     }
 
 }

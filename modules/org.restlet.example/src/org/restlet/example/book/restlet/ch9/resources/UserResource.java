@@ -52,10 +52,10 @@ public class UserResource extends BaseResource {
         // Get user thanks to its ID taken from the resource's
         // URI.
         String userId = (String) request.getAttributes().get("userId");
-        user = getDAOFactory().getUserDAO().getUserById(userId);
+        user = getDataFacade().getUserById(userId);
 
         if (user != null) {
-            mailboxes = getDAOFactory().getUserDAO().getMailboxes(user);
+            mailboxes = getDataFacade().getMailboxes(user);
             getVariants().add(new Variant(MediaType.TEXT_HTML));
         }
     }
@@ -75,7 +75,7 @@ public class UserResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDAOFactory().getUserDAO().deleteUser(user);
+        getDataFacade().deleteUser(user);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -114,7 +114,7 @@ public class UserResource extends BaseResource {
         user.setLastName(form.getFirstValue("lastName"));
         user.setLogin(form.getFirstValue("login"));
         user.setPassword(form.getFirstValue("password"));
-        getDAOFactory().getUserDAO().updateUser(user);
+        getDataFacade().updateUser(user);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 }

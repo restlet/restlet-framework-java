@@ -14,15 +14,11 @@
 <div>
 	<h4>Mail in ${mail.status} status</h4>
 	<form action="${resourceRef}?method=put" method="POST">
-		<table>
+		<input type="hidden" name="status" value="${mail.status}" >
+		<table width="100%">
 			<tr>
-				<td>Subject:</td>
-				<td><input type="text" name="subject" value="${mail.subject!"(no subject)"}" readonly="readonly"></td>
-			</tr>
-			<tr>
-				<td>Status:</td>
-				<td><input type="text" name="status" value="${mail.status}" readonly="readonly"></select>
-				</td>
+				<td width="20%">Subject:</td>
+				<td width="80%"><input type="text" name="subject" value="${mail.subject!"(no subject)"}" readonly="readonly"></td>
 			</tr>
 			<tr>
 				<td>Recipients:</td>

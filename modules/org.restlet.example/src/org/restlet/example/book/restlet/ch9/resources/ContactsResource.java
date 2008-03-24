@@ -57,11 +57,11 @@ public class ContactsResource extends BaseResource {
         // Get the parent mailbox thanks to its ID taken from the resource's
         // URI.
         String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
+        mailbox = getDataFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             contacts = mailbox.getContacts();
-            hostedMailboxes = getDAOFactory().getMailboxDAO().getMailboxes();
+            hostedMailboxes = getDataFacade().getMailboxes();
             getVariants().add(new Variant(MediaType.TEXT_HTML));
         }
     }
@@ -77,8 +77,7 @@ public class ContactsResource extends BaseResource {
         contact.setMailAddress(form.getFirstValue("mailAddress"));
         contact.setName(form.getFirstValue("name"));
 
-        contact = getDAOFactory().getMailboxDAO().createContact(mailbox,
-                contact);
+        contact = getDataFacade().createContact(mailbox, contact);
 
         getResponse().redirectSeeOther(
                 getChildReference(getRequest().getResourceRef(), contact

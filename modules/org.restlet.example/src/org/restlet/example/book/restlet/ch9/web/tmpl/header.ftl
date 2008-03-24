@@ -15,15 +15,15 @@
 	<#list contactsList as contact>
 		<#local found = 0>
 		<#list mailContacts as mailContact>
-			<#if contact.id==mailContact.id!"">
+			<#if contact.mailAddress==mailContact.mailAddress>
 				<#local found = 1>
 				<#break>
 			</#if>
 		</#list>
 		<#if found=1>
-		<option value="${contact.id}" selected>${contact.name}</option>
+		<option value="${contact.mailAddress}" selected>${contact.name}</option>
 		<#else>
-		<option value="${contact.id}">${contact.name}</option>
+		<option value="${contact.mailAddress}">${contact.name}</option>
 		</#if>
 	</#list>
 	</select>
