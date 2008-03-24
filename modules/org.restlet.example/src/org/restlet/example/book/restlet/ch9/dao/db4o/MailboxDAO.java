@@ -11,6 +11,8 @@ import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
+import com.db4o.query.Predicate;
+import com.db4o.query.QueryComparator;
 
 /**
  * DAO that manages the persistence of Mailbox objects.
@@ -75,8 +77,29 @@ public class MailboxDAO extends Db4oDAO {
      * @return the list of all mailboxes.
      */
     public List<Mailbox> getMailboxes() {
+        // Get all mailboxes
+        Predicate<Mailbox> predicate = new Predicate<Mailbox>() {
+            @Override
+            public boolean match(Mailbox arg0) {
+                return true;
+            }
+        };
+        // Sort by owner name
+        QueryComparator<Mailbox> comparator = new QueryComparator<Mailbox>() {
+            public int compare(Mailbox arg0, Mailbox arg1) {
+                int result = arg0.getOwner().getLastName().compareToIgnoreCase(
+                        arg1.getOwner().getLastName());
+                if (result == 0) {
+                    result = arg0.getNickname().compareToIgnoreCase(
+                            arg1.getNickname());
+                }
+                return result;
+            }
+
+        };
+
         List<Mailbox> result = new ArrayList<Mailbox>();
-        ObjectSet<Mailbox> list = objectContainer.queryByExample(new Mailbox());
+        ObjectSet<Mailbox> list = objectContainer.query(predicate, comparator);
         result.addAll(list);
         return result;
     }

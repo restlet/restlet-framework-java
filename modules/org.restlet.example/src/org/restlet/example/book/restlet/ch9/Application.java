@@ -118,40 +118,47 @@ public class Application extends org.restlet.Application {
         // Add a route for the CSS resources
         router.attach("/stylesheets", cssDirectory);
 
-        // Add a route for a Mailboxes resource
-        router.attach("/mailboxes", MailboxesResource.class);
-
-        // Add a route for a Mailbox resource
-        router.attach("/mailboxes/{mailboxId}", MailboxResource.class);
-
-        // Add a route for a Contacts resource
-        router
-                .attach("/mailboxes/{mailboxId}/contacts",
-                        ContactsResource.class);
-
-        // Add a route for a Contact resource
-        router.attach("/mailboxes/{mailboxId}/contacts/{contactId}",
-                ContactResource.class);
-
-        // Add a route for a Mails resource
-        router.attach("/mailboxes/{mailboxId}/mails", MailsResource.class);
-
-        // Add a route for a Mail resource
-        router.attach("/mailboxes/{mailboxId}/mails/{mailId}",
-                MailResource.class);
-
-        // Add a route for a Feeds resource
-        router.attach("/mailboxes/{mailboxId}/feeds", FeedsResource.class);
-
-        // Add a route for a Feed resource
-        router.attach("/mailboxes/{mailboxId}/feeds/{feedId}",
-                FeedResource.class);
-
         // Add a route for a Users resource
         router.attach("/users", UsersResource.class);
 
         // Add a route for a User resource
         router.attach("/users/{userId}", UserResource.class);
+
+        // Add a route for a Mailboxes resource
+        router.attach("/mailboxes", MailboxesResource.class);
+
+        // Guard that will secure any access to a single mailbox.
+        RmepMailboxGuard mailboxGuard = new RmepMailboxGuard(getContext(),
+                ChallengeScheme.HTTP_BASIC, "rmep", daoFactory);
+
+        // Add a route for a Mailbox resource
+        router.attach("/mailboxes/{mailboxId}", mailboxGuard);
+
+        // Add a router for access to mailbox
+        Router mailboxRouter = new Router(getContext());
+
+        // Add a route for a Mailbox resource
+        mailboxRouter.attachDefault(MailboxResource.class);
+
+        // Add a route for a Contacts resource
+        mailboxRouter.attach("/contacts", ContactsResource.class);
+
+        // Add a route for a Contact resource
+        mailboxRouter.attach("/contacts/{contactId}", ContactResource.class);
+
+        // Add a route for a Mails resource
+        mailboxRouter.attach("/mails", MailsResource.class);
+
+        // Add a route for a Mail resource
+        mailboxRouter.attach("/mails/{mailId}", MailResource.class);
+
+        // Add a route for a Feeds resource
+        mailboxRouter.attach("/feeds", FeedsResource.class);
+
+        // Add a route for a Feed resource
+        mailboxRouter.attach("/feeds/{feedId}", FeedResource.class);
+
+        mailboxGuard.setNext(mailboxRouter);
 
         // Secure the whole application.
         guard.setNext(router);

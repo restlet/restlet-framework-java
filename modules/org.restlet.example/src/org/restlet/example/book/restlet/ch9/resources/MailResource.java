@@ -81,6 +81,9 @@ public class MailResource extends BaseResource {
         return true;
     }
 
+    /**
+     * Remove this resource.
+     */
     @Override
     public void removeRepresentations() throws ResourceException {
         getDAOFactory().getMailboxDAO().deleteMail(mailbox, mail);
@@ -88,6 +91,9 @@ public class MailResource extends BaseResource {
                 getRequest().getResourceRef().getParentRef());
     }
 
+    /**
+     * Generate the HTML representation of this resource.
+     */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();
@@ -98,12 +104,16 @@ public class MailResource extends BaseResource {
         dataModel.put("rootRef", getRequest().getRootRef());
 
         TemplateRepresentation representation = new TemplateRepresentation(
-                "mail.html", getFmcConfiguration(), dataModel, variant
-                        .getMediaType());
+                "mail_" + mail.getStatus() + ".html", getFmcConfiguration(),
+                dataModel, variant.getMediaType());
 
         return representation;
     }
 
+    /**
+     * Update the underlying mail according to the given representation. If the
+     * mail is intended to be sent, send it to all of its recipients.
+     */
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {
@@ -190,6 +200,7 @@ public class MailResource extends BaseResource {
                     getResponse().redirectSeeOther(
                             getRequest().getResourceRef());
                 } else {
+                    // At least one error has been encountered.
                     Map<String, Object> dataModel = new TreeMap<String, Object>();
                     dataModel.put("currentUser", getCurrentUser());
                     dataModel.put("mailbox", mailbox);
@@ -198,7 +209,7 @@ public class MailResource extends BaseResource {
                     dataModel.put("rootRef", getRequest().getRootRef());
                     dataModel.put("message", builder.toString());
                     TemplateRepresentation representation = new TemplateRepresentation(
-                            "mailSendingError.html", getFmcConfiguration(),
+                            "mail_sending.html", getFmcConfiguration(),
                             dataModel, MediaType.TEXT_HTML);
 
                     getResponse().setEntity(representation);

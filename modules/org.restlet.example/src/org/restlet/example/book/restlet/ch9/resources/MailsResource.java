@@ -25,9 +25,9 @@ import java.util.TreeMap;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.restlet.ch9.objects.Contact;
 import org.restlet.example.book.restlet.ch9.objects.Mail;
 import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.ext.freemarker.TemplateRepresentation;
@@ -49,28 +49,41 @@ public class MailsResource extends BaseResource {
 
     public MailsResource(Context context, Request request, Response response) {
         super(context, request, response);
+        // Get the parent mailbox thanks to its ID taken from the resource's
+        // URI.
         String mailboxId = (String) request.getAttributes().get("mailboxId");
         mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
 
         if (mailbox != null) {
-            getVariants().add(new Variant(MediaType.TEXT_HTML));
             mails = mailbox.getMails();
+            getVariants().add(new Variant(MediaType.TEXT_HTML));
         }
     }
 
+    /**
+     * Accept the representation of a new mail, and create it.
+     */
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
         Form form = new Form(entity);
 
         Mail mail = new Mail();
-        mail.setSender(getCurrentUser());
         mail.setStatus(Mail.STATUS_DRAFT);
+        // TODO prolonger la réflexion sur ce point.
+        // Faut il créer un contact par défaut représentant l'utilisateur
+        // courant?
+        Contact sender = new Contact();
+        sender.setName(getCurrentUser().getFirstName() + " "
+                + getCurrentUser().getLastName());
+        sender.setMailAddress(getRequest().getRootRef().getIdentifier()
+                + "/mailboxes/" + mailbox.getId());
+        mail.setSender(sender);
         mail.setSubject(form.getFirstValue("subject"));
         mail = getDAOFactory().getMailboxDAO().createMail(mailbox, mail);
-        Reference mailRef = new Reference(getRequest().getResourceRef(), mail
-                .getId());
-        getResponse().redirectSeeOther(mailRef);
+
+        getResponse().redirectSeeOther(
+                getChildReference(getRequest().getResourceRef(), mail.getId()));
     }
 
     @Override
@@ -78,6 +91,9 @@ public class MailsResource extends BaseResource {
         return true;
     }
 
+    /**
+     * Generate the HTML representation of this resource.
+     */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();

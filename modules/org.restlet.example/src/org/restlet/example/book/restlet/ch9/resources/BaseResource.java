@@ -19,6 +19,7 @@
 package org.restlet.example.book.restlet.ch9.resources;
 
 import org.restlet.Context;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch9.Application;
@@ -45,7 +46,7 @@ public class BaseResource extends Resource {
      * 
      * @return a DAO factory.
      */
-    public DAOFactory getDAOFactory() {
+    protected DAOFactory getDAOFactory() {
         Application application = (Application) getApplication();
         return application.getDAOFactory();
     }
@@ -55,7 +56,7 @@ public class BaseResource extends Resource {
      * 
      * @return the Freemarker's configuration object.
      */
-    public Configuration getFmcConfiguration() {
+    protected Configuration getFmcConfiguration() {
         Application application = (Application) getApplication();
         return application.getFmc();
     }
@@ -65,8 +66,25 @@ public class BaseResource extends Resource {
      * 
      * @return the current user connected.
      */
-    public User getCurrentUser() {
+    protected User getCurrentUser() {
         return (User) getRequest().getAttributes().get(RmepGuard.CURRENT_USER);
     }
 
+    /**
+     * Returns the reference of a resource according to its identifiant and the
+     * reference of its "parent".
+     * 
+     * @param parentRef
+     *                parent reference.
+     * @param childId
+     *                identifiant of this resource
+     * @return the reference object of the child resource.
+     */
+    protected Reference getChildReference(Reference parentRef, String childId) {
+        if (parentRef.getIdentifier().endsWith("/")) {
+            return new Reference(parentRef.getIdentifier() + childId);
+        } else {
+            return new Reference(parentRef.getIdentifier() + "/" + childId);
+        }
+    }
 }

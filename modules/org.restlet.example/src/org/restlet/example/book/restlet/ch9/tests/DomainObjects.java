@@ -160,7 +160,6 @@ public class DomainObjects {
             List<Feed> feeds) {
         Mail mail = new Mail();
         mail.setId(Integer.toString(mailSequence++));
-        mail.setSender(sender);
         mail.setRecipients(new ArrayList<Contact>(recipients.subList(0,
                 (Integer.parseInt(mail.getId())) % recipients.size() + 1)));
         mail.setMessage("Cheers -" + sender.getFirstName());

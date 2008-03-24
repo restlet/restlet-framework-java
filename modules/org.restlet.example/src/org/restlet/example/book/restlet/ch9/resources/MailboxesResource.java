@@ -25,9 +25,9 @@ import java.util.TreeMap;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.restlet.ch9.objects.Contact;
 import org.restlet.example.book.restlet.ch9.objects.Mailbox;
 import org.restlet.example.book.restlet.ch9.objects.User;
 import org.restlet.ext.freemarker.TemplateRepresentation;
@@ -49,7 +49,7 @@ public class MailboxesResource extends BaseResource {
 
     public MailboxesResource(Context context, Request request, Response response) {
         super(context, request, response);
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
+        
         if (getCurrentUser().isAdministrator()) {
             mailboxes = getDAOFactory().getMailboxDAO().getMailboxes();
             users = getDAOFactory().getUserDAO().getUsers();
@@ -57,8 +57,12 @@ public class MailboxesResource extends BaseResource {
             mailboxes = getDAOFactory().getUserDAO().getMailboxes(
                     getCurrentUser());
         }
+        getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 
+    /**
+     * Accept the representation of a new mailbox, and create it.
+     */
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
@@ -71,9 +75,18 @@ public class MailboxesResource extends BaseResource {
         mailbox.setOwner(owner);
 
         mailbox = getDAOFactory().getMailboxDAO().createMailbox(mailbox);
-        Reference mailboxRef = new Reference(getRequest().getResourceRef(),
-                mailbox.getId());
-        getResponse().redirectSeeOther(mailboxRef);
+
+        // TODO approfondir
+        // Add the owner as contact
+        Contact contact = new Contact();
+        contact.setMailAddress(getRequest().getRootRef().getIdentifier()
+                + "/mailboxes/" + mailbox.getId());
+        contact.setName(owner.getFirstName() + " " + owner.getLastName());
+        getDAOFactory().getMailboxDAO().createContact(mailbox, contact);
+
+        getResponse().redirectSeeOther(
+                getChildReference(getRequest().getResourceRef(), mailbox
+                        .getId()));
     }
 
     @Override
@@ -81,6 +94,9 @@ public class MailboxesResource extends BaseResource {
         return true;
     }
 
+    /**
+     * Generate the HTML representation of this resource.
+     */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();

@@ -25,7 +25,6 @@ import java.util.TreeMap;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch9.objects.Contact;
@@ -55,16 +54,21 @@ public class ContactsResource extends BaseResource {
 
     public ContactsResource(Context context, Request request, Response response) {
         super(context, request, response);
+        // Get the parent mailbox thanks to its ID taken from the resource's
+        // URI.
         String mailboxId = (String) request.getAttributes().get("mailboxId");
         mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
-        hostedMailboxes = getDAOFactory().getMailboxDAO().getMailboxes();
 
         if (mailbox != null) {
-            getVariants().add(new Variant(MediaType.TEXT_HTML));
             contacts = mailbox.getContacts();
+            hostedMailboxes = getDAOFactory().getMailboxDAO().getMailboxes();
+            getVariants().add(new Variant(MediaType.TEXT_HTML));
         }
     }
 
+    /**
+     * Accept the representation of a new contact, and create it.
+     */
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
@@ -75,9 +79,10 @@ public class ContactsResource extends BaseResource {
 
         contact = getDAOFactory().getMailboxDAO().createContact(mailbox,
                 contact);
-        Reference contactRef = new Reference(getRequest().getResourceRef(),
-                contact.getId());
-        getResponse().redirectSeeOther(contactRef);
+
+        getResponse().redirectSeeOther(
+                getChildReference(getRequest().getResourceRef(), contact
+                        .getId()));
     }
 
     @Override
@@ -85,6 +90,9 @@ public class ContactsResource extends BaseResource {
         return true;
     }
 
+    /**
+     * Generate the HTML representation of this resource.
+     */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();

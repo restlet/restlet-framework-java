@@ -54,6 +54,8 @@ public class FeedResource extends BaseResource {
 
     public FeedResource(Context context, Request request, Response response) {
         super(context, request, response);
+        // Get the feed and its parent mailbox thanks to their IDs taken from
+        // the resource's URI.
         String mailboxId = (String) request.getAttributes().get("mailboxId");
         mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
 
@@ -62,6 +64,7 @@ public class FeedResource extends BaseResource {
             feed = getDAOFactory().getFeedDAO().getFeedById(feedId);
 
             if (feed != null) {
+                // Look for the list of tagged mails.
                 mails = new ArrayList<Mail>();
                 if (feed.getTags() != null) {
                     for (Mail mail : mailbox.getMails()) {
@@ -71,6 +74,8 @@ public class FeedResource extends BaseResource {
                         }
                     }
                 }
+
+                // This resource supports two kinds of representations.
                 getVariants().add(new Variant(MediaType.TEXT_HTML));
                 getVariants().add(new Variant(MediaType.APPLICATION_ATOM_XML));
             }
@@ -88,6 +93,9 @@ public class FeedResource extends BaseResource {
         return true;
     }
 
+    /**
+     * Remove this resource.
+     */
     @Override
     public void removeRepresentations() throws ResourceException {
         getDAOFactory().getMailboxDAO().deleteFeed(mailbox, feed);
@@ -95,6 +103,9 @@ public class FeedResource extends BaseResource {
                 getRequest().getResourceRef().getParentRef());
     }
 
+    /**
+     * Generate the HTML and ATOM representations of this resource.
+     */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();
@@ -117,7 +128,7 @@ public class FeedResource extends BaseResource {
             builder.append("\" ");
             builder.append("title=\"Test feed\"");
             builder.append("/>");
-            dataModel.put("feedHeader", builder.toString());
+            dataModel.put("feedHeaderContent", builder.toString());
 
             representation = new TemplateRepresentation("feed.html",
                     getFmcConfiguration(), dataModel, variant.getMediaType());
@@ -128,6 +139,9 @@ public class FeedResource extends BaseResource {
         return representation;
     }
 
+    /**
+     * Update the underlying feed according to the given representation.
+     */
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {

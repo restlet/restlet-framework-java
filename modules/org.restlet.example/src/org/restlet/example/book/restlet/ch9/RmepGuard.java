@@ -14,7 +14,7 @@ import org.restlet.example.book.restlet.ch9.objects.User;
 public class RmepGuard extends Guard {
 
     /** DAO objects factory. */
-    private DAOFactory daoFactory;
+    protected DAOFactory daoFactory;
 
     /** Storage key in request's context. */
     public final static String CURRENT_USER = "CURRENT_USER";

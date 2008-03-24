@@ -1,5 +1,6 @@
 package org.restlet.example.book.restlet.ch9.dao;
 
+
 import org.restlet.example.book.restlet.ch9.dao.db4o.ContactDAO;
 import org.restlet.example.book.restlet.ch9.dao.db4o.FeedDAO;
 import org.restlet.example.book.restlet.ch9.dao.db4o.MailDAO;

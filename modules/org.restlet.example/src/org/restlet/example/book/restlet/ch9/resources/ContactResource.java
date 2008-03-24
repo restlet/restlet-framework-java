@@ -51,18 +51,22 @@ public class ContactResource extends BaseResource {
      * creation of contacts.
      */
     private List<Mailbox> hostedMailboxes;
-    
+
     public ContactResource(Context context, Request request, Response response) {
         super(context, request, response);
+        // Get the contact and its parent mailbox thanks to their IDs taken from
+        // the resource's URI.
         String mailboxId = (String) request.getAttributes().get("mailboxId");
         mailbox = getDAOFactory().getMailboxDAO().getMailboxById(mailboxId);
-        hostedMailboxes = getDAOFactory().getMailboxDAO().getMailboxes();
+
         if (mailbox != null) {
             String contactId = (String) request.getAttributes()
                     .get("contactId");
             contact = getDAOFactory().getContactDAO().getContactById(contactId);
 
             if (contact != null) {
+                hostedMailboxes = getDAOFactory().getMailboxDAO()
+                        .getMailboxes();
                 getVariants().add(new Variant(MediaType.TEXT_HTML));
             }
         }
@@ -78,6 +82,9 @@ public class ContactResource extends BaseResource {
         return true;
     }
 
+    /**
+     * Remove this resource.
+     */
     @Override
     public void removeRepresentations() throws ResourceException {
         getDAOFactory().getMailboxDAO().deleteContact(mailbox, contact);
@@ -85,6 +92,9 @@ public class ContactResource extends BaseResource {
                 getRequest().getResourceRef().getParentRef());
     }
 
+    /**
+     * Generate the HTML representation of this resource.
+     */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();
@@ -102,6 +112,9 @@ public class ContactResource extends BaseResource {
         return representation;
     }
 
+    /**
+     * Update the underlying contact according to the given representation.
+     */
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {

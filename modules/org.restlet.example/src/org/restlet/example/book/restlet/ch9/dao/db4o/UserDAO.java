@@ -10,6 +10,7 @@ import org.restlet.example.book.restlet.ch9.objects.User;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.query.Predicate;
+import com.db4o.query.QueryComparator;
 
 /**
  * DAO that manages the persistence of User objects.
@@ -112,8 +113,23 @@ public class UserDAO extends Db4oDAO {
      * @return the list of all users.
      */
     public List<User> getUsers() {
+        // Get all users
+        Predicate<User> predicate = new Predicate<User>() {
+            @Override
+            public boolean match(User arg0) {
+                return true;
+            }
+        };
+        // Sort by last name
+        QueryComparator<User> comparator = new QueryComparator<User>() {
+            public int compare(User arg0, User arg1) {
+                return arg0.getLastName().compareToIgnoreCase(
+                        arg1.getLastName());
+            }
+
+        };
         List<User> result = new ArrayList<User>();
-        ObjectSet<User> list = objectContainer.queryByExample(new User());
+        ObjectSet<User> list = objectContainer.query(predicate, comparator);
         result.addAll(list);
         return result;
     }

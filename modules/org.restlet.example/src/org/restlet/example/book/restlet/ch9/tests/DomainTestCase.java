@@ -35,11 +35,6 @@ public class DomainTestCase extends TestCase {
         assertEquals(mailbox.getContacts().get(1).getName(), "contact-2");
         assertEquals(mailbox.getMails().size(), 2);
 
-        assertEquals(mailbox.getMails().get(0).getSender(), mailRoot.getUsers()
-                .get(0));
-        assertEquals(mailbox.getMails().get(1).getSender(), mailRoot.getUsers()
-                .get(0));
-
         assertEquals(mailbox.getMails().get(0).getTags().get(0), "tag1");
         assertEquals(mailbox.getMails().get(1).getTags().size(), 2);
 
@@ -64,11 +59,6 @@ public class DomainTestCase extends TestCase {
         assertEquals(mailbox.getContacts().size(), 3);
         assertEquals(mailbox.getContacts().get(1).getName(), "contact-4");
         assertEquals(mailbox.getMails().size(), 3);
-
-        assertEquals(mailbox.getMails().get(0).getSender(), mailRoot.getUsers()
-                .get(0));
-        assertEquals(mailbox.getMails().get(1).getSender(), mailRoot.getUsers()
-                .get(0));
 
         assertEquals(mailbox.getMails().get(0).getTags().get(0), "tag1");
         assertTrue(mailbox.getMails().get(1).getTags().isEmpty());
@@ -98,13 +88,6 @@ public class DomainTestCase extends TestCase {
         assertEquals(mailbox.getContacts().size(), 4);
         assertEquals(mailbox.getContacts().get(1).getName(), "contact-7");
         assertEquals(mailbox.getMails().size(), 4);
-
-        assertEquals(mailbox.getMails().get(0).getSender(), mailRoot.getUsers()
-                .get(1));
-        assertEquals(mailbox.getMails().get(1).getSender(), mailRoot.getUsers()
-                .get(1));
-        assertEquals(mailbox.getMails().get(3).getSender(), mailRoot.getUsers()
-                .get(1));
 
         assertEquals(mailbox.getMails().get(0).getTags().get(0), "tag1");
         assertEquals(mailbox.getMails().get(0).getTags().get(1), "tag2");

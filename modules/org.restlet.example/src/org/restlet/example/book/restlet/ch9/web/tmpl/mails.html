@@ -2,26 +2,7 @@
 <#global content>
 <div id="mailbox">Mailbox ${mailbox.nickname}</div>
 
-<div style="float: left">
-	<h4>List of mails.</h4>
-	<table>
-		<tr>
-			<th></th>
-			<th>From</th>
-			<th>Subject</th>
-			<th>Status</th>
-		</tr>
-	<#list mails as mail> 
-		<tr>
-			<td><a href="${resourceRef}/${mail.id}">=></a></td>
-			<td>${mail.sender.firstName} ${mail.sender.lastName}</td>
-			<td>${mail.subject!""}</td>
-			<td>${mail.status}</td>
-		</tr>
-	</#list>
-	</table>
-</div>
-<div style="width:200px; float: right">
+<div>
 	<h4>Create a new mail.</h4>
 	<form action="${resourceRef}" method="POST">
 		<table>
@@ -33,11 +14,29 @@
 		<input type="submit" name="createMail" title="Create a new Mail" value="Create">
 	</form>
 </div>
+
+<div style="margin-top: 10px;">
+	<h4>List of mails.</h4>
+	<table width="100%">
+		<tr>
+			<th width="70%">Subject</th>
+			<th width="20%">From</th>
+			<th width="10%">Status</th>
+		</tr>
+	<#list mails as mail> 
+		<tr>
+			<td><a href="<@concatUris parentUri=resourceRef relativeUri=mail.id />">${mail.subject!""}</a></td>
+			<td>${mail.sender.name}</td>
+			<td>${mail.status}</td>
+		</tr>
+	</#list>
+	</table>
+</div>
 </#global>
 
 <#global menu>
    <div>
-      <h3 class="menu"><a href="${rootRef}/mailboxes">My mailboxes</a></h3>
+      <h3 class="menu"><a href="${rootRef}/mailboxes">Mailboxes</a></h3>
       <ul>
          <li><a href="${rootRef}/mailboxes/${mailbox.id}/mails" title="My mails">My mails</a>&nbsp;</li>
          <li><a href="${rootRef}/mailboxes/${mailbox.id}/contacts" title="My contacts">My contacts</a>&nbsp;</li>
@@ -45,7 +44,7 @@
       </ul>
    </div>
    <div>
-      <h3 class="menu"><a href="${rootRef}/users">My account<a/></h3>
+      <h3 class="menu"><a href="${rootRef}/users">Accounts<a/></h3>
    </div>
 </#global>
 <#include "/footer.ftl"/>

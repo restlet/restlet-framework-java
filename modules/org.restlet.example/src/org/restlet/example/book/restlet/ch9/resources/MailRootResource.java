@@ -41,6 +41,9 @@ public class MailRootResource extends BaseResource {
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 
+    /**
+     * Generate the HTML representation of this resource.
+     */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();

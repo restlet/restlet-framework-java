@@ -1,38 +1,30 @@
 <#include "/header.ftl"/>
-<#global feedHeader>${feedHeaderContent}</#global>
-
 <#global content>
 <div id="mailbox">Mailbox ${mailbox.nickname}</div>
+
 <div>
-	<h4>Update my feed.</h4>
+	<h4>Mail in ${mail.status} status</h4>
 	<form action="${resourceRef}?method=put" method="POST">
 		<table>
 			<tr>
-				<td>Name:</td>
-				<td><input type="text" name="nickname" value="${feed.nickname}"></td>
+				<td>Subject:</td>
+				<td><input type="text" name="subject" value="${mail.subject!"(no subject)"}" readonly="readonly"></td>
 			</tr>
 			<tr>
-				<td>tags</td>
-				<td><input type="text" name="tags" value="<@listToString list=feed.tags![] />"></td>
+				<td>Recipients:</td>
+				<td><#list mail.recipients![] as recipient>${recipient.name}<#if recipient_has_next>, </#if></#list></td>
+			</tr>
+			<tr>
+				<td>Body:</td>
+				<td><textarea name="message" cols="50" rows="10" readonly="readonly">${mail.message!""}</textarea></td>
+			</tr>
+			<tr>
+				<td>Tags:</td>
+				<td><input type="text" name="tags" value="<@listToString list=mail.tags![] />" readonly="readonly"></td>
 			</tr>
 		</table>
-		<input type="submit" name="updateFeed" title="Submit modifications to the feed" value="Update" onclick="this.form.action='${resourceRef}?method=put'">
-		<input type="button" name="deleteFeed" title="Delete the feed" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+		<input type="button" name="deleteMail" title="Delete the mail" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
 	</form>
-</div>
-
-<div>
-	<h4>List of mails</h4>
-	<table>
-		<tr>
-			<th>Mails</th>
-		</tr>
-		<#list mails as mail> 
-		<tr>
-			<td><a href="${rootRef}/mailboxes/${mailbox.id}/mails/${mail.id}">${mail.subject}</a></td>
-		</tr>
-		</#list> 
-	</table>
 </div>
 </#global>
 

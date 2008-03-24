@@ -45,7 +45,7 @@ public class Mail extends BaseObject {
     private List<Contact> recipients;
 
     /** Sender of the mail. */
-    private User sender;
+    private Contact sender;
 
     /** Sending date of the mail. */
     private Date sendingDate;
@@ -73,7 +73,7 @@ public class Mail extends BaseObject {
         return recipients;
     }
 
-    public User getSender() {
+    public Contact getSender() {
         return sender;
     }
 
@@ -101,7 +101,7 @@ public class Mail extends BaseObject {
         this.recipients = recipients;
     }
 
-    public void setSender(User sender) {
+    public void setSender(Contact sender) {
         this.sender = sender;
     }
 

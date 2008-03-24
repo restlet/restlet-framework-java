@@ -26,7 +26,6 @@ import java.util.TreeMap;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch9.objects.User;
@@ -46,15 +45,19 @@ public class UsersResource extends BaseResource {
 
     public UsersResource(Context context, Request request, Response response) {
         super(context, request, response);
-        getVariants().add(new Variant(MediaType.TEXT_HTML));
+        
         if (getCurrentUser().isAdministrator()) {
             users = getDAOFactory().getUserDAO().getUsers();
         } else {
             users = new ArrayList<User>();
             users.add(getCurrentUser());
         }
+        getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 
+    /**
+     * Accept the representation of a new user, and create it.
+     */
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
@@ -70,9 +73,9 @@ public class UsersResource extends BaseResource {
                         : true));
 
         user = getDAOFactory().getUserDAO().createUser(user);
-        Reference userRef = new Reference(getRequest().getResourceRef(), user
-                .getId());
-        getResponse().redirectSeeOther(userRef);
+
+        getResponse().redirectSeeOther(
+                getChildReference(getRequest().getResourceRef(), user.getId()));
     }
 
     @Override
@@ -80,6 +83,9 @@ public class UsersResource extends BaseResource {
         return true;
     }
 
+    /**
+     * Generate the HTML representation of this resource.
+     */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();
@@ -87,7 +93,7 @@ public class UsersResource extends BaseResource {
         dataModel.put("users", users);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
-        
+
         TemplateRepresentation representation = new TemplateRepresentation(
                 "users.html", getFmcConfiguration(), dataModel, variant
                         .getMediaType());

@@ -70,29 +70,72 @@ public class MailboxResource extends BaseResource {
         return true;
     }
 
+    /**
+     * Accept the representation of a mail received from a sender, and create
+     * it.
+     */
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
         Form form = new Form(entity);
         Mail mail = new Mail();
         mail.setStatus(Mail.STATUS_RECEIVED);
-        // TODO changer le sender en Contact?
-        // Ici boucler sur la liste des contacts et voir si par hasard, le
-        // contact existerait.
-        form.getFirstValue("senderAddress");
-        form.getFirstValue("senderName");
+
+        // Look for an existing contact or create it.
+        String senderAddress = form.getFirstValue("senderAddress");
+        String senderName = form.getFirstValue("senderName");
+
+        Contact contact = lookForContact(senderAddress, mailbox);
+        if (contact == null) {
+            contact = new Contact();
+            contact.setMailAddress(senderAddress);
+            contact.setName(senderName);
+            getDAOFactory().getMailboxDAO().createContact(mailbox, contact);
+        }
+        mail.setSender(contact);
 
         mail.setMessage(form.getFirstValue("message"));
         mail.setSubject(form.getFirstValue("subject"));
         // form2.add("sendingDate", mail.getSendingDate().toString());
         Series<Parameter> recipients = form.subList("recipient");
-        for (Contact recipient : mail.getRecipients()) {
-            // TODO ajouter les contacts ou juste les adresses.
-            // form2.add("recipient", recipient.getMailAddress());
+        for (Parameter recipient : recipients) {
+            contact = lookForContact(recipient.getValue(), mailbox);
+            if (contact == null) {
+                contact = new Contact();
+                contact.setMailAddress(recipient.getValue());
+                // TODO attention, il faut coordonner adresse et nom de contact.
+                // contact.setName(senderName);
+                getDAOFactory().getMailboxDAO().createContact(mailbox, contact);
+            }
+            mail.getRecipients().add(contact);
         }
-        //getDAOFactory().getMailboxDAO().createMail(mailbox, mail);
+        getDAOFactory().getMailboxDAO().createMail(mailbox, mail);
     }
 
+    /**
+     * Returns the contact from a mailbox's list of contacts according to a
+     * given mail address.
+     * 
+     * @param mailboxAddress
+     *                The mail address to check.
+     * @param mailbox
+     *                The mailbox that contains the list of contacts
+     * @return null if the contact is not found, the contact otherwise.
+     */
+    private Contact lookForContact(String mailboxAddress, Mailbox mailbox) {
+        Contact contact = null;
+        for (Contact item : mailbox.getContacts()) {
+            if (item.getMailAddress().equals(mailboxAddress)) {
+                contact = item;
+                break;
+            }
+        }
+        return contact;
+    }
+
+    /**
+     * Remove this resource.
+     */
     @Override
     public void removeRepresentations() throws ResourceException {
         getDAOFactory().getMailboxDAO().deleteMailbox(mailbox);
@@ -100,6 +143,9 @@ public class MailboxResource extends BaseResource {
                 getRequest().getResourceRef().getParentRef());
     }
 
+    /**
+     * Generate the HTML representation of this resource.
+     */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();
@@ -115,6 +161,9 @@ public class MailboxResource extends BaseResource {
         return representation;
     }
 
+    /**
+     * Update the underlying mailbox according to the given representation.
+     */
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {

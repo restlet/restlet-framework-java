@@ -48,12 +48,15 @@ public class UserResource extends BaseResource {
 
     public UserResource(Context context, Request request, Response response) {
         super(context, request, response);
+
+        // Get user thanks to its ID taken from the resource's
+        // URI.
         String userId = (String) request.getAttributes().get("userId");
         user = getDAOFactory().getUserDAO().getUserById(userId);
 
         if (user != null) {
-            getVariants().add(new Variant(MediaType.TEXT_HTML));
             mailboxes = getDAOFactory().getUserDAO().getMailboxes(user);
+            getVariants().add(new Variant(MediaType.TEXT_HTML));
         }
     }
 
@@ -67,6 +70,9 @@ public class UserResource extends BaseResource {
         return true;
     }
 
+    /**
+     * Remove this resource.
+     */
     @Override
     public void removeRepresentations() throws ResourceException {
         getDAOFactory().getUserDAO().deleteUser(user);
@@ -74,6 +80,9 @@ public class UserResource extends BaseResource {
                 getRequest().getResourceRef().getParentRef());
     }
 
+    /**
+     * Generate the HTML representation of this resource.
+     */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Map<String, Object> dataModel = new TreeMap<String, Object>();
@@ -90,6 +99,9 @@ public class UserResource extends BaseResource {
         return representation;
     }
 
+    /**
+     * Update the underlying user according to the given representation.
+     */
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {
