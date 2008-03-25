@@ -42,9 +42,6 @@ import org.restlet.example.book.restlet.ch8.resources.MailsResource;
 import org.restlet.example.book.restlet.ch8.resources.UserResource;
 import org.restlet.example.book.restlet.ch8.resources.UsersResource;
 
-import com.db4o.Db4o;
-import com.db4o.config.Configuration;
-
 /**
  * The main Web application.
  */
@@ -74,19 +71,16 @@ public class Application extends org.restlet.Application {
         this.getConnectorService().getClientProtocols().add(Protocol.FILE);
         this.getConnectorService().getClientProtocols().add(Protocol.HTTP);
 
-        /** Open and keep the db4o object container. */
-        Configuration config = Db4o.configure();
-        config.updateDepth(2);
-        config.activationDepth(10);
-        dataFacade = new ObjectsFacade(new Db4oFacade(Db4o.openFile(System
+        /** Create and chain the Objects and Data facades. */
+        dataFacade = new ObjectsFacade(new Db4oFacade(System
                 .getProperty("user.home")
-                + File.separator + "rmep.dbo")));
+                + File.separator + "rmep.dbo"));
         // Check that at least one administrator exists in the database.
         this.dataFacade.initAdmin();
 
         try {
             File templateDir = new File(
-                    "D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch9\\web\\tmpl");
+                    "D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch8\\web\\tmpl");
             fmc = new freemarker.template.Configuration();
             fmc.setDirectoryForTemplateLoading(templateDir);
         } catch (Exception e) {
@@ -108,14 +102,14 @@ public class Application extends org.restlet.Application {
         Directory imgDirectory = new Directory(
                 getContext(),
                 LocalReference
-                        .createFileReference("D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch9\\web\\images"));
+                        .createFileReference("D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch8\\web\\images"));
         // Add a route for the image resources
         router.attach("/images", imgDirectory);
 
         Directory cssDirectory = new Directory(
                 getContext(),
                 LocalReference
-                        .createFileReference("D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch9\\web\\stylesheets"));
+                        .createFileReference("D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch8\\web\\stylesheets"));
         // Add a route for the CSS resources
         router.attach("/stylesheets", cssDirectory);
 

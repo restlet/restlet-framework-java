@@ -6,6 +6,7 @@ import java.util.List;
 import org.restlet.example.book.restlet.ch8.data.DataFacade;
 
 public class ObjectsFacade {
+
     /** Data facade. */
     protected DataFacade dataFacade;
 
@@ -31,7 +32,7 @@ public class ObjectsFacade {
      * @return a Contact object or null if no contact has been found.
      */
     public Contact getContactById(String contactId) {
-        return dataFacade.getContactDAO().getContactById(contactId);
+        return dataFacade.getContactById(contactId);
     }
 
     /**
@@ -42,7 +43,7 @@ public class ObjectsFacade {
      * @return a Feed object or null if no feed has been found.
      */
     public Feed getFeedById(String feedId) {
-        return dataFacade.getFeedDAO().getFeedById(feedId);
+        return dataFacade.getFeedById(feedId);
     }
 
     /**
@@ -53,7 +54,7 @@ public class ObjectsFacade {
      * @return a Mail object or null if no mail has been found.
      */
     public Mail getMailById(String mailId) {
-        return dataFacade.getMailDAO().getMailById(mailId);
+        return dataFacade.getMailById(mailId);
     }
 
     /**
@@ -64,7 +65,7 @@ public class ObjectsFacade {
      * @return the user object completed with its identfiant.
      */
     public User createUser(User user) {
-        return dataFacade.getUserDAO().createUser(user);
+        return dataFacade.createUser(user);
     }
 
     /**
@@ -75,7 +76,7 @@ public class ObjectsFacade {
      * @return a User object or null if no user has been found.
      */
     public User getUserById(String userId) {
-        return dataFacade.getUserDAO().getUserById(userId);
+        return dataFacade.getUserById(userId);
     }
 
     /**
@@ -88,7 +89,7 @@ public class ObjectsFacade {
      * @return a User object or null if no user has been found.
      */
     public User getUserByLoginPwd(String login, char[] password) {
-        return dataFacade.getUserDAO().getUserByLoginPwd(login, password);
+        return dataFacade.getUserByLoginPwd(login, password);
     }
 
     /**
@@ -97,7 +98,7 @@ public class ObjectsFacade {
      * @return the list of all users.
      */
     public List<User> getUsers() {
-        return dataFacade.getUserDAO().getUsers();
+        return dataFacade.getUsers();
     }
 
     /**
@@ -112,7 +113,7 @@ public class ObjectsFacade {
         for (Mailbox mailbox : mailboxes) {
             deleteMailbox(mailbox);
         }
-        dataFacade.getUserDAO().deleteUser(user);
+        dataFacade.deleteUser(user);
     }
 
     /**
@@ -122,7 +123,7 @@ public class ObjectsFacade {
      *                the user to be upated.
      */
     public void updateUser(User user) {
-        dataFacade.getUserDAO().updateUser(user);
+        dataFacade.updateUser(user);
     }
 
     /**
@@ -133,7 +134,7 @@ public class ObjectsFacade {
      * @return the list of mailboxes owned by this user.
      */
     public List<Mailbox> getMailboxes(User user) {
-        return dataFacade.getUserDAO().getMailboxes(user);
+        return dataFacade.getMailboxes(user);
     }
 
     /**
@@ -144,7 +145,7 @@ public class ObjectsFacade {
      * @return the mailbox object completed with its identfiant.
      */
     public Mailbox createMailbox(Mailbox mailbox) {
-        return dataFacade.getMailboxDAO().createMailbox(mailbox);
+        return dataFacade.createMailbox(mailbox);
     }
 
     /**
@@ -155,7 +156,7 @@ public class ObjectsFacade {
      * @return a Mailbox object or null if no mailbox has been found.
      */
     public Mailbox getMailboxById(String mailboxId) {
-        return dataFacade.getMailboxDAO().getMailboxById(mailboxId);
+        return dataFacade.getMailboxById(mailboxId);
     }
 
     /**
@@ -164,7 +165,7 @@ public class ObjectsFacade {
      * @return the list of all mailboxes.
      */
     public List<Mailbox> getMailboxes() {
-        return dataFacade.getMailboxDAO().getMailboxes();
+        return dataFacade.getMailboxes();
     }
 
     /**
@@ -174,20 +175,19 @@ public class ObjectsFacade {
      *                the mailbox to be deleted.
      */
     public void deleteMailbox(Mailbox mailbox) {
-        FeedDAO feedDAO = dataFacade.getFeedDAO();
         for (Feed feed : mailbox.getFeeds()) {
-            feedDAO.deleteFeed(feed);
-        }
-        MailDAO mailDAO = dataFacade.getMailDAO();
-        for (Mail mail : mailbox.getMails()) {
-            mailDAO.deleteMail(mail);
-        }
-        T contactDAO = dataFacade.getContactDAO();
-        for (Contact contact : mailbox.getContacts()) {
-            contactDAO.deleteContact(contact);
+            dataFacade.deleteFeed(feed);
         }
 
-        dataFacade.getMailboxDAO().deleteMailbox(mailbox);
+        for (Mail mail : mailbox.getMails()) {
+            dataFacade.deleteMail(mail);
+        }
+
+        for (Contact contact : mailbox.getContacts()) {
+            dataFacade.deleteContact(contact);
+        }
+
+        dataFacade.deleteMailbox(mailbox);
     }
 
     /**
@@ -197,7 +197,7 @@ public class ObjectsFacade {
      *                the mailbox to be updated.
      */
     public void updateMailbox(Mailbox mailbox) {
-        dataFacade.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.updateMailbox(mailbox);
     }
 
     /**
@@ -210,9 +210,9 @@ public class ObjectsFacade {
      * @return the contact object completed with its identfiant.
      */
     public Contact createContact(Mailbox mailbox, Contact contact) {
-        contact = dataFacade.getContactDAO().createContact(contact);
+        contact = dataFacade.createContact(contact);
         mailbox.getContacts().add(contact);
-        dataFacade.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.updateMailbox(mailbox);
 
         return contact;
     }
@@ -236,8 +236,8 @@ public class ObjectsFacade {
             }
         }
 
-        dataFacade.getContactDAO().deleteContact(contact);
-        dataFacade.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.deleteContact(contact);
+        dataFacade.updateMailbox(mailbox);
     }
 
     /**
@@ -249,7 +249,7 @@ public class ObjectsFacade {
      *                the contact to be update.
      */
     public void updateContact(Mailbox mailbox, Contact contact) {
-        dataFacade.getContactDAO().updateContact(contact);
+        dataFacade.updateContact(contact);
     }
 
     /**
@@ -262,9 +262,9 @@ public class ObjectsFacade {
      * @return the feed object completed with its identfiant.
      */
     public Feed createFeed(Mailbox mailbox, Feed feed) {
-        feed = dataFacade.getFeedDAO().createFeed(feed);
+        feed = dataFacade.createFeed(feed);
         mailbox.getFeeds().add(feed);
-        dataFacade.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.updateMailbox(mailbox);
 
         return feed;
     }
@@ -288,8 +288,8 @@ public class ObjectsFacade {
             }
         }
 
-        dataFacade.getFeedDAO().deleteFeed(feed);
-        dataFacade.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.deleteFeed(feed);
+        dataFacade.updateMailbox(mailbox);
     }
 
     /**
@@ -301,7 +301,7 @@ public class ObjectsFacade {
      *                the feed to be updated.
      */
     public void updateFeed(Mailbox mailbox, Feed feed) {
-        dataFacade.getFeedDAO().updateFeed(feed);
+        dataFacade.updateFeed(feed);
     }
 
     /**
@@ -314,9 +314,9 @@ public class ObjectsFacade {
      * @return the mail object completed with its identfiant.
      */
     public Mail createMail(Mailbox mailbox, Mail mail) {
-        mail = dataFacade.getMailDAO().createMail(mail);
+        mail = dataFacade.createMail(mail);
         mailbox.getMails().add(mail);
-        dataFacade.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.updateMailbox(mailbox);
 
         return mail;
     }
@@ -339,20 +339,20 @@ public class ObjectsFacade {
                 found = true;
             }
         }
-        T contactDAO = dataFacade.getContactDAO();
+
         // Delete its list of unregistered recipients
         for (Contact contact : mail.getRecipients()) {
             if (contact.getId() == null) {
-                contactDAO.deleteContact(contact);
+                dataFacade.deleteContact(contact);
             }
         }
         // Delete its list of sender if not registered.
         if (mail.getSender().getId() == null) {
-            contactDAO.deleteContact(mail.getSender());
+            dataFacade.deleteContact(mail.getSender());
         }
 
-        dataFacade.getMailDAO().deleteMail(mail);
-        dataFacade.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.deleteMail(mail);
+        dataFacade.updateMailbox(mailbox);
     }
 
     /**
@@ -364,7 +364,7 @@ public class ObjectsFacade {
      *                the mail to be updated.
      */
     public void updateMail(Mailbox mailbox, Mail mail) {
-        dataFacade.getMailDAO().updateMail(mail);
+        dataFacade.updateMail(mail);
     }
 
     /**
@@ -397,11 +397,10 @@ public class ObjectsFacade {
             List<Contact> mailRecipients = new ArrayList<Contact>();
             if (mailAddresses != null) {
                 // First, remove the unused mail's recipients
-                T contactDAO = dataFacade.getContactDAO();
                 if (mail.getRecipients() != null) {
                     for (Contact recipient : mail.getRecipients()) {
                         if (!mailAddresses.contains(recipient.getMailAddress())) {
-                            contactDAO.deleteContact(recipient);
+                            dataFacade.deleteContact(recipient);
                         }
                     }
                 }
@@ -426,10 +425,9 @@ public class ObjectsFacade {
                 mail.setRecipients(mailRecipients);
             } else {
                 // First, remove the unused mail's recipients
-                T contactDAO = dataFacade.getContactDAO();
                 if (mail.getRecipients() != null) {
                     for (Contact recipient : mail.getRecipients()) {
-                        contactDAO.deleteContact(recipient);
+                        dataFacade.deleteContact(recipient);
                     }
                 }
                 mail.setRecipients(null);
