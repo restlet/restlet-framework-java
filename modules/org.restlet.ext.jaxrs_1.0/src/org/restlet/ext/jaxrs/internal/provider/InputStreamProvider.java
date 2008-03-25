@@ -30,7 +30,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * This Provider is used to read directly from an {@link InputStream}
+ * This Provider is used to read directly from an {@link InputStream}.
  * 
  * @author Stephan Koops
  * @see MessageBodyReader

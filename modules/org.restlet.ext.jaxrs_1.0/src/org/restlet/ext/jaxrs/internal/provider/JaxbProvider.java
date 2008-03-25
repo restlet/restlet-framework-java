@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -58,9 +59,8 @@ public class JaxbProvider extends AbstractJaxbProvider<Object> {
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#readFrom(java.lang.Class,
-     *      Type, javax.ws.rs.core.MediaType, Annotation[],
-     *      javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
      */
     @Override
     public Object readFrom(Class<Object> type, Type genericType,

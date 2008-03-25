@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -35,7 +36,7 @@ import javax.xml.bind.Unmarshaller;
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
     /**
-     * @see AbstractProvider#getSize(java.lang.Object)
+     * @see MessageBodyWriter#getSize(Object)
      */
     @Override
     public final long getSize(T object) {

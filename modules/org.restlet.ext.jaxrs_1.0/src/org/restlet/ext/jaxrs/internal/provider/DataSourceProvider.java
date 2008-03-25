@@ -27,6 +27,8 @@ import javax.activation.DataSource;
 import javax.mail.util.ByteArrayDataSource;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
@@ -37,11 +39,18 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class DataSourceProvider extends AbstractProvider<DataSource> {
 
+    /**
+     * @see MessageBodyWriter#getSize(Object)
+     */
     @Override
     public long getSize(DataSource object) {
         return -1;
     }
 
+    /**
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
+     */
     @Override
     public DataSource readFrom(Class<DataSource> type, Type genericType,
             MediaType mediaType, Annotation[] annotations,
@@ -55,6 +64,10 @@ public class DataSourceProvider extends AbstractProvider<DataSource> {
         return DataSource.class;
     }
 
+    /**
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
+     */
     @Override
     public void writeTo(DataSource dataSource, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,

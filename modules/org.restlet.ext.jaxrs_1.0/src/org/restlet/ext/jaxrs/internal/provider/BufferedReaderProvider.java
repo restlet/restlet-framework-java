@@ -30,7 +30,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 /**
- * This {@link MessageBodyReader} is used to read from the net to a
+ * This {@link MessageBodyReader} is used to read data from the network to a
  * {@link BufferedReader}.
  * 
  * @author Stephan Koops
@@ -46,8 +46,8 @@ public class BufferedReaderProvider implements
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(Class, Type, MediaType,
-     *      Annotation[], MultivaluedMap, InputStream)
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
      */
     public BufferedReader readFrom(Class<BufferedReader> type,
             Type genericType, MediaType mediaType, Annotation[] annotations,

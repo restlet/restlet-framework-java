@@ -28,6 +28,8 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -49,9 +51,8 @@ public class FileProvider extends AbstractProvider<File> {
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.InputStream)
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
      */
     @Override
     public File readFrom(Class<File> type, Type genericType,
@@ -67,11 +68,18 @@ public class FileProvider extends AbstractProvider<File> {
         }
     }
 
+    /**
+     * @see AbstractProvider#supportedClass()
+     */
     @Override
     protected Class<?> supportedClass() {
         return File.class;
     }
 
+    /**
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
+     */
     @Override
     public void writeTo(File file, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,

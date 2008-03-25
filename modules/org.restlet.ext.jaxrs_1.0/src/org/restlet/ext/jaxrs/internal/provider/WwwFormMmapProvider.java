@@ -27,6 +27,7 @@ import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
@@ -41,6 +42,7 @@ import org.restlet.resource.Representation;
  * content to application/x-www-form-urlencoded and vice versa.
  * 
  * @author Stephan Koops
+ * @see WwwFormFormProvider
  */
 @Provider
 @ConsumeMime("application/x-www-form-urlencoded")
@@ -48,8 +50,10 @@ import org.restlet.resource.Representation;
 public class WwwFormMmapProvider extends
         AbstractProvider<MultivaluedMap<String, String>> {
 
+    // TODO check what about decoding or not, also for Restlet Form provider
+
     /**
-     * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#getSize(java.lang.Object)
+     * @see MessageBodyWriter#getSize(Object)
      */
     @Override
     public long getSize(MultivaluedMap<String, String> mmap) {
@@ -79,10 +83,8 @@ public class WwwFormMmapProvider extends
     }
 
     /**
-     * 
-     * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#readFrom(java.lang.Class,
-     *      Type, javax.ws.rs.core.MediaType, Annotation[],
-     *      javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
      */
     @Override
     public MultivaluedMap<String, String> readFrom(

@@ -32,7 +32,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * This Provider is used to read directly from a {@link Reader}
+ * This Provider is used to read directly from a {@link Reader}.
  * 
  * @author Stephan Koops
  * @see BufferedReaderProvider

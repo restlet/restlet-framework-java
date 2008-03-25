@@ -35,10 +35,13 @@ import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 
 /**
- * This {@link Provider} converts {@link Form} to
- * application/x-www-form-urlencoded and vice versa.
+ * This {@link Provider} converts Restlet {@link Form}s to
+ * application/x-www-form-urlencoded and vice versa.<br>
+ * For encoding or not the same conventions are valid than for
+ * {@link WwwFormMmapProvider}.
  * 
  * @author Stephan Koops
+ * @see WwwFormMmapProvider
  */
 @Provider
 @ConsumeMime("application/x-www-form-urlencoded")
@@ -68,7 +71,8 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
     @Override
     public void writeTo(Form form, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException {
         Representation formRepr = form.getWebRepresentation();
         super.copyAndCloseStream(formRepr.getStream(), entityStream);
     }

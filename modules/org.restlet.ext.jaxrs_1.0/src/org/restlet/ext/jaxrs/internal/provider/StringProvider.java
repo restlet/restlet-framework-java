@@ -32,7 +32,7 @@ import javax.ws.rs.ext.Provider;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
- * Provider for {@link String}s and {@link CharSequence}s.
+ * Provider for {@link String}s. Could also write other {@link CharSequence}s.
  * 
  * @author Stephan Koops
  */

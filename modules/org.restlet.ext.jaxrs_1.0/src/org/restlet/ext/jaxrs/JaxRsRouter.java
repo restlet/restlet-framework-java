@@ -570,27 +570,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         PathRegExp rMatch = tClass.getPathRegExp();
         MatchingResult matchResult = rMatch.match(u);
         u = matchResult.getFinalCapturingGroup();
-        addTemplVarsToMap(matchResult, callContext);
+        addPathVarsToMap(matchResult, callContext);
         return new RrcAndRemPath(tClass, matchResult.getMatched(), u);
-    }
-
-    /**
-     * Adds the matched template parameters to the {@link CallContext}.
-     * 
-     * @param matchResult
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     */
-    private void addTemplVarsToMap(MatchingResult matchResult,
-            CallContext callContext) {
-        Map<String, String> variables = matchResult.getVariables();
-        for (Map.Entry<String, String> varEntry : variables.entrySet()) {
-            String key = varEntry.getKey();
-            String value = varEntry.getValue();
-            callContext.addPathParamsEnc(key, value);
-        }
     }
 
     /**
@@ -684,7 +665,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             rMatch = firstMeth.getPathRegExp();
             MatchingResult matchingResult = rMatch.match(u);
 
-            addTemplVarsToMap(matchingResult, callContext);
+            addPathVarsToMap(matchingResult, callContext);
 
             // (h) When Method is resource method
             if (firstMeth instanceof ResourceMethod)
@@ -807,7 +788,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         ResourceMethod bestResourceMethod = getBestMethod(resourceMethods,
                 givenMediaType, accMediaTypes, httpMethod);
         MatchingResult mr = bestResourceMethod.getPathRegExp().match(u);
-        addTemplVarsToMap(mr, callContext);
+        addPathVarsToMap(mr, callContext);
         String matchedUriPart = mr.getMatched();
         if (matchedUriPart.length() > 0) {
             Object jaxRsResObj = resObj.getJaxRsResourceObject();
@@ -1009,18 +990,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         return returnMethods;
     }
 
-    private enum ConsOrProdMime {
-        /**
-         * Declares that the methods etc. for the consume mime shoud be used
-         */
-        CONSUME_MIME,
-
-        /**
-         * Declares that the methods etc. for the produced mime shoud be used
-         */
-        PRODUCE_MIME
-    }
-
     /**
      * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
      * 2008-03-11, Section 3.6, Part 2f+2g
@@ -1193,9 +1162,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * Converts the given JAX-RS {@link javax.ws.rs.core.Response} to a Restlet
      * {@link Response}.
      * 
-     * @see org.restlet.ext.jaxrs.JaxRsRouterHelpMethods#jaxRsRespToRestletResp(javax.ws.rs.core.Response,
-     *      org.restlet.ext.jaxrs.internal.core.CallContext,
-     *      org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper)
+     * @see JaxRsRouterHelpMethods#jaxRsRespToRestletResp(javax.ws.rs.core.Response,
+     *      CallContext, AbstractMethodWrapper)
      */
     @Override
     void jaxRsRespToRestletResp(javax.ws.rs.core.Response jaxRsResponse,
@@ -1359,6 +1327,25 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
     }
 
     /**
+     * Adds the matched template parameters to the {@link CallContext}.
+     * 
+     * @param matchResult
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
+     */
+    private void addPathVarsToMap(MatchingResult matchResult,
+            CallContext callContext) {
+        Map<String, String> variables = matchResult.getVariables();
+        for (Map.Entry<String, String> varEntry : variables.entrySet()) {
+            String key = varEntry.getKey();
+            String value = varEntry.getValue();
+            callContext.addPathParamsEnc(key, value);
+        }
+    }
+
+    /**
      * Structure to return the identiied {@link RootResourceClass}, the
      * remaining path after identifying and the matched template parameters.
      * 
@@ -1417,20 +1404,38 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         }
     }
 
+    private enum ConsOrProdMime {
+        /**
+         * Declares that the methods etc. for the consume mime shoud be used
+         */
+        CONSUME_MIME,
+
+        /**
+         * Declares that the methods etc. for the produced mime shoud be used
+         */
+        PRODUCE_MIME
+    }
+
     /**
-     * @return the accessControl
+     * Gets the currently used {@link AccessControl}.
+     * 
+     * @return the currently used AccessControl.
+     * @see #setAccessControl(AccessControl)
      */
     public AccessControl getAccessControl() {
         return accessControl;
     }
 
     /**
+     * Sets the {@link AccessControl} to use.
+     * 
      * @param accessControl
      *                the accessControl to set.
      * @throws IllegalArgumentException
      *                 If the given accessControl is null, an
      *                 {@link IllegalArgumentException} is thrown.
      * @see AccessControl
+     * @see #getAccessControl()
      */
     public void setAccessControl(AccessControl accessControl)
             throws IllegalArgumentException {
@@ -1447,6 +1452,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * Returns an unmodifiable set with the attached root resource classes.
      * 
      * @return an unmodifiable set with the attached root resource classes.
+     * @see #attach(ApplicationConfig)
      */
     public Set<Class<?>> getRootResourceClasses() {
         Set<Class<?>> rrcs = new HashSet<Class<?>>();

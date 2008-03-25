@@ -26,10 +26,11 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * {@link Provider} to read and write byte[]
+ * {@link Provider} to read and write byte[].
  * 
  * @author Stephan Koops
  */
@@ -37,7 +38,7 @@ import javax.ws.rs.ext.Provider;
 public class ByteArrayProvider extends AbstractProvider<byte[]> {
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
+     * @see MessageBodyWriter#getSize(Object)
      */
     @Override
     public long getSize(byte[] t) {
@@ -55,7 +56,7 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class)
+     * @see MessageBodyWriter#isWriteable(Class)
      */
     @Override
     protected Class<?> supportedClass() {
@@ -63,8 +64,8 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Class, Type,
-     *      Annotation[], MediaType, MultivaluedMap, OutputStream)
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
      */
     @Override
     public void writeTo(byte[] data, Class<?> type, Type genericType,

@@ -53,6 +53,9 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
         return this.logger;
     }
 
+    /**
+     * @see MessageBodyReader#isReadable(Class, Type, Annotation[])
+     */
     @Override
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations) {
@@ -69,6 +72,9 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
         return false;
     }
 
+    /**
+     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
+     */
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
@@ -85,6 +91,10 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
         return false;
     }
 
+    /**
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
+     */
     @Override
     @SuppressWarnings("unchecked")
     public JAXBElement<?> readFrom(Class<JAXBElement<?>> type,
