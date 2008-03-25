@@ -2217,12 +2217,13 @@ public class Reference {
      */
     public void setQuery(String query) {
         checkValidity(query);
+        boolean emptyQueryString = (query == null || query.length() <= 0);
 
         if (queryIndex != -1) {
             // Query found
             if (fragmentIndex != -1) {
                 // Fragment found
-                if (query != null) {
+                if (!emptyQueryString) {
                     this.internalRef = this.internalRef.substring(0,
                             queryIndex + 1)
                             + query + this.internalRef.substring(fragmentIndex);
@@ -2233,7 +2234,7 @@ public class Reference {
                 }
             } else {
                 // No fragment found
-                if (query != null) {
+                if (!emptyQueryString) {
                     this.internalRef = this.internalRef.substring(0,
                             queryIndex + 1)
                             + query;
@@ -2246,7 +2247,7 @@ public class Reference {
             // No query found
             if (fragmentIndex != -1) {
                 // Fragment found
-                if (query != null) {
+                if (!emptyQueryString) {
                     this.internalRef = this.internalRef.substring(0,
                             fragmentIndex)
                             + '?'
@@ -2257,7 +2258,7 @@ public class Reference {
                 }
             } else {
                 // No fragment found
-                if (query != null) {
+                if (!emptyQueryString) {
                     if (this.internalRef != null) {
                         this.internalRef = this.internalRef + '?' + query;
                     } else {
