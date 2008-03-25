@@ -47,4 +47,6 @@ public class Notizen {
     
     // TODO @Context and so on only in objects created by the runtime.
     // support and warn about this.
+    
+    // TODO JAX-RS is not only for XML: name is not realy good.
 }

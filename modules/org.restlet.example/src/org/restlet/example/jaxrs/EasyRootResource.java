@@ -36,7 +36,7 @@ public class EasyRootResource {
     /**
      * Returns a HTML representation of this resource.
      * 
-     * @return the person
+     * @return a HTML representation of this resource.
      */
     @GET
     @ProduceMime("text/html")
@@ -49,7 +49,7 @@ public class EasyRootResource {
     /**
      * Returns a plain text representation of this resource.
      * 
-     * @return the person
+     * @return a plain text representation of this resource.
      */
     @GET
     @ProduceMime("text/plain")
