@@ -1,0 +1,56 @@
+
+/* general */
+* {margin:0; padding:0}
+
+html, body {width:100%; height:100%; text-align:center; color:#2e3436; background:#ffffff url(../images/back.gif) repeat-x 0 0}
+acronym {text-decoration:none; font-weight:bold; font-style:normal; cursor:help}
+img {border: none}
+th {padding: 2px;background-color: #555753; color:white; font-weight: bold}
+td {padding: 2px}
+select {padding:1px;}
+
+/* error messages */
+.error {color:red; border: 1px solid red; padding: 2px; margin-bottom: 10px}
+
+/* container */
+#container {
+position:relative; width:700px; margin:0 auto; font:90% "Times New Roman", Times, serif; text-align:left; 
+background:#ffffff}
+
+#container p {margin:10px 20px 0; line-height:140%; text-align:justify}
+#container p.p1 {text-indent:20px}
+
+/* Logo RMEP */
+#logoRmep {position:relative; width:700px; height:150px; background:#d3d7cf}
+#logoRmep img {margin:20px 0 0 20px ; }
+#logoRmep a {text-decoration: none }
+
+/* quickSummary */
+#quickSummary {position:absolute; top:75px; left:280px; width:420px; }
+#quickSummary p {margin:20px 0 0 0; line-height:120%; text-align:right}
+#quickSummary p.p1 {text-indent:0; background:#d3d7cf; color:#292f33; font-variant:small-caps}
+
+/* hello */
+#hello {position:relative; top:10px; left:240px; width:460px; }
+#hello {color:#f57900; letter-spacing:1px; word-spacing:5px; text-align: right; font-weight: bold; border-bottom:1px solid #f57900}
+
+/* content */
+#content {position:relative; top:20px; left:170px; width:530px}
+#content a:link, #content a:visited {color:#292f33; text-decoration:none; background:transparent; border-bottom:1px solid #292f33}
+#content a:hover, #content a:focus {color:#3c4246; text-decoration:none; background:transparent; border-bottom:2px solid #3c4246}
+#content a:active {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}
+
+/* mailbox */
+#mailbox {position:relative; top:0px; left:0px; width:460px; }
+#mailbox {color:#cc0000; letter-spacing:1px; word-spacing:5px; text-align: left; font-weight: bold; border-bottom:1px solid #cc0000; margin-bottom:10px}
+
+/* menu */
+#menu {position:absolute; top:180px; left:0; width:150px; font:100% "Trebuchet MS", "Lucida Sans", Arial, Helvetica, sans-serif; text-align:center ; border-right: 1px solid black}
+#menu h3, #menu li {float:left; clear:left; width:150px; height:40px; overflow:hidden}
+#menu li {list-style:none; color:#885c2f}
+
+
+#menu a {display:block; color: #3465a4}
+#menu a:link, #menu a:visited {color:#292f33; text-decoration:none; background:transparent; border-bottom:1px solid #292f33}
+#menu a:hover, #menu a:focus {color:#3c4246; text-decoration:none; background:transparent; border-bottom:2px solid #3c4246}
+#menu a:active {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}

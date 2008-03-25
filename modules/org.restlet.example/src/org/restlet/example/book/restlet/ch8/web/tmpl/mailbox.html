@@ -1,0 +1,37 @@
+<#include "/header.ftl"/>
+<#global content>
+<div id="mailbox">Mailbox ${mailbox.nickname}</div>
+
+<div>
+	<h4>Update my mailbox.</h4>
+	<form action="${resourceRef}?method=put" method="POST">
+		<table width="100%">
+			<tr>
+				<td width="20%">Nickname:</td>
+				<td width="80%"><input type="text" name="nickname" value="${mailbox.nickname}"></td>
+			</tr>
+			<tr>
+				<td>Reply to name:</td>
+				<td><input type="text" name="senderName" value="${mailbox.senderName}"></td>
+			</tr>
+		</table>
+		<input type="submit" name="updateMailbox" title="Submit modifications to the mailbox" value="Update" onclick="this.form.action='${resourceRef}?method=put'">
+		<input type="button" name="deleteMailbox" title="Delete the mailbox" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+	</form>
+</div>
+</#global>
+
+<#global menu>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/mailboxes">Mailboxes</a></h3>
+      <ul>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/mails" title="My mails">My mails</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/contacts" title="My contacts">My contacts</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/feeds" title="My feeds">My feeds</a>&nbsp;</li>
+      </ul>
+   </div>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/users">Accounts<a/></h3>
+   </div>
+</#global>
+<#include "/footer.ftl"/>

@@ -1,0 +1,61 @@
+<#include "/header.ftl"/>
+<#global content>
+<div id="mailbox">Mailbox ${mailbox.nickname}</div>
+
+<div style="float: left">
+	<h4>List of contacts.</h4>
+	<table>
+		<tr>
+			<th>Name</th>
+		</tr>
+<#list contacts as contact>
+		<tr>
+			<td><a href="<@concatUris parentUri=resourceRef relativeUri=contact.id />">${contact.name}</a></td>
+		</tr>
+</#list>
+	</table>
+</div>
+
+<div style="width:300px; float: right">
+	<h4>Create a new contact.</h4>
+    <form action="${resourceRef}" method="POST">
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text" name="name"></td>
+			</tr>
+			<tr>
+				<td>Mailbox's address:</td>
+				<td><input type="text" name="mailAddress"></td>
+			</tr>
+			<tr>
+				<td>Choose one of the hosted mailboxes:</td>
+				<td>
+					<select onchange="this.form.mailAddress.value=this.options[this.selectedIndex].value;">
+						<option value="">--Choose--</option>
+			<#list hostedMailboxes as mailbox>
+						<option value="${rootRef}/mailboxes/${mailbox.id}" >${mailbox.owner.firstName} ${mailbox.owner.lastName}</option>
+			</#list>
+					</select>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" name="createContact" title="Create a new contact" value="Create">
+    </form>
+</div>
+</#global>
+
+<#global menu>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/mailboxes">Mailboxes</a></h3>
+      <ul>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/mails" title="My mails">My mails</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/contacts" title="My contacts">My contacts</a>&nbsp;</li>
+         <li><a href="${rootRef}/mailboxes/${mailbox.id}/feeds" title="My feeds">My feeds</a>&nbsp;</li>
+      </ul>
+   </div>
+   <div>
+      <h3 class="menu"><a href="${rootRef}/users">Accounts<a/></h3>
+   </div>
+</#global>
+<#include "/footer.ftl"/>
