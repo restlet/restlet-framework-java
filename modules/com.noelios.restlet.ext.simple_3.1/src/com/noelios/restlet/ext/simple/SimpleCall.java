@@ -56,13 +56,13 @@ public class SimpleCall extends HttpServerCall {
      */
     private Request request;
 
+    /** Indicates if the request headers were parsed and added. */
+    private boolean requestHeadersAdded;
+
     /**
      * Simple Response.
      */
     private Response response;
-
-    /** Indicates if the request headers were parsed and added. */
-    private boolean requestHeadersAdded;
 
     /**
      * Constructs this class with the specified {@link simple.http.Request} and
@@ -84,6 +84,16 @@ public class SimpleCall extends HttpServerCall {
         this.response = response;
         setConfidential(confidential);
         this.requestHeadersAdded = false;
+    }
+
+    @Override
+    public void complete() {
+        try {
+            // Commit the response
+            this.response.commit();
+        } catch (IOException ex) {
+            getLogger().log(Level.WARNING, "Unable to commit the response", ex);
+        }
     }
 
     @Override
@@ -202,6 +212,19 @@ public class SimpleCall extends HttpServerCall {
     }
 
     @Override
+    public String getSslCipherSuite() {
+        Socket socket = getSocket();
+        if (socket instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) socket;
+            SSLSession sslSession = sslSocket.getSession();
+            if (sslSession != null) {
+                return sslSession.getCipherSuite();
+            }
+        }
+        return null;
+    }
+
+    @Override
     public List<Certificate> getSslClientCertificates() {
         Socket socket = getSocket();
         if (socket instanceof SSLSocket) {
@@ -217,19 +240,6 @@ public class SimpleCall extends HttpServerCall {
                     getLogger().log(Level.FINE,
                             "Can't get the client certificates.", e);
                 }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public String getSslCipherSuite() {
-        Socket socket = getSocket();
-        if (socket instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) socket;
-            SSLSession sslSession = sslSocket.getSession();
-            if (sslSession != null) {
-                return sslSession.getCipherSuite();
             }
         }
         return null;

@@ -27,6 +27,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
+import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
@@ -180,6 +181,30 @@ public abstract class HttpCall {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the content length of the request entity if know,
+     * {@link Representation#UNKNOWN_SIZE} otherwise.
+     * 
+     * @return The request content length.
+     */
+    protected long getContentLength(Series<Parameter> headers) {
+        long contentLength = Representation.UNKNOWN_SIZE;
+
+        // Extract the content length header
+        for (Parameter header : headers) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_LENGTH)) {
+                try {
+                    contentLength = Long.parseLong(header.getValue());
+                } catch (NumberFormatException e) {
+                    contentLength = Representation.UNKNOWN_SIZE;
+                }
+            }
+        }
+
+        return contentLength;
     }
 
     /**

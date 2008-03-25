@@ -275,7 +275,6 @@ public class JettyCall extends HttpServerCall {
             getLogger().log(Level.WARNING,
                     "Unable to complete or commit the response", ex);
         }
-
     }
 
 }

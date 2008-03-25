@@ -288,7 +288,7 @@ public class HttpMethodCall extends HttpClientCall {
             // any open request stream.
             result = new Status(getStatusCode(), null, getReasonPhrase(), null);
 
-            // If there is not response body, immediatly release the connection
+            // If there is no response body, immediately release the connection
             if (getHttpMethod().getResponseBodyAsStream() == null) {
                 getHttpMethod().releaseConnection();
             }
