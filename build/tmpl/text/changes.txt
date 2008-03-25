@@ -12,9 +12,10 @@ Changes log
    Transformer to 'XML' to prevent HTML detection. Reported by Elliot Long 
    and fixed by Rob Heittman. 
  - Fixed potential infinite loops while reading forms. Reported by Sean Curtis.
-
+ 
 [Enhancements]
  - Updated Jetty to version 6.1.8.
+ - Enhanced behaviour of Reference instances when setting empty query string.
 
 [Other changes] 
  - Added condition on javadocs flag for the stage-classic task in the Ant 
