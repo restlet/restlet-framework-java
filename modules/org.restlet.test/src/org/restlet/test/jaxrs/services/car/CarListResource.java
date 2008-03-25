@@ -29,6 +29,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -95,14 +96,27 @@ public class CarListResource {
         return OFFERS;
     }
 
+    /**
+     * This method is available for OPTIONS-test.
+     */
     @POST
     @Path(OFFERS_PATH)
-    public Response newCar() {
+    public Response newCarOffer() {
         try {
             return Response.created(new URI("../5")).build();
         } catch (URISyntaxException e) {
             throw new WebApplicationException(e);
         }
+    }
+
+    /**
+     * This method do so, if it adds a new car to the car list.
+     */
+    @POST
+    public Response newCar(@Context UriInfo uriInfo) {
+        int newId = 47; // from business logic.
+        URI newUri = uriInfo.getAbsolutePathBuilder().path("{id}").build(newId);
+        return Response.created(newUri).build();
     }
 
     /**

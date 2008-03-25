@@ -110,7 +110,7 @@ public class CarTest extends JaxRsTestCase {
 
     public void testOptions() throws Exception {
         Response response = options();
-        assertAllowedMethod(response, Method.GET);
+        assertAllowedMethod(response, Method.GET, Method.POST);
 
         response = options("offers");
         assertAllowedMethod(response, Method.GET, Method.POST);
