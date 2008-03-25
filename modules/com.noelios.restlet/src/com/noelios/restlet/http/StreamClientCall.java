@@ -26,10 +26,13 @@ import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
+import org.restlet.util.WrapperRepresentation;
 
 import com.noelios.restlet.util.ChunkedInputStream;
 import com.noelios.restlet.util.ChunkedOutputStream;
@@ -42,14 +45,49 @@ import com.noelios.restlet.util.KeepAliveOutputStream;
  */
 public class StreamClientCall extends HttpClientCall {
 
-    /** The request output stream. */
-    private OutputStream requestStream;
+    /**
+     * Wrapper representation to close the associated socket when the
+     * representation is released
+     */
+    private static class SocketWrapperRepresentation extends
+            WrapperRepresentation {
+
+        private final Logger log;
+
+        private final Socket socket;
+
+        public SocketWrapperRepresentation(
+                Representation wrappedRepresentation, Socket socket, Logger log) {
+            super(wrappedRepresentation);
+            this.socket = socket;
+            this.log = log;
+        }
+
+        @Override
+        public void release() {
+            try {
+                socket.shutdownOutput();
+                socket.close();
+            } catch (IOException ex) {
+                log.log(Level.WARNING,
+                        "An error occured closing the client socket", ex);
+            }
+
+            super.release();
+        }
+    }
 
     /** The request entity output stream. */
     private OutputStream requestEntityStream;
 
+    /** The request output stream. */
+    private OutputStream requestStream;
+
     /** The response input stream. */
     private InputStream responseStream;
+
+    /** The request socket */
+    private Socket socket;
 
     /**
      * Constructor.
@@ -81,6 +119,13 @@ public class StreamClientCall extends HttpClientCall {
     public Socket createSocket(String hostDomain, int hostPort)
             throws UnknownHostException, IOException {
         return new Socket(hostDomain, hostPort);
+    }
+
+    @Override
+    protected Representation getRepresentation(InputStream stream) {
+        Representation result = super.getRepresentation(stream);
+        return new SocketWrapperRepresentation(result, socket, getHelper()
+                .getLogger());
     }
 
     @Override
@@ -228,7 +273,7 @@ public class StreamClientCall extends HttpClientCall {
             }
 
             // Create the client socket
-            Socket socket = createSocket(hostDomain, hostPort);
+            this.socket = createSocket(hostDomain, hostPort);
             this.requestStream = socket.getOutputStream();
             this.responseStream = socket.getInputStream();
 
@@ -291,5 +336,4 @@ public class StreamClientCall extends HttpClientCall {
 
         return result;
     }
-
 }

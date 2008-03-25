@@ -84,7 +84,6 @@ public abstract class HttpClientCall extends HttpCall {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LENGTH)) {
-                result.setSize(Long.parseLong(header.getValue()));
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_EXPIRES)) {
@@ -135,6 +134,7 @@ public abstract class HttpClientCall extends HttpCall {
         if (!entityHeaderFound) {
             return null;
         }
+
         return result;
     }
 
@@ -200,12 +200,44 @@ public abstract class HttpClientCall extends HttpCall {
     }
 
     /**
+     * Returns the content length of the request entity if know,
+     * {@link Representation#UNKNOWN_SIZE} otherwise.
+     * 
+     * @return The request content length.
+     */
+    protected long getContentLength() {
+        return getContentLength(getResponseHeaders());
+    }
+
+    /**
      * Returns the HTTP client helper.
      * 
      * @return The HTTP client helper.
      */
     public HttpClientHelper getHelper() {
         return this.helper;
+    }
+
+    /**
+     * Returns the representation wrapping the given stream.
+     * 
+     * @param stream
+     *                The response input stream.
+     * @return The wrapping representation.
+     */
+    protected Representation getRepresentation(InputStream stream) {
+        return new InputRepresentation(stream, null);
+    }
+
+    /**
+     * Returns the representation wrapping the given channel.
+     * 
+     * @param channel
+     *                The response channel.
+     * @return The wrapping representation.
+     */
+    protected Representation getRepresentation(ReadableByteChannel channel) {
+        return new ReadableRepresentation(channel, null);
     }
 
     /**
@@ -248,17 +280,7 @@ public abstract class HttpClientCall extends HttpCall {
                 && !"identity".equalsIgnoreCase(transferEncoding)) {
             size = Representation.UNKNOWN_SIZE;
         } else {
-            String contentLength = responseHeaders.getFirstValue(
-                    HttpConstants.HEADER_CONTENT_LENGTH, true);
-            if (contentLength != null) {
-                try {
-                    size = Long.parseLong(contentLength);
-                } catch (NumberFormatException e) {
-                    getLogger().warning(
-                            "Unkown value received as content length: \""
-                                    + contentLength + "\".");
-                }
-            }
+            size = getContentLength();
         }
 
         if (!getMethod().equals(Method.HEAD.getName())
@@ -274,9 +296,9 @@ public abstract class HttpClientCall extends HttpCall {
             ReadableByteChannel channel = getResponseEntityChannel(size);
 
             if (stream != null) {
-                result = new InputRepresentation(stream, null);
+                result = getRepresentation(stream);
             } else if (channel != null) {
-                result = new ReadableRepresentation(channel, null);
+                result = getRepresentation(channel);
                 // } else {
                 // result = new EmptyRepresentation();
             }
@@ -436,5 +458,4 @@ public abstract class HttpClientCall extends HttpCall {
         return request.isEntityAvailable() && request.getEntity() != null
                 && request.getEntity().getSize() == Representation.UNKNOWN_SIZE;
     }
-
 }

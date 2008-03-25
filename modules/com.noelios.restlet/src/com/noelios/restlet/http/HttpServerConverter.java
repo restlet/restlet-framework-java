@@ -391,6 +391,7 @@ public class HttpServerConverter extends HttpConverter {
 
             // Send the response to the client
             response.getHttpCall().sendResponse(response);
+            response.getHttpCall().complete();
         } catch (Exception e) {
             getLogger().log(Level.INFO, "Exception intercepted", e);
             response.getHttpCall().setStatusCode(

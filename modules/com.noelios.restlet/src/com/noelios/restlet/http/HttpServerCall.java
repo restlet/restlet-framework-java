@@ -97,6 +97,23 @@ public abstract class HttpServerCall extends HttpCall {
     }
 
     /**
+     * Complete the response
+     */
+    public void complete() {
+
+    }
+
+    /**
+     * Returns the content length of the request entity if know,
+     * {@link Representation#UNKNOWN_SIZE} otherwise.
+     * 
+     * @return The request content length.
+     */
+    protected long getContentLength() {
+        return getContentLength(getRequestHeaders());
+    }
+
+    /**
      * Returns the host domain name.
      * 
      * @return The host domain name.
@@ -127,19 +144,7 @@ public abstract class HttpServerCall extends HttpCall {
      */
     public Representation getRequestEntity() {
         Representation result = null;
-        long contentLength = Representation.UNKNOWN_SIZE;
-
-        // Extract the content length header
-        for (Parameter header : getRequestHeaders()) {
-            if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_CONTENT_LENGTH)) {
-                try {
-                    contentLength = Long.parseLong(header.getValue());
-                } catch (NumberFormatException e) {
-                    contentLength = Representation.UNKNOWN_SIZE;
-                }
-            }
-        }
+        long contentLength = getContentLength();
 
         // Create the result representation
         InputStream requestStream = getRequestEntityStream(contentLength);
@@ -508,5 +513,4 @@ public abstract class HttpServerCall extends HttpCall {
     public void writeResponseHead(Response response) throws IOException {
         // Do nothing by default
     }
-
 }

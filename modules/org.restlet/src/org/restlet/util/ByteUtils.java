@@ -63,11 +63,11 @@ public final class ByteUtils {
         /** The channel to read from. */
         private ReadableByteChannel channel;
 
-        /** The selectable channel to read from. */
-        private SelectableChannel selectableChannel;
-
         /** Indicates if further reads can be attempted. */
         private boolean endReached;
+
+        /** The selectable channel to read from. */
+        private SelectableChannel selectableChannel;
 
         /**
          * Constructor.
@@ -459,6 +459,22 @@ public final class ByteUtils {
         @Override
         public void write(int b) throws IOException {
             writer.write(b);
+        }
+    }
+
+    /**
+     * Read and discard all the bytes from {@code input}
+     * 
+     * @param input
+     *                The input stream to exhaust.
+     * @throws IOException
+     */
+    public static void exhaust(InputStream input) throws IOException {
+        byte[] buf = new byte[2048];
+        int read = input.read(buf);
+
+        while (read != -1) {
+            read = input.read(buf);
         }
     }
 

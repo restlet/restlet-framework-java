@@ -263,9 +263,19 @@ public class JettyCall extends HttpServerCall {
             super.sendResponse(response);
         }
 
-        // Fully complete and commit the response
-        this.connection.completeResponse();
-        this.connection.commitResponse(true);
+    }
+
+    @Override
+    public void complete() {
+        try {
+            // Fully complete and commit the response
+            this.connection.completeResponse();
+            this.connection.commitResponse(true);
+        } catch (IOException ex) {
+            getLogger().log(Level.WARNING,
+                    "Unable to complete or commit the response", ex);
+        }
+
     }
 
 }

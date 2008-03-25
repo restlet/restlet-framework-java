@@ -28,6 +28,7 @@ import java.util.logging.Level;
 
 import org.restlet.Server;
 import org.restlet.data.Response;
+import org.restlet.util.ByteUtils;
 
 import com.noelios.restlet.util.ChunkedInputStream;
 import com.noelios.restlet.util.ChunkedOutputStream;
@@ -40,14 +41,17 @@ import com.noelios.restlet.util.KeepAliveOutputStream;
  */
 public class StreamServerCall extends HttpServerCall {
 
+    /** The request entity stream */
+    private InputStream requestEntityStream;
+
     /** The request input stream. */
     private final InputStream requestStream;
 
-    /** The response output stream. */
-    private final OutputStream responseStream;
-
     /** The response entity output stream. */
     private OutputStream responseEntityStream;
+
+    /** The response output stream. */
+    private final OutputStream responseStream;
 
     /** The connecting user */
     private final Socket socket;
@@ -70,6 +74,7 @@ public class StreamServerCall extends HttpServerCall {
         this.requestStream = requestStream;
         this.responseStream = responseStream;
         this.responseEntityStream = null;
+        this.requestEntityStream = null;
         this.socket = socket;
 
         try {
@@ -77,6 +82,25 @@ public class StreamServerCall extends HttpServerCall {
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING, "Unable to parse the HTTP request",
                     ioe);
+        }
+    }
+
+    @Override
+    public void complete() {
+        try {
+            socket.getOutputStream().flush();
+
+            // Exhaust the input stream before closing in case
+            // the client is still writing to it
+            ByteUtils.exhaust(getRequestEntityStream(getContentLength()));
+
+            if (!socket.isClosed()) {
+                socket.shutdownOutput();
+                socket.close();
+            }
+        } catch (IOException ex) {
+            getLogger().log(Level.WARNING, "Unable to shutdown server socket",
+                    ex);
         }
     }
 
@@ -97,11 +121,15 @@ public class StreamServerCall extends HttpServerCall {
 
     @Override
     public InputStream getRequestEntityStream(long size) {
-        if (isRequestChunked()) {
-            return new ChunkedInputStream(getRequestStream());
-        } else {
-            return new InputEntityStream(getRequestStream(), size);
+        if (requestEntityStream == null) {
+            if (isRequestChunked()) {
+                requestEntityStream = new ChunkedInputStream(getRequestStream());
+            } else {
+                requestEntityStream = new InputEntityStream(getRequestStream(),
+                        size);
+            }
         }
+        return requestEntityStream;
     }
 
     @Override
@@ -126,17 +154,12 @@ public class StreamServerCall extends HttpServerCall {
     @Override
     public OutputStream getResponseEntityStream() {
         if (responseEntityStream == null) {
-            if (isResponseChunked() && isKeepAlive()) {
+            if (isResponseChunked()) {
                 responseEntityStream = new ChunkedOutputStream(
-                        new KeepAliveOutputStream(getResponseStream()));
-            } else if (isResponseChunked()) {
-                responseEntityStream = new ChunkedOutputStream(
-                        getResponseStream());
-            } else if (isKeepAlive()) {
-                responseEntityStream = new KeepAliveOutputStream(
                         getResponseStream());
             } else {
-                responseEntityStream = getResponseStream();
+                responseEntityStream = new KeepAliveOutputStream(
+                        getResponseStream());
             }
         }
         return responseEntityStream;
@@ -160,5 +183,4 @@ public class StreamServerCall extends HttpServerCall {
 
         writeResponseHead(getResponseStream());
     }
-
 }
