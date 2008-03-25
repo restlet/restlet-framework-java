@@ -24,7 +24,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.Application;
 import org.restlet.example.book.restlet.ch8.RmepGuard;
-import org.restlet.example.book.restlet.ch8.data.DataFacade;
+import org.restlet.example.book.restlet.ch8.objects.Facade;
 import org.restlet.example.book.restlet.ch8.objects.User;
 import org.restlet.resource.Resource;
 
@@ -42,13 +42,13 @@ public class BaseResource extends Resource {
     }
 
     /**
-     * Gives access to Data.
+     * Gives access to the Objects layer.
      * 
-     * @return a data facade.
+     * @return a facade.
      */
-    protected DataFacade getDataFacade() {
+    protected Facade getObjectsFacade() {
         Application application = (Application) getApplication();
-        return application.getDataFacade();
+        return application.getObjectsFacade();
     }
 
     /**

@@ -52,7 +52,7 @@ public class FeedsResource extends BaseResource {
         // Get the parent mailbox thanks to its ID taken from the resource's
         // URI.
         String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getDataFacade().getMailboxById(mailboxId);
+        mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             feeds = mailbox.getFeeds();
@@ -70,7 +70,7 @@ public class FeedsResource extends BaseResource {
         Feed feed = new Feed();
         feed.setNickname(form.getFirstValue("nickname"));
         feed.setTags(Arrays.asList(form.getFirstValue("tags").split(" ")));
-        feed = getDataFacade().createFeed(mailbox, feed);
+        feed = getObjectsFacade().createFeed(mailbox, feed);
 
         getResponse().redirectSeeOther(
                 getChildReference(getRequest().getResourceRef(), feed.getId()));

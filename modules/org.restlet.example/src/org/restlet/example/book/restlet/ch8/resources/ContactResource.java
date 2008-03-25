@@ -57,15 +57,15 @@ public class ContactResource extends BaseResource {
         // Get the contact and its parent mailbox thanks to their IDs taken from
         // the resource's URI.
         String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getDataFacade().getMailboxById(mailboxId);
+        mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             String contactId = (String) request.getAttributes()
                     .get("contactId");
-            contact = getDataFacade().getContactById(contactId);
+            contact = getObjectsFacade().getContactById(contactId);
 
             if (contact != null) {
-                hostedMailboxes = getDataFacade().getMailboxes();
+                hostedMailboxes = getObjectsFacade().getMailboxes();
                 getVariants().add(new Variant(MediaType.TEXT_HTML));
             }
         }
@@ -86,7 +86,7 @@ public class ContactResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDataFacade().deleteContact(mailbox, contact);
+        getObjectsFacade().deleteContact(mailbox, contact);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -121,7 +121,7 @@ public class ContactResource extends BaseResource {
         contact.setMailAddress(form.getFirstValue("mailAddress"));
         contact.setName(form.getFirstValue("name"));
 
-        getDataFacade().updateContact(mailbox, contact);
+        getObjectsFacade().updateContact(mailbox, contact);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 

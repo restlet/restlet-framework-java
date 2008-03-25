@@ -48,7 +48,7 @@ public class MailboxResource extends BaseResource {
     public MailboxResource(Context context, Request request, Response response) {
         super(context, request, response);
         String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getDataFacade().getMailboxById(mailboxId);
+        mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             getVariants().add(new Variant(MediaType.TEXT_HTML));
@@ -85,8 +85,8 @@ public class MailboxResource extends BaseResource {
         String senderAddress = form.getFirstValue("senderAddress");
         String senderName = form.getFirstValue("senderName");
 
-        Contact contact = getDataFacade()
-                .lookForContact(senderAddress, mailbox);
+        Contact contact = getObjectsFacade().lookForContact(senderAddress,
+                mailbox);
         if (contact == null) {
             contact = new Contact();
             contact.setMailAddress(senderAddress);
@@ -99,18 +99,17 @@ public class MailboxResource extends BaseResource {
         // form2.add("sendingDate", mail.getSendingDate().toString());
         Series<Parameter> recipients = form.subList("recipient");
         for (Parameter recipient : recipients) {
-            contact = getDataFacade().lookForContact(recipient.getValue(),
+            contact = getObjectsFacade().lookForContact(recipient.getValue(),
                     mailbox);
             if (contact == null) {
                 contact = new Contact();
-                String[] recipientValues = ((String) recipient.getValue())
-                        .split("\\$");
+                String[] recipientValues = recipient.getValue().split("\\$");
                 contact.setMailAddress(recipientValues[0]);
                 contact.setName(recipientValues[1]);
             }
             mail.getRecipients().add(contact);
         }
-        getDataFacade().createMail(mailbox, mail);
+        getObjectsFacade().createMail(mailbox, mail);
     }
 
     /**
@@ -118,7 +117,7 @@ public class MailboxResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDataFacade().deleteMailbox(mailbox);
+        getObjectsFacade().deleteMailbox(mailbox);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -151,7 +150,7 @@ public class MailboxResource extends BaseResource {
         mailbox.setNickname(form.getFirstValue("nickname"));
         mailbox.setSenderName(form.getFirstValue("senderName"));
 
-        getDataFacade().updateMailbox(mailbox);
+        getObjectsFacade().updateMailbox(mailbox);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 

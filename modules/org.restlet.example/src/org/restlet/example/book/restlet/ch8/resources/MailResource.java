@@ -59,11 +59,11 @@ public class MailResource extends BaseResource {
     public MailResource(Context context, Request request, Response response) {
         super(context, request, response);
         String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getDataFacade().getMailboxById(mailboxId);
+        mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             String mailId = (String) request.getAttributes().get("mailId");
-            mail = getDataFacade().getMailById(mailId);
+            mail = getObjectsFacade().getMailById(mailId);
 
             if (mail != null) {
                 getVariants().add(new Variant(MediaType.TEXT_HTML));
@@ -86,7 +86,7 @@ public class MailResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDataFacade().deleteMail(mailbox, mail);
+        getObjectsFacade().deleteMail(mailbox, mail);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -142,7 +142,7 @@ public class MailResource extends BaseResource {
                     "tags").split(" ")));
         }
 
-        getDataFacade().updateMail(mailbox, mail, form.getFirstValue("status"),
+        getObjectsFacade().updateMail(mailbox, mail, form.getFirstValue("status"),
                 form.getFirstValue("subject"), form.getFirstValue("message"),
                 mailAddresses, tags);
 
@@ -197,7 +197,7 @@ public class MailResource extends BaseResource {
                     // if the mail has been successfully sent to every
                     // recipient.
                     mail.setStatus(Mail.STATUS_SENT);
-                    getDataFacade().updateMail(mailbox, mail);
+                    getObjectsFacade().updateMail(mailbox, mail);
                     getResponse().redirectSeeOther(
                             getRequest().getResourceRef());
                 } else {
@@ -218,7 +218,7 @@ public class MailResource extends BaseResource {
             } else {
                 // Still a draft
                 mail.setStatus(Mail.STATUS_DRAFT);
-                getDataFacade().updateMail(mailbox, mail);
+                getObjectsFacade().updateMail(mailbox, mail);
                 getResponse().redirectSeeOther(getRequest().getResourceRef());
             }
         } else {

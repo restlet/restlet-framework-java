@@ -52,10 +52,10 @@ public class UserResource extends BaseResource {
         // Get user thanks to its ID taken from the resource's
         // URI.
         String userId = (String) request.getAttributes().get("userId");
-        user = getDataFacade().getUserById(userId);
+        user = getObjectsFacade().getUserById(userId);
 
         if (user != null) {
-            mailboxes = getDataFacade().getMailboxes(user);
+            mailboxes = getObjectsFacade().getMailboxes(user);
             getVariants().add(new Variant(MediaType.TEXT_HTML));
         }
     }
@@ -75,7 +75,7 @@ public class UserResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getDataFacade().deleteUser(user);
+        getObjectsFacade().deleteUser(user);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -114,7 +114,7 @@ public class UserResource extends BaseResource {
         user.setLastName(form.getFirstValue("lastName"));
         user.setLogin(form.getFirstValue("login"));
         user.setPassword(form.getFirstValue("password"));
-        getDataFacade().updateUser(user);
+        getObjectsFacade().updateUser(user);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 }

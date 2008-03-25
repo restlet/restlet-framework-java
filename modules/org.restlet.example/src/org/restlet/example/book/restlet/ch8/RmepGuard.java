@@ -4,7 +4,7 @@ import org.restlet.Context;
 import org.restlet.Guard;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
-import org.restlet.example.book.restlet.ch8.data.DataFacade;
+import org.restlet.example.book.restlet.ch8.objects.Facade;
 import org.restlet.example.book.restlet.ch8.objects.User;
 
 /**
@@ -14,13 +14,13 @@ import org.restlet.example.book.restlet.ch8.objects.User;
 public class RmepGuard extends Guard {
 
     /** Data facade object. */
-    protected DataFacade dataFacade;
+    protected Facade dataFacade;
 
     /** Storage key in request's context. */
     public final static String CURRENT_USER = "CURRENT_USER";
 
     public RmepGuard(Context context, ChallengeScheme scheme, String realm,
-            DataFacade dataFacade) {
+            Facade dataFacade) {
         super(context, scheme, realm);
         this.dataFacade = dataFacade;
     }

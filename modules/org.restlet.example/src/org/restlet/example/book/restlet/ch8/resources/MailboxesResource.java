@@ -50,10 +50,10 @@ public class MailboxesResource extends BaseResource {
         super(context, request, response);
 
         if (getCurrentUser().isAdministrator()) {
-            mailboxes = getDataFacade().getMailboxes();
-            users = getDataFacade().getUsers();
+            mailboxes = getObjectsFacade().getMailboxes();
+            users = getObjectsFacade().getUsers();
         } else {
-            mailboxes = getDataFacade().getMailboxes(getCurrentUser());
+            mailboxes = getObjectsFacade().getMailboxes(getCurrentUser());
         }
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
@@ -68,10 +68,10 @@ public class MailboxesResource extends BaseResource {
 
         Mailbox mailbox = new Mailbox();
         mailbox.setNickname(form.getFirstValue("nickname"));
-        User owner = getDataFacade().getUserById(form.getFirstValue("ownerId"));
+        User owner = getObjectsFacade().getUserById(form.getFirstValue("ownerId"));
         mailbox.setOwner(owner);
         mailbox.setSenderName(owner.getFirstName() + " " + owner.getLastName());
-        mailbox = getDataFacade().createMailbox(mailbox);
+        mailbox = getObjectsFacade().createMailbox(mailbox);
 
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }

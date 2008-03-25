@@ -55,7 +55,7 @@ public class MailsResource extends BaseResource {
         // Get the parent mailbox thanks to its ID taken from the resource's
         // URI.
         String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getDataFacade().getMailboxById(mailboxId);
+        mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             mails = mailbox.getMails();
@@ -103,7 +103,7 @@ public class MailsResource extends BaseResource {
             mail.setTags(null);
         }
 
-        mail = getDataFacade().createMail(mailbox, mail);
+        mail = getObjectsFacade().createMail(mailbox, mail);
 
         getResponse().redirectSeeOther(
                 getChildReference(getRequest().getResourceRef(), mail.getId()));

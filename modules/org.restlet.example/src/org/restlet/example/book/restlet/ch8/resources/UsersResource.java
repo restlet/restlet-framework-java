@@ -47,7 +47,7 @@ public class UsersResource extends BaseResource {
         super(context, request, response);
 
         if (getCurrentUser().isAdministrator()) {
-            users = getDataFacade().getUsers();
+            users = getObjectsFacade().getUsers();
         } else {
             users = new ArrayList<User>();
             users.add(getCurrentUser());
@@ -72,7 +72,7 @@ public class UsersResource extends BaseResource {
                 .setAdministrator((form.getFirstValue("administrator") == null ? false
                         : true));
 
-        user = getDataFacade().createUser(user);
+        user = getObjectsFacade().createUser(user);
 
         getResponse().redirectSeeOther(
                 getChildReference(getRequest().getResourceRef(), user.getId()));

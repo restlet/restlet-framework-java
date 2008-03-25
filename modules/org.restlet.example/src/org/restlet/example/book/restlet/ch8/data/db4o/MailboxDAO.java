@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch8.dao.db4o;
+package org.restlet.example.book.restlet.ch8.data.db4o;
 
 import java.util.ArrayList;
 import java.util.Date;
