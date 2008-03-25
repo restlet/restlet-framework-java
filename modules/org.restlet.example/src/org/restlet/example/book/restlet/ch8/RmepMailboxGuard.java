@@ -3,7 +3,7 @@ package org.restlet.example.book.restlet.ch8;
 import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
-import org.restlet.example.book.restlet.ch8.objects.Facade;
+import org.restlet.example.book.restlet.ch8.objects.ObjectsFacade;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
 import org.restlet.example.book.restlet.ch8.objects.User;
 
@@ -14,7 +14,7 @@ import org.restlet.example.book.restlet.ch8.objects.User;
 public class RmepMailboxGuard extends RmepGuard {
 
     public RmepMailboxGuard(Context context, ChallengeScheme scheme,
-            String realm, Facade dataFacade) {
+            String realm, ObjectsFacade dataFacade) {
         super(context, scheme, realm, dataFacade);
     }
 

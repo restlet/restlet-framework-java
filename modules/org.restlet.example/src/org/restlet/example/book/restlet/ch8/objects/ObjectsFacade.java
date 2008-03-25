@@ -4,17 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.example.book.restlet.ch8.data.DataFacade;
-import org.restlet.example.book.restlet.ch8.data.db4o.ContactDAO;
-import org.restlet.example.book.restlet.ch8.data.db4o.FeedDAO;
-import org.restlet.example.book.restlet.ch8.data.db4o.MailDAO;
 
-public class Facade {
-    /** DAO objects factory. */
-    protected DataFacade daoFactory;
+public class ObjectsFacade {
+    /** Data facade. */
+    protected DataFacade dataFacade;
 
-    public Facade(DataFacade daoFactory) {
+    public ObjectsFacade(DataFacade dataFacade) {
         super();
-        this.daoFactory = daoFactory;
+        this.dataFacade = dataFacade;
     }
 
     /**
@@ -23,7 +20,7 @@ public class Facade {
      * 
      */
     public void initAdmin() {
-        daoFactory.getUserDAO().initAdmin();
+        dataFacade.initAdmin();
     }
 
     /**
@@ -34,7 +31,7 @@ public class Facade {
      * @return a Contact object or null if no contact has been found.
      */
     public Contact getContactById(String contactId) {
-        return daoFactory.getContactDAO().getContactById(contactId);
+        return dataFacade.getContactDAO().getContactById(contactId);
     }
 
     /**
@@ -45,7 +42,7 @@ public class Facade {
      * @return a Feed object or null if no feed has been found.
      */
     public Feed getFeedById(String feedId) {
-        return daoFactory.getFeedDAO().getFeedById(feedId);
+        return dataFacade.getFeedDAO().getFeedById(feedId);
     }
 
     /**
@@ -56,7 +53,7 @@ public class Facade {
      * @return a Mail object or null if no mail has been found.
      */
     public Mail getMailById(String mailId) {
-        return daoFactory.getMailDAO().getMailById(mailId);
+        return dataFacade.getMailDAO().getMailById(mailId);
     }
 
     /**
@@ -67,7 +64,7 @@ public class Facade {
      * @return the user object completed with its identfiant.
      */
     public User createUser(User user) {
-        return daoFactory.getUserDAO().createUser(user);
+        return dataFacade.getUserDAO().createUser(user);
     }
 
     /**
@@ -78,7 +75,7 @@ public class Facade {
      * @return a User object or null if no user has been found.
      */
     public User getUserById(String userId) {
-        return daoFactory.getUserDAO().getUserById(userId);
+        return dataFacade.getUserDAO().getUserById(userId);
     }
 
     /**
@@ -91,7 +88,7 @@ public class Facade {
      * @return a User object or null if no user has been found.
      */
     public User getUserByLoginPwd(String login, char[] password) {
-        return daoFactory.getUserDAO().getUserByLoginPwd(login, password);
+        return dataFacade.getUserDAO().getUserByLoginPwd(login, password);
     }
 
     /**
@@ -100,7 +97,7 @@ public class Facade {
      * @return the list of all users.
      */
     public List<User> getUsers() {
-        return daoFactory.getUserDAO().getUsers();
+        return dataFacade.getUserDAO().getUsers();
     }
 
     /**
@@ -115,7 +112,7 @@ public class Facade {
         for (Mailbox mailbox : mailboxes) {
             deleteMailbox(mailbox);
         }
-        daoFactory.getUserDAO().deleteUser(user);
+        dataFacade.getUserDAO().deleteUser(user);
     }
 
     /**
@@ -125,7 +122,7 @@ public class Facade {
      *                the user to be upated.
      */
     public void updateUser(User user) {
-        daoFactory.getUserDAO().updateUser(user);
+        dataFacade.getUserDAO().updateUser(user);
     }
 
     /**
@@ -136,7 +133,7 @@ public class Facade {
      * @return the list of mailboxes owned by this user.
      */
     public List<Mailbox> getMailboxes(User user) {
-        return daoFactory.getUserDAO().getMailboxes(user);
+        return dataFacade.getUserDAO().getMailboxes(user);
     }
 
     /**
@@ -147,7 +144,7 @@ public class Facade {
      * @return the mailbox object completed with its identfiant.
      */
     public Mailbox createMailbox(Mailbox mailbox) {
-        return daoFactory.getMailboxDAO().createMailbox(mailbox);
+        return dataFacade.getMailboxDAO().createMailbox(mailbox);
     }
 
     /**
@@ -158,7 +155,7 @@ public class Facade {
      * @return a Mailbox object or null if no mailbox has been found.
      */
     public Mailbox getMailboxById(String mailboxId) {
-        return daoFactory.getMailboxDAO().getMailboxById(mailboxId);
+        return dataFacade.getMailboxDAO().getMailboxById(mailboxId);
     }
 
     /**
@@ -167,7 +164,7 @@ public class Facade {
      * @return the list of all mailboxes.
      */
     public List<Mailbox> getMailboxes() {
-        return daoFactory.getMailboxDAO().getMailboxes();
+        return dataFacade.getMailboxDAO().getMailboxes();
     }
 
     /**
@@ -177,20 +174,20 @@ public class Facade {
      *                the mailbox to be deleted.
      */
     public void deleteMailbox(Mailbox mailbox) {
-        FeedDAO feedDAO = daoFactory.getFeedDAO();
+        FeedDAO feedDAO = dataFacade.getFeedDAO();
         for (Feed feed : mailbox.getFeeds()) {
             feedDAO.deleteFeed(feed);
         }
-        MailDAO mailDAO = daoFactory.getMailDAO();
+        MailDAO mailDAO = dataFacade.getMailDAO();
         for (Mail mail : mailbox.getMails()) {
             mailDAO.deleteMail(mail);
         }
-        ContactDAO contactDAO = daoFactory.getContactDAO();
+        T contactDAO = dataFacade.getContactDAO();
         for (Contact contact : mailbox.getContacts()) {
             contactDAO.deleteContact(contact);
         }
 
-        daoFactory.getMailboxDAO().deleteMailbox(mailbox);
+        dataFacade.getMailboxDAO().deleteMailbox(mailbox);
     }
 
     /**
@@ -200,7 +197,7 @@ public class Facade {
      *                the mailbox to be updated.
      */
     public void updateMailbox(Mailbox mailbox) {
-        daoFactory.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.getMailboxDAO().updateMailbox(mailbox);
     }
 
     /**
@@ -213,9 +210,9 @@ public class Facade {
      * @return the contact object completed with its identfiant.
      */
     public Contact createContact(Mailbox mailbox, Contact contact) {
-        contact = daoFactory.getContactDAO().createContact(contact);
+        contact = dataFacade.getContactDAO().createContact(contact);
         mailbox.getContacts().add(contact);
-        daoFactory.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.getMailboxDAO().updateMailbox(mailbox);
 
         return contact;
     }
@@ -239,8 +236,8 @@ public class Facade {
             }
         }
 
-        daoFactory.getContactDAO().deleteContact(contact);
-        daoFactory.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.getContactDAO().deleteContact(contact);
+        dataFacade.getMailboxDAO().updateMailbox(mailbox);
     }
 
     /**
@@ -252,7 +249,7 @@ public class Facade {
      *                the contact to be update.
      */
     public void updateContact(Mailbox mailbox, Contact contact) {
-        daoFactory.getContactDAO().updateContact(contact);
+        dataFacade.getContactDAO().updateContact(contact);
     }
 
     /**
@@ -265,9 +262,9 @@ public class Facade {
      * @return the feed object completed with its identfiant.
      */
     public Feed createFeed(Mailbox mailbox, Feed feed) {
-        feed = daoFactory.getFeedDAO().createFeed(feed);
+        feed = dataFacade.getFeedDAO().createFeed(feed);
         mailbox.getFeeds().add(feed);
-        daoFactory.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.getMailboxDAO().updateMailbox(mailbox);
 
         return feed;
     }
@@ -291,8 +288,8 @@ public class Facade {
             }
         }
 
-        daoFactory.getFeedDAO().deleteFeed(feed);
-        daoFactory.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.getFeedDAO().deleteFeed(feed);
+        dataFacade.getMailboxDAO().updateMailbox(mailbox);
     }
 
     /**
@@ -304,7 +301,7 @@ public class Facade {
      *                the feed to be updated.
      */
     public void updateFeed(Mailbox mailbox, Feed feed) {
-        daoFactory.getFeedDAO().updateFeed(feed);
+        dataFacade.getFeedDAO().updateFeed(feed);
     }
 
     /**
@@ -317,9 +314,9 @@ public class Facade {
      * @return the mail object completed with its identfiant.
      */
     public Mail createMail(Mailbox mailbox, Mail mail) {
-        mail = daoFactory.getMailDAO().createMail(mail);
+        mail = dataFacade.getMailDAO().createMail(mail);
         mailbox.getMails().add(mail);
-        daoFactory.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.getMailboxDAO().updateMailbox(mailbox);
 
         return mail;
     }
@@ -342,7 +339,7 @@ public class Facade {
                 found = true;
             }
         }
-        ContactDAO contactDAO = daoFactory.getContactDAO();
+        T contactDAO = dataFacade.getContactDAO();
         // Delete its list of unregistered recipients
         for (Contact contact : mail.getRecipients()) {
             if (contact.getId() == null) {
@@ -354,8 +351,8 @@ public class Facade {
             contactDAO.deleteContact(mail.getSender());
         }
 
-        daoFactory.getMailDAO().deleteMail(mail);
-        daoFactory.getMailboxDAO().updateMailbox(mailbox);
+        dataFacade.getMailDAO().deleteMail(mail);
+        dataFacade.getMailboxDAO().updateMailbox(mailbox);
     }
 
     /**
@@ -367,7 +364,7 @@ public class Facade {
      *                the mail to be updated.
      */
     public void updateMail(Mailbox mailbox, Mail mail) {
-        daoFactory.getMailDAO().updateMail(mail);
+        dataFacade.getMailDAO().updateMail(mail);
     }
 
     /**
@@ -400,7 +397,7 @@ public class Facade {
             List<Contact> mailRecipients = new ArrayList<Contact>();
             if (mailAddresses != null) {
                 // First, remove the unused mail's recipients
-                ContactDAO contactDAO = daoFactory.getContactDAO();
+                T contactDAO = dataFacade.getContactDAO();
                 if (mail.getRecipients() != null) {
                     for (Contact recipient : mail.getRecipients()) {
                         if (!mailAddresses.contains(recipient.getMailAddress())) {
@@ -429,7 +426,7 @@ public class Facade {
                 mail.setRecipients(mailRecipients);
             } else {
                 // First, remove the unused mail's recipients
-                ContactDAO contactDAO = daoFactory.getContactDAO();
+                T contactDAO = dataFacade.getContactDAO();
                 if (mail.getRecipients() != null) {
                     for (Contact recipient : mail.getRecipients()) {
                         contactDAO.deleteContact(recipient);

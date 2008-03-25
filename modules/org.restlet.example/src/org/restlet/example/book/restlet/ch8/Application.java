@@ -28,8 +28,8 @@ import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
-import org.restlet.example.book.restlet.ch8.data.DataFacade;
-import org.restlet.example.book.restlet.ch8.objects.Facade;
+import org.restlet.example.book.restlet.ch8.data.db4o.Db4oFacade;
+import org.restlet.example.book.restlet.ch8.objects.ObjectsFacade;
 import org.restlet.example.book.restlet.ch8.resources.ContactResource;
 import org.restlet.example.book.restlet.ch8.resources.ContactsResource;
 import org.restlet.example.book.restlet.ch8.resources.FeedResource;
@@ -63,7 +63,7 @@ public class Application extends org.restlet.Application {
     }
 
     /** Facade object for all access to data. */
-    private Facade dataFacade;
+    private ObjectsFacade dataFacade;
 
     /** Freemarker configuration object. */
     private freemarker.template.Configuration fmc;
@@ -78,7 +78,7 @@ public class Application extends org.restlet.Application {
         Configuration config = Db4o.configure();
         config.updateDepth(2);
         config.activationDepth(10);
-        dataFacade = new Facade(new DataFacade(Db4o.openFile(System
+        dataFacade = new ObjectsFacade(new Db4oFacade(Db4o.openFile(System
                 .getProperty("user.home")
                 + File.separator + "rmep.dbo")));
         // Check that at least one administrator exists in the database.
@@ -171,7 +171,7 @@ public class Application extends org.restlet.Application {
      * 
      * @return the data facade.
      */
-    public Facade getObjectsFacade() {
+    public ObjectsFacade getObjectsFacade() {
         return this.dataFacade;
     }
 

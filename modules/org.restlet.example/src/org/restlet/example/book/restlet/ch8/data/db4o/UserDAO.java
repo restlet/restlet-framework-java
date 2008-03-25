@@ -16,7 +16,7 @@ import com.db4o.query.QueryComparator;
  * DAO that manages the persistence of User objects.
  * 
  */
-public class UserDAO extends Db4oDAO {
+public class UserDAO extends Db4oFacade {
 
     public UserDAO(ObjectContainer objectContainer) {
         super(objectContainer);

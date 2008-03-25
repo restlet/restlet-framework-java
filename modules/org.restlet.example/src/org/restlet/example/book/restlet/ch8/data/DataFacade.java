@@ -1,71 +1,48 @@
 package org.restlet.example.book.restlet.ch8.data;
 
-import org.restlet.example.book.restlet.ch8.data.db4o.ContactDAO;
-import org.restlet.example.book.restlet.ch8.data.db4o.FeedDAO;
-import org.restlet.example.book.restlet.ch8.data.db4o.MailDAO;
-import org.restlet.example.book.restlet.ch8.data.db4o.MailboxDAO;
-import org.restlet.example.book.restlet.ch8.data.db4o.UserDAO;
-
-import com.db4o.ObjectContainer;
+import org.restlet.example.book.restlet.ch8.objects.Contact;
 
 /**
  * Simple factory that generates Data Access Objects dedicated to the Db4o
  * database.
  * 
  */
-public class DataFacade {
-
-    /** Db4o object container. */
-    private ObjectContainer objectContainer;
-
-    public DataFacade(ObjectContainer objectContainer) {
-        super();
-        this.objectContainer = objectContainer;
-    }
+public abstract class DataFacade {
 
     /**
-     * Return a new DAO instance for managing contact data.
+     * Add a new Contact object in the database.
      * 
-     * @return a new DAO instance for managing contact data.
+     * @param contact
+     *                new Contact object to be added.
+     * @return the contact object completed with its identfiant.
      */
-    public ContactDAO getContactDAO() {
-        return new ContactDAO(objectContainer);
-    }
+    public abstract Contact createContact(Contact contact);
 
     /**
-     * Return a new DAO instance for managing feed data.
+     * Get a contact by its id.
      * 
-     * @return a new DAO instance for managing feed data.
+     * @param contactId
+     *                the contact's id.
+     * @return a Contact object or null if no contact has been found.
      */
-    public FeedDAO getFeedDAO() {
-        return new FeedDAO(objectContainer);
-    }
+    public abstract Contact getContactById(String contactId);
 
     /**
-     * Return a new DAO instance for managing mailbox data.
+     * Update a contact.
      * 
-     * @return a new DAO instance for managing mailbox data.
+     * @param mailbox
+     *                the parent mailbox.
+     * @param contact
+     *                the contact to be update.
      */
-    public MailboxDAO getMailboxDAO() {
-        return new MailboxDAO(objectContainer);
-    }
+    public abstract void updateContact(Contact contact);
 
     /**
-     * Return a new DAO instance for managing mail data.
+     * Delete a contact.
      * 
-     * @return a new DAO instance for managing mail data.
+     * @param contact
+     *                the contact to be deleted.
      */
-    public MailDAO getMailDAO() {
-        return new MailDAO(objectContainer);
-    }
-
-    /**
-     * Return a new DAO instance for managing user data.
-     * 
-     * @return a new DAO instance for managing user data.
-     */
-    public UserDAO getUserDAO() {
-        return new UserDAO(objectContainer);
-    }
+    public abstract void deleteContact(Contact contact);
 
 }

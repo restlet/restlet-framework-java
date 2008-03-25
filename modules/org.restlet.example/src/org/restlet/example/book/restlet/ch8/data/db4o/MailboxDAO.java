@@ -15,7 +15,7 @@ import com.db4o.query.QueryComparator;
  * DAO that manages the persistence of Mailbox objects.
  * 
  */
-public class MailboxDAO extends Db4oDAO {
+public class MailboxDAO extends Db4oFacade {
 
     public MailboxDAO(ObjectContainer objectContainer) {
         super(objectContainer);

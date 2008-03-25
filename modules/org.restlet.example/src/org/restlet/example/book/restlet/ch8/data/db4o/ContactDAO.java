@@ -11,18 +11,16 @@ import com.db4o.ObjectSet;
  * DAO that manages the persistence of Contact objects.
  * 
  */
-public class ContactDAO extends Db4oDAO {
+public class ContactDAO extends Db4oFacade {
 
     public ContactDAO(ObjectContainer objectContainer) {
         super(objectContainer);
     }
 
-    /**
-     * Add a new Contact object in the database.
+    /*
+     * (non-Javadoc)
      * 
-     * @param contact
-     *                new Contact object to be added.
-     * @return the contact object completed with its identfiant.
+     * @see org.restlet.example.book.restlet.ch8.data.db4o.T#createContact(org.restlet.example.book.restlet.ch8.objects.Contact)
      */
     public Contact createContact(Contact contact) {
         contact.setId(Long.toString(new Date().getTime()));
@@ -32,12 +30,10 @@ public class ContactDAO extends Db4oDAO {
         return contact;
     }
 
-    /**
-     * Get a contact by its id.
+    /*
+     * (non-Javadoc)
      * 
-     * @param contactId
-     *                the contact's id.
-     * @return a Contact object or null if no contact has been found.
+     * @see org.restlet.example.book.restlet.ch8.data.db4o.T#getContactById(java.lang.String)
      */
     public Contact getContactById(String contactId) {
         Contact prototype = new Contact();
@@ -64,24 +60,20 @@ public class ContactDAO extends Db4oDAO {
         return contact;
     }
 
-    /**
-     * Update a contact.
+    /*
+     * (non-Javadoc)
      * 
-     * @param mailbox
-     *                the parent mailbox.
-     * @param contact
-     *                the contact to be update.
+     * @see org.restlet.example.book.restlet.ch8.data.db4o.T#updateContact(org.restlet.example.book.restlet.ch8.objects.Contact)
      */
     public void updateContact(Contact contact) {
         objectContainer.store(contact);
         objectContainer.commit();
     }
 
-    /**
-     * Delete a contact.
+    /*
+     * (non-Javadoc)
      * 
-     * @param contact
-     *                the contact to be deleted.
+     * @see org.restlet.example.book.restlet.ch8.data.db4o.T#deleteContact(org.restlet.example.book.restlet.ch8.objects.Contact)
      */
     public void deleteContact(Contact contact) {
         objectContainer.delete(contact);

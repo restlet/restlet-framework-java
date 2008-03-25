@@ -11,7 +11,7 @@ import com.db4o.ObjectSet;
  * DAO that manages the persistence of Feed objects.
  * 
  */
-public class FeedDAO extends Db4oDAO {
+public class FeedDAO extends Db4oFacade {
 
     public FeedDAO(ObjectContainer objectContainer) {
         super(objectContainer);
