@@ -48,10 +48,17 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.HttpHeaders;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateProviderException;
+import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRessourceException;
+import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRootRessourceException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
@@ -69,7 +76,7 @@ import org.restlet.ext.jaxrs.internal.provider.StreamingOutputProvider;
 import org.restlet.ext.jaxrs.internal.provider.StringProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormFormProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormMmapProvider;
-import org.restlet.ext.jaxrs.internal.provider.XsltProvider;
+import org.restlet.ext.jaxrs.internal.provider.SourceProvider;
 import org.restlet.ext.jaxrs.internal.util.MatchingResult;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
@@ -78,7 +85,6 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.util.WrappedRequestForHttpHeaders;
 import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.internal.wrappers.ContextResolver;
-import org.restlet.ext.jaxrs.internal.wrappers.HiddenJaxRsRouter;
 import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyReaderSet;
 import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriter;
 import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriterSet;
@@ -110,8 +116,8 @@ import org.restlet.resource.StringRepresentation;
  * contains only the real logic code and is more well arranged. </li>
  * </ul>
  * <p>
- * LATER The class JaxRsRouter is not thread save while attach or detach
- * classes.
+ * <!--LATER The class JaxRsRouter is not thread save while attach or detach
+ * classes.-->
  * </p>
  * For further information see <a href="https://jsr311.dev.java.net/">Java
  * Service Request 311</a>. Because the specification is just under development
@@ -119,8 +125,7 @@ import org.restlet.resource.StringRepresentation;
  * 
  * @author Stephan Koops
  */
-public class JaxRsRouter extends JaxRsRouterHelpMethods implements
-        HiddenJaxRsRouter {
+public class JaxRsRouter extends JaxRsRouterHelpMethods {
 
     private static final String PRE_CONSTR_EXC_MESSAGE = "Exception while calling the pre construct method";
 
@@ -159,7 +164,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      *                {@link ThrowExcAccessControl}. See also
      *                {@link #JaxRsRouter(Context, ApplicationConfig)}.
      * @throws IllegalArgumentException
-     *                 if the {@link ApplicationConfig} contains invalid date;
+     *                 if the {@link ApplicationConfig} contains invalid data;
      *                 see {@link #attach(ApplicationConfig)} for detailed
      *                 information.
      */
@@ -198,7 +203,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
      *                as providers. You could add more {@link ApplicationConfig}s;
      *                use method {@link #attach(ApplicationConfig)}.
      * @throws IllegalArgumentException
-     *                 if the {@link ApplicationConfig} contains invalid date;
+     *                 if the {@link ApplicationConfig} contains invalid data;
      *                 see {@link #attach(ApplicationConfig)} for detailed
      *                 information.
      * @see #JaxRsRouter(Context, ApplicationConfig, AccessControl)
@@ -249,7 +254,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
     /**
      * attaches the classes and providers to this JaxRsRouter. The providers are
      * available for all root resource classes provided to this JaxRsRouter. If
-     * you want mix them, instantiate another JaxRsRouter.
+     * you won't mix them, instantiate another JaxRsRouter.
      * 
      * @param appConfig
      *                Contains the classes to load as root resource classes and
@@ -365,7 +370,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         this.addDefaultProvider(StringProvider.class);
         this.addDefaultProvider(WwwFormFormProvider.class);
         this.addDefaultProvider(WwwFormMmapProvider.class);
-        this.addDefaultProvider(XsltProvider.class);
+        this.addDefaultProvider(SourceProvider.class);
     }
 
     private void addDefaultProvider(Class<?> jaxRsProviderClass) {
@@ -584,7 +589,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         for (Map.Entry<String, String> varEntry : variables.entrySet()) {
             String key = varEntry.getKey();
             String value = varEntry.getValue();
-            callContext.addTemplParamsEnc(key, value);
+            callContext.addPathParamsEnc(key, value);
         }
     }
 
@@ -610,16 +615,39 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         ResourceObject o;
         // LATER Do I use dynamic proxies, to inject instance variables?
         try {
-            o = rrc.createInstance(callContext, this);
-        } catch (ConvertParameterException e) {
-            throw handleConvertParameterExc(e);
+            o = rrc.createInstance(callContext, this.messageBodyReaders,
+                    getLogger());
         } catch (WebApplicationException e) {
             throw e;
         } catch (NoMessageBodyReaderException e) {
             throw handleNoMessageBodyReader(callContext, e);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw handleExecption(e, null, callContext,
                     "Could not create new instance of root resource class");
+        } catch (MissingAnnotationException e) {
+            throw handleExecption(e, null, callContext,
+                    "Could not create new instance of root resource class");
+        } catch (InstantiateRootRessourceException e) {
+            throw handleExecption(e, null, callContext,
+                    "Could not create new instance of root resource class");
+        } catch (MethodInvokeException e) {
+            throw handleExecption(e, null, callContext,
+                    "Could not create new instance of root resource class");
+        } catch (InvocationTargetException e) {
+            throw handleExecption(e, null, callContext,
+                    "Could not create new instance of root resource class");
+        } catch (ConvertRepresentationException e) {
+            throw handleConvertRepresentationExc(e);
+        } catch (ConvertHeaderParamException e) {
+            throw handleConvertHeaderParamExc(e);
+        } catch (ConvertPathParamException e) {
+            throw handleConvertPathParamExc(e);
+        } catch (ConvertMatrixParamException e) {
+            throw handleConvertMatrixParamExc(e);
+        } catch (ConvertQueryParamException e) {
+            throw handleConvertQueryParamExc(e);
+        } catch (ConvertCookieParamException e) {
+            throw handleConvertCookieParamExc(e);
         }
         Object jaxRsResObj1 = o.getJaxRsResourceObject();
         callContext.addForAncestor(jaxRsResObj1, rrcAndRemPath.matchedUriPath);
@@ -669,14 +697,39 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             u = matchingResult.getFinalCapturingGroup();
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
-                o = subResourceLocator.createSubResource(o, callContext, this);
+                o = subResourceLocator.createSubResource(o, callContext,
+                        this.messageBodyReaders, wrapperFactory, getLogger());
             } catch (WebApplicationException e) {
                 throw e;
-            } catch (ConvertParameterException cpe) {
-                throw handleConvertParameterExc(cpe);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 throw handleExecption(e, subResourceLocator, callContext,
                         "Could not create new instance of root resource class");
+            } catch (MissingAnnotationException e) {
+                throw handleExecption(e, subResourceLocator, callContext,
+                        "Could not create new instance of root resource class");
+            } catch (InstantiateRessourceException e) {
+                throw handleExecption(e, subResourceLocator, callContext,
+                        "Could not create new instance of root resource class");
+            } catch (MethodInvokeException e) {
+                throw handleExecption(e, subResourceLocator, callContext,
+                        "Could not create new instance of root resource class");
+            } catch (InvocationTargetException e) {
+                throw handleExecption(e, subResourceLocator, callContext,
+                        "Could not create new instance of root resource class");
+            } catch (NoMessageBodyReaderException nmbre) {
+                throw handleNoMessageBodyReader(callContext, nmbre);
+            } catch (ConvertRepresentationException e) {
+                throw handleConvertRepresentationExc(e);
+            } catch (ConvertHeaderParamException e) {
+                throw handleConvertHeaderParamExc(e);
+            } catch (ConvertPathParamException e) {
+                throw handleConvertPathParamExc(e);
+            } catch (ConvertMatrixParamException e) {
+                throw handleConvertMatrixParamExc(e);
+            } catch (ConvertQueryParamException e) {
+                throw handleConvertQueryParamExc(e);
+            } catch (ConvertCookieParamException e) {
+                throw handleConvertCookieParamExc(e);
             }
             resClass = o.getResourceClass();
             // (j) Go to step 2a (repeat for)
@@ -1074,18 +1127,37 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
             throws RequestHandledException {
         Object result;
         try {
-            result = resourceMethod.invoke(resourceObject, callContext, this);
+            result = resourceMethod.invoke(resourceObject, callContext,
+                    this.messageBodyReaders, getLogger());
         } catch (WebApplicationException e) {
             throw e;
-        } catch (ConvertParameterException e) {
-            throw handleConvertParameterExc(e);
         } catch (InvocationTargetException ite) {
             // LATER if RuntimeException, then propagate and not handle here?
             throw handleExecption(ite, resourceMethod, callContext,
                     "Exception in resource method");
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw handleExecption(e, resourceMethod, callContext,
                     "Can not invoke the resource method");
+        } catch (MethodInvokeException e) {
+            throw handleExecption(e, resourceMethod, callContext,
+                    "Can not invoke the resource method");
+        } catch (MissingAnnotationException e) {
+            throw handleExecption(e, resourceMethod, callContext,
+                    "Can not invoke the resource method");
+        } catch (NoMessageBodyReaderException nmbre) {
+            throw handleNoMessageBodyReader(callContext, nmbre);
+        } catch (ConvertRepresentationException e) {
+            throw handleConvertRepresentationExc(e);
+        } catch (ConvertHeaderParamException e) {
+            throw handleConvertHeaderParamExc(e);
+        } catch (ConvertPathParamException e) {
+            throw handleConvertPathParamExc(e);
+        } catch (ConvertMatrixParamException e) {
+            throw handleConvertMatrixParamExc(e);
+        } catch (ConvertQueryParamException e) {
+            throw handleConvertQueryParamExc(e);
+        } catch (ConvertCookieParamException e) {
+            throw handleConvertCookieParamExc(e);
         }
         Response restletResponse = callContext.getResponse();
         if (result == null) { // no representation
@@ -1172,14 +1244,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         if (entity instanceof Representation)
             return (Representation) entity;
         if (entity == null)
-            return null; // REQUESTED what to, if resource method returns
-        // null?
+            return null;
         Class<? extends Object> entityClass = entity.getClass();
-        // Class<? extends Object> returnType = null;
-        // if(entity != null)
-        // returnType = entity.getClass();
-        // else if (resourceMethod != null)
-        // returnType = resourceMethod.getReturnType();
         Type genericReturnType = null;
         Annotation[] methodAnnotations = null;
         if (resourceMethod != null) { // is default
@@ -1360,9 +1426,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
 
     /**
      * @param accessControl
-     *                the accessControl to set
+     *                the accessControl to set.
+     * @throws IllegalArgumentException
+     *                 If the given accessControl is null, an
+     *                 {@link IllegalArgumentException} is thrown.
+     * @see AccessControl
      */
-    public void setAccessControl(AccessControl accessControl) {
+    public void setAccessControl(AccessControl accessControl)
+            throws IllegalArgumentException {
         if (accessControl == null)
             throw new IllegalArgumentException(
                     "The accessControl must not be null. You can use the "
@@ -1382,36 +1453,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods implements
         for (RootResourceClass rootResourceClass : this.rootResourceClasses)
             rrcs.add(rootResourceClass.getJaxRsClass());
         return Collections.unmodifiableSet(rrcs);
-    }
-
-    /**
-     * for internal use only
-     * 
-     * @see org.restlet.ext.jaxrs.internal.wrappers.HiddenJaxRsRouter#getMessageBodyReaders()
-     */
-    @Deprecated
-    public MessageBodyReaderSet getMessageBodyReaders() {
-        return this.messageBodyReaders;
-    }
-
-    /**
-     * for internal use only
-     * 
-     * @see org.restlet.ext.jaxrs.internal.wrappers.HiddenJaxRsRouter#getMessageBodyWriters()
-     */
-    @Deprecated
-    public MessageBodyWriterSet getMessageBodyWriters() {
-        return this.messageBodyWriters;
-    }
-
-    /**
-     * for internal use only
-     * 
-     * @see org.restlet.ext.jaxrs.internal.wrappers.HiddenJaxRsRouter#getWrapperFactory()
-     */
-    @Deprecated
-    public WrapperFactory getWrapperFactory() {
-        return wrapperFactory;
     }
 
     /**

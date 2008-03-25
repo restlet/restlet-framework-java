@@ -154,7 +154,7 @@ public class JaxRsPathSegment implements PathSegment {
         this.encode = encode;
         int indexOfSemic = segment.indexOf(';');
         String path;
-        if (indexOfSemic > 0) {
+        if (indexOfSemic >= 0) {
             path = segment.substring(0, indexOfSemic);
             this.matrParamEncoded = segment.substring(indexOfSemic + 1);
         } else {

@@ -33,7 +33,12 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
@@ -45,7 +50,7 @@ import org.restlet.resource.StringRepresentation;
 
 /**
  * This class contains only the methods to handle exceptions while identifying
- * the method taht should handle the request and in other situations. Therefor
+ * the method that should handle the request and in other situations. Therefor
  * it contains some Restlets that handles this exceptions. The
  * {@link JaxRsRouter} is a subclass of this class. By moving all this methods
  * and so on to this super class, the class {@link JaxRsRouter} contains only
@@ -228,14 +233,88 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
      * @param cpe
      * @throws WebApplicationException
      */
-    RequestHandledException handleConvertParameterExc(ConvertParameterException cpe)
-            throws WebApplicationException {
+    RequestHandledException handleConvertQueryParamExc(
+            ConvertQueryParamException cpe) throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response
+                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        StringWriter stw = new StringWriter();
+        cpe.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cpe, rb.build());
+    }
+
+    /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException handleConvertMatrixParamExc(
+            ConvertMatrixParamException cpe) throws WebApplicationException {
         // LATER use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
         StringWriter stw = new StringWriter();
         cpe.printStackTrace(new PrintWriter(stw));
         rb.entity(stw.toString());
         throw new WebApplicationException(cpe, rb.build());
+    }
+
+    /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException handleConvertHeaderParamExc(
+            ConvertHeaderParamException cpe) throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response
+                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        StringWriter stw = new StringWriter();
+        cpe.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cpe, rb.build());
+    }
+
+    /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException handleConvertPathParamExc(
+            ConvertPathParamException cpe) throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
+        StringWriter stw = new StringWriter();
+        cpe.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cpe, rb.build());
+    }
+
+    /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException handleConvertCookieParamExc(
+            ConvertCookieParamException cpe) throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response
+                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        StringWriter stw = new StringWriter();
+        cpe.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cpe, rb.build());
+    }
+
+    /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException handleConvertRepresentationExc(
+            ConvertRepresentationException cre) throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response
+                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        StringWriter stw = new StringWriter();
+        cre.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cre, rb.build());
     }
 
     /**
@@ -293,8 +372,7 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
      * @throws RequestHandledException
      */
     RequestHandledException handleNoMessageBodyReader(CallContext callContext,
-            NoMessageBodyReaderException nmbre)
-            throws RequestHandledException {
+            NoMessageBodyReaderException nmbre) throws RequestHandledException {
         // LATER Restlet fuer throw
         Response response = callContext.getResponse();
         MediaType mediaType = nmbre.getMediaType();
@@ -312,7 +390,8 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
         // LATER Restlet fuer throw
         response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
         response.setEntity(new StringRepresentation(
-                "No MessageBodyReader found to convert from java type " + paramType+" to one of the media types "
+                "No MessageBodyReader found to convert from java type "
+                        + paramType + " to one of the media types "
                         + accMediaTypes));
         throw new RequestHandledException();
     }

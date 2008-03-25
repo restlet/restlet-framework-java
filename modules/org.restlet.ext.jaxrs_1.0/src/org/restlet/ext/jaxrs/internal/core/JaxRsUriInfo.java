@@ -169,9 +169,8 @@ public class JaxRsUriInfo implements UriInfo {
 
     private List<PathSegment> createPathSegments(boolean decode) {
         List<String> segments = this.reference.getRelativeRef().getSegments();
-        List<PathSegment> pathSegments = new ArrayList<PathSegment>(segments
-                .size());
         int l = segments.size();
+        List<PathSegment> pathSegments = new ArrayList<PathSegment>(l);
         for (int i = 0; i < l; i++)
             pathSegments.add(new JaxRsPathSegment(segments.get(i), true,
                     decode, false, false, i));
@@ -457,7 +456,7 @@ public class JaxRsUriInfo implements UriInfo {
         if (this.templateParametersDecoded == null) {
             MultivaluedMapImpl<String, String> templParamsDec = new MultivaluedMapImpl<String, String>();
             for (Map.Entry<String, List<String>> entryEnc : this
-                    .interalGetTemplateParametersEncoded().entrySet()) {
+                    .interalGetPathParamsEncoded().entrySet()) {
                 String keyDec = Reference.decode(entryEnc.getKey());
                 List<String> valuesEnc = entryEnc.getValue();
                 List<String> valuesDec = new ArrayList<String>(valuesEnc.size());
@@ -491,7 +490,7 @@ public class JaxRsUriInfo implements UriInfo {
             return getTemplateParameters();
         } else {
             return UnmodifiableMultivaluedMap
-                    .get(interalGetTemplateParametersEncoded());
+                    .get(interalGetPathParamsEncoded());
         }
     }
 
@@ -505,7 +504,7 @@ public class JaxRsUriInfo implements UriInfo {
     /**
      * @return the templateParametersEncoded
      */
-    protected MultivaluedMap<String, String> interalGetTemplateParametersEncoded() {
+    protected MultivaluedMap<String, String> interalGetPathParamsEncoded() {
         if (templateParametersEncoded == null)
             this.templateParametersEncoded = new MultivaluedMapImpl<String, String>();
         return templateParametersEncoded;

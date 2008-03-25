@@ -41,7 +41,6 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.data.Form;
-import org.restlet.ext.jaxrs.XsltSource;
 import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -296,18 +295,14 @@ public class ProviderTestService {
     }
 
     @GET
-    @Path("xslt")
-    @ProduceMime("text/html")
-    @XsltSource("src/org/restlet/test/jaxrs/services/others/greeting.xsl")
-    public Source xsltGet(@QueryParam("text") String text) {
-        String xmlStart = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
-        String xml = "<greeting>" + text + "</greeting>";
-        byte[] bytes = (xmlStart + xml).getBytes();
-        return new StreamSource(new ByteArrayInputStream(bytes));
+    @Path("source")
+    @ProduceMime("text/xml")
+    public Source xsltGet() {
+        return new StreamSource(new ByteArrayInputStream("<abc/>".getBytes()));
     }
 
     @POST
-    @Path("xslt")
+    @Path("source")
     @ConsumeMime("text/xml")
     @ProduceMime("text/plain")
     public byte[] xsltPost(Source source) throws IOException {

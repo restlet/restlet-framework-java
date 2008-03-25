@@ -37,8 +37,6 @@ public class MatrixParamTest2 extends JaxRsTestCase {
     }
 
     public void testWithoutPath() throws Exception {
-        if(jaxRxImplementorCheck(26, 3))
-            return;
         Response response = get(";firstname=Angela;lastname=Merkel");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("Angela Merkel", response.getEntity().getText());

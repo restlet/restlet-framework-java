@@ -57,6 +57,7 @@ import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.AccessControl;
 import org.restlet.ext.jaxrs.ThrowExcAccessControl;
 import org.restlet.ext.jaxrs.internal.util.Converter;
+import org.restlet.ext.jaxrs.internal.util.EmptyIterator;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
@@ -73,14 +74,81 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
 
     // TODO throw IllegalStateException if called outside the scope of a request
 
+    /**
+     * Iterator to return the values for a matrix parameter.
+     * 
+     * @author Stephan Koops
+     */
+    private static class MatrixParamEncIter implements Iterator<String> {
+
+        /** Iterates over the matrix parameters of one path segment */
+        private Iterator<Map.Entry<String, List<String>>> matrixParamIter;
+
+        private String mpName;
+
+        private Iterator<String> mpValueIter;
+
+        private String nextMpValue;
+
+        private Iterator<PathSegment> pathSegmentIter;
+
+        MatrixParamEncIter(String mpName, List<PathSegment> pathSegmentsEnc) {
+            this.pathSegmentIter = pathSegmentsEnc.iterator();
+            this.mpName = mpName;
+        }
+
+        /**
+         * @see java.util.Iterator#hasNext()
+         */
+        public boolean hasNext() {
+            if (nextMpValue != null)
+                return true;
+            while (mpValueIter != null && mpValueIter.hasNext()) {
+                this.nextMpValue = mpValueIter.next();
+                return true;
+            }
+            while (matrixParamIter != null && matrixParamIter.hasNext()) {
+                Map.Entry<String, List<String>> entry = matrixParamIter.next();
+                if (entry.getKey().equals(mpName)) {
+                    this.mpValueIter = entry.getValue().iterator();
+                    return this.hasNext();
+                }
+            }
+            while (pathSegmentIter.hasNext()) {
+                this.matrixParamIter = pathSegmentIter.next()
+                        .getMatrixParameters().entrySet().iterator();
+                return this.hasNext();
+            }
+            return false;
+        }
+
+        /**
+         * @see java.util.Iterator#next()
+         */
+        public String next() {
+            if (!this.hasNext())
+                throw new NoSuchElementException();
+            String nextMpValue = this.nextMpValue;
+            this.nextMpValue = null;
+            return nextMpValue;
+        }
+
+        /**
+         * @see java.util.Iterator#remove()
+         */
+        public void remove() {
+            throw new UnsupportedOperationException("unmodifiable");
+        }
+    }
+
     private static final int STATUS_PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED
             .getCode();
 
     private List<MediaType> acceptedMediaTypes;
 
-    private SortedMetadata<org.restlet.data.MediaType> accMediaTypes;
-
     private AccessControl accessControl;
+
+    private SortedMetadata<org.restlet.data.MediaType> accMediaTypes;
 
     private Map<String, Cookie> cookies;
 
@@ -93,6 +161,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
     private UnmodifiableMultivaluedMap<String, String> requestHeaders;
 
     private org.restlet.data.Response response;
+
+    // HttpHeaders methods
 
     /**
      * 
@@ -130,7 +200,14 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
                 request.getClientInfo().getAcceptedMediaTypes());
     }
 
-    // HttpHeaders methods
+    /**
+     * @param key
+     * @param value
+     */
+    public void addPathParamsEnc(String key, String value) {
+        checkChangeable();
+        interalGetPathParamsEncoded().add(key, value);
+    }
 
     private boolean checkIfOneMatch(List<Tag> requestETags, Tag entityTag) {
         if (entityTag.isWeak())
@@ -364,6 +441,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @see HttpHeaders#getCookies()
      */
     public Map<String, Cookie> getCookies() {
+        // REQUEST should HttpHeaders#getCookies() return a MultivaluedMap?
         if (this.cookies == null) {
             Map<String, Cookie> cookies = new HashMap<String, Cookie>();
             for (org.restlet.data.Cookie rc : request.getCookies()) {
@@ -392,10 +470,54 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
     }
 
     /**
+     * @param matrixParamAnnot
+     * @return
+     * @see #matrixParamEncIter(MatrixParam)
+     */
+    public String getLastMatrixParamEnc(MatrixParam matrixParamAnnot) {
+        String mpName = matrixParamAnnot.value();
+        List<PathSegment> pathSegments = getPathSegments(false);
+        for (int i = pathSegments.size() - 1; i >= 0; i--) {
+            PathSegment pathSegment = pathSegments.get(i);
+            List<String> mpValues = pathSegment.getMatrixParameters().get(
+                    mpName);
+            if (mpValues != null && !mpValues.isEmpty()) {
+                String result = Util.getLastElement(mpValues);
+                if (result == null)
+                    return "";
+                return result;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param annotation
+     * @return
+     * @see #pathParamEncIter(PathParam)
+     */
+    public String getLastPathParamEnc(PathParam annotation) {
+        String key = annotation.value();
+        List<String> values = interalGetPathParamsEncoded().get(key);
+        if (values == null || values.isEmpty())
+            return null;
+        return Util.getLastElement(values);
+    }
+
+    /**
      * @see HttpHeaders#getMediaType()
      */
     public MediaType getMediaType() {
         return this.mediaType;
+    }
+
+    /**
+     * Returns the Restlet {@link org.restlet.data.Request}
+     * 
+     * @return the Restlet {@link org.restlet.data.Request}
+     */
+    public org.restlet.data.Request getRequest() {
+        return request;
     }
 
     /**
@@ -407,6 +529,15 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
                     .getHttpHeaders(request), false);
         }
         return this.requestHeaders;
+    }
+
+    /**
+     * Returns the Restlet {@link org.restlet.data.Response}
+     * 
+     * @return the Restlet {@link org.restlet.data.Response}
+     */
+    public org.restlet.data.Response getResponse() {
+        return response;
     }
 
     /**
@@ -452,6 +583,30 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
         if (this.accessControl == null)
             this.accessControl = ThrowExcAccessControl.getInstance();
         return accessControl.isUserInRole(principal, role);
+    }
+
+    /**
+     * @param matrixParamAnnot
+     * @return
+     * @see #getLastMatrixParamEnc(MatrixParam)
+     */
+    public Iterator<String> matrixParamEncIter(MatrixParam matrixParamAnnot) {
+        String mpName = matrixParamAnnot.value();
+        return new MatrixParamEncIter(mpName, getPathSegments(false));
+    }
+
+    /**
+     * @param pathParamAnnot
+     * @return
+     * @see #getLastPathParamEnc(PathParam)
+     */
+    public Iterator<String> pathParamEncIter(PathParam pathParamAnnot) {
+        String ppName = pathParamAnnot.value();
+        List<String> pathParamValues;
+        pathParamValues = interalGetPathParamsEncoded().get(ppName);
+        if(pathParamValues == null)
+            return EmptyIterator.get();
+        return pathParamValues.iterator();
     }
 
     /**
@@ -508,150 +663,10 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
     }
 
     /**
-     * Returns the Restlet {@link org.restlet.data.Request}
-     * 
-     * @return the Restlet {@link org.restlet.data.Request}
-     */
-    public org.restlet.data.Request getRequest() {
-        return request;
-    }
-
-    /**
-     * Returns the Restlet {@link org.restlet.data.Response}
-     * 
-     * @return the Restlet {@link org.restlet.data.Response}
-     */
-    public org.restlet.data.Response getResponse() {
-        return response;
-    }
-
-    /**
-     * @param annotation
-     * @return
-     */
-    public String getLastTemplParamEnc(PathParam annotation) {
-        String key = annotation.value();
-        MultivaluedMap<String, String> templParamsEncoded = interalGetTemplateParametersEncoded();
-        List<String> values = templParamsEncoded.get(key);
-        if (values == null || values.isEmpty())
-            return null;
-        return Util.getLastElement(values);
-    }
-
-    /**
-     * @param key
-     * @param value
-     */
-    public void addTemplParamsEnc(String key, String value) {
-        checkChangeable();
-        interalGetTemplateParametersEncoded().add(key, value);
-    }
-
-    /**
-     * @param matrixParamAnnot
-     * @return
-     */
-    public String getLastMatrixParamEnc(MatrixParam matrixParamAnnot) {
-        String mpName = matrixParamAnnot.value();
-        List<PathSegment> pathSegments = getPathSegments(false);
-        for (int i = pathSegments.size() - 1; i >= 0; i--) {
-            PathSegment pathSegment = pathSegments.get(i);
-            List<String> mpValues = pathSegment.getMatrixParameters().get(
-                    mpName);
-            if (mpValues != null && !mpValues.isEmpty()) {
-                String result = Util.getLastElement(mpValues);
-                if (result == null)
-                    return "";
-                return result;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Sets the Context to be read only. As from now changes are not allowed.
      */
     @Override
     public void setReadOnly() {
         super.setReadOnly();
-    }
-
-    // REQUEST support http://www.example.org/;mp=jf;asf=sdf and its MatrParams?
-    // PathSegment for matrix params does not exist. How handle this?
-
-    /**
-     * @param matrixParamAnnot
-     * @return
-     */
-    public Iterator<String> matrixParamEncIter(MatrixParam matrixParamAnnot) {
-        String mpName = matrixParamAnnot.value();
-        return new MatrixParamEncIter(mpName, getPathSegments(false));
-    }
-
-    /**
-     * Iterator to return the values for a matrix parameter.
-     * 
-     * @author Stephan Koops
-     */
-    private static class MatrixParamEncIter implements Iterator<String> {
-
-        private Iterator<PathSegment> pathSegmentIter;
-
-        /** Iterates over the matrix parameters of one path segment */
-        private Iterator<Map.Entry<String, List<String>>> matrixParamIter;
-
-        private String mpName;
-
-        private Iterator<String> mpValueIter;
-
-        private String nextMpValue;
-
-        MatrixParamEncIter(String mpName, List<PathSegment> pathSegmentsEnc) {
-            this.pathSegmentIter = pathSegmentsEnc.iterator();
-            this.mpName = mpName;
-        }
-
-        /**
-         * @see java.util.Iterator#hasNext()
-         */
-        public boolean hasNext() {
-            if (nextMpValue != null)
-                return true;
-            while (mpValueIter != null && mpValueIter.hasNext()) {
-                this.nextMpValue = mpValueIter.next();
-                return true;
-            }
-            while (matrixParamIter != null && matrixParamIter.hasNext()) {
-                Map.Entry<String, List<String>> entry = matrixParamIter.next();
-                if (entry.getKey().equals(mpName)) {
-                    this.mpValueIter = entry.getValue().iterator();
-                    return this.hasNext();
-                }
-            }
-            while (pathSegmentIter.hasNext()) {
-                this.matrixParamIter = pathSegmentIter.next()
-                        .getMatrixParameters().entrySet().iterator();
-                return this.hasNext();
-            }
-            return false;
-        }
-
-        /**
-         * @see java.util.Iterator#next()
-         */
-        public String next() {
-            if (!this.hasNext())
-                throw new NoSuchElementException();
-            String nextMpValue = this.nextMpValue;
-            this.nextMpValue = null;
-            return nextMpValue;
-        }
-
-        /**
-         * @see java.util.Iterator#remove()
-         */
-        public void remove() {
-            throw new UnsupportedOperationException("unmodifiable");
-        }
     }
 }

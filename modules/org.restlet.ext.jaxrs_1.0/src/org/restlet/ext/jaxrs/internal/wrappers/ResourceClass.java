@@ -50,7 +50,11 @@ import javax.ws.rs.core.Context;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
@@ -598,14 +602,18 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @throws InjectException
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
-     * @throws ConvertParameterException
      * @throws MethodInvokeException
      *                 if the method annotated with &#64;{@link PostConstruct}
      *                 could not be called or throws an exception.
+     * @throws ConvertCookieParamException 
+     * @throws ConvertHeaderParamException 
+     * @throws ConvertMatrixParamException 
+     * @throws ConvertPathParamException 
+     * @throws ConvertQueryParamException 
      */
     void init(ResourceObject resourceObject, CallContext callContext)
-            throws InjectException, ConvertParameterException,
-            WebApplicationException, MethodInvokeException {
+            throws InjectException, WebApplicationException,
+            MethodInvokeException, ConvertCookieParamException, ConvertHeaderParamException, ConvertMatrixParamException, ConvertPathParamException, ConvertQueryParamException {
         // inject fields annotated with @Context
         Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
         for (Field contextField : this.injectFieldsContext) {
@@ -662,7 +670,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             Class<?> convTo = cpf.getType();
             Type paramGenericType = cpf.getGenericType();
             Object value = getQueryParamValue(convTo, paramGenericType,
-                    headerParam, defaultValue, callContext, Logger
+                    headerParam, leaveEncoded, defaultValue, callContext, Logger
                             .getAnonymousLogger());
             Util.inject(jaxRsResObj, cpf, value);
         }

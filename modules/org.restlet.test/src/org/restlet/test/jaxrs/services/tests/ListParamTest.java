@@ -84,7 +84,7 @@ public class ListParamTest extends JaxRsTestCase {
         String m = entity[0];
         String mm = entity[1];
         try {
-            // REQUESTED ;m=1;m=2 -> @MatrixParam("m") = ?
+            // TESTEN ;m=1;m=2 -> @MatrixParam("m") = ?
             assertEquals("m=m1", m);
         } catch (AssertionFailedError afe) {
             assertEquals("m=m2", m);

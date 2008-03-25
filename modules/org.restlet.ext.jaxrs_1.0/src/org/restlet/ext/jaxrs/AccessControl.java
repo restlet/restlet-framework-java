@@ -53,11 +53,9 @@ import org.restlet.Guard;
  * </p>
  * 
  * @author Stephan Koops
- * @see ForbidAllAccess If using this access control, no user has any role.
- * @see AllowAllAccess If using this access control, every user has every role.
- * @see ThrowExcAccessControl If using this access control, every call of
- *      {@link SecurityContext#isUserInRole(String)} results in an Internal
- *      Server Error, which will get returned to the client.
+ * @see ForbidAllAccess
+ * @see AllowAllAccess
+ * @see ThrowExcAccessControl
  * @see SecurityContext
  */
 public interface AccessControl {

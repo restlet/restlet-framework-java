@@ -17,17 +17,28 @@
  */
 package org.restlet.test.jaxrs.services.resources;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 
-import org.restlet.test.jaxrs.services.tests.MatrixParamTest;
+import org.restlet.test.jaxrs.services.tests.MatrixParamTest2;
 
 /**
  * @author Stephan Koops
- * @see MatrixParamTest
+ * @see MatrixParamTest2
  * @see MatrixParam
+ * @see UriInfo
  */
 @Path("")
 public class MatrixParamTestService2 {
@@ -35,7 +46,15 @@ public class MatrixParamTestService2 {
     @GET
     @ProduceMime("text/plain")
     public String get(@MatrixParam("firstname") String firstname,
-            @MatrixParam("lastname") String lastname) {
+            @MatrixParam("lastname") String lastname, @Context UriInfo uriInfo) {
+        List<PathSegment> pathSegents = uriInfo.getPathSegments();
+        PathSegment lastPathSegm = pathSegents.get(0);
+        MultivaluedMap<String, String> mp = lastPathSegm.getMatrixParameters();
+        if(mp.isEmpty()) {
+            ResponseBuilder rb = Response.status(Status.NOT_FOUND);
+            rb.entity("matrix parameters are empty");
+            throw new WebApplicationException(rb.build());
+        }
         return firstname + " " + lastname;
     }
 }

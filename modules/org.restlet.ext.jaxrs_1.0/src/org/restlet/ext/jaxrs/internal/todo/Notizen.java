@@ -48,5 +48,11 @@ public class Notizen {
     // TODO @Context and so on only in objects created by the runtime.
     // support and warn about this.
     
-    // TODO JAX-RS is not only for XML: name is not realy good.
+    // TESTEN what happens, if ".." or "." in @Path?
+    
+    // REQUESTED @Context on type PathSegment ?
+    
+    // TESTEN What about not available (or null) values on @*Param
+    
+    // REQUEST disallow entity on sub resource locator?
 }

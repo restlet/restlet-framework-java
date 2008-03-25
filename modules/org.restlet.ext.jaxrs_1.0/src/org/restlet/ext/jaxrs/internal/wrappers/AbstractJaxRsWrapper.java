@@ -60,7 +60,13 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -141,17 +147,17 @@ public abstract class AbstractJaxRsWrapper {
     /**
      * @param paramClass
      * @param paramGenericType
-     * @param paramValues
+     * @param paramValueIter
      *                the values to use if multiples are required
      * @param paramValue
-     *                th value, if only one is needed.
+     *                the value, if only one is needed.
      * @param defaultValue
      * @param leaveEncoded
      * @return
      * @throws ConvertParameterException
      */
     private static Object convertParamValuesFromParam(Class<?> paramClass,
-            Type paramGenericType, Iterator<String> paramValues,
+            Type paramGenericType, Iterator<String> paramValueIter,
             String paramValue, DefaultValue defaultValue, boolean leaveEncoded)
             throws ConvertParameterException {
         boolean toArray = false;
@@ -160,33 +166,43 @@ public abstract class AbstractJaxRsWrapper {
             GenericArrayType genericArrayType = (GenericArrayType) paramGenericType;
             paramClass = (Class<?>) genericArrayType.getGenericComponentType();
             coll = new ArrayList<Object>(1);
+            toArray = true;
+            // TESTEN @*Param with array
         } else if (paramGenericType instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) paramGenericType;
-            Type rawType = parameterizedType.getRawType();
-            if (rawType.equals(Collection.class) || rawType.equals(List.class))
-                coll = new ArrayList<Object>(1);
-            else if (rawType.equals(Set.class))
-                coll = new HashSet<Object>(2);
-            else if (rawType.equals(SortedSet.class))
-                coll = new TreeSet<Object>();
+            coll = createColl(parameterizedType);
             paramClass = (Class<?>) parameterizedType.getActualTypeArguments()[0];
         }
-        if (coll != null) {
-            while (paramValues.hasNext()) {
-                String queryParamValue = paramValues.next();
-                Object paramValue_ = convertParamValueFromParam(paramClass,
-                        queryParamValue, defaultValue, leaveEncoded);
-                if (paramValue_ != null)
-                    coll.add(paramValue_);
-                defaultValue = null;
-            }
-            if (toArray)
-                return coll.toArray();
-            return coll;
+        if (coll == null) { // no collection type
+            return convertParamValueFromParam(paramClass, paramValue,
+                    defaultValue, leaveEncoded);
         }
-        // no collection type
-        return convertParamValueFromParam(paramClass, paramValue, defaultValue,
-                leaveEncoded);
+        while (paramValueIter.hasNext()) {
+            String queryParamValue = paramValueIter.next();
+            Object convertedValue = convertParamValueFromParam(paramClass,
+                    queryParamValue, defaultValue, leaveEncoded);
+            if (convertedValue != null)
+                coll.add(convertedValue);
+            defaultValue = null;
+        }
+        if (toArray)
+            return coll.toArray();
+        return coll;
+    }
+
+    /**
+     * @param type
+     * @return
+     */
+    private static <A> Collection<A> createColl(ParameterizedType type) {
+        Type rawType = type.getRawType();
+        if (rawType.equals(Collection.class) || rawType.equals(List.class))
+            return new ArrayList<A>(1);
+        else if (rawType.equals(Set.class))
+            return new HashSet<A>(2);
+        else if (rawType.equals(SortedSet.class))
+            return new TreeSet<A>();
+        return null;
     }
 
     /**
@@ -201,27 +217,30 @@ public abstract class AbstractJaxRsWrapper {
      *                The generic {@link Type} to convert to.
      * @param annotations
      *                the annotations of the artefact to convert to
-     * @param jaxRsRouter
+     * @param mbrs
+     *                The Set of all available {@link MessageBodyReader}s in
+     *                the {@link JaxRsRouter}.
+     * @param logger
+     *                The logger to use
      * @return
      * @throws NoMessageBodyReaderException
-     * @throws ConvertParameterException
+     * @throws ConvertRepresentationException
      */
     @SuppressWarnings("unchecked")
     private static Object convertRepresentation(CallContext callContext,
             Class<?> paramType, Type genericType, Annotation[] annotations,
-            HiddenJaxRsRouter jaxRsRouter) throws NoMessageBodyReaderException,
-            ConvertParameterException {
+            MessageBodyReaderSet mbrs, Logger logger)
+            throws NoMessageBodyReaderException, ConvertRepresentationException {
         Representation entity = callContext.getRequest().getEntity();
         if (entity == null)
             return null;
         if (Representation.class.isAssignableFrom(paramType)) {
             Object repr = createConcreteRepresentationInstance(paramType,
-                    entity, jaxRsRouter.getLogger());
+                    entity, logger);
             if (repr != null)
                 return repr;
         }
         MediaType mediaType = entity.getMediaType();
-        MessageBodyReaderSet mbrs = jaxRsRouter.getMessageBodyReaders();
         MessageBodyReader<?> mbr = mbrs.getBest(mediaType, paramType,
                 genericType, annotations);
         if (mbr == null)
@@ -234,19 +253,20 @@ public abstract class AbstractJaxRsWrapper {
             return mbr.readFrom((Class) paramType, genericType, jaxRsMediaType,
                     annotations, httpHeaders, entity.getStream());
         } catch (IOException e) {
-            throw ConvertParameterException.object(paramType,
+            throw ConvertRepresentationException.object(paramType,
                     "the message body", e);
         }
     }
 
     /**
      * @param entity
-     * @return the created representation, or null, if it coud not be converted.
+     * @return the created representation, or null, if it could not be
+     *         converted.
      * @throws ConvertParameterException
      */
     private static Object createConcreteRepresentationInstance(
             Class<?> paramType, Representation entity, Logger logger)
-            throws ConvertParameterException {
+            throws ConvertRepresentationException {
         if (paramType.equals(Representation.class))
             return entity;
         Constructor<?> constr;
@@ -262,7 +282,7 @@ public abstract class AbstractJaxRsWrapper {
         try {
             return constr.newInstance(entity);
         } catch (Exception e) {
-            throw ConvertParameterException.object(paramType,
+            throw ConvertRepresentationException.object(paramType,
                     "the message body", e);
         }
     }
@@ -287,20 +307,61 @@ public abstract class AbstractJaxRsWrapper {
      *                the {@link CallContext}
      * @param jaxRsRouter
      * @return the cookie parameter, converted to type paramClass
-     * @throws ConvertParameterException
+     * @throws ConvertCookieParamException
      */
     @SuppressWarnings("unchecked")
     static Object getCookieParamValue(Class<?> paramClass,
             Type paramGenericType, CookieParam cookieParam,
             DefaultValue defaultValue, CallContext callContext)
-            throws ConvertParameterException {
+            throws ConvertCookieParamException {
         Series<Cookie> cookies = callContext.getRequest().getCookies();
         String cookieName = cookieParam.value();
-        // TODO jawax.ws.rs.Cookie also allowed on @CookieParam
-        return convertParamValuesFromParam(paramClass, paramGenericType,
-                new ParamValueIter((Series) cookies.subList(cookieName)),
-                getValue(cookies.getFirst(cookieName)), defaultValue, true);
+        if (paramClass.equals(javax.ws.rs.core.Cookie.class))
+            getCookies(cookieName, paramGenericType, callContext);
+        try {
+            return convertParamValuesFromParam(paramClass, paramGenericType,
+                    new ParamValueIter((Series) cookies.subList(cookieName)),
+                    getValue(cookies.getFirst(cookieName)), defaultValue, true);
+        } catch (ConvertParameterException e) {
+            throw new ConvertCookieParamException(e);
+        }
         // leaveEncoded = true -> not change
+    }
+
+    /**
+     * Return the cookies with the given cookieName from the callContext. If the
+     * {@link Type} represents an array or a collection, all cookies with the
+     * given name were returned, otherwise only the first.
+     * 
+     * @param cookieName
+     * @param paramGenericType
+     * @param callContext
+     * @return
+     */
+    private static Object getCookies(String cookieName, Type paramGenericType,
+            CallContext callContext) {
+        Collection<javax.ws.rs.core.Cookie> cookies = null;
+        boolean toArray = false;
+        if (paramGenericType instanceof GenericArrayType) {
+            cookies = new ArrayList<javax.ws.rs.core.Cookie>(1);
+            toArray = true;
+        } else if (paramGenericType instanceof ParameterizedType) {
+            cookies = createColl((ParameterizedType) paramGenericType);
+        }
+        for (Cookie rc : callContext.getRequest().getCookies()) {
+            if (!rc.getName().equals(cookieName))
+                continue;
+            javax.ws.rs.core.Cookie cookie = Converter.toJaxRsCookie(rc);
+            if (cookies == null) // no collection requested
+                return cookie;
+            cookies.add(cookie);
+        }
+        if (cookies == null)
+            return null;
+        if (toArray)
+            return cookies.toArray();
+        return cookies;
+        // TESTEN Cookie also allowed on @CookieParam, also array and colls
     }
 
     private static class ParamValueIter implements Iterator<String> {
@@ -345,18 +406,22 @@ public abstract class AbstractJaxRsWrapper {
      * @param callContext
      * @param jaxRsRouter
      * @return
-     * @throws ConvertParameterException
+     * @throws ConvertHeaderParamException
      */
     static Object getHeaderParamValue(Class<?> paramClass,
             Type paramGenericType, HeaderParam annotation,
             DefaultValue defaultValue, CallContext callContext)
-            throws ConvertParameterException {
+            throws ConvertHeaderParamException {
         Form httpHeaders = Util.getHttpHeaders(callContext.getRequest());
         String headerName = annotation.value();
-        return convertParamValuesFromParam(paramClass, paramGenericType,
-                new ParamValueIter(httpHeaders.subList(headerName, true)),
-                getValue(httpHeaders.getFirst(headerName, true)), defaultValue,
-                true);
+        try {
+            return convertParamValuesFromParam(paramClass, paramGenericType,
+                    new ParamValueIter(httpHeaders.subList(headerName, true)),
+                    getValue(httpHeaders.getFirst(headerName, true)),
+                    defaultValue, true);
+        } catch (ConvertParameterException e) {
+            throw new ConvertHeaderParamException(e);
+        }
     }
 
     /**
@@ -369,18 +434,23 @@ public abstract class AbstractJaxRsWrapper {
      * @param callContext
      * @param jaxRsRouter
      * @return
-     * @throws ConvertParameterException
+     * @throws ConvertMatrixParamException
      */
     static Object getMatrixParamValue(Class<?> paramClass,
             Type paramGenericType, MatrixParam matrixParam,
             boolean leaveEncoded, DefaultValue defaultValue,
-            CallContext callContext) throws ConvertParameterException {
+            CallContext callContext) throws ConvertMatrixParamException {
         String matrixParamValue = callContext
                 .getLastMatrixParamEnc(matrixParam);
         Iterator<String> matrixParamValues = callContext
                 .matrixParamEncIter(matrixParam);
-        return convertParamValuesFromParam(paramClass, paramGenericType,
-                matrixParamValues, matrixParamValue, defaultValue, leaveEncoded);
+        try {
+            return convertParamValuesFromParam(paramClass, paramGenericType,
+                    matrixParamValues, matrixParamValue, defaultValue,
+                    leaveEncoded);
+        } catch (ConvertParameterException e) {
+            throw new ConvertMatrixParamException(e);
+        }
     }
 
     /**
@@ -408,13 +478,19 @@ public abstract class AbstractJaxRsWrapper {
      *                 Thrown, when no valid annotation was found. For
      *                 (Sub)ResourceMethods this is one times allowed; than the
      *                 given request entity should taken as parameter.
-     * @throws ConvertParameterException
+     * @throws ConvertHeaderParamException
+     * @throws ConvertPathParamException
+     * @throws ConvertMatrixParamException
+     * @throws ConvertQueryParamException
+     * @throws ConvertCookieParamException
      */
     private static Object getParameterValue(Annotation[] paramAnnotations,
             Class<?> paramClass, Type paramGenericType,
             CallContext callContext, Logger logger, boolean leaveEncoded,
             int indexForExcMessages) throws MissingAnnotationException,
-            ConvertParameterException {
+            ConvertHeaderParamException, ConvertPathParamException,
+            ConvertMatrixParamException, ConvertQueryParamException,
+            ConvertCookieParamException {
         DefaultValue defaultValue = null;
         for (Annotation annot : paramAnnotations) {
             Class<? extends Annotation> annotationType = annot.annotationType();
@@ -449,8 +525,8 @@ public abstract class AbstractJaxRsWrapper {
             }
             if (annoType.equals(QueryParam.class)) {
                 return getQueryParamValue(paramClass, paramGenericType,
-                        (QueryParam) annotation, defaultValue, callContext,
-                        logger);
+                        (QueryParam) annotation, leaveEncoded, defaultValue,
+                        callContext, logger);
             }
             if (annoType.equals(CookieParam.class)) {
                 return getCookieParamValue(paramClass, paramGenericType,
@@ -479,28 +555,36 @@ public abstract class AbstractJaxRsWrapper {
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
-     * @param jaxRsRouter
-     *                The {@link JaxRsRouter}. May be null, but should not be.
      * @param mbrs
-     *                The Set of {@link MessageBodyReader}s.
-     * 
+     *                The Set of all available {@link MessageBodyReader}s in
+     *                the {@link JaxRsRouter}.
+     * @param logger
+     *                The logger to use
      * @return the parameter array
      * @throws MissingAnnotationException
-     * @throws ConvertParameterException
      * @throws NoMessageBodyReaderException
+     * @throws ConvertCookieParamException
+     * @throws ConvertQueryParamException
+     * @throws ConvertMatrixParamException
+     * @throws ConvertPathParamException
+     * @throws ConvertHeaderParamException
+     * @throws ConvertRepresentationException
      */
     protected static Object[] getParameterValues(Class<?>[] paramTypes,
             Type[] paramGenericTypes, Annotation[][] paramAnnotationss,
             boolean leaveEncoded, CallContext callContext,
-            HiddenJaxRsRouter jaxRsRouter) throws MissingAnnotationException,
-            ConvertParameterException, NoMessageBodyReaderException {
+            MessageBodyReaderSet mbrs, Logger logger)
+            throws MissingAnnotationException, NoMessageBodyReaderException,
+            ConvertHeaderParamException, ConvertPathParamException,
+            ConvertMatrixParamException, ConvertQueryParamException,
+            ConvertCookieParamException, ConvertRepresentationException {
         int paramNo = paramTypes.length;
         if (paramNo == 0)
             return new Object[0];
         Object[] args = new Object[paramNo];
         boolean annotRequired = false;
-        Logger logger = jaxRsRouter != null ? jaxRsRouter.getLogger() : Logger
-                .getAnonymousLogger();
+        if (logger == null)
+            logger = Logger.getAnonymousLogger();
         for (int i = 0; i < args.length; i++) {
             Class<?> paramType = paramTypes[i];
             Type paramGenericType = paramGenericTypes[i];
@@ -519,7 +603,7 @@ public abstract class AbstractJaxRsWrapper {
                 // if yes, save converted Representation to CallContext,
                 // (not possible e.g. for InputStream and Reader)
                 arg = convertRepresentation(callContext, paramType,
-                        paramGenericType, paramAnnotations, jaxRsRouter);
+                        paramGenericType, paramAnnotations, mbrs, logger);
                 // TODO convert representation before first access, because
                 // MessageBodyReader may change headers.
                 // This is another argument against changing the headers in an
@@ -527,7 +611,7 @@ public abstract class AbstractJaxRsWrapper {
                 // Precondition failed), the MessageBodyReader s not required to
                 // be called and does not need time for the conversion
                 // TODO ensure read full MessageBody or Representation.release()
-                // REQUEST can we add a method if a MessageBodyReader and/or
+                // REQUESTED can we add a method if a MessageBodyReader and/or
                 // writer will possibly change the headers:
                 // enum MessageBodyReader.Header.CHANGED, READ, NOT_NEEDED
                 // if it is not needed, null could be given for the headers
@@ -536,10 +620,10 @@ public abstract class AbstractJaxRsWrapper {
                 // writeTo starts: The headers could be sent to client, while
                 // JAX-RS runtime environment is working between header writing
                 // and body writing.
-                // REQUEST Request.getEntity: could convert entity if needed. If
-                // the entity is not required (e.g. prec failed) it could be not
-                // converted, if no headers are needed. (The last is the case in
-                // the most cases, I think.)
+                // REQUESTED Request.getEntity: converts entity only if needed.
+                // If the entity is not required (e.g. prec failed) it could be
+                // not converted, if no headers are needed. (The last is the
+                // case in the most cases, I think.)
             }
             args[i] = arg;
         }
@@ -606,21 +690,26 @@ public abstract class AbstractJaxRsWrapper {
      * @param callContext
      * @param logger
      * @return
-     * @throws ConvertParameterException
+     * @throws ConvertPathParamException
      */
     static Object getPathParamValue(Class<?> paramClass, Type paramGenericType,
             PathParam pathParam, boolean leaveEncoded,
             DefaultValue defaultValue, CallContext callContext)
-            throws ConvertParameterException {
-        // TODO Path-Param: List<String>
+            throws ConvertPathParamException {
+        // TESTEN Path-Param: List<String>
         // TODO @PathParam("x") PathSegment allowed
-        // REQUESTED What do @PathParam-value means, if should be PathSegment?
-        // allow without? ignore it?
         if (paramGenericType == null)
             "".toString();
-        String pathParamValue = callContext.getLastTemplParamEnc(pathParam);
-        return convertParamValueFromParam(paramClass, pathParamValue,
-                defaultValue, leaveEncoded);
+        String pathParamValue = callContext.getLastPathParamEnc(pathParam);
+        Iterator<String> pathParamValueIter = callContext
+                .pathParamEncIter(pathParam);
+        try {
+            return convertParamValuesFromParam(paramClass, paramGenericType,
+                    pathParamValueIter, pathParamValue, defaultValue,
+                    leaveEncoded);
+        } catch (ConvertParameterException e) {
+            throw new ConvertPathParamException(e);
+        }
     }
 
     /**
@@ -659,25 +748,31 @@ public abstract class AbstractJaxRsWrapper {
      * @param paramGenericType
      *                the generic type to convert to
      * @param queryParam
+     * @param leaveEncoded
      * @param defaultValue
      * @param callContext
      * @param logger
      * @return
-     * @throws ConvertParameterException
+     * @throws ConvertQueryParamException
      */
     static Object getQueryParamValue(Class<?> paramClass,
-            Type paramGenericType, QueryParam queryParam,
+            Type paramGenericType, QueryParam queryParam, boolean leaveEncoded,
             DefaultValue defaultValue, CallContext callContext, Logger logger)
-            throws ConvertParameterException {
+            throws ConvertQueryParamException {
         Reference resourceRef = callContext.getRequest().getResourceRef();
         String queryString = resourceRef.getQuery();
         Form form = Converter.toFormEncoded(queryString, logger);
         String paramName = queryParam.value();
         List<Parameter> parameters = form.subList(paramName);
-        return convertParamValuesFromParam(paramClass, paramGenericType,
-                new ParamValueIter(parameters), getValue(form
-                        .getFirst(paramName)), defaultValue, true);
-        // TODO Encode or not of @QueryParam: leaveEncoded = true -> not change
+        try {
+            String queryParamValue = getValue(form.getFirst(paramName));
+            ParamValueIter queryParamValueIter = new ParamValueIter(parameters);
+            return convertParamValuesFromParam(paramClass, paramGenericType,
+                    queryParamValueIter, queryParamValue, defaultValue,
+                    leaveEncoded);
+        } catch (ConvertParameterException e) {
+            throw new ConvertQueryParamException(e);
+        }
     }
 
     /**

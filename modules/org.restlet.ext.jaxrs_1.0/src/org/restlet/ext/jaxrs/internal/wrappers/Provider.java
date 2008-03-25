@@ -35,7 +35,12 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateProviderException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRootRessourceException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
@@ -47,7 +52,8 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * Wraps a JAX-RS provider, see chapter 4 of JAX-RS specification.
  * 
  * @author Stephan Koops
- * @param <T> the java type to convert.
+ * @param <T>
+ *                the java type to convert.
  * @see javax.ws.rs.ext.Provider
  */
 public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
@@ -93,8 +99,41 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         RootResourceClass.checkClassConcrete(jaxRsProviderClass, "provider");
         Constructor<?> providerConstructor = RootResourceClass
                 .findJaxRsConstructor(jaxRsProviderClass);
-        Object jaxRsProvider = createInstance(providerConstructor,
-                jaxRsProviderClass);
+        Object jaxRsProvider;
+        try {
+            jaxRsProvider = createInstance(providerConstructor,
+                    jaxRsProviderClass);
+        } catch (ConvertRepresentationException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (ConvertHeaderParamException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (ConvertPathParamException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (ConvertMatrixParamException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (ConvertQueryParamException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (ConvertCookieParamException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        }
         boolean isProvider = false;
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyWriter) {
             this.writer = (javax.ws.rs.ext.MessageBodyWriter<T>) jaxRsProvider;
@@ -122,18 +161,22 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      *                 if the constructor throws an Throwable
+     * @throws ConvertCookieParamException
+     * @throws ConvertQueryParamException
+     * @throws ConvertMatrixParamException
+     * @throws ConvertPathParamException
+     * @throws ConvertHeaderParamException
+     * @throws ConvertRepresentationException
      */
     private Object createInstance(Constructor<?> providerConstructor,
             Class<?> jaxRsProviderClass) throws IllegalArgumentException,
-            InvocationTargetException {
+            InvocationTargetException, ConvertRepresentationException,
+            ConvertHeaderParamException, ConvertPathParamException,
+            ConvertMatrixParamException, ConvertQueryParamException,
+            ConvertCookieParamException {
         try {
             return RootResourceClass.createInstance(providerConstructor, false,
-                    null, null);
-        } catch (ConvertParameterException e) {
-            // should be not possible here
-            throw new IllegalArgumentException(
-                    "Could not instantiate the Provider, class "
-                            + jaxRsProviderClass.getName(), e);
+                    null, null, null);
         } catch (MissingAnnotationException e) {
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
@@ -399,6 +442,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * Write a type to an HTTP response. The response header map is mutable but
      * any changes must be made before writing to the output stream since the
      * headers will be flushed prior to writing the response body.
+     * 
      * @param genericType
      *                The generic {@link Type} to convert to.
      * @param annotations
@@ -419,10 +463,10 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *      OutputStream)
      */
     public void writeTo(T object, Class<?> type, Type genericType,
-            Annotation[] annotations,
-            javax.ws.rs.core.MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
-        writer.writeTo(object, type, genericType, annotations,
-                mediaType, httpHeaders, entityStream);
+            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException {
+        writer.writeTo(object, type, genericType, annotations, mediaType,
+                httpHeaders, entityStream);
     }
 }

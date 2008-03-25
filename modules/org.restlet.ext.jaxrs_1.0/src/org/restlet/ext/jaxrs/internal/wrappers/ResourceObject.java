@@ -24,7 +24,11 @@ import javax.annotation.PreDestroy;
 import javax.ws.rs.WebApplicationException;
 
 import org.restlet.ext.jaxrs.internal.core.CallContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 
@@ -92,13 +96,21 @@ public class ResourceObject {
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
      * @throws WebApplicationException
-     * @throws ConvertParameterException
      * @throws MethodInvokeException
      *                 if the method annotated with &#64;{@link PostConstruct}
      *                 could not be called or throws an exception.
+     * @throws ConvertQueryParamException
+     * @throws ConvertPathParamException
+     * @throws ConvertMatrixParamException
+     * @throws ConvertHeaderParamException
+     * @throws ConvertCookieParamException
+     * @throws WebApplicationException
      */
     public void init(CallContext callContext) throws InjectException,
-            ConvertParameterException, MethodInvokeException {
+            MethodInvokeException, WebApplicationException,
+            ConvertCookieParamException, ConvertHeaderParamException,
+            ConvertMatrixParamException, ConvertPathParamException,
+            ConvertQueryParamException {
         this.getResourceClass().init(this, callContext);
     }
 

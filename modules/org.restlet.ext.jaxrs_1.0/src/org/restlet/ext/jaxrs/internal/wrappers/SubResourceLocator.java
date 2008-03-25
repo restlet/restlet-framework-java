@@ -19,14 +19,21 @@ package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRessourceException;
@@ -68,22 +75,36 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
-     * @param jaxRsRouter
+     * @param mbrs
+     *                The Set of all available {@link MessageBodyReader}s in
+     *                the {@link JaxRsRouter}.
+     * @param wrapperFactory
+     *                factory to create wrappers.
+     * @param logger
+     *                The logger to use
      * @return Returns the wrapped sub resource object.
      * @throws InvocationTargetException
      * @throws NoMessageBodyReaderException
      * @throws WebApplicationException
      * @throws MissingAnnotationException
      * @throws InstantiateRessourceException
-     * @throws ConvertParameterException
      * @throws MethodInvokeException
+     * @throws ConvertCookieParamException
+     * @throws ConvertQueryParamException
+     * @throws ConvertMatrixParamException
+     * @throws ConvertPathParamException
+     * @throws ConvertHeaderParamException
+     * @throws ConvertRepresentationException
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
-            CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
+            CallContext callContext, MessageBodyReaderSet mbrs,
+            WrapperFactory wrapperFactory, Logger logger)
             throws InvocationTargetException, MissingAnnotationException,
             WebApplicationException, NoMessageBodyReaderException,
-            InstantiateRessourceException, ConvertParameterException,
-            MethodInvokeException {
+            InstantiateRessourceException, MethodInvokeException,
+            ConvertRepresentationException, ConvertHeaderParamException,
+            ConvertPathParamException, ConvertMatrixParamException,
+            ConvertQueryParamException, ConvertCookieParamException {
         Object[] args;
         Class<?>[] parameterTypes = this.executeMethod.getParameterTypes();
         if (parameterTypes.length == 0)
@@ -92,7 +113,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             args = getParameterValues(parameterTypes, executeMethod
                     .getGenericParameterTypes(), annotatedMethod
                     .getParameterAnnotations(), leaveEncoded, callContext,
-                    jaxRsRouter);
+                    mbrs, logger);
         Object subResObj;
         try {
             subResObj = executeMethod.invoke(resourceObject
@@ -103,13 +124,12 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             throw new InstantiateRessourceException(executeMethod, e);
         }
         if (subResObj == null) {
-            jaxRsRouter.getLogger().warning(
-                    "The sub resource object is null. That is not allowed");
+            logger
+                    .warning("The sub resource object is null. That is not allowed");
             ResponseBuilder rb = javax.ws.rs.core.Response.serverError();
             rb.entity("The sub resource object is null. That is not allowed");
             throw new WebApplicationException(rb.build());
         }
-        WrapperFactory wrapperFactory = jaxRsRouter.getWrapperFactory();
         ResourceClass resourceClass = wrapperFactory.getResourceClass(subResObj
                 .getClass());
         ResourceObject subResourceObject = new ResourceObject(subResObj,

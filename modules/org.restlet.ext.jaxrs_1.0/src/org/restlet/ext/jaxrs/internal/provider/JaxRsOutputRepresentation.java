@@ -43,9 +43,6 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
 
     private T object;
 
-    /** necessary, because the {@link #object} could be null */
-    private Class<?> type;
-
     private Type genericType;
 
     private Annotation[] annotations;
@@ -70,9 +67,9 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
      * @param httpHeaders
      *                the mutable Map of HTTP response headers.
      */
-    public JaxRsOutputRepresentation(T object, Type genericType, MediaType mediaType,
-            Annotation[] annotations, MessageBodyWriter<T> mbw,
-            MultivaluedMap<String, Object> httpHeaders) {
+    public JaxRsOutputRepresentation(T object, Type genericType,
+            MediaType mediaType, Annotation[] annotations,
+            MessageBodyWriter<T> mbw, MultivaluedMap<String, Object> httpHeaders) {
         super(mediaType, mbw.getSize(object));
         if (!mediaType.isConcrete())
             throw new IllegalArgumentException(mediaType + " is not concrete");
@@ -81,8 +78,6 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
         this.mbw = mbw;
         this.httpHeaders = httpHeaders;
         this.object = object;
-        this.type = object.getClass();
-        // TODO if definitely not needed remove instance variable
     }
 
     /**
@@ -90,8 +85,9 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        this.mbw.writeTo(object, type, genericType, annotations, Converter
-                .toJaxRsMediaType(getMediaType(), null), httpHeaders,
-                outputStream);
+        javax.ws.rs.core.MediaType jaxRsMediaType;
+        jaxRsMediaType = Converter.toJaxRsMediaType(getMediaType(), null);
+        this.mbw.writeTo(object, object.getClass(), genericType, annotations,
+                jaxRsMediaType, httpHeaders, outputStream);
     }
 }

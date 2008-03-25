@@ -21,14 +21,21 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
@@ -195,7 +202,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
     public PathRegExp getPathRegExp() {
         return super.getPathRegExp();
     }
-    
+
     /**
      * @return Retuns the resource class
      */
@@ -208,29 +215,39 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * response.
      * 
      * @param resourceObject
-     * @param jaxRsRouter
      * @param callContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
+     * @param mbrs
+     *                The Set of all available {@link MessageBodyReader}s in
+     *                the {@link JaxRsRouter}.
+     * @param logger
      * @return the unwrapped returned onject by the wrapped method.
      * @throws MethodInvokeException
      * @throws InvocationTargetException
-     * @throws ConvertParameterException
      * @throws NoMessageBodyReaderException
      * @throws MissingAnnotationException
+     * @throws ConvertCookieParamException
+     * @throws ConvertQueryParamException
+     * @throws ConvertMatrixParamException
+     * @throws ConvertPathParamException
+     * @throws ConvertHeaderParamException
+     * @throws ConvertRepresentationException
      */
     public Object invoke(ResourceObject resourceObject,
-            CallContext callContext, HiddenJaxRsRouter jaxRsRouter)
+            CallContext callContext, MessageBodyReaderSet mbrs, Logger logger)
             throws MethodInvokeException, InvocationTargetException,
-            MissingAnnotationException, ConvertParameterException,
-            NoMessageBodyReaderException {
+            MissingAnnotationException, NoMessageBodyReaderException,
+            ConvertRepresentationException, ConvertHeaderParamException,
+            ConvertPathParamException, ConvertMatrixParamException,
+            ConvertQueryParamException, ConvertCookieParamException {
         Annotation[][] parameterAnnotationss = annotatedMethod
                 .getParameterAnnotations();
         Class<?>[] paramTypes = executeMethod.getParameterTypes();
         Type[] paramGenericTypes = executeMethod.getGenericParameterTypes();
         Object[] args = getParameterValues(paramTypes, paramGenericTypes,
-                parameterAnnotationss, leaveEncoded, callContext, jaxRsRouter);
+                parameterAnnotationss, leaveEncoded, callContext, mbrs, logger);
         try {
             Object jaxRsResourceObj = resourceObject.getJaxRsResourceObject();
             return executeMethod.invoke(jaxRsResourceObj, args);
