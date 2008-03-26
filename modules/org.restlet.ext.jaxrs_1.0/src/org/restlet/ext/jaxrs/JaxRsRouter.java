@@ -71,6 +71,7 @@ import org.restlet.ext.jaxrs.internal.provider.InputStreamProvider;
 import org.restlet.ext.jaxrs.internal.provider.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
 import org.restlet.ext.jaxrs.internal.provider.JaxbProvider;
+import org.restlet.ext.jaxrs.internal.provider.JsonProvider;
 import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.StreamingOutputProvider;
 import org.restlet.ext.jaxrs.internal.provider.StringProvider;
@@ -365,6 +366,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         this.addDefaultProvider(InputStreamProvider.class);
         this.addDefaultProvider(JaxbElementProvider.class);
         this.addDefaultProvider(JaxbProvider.class);
+        this.addDefaultProvider(JsonProvider.class);
         this.addDefaultProvider(ReaderProvider.class);
         this.addDefaultProvider(StreamingOutputProvider.class);
         this.addDefaultProvider(StringProvider.class);
@@ -443,12 +445,13 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
     // now methods for the daily work
 
     /**
-     * Handles a call by invoking the next Restlet if it is available.
+     * Handles a call by looking for the resource metod to call, call it and
+     * return the result.
      * 
      * @param request
-     *                The request to handle.
+     *                The {@link Request} to handle.
      * @param response
-     *                The response to update.
+     *                The {@link Response} to update.
      */
     @Override
     public void handle(Request request, Response response) {

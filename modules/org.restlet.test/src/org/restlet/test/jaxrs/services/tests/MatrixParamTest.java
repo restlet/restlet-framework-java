@@ -161,4 +161,31 @@ public class MatrixParamTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("[null]", response.getEntity().getText());
     }
+
+    public void testSub1() throws Exception {
+        Response response2 = get("sub;name=abc/one");
+        sysOutEntityIfError(response2);
+        assertEquals(Status.SUCCESS_OK, response2.getStatus());
+        assertEquals("abc", response2.getEntity().getText());
+
+        Response response3 = get("sub/one;name=def");
+        sysOutEntityIfError(response3);
+        assertEquals(Status.SUCCESS_OK, response3.getStatus());
+        assertEquals("def", response3.getEntity().getText());
+
+        Response response4 = get("sub;name=abc/one;name=def");
+        sysOutEntityIfError(response4);
+        assertEquals(Status.SUCCESS_OK, response4.getStatus());
+        assertEquals("def", response4.getEntity().getText());
+
+        Response response5 = get("sub;name=abc/allNames;name=def");
+        sysOutEntityIfError(response5);
+        assertEquals(Status.SUCCESS_OK, response5.getStatus());
+        assertEquals("[abc, def]", response5.getEntity().getText());
+
+        Response response6 = get("allNames;name=abc");
+        sysOutEntityIfError(response6);
+        assertEquals(Status.SUCCESS_OK, response6.getStatus());
+        assertEquals("[abc]", response6.getEntity().getText());
+    }
 }

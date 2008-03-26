@@ -19,12 +19,15 @@ package org.restlet.test.jaxrs.services.resources;
 
 import java.util.List;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
@@ -56,5 +59,13 @@ public class MatrixParamTestService2 {
             throw new WebApplicationException(rb.build());
         }
         return firstname + " " + lastname;
+    }
+
+    @GET
+    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Path("encodedWithDefault")
+    public String encodedList(@Encoded @DefaultValue("default") 
+            @MatrixParam("m") List<String> cc) {
+        return cc.toString();
     }
 }

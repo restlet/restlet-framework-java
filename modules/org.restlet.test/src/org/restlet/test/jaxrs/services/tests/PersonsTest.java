@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
 
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -67,6 +68,11 @@ public class PersonsTest extends JaxRsTestCase {
         assertEquals("George U.", persons.get(2).getFirstname());
     }
 
+    /**
+     * @throws Exception
+     * @see PersonsResource#addPerson(Person)
+     * @see PersonResource#get(int)
+     */
     public void testCreate() throws Exception {
         Person newPerson = new Person("Kurt", "Beck");
         Response response1 = post(new JaxbRepresentation<Person>(newPerson));
@@ -74,7 +80,7 @@ public class PersonsTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_CREATED, response1.getStatus());
         Reference newLocation = response1.getLocationRef();
         
-        Response response2 = get(newLocation);
+        Response response2 = get(newLocation, MediaType.TEXT_XML);
         sysOutEntityIfError(response2);
         assertEquals(Status.SUCCESS_OK, response2.getStatus());
         JaxbRepresentation<Person> repr = new JaxbRepresentation<Person>(response2.getEntity(), Person.class);

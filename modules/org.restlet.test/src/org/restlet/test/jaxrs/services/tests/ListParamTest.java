@@ -40,8 +40,6 @@ public class ListParamTest extends JaxRsTestCase {
         return ListParamService.class;
     }
 
-    // TESTEN also on List<String> check @DefaultValue and @Encode
-    
     public void testCookieParams() throws IOException {
         List<Cookie> cookies = new ArrayList<Cookie>();
         cookies.add(new Cookie("c", "c1"));
@@ -74,9 +72,6 @@ public class ListParamTest extends JaxRsTestCase {
         }
     }
 
-    // TESTEN werden Matrix-Parameter voriger path segments beruecksichtigt?
-    // (Email von Marc Hadley 18.3.)
-    
     public void testMatrixParams() throws IOException {
         Response response = get("matrix;m=m1;m=m2;mm=mm1;mm=mm2");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -84,7 +79,7 @@ public class ListParamTest extends JaxRsTestCase {
         String m = entity[0];
         String mm = entity[1];
         try {
-            // TESTEN ;m=1;m=2 -> @MatrixParam("m") = ?
+            // LATER lexikalisch sortieren: -> Resources.Parameters
             assertEquals("m=m1", m);
         } catch (AssertionFailedError afe) {
             assertEquals("m=m2", m);

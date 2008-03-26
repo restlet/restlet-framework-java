@@ -37,8 +37,8 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * @author Stephan Koops
  */
 @Provider
-@ProduceMime("text/*")
-@ConsumeMime("text/*")
+@ProduceMime( { "text/*", MediaType.APPLICATION_JSON })
+@ConsumeMime( { "text/*", MediaType.APPLICATION_JSON })
 public class StringProvider extends AbstractProvider<CharSequence> {
 
     /**

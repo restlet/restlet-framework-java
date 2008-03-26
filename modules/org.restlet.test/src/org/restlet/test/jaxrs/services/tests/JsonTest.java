@@ -1,0 +1,123 @@
+/*
+ * Copyright 2005-2008 Noelios Consulting.
+ * 
+ * The contents of this file are subject to the terms of the Common Development
+ * and Distribution License (the "License"). You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at
+ * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL HEADER in each file and
+ * include the License file at http://www.opensource.org/licenses/cddl1.txt If
+ * applicable, add the following below this CDDL HEADER, with the fields
+ * enclosed by brackets "[]" replaced with your own identifying information:
+ * Portions Copyright [yyyy] [name of copyright owner]
+ */
+package org.restlet.test.jaxrs.services.tests;
+
+import java.io.IOException;
+
+import junit.framework.AssertionFailedError;
+
+import org.json.JSONObject;
+import org.restlet.data.MediaType;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.ext.jaxb.JaxbRepresentation;
+import org.restlet.ext.jaxrs.internal.provider.JsonProvider;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
+import org.restlet.test.jaxrs.server.RestletServerWrapperFactory;
+import org.restlet.test.jaxrs.services.others.Person;
+import org.restlet.test.jaxrs.services.resources.JsonTestService;
+
+/**
+ * @author Stephan Koops
+ * @see JsonTestService
+ * @see JsonProvider
+ * @see JSONObject
+ */
+public class JsonTest extends JaxRsTestCase {
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return JsonTestService.class;
+    }
+
+    public static void main(String[] args) throws Exception {
+        if (USE_TCP == false)
+            setServerWrapperFactory(new RestletServerWrapperFactory());
+        runServerUntilKeyPressed(new JsonTest());
+    }
+
+    public void testGetJsonObject() throws Exception {
+        Response response = get("JSONObject");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        String entity = response.getEntity().getText();
+        try {
+            assertEquals("{\"name1\":\"value1\",\"name2\":\"value2\"}", entity);
+        } catch (AssertionFailedError afe) {
+            assertEquals("{\"name2\":\"value2\",\"name1\":\"value1\"}", entity);
+        }
+    }
+
+    public void testGetPersonJson() throws Exception {
+        Response response = get("person?firstname=Angela&lastname=Merkel",
+                MediaType.APPLICATION_JSON);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        JSONObject jsonObject = new JSONObject(response.getEntity().getText());
+        assertEquals("Angela", jsonObject.get("firstname"));
+        assertEquals("Merkel", jsonObject.get("lastname"));
+    }
+
+    public void testGetPersonXmlA() throws Exception {
+        testGetPersonXml(MediaType.APPLICATION_XML);
+    }
+
+    public void testGetPersonXmlT() throws Exception {
+        testGetPersonXml(MediaType.TEXT_XML);
+    }
+
+    /**
+     * This test using JAXB, but shows that you can serialize Objects by JAXb
+     * and by JSON.
+     * 
+     * @param xmlMediaType
+     * @throws IOException
+     */
+    private void testGetPersonXml(MediaType xmlMediaType) throws IOException {
+        Response response = get("person?firstname=Angela&lastname=Merkel",
+                xmlMediaType);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        JaxbRepresentation<Person> jaxbReprs = new JaxbRepresentation<Person>(
+                response.getEntity(), Person.class);
+        Person person = jaxbReprs.getObject();
+        assertEquals("Angela", person.getFirstname());
+        assertEquals("Merkel", person.getLastname());
+    }
+
+    public void testPost() throws Exception {
+        Representation entity = new StringRepresentation("{name:value}",
+                MediaType.APPLICATION_JSON);
+        Response response = post("JSONObject", entity);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("value", response.getEntity().getText());
+    }
+
+    /**
+     * @see JsonTestService#getString()
+     */
+    public void testString() throws Exception {
+        Response response = get("String");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation entity = response.getEntity();
+        assertEquals("{name:value}", entity.getText());
+    }
+}

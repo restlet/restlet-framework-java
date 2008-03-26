@@ -20,7 +20,6 @@ package org.restlet.ext.jaxrs.internal.wrappers;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -46,12 +45,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
-import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
@@ -84,6 +83,11 @@ import org.restlet.util.Series;
  * @author Stephan Koops
  */
 public abstract class AbstractJaxRsWrapper {
+
+    /**
+     * 
+     */
+    private static final String COLL_PARAM_NOT_DEFAULT = "The collection type Collection is not supported for parameters. Use List, Set or SortedSet";
 
     private static final Collection<Class<? extends Annotation>> VALID_ANNOTATIONS = createValidAnnotations();
 
@@ -162,12 +166,10 @@ public abstract class AbstractJaxRsWrapper {
             throws ConvertParameterException {
         boolean toArray = false;
         Collection<Object> coll = null;
-        if (paramGenericType instanceof GenericArrayType) {
-            GenericArrayType genericArrayType = (GenericArrayType) paramGenericType;
-            paramClass = (Class<?>) genericArrayType.getGenericComponentType();
+        if (paramClass.isArray()) {
             coll = new ArrayList<Object>(1);
             toArray = true;
-            // TESTEN @*Param with array
+            paramClass = paramClass.getComponentType();
         } else if (paramGenericType instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) paramGenericType;
             coll = createColl(parameterizedType);
@@ -185,8 +187,11 @@ public abstract class AbstractJaxRsWrapper {
                 coll.add(convertedValue);
             defaultValue = null;
         }
+        if (coll.isEmpty()) // add default value
+            coll.add(convertParamValueFromParam(paramClass, paramValue,
+                    defaultValue, leaveEncoded));
         if (toArray)
-            return coll.toArray();
+            return Util.toArray(coll, paramClass);
         return coll;
     }
 
@@ -196,12 +201,17 @@ public abstract class AbstractJaxRsWrapper {
      */
     private static <A> Collection<A> createColl(ParameterizedType type) {
         Type rawType = type.getRawType();
-        if (rawType.equals(Collection.class) || rawType.equals(List.class))
+        if (rawType.equals(List.class))
             return new ArrayList<A>(1);
         else if (rawType.equals(Set.class))
             return new HashSet<A>(2);
         else if (rawType.equals(SortedSet.class))
             return new TreeSet<A>();
+        else if (rawType.equals(Collection.class)) {
+            Logger logger = Logger.getAnonymousLogger();
+            logger.config(COLL_PARAM_NOT_DEFAULT);
+            return new ArrayList<A>();
+        }
         return null;
     }
 
@@ -314,10 +324,49 @@ public abstract class AbstractJaxRsWrapper {
             Type paramGenericType, CookieParam cookieParam,
             DefaultValue defaultValue, CallContext callContext)
             throws ConvertCookieParamException {
-        Series<Cookie> cookies = callContext.getRequest().getCookies();
         String cookieName = cookieParam.value();
-        if (paramClass.equals(javax.ws.rs.core.Cookie.class))
-            getCookies(cookieName, paramGenericType, callContext);
+        Collection<Cookie> coll = null;
+        boolean isCookie = false; // javax.ws.rs.core.Cookie requested
+        boolean toArray = false;
+        if (paramClass.equals(Cookie.class)) {
+            isCookie = true;
+        } else if (paramClass.isArray()) {
+            Class<?> paramClass2 = paramClass.getComponentType();
+            if (paramClass2.equals(Cookie.class)) {
+                coll = new ArrayList<Cookie>();
+                toArray = true;
+                isCookie = true;
+            }
+        } else if (paramGenericType instanceof ParameterizedType) {
+            ParameterizedType parametrizedType = (ParameterizedType) paramGenericType;
+            Type[] argTypes = parametrizedType.getActualTypeArguments();
+            if (argTypes.length == 1 && argTypes[0].equals(Cookie.class)) {
+                coll = createColl(parametrizedType);
+                if (coll != null)
+                    isCookie = true;
+            }
+        }
+        Series<org.restlet.data.Cookie> cookies;
+        cookies = callContext.getRequest().getCookies();
+        if (isCookie) {
+            for (org.restlet.data.Cookie rc : cookies) {
+                if (!rc.getName().equals(cookieName))
+                    continue;
+                Cookie cookie = Converter.toJaxRsCookie(rc);
+                if (coll == null) // no collection requested
+                    return cookie;
+                coll.add(cookie);
+            }
+            if (coll == null)
+                return null;
+            if (coll.isEmpty()) {
+                String value = defaultValue.value();
+                coll.add(new Cookie(cookieName, value));
+            }
+            if (toArray)
+                return Util.toArray(coll, Cookie.class);
+            return coll;
+        }
         try {
             return convertParamValuesFromParam(paramClass, paramGenericType,
                     new ParamValueIter((Series) cookies.subList(cookieName)),
@@ -326,42 +375,6 @@ public abstract class AbstractJaxRsWrapper {
             throw new ConvertCookieParamException(e);
         }
         // leaveEncoded = true -> not change
-    }
-
-    /**
-     * Return the cookies with the given cookieName from the callContext. If the
-     * {@link Type} represents an array or a collection, all cookies with the
-     * given name were returned, otherwise only the first.
-     * 
-     * @param cookieName
-     * @param paramGenericType
-     * @param callContext
-     * @return
-     */
-    private static Object getCookies(String cookieName, Type paramGenericType,
-            CallContext callContext) {
-        Collection<javax.ws.rs.core.Cookie> cookies = null;
-        boolean toArray = false;
-        if (paramGenericType instanceof GenericArrayType) {
-            cookies = new ArrayList<javax.ws.rs.core.Cookie>(1);
-            toArray = true;
-        } else if (paramGenericType instanceof ParameterizedType) {
-            cookies = createColl((ParameterizedType) paramGenericType);
-        }
-        for (Cookie rc : callContext.getRequest().getCookies()) {
-            if (!rc.getName().equals(cookieName))
-                continue;
-            javax.ws.rs.core.Cookie cookie = Converter.toJaxRsCookie(rc);
-            if (cookies == null) // no collection requested
-                return cookie;
-            cookies.add(cookie);
-        }
-        if (cookies == null)
-            return null;
-        if (toArray)
-            return cookies.toArray();
-        return cookies;
-        // TESTEN Cookie also allowed on @CookieParam, also array and colls
     }
 
     private static class ParamValueIter implements Iterator<String> {
@@ -696,10 +709,9 @@ public abstract class AbstractJaxRsWrapper {
             PathParam pathParam, boolean leaveEncoded,
             DefaultValue defaultValue, CallContext callContext)
             throws ConvertPathParamException {
-        // TESTEN Path-Param: List<String>
+        // LATER testen Path-Param: List<String> (see PathParamTest.testGet3())
         // TODO @PathParam("x") PathSegment allowed
-        if (paramGenericType == null)
-            "".toString();
+
         String pathParamValue = callContext.getLastPathParamEnc(pathParam);
         Iterator<String> pathParamValueIter = callContext
                 .pathParamEncIter(pathParam);

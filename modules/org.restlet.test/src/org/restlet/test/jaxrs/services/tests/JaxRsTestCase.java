@@ -331,7 +331,7 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
-    private Response accessServer(Method httpMethod, Reference reference,
+    protected Response accessServer(Method httpMethod, Reference reference,
             Collection accMediaTypes, ChallengeResponse challengeResponse,
             Representation entity, Collection<Cookie> addCookies,
             Collection<Parameter> addHeaders) {
@@ -351,7 +351,7 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param request
      * @return
      */
-    private Response accessServer(Request request) {
+    protected Response accessServer(Request request) {
         Restlet connector = getConnector();
         if (shouldAccessWithoutTcp()) {
             String hostDomain = request.getResourceRef().getHostDomain();
@@ -439,10 +439,14 @@ public abstract class JaxRsTestCase extends TestCase {
         if (!path.startsWith("/"))
             path = "/" + path;
         if (subPath != null) {
-            if (subPath.startsWith(";"))
+            if (subPath.startsWith(";")) {
                 path += subPath;
-            else if (subPath.length() > 0)
-                path += "/" + subPath;
+            } else if (subPath.length() > 0) {
+                if (path.endsWith("/") || subPath.startsWith("/"))
+                    path += subPath;
+                else
+                    path += "/" + subPath;
+            }
         }
         reference.setPath(path);
         return reference;
@@ -460,6 +464,18 @@ public abstract class JaxRsTestCase extends TestCase {
         if (reference.getBaseRef() == null)
             reference.setBaseRef(reference.getHostIdentifier());
         return accessServer(Method.GET, reference);
+    }
+
+    public Response get(Reference reference, MediaType mediaType) {
+        if (reference.getBaseRef() == null)
+            reference.setBaseRef(reference.getHostIdentifier());
+        Collection<MediaType> mediaTypes = null;
+        if (mediaType != null) {
+            mediaTypes = new ArrayList<MediaType>();
+            mediaTypes.add(mediaType);
+        }
+        return accessServer(Method.GET, reference, mediaTypes, null, null,
+                null, null);
     }
 
     public Response get(MediaType accMediaType) {

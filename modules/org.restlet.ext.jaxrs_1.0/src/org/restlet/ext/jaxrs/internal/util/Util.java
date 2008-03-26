@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -1024,6 +1025,20 @@ public class Util {
         if (mediaType.getSubType().equals("*"))
             return 0;
         return 1;
+    }
+
+    /**
+     * Creates an Array of the given type.
+     * 
+     * @param coll
+     * @param arrayType
+     * @return
+     * @throws NegativeArraySizeException
+     */
+    public static Object toArray(Collection<?> coll, Class<?> arrayType) {
+        int collSize = coll.size();
+        Object[] array = (Object[]) Array.newInstance(arrayType, collSize);
+        return coll.toArray(array);
     }
 
     /**

@@ -50,6 +50,7 @@ org.restlet.ext.jaxrs_1.0 (Integration with JAX-RS 1.0)
  - javax.xml.stream_1.0 (optional)
  - javax.mail_1.4 (optional)
  - javax.activation_1.1 (optional)
+ - org.json_2.0 (optional)
 
 
 org.restlet.ext.jibx_1.1 (Integration with JiBX 1.1)

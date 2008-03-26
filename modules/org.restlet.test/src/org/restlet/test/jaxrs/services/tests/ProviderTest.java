@@ -39,6 +39,7 @@ import org.w3c.dom.NodeList;
  * @see ProviderTestService
  * @see MessageBodyReader
  * @see MessageBodyWriter
+ * @see JsonTest
  */
 public class ProviderTest extends JaxRsTestCase {
 

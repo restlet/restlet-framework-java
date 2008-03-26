@@ -21,12 +21,11 @@ import javax.ws.rs.MatrixParam;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.MatrixParamTestService;
 import org.restlet.test.jaxrs.services.resources.MatrixParamTestService2;
 
 /**
  * @author Stephan Koops
- * @see MatrixParamTestService
+ * @see MatrixParamTestService2
  * @see MatrixParam
  */
 public class MatrixParamTest2 extends JaxRsTestCase {
@@ -40,17 +39,31 @@ public class MatrixParamTest2 extends JaxRsTestCase {
         Response response = get(";firstname=Angela;lastname=Merkel");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("Angela Merkel", response.getEntity().getText());
-        
+
         response = get(";lastname=Merkel;firstname=Angela");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("Angela Merkel", response.getEntity().getText());
-        
+
         response = get(";firstname=Goofy");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("Goofy null", response.getEntity().getText());
-        
+
         response = get(";lastname=Goofy");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("null Goofy", response.getEntity().getText());
+    }
+
+    public void testEncodedWithDefault() throws Exception {
+        Response response = get("encodedWithDefault;m=1;m=2;x=3");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[1, 2]", response.getEntity().getText());
+
+        response = get("encodedWithDefault;m=1;i=2;x=3");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[1]", response.getEntity().getText());
+
+        response = get("encodedWithDefault;a=1;i=2;x=3");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[default]", response.getEntity().getText());
     }
 }

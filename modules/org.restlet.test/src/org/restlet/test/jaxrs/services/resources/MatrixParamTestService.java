@@ -17,6 +17,8 @@
  */
 package org.restlet.test.jaxrs.services.resources;
 
+import java.util.List;
+
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
@@ -112,5 +114,18 @@ public class MatrixParamTestService {
         if (name.equals(""))
             return "[empty]";
         return name;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("allNames")
+    public String getAllNames(@MatrixParam("name") List<String> name) {
+        return name.toString();
+    }
+    
+    @Path("sub")
+    public MatrixParamTestService getSub()
+    {
+        return new MatrixParamTestService();
     }
 }

@@ -21,7 +21,10 @@ import java.io.IOException;
 
 import javax.ws.rs.CookieParam;
 
+import junit.framework.AssertionFailedError;
+
 import org.restlet.data.Cookie;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
@@ -62,6 +65,48 @@ public class CookieParamTest extends JaxRsTestCase {
         else
             text = null;
         assertEquals(null, text);
+    }
+
+    public void testCookieSet() throws Exception {
+        Request request = createGetRequest("Set");
+        request.getCookies().add(new Cookie("c", "c1"));
+        request.getCookies().add(new Cookie("c", "c2"));
+        request.getCookies().add(new Cookie("d", "c3"));
+        Response response = accessServer(request);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        String entity = response.getEntity().getText();
+        String entityWithoutBrackets = entity.substring(1, entity.length() - 1);
+        try {
+            assertEquals("c1, c2", entityWithoutBrackets);
+        } catch (AssertionFailedError afe) {
+            assertEquals("c2, c1", entityWithoutBrackets);
+        }
+    }
+
+    public void testCookieArray() throws Exception {
+        Request request = createGetRequest("array");
+        request.getCookies().add(new Cookie("c", "c1"));
+        request.getCookies().add(new Cookie("c", "c2"));
+        request.getCookies().add(new Cookie("d", "c3"));
+        Response response = accessServer(request);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        String entity = response.getEntity().getText();
+        String entityWithoutBrackets = entity.substring(1, entity.length() - 1);
+        assertEquals("c1, c2", entityWithoutBrackets);
+    }
+
+    public void testCookieSortedSet() throws Exception {
+        Request request = createGetRequest("SortedSet");
+        request.getCookies().add(new Cookie("c", "c1"));
+        request.getCookies().add(new Cookie("c", "c2"));
+        request.getCookies().add(new Cookie("d", "c3"));
+        Response response = accessServer(request);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        String entity = response.getEntity().getText();
+        assertEquals("c1, c2", entity.substring(1, entity.length() - 1));
     }
 
     public void testWithDefault() throws IOException {

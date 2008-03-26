@@ -10,7 +10,8 @@ Require-Bundle: org.restlet;visibility:=reexport,
  javax.annotation;visibility:=reexport,
  javax.mail;visibility:=reexport,
  javax.xml.bind;visibility:=reexport,
- javax.xml.stream;visibility:=reexport
+ javax.xml.stream;visibility:=reexport,
+ org.json
 Export-Package: org.restlet.ext.jaxrs;
   uses:="org.restlet.ext.jaxrs.internal.util,
    javax.ws.rs,

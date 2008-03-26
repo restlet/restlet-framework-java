@@ -17,12 +17,17 @@
  */
 package org.restlet.test.jaxrs.services.resources;
 
+import java.util.Set;
+import java.util.SortedSet;
+
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.MediaType;
 
 import org.restlet.test.jaxrs.services.tests.CookieParamTest;
 
@@ -35,18 +40,44 @@ import org.restlet.test.jaxrs.services.tests.CookieParamTest;
 public class CookieParamTestService {
 
     @GET
-    @ProduceMime("text/plain")
-    public String get(@CookieParam("c")
-    String cookieValue) {
-        return cookieValue;
+    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Path("array")
+    public String array(@CookieParam("c") Cookie[] cc) {
+        String result = "[";
+        for(Cookie c : cc)
+            result+=c.getValue()+", ";
+        return result.substring(0, result.length()-2)+"]";
     }
 
+    @GET
+    @ProduceMime("text/plain")
+    public String get(@CookieParam("c") String cookieValue) {
+        return cookieValue;
+    }
+   
+    @GET
+    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Path("Set")
+    public String set(@CookieParam("c") Set<Cookie> cc) {
+        String result = "{";
+        for(Cookie c : cc)
+            result+=c.getValue()+", ";
+        return result.substring(0, result.length()-2)+"}";
+    }
+   
+    @GET
+    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Path("SortedSet")
+    public String sortedSet(@CookieParam("c") SortedSet<String> cc) {
+        return cc.toString();
+    }
+    
     @GET
     @ProduceMime("text/plain")
     @Path("withDefault")
     @Encoded
     public String withDefault(@CookieParam("c") @DefaultValue("default")
-    String cookieValue) {
+               String cookieValue) {
         return cookieValue;
     }
 }

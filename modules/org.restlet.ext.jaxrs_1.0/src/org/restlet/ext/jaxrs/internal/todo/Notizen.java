@@ -52,7 +52,7 @@ public class Notizen {
     
     // REQUESTED @Context on type PathSegment ?
     
-    // TESTEN What about not available (or null) values on @*Param
-    
     // REQUEST disallow entity on sub resource locator?
+    
+    // REQUEST javadoc of PathParam: Template -> Path
 }
