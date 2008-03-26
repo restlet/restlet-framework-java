@@ -52,14 +52,23 @@ public class MailsResource extends BaseResource {
 
     public MailsResource(Context context, Request request, Response response) {
         super(context, request, response);
-        // Get the parent mailbox thanks to its ID taken from the resource's
-        // URI.
-        String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-        if (mailbox != null) {
-            mails = mailbox.getMails();
-            getVariants().add(new Variant(MediaType.TEXT_HTML));
+        if (getCurrentUser() != null) {
+            // Authenticated access.
+            setModifiable(true);
+            // Get the parent mailbox thanks to its ID taken from the resource's
+            // URI.
+            String mailboxId = (String) request.getAttributes()
+                    .get("mailboxId");
+            mailbox = getObjectsFacade().getMailboxById(mailboxId);
+
+            if (mailbox != null) {
+                mails = mailbox.getMails();
+                getVariants().add(new Variant(MediaType.TEXT_HTML));
+            }
+        } else {
+            // Anonymous access
+            setModifiable(false);
         }
     }
 

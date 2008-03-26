@@ -96,8 +96,11 @@ public class Application extends org.restlet.Application {
         RmepGuard guard = new RmepGuard(getContext(),
                 ChallengeScheme.HTTP_BASIC, "rmep", dataFacade);
 
+        // Secure the root of the application.
+        guard.setNext(MailRootResource.class);
+
         // Add a route for the MailRoot resource
-        router.attachDefault(MailRootResource.class);
+        router.attachDefault(guard);
 
         Directory imgDirectory = new Directory(
                 getContext(),
@@ -121,13 +124,6 @@ public class Application extends org.restlet.Application {
 
         // Add a route for a Mailboxes resource
         router.attach("/mailboxes", MailboxesResource.class);
-
-        // Guard that will secure any access to a single mailbox.
-        RmepMailboxGuard mailboxGuard = new RmepMailboxGuard(getContext(),
-                ChallengeScheme.HTTP_BASIC, "rmep", dataFacade);
-
-        // Add a route for a Mailbox resource
-        router.attach("/mailboxes/{mailboxId}", mailboxGuard);
 
         // Add a router for access to mailbox
         Router mailboxRouter = new Router(getContext());
@@ -153,11 +149,10 @@ public class Application extends org.restlet.Application {
         // Add a route for a Feed resource
         mailboxRouter.attach("/feeds/{feedId}", FeedResource.class);
 
-        mailboxGuard.setNext(mailboxRouter);
+        // Add a route for a Mailbox resource
+        router.attach("/mailboxes/{mailboxId}", mailboxRouter);
 
-        // Secure the whole application.
-        guard.setNext(router);
-        return guard;
+        return router;
     }
 
     /**

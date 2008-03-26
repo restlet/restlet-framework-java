@@ -47,27 +47,16 @@ public class MailboxResource extends BaseResource {
 
     public MailboxResource(Context context, Request request, Response response) {
         super(context, request, response);
+
         String mailboxId = (String) request.getAttributes().get("mailboxId");
         mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
             getVariants().add(new Variant(MediaType.TEXT_HTML));
         }
-    }
 
-    @Override
-    public boolean allowDelete() {
-        return true;
-    }
-
-    @Override
-    public boolean allowPost() {
-        return true;
-    }
-
-    @Override
-    public boolean allowPut() {
-        return true;
+        // Avoid anonymous to update this resource.
+        setModifiable(true);
     }
 
     /**

@@ -28,6 +28,7 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.example.book.restlet.ch8.objects.ObjectsException;
 import org.restlet.example.book.restlet.ch8.objects.User;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
@@ -46,12 +47,20 @@ public class UsersResource extends BaseResource {
     public UsersResource(Context context, Request request, Response response) {
         super(context, request, response);
 
-        if (getCurrentUser().isAdministrator()) {
-            users = getObjectsFacade().getUsers();
+        if (getCurrentUser() != null) {
+            // Authenticated access.
+            if (getCurrentUser().isAdministrator()) {
+                setModifiable(true);
+                users = getObjectsFacade().getUsers();
+            } else {
+                users = new ArrayList<User>();
+                users.add(getCurrentUser());
+            }
         } else {
-            users = new ArrayList<User>();
-            users.add(getCurrentUser());
+            // Anonymous access.
+            setModifiable(false);
         }
+
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 
@@ -72,15 +81,30 @@ public class UsersResource extends BaseResource {
                 .setAdministrator((form.getFirstValue("administrator") == null ? false
                         : true));
 
-        user = getObjectsFacade().createUser(user);
+        try {
+            user = getObjectsFacade().createUser(user);
+            getResponse().redirectSeeOther(
+                    getChildReference(getRequest().getResourceRef(), user
+                            .getId()));
+        } catch (ObjectsException e) {
+            Map<String, Object> dataModel = new TreeMap<String, Object>();
+            dataModel.put("currentUser", getCurrentUser());
+            dataModel.put("users", users);
+            dataModel.put("resourceRef", getRequest().getResourceRef());
+            dataModel.put("rootRef", getRequest().getRootRef());
+            dataModel.put("firstName", form.getFirstValue("firstName"));
+            dataModel.put("lastName", form.getFirstValue("lastName"));
+            dataModel.put("login", form.getFirstValue("login"));
+            dataModel.put("password", form.getFirstValue("password"));
 
-        getResponse().redirectSeeOther(
-                getChildReference(getRequest().getResourceRef(), user.getId()));
-    }
+            dataModel.put("errorMessage", e.getMessage());
 
-    @Override
-    public boolean allowPost() {
-        return true;
+            TemplateRepresentation representation = new TemplateRepresentation(
+                    "users.html", getFmcConfiguration(), dataModel,
+                    MediaType.TEXT_HTML);
+
+            getResponse().setEntity(representation);
+        }
     }
 
     /**

@@ -138,12 +138,9 @@ public class Db4oFacade extends DataFacade {
     }
 
     @Override
-    public Mailbox createMailbox(Mailbox mailbox) {
-        mailbox.setId(Long.toString(new Date().getTime()));
+    public void createMailbox(Mailbox mailbox) {
         objectContainer.store(mailbox);
         objectContainer.commit();
-
-        return mailbox;
     }
 
     @Override
@@ -282,12 +279,9 @@ public class Db4oFacade extends DataFacade {
     }
 
     @Override
-    public User createUser(User user) {
-        user.setId(Long.toString(new Date().getTime()));
+    public void createUser(User user) {
         objectContainer.store(user);
         objectContainer.commit();
-
-        return user;
     }
 
     @Override

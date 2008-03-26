@@ -54,33 +54,44 @@ public class FeedResource extends BaseResource {
 
     public FeedResource(Context context, Request request, Response response) {
         super(context, request, response);
-        // Get the feed and its parent mailbox thanks to their IDs taken from
-        // the resource's URI.
-        String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-        if (mailbox != null) {
-            String feedId = (String) request.getAttributes().get("feedId");
-            feed = getObjectsFacade().getFeedById(feedId);
+        if (getCurrentUser() != null) {
+            // Authenticated access.
+            setModifiable(true);
+            // Get the feed and its parent mailbox thanks to their IDs taken
+            // from
+            // the resource's URI.
+            String mailboxId = (String) request.getAttributes()
+                    .get("mailboxId");
+            mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-            if (feed != null) {
-                // Look for the list of tagged mails.
-                mails = new ArrayList<Mail>();
-                if (feed.getTags() != null) {
-                    for (Mail mail : mailbox.getMails()) {
-                        if (mail.getTags() != null
-                                && mail.getTags().containsAll(feed.getTags())) {
-                            mails.add(mail);
+            if (mailbox != null) {
+                String feedId = (String) request.getAttributes().get("feedId");
+                feed = getObjectsFacade().getFeedById(feedId);
+
+                if (feed != null) {
+                    // Look for the list of tagged mails.
+                    mails = new ArrayList<Mail>();
+                    if (feed.getTags() != null) {
+                        for (Mail mail : mailbox.getMails()) {
+                            if (mail.getTags() != null
+                                    && mail.getTags().containsAll(
+                                            feed.getTags())) {
+                                mails.add(mail);
+                            }
                         }
                     }
+
+                    // This resource supports two kinds of representations.
+                    getVariants().add(new Variant(MediaType.TEXT_HTML));
+                    getVariants().add(
+                            new Variant(MediaType.APPLICATION_ATOM_XML));
                 }
-
-                // This resource supports two kinds of representations.
-                getVariants().add(new Variant(MediaType.TEXT_HTML));
-                getVariants().add(new Variant(MediaType.APPLICATION_ATOM_XML));
             }
+        } else {
+            // Anonymous access.
+            setModifiable(false);
         }
-
     }
 
     @Override

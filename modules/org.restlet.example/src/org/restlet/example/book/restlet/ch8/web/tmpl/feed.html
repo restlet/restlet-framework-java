@@ -2,6 +2,7 @@
 <#global feedHeader>${feedHeaderContent}</#global>
 
 <#global content>
+<#if currentUser??>
 <div id="mailbox">Mailbox ${mailbox.nickname}</div>
 <div>
 	<h4>Update my feed.</h4>
@@ -34,6 +35,7 @@
 		</#list> 
 	</table>
 </div>
+</#if>
 </#global>
 
 <#global menu>

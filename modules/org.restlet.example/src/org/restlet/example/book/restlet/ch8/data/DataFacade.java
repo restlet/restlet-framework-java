@@ -92,9 +92,8 @@ public abstract class DataFacade {
      * 
      * @param mailbox
      *                new Mailbox object to be added.
-     * @return the mailbox object completed with its identfiant.
      */
-    public abstract Mailbox createMailbox(Mailbox mailbox);
+    public abstract void createMailbox(Mailbox mailbox);
 
     /**
      * Get a mailbox by its id.
@@ -174,9 +173,8 @@ public abstract class DataFacade {
      * 
      * @param user
      *                new User object to be added.
-     * @return the user object completed with its identfiant.
      */
-    public abstract User createUser(User user);
+    public abstract void createUser(User user);
 
     /**
      * Get a user by its login and password.

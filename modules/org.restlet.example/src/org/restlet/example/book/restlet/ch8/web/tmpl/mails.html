@@ -1,16 +1,11 @@
 <#include "/header.ftl"/>
 <#global content>
+<#if currentUser??>
 <div id="mailbox">Mailbox ${mailbox.nickname}</div>
 
 <div>
 	<h4>Create a new mail.</h4>
 	<form action="${resourceRef}" method="POST">
-		<table>
-			<tr>
-				<td>Subject:</td>
-				<td><input type="text" name="subject"></td>
-			</tr>
-		</table>
 		<input type="submit" name="createMail" title="Create a new Mail" value="Create">
 	</form>
 </div>
@@ -32,6 +27,7 @@
 	</#list>
 	</table>
 </div>
+</#if>
 </#global>
 
 <#global menu>

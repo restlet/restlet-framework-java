@@ -49,25 +49,22 @@ public class UserResource extends BaseResource {
     public UserResource(Context context, Request request, Response response) {
         super(context, request, response);
 
-        // Get user thanks to its ID taken from the resource's
-        // URI.
-        String userId = (String) request.getAttributes().get("userId");
-        user = getObjectsFacade().getUserById(userId);
+        if (getCurrentUser() != null) {
+            // Authenticated access.
+            setModifiable(true);
+            // Get user thanks to its ID taken from the resource's
+            // URI.
+            String userId = (String) request.getAttributes().get("userId");
+            user = getObjectsFacade().getUserById(userId);
 
-        if (user != null) {
-            mailboxes = getObjectsFacade().getMailboxes(user);
-            getVariants().add(new Variant(MediaType.TEXT_HTML));
+            if (user != null) {
+                mailboxes = getObjectsFacade().getMailboxes(user);
+                getVariants().add(new Variant(MediaType.TEXT_HTML));
+            }
+        } else {
+            // Anonymous access.
+            setModifiable(false);
         }
-    }
-
-    @Override
-    public boolean allowDelete() {
-        return true;
-    }
-
-    @Override
-    public boolean allowPut() {
-        return true;
     }
 
     /**

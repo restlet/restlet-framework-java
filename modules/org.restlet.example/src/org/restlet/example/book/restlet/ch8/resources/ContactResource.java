@@ -54,20 +54,30 @@ public class ContactResource extends BaseResource {
 
     public ContactResource(Context context, Request request, Response response) {
         super(context, request, response);
-        // Get the contact and its parent mailbox thanks to their IDs taken from
-        // the resource's URI.
-        String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-        if (mailbox != null) {
-            String contactId = (String) request.getAttributes()
-                    .get("contactId");
-            contact = getObjectsFacade().getContactById(contactId);
+        if (getCurrentUser() != null) {
+            // Authenticated access.
+            setModifiable(true);
+            // Get the contact and its parent mailbox thanks to their IDs taken
+            // from
+            // the resource's URI.
+            String mailboxId = (String) request.getAttributes()
+                    .get("mailboxId");
+            mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-            if (contact != null) {
-                hostedMailboxes = getObjectsFacade().getMailboxes();
-                getVariants().add(new Variant(MediaType.TEXT_HTML));
+            if (mailbox != null) {
+                String contactId = (String) request.getAttributes().get(
+                        "contactId");
+                contact = getObjectsFacade().getContactById(contactId);
+
+                if (contact != null) {
+                    hostedMailboxes = getObjectsFacade().getMailboxes();
+                    getVariants().add(new Variant(MediaType.TEXT_HTML));
+                }
             }
+        } else {
+            // Anonymous access.
+            setModifiable(false);
         }
     }
 

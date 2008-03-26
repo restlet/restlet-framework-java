@@ -49,7 +49,7 @@ public class MailRootResource extends BaseResource {
         Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
         dataModel.put("rootRef", getRequest().getRootRef());
-
+        
         TemplateRepresentation representation = new TemplateRepresentation(
                 "mailRoot.html", getFmcConfiguration(), dataModel, variant
                         .getMediaType());

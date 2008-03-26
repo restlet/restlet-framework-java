@@ -15,7 +15,7 @@ select {padding:1px;}
 /* container */
 #container {
 position:relative; width:700px; margin:0 auto; font:90% "Times New Roman", Times, serif; text-align:left; 
-background:#ffffff}
+background:#ffffff;}
 
 #container p {margin:10px 20px 0; line-height:140%; text-align:justify}
 #container p.p1 {text-indent:20px}
@@ -31,17 +31,21 @@ background:#ffffff}
 #quickSummary p.p1 {text-indent:0; background:#d3d7cf; color:#292f33; font-variant:small-caps}
 
 /* hello */
-#hello {position:relative; top:10px; left:240px; width:460px; }
+#hello {position:relative; top:10px; left:170px; width:530px; }
 #hello {color:#f57900; letter-spacing:1px; word-spacing:5px; text-align: right; font-weight: bold; border-bottom:1px solid #f57900}
+#hello a:link, #hello a:visited {color:#f57900; text-decoration:none; background:transparent; border-bottom:1px solid #f57900}
+#hello a:hover, #hello a:focus {color:#f57900; text-decoration:none; background:transparent; border-bottom:2px solid #f57900}
+#hello a:active {color:#f57900; text-decoration:none; background:#3c4246; border-bottom:2px solid #f57900}
 
 /* content */
 #content {position:relative; top:20px; left:170px; width:530px}
 #content a:link, #content a:visited {color:#292f33; text-decoration:none; background:transparent; border-bottom:1px solid #292f33}
 #content a:hover, #content a:focus {color:#3c4246; text-decoration:none; background:transparent; border-bottom:2px solid #3c4246}
 #content a:active {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}
+#content h4 {margin-top: 30px; margin-bottom: 10px}
 
 /* mailbox */
-#mailbox {position:relative; top:0px; left:0px; width:460px; }
+#mailbox {position:relative; top:0px; left:0px; width:530px; }
 #mailbox {color:#cc0000; letter-spacing:1px; word-spacing:5px; text-align: left; font-weight: bold; border-bottom:1px solid #cc0000; margin-bottom:10px}
 
 /* menu */
@@ -49,8 +53,10 @@ background:#ffffff}
 #menu h3, #menu li {float:left; clear:left; width:150px; height:40px; overflow:hidden}
 #menu li {list-style:none; color:#885c2f}
 
-
-#menu a {display:block; color: #3465a4}
-#menu a:link, #menu a:visited {color:#292f33; text-decoration:none; background:transparent; border-bottom:1px solid #292f33}
-#menu a:hover, #menu a:focus {color:#3c4246; text-decoration:none; background:transparent; border-bottom:2px solid #3c4246}
+#menu a {display:block; color: #3465a4;background:transparent}
+#menu a:link, #menu a:visited {color:#292f33; text-decoration:none; border-bottom:1px solid #292f33}
+#menu a:hover, #menu a:focus {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}
 #menu a:active {color:#d8dde0; text-decoration:none; background:#3c4246; border-bottom:2px solid #3c4246}
+
+/* footer */
+#footer {margin-top: 50px;clear: both; margin-left:auto; margin-right: auto}

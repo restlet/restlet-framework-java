@@ -16,12 +16,209 @@ public class ObjectsFacade {
     }
 
     /**
-     * Check that at least one administrator is declared in the database.
-     * Otherwise add a new one.
+     * Add a new Contact object in the database.
      * 
+     * @param mailbox
+     *                the parent mailbox.
+     * @param contact
+     *                new Contact object to be added.
+     * @return the contact object completed with its identfiant.
      */
-    public void initAdmin() {
-        dataFacade.initAdmin();
+    public Contact createContact(Mailbox mailbox, Contact contact) {
+        contact = dataFacade.createContact(contact);
+        mailbox.getContacts().add(contact);
+        dataFacade.updateMailbox(mailbox);
+
+        return contact;
+    }
+
+    /**
+     * Add a new Feed object in the database.
+     * 
+     * @param mailbox
+     *                the parent mailbox.
+     * @param feed
+     *                new Feed object to be added.
+     * @return the feed object completed with its identfiant.
+     */
+    public Feed createFeed(Mailbox mailbox, Feed feed) {
+        feed = dataFacade.createFeed(feed);
+        mailbox.getFeeds().add(feed);
+        dataFacade.updateMailbox(mailbox);
+
+        return feed;
+    }
+
+    /**
+     * Add a new Mail object in the database.
+     * 
+     * @param mailbox
+     *                the parent mailbox.
+     * @param mail
+     *                new Mail object to be added.
+     * @return the mail object completed with its identfiant.
+     */
+    public Mail createMail(Mailbox mailbox, Mail mail) {
+        mail = dataFacade.createMail(mail);
+        mailbox.getMails().add(mail);
+        dataFacade.updateMailbox(mailbox);
+
+        return mail;
+    }
+
+    /**
+     * Add a new Mailbox object in the database.
+     * 
+     * @param mailbox
+     *                new Mailbox object to be added.
+     * @return the mailbox object completed with its identfiant.
+     * @throws ObjectsException
+     */
+    public Mailbox createMailbox(Mailbox mailbox) throws ObjectsException {
+        mailbox.setId(mailbox.getNickname());
+
+        if (dataFacade.getMailboxById(mailbox.getId()) != null) {
+            throw new ObjectsException("An other mailbox has the same name.");
+        }
+        dataFacade.createMailbox(mailbox);
+
+        return mailbox;
+    }
+
+    /**
+     * Add a new User object in the database.
+     * 
+     * @param user
+     *                new User object to be added.
+     * @return the user object completed with its identfiant.
+     * @throws ObjectsException
+     */
+    public User createUser(User user) throws ObjectsException {
+        user.setId(user.getLogin());
+
+        if (dataFacade.getUserById(user.getId()) != null) {
+            throw new ObjectsException("An other user has the same login.");
+        }
+
+        dataFacade.createUser(user);
+        return user;
+    }
+
+    /**
+     * Delete a contact.
+     * 
+     * @param mailbox
+     *                the parent mailbox.
+     * @param contact
+     *                the contact to be deleted.
+     */
+    public void deleteContact(Mailbox mailbox, Contact contact) {
+        // Remove the contact from the mailbox's list of contacts.
+        boolean found = false;
+        for (int i = 0; i < mailbox.getContacts().size() && !found; i++) {
+            Contact contact2 = mailbox.getContacts().get(i);
+            if (contact2.getId().equals(contact.getId())) {
+                mailbox.getContacts().remove(i);
+                found = true;
+            }
+        }
+
+        dataFacade.deleteContact(contact);
+        dataFacade.updateMailbox(mailbox);
+    }
+
+    /**
+     * Delete a feed.
+     * 
+     * @param mailbox
+     *                the parent mailbox.
+     * @param feed
+     *                the feed to be deleted.
+     */
+    public void deleteFeed(Mailbox mailbox, Feed feed) {
+        // Remove the feed from the mailbox's list of feeds.
+        boolean found = false;
+        for (int i = 0; i < mailbox.getFeeds().size() && !found; i++) {
+            Feed feed2 = mailbox.getFeeds().get(i);
+            if (feed2.getId().equals(feed.getId())) {
+                mailbox.getFeeds().remove(i);
+                found = true;
+            }
+        }
+
+        dataFacade.deleteFeed(feed);
+        dataFacade.updateMailbox(mailbox);
+    }
+
+    /**
+     * Delete a mail from a mailbox.
+     * 
+     * @param mailbox
+     *                the parent mailbox.
+     * @param mail
+     *                the mail to be deleted.
+     */
+    public void deleteMail(Mailbox mailbox, Mail mail) {
+        // Remove the mail from the mailbox's list of mails.
+        boolean found = false;
+        for (int i = 0; i < mailbox.getMails().size() && !found; i++) {
+            Mail mail2 = mailbox.getMails().get(i);
+            if (mail2.getId().equals(mail.getId())) {
+                mailbox.getMails().remove(i);
+                found = true;
+            }
+        }
+
+        // Delete its list of unregistered recipients
+        for (Contact contact : mail.getRecipients()) {
+            if (contact.getId() == null) {
+                dataFacade.deleteContact(contact);
+            }
+        }
+        // Delete its list of sender if not registered.
+        if (mail.getSender().getId() == null) {
+            dataFacade.deleteContact(mail.getSender());
+        }
+
+        dataFacade.deleteMail(mail);
+        dataFacade.updateMailbox(mailbox);
+    }
+
+    /**
+     * Delete a mailbox.
+     * 
+     * @param maibox
+     *                the mailbox to be deleted.
+     */
+    public void deleteMailbox(Mailbox mailbox) {
+        for (Feed feed : mailbox.getFeeds()) {
+            dataFacade.deleteFeed(feed);
+        }
+
+        for (Mail mail : mailbox.getMails()) {
+            dataFacade.deleteMail(mail);
+        }
+
+        for (Contact contact : mailbox.getContacts()) {
+            dataFacade.deleteContact(contact);
+        }
+
+        dataFacade.deleteMailbox(mailbox);
+    }
+
+    /**
+     * Delete a user.
+     * 
+     * @param user
+     *                the user to be deleted.
+     */
+    public void deleteUser(User user) {
+        // Delete the user and its mailboxes.
+        List<Mailbox> mailboxes = getMailboxes(user);
+        for (Mailbox mailbox : mailboxes) {
+            deleteMailbox(mailbox);
+        }
+        dataFacade.deleteUser(user);
     }
 
     /**
@@ -47,6 +244,37 @@ public class ObjectsFacade {
     }
 
     /**
+     * Get a mailbox by its id.
+     * 
+     * @param mailboxId
+     *                the mailbox's id.
+     * @return a Mailbox object or null if no mailbox has been found.
+     */
+    public Mailbox getMailboxById(String mailboxId) {
+        return dataFacade.getMailboxById(mailboxId);
+    }
+
+    /**
+     * Get the list of all mailboxes.
+     * 
+     * @return the list of all mailboxes.
+     */
+    public List<Mailbox> getMailboxes() {
+        return dataFacade.getMailboxes();
+    }
+
+    /**
+     * Get the list of mailboxes owned by a given user.
+     * 
+     * @param user
+     *                the owner.
+     * @return the list of mailboxes owned by this user.
+     */
+    public List<Mailbox> getMailboxes(User user) {
+        return dataFacade.getMailboxes(user);
+    }
+
+    /**
      * Get a mail by its id.
      * 
      * @param mailId
@@ -55,17 +283,6 @@ public class ObjectsFacade {
      */
     public Mail getMailById(String mailId) {
         return dataFacade.getMailById(mailId);
-    }
-
-    /**
-     * Add a new User object in the database.
-     * 
-     * @param user
-     *                new User object to be added.
-     * @return the user object completed with its identfiant.
-     */
-    public User createUser(User user) {
-        return dataFacade.createUser(user);
     }
 
     /**
@@ -102,142 +319,35 @@ public class ObjectsFacade {
     }
 
     /**
-     * Delete a user.
+     * Check that at least one administrator is declared in the database.
+     * Otherwise add a new one.
      * 
-     * @param user
-     *                the user to be deleted.
      */
-    public void deleteUser(User user) {
-        // Delete the user and its mailboxes.
-        List<Mailbox> mailboxes = getMailboxes(user);
-        for (Mailbox mailbox : mailboxes) {
-            deleteMailbox(mailbox);
-        }
-        dataFacade.deleteUser(user);
+    public void initAdmin() {
+        dataFacade.initAdmin();
     }
 
     /**
-     * Update a user.
+     * Returns the contact from a mailbox's list of contacts according to a
+     * given mail address.
      * 
-     * @param user
-     *                the user to be upated.
-     */
-    public void updateUser(User user) {
-        dataFacade.updateUser(user);
-    }
-
-    /**
-     * Get the list of mailboxes owned by a given user.
-     * 
-     * @param user
-     *                the owner.
-     * @return the list of mailboxes owned by this user.
-     */
-    public List<Mailbox> getMailboxes(User user) {
-        return dataFacade.getMailboxes(user);
-    }
-
-    /**
-     * Add a new Mailbox object in the database.
-     * 
+     * @param mailboxAddress
+     *                The mail address to check.
      * @param mailbox
-     *                new Mailbox object to be added.
-     * @return the mailbox object completed with its identfiant.
+     *                The mailbox that contains the list of contacts
+     * @return null if the contact is not found, the contact otherwise.
      */
-    public Mailbox createMailbox(Mailbox mailbox) {
-        return dataFacade.createMailbox(mailbox);
-    }
-
-    /**
-     * Get a mailbox by its id.
-     * 
-     * @param mailboxId
-     *                the mailbox's id.
-     * @return a Mailbox object or null if no mailbox has been found.
-     */
-    public Mailbox getMailboxById(String mailboxId) {
-        return dataFacade.getMailboxById(mailboxId);
-    }
-
-    /**
-     * Get the list of all mailboxes.
-     * 
-     * @return the list of all mailboxes.
-     */
-    public List<Mailbox> getMailboxes() {
-        return dataFacade.getMailboxes();
-    }
-
-    /**
-     * Delete a mailbox.
-     * 
-     * @param maibox
-     *                the mailbox to be deleted.
-     */
-    public void deleteMailbox(Mailbox mailbox) {
-        for (Feed feed : mailbox.getFeeds()) {
-            dataFacade.deleteFeed(feed);
-        }
-
-        for (Mail mail : mailbox.getMails()) {
-            dataFacade.deleteMail(mail);
-        }
-
-        for (Contact contact : mailbox.getContacts()) {
-            dataFacade.deleteContact(contact);
-        }
-
-        dataFacade.deleteMailbox(mailbox);
-    }
-
-    /**
-     * Update a mailbox.
-     * 
-     * @param maibox
-     *                the mailbox to be updated.
-     */
-    public void updateMailbox(Mailbox mailbox) {
-        dataFacade.updateMailbox(mailbox);
-    }
-
-    /**
-     * Add a new Contact object in the database.
-     * 
-     * @param mailbox
-     *                the parent mailbox.
-     * @param contact
-     *                new Contact object to be added.
-     * @return the contact object completed with its identfiant.
-     */
-    public Contact createContact(Mailbox mailbox, Contact contact) {
-        contact = dataFacade.createContact(contact);
-        mailbox.getContacts().add(contact);
-        dataFacade.updateMailbox(mailbox);
-
-        return contact;
-    }
-
-    /**
-     * Delete a contact.
-     * 
-     * @param mailbox
-     *                the parent mailbox.
-     * @param contact
-     *                the contact to be deleted.
-     */
-    public void deleteContact(Mailbox mailbox, Contact contact) {
-        // Remove the contact from the mailbox's list of contacts.
-        boolean found = false;
-        for (int i = 0; i < mailbox.getContacts().size() && !found; i++) {
-            Contact contact2 = mailbox.getContacts().get(i);
-            if (contact2.getId().equals(contact.getId())) {
-                mailbox.getContacts().remove(i);
-                found = true;
+    public Contact lookForContact(String mailboxAddress, Mailbox mailbox) {
+        Contact contact = null;
+        if (mailbox.getContacts() != null) {
+            for (Contact item : mailbox.getContacts()) {
+                if (item.getMailAddress().equals(mailboxAddress)) {
+                    contact = item;
+                    break;
+                }
             }
         }
-
-        dataFacade.deleteContact(contact);
-        dataFacade.updateMailbox(mailbox);
+        return contact;
     }
 
     /**
@@ -253,46 +363,6 @@ public class ObjectsFacade {
     }
 
     /**
-     * Add a new Feed object in the database.
-     * 
-     * @param mailbox
-     *                the parent mailbox.
-     * @param feed
-     *                new Feed object to be added.
-     * @return the feed object completed with its identfiant.
-     */
-    public Feed createFeed(Mailbox mailbox, Feed feed) {
-        feed = dataFacade.createFeed(feed);
-        mailbox.getFeeds().add(feed);
-        dataFacade.updateMailbox(mailbox);
-
-        return feed;
-    }
-
-    /**
-     * Delete a feed.
-     * 
-     * @param mailbox
-     *                the parent mailbox.
-     * @param feed
-     *                the feed to be deleted.
-     */
-    public void deleteFeed(Mailbox mailbox, Feed feed) {
-        // Remove the feed from the mailbox's list of feeds.
-        boolean found = false;
-        for (int i = 0; i < mailbox.getFeeds().size() && !found; i++) {
-            Feed feed2 = mailbox.getFeeds().get(i);
-            if (feed2.getId().equals(feed.getId())) {
-                mailbox.getFeeds().remove(i);
-                found = true;
-            }
-        }
-
-        dataFacade.deleteFeed(feed);
-        dataFacade.updateMailbox(mailbox);
-    }
-
-    /**
      * Update a feed.
      * 
      * @param mailbox
@@ -302,57 +372,6 @@ public class ObjectsFacade {
      */
     public void updateFeed(Mailbox mailbox, Feed feed) {
         dataFacade.updateFeed(feed);
-    }
-
-    /**
-     * Add a new Mail object in the database.
-     * 
-     * @param mailbox
-     *                the parent mailbox.
-     * @param mail
-     *                new Mail object to be added.
-     * @return the mail object completed with its identfiant.
-     */
-    public Mail createMail(Mailbox mailbox, Mail mail) {
-        mail = dataFacade.createMail(mail);
-        mailbox.getMails().add(mail);
-        dataFacade.updateMailbox(mailbox);
-
-        return mail;
-    }
-
-    /**
-     * Delete a mail from a mailbox.
-     * 
-     * @param mailbox
-     *                the parent mailbox.
-     * @param mail
-     *                the mail to be deleted.
-     */
-    public void deleteMail(Mailbox mailbox, Mail mail) {
-        // Remove the mail from the mailbox's list of mails.
-        boolean found = false;
-        for (int i = 0; i < mailbox.getMails().size() && !found; i++) {
-            Mail mail2 = mailbox.getMails().get(i);
-            if (mail2.getId().equals(mail.getId())) {
-                mailbox.getMails().remove(i);
-                found = true;
-            }
-        }
-
-        // Delete its list of unregistered recipients
-        for (Contact contact : mail.getRecipients()) {
-            if (contact.getId() == null) {
-                dataFacade.deleteContact(contact);
-            }
-        }
-        // Delete its list of sender if not registered.
-        if (mail.getSender().getId() == null) {
-            dataFacade.deleteContact(mail.getSender());
-        }
-
-        dataFacade.deleteMail(mail);
-        dataFacade.updateMailbox(mailbox);
     }
 
     /**
@@ -441,26 +460,23 @@ public class ObjectsFacade {
     }
 
     /**
-     * Returns the contact from a mailbox's list of contacts according to a
-     * given mail address.
+     * Update a mailbox.
      * 
-     * @param mailboxAddress
-     *                The mail address to check.
-     * @param mailbox
-     *                The mailbox that contains the list of contacts
-     * @return null if the contact is not found, the contact otherwise.
+     * @param maibox
+     *                the mailbox to be updated.
      */
-    public Contact lookForContact(String mailboxAddress, Mailbox mailbox) {
-        Contact contact = null;
-        if (mailbox.getContacts() != null) {
-            for (Contact item : mailbox.getContacts()) {
-                if (item.getMailAddress().equals(mailboxAddress)) {
-                    contact = item;
-                    break;
-                }
-            }
-        }
-        return contact;
+    public void updateMailbox(Mailbox mailbox) {
+        dataFacade.updateMailbox(mailbox);
+    }
+
+    /**
+     * Update a user.
+     * 
+     * @param user
+     *                the user to be upated.
+     */
+    public void updateUser(User user) {
+        dataFacade.updateUser(user);
     }
 
 }

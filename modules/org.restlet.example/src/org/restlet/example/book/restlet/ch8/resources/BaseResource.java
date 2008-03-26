@@ -37,6 +37,9 @@ import freemarker.template.Configuration;
  */
 public class BaseResource extends Resource {
 
+    /** Current user (if the request is authenticated). */
+    private User currentUser;
+
     public BaseResource(Context context, Request request, Response response) {
         super(context, request, response);
     }
@@ -62,12 +65,31 @@ public class BaseResource extends Resource {
     }
 
     /**
-     * Returns a User object representing the current user connected.
+     * Returns a User object representing the current user connected or null, if
+     * the access is anonymous
      * 
-     * @return the current user connected.
+     * @return the current user connected or null if the access is anonymous.
      */
     protected User getCurrentUser() {
-        return (User) getRequest().getAttributes().get(RmepGuard.CURRENT_USER);
+        if (currentUser == null) {
+            // The root's guard may have put this user object in the request's
+            // attributes.
+            currentUser = (User) getRequest().getAttributes().get(
+                    RmepGuard.CURRENT_USER);
+            if (currentUser == null) {
+                // The client may preemptively authenticate its request.
+                if (getRequest().getChallengeResponse() != null) {
+                    currentUser = getObjectsFacade()
+                            .getUserByLoginPwd(
+                                    getRequest().getChallengeResponse()
+                                            .getIdentifier(),
+                                    getRequest().getChallengeResponse()
+                                            .getSecret());
+                }
+            }
+        }
+
+        return currentUser;
     }
 
     /**

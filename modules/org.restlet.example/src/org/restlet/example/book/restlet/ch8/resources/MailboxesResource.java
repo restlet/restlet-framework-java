@@ -28,6 +28,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
+import org.restlet.example.book.restlet.ch8.objects.ObjectsException;
 import org.restlet.example.book.restlet.ch8.objects.User;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
@@ -49,12 +50,20 @@ public class MailboxesResource extends BaseResource {
     public MailboxesResource(Context context, Request request, Response response) {
         super(context, request, response);
 
-        if (getCurrentUser().isAdministrator()) {
-            mailboxes = getObjectsFacade().getMailboxes();
-            users = getObjectsFacade().getUsers();
-        } else {
-            mailboxes = getObjectsFacade().getMailboxes(getCurrentUser());
+        if (getCurrentUser() != null) {
+            // Authenticated access.
+            if (getCurrentUser().isAdministrator()) {
+                setModifiable(true);
+                mailboxes = getObjectsFacade().getMailboxes();
+                users = getObjectsFacade().getUsers();
+            } else {
+                mailboxes = getObjectsFacade().getMailboxes(getCurrentUser());
+            }
         }
+
+        // Let anybody post new mails to this mailbox.
+        // setModifiable(getCurrentUser() != null);
+
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 
@@ -68,12 +77,31 @@ public class MailboxesResource extends BaseResource {
 
         Mailbox mailbox = new Mailbox();
         mailbox.setNickname(form.getFirstValue("nickname"));
-        User owner = getObjectsFacade().getUserById(form.getFirstValue("ownerId"));
+        User owner = getObjectsFacade().getUserById(
+                form.getFirstValue("ownerId"));
         mailbox.setOwner(owner);
         mailbox.setSenderName(owner.getFirstName() + " " + owner.getLastName());
-        mailbox = getObjectsFacade().createMailbox(mailbox);
+        try {
+            mailbox = getObjectsFacade().createMailbox(mailbox);
+            getResponse().redirectSeeOther(getRequest().getResourceRef());
+        } catch (ObjectsException e) {
+            Map<String, Object> dataModel = new TreeMap<String, Object>();
+            dataModel.put("currentUser", getCurrentUser());
+            dataModel.put("mailboxes", mailboxes);
+            dataModel.put("users", users);
+            dataModel.put("resourceRef", getRequest().getResourceRef());
+            dataModel.put("rootRef", getRequest().getRootRef());
+            dataModel.put("ownerId", form.getFirstValue("ownerId"));
+            dataModel.put("nickname", form.getFirstValue("nickname"));
+            dataModel.put("errorMessage", e.getMessage());
+            System.out.println(e.getMessage());
 
-        getResponse().redirectSeeOther(getRequest().getResourceRef());
+            TemplateRepresentation representation = new TemplateRepresentation(
+                    "mailboxes.html", getFmcConfiguration(), dataModel,
+                    MediaType.TEXT_HTML);
+
+            getResponse().setEntity(representation);
+        }
     }
 
     @Override

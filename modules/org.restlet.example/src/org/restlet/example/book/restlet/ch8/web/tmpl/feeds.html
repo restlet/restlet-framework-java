@@ -1,5 +1,6 @@
 <#include "/header.ftl"/>
 <#global content>
+<#if currentUser??>
 <div id="mailbox">Mailbox ${mailbox.nickname}</div>
 
 <div style="float: left">
@@ -32,6 +33,7 @@
 		<input type="submit" name="createFeed" title="Create a new Feed" value="Create">
 	</form>
 </div>
+</#if>
 </#global>
 
 <#global menu>

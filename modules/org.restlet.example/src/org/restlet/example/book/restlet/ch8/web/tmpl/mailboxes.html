@@ -1,5 +1,6 @@
 <#include "/header.ftl"/>
 <#global content>
+<#if currentUser??>
 <div style="float: left">
 	<h4>List of mailboxes.</h4>
 	<table>
@@ -19,10 +20,13 @@
 <div style="width:200px; float: right">
 	<h4>Create a new mailbox.</h4>
     <form action="${resourceRef}" method="POST">
+		<#if errorMessage??>
+		<div class="error">${errorMessage}</div>
+		</#if>
 		<table>
 			<tr>
 				<td>Name:</td>
-				<td><input type="text" name="nickname"></td>
+				<td><input type="text" name="nickname" value="${nickname!""}"></td>
 			</tr>
 			<tr>
 				<td>Owner:</td>
@@ -30,7 +34,11 @@
 					<select name="ownerId">
 						<option value="">-- Choose --</option>
 	<#list users as user> 
+		<#if ownerId?? && ownerId == user.id >
+						<option value="${user.id}" selected>${user.firstName} ${user.lastName}</option>
+		<#else>
 						<option value="${user.id}">${user.firstName} ${user.lastName}</option>
+		</#if>
 	</#list> 
 					</select>
 				</td>
@@ -39,6 +47,7 @@
 		<input type="submit" name="createMailbox" title="Create a new mailbox" value="Create">
     </form>
 </div>
+</#if>
 </#if>
 </#global>
 <#global menu>

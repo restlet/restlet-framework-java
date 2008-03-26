@@ -27,8 +27,6 @@ import java.util.TreeMap;
 
 import org.restlet.Client;
 import org.restlet.Context;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -58,27 +56,26 @@ public class MailResource extends BaseResource {
 
     public MailResource(Context context, Request request, Response response) {
         super(context, request, response);
-        String mailboxId = (String) request.getAttributes().get("mailboxId");
-        mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-        if (mailbox != null) {
-            String mailId = (String) request.getAttributes().get("mailId");
-            mail = getObjectsFacade().getMailById(mailId);
+        if (getCurrentUser() != null) {
+            // Authenticated access.
+            setModifiable(true);
+            String mailboxId = (String) request.getAttributes()
+                    .get("mailboxId");
+            mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-            if (mail != null) {
-                getVariants().add(new Variant(MediaType.TEXT_HTML));
+            if (mailbox != null) {
+                String mailId = (String) request.getAttributes().get("mailId");
+                mail = getObjectsFacade().getMailById(mailId);
+
+                if (mail != null) {
+                    getVariants().add(new Variant(MediaType.TEXT_HTML));
+                }
             }
+        } else {
+            // Anonymous access
+            setModifiable(false);
         }
-    }
-
-    @Override
-    public boolean allowDelete() {
-        return true;
-    }
-
-    @Override
-    public boolean allowPut() {
-        return true;
     }
 
     /**
@@ -142,9 +139,9 @@ public class MailResource extends BaseResource {
                     "tags").split(" ")));
         }
 
-        getObjectsFacade().updateMail(mailbox, mail, form.getFirstValue("status"),
-                form.getFirstValue("subject"), form.getFirstValue("message"),
-                mailAddresses, tags);
+        getObjectsFacade().updateMail(mailbox, mail,
+                form.getFirstValue("status"), form.getFirstValue("subject"),
+                form.getFirstValue("message"), mailAddresses, tags);
 
         // Detect if the mail is to be sent.
         if (Mail.STATUS_SENDING.equalsIgnoreCase(mail.getStatus())) {
@@ -173,14 +170,6 @@ public class MailResource extends BaseResource {
                 Request request = new Request();
                 request.setMethod(Method.POST);
                 request.setEntity(form2.getWebRepresentation());
-
-                // TODO on ne devrait pas avoir à le faire!!
-                // Add the client authentication to the call
-                ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
-                ChallengeResponse authentication = new ChallengeResponse(
-                        scheme, getCurrentUser().getLogin(), getCurrentUser()
-                                .getPassword());
-                request.setChallengeResponse(authentication);
 
                 for (Contact contact : mail.getRecipients()) {
                     request.setResourceRef(contact.getMailAddress());

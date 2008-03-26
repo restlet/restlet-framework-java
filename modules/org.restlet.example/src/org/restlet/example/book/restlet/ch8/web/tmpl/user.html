@@ -1,5 +1,6 @@
 <#include "/header.ftl"/>
 <#global content>
+<#if currentUser??>
 <div>
 	<h4>Update an account.</h4>
 	<form action="${resourceRef}?method=put" method="POST">
@@ -36,14 +37,14 @@
 	  <tr>
 	    <th>Name</th>
 	  </tr>
-<#list mailboxes as mailbox>
+	<#list mailboxes as mailbox>
 	  <tr>
 	    <td><a href="${rootRef}/mailboxes/${mailbox.id}" >${mailbox.nickname}</a></td>
 	  </tr>
-</#list>
+	</#list>
 	</table>
 </div>
-
+</#if>
 </#global>
 
 <#global menu>

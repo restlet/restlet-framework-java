@@ -1,15 +1,16 @@
 <#include "/header.ftl"/>
 
 <#global content>
+<#if currentUser??>
 <div id="mailbox">Mailbox ${mailbox.nickname}</div>
 
-<#if message??>
+	<#if message??>
 <div class="error">
 	<h4>Error when sending the mail.</h4>
 	<p>${message}</p>
 	<p>Try send it again.</p>
 </div>
-</#if>
+	</#if>
 
 <div>
 	<h4>Mail in ${mail.status} status</h4>
@@ -37,6 +38,7 @@
 		<input type="button" name="deleteMail" title="Delete the mail" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
 	</form>
 </div>
+</#if>
 </#global>
 
 <#global menu>

@@ -1,5 +1,6 @@
 <#include "/header.ftl"/>
 <#global content>
+<#if currentUser??>
 <div id="mailbox">Mailbox ${mailbox.nickname}</div>
 
 <div style="float: left">
@@ -8,11 +9,11 @@
 		<tr>
 			<th>Name</th>
 		</tr>
-<#list contacts as contact>
+	<#list contacts as contact>
 		<tr>
 			<td><a href="<@concatUris parentUri=resourceRef relativeUri=contact.id />">${contact.name}</a></td>
 		</tr>
-</#list>
+	</#list>
 	</table>
 </div>
 
@@ -43,6 +44,7 @@
 		<input type="submit" name="createContact" title="Create a new contact" value="Create">
     </form>
 </div>
+</#if>
 </#global>
 
 <#global menu>

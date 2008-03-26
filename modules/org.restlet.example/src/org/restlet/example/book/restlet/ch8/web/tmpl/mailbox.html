@@ -1,5 +1,6 @@
 <#include "/header.ftl"/>
 <#global content>
+<#if currentUser??>
 <div id="mailbox">Mailbox ${mailbox.nickname}</div>
 
 <div>
@@ -19,6 +20,7 @@
 		<input type="button" name="deleteMailbox" title="Delete the mailbox" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
 	</form>
 </div>
+</#if>
 </#global>
 
 <#global menu>
