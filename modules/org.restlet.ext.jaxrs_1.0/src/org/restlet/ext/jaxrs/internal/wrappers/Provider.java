@@ -278,7 +278,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @throws InjectException
      */
     @SuppressWarnings("unused")
-    public void init(Collection<ContextResolver<?>> internalResolvers)
+    public void init(Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> internalResolvers)
             throws InjectException {
         injectContext(internalResolvers);
     }
@@ -289,7 +289,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @param allResolvers
      * @throws InjectException
      */
-    private void injectContext(Collection<ContextResolver<?>> allResolvers)
+    private void injectContext(Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers)
             throws InjectException {
         Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
         do {

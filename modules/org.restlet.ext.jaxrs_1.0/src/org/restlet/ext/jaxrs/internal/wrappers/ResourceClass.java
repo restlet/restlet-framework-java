@@ -642,7 +642,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @throws ConvertQueryParamException
      */
     void init(ResourceObject resourceObject, CallContext callContext,
-            Collection<ContextResolver<?>> allResolvers)
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers)
             throws InjectException, WebApplicationException,
             ConvertCookieParamException, ConvertHeaderParamException,
             ConvertMatrixParamException, ConvertPathParamException,

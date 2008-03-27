@@ -34,7 +34,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -319,7 +318,7 @@ public class RootResourceClass extends ResourceClass {
      * @throws ConvertRepresentationException
      */
     public ResourceObject createInstance(CallContext callContext,
-            Collection<ContextResolver<?>> contextResolvers,
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> contextResolvers,
             MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException,
             InstantiateRootRessourceException, NoMessageBodyReaderException,

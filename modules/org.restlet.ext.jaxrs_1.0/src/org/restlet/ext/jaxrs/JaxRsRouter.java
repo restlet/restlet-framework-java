@@ -55,7 +55,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
-import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateProviderException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRessourceException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRootRessourceException;
@@ -146,7 +145,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * {@link ContextResolver}.<br>
      * This field is final, because it is shared with other objects.
      */
-    private final Collection<javax.ws.rs.ext.ContextResolver<?>> contextResolvers = new HashSet<javax.ws.rs.ext.ContextResolver<?>>();
+    private final Collection<ContextResolver<?>> contextResolvers = new HashSet<ContextResolver<?>>();
 
     private WrapperFactory wrapperFactory;
 
@@ -294,10 +293,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
                     String msg = "The provider " + providerClass.getName()
                             + " could not be instantiated";
                     throw new IllegalArgumentException(msg, ipe);
-                } catch (InjectException ie) {
-                    String msg = "The provider " + providerClass.getName()
-                            + " could not be instantiated";
-                    throw new IllegalArgumentException(msg, ie);
                 }
             }
         }
@@ -368,8 +363,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             throw new ImplementationException(e);
         } catch (InstantiateProviderException e) {
             throw new ImplementationException(e);
-        } catch (InjectException e) {
-            throw new ImplementationException(e);
         }
     }
 
@@ -385,14 +378,11 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * @throws IllegalArgumentException
      *                 if the provider is not a valid provider.
      * @throws InstantiateProviderException
-     * @throws InjectException
-     *                 If injection for &#64;{@link javax.ws.rs.core.Context}
      * @throws InvocationTargetException
      * @see {@link javax.ws.rs.ext.Provider}
      */
     private void addProvider(Class<?> jaxRsProviderClass)
-            throws IllegalArgumentException, InstantiateProviderException,
-            InjectException {
+            throws IllegalArgumentException, InstantiateProviderException {
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -410,14 +400,12 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             ipe.setStackTrace(e.getCause().getStackTrace());
             throw ipe;
         }
-        provider.init(this.contextResolvers);
         if (provider.isWriter())
             this.messageBodyWriters.add(provider);
         if (provider.isReader())
             this.messageBodyReaders.add(provider);
         if (provider.isContextResolver())
-            this.contextResolvers.add(provider.getJaxRsContextResolver());
-        // TODO hold all providers for preDestroy
+            this.contextResolvers.add(provider);
     }
 
     /**
@@ -434,6 +422,19 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
     }
 
     // methods for initialization ready
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void start() throws Exception {
+        Set<Provider<?>> providers = new HashSet<Provider<?>>();
+        providers.addAll((Collection)this.messageBodyReaders);
+        providers.addAll((Collection)this.messageBodyWriters);
+        providers.addAll((Collection)this.contextResolvers);
+        for (Provider<?> provider : providers)
+            provider.init(this.contextResolvers);
+        super.start();
+    }
+
     // now methods for the daily work
 
     /**

@@ -25,8 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.ws.rs.ext.ContextResolver;
-
+import org.restlet.ext.jaxrs.internal.wrappers.ContextResolver;
 import org.restlet.ext.jaxrs.internal.provider.ReturnNullContextResolver;
 
 /**
@@ -45,7 +44,7 @@ class WrapperUtil {
      * @return
      */
     @SuppressWarnings("unchecked")
-    static ContextResolver<?> getContextResolver(Field field,
+    static javax.ws.rs.ext.ContextResolver<?> getContextResolver(Field field,
             Collection<ContextResolver<?>> allResolvers) {
         Type genType = field.getGenericType();
         if (!(genType instanceof ParameterizedType))
@@ -54,13 +53,15 @@ class WrapperUtil {
         if (!(t instanceof Class))
             return ReturnNullContextResolver.get();
         Class crType = (Class) t;
-        List<ContextResolver<?>> returnResolvers = new ArrayList<ContextResolver<?>>();
+        List<javax.ws.rs.ext.ContextResolver<?>> returnResolvers = new ArrayList<javax.ws.rs.ext.ContextResolver<?>>();
         for (ContextResolver<?> cr : allResolvers) {
-            Class<? extends ContextResolver> crClaz = cr.getClass();
+            javax.ws.rs.ext.ContextResolver<?> jaxRsResolver;
+            jaxRsResolver = cr.getJaxRsContextResolver();
+            Class<?> crClaz = jaxRsResolver.getClass();
             try {
                 Method getContext = crClaz.getMethod("getContext", Class.class);
                 if (getContext.getReturnType().equals(crType))
-                    returnResolvers.add(cr);
+                    returnResolvers.add(jaxRsResolver);
             } catch (SecurityException e) {
                 throw new RuntimeException(
                         "sorry, the method getContext(Class) of ContextResolver "

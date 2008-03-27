@@ -20,7 +20,6 @@ package org.restlet.ext.jaxrs.internal.wrappers;
 import java.util.Collection;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
@@ -104,7 +103,7 @@ public class ResourceObject {
      * @throws WebApplicationException
      */
     public void init(CallContext callContext,
-            Collection<ContextResolver<?>> contextResolvers) throws InjectException,
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> contextResolvers) throws InjectException,
             WebApplicationException, ConvertCookieParamException,
             ConvertHeaderParamException, ConvertMatrixParamException,
             ConvertPathParamException, ConvertQueryParamException {
