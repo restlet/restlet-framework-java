@@ -22,11 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
-import javax.xml.transform.Source;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -34,7 +30,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
@@ -57,11 +52,9 @@ import org.xml.sax.InputSource;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SaxRepresentation extends XmlRepresentation {
-    /** The wrapped DOM document to parse. */
-    private Document xmlDocument;
 
-    /** The wrapped XML representation. */
-    private Representation xmlRepresentation;
+    /** The SAX source. */
+    private SAXSource source;
 
     /**
      * Constructor.
@@ -79,11 +72,38 @@ public class SaxRepresentation extends XmlRepresentation {
      * @param mediaType
      *                The representation's media type.
      * @param xmlDocument
-     *                A source DOM representation to parse.
+     *                A DOM document to parse.
      */
     public SaxRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
-        this.xmlDocument = xmlDocument;
+        this.source = new SAXSource(SAXSource
+                .sourceToInputSource(new DOMSource(xmlDocument)));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *                The representation's media type.
+     * @param xmlDocument
+     *                A SAX input source to parse.
+     */
+    public SaxRepresentation(MediaType mediaType, InputSource xmlSource) {
+        super(mediaType);
+        this.source = new SAXSource(xmlSource);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *                The representation's media type.
+     * @param xmlDocument
+     *                A JAXP source to parse.
+     */
+    public SaxRepresentation(MediaType mediaType, SAXSource xmlSource) {
+        super(mediaType);
+        this.source = xmlSource;
     }
 
     /**
@@ -91,10 +111,56 @@ public class SaxRepresentation extends XmlRepresentation {
      * 
      * @param xmlRepresentation
      *                A source XML representation to parse.
+     * @throws IOException
      */
     public SaxRepresentation(Representation xmlRepresentation) {
         super(xmlRepresentation.getMediaType());
-        this.xmlRepresentation = xmlRepresentation;
+
+        try {
+            if (xmlRepresentation instanceof XmlRepresentation) {
+                this.source = ((XmlRepresentation) xmlRepresentation)
+                        .getSaxSource();
+            } else {
+                this.source = new SAXSource(new InputSource(xmlRepresentation
+                        .getStream()));
+            }
+
+            if (xmlRepresentation.getIdentifier() != null) {
+                this.source.setSystemId(xmlRepresentation.getIdentifier()
+                        .getTargetRef().toString());
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    @Override
+    public Object evaluate(String expression, QName returnType)
+            throws Exception {
+        Object result = null;
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext(this);
+
+        if (this.source != null) {
+            Document document = getDocumentBuilder().parse(
+                    SAXSource.sourceToInputSource(this.source));
+            result = xpath.evaluate(expression, document, returnType);
+        } else {
+            throw new Exception(
+                    "Unable to obtain a DOM document for the SAX representation. "
+                            + "XPath evaluation cancelled.");
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the SAX source that can be parsed by the
+     * {@link #parse(ContentHandler)} method.
+     */
+    @Override
+    public SAXSource getSaxSource() throws IOException {
+        return this.source;
     }
 
     /**
@@ -106,22 +172,9 @@ public class SaxRepresentation extends XmlRepresentation {
     public void parse(ContentHandler contentHandler) throws IOException {
         if (contentHandler != null) {
             try {
-                Source source = null;
-
-                if (this.xmlDocument != null) {
-                    source = new DOMSource(xmlDocument);
-                } else {
-                    source = new StreamSource(xmlRepresentation.getStream());
-                }
-
-                if (xmlRepresentation.getIdentifier() != null) {
-                    source.setSystemId(xmlRepresentation.getIdentifier()
-                            .getTargetRef().toString());
-                }
-
                 Result result = new SAXResult(contentHandler);
                 TransformerFactory.newInstance().newTransformer().transform(
-                        source, result);
+                        this.source, result);
             } catch (TransformerConfigurationException tce) {
                 throw new IOException(
                         "Couldn't parse the source representation: "
@@ -147,16 +200,22 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     @Override
     public void release() {
-        if (this.xmlDocument != null) {
-            this.xmlDocument = null;
-        }
-
-        if (this.xmlRepresentation != null) {
-            this.xmlRepresentation.release();
-            this.xmlRepresentation = null;
+        if (this.source != null) {
+            this.source = null;
         }
 
         super.release();
+    }
+
+    /**
+     * Sets a SAX source that can be parsed by the
+     * {@link #parse(ContentHandler)} method.
+     * 
+     * @param source
+     *                A SAX source.
+     */
+    public void setSaxSource(SAXSource source) {
+        this.source = source;
     }
 
     @Override
@@ -176,55 +235,4 @@ public class SaxRepresentation extends XmlRepresentation {
     public void write(XmlWriter writer) throws IOException {
         // Do nothing by default.
     }
-
-    /**
-     * Returns a document builder properly configured.
-     * 
-     * @return A document builder properly configured.
-     */
-    private DocumentBuilder getDocumentBuilder() throws IOException {
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(isNamespaceAware());
-            dbf.setValidating(false);
-            return dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException pce) {
-            throw new IOException("Couldn't create the empty document: "
-                    + pce.getMessage());
-        }
-    }
-
-    /**
-     * Returns a SAXSource based on a SAX InputSource.
-     * 
-     * @return A SAXSource based on a SAX InputSource.
-     */
-    @Override
-    public Source getSource() throws IOException {
-        return new SAXSource(new InputSource(getStream()));
-    }
-
-    @Override
-    public Object evaluate(String expression, QName returnType)
-            throws Exception {
-        Object result = null;
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(this);
-
-        if (this.xmlDocument == null) {
-            this.xmlDocument = getDocumentBuilder().parse(
-                    this.xmlRepresentation.getStream());
-        }
-
-        if (this.xmlDocument != null) {
-            result = xpath.evaluate(expression, this.xmlDocument, returnType);
-        } else {
-            throw new Exception(
-                    "Unable to obtain a DOM document for the SAX representation. "
-                            + "XPath evaluation cancelled.");
-        }
-
-        return result;
-    }
-
 }

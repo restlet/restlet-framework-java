@@ -6,9 +6,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
@@ -180,24 +177,13 @@ public class JibxRepresentation<T> extends XmlRepresentation {
     }
 
     /**
-     * Returns a document builder properly configured.
+     * Returns the document encoding to use for marshalling. The default value
+     * is UTF-8.
      * 
-     * @return A document builder properly configured.
+     * @return The document encoding to use for marshalling.
      */
-    private DocumentBuilder getDocumentBuilder() throws IOException {
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(isNamespaceAware());
-            dbf.setValidating(false);
-            return dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException pce) {
-            throw new IOException("Couldn't create the empty document: "
-                    + pce.getMessage());
-        }
-    }
-
     public String getEncoding() {
-        return encoding;
+        return this.encoding;
     }
 
     /**

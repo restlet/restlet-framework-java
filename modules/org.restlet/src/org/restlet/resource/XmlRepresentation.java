@@ -30,8 +30,12 @@ import java.util.Map.Entry;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
-import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -41,6 +45,8 @@ import org.restlet.data.MediaType;
 import org.restlet.util.NodeSet;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Representation based on an XML document. It knows how to evaluate XPath
@@ -50,6 +56,31 @@ import org.w3c.dom.NodeList;
  */
 public abstract class XmlRepresentation extends OutputRepresentation implements
         NamespaceContext {
+
+    /**
+     * Returns a SAX source.
+     * 
+     * @param The
+     *                XML representation to wrap.
+     * @return A SAX source.
+     * @throws IOException
+     */
+    public static SAXSource getSaxSource(Representation xmlRepresentation)
+            throws IOException {
+        SAXSource result = null;
+
+        if (xmlRepresentation != null) {
+            result = new SAXSource(new InputSource(xmlRepresentation
+                    .getStream()));
+
+            if (xmlRepresentation.getIdentifier() != null) {
+                result.setSystemId(xmlRepresentation.getIdentifier()
+                        .getTargetRef().toString());
+            }
+        }
+
+        return result;
+    }
 
     /**
      * Returns the wrapped schema.
@@ -97,11 +128,11 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         return result;
     }
 
-    /** Internal map of namespaces. */
-    private Map<String, String> namespaces;
-
     /** Indicates if processing is namespace aware. */
     private boolean namespaceAware;
+
+    /** Internal map of namespaces. */
+    private Map<String, String> namespaces;
 
     /**
      * Constructor.
@@ -150,6 +181,51 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      */
     public Boolean getBoolean(String expression) {
         return (Boolean) internalEval(expression, XPathConstants.BOOLEAN);
+    }
+
+    /**
+     * Returns a document builder properly configured.
+     * 
+     * @return A document builder properly configured.
+     */
+    protected DocumentBuilder getDocumentBuilder() throws IOException {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(isNamespaceAware());
+            dbf.setValidating(false);
+            return dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException pce) {
+            throw new IOException("Couldn't create the empty document: "
+                    + pce.getMessage());
+        }
+    }
+
+    /**
+     * Returns a DOM source.
+     * 
+     * @return A DOM source.
+     * @throws IOException
+     */
+    public DOMSource getDomSource() throws IOException {
+        DOMSource result = null;
+        Node document = null;
+
+        try {
+            document = getDocumentBuilder().parse(getStream());
+        } catch (SAXException se) {
+            throw new IOException("Couldn't read the XML representation. "
+                    + se.getMessage());
+        }
+
+        if (document != null) {
+            result = new DOMSource(document);
+
+            if (getIdentifier() != null) {
+                result.setSystemId(getIdentifier().getTargetRef().toString());
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -231,19 +307,26 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     }
 
     /**
-     * Returns an XML source or transformation instructions.
+     * Returns a SAX source.
      * 
-     * @return An XML source or transformation instructions.
+     * @return A SAX source.
      * @throws IOException
      */
-    public Source getSource() throws IOException {
-        Source result = null;
+    public SAXSource getSaxSource() throws IOException {
+        return getSaxSource(this);
+    }
+
+    /**
+     * Returns a stream of XML markup.
+     * 
+     * @return A stream of XML markup.
+     * @throws IOException
+     */
+    public StreamSource getStreamSource() throws IOException {
+        StreamSource result = new StreamSource(getStream());
 
         if (getIdentifier() != null) {
-            result = new StreamSource(getStream(), getIdentifier()
-                    .getTargetRef().toString());
-        } else {
-            result = new StreamSource(getStream());
+            result.setSystemId(getIdentifier().getTargetRef().toString());
         }
 
         return result;
@@ -359,7 +442,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      *                The Result object that receives (possibly augmented) XML.
      */
     public void validate(Schema schema, Result result) throws Exception {
-        schema.newValidator().validate(getSource(), result);
+        schema.newValidator().validate(getSaxSource(), result);
     }
 
 }

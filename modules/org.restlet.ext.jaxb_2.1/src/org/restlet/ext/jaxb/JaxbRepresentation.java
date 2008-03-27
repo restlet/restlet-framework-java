@@ -34,10 +34,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.util.JAXBSource;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
@@ -490,23 +487,6 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
     }
 
     /**
-     * Returns a document builder properly configured.
-     * 
-     * @return A document builder properly configured.
-     */
-    private DocumentBuilder getDocumentBuilder() throws IOException {
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(isNamespaceAware());
-            dbf.setValidating(false);
-            return dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException pce) {
-            throw new IOException("Couldn't create the empty document: "
-                    + pce.getMessage());
-        }
-    }
-
-    /**
      * Returns the wrapped Java object.
      * 
      * @return The wrapped Java object.
@@ -543,12 +523,12 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
     }
 
     /**
-     * Returns a JAXBSource.
+     * Returns a JAXB SAX source.
      * 
-     * @return A JAXBSource.
+     * @return A JAXB SAX source.
      */
     @Override
-    public Source getSource() throws IOException {
+    public SAXSource getSaxSource() throws IOException {
         try {
             return new JAXBSource(getContext(), getObject());
         } catch (JAXBException e) {

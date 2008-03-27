@@ -22,11 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -125,23 +121,6 @@ public class DomRepresentation extends XmlRepresentation {
     }
 
     /**
-     * Returns a document builder properly configured.
-     * 
-     * @return A document builder properly configured.
-     */
-    private DocumentBuilder getDocumentBuilder() throws IOException {
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(isNamespaceAware());
-            dbf.setValidating(false);
-            return dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException pce) {
-            throw new IOException("Couldn't create the empty document: "
-                    + pce.getMessage());
-        }
-    }
-
-    /**
      * Creates a new JAXP Transformer object that will be used to serialize this
      * DOM. This method may be overridden in order to set custom properties on
      * the Transformer.
@@ -169,12 +148,12 @@ public class DomRepresentation extends XmlRepresentation {
     }
 
     /**
-     * Returns a DOMSource.
+     * Returns a DOM source.
      * 
-     * @return A DOMSource.
+     * @return A DOM source.
      */
     @Override
-    public Source getSource() throws IOException {
+    public DOMSource getDomSource() throws IOException {
         return new DOMSource(getDocument());
     }
 

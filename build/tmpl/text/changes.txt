@@ -60,6 +60,18 @@ Changes log
           Dan Diephouse.
         - Added a "getValuesArray(String name):String[]" method on the
           Series class. Suggested by Paul J. Lucas.
+        - Method getDocumentBuilder() on XmlRepresentation is now 
+          protected, allowing reuse by subclasses like 
+          JaxbRepresentation, JibxRepresentation or DomRepresentation.
+        - Method XmlRepresentation.getSource() was renamed to 
+          getStreamSource() and new getSaxSource() and getDomSource()
+          methods were added. DomRepresentation has an optimized 
+          implementation of getDomSource() and SaxRepresentation was
+          refactored to support this approach as well with many new
+          constructors added. Suggested by Marc Portier.
+        - TransformRepresentation has been refactored to support SAX
+          pipelining when multiple TransformRepresentation are nested.
+          Suggested by Marc Portier. 
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.

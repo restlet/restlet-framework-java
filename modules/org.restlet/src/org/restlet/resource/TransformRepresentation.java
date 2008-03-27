@@ -14,12 +14,17 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.URIResolver;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLFilter;
 
 /**
  * Representation able to apply an XSLT transformation. The internal JAXP
@@ -219,6 +224,71 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /**
+     * Returns the SAX source associated to the source representation.
+     * 
+     * @return The SAX source associated to the source representation.
+     * @throws IOException
+     */
+    public SAXSource getSaxSource() throws IOException {
+        SAXSource source = null;
+
+        if (getSourceRepresentation() instanceof XmlRepresentation) {
+            source = ((XmlRepresentation) getSourceRepresentation())
+                    .getSaxSource();
+        } else if (getSourceRepresentation() instanceof TransformRepresentation) {
+            TransformRepresentation lastTR = (TransformRepresentation) getSourceRepresentation();
+            TransformRepresentation rootTR = lastTR;
+            XMLFilter lastFilter = lastTR.getXmlFilter();
+            XMLFilter rootFilter = lastFilter;
+            XMLFilter currFilter = null;
+
+            // Walk up the transformation hierarchy while
+            // building the chain of SAX filters
+            while (rootTR.getSourceRepresentation() instanceof TransformRepresentation) {
+                rootTR = (TransformRepresentation) rootTR
+                        .getSourceRepresentation();
+                currFilter = rootTR.getXmlFilter();
+                rootFilter.setParent(currFilter);
+                rootFilter = currFilter;
+            }
+
+            InputSource rootSource = null;
+            if (rootTR.getSourceRepresentation() instanceof XmlRepresentation) {
+                rootSource = ((XmlRepresentation) rootTR
+                        .getSourceRepresentation()).getSaxSource()
+                        .getInputSource();
+            } else {
+                rootSource = new InputSource(rootTR.getSourceRepresentation()
+                        .getStream());
+            }
+
+            source = new SAXSource(lastFilter, rootSource);
+        } else {
+            // Prepare the source and result documents
+            source = new SAXSource(new InputSource(getSourceRepresentation()
+                    .getStream()));
+        }
+
+        if (getSourceRepresentation().getIdentifier() != null) {
+            source.setSystemId(getSourceRepresentation().getIdentifier()
+                    .getTargetRef().toString());
+        }
+
+        return source;
+    }
+
+    /**
+     * Returns the default SAX transformer factory.
+     * 
+     * @return The default SAX transformer factory.
+     */
+    private SAXTransformerFactory getSaxTransformerFactory() {
+        SAXTransformerFactory result = (SAXTransformerFactory) TransformerFactory
+                .newInstance();
+        return result;
+    }
+
+    /**
      * Returns the source representation to transform.
      * 
      * @return The source representation to transform.
@@ -310,6 +380,29 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /**
+     * Returns the SAX transformer handler associated to the transform sheet.
+     * 
+     * @return The SAX transformer handler.
+     * @throws IOException
+     */
+    public TransformerHandler getTransformerHandler() throws IOException {
+        TransformerHandler result = null;
+        Templates templates = getTemplates();
+
+        if (templates != null) {
+            try {
+                result = getSaxTransformerFactory().newTransformerHandler(
+                        templates);
+            } catch (TransformerConfigurationException tce) {
+                throw new IOException("Transformer configuration exception. "
+                        + tce.getMessage());
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the XSLT transform sheet to apply to the source representation.
      * 
      * @return The XSLT transform sheet to apply.
@@ -336,6 +429,28 @@ public class TransformRepresentation extends OutputRepresentation {
     @Deprecated
     public URIResolver getURIResolver() {
         return this.uriResolver;
+    }
+
+    /**
+     * Returns the SAX XML filter applying the transform sheet to its input.
+     * 
+     * @return The SAX XML filter.
+     * @throws IOException
+     */
+    public XMLFilter getXmlFilter() throws IOException {
+        XMLFilter result = null;
+        Templates templates = getTemplates();
+
+        if (templates != null) {
+            try {
+                result = getSaxTransformerFactory().newXMLFilter(templates);
+            } catch (TransformerConfigurationException tce) {
+                throw new IOException("Transformer configuration exception. "
+                        + tce.getMessage());
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -428,19 +543,9 @@ public class TransformRepresentation extends OutputRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         try {
-            // Prepare the source and result documents
-            StreamSource sourceDocument = new StreamSource(
-                    getSourceRepresentation().getStream());
-
-            if (getSourceRepresentation().getIdentifier() != null) {
-                sourceDocument.setSystemId(getSourceRepresentation()
-                        .getIdentifier().getTargetRef().toString());
-            }
-
-            StreamResult resultDocument = new StreamResult(outputStream);
-
             // Generates the result of the transformation
-            getTransformer().transform(sourceDocument, resultDocument);
+            getTransformer().transform(getSaxSource(),
+                    new StreamResult(outputStream));
         } catch (TransformerException te) {
             throw new IOException("Transformer exception. " + te.getMessage());
         }
