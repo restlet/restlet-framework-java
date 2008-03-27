@@ -20,6 +20,8 @@ Changes log
           Reported and fixed by Kevin Conaway.
         - Fixed potential NPE in CLAP connector. Reported by Rob 
           Heittman. 
+        - Fixed potential NPE in Freemarker extension when the 
+          template is provided under the form of a representation.
     - API Enhancements
         - Made the org.restlet.util.Resolver generic and used it in 
           Guard to allow the user to provide a secret resolver without

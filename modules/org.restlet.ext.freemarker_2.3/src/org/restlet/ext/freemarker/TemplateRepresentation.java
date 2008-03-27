@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.logging.Logger;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
@@ -40,11 +42,16 @@ import freemarker.template.TemplateException;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TemplateRepresentation extends OutputRepresentation {
+
     /** The template. */
     private Template template;
 
     /** The template's data model. */
     private Object dataModel;
+
+    /** The logger instance to use. */
+    private static Logger logger = Logger
+            .getLogger(TemplateRepresentation.class.getName());
 
     /**
      * Constructor.
@@ -67,7 +74,7 @@ public class TemplateRepresentation extends OutputRepresentation {
     /**
      * Constructor.
      * 
-     * @param templateRepresention
+     * @param templateRepresentation
      *                The FreeMarker template provided via a representation.
      * @param config
      *                The FreeMarker configuration.
@@ -76,9 +83,9 @@ public class TemplateRepresentation extends OutputRepresentation {
      * @param mediaType
      *                The representation's media type.
      */
-    public TemplateRepresentation(Representation templateRepresention,
+    public TemplateRepresentation(Representation templateRepresentation,
             Configuration config, Object dataModel, MediaType mediaType) {
-        this(getTemplate(templateRepresention, config), dataModel, mediaType);
+        this(getTemplate(templateRepresentation, config), dataModel, mediaType);
     }
 
     /**
@@ -112,6 +119,8 @@ public class TemplateRepresentation extends OutputRepresentation {
         try {
             return config.getTemplate(templateName);
         } catch (IOException e) {
+            logger.warning("Unable to get the template " + templateName + ". Error message: "
+                    + e.getMessage());
             return null;
         }
     }
@@ -128,9 +137,22 @@ public class TemplateRepresentation extends OutputRepresentation {
     private static Template getTemplate(Representation templateRepresentation,
             Configuration config) {
         try {
-            return new Template("template", templateRepresentation.getReader(),
-                    config);
+            // Instantiate the template with the character set of the template
+            // representation if it has been set, otherwise use UTF-8.
+            if (templateRepresentation.getCharacterSet() != null) {
+                return new Template("template", templateRepresentation
+                        .getReader(), config, templateRepresentation
+                        .getCharacterSet().getName());
+            } else {
+                return new Template("template", templateRepresentation
+                        .getReader(), config, CharacterSet.UTF_8.getName());
+            }
         } catch (IOException e) {
+            logger
+                    .warning("Unable to get the template from the representation "
+                            + templateRepresentation.getIdentifier()
+                            + ". Error message: "
+                            + e.getMessage());
             return null;
         }
     }
