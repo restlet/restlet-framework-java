@@ -28,8 +28,8 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.AllowAllAccess;
 import org.restlet.ext.jaxrs.AccessControl;
+import org.restlet.ext.jaxrs.AllowAllAccess;
 import org.restlet.ext.jaxrs.ForbidAllAccess;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.server.RestletServerWrapper;
@@ -125,8 +125,10 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testAllowAll() throws Exception {
-        startServer(); // no authorization
+        if(!startServer(AllowAllAccess.getInstance())) // no authorization
+            return;
         Response response = get();
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         response = post(new Form("abc=def").getWebRepresentation());
@@ -219,7 +221,7 @@ public class SecurityContextTest extends JaxRsTestCase {
                 .getStatus());
     }
 
-    // hope that Restlet Request.isConfidential(); works right with HTTPS
+    // hope that Restlet Request.isConfidential() works right with HTTPS
 
     public void testSecure() throws Exception {
         startServer();

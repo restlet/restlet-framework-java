@@ -26,6 +26,7 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Finder;
+import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
@@ -35,6 +36,9 @@ import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
  * @author Stephan Koops
  */
 public class JaxRsApplication extends Application {
+
+    /** the {@link Guard} to use. May be null. */
+    private Guard guard;
 
     /** The {@link JaxRsRouter} to use. */
     private JaxRsRouter jaxRsRouter;
@@ -63,12 +67,21 @@ public class JaxRsApplication extends Application {
 
     @Override
     public Restlet createRoot() {
+
+        Restlet restlet = jaxRsRouter;
+
+        if (this.guard != null) {
+            this.guard.setNext(restlet);
+            restlet = this.guard;
+        }
+
         // some browser request XML with higher quality than HTML.
         // If you want to change the quality, use this HtmlPreferer
         // filter. If you do not need it, you can directly return the
         // router.
-        HtmlPreferer filter = new HtmlPreferer(getContext(), jaxRsRouter);
-        return filter;
+        restlet = new HtmlPreferer(getContext(), restlet);
+
+        return restlet;
     }
 
     /**
@@ -77,6 +90,13 @@ public class JaxRsApplication extends Application {
      */
     public AccessControl getAccessControl() {
         return this.jaxRsRouter.getAccessControl();
+    }
+
+    /**
+     * @return the guard
+     */
+    public Guard getGuard() {
+        return this.guard;
     }
 
     /**
@@ -98,7 +118,7 @@ public class JaxRsApplication extends Application {
     public Collection<String> getRootUris() {
         return this.jaxRsRouter.getRootUris();
     }
-    
+
     /**
      * This method (should, if ready implemented) return {@link Route} to attach
      * to a {@link Router}.<br>
@@ -114,12 +134,24 @@ public class JaxRsApplication extends Application {
     public List<Route> getRoutes() {
         throw new NotYetImplementedException();
     }
-    
+
     /**
      * @param accessControl
      * @see JaxRsRouter#setAccessControl(AccessControl)
      */
     public void setAccessControl(AccessControl accessControl) {
         this.jaxRsRouter.setAccessControl(accessControl);
+    }
+
+    /**
+     * Sets the {@link Guard} to use.<br>
+     * The new one is ignored, after the root Restlet is created (see
+     * {@link #createRoot()}.
+     * 
+     * @param guard
+     *                the guard to set
+     */
+    public void setGuard(Guard guard) {
+        this.guard = guard;
     }
 }

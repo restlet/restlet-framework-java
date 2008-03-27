@@ -23,14 +23,12 @@ import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Guard;
-import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.AccessControl;
-import org.restlet.ext.jaxrs.AllowAllAccess;
-import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.JaxRsApplication;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
@@ -109,21 +107,13 @@ public class RestletServerWrapper implements ServerWrapper {
             final ApplicationConfig appConfig,
             final ChallengeScheme challengeScheme,
             final AccessControl accessControl) {
-        final Application application = new Application(context) {
-            @Override
-            public Restlet createRoot() {
-                final Context context = getContext();
-                if (accessControl == null) {
-                    return new JaxRsRouter(context, appConfig, AllowAllAccess
-                            .getInstance());
-                }
-                Guard guard = createGuard(context, challengeScheme);
-                JaxRsRouter router = new JaxRsRouter(context, appConfig,
-                        accessControl);
-                guard.setNext(router);
-                return guard;
-            }
-        };
+        JaxRsApplication application = new JaxRsApplication(context);
+        if (accessControl != null) {
+            application.setAccessControl(accessControl);
+            Guard guard = createGuard(context, challengeScheme);
+            application.setGuard(guard);
+        }
+        application.attach(appConfig);
         return application;
     }
 

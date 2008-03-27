@@ -20,9 +20,10 @@ package org.restlet.ext.jaxrs;
 import java.security.Principal;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-
-import org.restlet.data.Status;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * An {@link AccessControl} that throws an WebApplicationExeption with status
@@ -52,7 +53,9 @@ public class ThrowExcAccessControl implements AccessControl {
      * @see SecurityContext#isUserInRole(String)
      */
     public boolean isUserInRole(Principal principal, String role) {
-        throw new WebApplicationException(Status.SERVER_ERROR_INTERNAL
-                .getCode());
+        String entity = "No access control defined.";
+        ResponseBuilder rb = Response.serverError();
+        rb.entity(entity).language("en").type(MediaType.TEXT_HTML_TYPE);
+        throw new WebApplicationException(rb.build());
     }
 }
