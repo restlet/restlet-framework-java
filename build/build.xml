@@ -346,7 +346,6 @@
       <path refid="mod-json-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <fileset dir="${lib}/${lib-jaxrs-id}" includes="*.jar" />
-      <fileset dir="${lib}/${lib-annotation-id}" includes="*.jar" />
    </path>
    
    <path id="mod-jdbc-path">
@@ -1292,7 +1291,6 @@
       <stageLibrary name="jaxb" />
       <stageLibrary name="jaxrs" />
       <stageLibrary name="activation" />
-      <stageLibrary name="annotation" />
       <stageLibrary name="jetty" />
       <stageLibrary name="jibx" />
       <stageLibrary name="json" />
