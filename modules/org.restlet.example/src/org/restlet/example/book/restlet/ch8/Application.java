@@ -96,7 +96,11 @@ public class Application extends org.restlet.Application {
         RmepGuard guard = new RmepGuard(getContext(),
                 ChallengeScheme.HTTP_BASIC, "rmep", dataFacade);
 
-        // Secure the root of the application.
+        // Secure the root of the application and only this resource. It allows
+        // anonymous access to all other resources and authentication at the top
+        // of our application's hierarchy of URIs. It also makes the assumption
+        // that common Internet browsers preemptively authenticate future
+        // requests made to "sub" URIs.
         guard.setNext(MailRootResource.class);
 
         // Add a route for the MailRoot resource

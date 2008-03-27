@@ -42,6 +42,21 @@ public class BaseResource extends Resource {
 
     public BaseResource(Context context, Request request, Response response) {
         super(context, request, response);
+        // All access to the root resource is filtered by a Guard which controls
+        // the provided login/password, looks for the corresponding user and put
+        // this user object in the request's attributes.
+        currentUser = (User) getRequest().getAttributes().get(
+                RmepGuard.CURRENT_USER);
+        if (currentUser == null) {
+            // This request does not target the root resource.
+            // This request may be anonymous or the client may preemptively
+            // authenticate it.
+            if (getRequest().getChallengeResponse() != null) {
+                currentUser = getObjectsFacade().getUserByLoginPwd(
+                        getRequest().getChallengeResponse().getIdentifier(),
+                        getRequest().getChallengeResponse().getSecret());
+            }
+        }
     }
 
     /**
@@ -55,7 +70,8 @@ public class BaseResource extends Resource {
     }
 
     /**
-     * Returns the Freemarker's configuration object.
+     * Returns the Freemarker's configuration object used for the generation of
+     * all HTML representations.
      * 
      * @return the Freemarker's configuration object.
      */
@@ -66,29 +82,11 @@ public class BaseResource extends Resource {
 
     /**
      * Returns a User object representing the current user connected or null, if
-     * the access is anonymous
+     * the access is anonymous.
      * 
      * @return the current user connected or null if the access is anonymous.
      */
     protected User getCurrentUser() {
-        if (currentUser == null) {
-            // The root's guard may have put this user object in the request's
-            // attributes.
-            currentUser = (User) getRequest().getAttributes().get(
-                    RmepGuard.CURRENT_USER);
-            if (currentUser == null) {
-                // The client may preemptively authenticate its request.
-                if (getRequest().getChallengeResponse() != null) {
-                    currentUser = getObjectsFacade()
-                            .getUserByLoginPwd(
-                                    getRequest().getChallengeResponse()
-                                            .getIdentifier(),
-                                    getRequest().getChallengeResponse()
-                                            .getSecret());
-                }
-            }
-        }
-
         return currentUser;
     }
 
