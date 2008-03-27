@@ -48,8 +48,6 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -407,38 +405,6 @@ public class Util {
         if (object1 == null)
             return object2 == null;
         return object1.equals(object2);
-    }
-
-    /**
-     * 
-     * @param jaxRsClass
-     *                the class to find the method to call for &#64;{@link PostConstruct}.
-     * @return The method to call for post construct, or null, if none found.
-     * @see #invokeNoneArgMethod(Object, Method)
-     * @see #findPreDestroyMethod(Class)
-     */
-    public static Method findPostConstructMethod(Class<?> jaxRsClass) {
-        for (Method method : jaxRsClass.getDeclaredMethods())
-            if (method.isAnnotationPresent(PostConstruct.class))
-                // LATER check, if no args -> warn and ignore
-                return method;
-        return null;
-    }
-
-    /**
-     * 
-     * @param jaxRsClass
-     *                the class to find the method to call for &#64;{@link PreDestroy}.
-     * @return The method to call for post construct, or null, if none found.
-     * @see #invokeNoneArgMethod(Object, Method)
-     * @see #findPostConstructMethod(Class)
-     */
-    public static Method findPreDestroyMethod(Class<?> jaxRsClass) {
-        for (Method method : jaxRsClass.getDeclaredMethods())
-            if (method.isAnnotationPresent(PreDestroy.class))
-                // LATER check, if no args -> warn and ignore
-                return method;
-        return null;
     }
 
     /**

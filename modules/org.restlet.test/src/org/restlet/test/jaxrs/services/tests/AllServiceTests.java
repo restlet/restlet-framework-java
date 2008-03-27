@@ -41,7 +41,6 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(InheritAnnotationTest.class);
         mySuite.addTestSuite(InjectionTest.class);
         mySuite.addTestSuite(JsonTest.class);
-        mySuite.addTestSuite(Jsr250Test.class);
         mySuite.addTestSuite(ListParamTest.class);
         mySuite.addTestSuite(MatrixParamTest.class);
         mySuite.addTestSuite(MatrixParamTest2.class);

@@ -24,13 +24,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
@@ -45,9 +42,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateProviderException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRootRessourceException;
-import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -68,6 +63,10 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      */
     private List<org.restlet.data.MediaType> consumedMimes;
 
+    /**
+     * the {@link ContextResolver}, if this providers is a
+     * {@link ContextResolver}
+     */
     private javax.ws.rs.ext.ContextResolver<T> contextResolver;
 
     private List<org.restlet.data.MediaType> producedMimes;
@@ -81,6 +80,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     private javax.ws.rs.ext.MessageBodyReader<T> reader;
 
     private javax.ws.rs.ext.MessageBodyWriter<T> writer;
+
+    private Object jaxRsProvider;
 
     /**
      * Construct a wrapper for a Provider
@@ -105,9 +106,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         RootResourceClass.checkClassConcrete(jaxRsProviderClass, "provider");
         Constructor<?> providerConstructor = RootResourceClass
                 .findJaxRsConstructor(jaxRsProviderClass);
-        Object jaxRsProvider;
         try {
-            jaxRsProvider = createInstance(providerConstructor,
+            this.jaxRsProvider = createInstance(providerConstructor,
                     jaxRsProviderClass);
         } catch (ConvertRepresentationException e) {
             // should be not possible here
@@ -204,8 +204,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             return true;
         if (!(otherProvider instanceof Provider))
             return false;
-        return this.getJaxRsProvider().getClass().equals(
-                ((Provider<?>) otherProvider).getJaxRsProvider().getClass());
+        return this.jaxRsProvider.getClass().equals(
+                ((Provider<?>) otherProvider).jaxRsProvider.getClass());
     }
 
     /**
@@ -228,14 +228,6 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
 
     public T getContext(Class<?> type) {
         return contextResolver.getContext(type);
-    }
-
-    private Object getJaxRsProvider() {
-        if (this.reader != null)
-            return this.reader;
-        if (this.writer != null)
-            return this.writer;
-        return this.contextResolver;
     }
 
     /**
@@ -273,7 +265,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
 
     @Override
     public final int hashCode() {
-        return getJaxRsProvider().hashCode();
+        return this.jaxRsProvider.hashCode();
     }
 
     /**
@@ -282,73 +274,38 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * 
      * @param internalResolvers
      *                TODO
-     * @throws InstantiateProviderException
-     *                 if the provider could not be instantiated, because the
-     *                 method could not be called or because of an Exception
-     *                 while calling the post construct method.
      * @throws InjectException
      */
     @SuppressWarnings("unused")
     public void init(ContextResolverCollection internalResolvers)
-            throws InstantiateProviderException, InjectException {
-        // until now no dependencies possible.
-        // Perhaps later some are added.
-        Object jaxRsProvider = this.getJaxRsProvider();
-        injectContext(jaxRsProvider, internalResolvers);
-        Class<? extends Object> providerClass = jaxRsProvider.getClass();
-        Method postConstructMethod = Util
-                .findPostConstructMethod(providerClass);
-        try {
-            Util.invokeNoneArgMethod(jaxRsProvider, postConstructMethod);
-        } catch (MethodInvokeException e) {
-            InstantiateProviderException ipe = new InstantiateProviderException(
-                    e.getMessage());
-            ipe.setStackTrace(e.getStackTrace());
-            throw ipe;
-        } catch (InvocationTargetException e) {
-            String message = "Exception while calling " + postConstructMethod;
-            throw new InstantiateProviderException(message, e);
-        }
+            throws InjectException {
+        injectContext(internalResolvers);
     }
 
     /**
      * Inject the values fields for &#64;{@link Context}.
      * 
      * @param internalResolvers
+     * 
      * @throws InjectException
      */
-    private void injectContext(Object jaxRsProvider,
-            ContextResolverCollection internalResolvers) throws InjectException {
-        Class<? extends Object> providerClass = jaxRsProvider.getClass();
+    private void injectContext(ContextResolverCollection internalResolvers)
+            throws InjectException {
+        Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
         for (Field field : providerClass.getDeclaredFields()) {
             if (!field.isAnnotationPresent(Context.class))
                 continue;
             Class<?> fieldType = field.getType();
             if (fieldType.equals(ContextResolver.class)) {
                 field.setAccessible(true);
-                Util.inject(jaxRsProvider, field, internalResolvers);
+                Util.inject(this.jaxRsProvider, field, internalResolvers);
             } else if (fieldType.equals(MessageBodyWorkers.class)) {
                 field.setAccessible(true);
                 Object toInject = null;
                 // TODO inject MessageBodyWorker
-                Util.inject(jaxRsProvider, field, toInject);
+                Util.inject(this.jaxRsProvider, field, toInject);
             }
         }
-    }
-
-    /**
-     * Invokes the method annotated with &#64;{@link PreDestroy}.
-     * 
-     * @throws InvocationTargetException
-     * @throws MethodInvokeException
-     * 
-     */
-    public void preDestroy() throws MethodInvokeException,
-            InvocationTargetException {
-        Object provider = getJaxRsProvider();
-        Class<? extends Object> providerClass = provider.getClass();
-        Method preDestroxMethod = Util.findPreDestroyMethod(providerClass);
-        Util.invokeNoneArgMethod(provider, preDestroxMethod);
     }
 
     /**
@@ -471,7 +428,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
 
     @Override
     public String toString() {
-        return this.getJaxRsProvider().getClass().getName();
+        return this.jaxRsProvider.getClass().getName();
     }
 
     /**

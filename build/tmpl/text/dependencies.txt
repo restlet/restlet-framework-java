@@ -45,7 +45,6 @@ org.restlet.ext.jaxb_2.1 (Integration with JAXB 2.1)
 org.restlet.ext.jaxrs_1.0 (Integration with JAX-RS 1.0)
 -------------------------
  - javax.ws.rs_1.0
- - javax.annotation_1.0
  - javax.xml.bind_2.1 (optional)
  - javax.xml.stream_1.0 (optional)
  - javax.mail_1.4 (optional)

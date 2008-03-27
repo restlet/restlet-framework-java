@@ -18,9 +18,9 @@
 package org.restlet.ext.jaxrs.internal.wrappers;
 
 import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.EMPTY_FIELD_ARRAY;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -34,8 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
@@ -65,7 +63,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
-import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
@@ -274,10 +271,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     private Collection<ResourceMethod> subResourceMethods;
 
     private Collection<ResourceMethodOrLocator> subResourceMethodsAndLocators;
-
-    private Method postConstructMethod;
-
-    private Method preDestroyMethod;
 
     /**
      * Creates a new root resource class wrapper. Will not set the path, because
@@ -523,13 +516,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         initResourceMethodsAndLocators(logger);
         initInjectFields();
-        findJsr250Methods();
-    }
-
-    private void findJsr250Methods() {
-        Class<?> jaxRsClass = this.getJaxRsClass();
-        this.postConstructMethod = Util.findPostConstructMethod(jaxRsClass);
-        this.preDestroyMethod = Util.findPreDestroyMethod(jaxRsClass);
     }
 
     /**
@@ -644,9 +630,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @throws InjectException
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
-     * @throws MethodInvokeException
-     *                 if the method annotated with &#64;{@link PostConstruct}
-     *                 could not be called or throws an exception.
      * @throws ConvertCookieParamException
      * @throws ConvertHeaderParamException
      * @throws ConvertMatrixParamException
@@ -656,9 +639,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     void init(ResourceObject resourceObject, CallContext callContext,
             ContextResolverCollection internalResolvers)
             throws InjectException, WebApplicationException,
-            MethodInvokeException, ConvertCookieParamException,
-            ConvertHeaderParamException, ConvertMatrixParamException,
-            ConvertPathParamException, ConvertQueryParamException {
+            ConvertCookieParamException, ConvertHeaderParamException,
+            ConvertMatrixParamException, ConvertPathParamException,
+            ConvertQueryParamException {
         Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
         for (Field contextField : this.injectFieldsCallContext) {
             Util.inject(jaxRsResObj, contextField, callContext);
@@ -725,41 +708,10 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                     Logger.getAnonymousLogger());
             Util.inject(jaxRsResObj, cpf, value);
         }
-        // invoke @PostConstruct annotated method
-        try {
-            Util.invokeNoneArgMethod(jaxRsResObj, this.postConstructMethod);
-        } catch (InvocationTargetException e) {
-            String message = e.getMessage();
-            MethodInvokeException mie = new MethodInvokeException(message);
-            mie.setStackTrace(e.getCause().getStackTrace());
-            throw mie;
-        }
     }
 
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[" + this.jaxRsClass + "]";
-    }
-
-    /**
-     * Do work before destroying the given object:
-     * <ul>
-     * <li>Calls the method annotated with &#64;{@link PreDestroy}, see
-     * JSR-250. Excptions while calling this method</li>
-     * </ul>
-     * 
-     * @param resourceObject
-     *                the object that is prepared for destroying.
-     * @throws MethodInvokeException
-     *                 if the method annotated with &#64;{@link PreDestroy}
-     *                 could not be called
-     * @throws InvocationTargetException
-     *                 if the method annotated with &#64;{@link PreDestroy} has
-     *                 thrown an Exception.
-     */
-    public void preDestroy(ResourceObject resourceObject)
-            throws MethodInvokeException, InvocationTargetException {
-        Object jaxRsResourceObject = resourceObject.getJaxRsResourceObject();
-        Util.invokeNoneArgMethod(jaxRsResourceObject, this.preDestroyMethod);
     }
 }

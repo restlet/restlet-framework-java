@@ -23,7 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
@@ -49,7 +48,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRootRessourceException;
-import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
@@ -280,8 +278,7 @@ public class RootResourceClass extends ResourceClass {
      *                 if the class is not annotated with &#64;Path.
      * @throws IllegalPathOnClassException
      */
-    RootResourceClass(Class<?> jaxRsClass,
-            Logger logger)
+    RootResourceClass(Class<?> jaxRsClass, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException,
             IllegalPathOnClassException {
         super(jaxRsClass, logger, logger);
@@ -299,7 +296,8 @@ public class RootResourceClass extends ResourceClass {
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
-     * @param contextResolvers TODO
+     * @param contextResolvers
+     *                TODO
      * @param mbrs
      *                The Set of all available {@link MessageBodyReader}s in
      *                the {@link JaxRsRouter}.
@@ -311,9 +309,6 @@ public class RootResourceClass extends ResourceClass {
      * @throws InstantiateRootRessourceException
      * @throws MissingAnnotationException
      * @throws NoMessageBodyReaderException
-     * @throws MethodInvokeException
-     *                 if the method annotated with &#64;{@link PostConstruct}
-     *                 could not be called or throws an exception.
      * @throws ConvertCookieParamException
      * @throws ConvertQueryParamException
      * @throws ConvertMatrixParamException
@@ -322,13 +317,14 @@ public class RootResourceClass extends ResourceClass {
      * @throws ConvertRepresentationException
      */
     public ResourceObject createInstance(CallContext callContext,
-            ContextResolverCollection contextResolvers, MessageBodyReaderSet mbrs, Logger logger)
+            ContextResolverCollection contextResolvers,
+            MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException,
             InstantiateRootRessourceException, NoMessageBodyReaderException,
-            InvocationTargetException, MethodInvokeException,
-            ConvertRepresentationException, ConvertHeaderParamException,
-            ConvertPathParamException, ConvertMatrixParamException,
-            ConvertQueryParamException, ConvertCookieParamException {
+            InvocationTargetException, ConvertRepresentationException,
+            ConvertHeaderParamException, ConvertPathParamException,
+            ConvertMatrixParamException, ConvertQueryParamException,
+            ConvertCookieParamException {
         Constructor<?> constructor = this.constructor;
         Object instance = createInstance(constructor, constructorLeaveEncoded,
                 callContext, mbrs, logger);

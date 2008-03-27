@@ -37,7 +37,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRessourceException;
-import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 
@@ -80,7 +79,8 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                the {@link JaxRsRouter}.
      * @param wrapperFactory
      *                factory to create wrappers.
-     * @param contextResolvers TODO
+     * @param contextResolvers
+     *                TODO
      * @param logger
      *                The logger to use
      * @return Returns the wrapped sub resource object.
@@ -89,7 +89,6 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @throws WebApplicationException
      * @throws MissingAnnotationException
      * @throws InstantiateRessourceException
-     * @throws MethodInvokeException
      * @throws ConvertCookieParamException
      * @throws ConvertQueryParamException
      * @throws ConvertMatrixParamException
@@ -99,13 +98,14 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
             CallContext callContext, MessageBodyReaderSet mbrs,
-            WrapperFactory wrapperFactory, ContextResolverCollection contextResolvers, Logger logger)
+            WrapperFactory wrapperFactory,
+            ContextResolverCollection contextResolvers, Logger logger)
             throws InvocationTargetException, MissingAnnotationException,
             WebApplicationException, NoMessageBodyReaderException,
-            InstantiateRessourceException, MethodInvokeException,
-            ConvertRepresentationException, ConvertHeaderParamException,
-            ConvertPathParamException, ConvertMatrixParamException,
-            ConvertQueryParamException, ConvertCookieParamException {
+            InstantiateRessourceException, ConvertRepresentationException,
+            ConvertHeaderParamException, ConvertPathParamException,
+            ConvertMatrixParamException, ConvertQueryParamException,
+            ConvertCookieParamException {
         Object[] args;
         Class<?>[] parameterTypes = this.executeMethod.getParameterTypes();
         if (parameterTypes.length == 0)

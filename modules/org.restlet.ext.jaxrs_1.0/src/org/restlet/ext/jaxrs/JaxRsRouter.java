@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.ApplicationConfig;
@@ -74,11 +73,11 @@ import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
 import org.restlet.ext.jaxrs.internal.provider.JaxbProvider;
 import org.restlet.ext.jaxrs.internal.provider.JsonProvider;
 import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
+import org.restlet.ext.jaxrs.internal.provider.SourceProvider;
 import org.restlet.ext.jaxrs.internal.provider.StreamingOutputProvider;
 import org.restlet.ext.jaxrs.internal.provider.StringProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormFormProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormMmapProvider;
-import org.restlet.ext.jaxrs.internal.provider.SourceProvider;
 import org.restlet.ext.jaxrs.internal.util.MatchingResult;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
@@ -130,8 +129,6 @@ import org.restlet.resource.StringRepresentation;
  */
 public class JaxRsRouter extends JaxRsRouterHelpMethods {
 
-    private static final String PRE_CONSTR_EXC_MESSAGE = "Exception while calling the pre construct method";
-
     /**
      * This set must only changed by adding a root resource class to this
      * JaxRsRouter.
@@ -180,8 +177,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
     public JaxRsRouter(Context context, ApplicationConfig appConfig,
             AccessControl accessControl) throws IllegalArgumentException {
         super(context);
-        this.wrapperFactory = new WrapperFactory(getContext()
-                .getLogger());
+        this.wrapperFactory = new WrapperFactory(getContext().getLogger());
         this.loadDefaultProviders();
         if (appConfig != null)
             this.attach(appConfig);
@@ -307,28 +303,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             }
         }
         this.addExtensionMappings(appConfig.getExtensionMappings());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public synchronized void stop() throws Exception {
-        try {
-            Set<Provider<?>> allProviders = new HashSet<Provider<?>>(64);
-            allProviders.addAll((Collection) this.messageBodyReaders);
-            allProviders.addAll((Collection) this.messageBodyWriters);
-            allProviders.addAll((Collection) this.contextResolvers);
-            for (Provider<?> p : allProviders) {
-                try {
-                    p.preDestroy();
-                } catch (MethodInvokeException e) {
-                    getLogger().log(Level.INFO, PRE_CONSTR_EXC_MESSAGE, e);
-                } catch (InvocationTargetException e) {
-                    getLogger().log(Level.INFO, PRE_CONSTR_EXC_MESSAGE, e);
-                }
-            }
-        } finally {
-            super.stop();
-        }
     }
 
     /**
@@ -500,16 +474,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             }
         } catch (RequestHandledException e) {
             // Exception was handled and data were set into the Response.
-        } finally {
-            if (resourceObject != null) {
-                try {
-                    resourceObject.preDestroy();
-                } catch (MethodInvokeException e) {
-                    getLogger().log(Level.INFO, PRE_CONSTR_EXC_MESSAGE, e);
-                } catch (InvocationTargetException e) {
-                    getLogger().log(Level.INFO, PRE_CONSTR_EXC_MESSAGE, e);
-                }
-            }
         }
     }
 
@@ -633,9 +597,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         } catch (InstantiateRootRessourceException e) {
             throw handleExecption(e, null, callContext,
                     "Could not create new instance of root resource class");
-        } catch (MethodInvokeException e) {
-            throw handleExecption(e, null, callContext,
-                    "Could not create new instance of root resource class");
         } catch (InvocationTargetException e) {
             throw handleExecption(e, null, callContext,
                     "Could not create new instance of root resource class");
@@ -701,7 +662,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
                 o = subResourceLocator.createSubResource(o, callContext,
-                        this.messageBodyReaders, wrapperFactory, contextResolvers, getLogger());
+                        this.messageBodyReaders, wrapperFactory,
+                        contextResolvers, getLogger());
             } catch (WebApplicationException e) {
                 throw e;
             } catch (RuntimeException e) {
@@ -711,9 +673,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
                 throw handleExecption(e, subResourceLocator, callContext,
                         "Could not create new instance of root resource class");
             } catch (InstantiateRessourceException e) {
-                throw handleExecption(e, subResourceLocator, callContext,
-                        "Could not create new instance of root resource class");
-            } catch (MethodInvokeException e) {
                 throw handleExecption(e, subResourceLocator, callContext,
                         "Could not create new instance of root resource class");
             } catch (InvocationTargetException e) {

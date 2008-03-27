@@ -17,10 +17,6 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
-import java.lang.reflect.InvocationTargetException;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.ws.rs.WebApplicationException;
 
 import org.restlet.ext.jaxrs.internal.core.CallContext;
@@ -30,7 +26,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
-import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 
 /**
  * An instance wraps a JAX-RS resource object. See section 3 of JAX-RS
@@ -92,14 +87,12 @@ public class ResourceObject {
      * 
      * @param callContext
      *                The CallContext to get the dependencies from.
-     * @param contextResolvers TODO
+     * @param contextResolvers
+     *                TODO
      * @throws InjectException
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
      * @throws WebApplicationException
-     * @throws MethodInvokeException
-     *                 if the method annotated with &#64;{@link PostConstruct}
-     *                 could not be called or throws an exception.
      * @throws ConvertQueryParamException
      * @throws ConvertPathParamException
      * @throws ConvertMatrixParamException
@@ -107,31 +100,11 @@ public class ResourceObject {
      * @throws ConvertCookieParamException
      * @throws WebApplicationException
      */
-    public void init(CallContext callContext, ContextResolverCollection contextResolvers) throws InjectException,
-            MethodInvokeException, WebApplicationException,
-            ConvertCookieParamException, ConvertHeaderParamException,
-            ConvertMatrixParamException, ConvertPathParamException,
-            ConvertQueryParamException {
+    public void init(CallContext callContext,
+            ContextResolverCollection contextResolvers) throws InjectException,
+            WebApplicationException, ConvertCookieParamException,
+            ConvertHeaderParamException, ConvertMatrixParamException,
+            ConvertPathParamException, ConvertQueryParamException {
         this.getResourceClass().init(this, callContext, contextResolvers);
-    }
-
-    /**
-     * Do work before destroying the object:
-     * <ul>
-     * <li>Calls the method annotated with &#64;{@link PreDestroy}, see
-     * JSR-250.</li>
-     * </ul>
-     * 
-     * @throws MethodInvokeException
-     *                 if the method annotated with &#64;{@link PreDestroy}
-     *                 could not be called
-     * @throws InvocationTargetException
-     * @throws InvocationTargetException
-     *                 if the method annotated with &#64;{@link PreDestroy} has
-     *                 thrown an Exception.
-     */
-    public void preDestroy() throws MethodInvokeException,
-            InvocationTargetException {
-        this.getResourceClass().preDestroy(this);
     }
 }
