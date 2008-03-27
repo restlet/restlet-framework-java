@@ -271,6 +271,8 @@ public class RootResourceClass extends ResourceClass {
      * 
      * @param jaxRsClass
      *                the root resource class to wrap
+     * @param internalresolvers
+     *                TODO
      * @see WrapperFactory#getRootResourceClass(Class)
      * @throws IllegalArgumentException
      *                 if the class is not a valid root resource class.
@@ -278,7 +280,8 @@ public class RootResourceClass extends ResourceClass {
      *                 if the class is not annotated with &#64;Path.
      * @throws IllegalPathOnClassException
      */
-    RootResourceClass(Class<?> jaxRsClass, Logger logger)
+    RootResourceClass(Class<?> jaxRsClass,
+            Logger logger)
             throws IllegalArgumentException, MissingAnnotationException,
             IllegalPathOnClassException {
         super(jaxRsClass, logger, logger);
@@ -296,6 +299,7 @@ public class RootResourceClass extends ResourceClass {
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
+     * @param contextResolvers TODO
      * @param mbrs
      *                The Set of all available {@link MessageBodyReader}s in
      *                the {@link JaxRsRouter}.
@@ -318,7 +322,7 @@ public class RootResourceClass extends ResourceClass {
      * @throws ConvertRepresentationException
      */
     public ResourceObject createInstance(CallContext callContext,
-            MessageBodyReaderSet mbrs, Logger logger)
+            ContextResolverCollection contextResolvers, MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException,
             InstantiateRootRessourceException, NoMessageBodyReaderException,
             InvocationTargetException, MethodInvokeException,
@@ -330,7 +334,7 @@ public class RootResourceClass extends ResourceClass {
                 callContext, mbrs, logger);
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {
-            rootResourceObject.init(callContext);
+            rootResourceObject.init(callContext, contextResolvers);
         } catch (InjectException e) {
             throw new InstantiateRootRessourceException(e);
         }

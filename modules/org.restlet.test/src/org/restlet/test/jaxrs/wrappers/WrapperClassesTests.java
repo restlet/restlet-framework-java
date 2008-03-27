@@ -23,12 +23,13 @@ import java.util.logging.Logger;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
+import junit.framework.TestCase;
+
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
-
-import junit.framework.TestCase;
 
 /**
  * Tests for classes in package {@link org.restlet.ext.jaxrs.internal.wrappers}.
@@ -82,9 +83,13 @@ public class WrapperClassesTests extends TestCase {
     }
 
     public void testIllegalRrcPath() throws Exception {
-        @SuppressWarnings("unused")
-        RootResourceClass rrc = wrapperFactory
-                .getRootResourceClass(IllegalRrcPathRrc.class);
+        try {
+            RootResourceClass rrc = wrapperFactory
+                    .getRootResourceClass(IllegalRrcPathRrc.class);
+            fail("must fail");
+        } catch (IllegalPathOnClassException iae) {
+            // good
+        }
     }
 
     public void testIllegalMethodPath() throws Exception {

@@ -21,6 +21,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.restlet.test.jaxrs.services.providers.CrazyTypeProvider;
 import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
 import org.restlet.test.jaxrs.services.resources.PersonsResource;
 import org.restlet.test.jaxrs.services.resources.ProviderTestService;

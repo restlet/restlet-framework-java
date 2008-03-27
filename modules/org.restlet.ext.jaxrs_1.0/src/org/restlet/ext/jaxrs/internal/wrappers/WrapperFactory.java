@@ -33,12 +33,29 @@ public class WrapperFactory {
 
     private Logger logger;
 
+    private final Map<Class<?>, ResourceClass> resourceClasses = new HashMap<Class<?>, ResourceClass>();
+
     /**
      * @param logger
      *                the to log warnings and so on
      */
     public WrapperFactory(Logger logger) {
         this.logger = logger;
+    }
+
+    /**
+     * Creates a new JAX-RS resource class wrapper.
+     * 
+     * @param jaxRsResourceClass
+     * @return
+     */
+    ResourceClass getResourceClass(Class<?> jaxRsResourceClass) {
+        ResourceClass rc = resourceClasses.get(jaxRsResourceClass);
+        if (rc == null) {
+            rc = new ResourceClass(jaxRsResourceClass, logger);
+            resourceClasses.put(jaxRsResourceClass, rc);
+        }
+        return rc;
     }
 
     /**
@@ -56,22 +73,5 @@ public class WrapperFactory {
             Class<?> jaxRsRootResourceClass) throws IllegalArgumentException,
             MissingAnnotationException, IllegalPathOnClassException {
         return new RootResourceClass(jaxRsRootResourceClass, logger);
-    }
-
-    private final Map<Class<?>, ResourceClass> resourceClasses = new HashMap<Class<?>, ResourceClass>();
-
-    /**
-     * Creates a new JAX-RS resource class wrapper.
-     * 
-     * @param jaxRsResourceClass
-     * @return
-     */
-    ResourceClass getResourceClass(Class<?> jaxRsResourceClass) {
-        ResourceClass rc = resourceClasses.get(jaxRsResourceClass);
-        if (rc == null) {
-            rc = new ResourceClass(jaxRsResourceClass, logger);
-            resourceClasses.put(jaxRsResourceClass, rc);
-        }
-        return rc;
     }
 }

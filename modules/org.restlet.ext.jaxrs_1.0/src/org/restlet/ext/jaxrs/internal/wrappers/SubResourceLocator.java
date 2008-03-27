@@ -80,6 +80,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                the {@link JaxRsRouter}.
      * @param wrapperFactory
      *                factory to create wrappers.
+     * @param contextResolvers TODO
      * @param logger
      *                The logger to use
      * @return Returns the wrapped sub resource object.
@@ -98,7 +99,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
             CallContext callContext, MessageBodyReaderSet mbrs,
-            WrapperFactory wrapperFactory, Logger logger)
+            WrapperFactory wrapperFactory, ContextResolverCollection contextResolvers, Logger logger)
             throws InvocationTargetException, MissingAnnotationException,
             WebApplicationException, NoMessageBodyReaderException,
             InstantiateRessourceException, MethodInvokeException,
@@ -135,7 +136,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         ResourceObject subResourceObject = new ResourceObject(subResObj,
                 resourceClass);
         try {
-            subResourceObject.init(callContext);
+            subResourceObject.init(callContext, contextResolvers);
         } catch (InjectException e) {
             throw new InstantiateRessourceException(executeMethod, e);
         }

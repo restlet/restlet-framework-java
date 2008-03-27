@@ -30,7 +30,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.resource.Representation;
-import org.restlet.test.jaxrs.services.others.Jsr250TestProvider;
+import org.restlet.test.jaxrs.services.providers.Jsr250TestProvider;
 import org.restlet.test.jaxrs.services.resources.Jsr250TestService;
 import org.restlet.test.jaxrs.util.TestUtils;
 

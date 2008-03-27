@@ -92,6 +92,7 @@ public class ResourceObject {
      * 
      * @param callContext
      *                The CallContext to get the dependencies from.
+     * @param contextResolvers TODO
      * @throws InjectException
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
@@ -106,12 +107,12 @@ public class ResourceObject {
      * @throws ConvertCookieParamException
      * @throws WebApplicationException
      */
-    public void init(CallContext callContext) throws InjectException,
+    public void init(CallContext callContext, ContextResolverCollection contextResolvers) throws InjectException,
             MethodInvokeException, WebApplicationException,
             ConvertCookieParamException, ConvertHeaderParamException,
             ConvertMatrixParamException, ConvertPathParamException,
             ConvertQueryParamException {
-        this.getResourceClass().init(this, callContext);
+        this.getResourceClass().init(this, callContext, contextResolvers);
     }
 
     /**

@@ -50,9 +50,20 @@ public class Notizen {
     
     // TESTEN what happens, if ".." or "." in @Path?
     
+    // TESTEN set values for @*Param, if not available on primitives
+    
+    // TODO inject ContextProvider to other providers and resource instances
+    
+    // REQUEST Spec, section 5.1.3. (Content Negotiation and Preconditions):
+    // request.evaluatePRECONDITIONS(...); null is not necessary
+    
+    // TESTEN @DefaultValue on Integer and int
+    
     // REQUESTED @Context on type PathSegment ?
     
     // REQUEST disallow entity on sub resource locator?
     
     // REQUEST javadoc of PathParam: Template -> Path
+    
+    // TODO read already javadoc of PathSegment 
 }

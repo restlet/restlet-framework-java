@@ -17,6 +17,7 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.EMPTY_FIELD_ARRAY;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -46,6 +47,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
@@ -74,10 +80,6 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * @author Stephan Koops
  */
 public class ResourceClass extends AbstractJaxRsWrapper {
-
-    // LATER cache ResourceClasses, e.g. for recursive resources
-
-    private static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
 
     private static final String JAX_RS_PACKAGE_PREFIX = "javax.ws.rs";
 
@@ -145,20 +147,50 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     /**
      * <p>
      * This array contains the fields in this class in which are annotated to
-     * inject an {@link CallContext}. Array is round about 10 times faster than
-     * the list.
+     * inject an {@link CallContext}.<br>
+     * (Array is round about 10 times faster than the list.)
      * </p>
      * <p>
-     * Must bei initiated with the other fields starting with initFields.
+     * Must be initiated with the other fields starting with initFields.
      * </p>
+     * 
+     * @see UriInfo
+     * @see SecurityContext
+     * @see Request
+     * @see HttpHeaders
      */
-    private Field[] injectFieldsContext;
+    private Field[] injectFieldsCallContext;
 
     /**
      * <p>
      * This array contains the fields in this class in which are annotated to
-     * inject an {@link CallContext}. Array is round about 10 times faster than
-     * the list.
+     * inject an {@link ContextResolver}.
+     * </p>
+     * <p>
+     * Must be initiated with the other fields starting with initFields.
+     * </p>
+     * 
+     * @see ContextResolver
+     */
+    private Field[] injectFieldsContextResolvers;
+
+    /**
+     * <p>
+     * This array contains the fields in this class in which are annotated to
+     * inject an {@link MessageBodyWorkers}.
+     * </p>
+     * <p>
+     * Must be initiated with the other fields starting with initFields.
+     * </p>
+     * 
+     * @see MessageBodyWorkers
+     */
+    private Field[] injectFieldsMbWorkers;
+
+    /**
+     * <p>
+     * This array contains the fields in this class in which are annotated to
+     * inject an {@link CallContext}.
      * </p>
      * <p>
      * Must bei initiated with the other fields starting with initFields.
@@ -169,8 +201,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     /**
      * <p>
      * This array contains the fields in this class in which are annotated to
-     * inject an {@link CallContext}. Array is round about 10 times faster than
-     * the list.
+     * inject an {@link CallContext}.
      * </p>
      * <p>
      * Must bei initiated with the other fields starting with initFields.
@@ -507,21 +538,28 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @throws SecurityException
      */
     private void initInjectFields() {
-        List<Field> ifContext = new ArrayList<Field>();
-        List<Field> ifClientInfo = new ArrayList<Field>();
-        List<Field> ifConditions = new ArrayList<Field>();
-        List<Field> ifCookieParam = new ArrayList<Field>();
-        List<Field> ifHeaderParam = new ArrayList<Field>();
-        List<Field> ifMatrixParam = new ArrayList<Field>();
-        List<Field> ifPathParam = new ArrayList<Field>();
-        List<Field> ifQueryParam = new ArrayList<Field>();
+        List<Field> ifContext = new ArrayList<Field>(3);
+        List<Field> ifMbWorkers = new ArrayList<Field>(1);
+        List<Field> ifContRs = new ArrayList<Field>(1);
+        List<Field> ifClientInfo = new ArrayList<Field>(1);
+        List<Field> ifConditions = new ArrayList<Field>(1);
+        List<Field> ifCookieParam = new ArrayList<Field>(1);
+        List<Field> ifHeaderParam = new ArrayList<Field>(1);
+        List<Field> ifMatrixParam = new ArrayList<Field>(1);
+        List<Field> ifPathParam = new ArrayList<Field>(1);
+        List<Field> ifQueryParam = new ArrayList<Field>(1);
         for (Field field : this.jaxRsClass.getDeclaredFields()) {
             field.setAccessible(true);
             if (field.isAnnotationPresent(Context.class)) {
-                if (field.getType().equals(ClientInfo.class))
+                Class<?> fieldType = field.getType();
+                if (fieldType.equals(ClientInfo.class))
                     ifClientInfo.add(field);
-                else if (field.getType().equals(Conditions.class))
+                else if (fieldType.equals(Conditions.class))
                     ifConditions.add(field);
+                else if (fieldType.equals(MessageBodyWorkers.class))
+                    ifMbWorkers.add(field);
+                else if (fieldType.equals(ContextResolver.class))
+                    ifContRs.add(field);
                 else
                     ifContext.add(field);
             } else if (Util.isAnnotationPresentExtended(field, PathParam.class))
@@ -535,7 +573,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             else if (Util.isAnnotationPresentExtended(field, QueryParam.class))
                 ifQueryParam.add(field);
         }
-        this.injectFieldsContext = ifContext.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsCallContext = ifContext.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsMbWorkers = ifMbWorkers.toArray(EMPTY_FIELD_ARRAY);
+        this.injectFieldsContextResolvers = ifContRs.toArray(EMPTY_FIELD_ARRAY);
         this.injectFieldsClientInfo = ifClientInfo.toArray(EMPTY_FIELD_ARRAY);
         this.injectFieldsConditions = ifConditions.toArray(EMPTY_FIELD_ARRAY);
         this.injectFieldsCookieParam = ifCookieParam.toArray(EMPTY_FIELD_ARRAY);
@@ -599,26 +639,37 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param resourceObject
      * @param callContext
      *                The CallContext to get the dependencies from.
+     * @param internalResolvers
+     *                TODO
      * @throws InjectException
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
      * @throws MethodInvokeException
      *                 if the method annotated with &#64;{@link PostConstruct}
      *                 could not be called or throws an exception.
-     * @throws ConvertCookieParamException 
-     * @throws ConvertHeaderParamException 
-     * @throws ConvertMatrixParamException 
-     * @throws ConvertPathParamException 
-     * @throws ConvertQueryParamException 
+     * @throws ConvertCookieParamException
+     * @throws ConvertHeaderParamException
+     * @throws ConvertMatrixParamException
+     * @throws ConvertPathParamException
+     * @throws ConvertQueryParamException
      */
-    void init(ResourceObject resourceObject, CallContext callContext)
+    void init(ResourceObject resourceObject, CallContext callContext,
+            ContextResolverCollection internalResolvers)
             throws InjectException, WebApplicationException,
-            MethodInvokeException, ConvertCookieParamException, ConvertHeaderParamException, ConvertMatrixParamException, ConvertPathParamException, ConvertQueryParamException {
-        // inject fields annotated with @Context
+            MethodInvokeException, ConvertCookieParamException,
+            ConvertHeaderParamException, ConvertMatrixParamException,
+            ConvertPathParamException, ConvertQueryParamException {
         Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
-        for (Field contextField : this.injectFieldsContext) {
+        for (Field contextField : this.injectFieldsCallContext) {
             Util.inject(jaxRsResObj, contextField, callContext);
-            // TODO ContextResolver und MessageBodyWorker anders.
+        }
+        for (Field crf : this.injectFieldsContextResolvers) {
+            Util.inject(jaxRsResObj, crf, internalResolvers);
+        }
+        for (Field mbwField : this.injectFieldsMbWorkers) {
+            Object messageBodyWorkers = null;
+            Util.inject(jaxRsResObj, mbwField, messageBodyWorkers);
+            // TODO inject MessageBodyWorker
         }
         for (Field clientInfoField : this.injectFieldsClientInfo) {
             ClientInfo clientInfo = callContext.getRequest().getClientInfo();
@@ -670,8 +721,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             Class<?> convTo = cpf.getType();
             Type paramGenericType = cpf.getGenericType();
             Object value = getQueryParamValue(convTo, paramGenericType,
-                    headerParam, leaveEncoded, defaultValue, callContext, Logger
-                            .getAnonymousLogger());
+                    headerParam, leaveEncoded, defaultValue, callContext,
+                    Logger.getAnonymousLogger());
             Util.inject(jaxRsResObj, cpf, value);
         }
         // invoke @PostConstruct annotated method

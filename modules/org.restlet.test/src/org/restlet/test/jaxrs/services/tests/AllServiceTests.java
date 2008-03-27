@@ -32,6 +32,7 @@ public class AllServiceTests extends TestCase {
         mySuite.setName("All service tests");
         mySuite.addTestSuite(AncestorTest.class);
         mySuite.addTestSuite(CarTest.class);
+        mySuite.addTestSuite(ContextResolverTest.class);
         mySuite.addTestSuite(CookieParamTest.class);
         mySuite.addTestSuite(DeterminingMediaTypeTest.class);
         mySuite.addTestSuite(HeadOptionsTest.class);

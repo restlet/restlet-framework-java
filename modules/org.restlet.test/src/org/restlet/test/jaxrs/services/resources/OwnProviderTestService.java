@@ -22,8 +22,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Response;
 
-import org.restlet.test.jaxrs.services.others.CrazyTypeProvider;
 import org.restlet.test.jaxrs.services.others.Person;
+import org.restlet.test.jaxrs.services.providers.CrazyTypeProvider;
 import org.restlet.test.jaxrs.services.tests.OwnProviderTest;
 
 /**

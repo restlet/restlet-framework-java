@@ -390,7 +390,7 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
         // LATER Restlet fuer throw
         response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
         response.setEntity(new StringRepresentation(
-                "No MessageBodyReader found to convert from java type "
+                "No MessageBodyWriter found to convert from java type "
                         + paramType + " to one of the media types "
                         + accMediaTypes));
         throw new RequestHandledException();

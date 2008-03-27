@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -32,7 +33,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
@@ -41,6 +44,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateProviderException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRootRessourceException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
@@ -57,7 +61,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * @see javax.ws.rs.ext.Provider
  */
 public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
-        ContextResolver<T> {
+        org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<T> {
 
     /**
      * the mimes this MessageBodyReader consumes.
@@ -67,6 +71,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     private javax.ws.rs.ext.ContextResolver<T> contextResolver;
 
     private List<org.restlet.data.MediaType> producedMimes;
+
+    // TODO inject ContextResolver and MessageBodyReaders into Provider
 
     /**
      * The JAX-RS {@link javax.ws.rs.ext.MessageBodyReader} this wrapper
@@ -220,7 +226,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         return consumedMimes;
     }
 
-    public T getContext(Class<T> type) {
+    public T getContext(Class<?> type) {
         return contextResolver.getContext(type);
     }
 
@@ -274,16 +280,21 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * Injects the supported dependencies into this provider and calls the
      * method annotated with &#64;{@link PostConstruct}.
      * 
+     * @param internalResolvers
+     *                TODO
      * @throws InstantiateProviderException
      *                 if the provider could not be instantiated, because the
      *                 method could not be called or because of an Exception
      *                 while calling the post construct method.
+     * @throws InjectException
      */
     @SuppressWarnings("unused")
-    public void init() throws InstantiateProviderException {
+    public void init(ContextResolverCollection internalResolvers)
+            throws InstantiateProviderException, InjectException {
         // until now no dependencies possible.
         // Perhaps later some are added.
         Object jaxRsProvider = this.getJaxRsProvider();
+        injectContext(jaxRsProvider, internalResolvers);
         Class<? extends Object> providerClass = jaxRsProvider.getClass();
         Method postConstructMethod = Util
                 .findPostConstructMethod(providerClass);
@@ -297,6 +308,31 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         } catch (InvocationTargetException e) {
             String message = "Exception while calling " + postConstructMethod;
             throw new InstantiateProviderException(message, e);
+        }
+    }
+
+    /**
+     * Inject the values fields for &#64;{@link Context}.
+     * 
+     * @param internalResolvers
+     * @throws InjectException
+     */
+    private void injectContext(Object jaxRsProvider,
+            ContextResolverCollection internalResolvers) throws InjectException {
+        Class<? extends Object> providerClass = jaxRsProvider.getClass();
+        for (Field field : providerClass.getDeclaredFields()) {
+            if (!field.isAnnotationPresent(Context.class))
+                continue;
+            Class<?> fieldType = field.getType();
+            if (fieldType.equals(ContextResolver.class)) {
+                field.setAccessible(true);
+                Util.inject(jaxRsProvider, field, internalResolvers);
+            } else if (fieldType.equals(MessageBodyWorkers.class)) {
+                field.setAccessible(true);
+                Object toInject = null;
+                // TODO inject MessageBodyWorker
+                Util.inject(jaxRsProvider, field, toInject);
+            }
         }
     }
 
@@ -468,5 +504,16 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             OutputStream entityStream) throws IOException {
         writer.writeTo(object, type, genericType, annotations, mediaType,
                 httpHeaders, entityStream);
+    }
+
+    /**
+     * Returns the JAX-RS provider as {@link ContextResolver}, if the provider
+     * is a ContextResolver, otherwise null.
+     * 
+     * @return
+     * @see org.restlet.ext.jaxrs.internal.wrappers.ContextResolver#getJaxRsContextResolver()
+     */
+    public javax.ws.rs.ext.ContextResolver<?> getJaxRsContextResolver() {
+        return this.contextResolver;
     }
 }

@@ -25,6 +25,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
+import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -43,6 +45,9 @@ import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
  * @see MessageBodyWriter
  */
 @Provider
+@ProduceMime({"application/xml", MediaType.TEXT_XML, "application/*+xml"})
+@ConsumeMime({"application/xml", MediaType.TEXT_XML, "application/*+xml"})
+// TODO Jaxb(Element)Provider for application/*+xml
 public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
 
     private Logger logger = Logger.getLogger(JaxbElementProvider.class

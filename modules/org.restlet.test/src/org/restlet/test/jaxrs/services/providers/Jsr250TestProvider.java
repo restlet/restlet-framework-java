@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.test.jaxrs.services.others;
+package org.restlet.test.jaxrs.services.providers;
 
 import java.io.IOException;
 import java.io.OutputStream;

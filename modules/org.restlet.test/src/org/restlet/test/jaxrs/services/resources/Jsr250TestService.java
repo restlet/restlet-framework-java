@@ -23,7 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
-import org.restlet.test.jaxrs.services.others.Jsr250TestProvider;
+import org.restlet.test.jaxrs.services.providers.Jsr250TestProvider;
 import org.restlet.test.jaxrs.services.tests.Jsr250Test;
 
 /**

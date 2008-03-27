@@ -24,6 +24,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
+import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -37,6 +39,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Stephan Koops
  */
 @Provider
+@ProduceMime({"application/xml", MediaType.TEXT_XML, "application/*+xml"})
+@ConsumeMime({"application/xml", MediaType.TEXT_XML, "application/*+xml"})
 public class JaxbProvider extends AbstractJaxbProvider<Object> {
 
     private Logger logger = Logger.getLogger(JaxbProvider.class.getName());

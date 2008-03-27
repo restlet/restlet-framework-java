@@ -29,6 +29,7 @@ import org.restlet.test.jaxrs.util.PathRegExpTests;
 import org.restlet.test.jaxrs.util.RemainingPathTests;
 import org.restlet.test.jaxrs.util.UtilTests;
 import org.restlet.test.jaxrs.wrappers.RootResourceClassTest;
+import org.restlet.test.jaxrs.wrappers.WrapperClassesTests;
 
 /**
  * Collect all class tests
@@ -41,17 +42,20 @@ public class AllClassTests extends TestCase {
         TestSuite mySuite = new TestSuite();
         mySuite.setName("All class tests");
         // package .
+        mySuite.addTestSuite(HtmlPrefererTest.class);
         mySuite.addTestSuite(JaxRsRouterTest.class);
-        mySuite.addTestSuite(RootResourceClassTest.class);
-        mySuite.addTestSuite(PathRegExpTests.class);
         // package .core.
         mySuite.addTestSuite(JaxRsPathSegmentTest.class);
-        mySuite.addTestSuite(JaxRsUriInfoTest.class);
         mySuite.addTestSuite(JaxRsUriBuilderTest.class);
+        mySuite.addTestSuite(JaxRsUriInfoTest.class);
         // package .util.
         mySuite.addTestSuite(EncodeOrCheckTests.class);
+        mySuite.addTestSuite(PathRegExpTests.class);
         mySuite.addTestSuite(RemainingPathTests.class);
         mySuite.addTestSuite(UtilTests.class);
+        // package .wrappers.
+        mySuite.addTestSuite(RootResourceClassTest.class);
+        mySuite.addTestSuite(WrapperClassesTests.class);
         return mySuite;
     }
 }

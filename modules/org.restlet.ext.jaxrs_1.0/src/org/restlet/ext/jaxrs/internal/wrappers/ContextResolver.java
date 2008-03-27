@@ -35,5 +35,10 @@ public interface ContextResolver<T> {
      * context for the supplied type is not available from this provider.
      * @see javax.ws.rs.ext.ContextResolver#getContext(Class)
      */
-    public Object getContext(Class<T> type);
+    public T getContext(Class<?> type);
+
+    /**
+     * @return
+     */
+    public javax.ws.rs.ext.ContextResolver<?> getJaxRsContextResolver();
 }

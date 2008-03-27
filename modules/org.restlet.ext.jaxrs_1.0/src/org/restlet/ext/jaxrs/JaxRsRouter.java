@@ -56,6 +56,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
+import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateProviderException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRessourceException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRootRessourceException;
@@ -86,6 +87,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.util.WrappedRequestForHttpHeaders;
 import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.internal.wrappers.ContextResolver;
+import org.restlet.ext.jaxrs.internal.wrappers.ContextResolverCollection;
 import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyReaderSet;
 import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriter;
 import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriterSet;
@@ -142,7 +144,13 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
 
     private MessageBodyWriterSet messageBodyWriters = new MessageBodyWriterSet();
 
-    private Set<ContextResolver<?>> contextResolvers = new HashSet<ContextResolver<?>>();
+    /**
+     * This {@link Set} contains the available
+     * {@link javax.ws.rs.ext.ContextResolver}s, each wrapped with an
+     * {@link ContextResolver}.<br>
+     * This field is final, because it is shared with other objects.
+     */
+    private final ContextResolverCollection contextResolvers = new ContextResolverCollection();
 
     private WrapperFactory wrapperFactory;
 
@@ -172,7 +180,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
     public JaxRsRouter(Context context, ApplicationConfig appConfig,
             AccessControl accessControl) throws IllegalArgumentException {
         super(context);
-        this.wrapperFactory = new WrapperFactory(getContext().getLogger());
+        this.wrapperFactory = new WrapperFactory(getContext()
+                .getLogger());
         this.loadDefaultProviders();
         if (appConfig != null)
             this.attach(appConfig);
@@ -290,6 +299,10 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
                     String msg = "The provider " + providerClass.getName()
                             + " could not be instantiated";
                     throw new IllegalArgumentException(msg, ipe.getCause());
+                } catch (InjectException ie) {
+                    String msg = "The provider " + providerClass.getName()
+                            + " could not be instantiated";
+                    throw new IllegalArgumentException(msg, ie.getCause());
                 }
             }
         }
@@ -382,6 +395,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             throw new ImplementationException(e);
         } catch (InstantiateProviderException e) {
             throw new ImplementationException(e);
+        } catch (InjectException e) {
+            throw new ImplementationException(e);
         }
     }
 
@@ -397,11 +412,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * @throws IllegalArgumentException
      *                 if the provider is not a valid provider.
      * @throws InstantiateProviderException
+     * @throws InjectException
+     *                 If injection for &#64;{@link javax.ws.rs.core.Context}
      * @throws InvocationTargetException
      * @see {@link javax.ws.rs.ext.Provider}
      */
     private void addProvider(Class<?> jaxRsProviderClass)
-            throws IllegalArgumentException, InstantiateProviderException {
+            throws IllegalArgumentException, InstantiateProviderException,
+            InjectException {
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -419,13 +437,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             ipe.setStackTrace(e.getCause().getStackTrace());
             throw ipe;
         }
-        provider.init();
+        provider.init(this.contextResolvers);
         if (provider.isWriter())
             this.messageBodyWriters.add(provider);
         if (provider.isReader())
             this.messageBodyReaders.add(provider);
         if (provider.isContextResolver())
-            this.contextResolvers.add(provider);
+            this.contextResolvers.add(provider.getJaxRsContextResolver());
+        // TODO hold all providers for preDestroy
     }
 
     /**
@@ -599,8 +618,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         ResourceObject o;
         // LATER Do I use dynamic proxies, to inject instance variables?
         try {
-            o = rrc.createInstance(callContext, this.messageBodyReaders,
-                    getLogger());
+            o = rrc.createInstance(callContext, contextResolvers,
+                    this.messageBodyReaders, getLogger());
         } catch (WebApplicationException e) {
             throw e;
         } catch (NoMessageBodyReaderException e) {
@@ -682,7 +701,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
                 o = subResourceLocator.createSubResource(o, callContext,
-                        this.messageBodyReaders, wrapperFactory, getLogger());
+                        this.messageBodyReaders, wrapperFactory, contextResolvers, getLogger());
             } catch (WebApplicationException e) {
                 throw e;
             } catch (RuntimeException e) {

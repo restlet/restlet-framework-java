@@ -51,6 +51,8 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 @ConsumeMime(MediaType.APPLICATION_JSON)
 public class JsonProvider extends AbstractProvider<Object> {
 
+    // LATER better support planned for later.
+    
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */

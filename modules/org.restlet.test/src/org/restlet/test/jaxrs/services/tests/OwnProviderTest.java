@@ -24,7 +24,7 @@ import javax.ws.rs.core.ApplicationConfig;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.others.CrazyTypeProvider;
+import org.restlet.test.jaxrs.services.providers.CrazyTypeProvider;
 import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
 import org.restlet.test.jaxrs.util.TestUtils;
 
