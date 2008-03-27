@@ -55,9 +55,10 @@ public class DirectServerWrapper implements ServerWrapper {
      *                authentication.
      * @throws IllegalArgumentException
      */
-    public void setAccessControl(AccessControl accessControl)
+    public boolean setAccessControl(AccessControl accessControl)
             throws IllegalArgumentException {
         this.accessControl = accessControl;
+        return true;
     }
 
     public int getPort() {

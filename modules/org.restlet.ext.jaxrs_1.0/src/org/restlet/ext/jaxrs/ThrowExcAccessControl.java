@@ -26,9 +26,13 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
+ * <p>
  * An {@link AccessControl} that throws an WebApplicationExeption with status
  * 500 (Internal Server Error) for every call on it.<br>
+ * </p>
+ * <p>
  * For more explanation see the documentation of interface {@link AccessControl}.
+ * </p>
  * 
  * @see AccessControl
  * @author Stephan Koops

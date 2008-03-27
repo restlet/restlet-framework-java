@@ -45,17 +45,15 @@ public class SecurityContextService {
 
     @GET
     @ProduceMime("text/plain")
-    public String get(@Context
-    SecurityContext securityContext) {
+    public String get(@Context SecurityContext securityContext) {
         if (!securityContext.isUserInRole("bad"))
             throw new WebApplicationException(403);
         return "das darfst Du";
     }
 
     @POST
-    public Response post(@Context
-    SecurityContext securityContext, MultivaluedMap<String, String> entity, @Context
-    UriInfo uriInfo) {
+    public Response post(@Context SecurityContext securityContext,
+            MultivaluedMap<String, String> entity, @Context UriInfo uriInfo) {
         if (!securityContext.isUserInRole("bat"))
             throw new WebApplicationException(403);
         entity.toString(); // typically the entity will be stored in the DB.
@@ -68,16 +66,14 @@ public class SecurityContextService {
     @GET
     @Path("authenticationScheme")
     @ProduceMime("text/plain")
-    public String getAuthenticationScheme(@Context
-    SecurityContext securityContext) {
+    public String getAuthenticationScheme(@Context SecurityContext securityContext) {
         return securityContext.getAuthenticationScheme();
     }
 
     @GET
     @Path("userPrincipal")
     @ProduceMime("text/plain")
-    public String getUserPrincipal(@Context
-    SecurityContext securityContext) {
+    public String getUserPrincipal(@Context SecurityContext securityContext) {
         Principal principal = securityContext.getUserPrincipal();
         if(principal == null)
             return "-";
@@ -87,8 +83,7 @@ public class SecurityContextService {
     @GET
     @Path("secure")
     @ProduceMime("text/plain")
-    public String isSecure(@Context
-    SecurityContext securityContext) {
+    public String isSecure(@Context SecurityContext securityContext) {
         if (!securityContext.isSecure())
             throw new WebApplicationException(Status.CLIENT_ERROR_NOT_FOUND.getCode());
         return "wonderful! It's a secure request.";

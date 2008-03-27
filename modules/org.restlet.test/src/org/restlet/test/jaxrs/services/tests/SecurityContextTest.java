@@ -32,7 +32,6 @@ import org.restlet.ext.jaxrs.AccessControl;
 import org.restlet.ext.jaxrs.AllowAllAccess;
 import org.restlet.ext.jaxrs.ForbidAllAccess;
 import org.restlet.resource.Representation;
-import org.restlet.test.jaxrs.server.RestletServerWrapper;
 import org.restlet.test.jaxrs.server.ServerWrapper;
 import org.restlet.test.jaxrs.services.resources.SecurityContextService;
 
@@ -57,12 +56,7 @@ public class SecurityContextTest extends JaxRsTestCase {
      */
     private boolean setAccessControl(AccessControl accessControl) {
         ServerWrapper serverWrapper = getServerWrapper();
-        if (serverWrapper instanceof RestletServerWrapper) {
-            RestletServerWrapper restletServerWrapper = ((RestletServerWrapper) serverWrapper);
-            restletServerWrapper.setAccessControl(accessControl);
-            return true;
-        }
-        return false;
+        return serverWrapper.setAccessControl(accessControl);
     }
 
     @Override
@@ -124,14 +118,20 @@ public class SecurityContextTest extends JaxRsTestCase {
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
 
+    /**
+     * @see SecurityContextService#post(SecurityContext, javax.ws.rs.core.MultivaluedMap, javax.ws.rs.core.UriInfo)
+     * @throws Exception
+     */
     public void testAllowAll() throws Exception {
         if(!startServer(AllowAllAccess.getInstance())) // no authorization
             return;
-        Response response = get();
+        ChallengeResponse cr = new ChallengeResponse(
+                ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
+        Response response = get(null, cr);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
-        response = post(new Form("abc=def").getWebRepresentation());
+        response = post(null, new Form("abc=def").getWebRepresentation(), cr);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
         Reference expecretLocation = createReference(SEC_CONT_SERV, null);

@@ -74,6 +74,8 @@ public class PersonsTest extends JaxRsTestCase {
      * @see PersonResource#get(int)
      */
     public void testCreate() throws Exception {
+        if(USE_TCP)
+            return;
         Person newPerson = new Person("Kurt", "Beck");
         Response response1 = post(new JaxbRepresentation<Person>(newPerson));
         sysOutEntityIfError(response1);

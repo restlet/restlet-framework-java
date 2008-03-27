@@ -22,8 +22,12 @@ import java.security.Principal;
 import javax.ws.rs.core.SecurityContext;
 
 /**
+ * <p>
  * An {@link AccessControl} that forbid every what it is requested.<br>
+ * </p>
+ * <p>
  * For more explanation see the documentation of interface {@link AccessControl}.
+ * </p>
  * 
  * @see AccessControl
  * @author Stephan Koops

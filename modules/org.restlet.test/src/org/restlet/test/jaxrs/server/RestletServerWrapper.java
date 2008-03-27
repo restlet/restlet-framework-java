@@ -59,9 +59,10 @@ public class RestletServerWrapper implements ServerWrapper {
      *                authentication.
      * @throws IllegalArgumentException
      */
-    public void setAccessControl(AccessControl accessControl)
+    public boolean setAccessControl(AccessControl accessControl)
             throws IllegalArgumentException {
         this.accessControl = accessControl;
+        return true;
     }
 
     /**

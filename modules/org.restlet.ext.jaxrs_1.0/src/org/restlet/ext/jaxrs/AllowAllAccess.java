@@ -22,8 +22,13 @@ import java.security.Principal;
 import javax.ws.rs.core.SecurityContext;
 
 /**
+ * <p>
  * An AccessControl that always allow access.<br>
+ * If a Guard is used, it is nevertheless respected.
+ * </p>
+ * <p>
  * For more explanation see the documentation of interface {@link AccessControl}.
+ * </p>
  * 
  * @see AccessControl
  * @author Stephan Koops

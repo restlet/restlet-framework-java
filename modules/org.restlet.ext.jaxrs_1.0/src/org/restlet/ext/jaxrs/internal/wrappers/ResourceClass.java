@@ -581,8 +581,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         Collection<ResourceMethod> subRsesMeths = new ArrayList<ResourceMethod>();
         Collection<SubResourceLocator> subResLocs = new ArrayList<SubResourceLocator>();
         Method[] classMethods = jaxRsClass.getDeclaredMethods();
-        for (Method javaMethod : classMethods) {
-            Method annotatedMethod = getAnnotatedJavaMethod(javaMethod);
+        for (Method execMethod : classMethods) {
+            Method annotatedMethod = getAnnotatedJavaMethod(execMethod);
             if (annotatedMethod == null)
                 continue;
             Path path = annotatedMethod.getAnnotation(Path.class);
@@ -590,21 +590,23 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             httpMethod = ResourceMethod.getHttpMethod(annotatedMethod);
             try {
                 if (httpMethod != null) {
-                    if (!checkResMethodVolatileOrNotPublic(javaMethod, logger))
+                    if (!checkResMethodVolatileOrNotPublic(execMethod, logger))
                         continue;
-                    ResourceMethod subResMeth = new ResourceMethod(javaMethod,
+                    ResourceMethod subResMeth = new ResourceMethod(execMethod,
                             annotatedMethod, this, httpMethod);
                     subRsesMeths.add(subResMeth);
                     srmls.add(subResMeth);
+                    checkForPrimitiveParameters(execMethod, logger);
                 } else {
                     if (path != null) {
-                        if (!checkResMethodVolatileOrNotPublic(javaMethod,
+                        if (!checkResMethodVolatileOrNotPublic(execMethod,
                                 logger))
                             continue;
                         SubResourceLocator subResLoc = new SubResourceLocator(
-                                javaMethod, annotatedMethod, this);
+                                execMethod, annotatedMethod, this);
                         subResLocs.add(subResLoc);
                         srmls.add(subResLoc);
+                        checkForPrimitiveParameters(execMethod, logger);
                     }
                 }
             } catch (IllegalPathOnMethodException e) {
@@ -616,6 +618,25 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         this.subResourceLocators = subResLocs;
         this.subResourceMethods = subRsesMeths;
         this.subResourceMethodsAndLocators = srmls;
+    }
+
+    /**
+     * Warn, if one of the message parameters is primitive.
+     * 
+     * @param execMethod
+     * @param logger
+     */
+    private void checkForPrimitiveParameters(Method execMethod, Logger logger) {
+        Class<?>[] paramTypes = execMethod.getParameterTypes();
+        for (Class<?> paramType : paramTypes) {
+            if (paramType.isPrimitive()) {
+                logger.config("The method " + execMethod
+                        + " contains a primitive parameter " + paramType + ".");
+                logger
+                        .config("It is recommended to use it's wrapper class. If no value could be read from the request, now you would got the default value. If you use the wrapper class, you would get null.");
+                break;
+            }
+        }
     }
 
     /**
