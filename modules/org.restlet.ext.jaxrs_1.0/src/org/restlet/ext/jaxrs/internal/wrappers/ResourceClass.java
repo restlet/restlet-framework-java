@@ -631,7 +631,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param callContext
      *                The CallContext to get the dependencies from.
      * @param allResolvers
-     *                TODO
+     *                all available wrapped {@link ContextResolver}s.
      * @throws InjectException
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
@@ -659,7 +659,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         for (Field mbwField : this.injectFieldsMbWorkers) {
             Object messageBodyWorkers = null;
             Util.inject(jaxRsResObj, mbwField, messageBodyWorkers);
-            // TODO inject MessageBodyWorker
+            // TODO inject MessageBodyWorker to resource classes
         }
         for (Field clientInfoField : this.injectFieldsClientInfo) {
             ClientInfo clientInfo = callContext.getRequest().getClientInfo();

@@ -34,7 +34,7 @@ public class ConvertCookieParamException extends Exception {
      * @param cpe
      */
     public ConvertCookieParamException(ConvertParameterException cpe) {
-        super(cpe.getMessage());
+        super(cpe.getMessage(), cpe.getCause());
         this.setStackTrace(cpe.getStackTrace());
     }
 }

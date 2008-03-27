@@ -17,12 +17,14 @@
  */
 package org.restlet.test.jaxrs.services.resources;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import org.restlet.test.jaxrs.services.tests.QueryParamTest;
@@ -37,10 +39,37 @@ public class QueryParamTestService {
 
     @GET
     @ProduceMime("text/plain")
+    @Path("encodedA")
+    @Encoded
+    public String encodedA(@QueryParam("firstname") String firstname,
+            @QueryParam("lastname") String lastname) {
+        return firstname + " " + lastname;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
     @Path("a")
     public String getA(@QueryParam("firstname") String firstname,
             @QueryParam("lastname") String lastname) {
         return firstname + " " + lastname;
+    }
+
+    @GET
+    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Path("int")
+    public String getInt(@QueryParam("n1") int n1,
+            @QueryParam("n2") @DefaultValue("xx") int n2,
+            @QueryParam("n3") @DefaultValue("99") int n3) {
+        return n1+" "+n2+" "+n3;
+    }
+
+    @GET
+    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Path("Integer")
+    public String getInteger(@QueryParam("n1") Integer n1,
+            @QueryParam("n2") @DefaultValue("xx") Integer n2,
+            @QueryParam("n3") @DefaultValue("99") Integer n3) {
+        return n1+" "+n2+" "+n3;
     }
 
     @GET
@@ -53,16 +82,7 @@ public class QueryParamTestService {
             return "[empty]";
         return name;
     }
-
-    @GET
-    @ProduceMime("text/plain")
-    @Path("encodedA")
-    @Encoded
-    public String encodedA(@QueryParam("firstname") String firstname,
-            @QueryParam("lastname") String lastname) {
-        return firstname + " " + lastname;
-    }
-
+    
     @GET
     @ProduceMime("text/plain")
     @Path("qpDecoded")
@@ -71,7 +91,7 @@ public class QueryParamTestService {
         String lastname = uriInfo.getQueryParameters().getFirst("lastname");
         return firstname + " " + lastname;
     }
-
+    
     @GET
     @ProduceMime("text/plain")
     @Path("qpEncoded")

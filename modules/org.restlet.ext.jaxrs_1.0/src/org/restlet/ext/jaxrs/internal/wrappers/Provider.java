@@ -72,8 +72,6 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
 
     private List<org.restlet.data.MediaType> producedMimes;
 
-    // TODO inject ContextResolver and MessageBodyReaders into Provider
-
     /**
      * The JAX-RS {@link javax.ws.rs.ext.MessageBodyReader} this wrapper
      * represent.
@@ -273,23 +271,26 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * Injects the supported dependencies into this provider and calls the
      * method annotated with &#64;{@link PostConstruct}.
      * 
-     * @param internalResolvers
-     *                TODO
+     * @param allResolvers
+     *                all available wrapped {@link ContextResolver}s.
      * @throws InjectException
      */
     @SuppressWarnings("unused")
-    public void init(Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> internalResolvers)
+    public void init(
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers)
             throws InjectException {
-        injectContext(internalResolvers);
+        injectContext(allResolvers);
     }
 
     /**
      * Inject the values fields for &#64;{@link Context}.
      * 
      * @param allResolvers
+     *                all available wrapped {@link ContextResolver}s.
      * @throws InjectException
      */
-    private void injectContext(Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers)
+    private void injectContext(
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers)
             throws InjectException {
         Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
         do {
@@ -300,14 +301,14 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
                 if (fieldType.equals(ContextResolver.class)) {
                     field.setAccessible(true);
                     ContextResolver<?> injectCR;
-                    jaxRsProvider.toString(); // avoid trouble, don't ask why  ...
+                    jaxRsProvider.toString(); // avoid trouble, don't ask why
                     injectCR = WrapperUtil.getContextResolver(field,
                             allResolvers);
                     Util.inject(this.jaxRsProvider, field, injectCR);
                 } else if (fieldType.equals(MessageBodyWorkers.class)) {
                     field.setAccessible(true);
                     Object toInject = null;
-                    // TODO inject MessageBodyWorker
+                    // TODO inject MessageBodyWorker to provider
                     Util.inject(this.jaxRsProvider, field, toInject);
                 }
             }

@@ -34,7 +34,7 @@ public class ConvertHeaderParamException extends Exception {
      * @param cpe
      */
     public ConvertHeaderParamException(ConvertParameterException cpe) {
-        super(cpe.getMessage());
+        super(cpe.getMessage(), cpe.getCause());
         this.setStackTrace(cpe.getStackTrace());
     }
 }

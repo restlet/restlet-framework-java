@@ -34,7 +34,7 @@ public class ConvertQueryParamException extends Exception {
      * @param cpe
      */
     public ConvertQueryParamException(ConvertParameterException cpe) {
-        super(cpe.getMessage());
+        super(cpe.getMessage(), cpe.getCause());
         this.setStackTrace(cpe.getStackTrace());
     }
 }

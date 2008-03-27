@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -80,8 +81,8 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                the {@link JaxRsRouter}.
      * @param wrapperFactory
      *                factory to create wrappers.
-     * @param contextResolvers
-     *                TODO
+     * @param allResolvers
+     *                all available wrapped {@link ContextResolver}s.
      * @param logger
      *                The logger to use
      * @return Returns the wrapped sub resource object.
@@ -100,7 +101,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
     public ResourceObject createSubResource(ResourceObject resourceObject,
             CallContext callContext, MessageBodyReaderSet mbrs,
             WrapperFactory wrapperFactory,
-            Collection<ContextResolver<?>> contextResolvers, Logger logger)
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers, Logger logger)
             throws InvocationTargetException, MissingAnnotationException,
             WebApplicationException, NoMessageBodyReaderException,
             InstantiateRessourceException, ConvertRepresentationException,
@@ -137,7 +138,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         ResourceObject subResourceObject = new ResourceObject(subResObj,
                 resourceClass);
         try {
-            subResourceObject.init(callContext, contextResolvers);
+            subResourceObject.init(callContext, allResolvers);
         } catch (InjectException e) {
             throw new InstantiateRessourceException(executeMethod, e);
         }

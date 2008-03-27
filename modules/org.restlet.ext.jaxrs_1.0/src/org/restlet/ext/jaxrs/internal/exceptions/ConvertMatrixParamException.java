@@ -34,7 +34,7 @@ public class ConvertMatrixParamException extends Exception {
      * @param cpe
      */
     public ConvertMatrixParamException(ConvertParameterException cpe) {
-        super(cpe.getMessage());
+        super(cpe.getMessage(), cpe.getCause());
         this.setStackTrace(cpe.getStackTrace());
     }
 }

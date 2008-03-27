@@ -91,6 +91,22 @@ public abstract class AbstractJaxRsWrapper {
 
     private static final Collection<Class<? extends Annotation>> VALID_ANNOTATIONS = createValidAnnotations();
 
+    private static final Boolean DEFAULT_BOOLEAN = Boolean.FALSE;
+
+    private static final Character DEFAULT_CHAR = new Character('\0');
+
+    private static final Short DEFAULT_SHORT = 0;
+
+    private static final Long DEFAULT_LONG = new Long(0);
+
+    private static final Byte DEFAULT_BYTE = (byte) 0;
+
+    private static final Float DEFAULT_FLOAT = 0.0f;
+
+    private static final Double DEFAULT_DOUBLE = 0d;
+
+    private static final Integer DEFAULT_INT = 0;
+
     /**
      * Converts the given paramValue (found in the path, query, matrix or
      * header) into the given paramClass.
@@ -121,8 +137,26 @@ public abstract class AbstractJaxRsWrapper {
             paramValue = defaultValue.value();
         if (paramClass.equals(String.class)) // optimization
             return paramValue;
-        if (paramClass.isPrimitive())
+        if (paramClass.isPrimitive()) {
+            if (paramValue != null && paramValue.length() <= 0)
+                paramValue = defaultValue.value();
             return getParamValueForPrimitive(paramClass, paramValue);
+        }
+        return convertParamValueFromParam(paramClass, paramValue, defaultValue);
+    }
+
+    /**
+     * converts the given value without any decoding.
+     * 
+     * @param paramClass
+     * @param paramValue
+     * @param defaultValue
+     * @return
+     * @throws ConvertParameterException
+     */
+    private static Object convertParamValueFromParam(Class<?> paramClass,
+            String paramValue, DefaultValue defaultValue)
+            throws ConvertParameterException {
         try {
             Constructor<?> constr = paramClass.getConstructor(String.class);
             return constr.newInstance(paramValue);
@@ -144,6 +178,15 @@ public abstract class AbstractJaxRsWrapper {
         } catch (IllegalAccessException e) {
             throw ConvertParameterException.object(paramClass, paramValue, e);
         } catch (InvocationTargetException e) {
+            if ((paramValue == null || paramValue.length() <= 0)
+                    && (e.getCause() instanceof IllegalArgumentException)) {
+                if (defaultValue == null)
+                    return null;
+                else {
+                    String dfv = defaultValue.value();
+                    return convertParamValueFromParam(paramClass, dfv, null);
+                }
+            }
             throw ConvertParameterException.object(paramClass, paramValue, e);
         }
     }
@@ -651,25 +694,47 @@ public abstract class AbstractJaxRsWrapper {
     private static Object getParamValueForPrimitive(Class<?> paramClass,
             String paramValue) throws ConvertParameterException {
         try {
-            if (paramClass == Integer.TYPE)
+            if (paramClass == Integer.TYPE) {
+                if ((paramValue == null || paramValue.length() <= 0))
+                    return DEFAULT_INT;
                 return new Integer(paramValue);
-            if (paramClass == Double.TYPE)
+            }
+            if (paramClass == Double.TYPE) {
+                if ((paramValue == null || paramValue.length() <= 0))
+                    return DEFAULT_DOUBLE;
                 return new Double(paramValue);
-            if (paramClass == Float.TYPE)
+            }
+            if (paramClass == Float.TYPE) {
+                if ((paramValue == null || paramValue.length() <= 0))
+                    return DEFAULT_FLOAT;
                 return new Float(paramValue);
-            if (paramClass == Byte.TYPE)
+            }
+            if (paramClass == Byte.TYPE) {
+                if ((paramValue == null || paramValue.length() <= 0))
+                    return DEFAULT_BYTE;
                 return new Byte(paramValue);
-            if (paramClass == Long.TYPE)
+            }
+            if (paramClass == Long.TYPE) {
+                if ((paramValue == null || paramValue.length() <= 0))
+                    return DEFAULT_LONG;
                 return new Long(paramValue);
-            if (paramClass == Short.TYPE)
+            }
+            if (paramClass == Short.TYPE) {
+                if ((paramValue == null || paramValue.length() <= 0))
+                    return DEFAULT_SHORT;
                 return new Short(paramValue);
+            }
             if (paramClass == Character.TYPE) {
+                if ((paramValue == null || paramValue.length() <= 0))
+                    return DEFAULT_CHAR;
                 if (paramValue.length() == 1)
                     return paramValue.charAt(0);
                 throw ConvertParameterException.primitive(paramClass,
                         paramValue, null);
             }
             if (paramClass == Boolean.TYPE) {
+                if ((paramValue == null || paramValue.length() <= 0))
+                    return DEFAULT_BOOLEAN;
                 if (paramValue.equalsIgnoreCase("true"))
                     return Boolean.TRUE;
                 if (paramValue.equalsIgnoreCase("false"))

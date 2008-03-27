@@ -34,6 +34,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -270,8 +271,8 @@ public class RootResourceClass extends ResourceClass {
      * 
      * @param jaxRsClass
      *                the root resource class to wrap
-     * @param internalresolvers
-     *                TODO
+     * @param logger
+     *                the logger to use.
      * @see WrapperFactory#getRootResourceClass(Class)
      * @throws IllegalArgumentException
      *                 if the class is not a valid root resource class.
@@ -297,8 +298,8 @@ public class RootResourceClass extends ResourceClass {
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
-     * @param contextResolvers
-     *                TODO
+     * @param allResolvers
+     *                all available wrapped {@link ContextResolver}s.
      * @param mbrs
      *                The Set of all available {@link MessageBodyReader}s in
      *                the {@link JaxRsRouter}.
@@ -317,8 +318,9 @@ public class RootResourceClass extends ResourceClass {
      * @throws ConvertHeaderParamException
      * @throws ConvertRepresentationException
      */
-    public ResourceObject createInstance(CallContext callContext,
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> contextResolvers,
+    public ResourceObject createInstance(
+            CallContext callContext,
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers,
             MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException,
             InstantiateRootRessourceException, NoMessageBodyReaderException,
@@ -331,7 +333,7 @@ public class RootResourceClass extends ResourceClass {
                 callContext, mbrs, logger);
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {
-            rootResourceObject.init(callContext, contextResolvers);
+            rootResourceObject.init(callContext, allResolvers);
         } catch (InjectException e) {
             throw new InstantiateRootRessourceException(e);
         }

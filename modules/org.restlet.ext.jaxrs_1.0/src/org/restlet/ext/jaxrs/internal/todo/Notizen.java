@@ -30,17 +30,12 @@ public class Notizen {
     // LATER alle LATERs in Masterarbeit uebernehmen
 
     // TODO look for warnings in tests and put them away.
-    // gehoert. Gibt es dann ne Endlosrekursion?
-
-    // TODO inject ContextResolver and MessageBodyWorkers into providers.
 
     // TODO When writing responses, implementations SHOULD respect
     // application-supplied character set metadata and SHOULD use UTF-8 if a
     // character set is not specified by the application or if the application
     // specifies a character set that is unsupported.
 
-    // LATER Constructor-Nutzung ist inkompatibel
-    
     // TODO JaxRsComponent
     // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc17
     // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc19
@@ -50,14 +45,8 @@ public class Notizen {
     
     // TESTEN what happens, if ".." or "." in @Path?
     
-    // TESTEN set values for @*Param, if not available on primitives
-    
-    // TODO inject ContextProvider to other providers and resource instances
-    
     // REQUEST Spec, section 5.1.3. (Content Negotiation and Preconditions):
     // request.evaluatePRECONDITIONS(...); null is not necessary
-    
-    // TESTEN @DefaultValue on Integer and int
     
     // REQUESTED @Context on type PathSegment ?
     
@@ -65,5 +54,5 @@ public class Notizen {
     
     // REQUEST javadoc of PathParam: Template -> Path
     
-    // TODO read already javadoc of PathSegment 
+    // TODO read javadoc of PathSegment again. 
 }

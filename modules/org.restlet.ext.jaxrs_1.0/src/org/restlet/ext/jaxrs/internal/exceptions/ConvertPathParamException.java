@@ -33,7 +33,7 @@ public class ConvertPathParamException extends Exception {
      * @param cpe
      */
     public ConvertPathParamException(ConvertParameterException cpe) {
-        super(cpe.getMessage());
+        super(cpe.getMessage(), cpe.getCause());
         this.setStackTrace(cpe.getStackTrace());
     }
 }
