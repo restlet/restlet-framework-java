@@ -343,6 +343,7 @@
       <path refid="mod-ri-path" />
       <path refid="mod-javamail-path" />
       <path refid="mod-jaxb-path" />
+      <path refid="mod-json-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <fileset dir="${lib}/${lib-jaxrs-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-annotation-id}" includes="*.jar" />
