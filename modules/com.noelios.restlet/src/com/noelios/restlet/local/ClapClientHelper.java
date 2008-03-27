@@ -118,13 +118,24 @@ public class ClapClientHelper extends LocalClientHelper {
         if (request.getMethod().equals(Method.GET)
                 || request.getMethod().equals(Method.HEAD)) {
             String path = request.getResourceRef().getPath();
+            URL url = null;
+            Date modificationDate = null;
 
             // Prepare a classloader URI, removing the leading slash
-            if ((path != null) && path.startsWith("/"))
+            if ((path != null) && path.startsWith("/")) {
                 path = path.substring(1);
-            // As the path may be percent-encoded, it has to be percent-decoded.
-            URL url = classLoader.getResource(Reference.decode(path));
-            Date modificationDate = null;
+            }
+
+            // Get the URL to the classloader 'resource'
+            if (classLoader != null) {
+                // As the path may be percent-encoded, it has to be
+                // percent-decoded.
+                url = classLoader.getResource(Reference.decode(path));
+            } else {
+                getLogger()
+                        .warning(
+                                "Unable to get the resource. The selected classloader is null.");
+            }
 
             // The ClassLoader returns a directory listing in some cases.
             // As this listing is partial, it is of little value in the context
@@ -170,5 +181,4 @@ public class ClapClientHelper extends LocalClientHelper {
             response.getAllowedMethods().add(Method.HEAD);
         }
     }
-
 }

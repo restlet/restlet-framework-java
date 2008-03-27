@@ -17,7 +17,9 @@ Changes log
         - Fixed NPE in RestletFrameworkServlet. Reported by Yuri de Wit
           and fixed by Rhett Sutphin.
         - Fixed socket closing issues with the internal HTTP connectors.
-          Reported and fixed by Kevin Conaway. 
+          Reported and fixed by Kevin Conaway.
+        - Fixed potential NPE in CLAP connector. Reported by Rob 
+          Heittman. 
     - API Enhancements
         - Made the org.restlet.util.Resolver generic and used it in 
           Guard to allow the user to provide a secret resolver without
