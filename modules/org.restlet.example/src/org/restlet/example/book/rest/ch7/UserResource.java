@@ -251,7 +251,7 @@ public class UserResource extends Resource {
                 getUser().setPassword(form.getFirstValue("user[password]"));
 
                 // Commit the changes
-                getContainer().set(getUser());
+                getContainer().store(getUser());
                 getContainer().commit();
             }
         }

@@ -82,7 +82,7 @@ public class BookmarkResource extends UserResource {
             // Delete the bookmark
             getUser().getBookmarks().remove(this.bookmark);
             getContainer().delete(this.bookmark);
-            getContainer().set(getUser());
+            getContainer().store(getUser());
             getContainer().commit();
             getResponse().setStatus(Status.SUCCESS_OK);
         } else {
@@ -146,8 +146,8 @@ public class BookmarkResource extends UserResource {
                         .getFirstValue("bookmark[restrict]")));
 
                 // Commit the changes
-                getContainer().set(this.bookmark);
-                getContainer().set(getUser());
+                getContainer().store(this.bookmark);
+                getContainer().store(getUser());
                 getContainer().commit();
             }
         } else {
