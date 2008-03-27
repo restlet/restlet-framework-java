@@ -18,6 +18,16 @@
 package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.ws.rs.ext.ContextResolver;
+
+import org.restlet.ext.jaxrs.internal.provider.ReturnNullContextResolver;
 
 /**
  * @author Stephan Koops
@@ -26,4 +36,46 @@ import java.lang.reflect.Field;
 class WrapperUtil {
 
     static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
+
+    /**
+     * Creates the {@link ContextResolver} to inject in the given field.
+     * 
+     * @param field
+     * @param allResolvers
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    static ContextResolver<?> getContextResolver(Field field,
+            Collection<ContextResolver<?>> allResolvers) {
+        Type genType = field.getGenericType();
+        if (!(genType instanceof ParameterizedType))
+            return ReturnNullContextResolver.get();
+        Type t = ((ParameterizedType) genType).getActualTypeArguments()[0];
+        if (!(t instanceof Class))
+            return ReturnNullContextResolver.get();
+        Class crType = (Class) t;
+        List<ContextResolver<?>> returnResolvers = new ArrayList<ContextResolver<?>>();
+        for (ContextResolver<?> cr : allResolvers) {
+            Class<? extends ContextResolver> crClaz = cr.getClass();
+            try {
+                Method getContext = crClaz.getMethod("getContext", Class.class);
+                if (getContext.getReturnType().equals(crType))
+                    returnResolvers.add(cr);
+            } catch (SecurityException e) {
+                throw new RuntimeException(
+                        "sorry, the method getContext(Class) of ContextResolver "
+                                + crClaz + " is not accessible");
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(
+                        "The ContextResolver "
+                                + crClaz
+                                + " is not valid, because it has no method getContext(Class)");
+            }
+        }
+        if (returnResolvers.isEmpty())
+            return ReturnNullContextResolver.get();
+        if (returnResolvers.size() == 1)
+            return returnResolvers.get(0);
+        return new ContextResolverCollection(returnResolvers);
+    }
 }

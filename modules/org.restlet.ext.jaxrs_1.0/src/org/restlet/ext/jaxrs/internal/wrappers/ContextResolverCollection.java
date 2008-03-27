@@ -17,7 +17,6 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.ws.rs.ext.ContextResolver;
@@ -29,22 +28,13 @@ import javax.ws.rs.ext.ContextResolver;
  */
 public class ContextResolverCollection implements ContextResolver<Object> {
 
-    private Collection<ContextResolver<Object>> resolvers = new ArrayList<ContextResolver<Object>>();
+    private Collection<ContextResolver<?>> resolvers;
 
     /**
-     * @param returnResolvers
+     * @param resolvers
      */
-    public ContextResolverCollection() {
-    }
-
-    /**
-     * Adds the ContextResolver to this collection.
-     * 
-     * @param contextResolver
-     */
-    @SuppressWarnings("unchecked")
-    public void add(ContextResolver contextResolver) {
-        this.resolvers.add(contextResolver);
+    public ContextResolverCollection(Collection<ContextResolver<?>> resolvers) {
+        this.resolvers = resolvers;
     }
 
     /**

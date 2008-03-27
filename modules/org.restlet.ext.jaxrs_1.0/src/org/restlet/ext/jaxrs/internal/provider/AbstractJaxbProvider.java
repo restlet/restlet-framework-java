@@ -23,7 +23,9 @@ import java.io.OutputStream;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -35,6 +37,8 @@ import javax.xml.bind.Unmarshaller;
  */
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
+    @Context ContextResolver<JAXBContext> contextResolver;
+    
     /**
      * @see MessageBodyWriter#getSize(Object)
      */
@@ -69,10 +73,13 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
         }
     }
 
-    private JAXBContext getJaxbContext(Class<?> clazz) throws JAXBException {
+    private JAXBContext getJaxbContext(Class<?> type) throws JAXBException {
         // LATER perhaps caching the JAXBContext
+        JAXBContext jaxbContext = contextResolver.getContext(type);
+        if(jaxbContext != null)
+            return jaxbContext;
         try {
-            return JAXBContext.newInstance(clazz);
+            return JAXBContext.newInstance(type);
         } catch (NoClassDefFoundError e) {
             throw new WebApplicationException(Response.serverError().entity(
                     e.getMessage()).build());

@@ -25,6 +25,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -277,7 +278,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @throws InjectException
      */
     @SuppressWarnings("unused")
-    public void init(ContextResolverCollection internalResolvers)
+    public void init(Collection<ContextResolver<?>> internalResolvers)
             throws InjectException {
         injectContext(internalResolvers);
     }
@@ -285,27 +286,33 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     /**
      * Inject the values fields for &#64;{@link Context}.
      * 
-     * @param internalResolvers
-     * 
+     * @param allResolvers
      * @throws InjectException
      */
-    private void injectContext(ContextResolverCollection internalResolvers)
+    private void injectContext(Collection<ContextResolver<?>> allResolvers)
             throws InjectException {
         Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
-        for (Field field : providerClass.getDeclaredFields()) {
-            if (!field.isAnnotationPresent(Context.class))
-                continue;
-            Class<?> fieldType = field.getType();
-            if (fieldType.equals(ContextResolver.class)) {
-                field.setAccessible(true);
-                Util.inject(this.jaxRsProvider, field, internalResolvers);
-            } else if (fieldType.equals(MessageBodyWorkers.class)) {
-                field.setAccessible(true);
-                Object toInject = null;
-                // TODO inject MessageBodyWorker
-                Util.inject(this.jaxRsProvider, field, toInject);
+        do {
+            for (Field field : providerClass.getDeclaredFields()) {
+                if (!field.isAnnotationPresent(Context.class))
+                    continue;
+                Class<?> fieldType = field.getType();
+                if (fieldType.equals(ContextResolver.class)) {
+                    field.setAccessible(true);
+                    ContextResolver<?> injectCR;
+                    jaxRsProvider.toString(); // avoid trouble, don't ask why  ...
+                    injectCR = WrapperUtil.getContextResolver(field,
+                            allResolvers);
+                    Util.inject(this.jaxRsProvider, field, injectCR);
+                } else if (fieldType.equals(MessageBodyWorkers.class)) {
+                    field.setAccessible(true);
+                    Object toInject = null;
+                    // TODO inject MessageBodyWorker
+                    Util.inject(this.jaxRsProvider, field, toInject);
+                }
             }
-        }
+            providerClass = providerClass.getSuperclass();
+        } while (providerClass != null);
     }
 
     /**

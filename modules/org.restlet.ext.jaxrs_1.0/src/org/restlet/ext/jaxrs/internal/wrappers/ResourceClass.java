@@ -18,6 +18,7 @@
 package org.restlet.ext.jaxrs.internal.wrappers;
 
 import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.EMPTY_FIELD_ARRAY;
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getContextResolver;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -534,31 +535,35 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         List<Field> ifMatrixParam = new ArrayList<Field>(1);
         List<Field> ifPathParam = new ArrayList<Field>(1);
         List<Field> ifQueryParam = new ArrayList<Field>(1);
-        for (Field field : this.jaxRsClass.getDeclaredFields()) {
-            field.setAccessible(true);
-            if (field.isAnnotationPresent(Context.class)) {
-                Class<?> fieldType = field.getType();
-                if (fieldType.equals(ClientInfo.class))
-                    ifClientInfo.add(field);
-                else if (fieldType.equals(Conditions.class))
-                    ifConditions.add(field);
-                else if (fieldType.equals(MessageBodyWorkers.class))
-                    ifMbWorkers.add(field);
-                else if (fieldType.equals(ContextResolver.class))
-                    ifContRs.add(field);
-                else
-                    ifContext.add(field);
-            } else if (Util.isAnnotationPresentExtended(field, PathParam.class))
-                ifPathParam.add(field);
-            else if (Util.isAnnotationPresentExtended(field, CookieParam.class))
-                ifCookieParam.add(field);
-            else if (Util.isAnnotationPresentExtended(field, HeaderParam.class))
-                ifHeaderParam.add(field);
-            else if (Util.isAnnotationPresentExtended(field, MatrixParam.class))
-                ifMatrixParam.add(field);
-            else if (Util.isAnnotationPresentExtended(field, QueryParam.class))
-                ifQueryParam.add(field);
-        }
+        Class<?> jaxRsClass2 = this.jaxRsClass;
+        do {
+            for (Field field : jaxRsClass2.getDeclaredFields()) {
+                field.setAccessible(true);
+                if (field.isAnnotationPresent(Context.class)) {
+                    Class<?> fieldType = field.getType();
+                    if (fieldType.equals(ClientInfo.class))
+                        ifClientInfo.add(field);
+                    else if (fieldType.equals(Conditions.class))
+                        ifConditions.add(field);
+                    else if (fieldType.equals(MessageBodyWorkers.class))
+                        ifMbWorkers.add(field);
+                    else if (fieldType.equals(ContextResolver.class))
+                        ifContRs.add(field);
+                    else
+                        ifContext.add(field);
+                } else if (Util.isAnnotationPresentExt(field, PathParam.class))
+                    ifPathParam.add(field);
+                else if (Util.isAnnotationPresentExt(field, CookieParam.class))
+                    ifCookieParam.add(field);
+                else if (Util.isAnnotationPresentExt(field, HeaderParam.class))
+                    ifHeaderParam.add(field);
+                else if (Util.isAnnotationPresentExt(field, MatrixParam.class))
+                    ifMatrixParam.add(field);
+                else if (Util.isAnnotationPresentExt(field, QueryParam.class))
+                    ifQueryParam.add(field);
+            }
+            jaxRsClass2 = jaxRsClass2.getSuperclass();
+        } while (jaxRsClass2 != null);
         this.injectFieldsCallContext = ifContext.toArray(EMPTY_FIELD_ARRAY);
         this.injectFieldsMbWorkers = ifMbWorkers.toArray(EMPTY_FIELD_ARRAY);
         this.injectFieldsContextResolvers = ifContRs.toArray(EMPTY_FIELD_ARRAY);
@@ -625,7 +630,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param resourceObject
      * @param callContext
      *                The CallContext to get the dependencies from.
-     * @param internalResolvers
+     * @param allResolvers
      *                TODO
      * @throws InjectException
      *                 if the injection was not possible. See
@@ -637,7 +642,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @throws ConvertQueryParamException
      */
     void init(ResourceObject resourceObject, CallContext callContext,
-            ContextResolverCollection internalResolvers)
+            Collection<ContextResolver<?>> allResolvers)
             throws InjectException, WebApplicationException,
             ConvertCookieParamException, ConvertHeaderParamException,
             ConvertMatrixParamException, ConvertPathParamException,
@@ -646,8 +651,10 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         for (Field contextField : this.injectFieldsCallContext) {
             Util.inject(jaxRsResObj, contextField, callContext);
         }
-        for (Field crf : this.injectFieldsContextResolvers) {
-            Util.inject(jaxRsResObj, crf, internalResolvers);
+        for (Field field : this.injectFieldsContextResolvers) {
+            ContextResolver<?> contextResolver;
+            contextResolver = getContextResolver(field, allResolvers);
+            Util.inject(jaxRsResObj, field, contextResolver);
         }
         for (Field mbwField : this.injectFieldsMbWorkers) {
             Object messageBodyWorkers = null;

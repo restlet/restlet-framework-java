@@ -86,7 +86,6 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.util.WrappedRequestForHttpHeaders;
 import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.internal.wrappers.ContextResolver;
-import org.restlet.ext.jaxrs.internal.wrappers.ContextResolverCollection;
 import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyReaderSet;
 import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriter;
 import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriterSet;
@@ -147,7 +146,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * {@link ContextResolver}.<br>
      * This field is final, because it is shared with other objects.
      */
-    private final ContextResolverCollection contextResolvers = new ContextResolverCollection();
+    private final Collection<javax.ws.rs.ext.ContextResolver<?>> contextResolvers = new HashSet<javax.ws.rs.ext.ContextResolver<?>>();
 
     private WrapperFactory wrapperFactory;
 
@@ -294,11 +293,11 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
                 } catch (InstantiateProviderException ipe) {
                     String msg = "The provider " + providerClass.getName()
                             + " could not be instantiated";
-                    throw new IllegalArgumentException(msg, ipe.getCause());
+                    throw new IllegalArgumentException(msg, ipe);
                 } catch (InjectException ie) {
                     String msg = "The provider " + providerClass.getName()
                             + " could not be instantiated";
-                    throw new IllegalArgumentException(msg, ie.getCause());
+                    throw new IllegalArgumentException(msg, ie);
                 }
             }
         }

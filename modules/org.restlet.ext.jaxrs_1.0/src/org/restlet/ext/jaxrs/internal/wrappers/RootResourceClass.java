@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
@@ -33,6 +34,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -317,7 +319,7 @@ public class RootResourceClass extends ResourceClass {
      * @throws ConvertRepresentationException
      */
     public ResourceObject createInstance(CallContext callContext,
-            ContextResolverCollection contextResolvers,
+            Collection<ContextResolver<?>> contextResolvers,
             MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException,
             InstantiateRootRessourceException, NoMessageBodyReaderException,

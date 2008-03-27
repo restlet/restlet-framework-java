@@ -34,7 +34,8 @@ public class UtilTests extends TestCase {
     /**
      * @see #testIsAnnotationPresent1()
      */
-    @HeaderParam("h1") String hpAnnotated;
+    @HeaderParam("h1")
+    String hpAnnotated;
 
     /**
      * @see #testIsAnnotationPresent2()
@@ -44,59 +45,56 @@ public class UtilTests extends TestCase {
     /**
      * @see #testIsAnnotationPresent3()
      */
-    @CookieParam("c1") String cpAnnotated;
+    @CookieParam("c1")
+    String cpAnnotated;
 
     /**
-     * @see Util#isAnnotationPresentExtended(java.lang.reflect.AnnotatedElement,
+     * @see Util#isAnnotationPresentExt(java.lang.reflect.AnnotatedElement,
      *      Class)
      * @throws Exception
      */
     public void testIsAnnotationPresent1() throws Exception {
         Field hpAnnotated = UtilTests.class.getDeclaredField("hpAnnotated");
 
-        assertTrue(Util.isAnnotationPresentExtended(hpAnnotated,
-                HeaderParam.class));
-        assertTrue(Util.isAnnotationPresentExtended(hpAnnotated,
+        assertTrue(Util.isAnnotationPresentExt(hpAnnotated, HeaderParam.class));
+        assertTrue(Util.isAnnotationPresentExt(hpAnnotated,
                 javax.ws.rs.HeaderParam.class));
-        assertFalse(Util.isAnnotationPresentExtended(hpAnnotated,
-                CookieParam.class));
-        assertFalse(Util.isAnnotationPresentExtended(hpAnnotated,
+        assertFalse(Util.isAnnotationPresentExt(hpAnnotated, CookieParam.class));
+        assertFalse(Util.isAnnotationPresentExt(hpAnnotated,
                 javax.ws.rs.CookieParam.class));
     }
 
     /**
-     * @see Util#isAnnotationPresentExtended(java.lang.reflect.AnnotatedElement,
+     * @see Util#isAnnotationPresentExt(java.lang.reflect.AnnotatedElement,
      *      Class)
      * @throws Exception
      */
     public void testIsAnnotationPresent2() throws Exception {
         Field notAnnotated = UtilTests.class.getDeclaredField("notAnnotated");
 
-        assertFalse(Util.isAnnotationPresentExtended(notAnnotated,
-                HeaderParam.class));
-        assertFalse(Util.isAnnotationPresentExtended(notAnnotated,
+        assertFalse(Util
+                .isAnnotationPresentExt(notAnnotated, HeaderParam.class));
+        assertFalse(Util.isAnnotationPresentExt(notAnnotated,
                 javax.ws.rs.HeaderParam.class));
-        assertFalse(Util.isAnnotationPresentExtended(notAnnotated,
-                CookieParam.class));
-        assertFalse(Util.isAnnotationPresentExtended(notAnnotated,
+        assertFalse(Util
+                .isAnnotationPresentExt(notAnnotated, CookieParam.class));
+        assertFalse(Util.isAnnotationPresentExt(notAnnotated,
                 javax.ws.rs.CookieParam.class));
     }
 
     /**
-     * @see Util#isAnnotationPresentExtended(java.lang.reflect.AnnotatedElement,
+     * @see Util#isAnnotationPresentExt(java.lang.reflect.AnnotatedElement,
      *      Class)
      * @throws Exception
      */
     public void testIsAnnotationPresent3() throws Exception {
         Field cpAnnotated = UtilTests.class.getDeclaredField("cpAnnotated");
 
-        assertFalse(Util.isAnnotationPresentExtended(cpAnnotated,
-                HeaderParam.class));
-        assertFalse(Util.isAnnotationPresentExtended(cpAnnotated,
+        assertFalse(Util.isAnnotationPresentExt(cpAnnotated, HeaderParam.class));
+        assertFalse(Util.isAnnotationPresentExt(cpAnnotated,
                 javax.ws.rs.HeaderParam.class));
-        assertTrue(Util.isAnnotationPresentExtended(cpAnnotated,
-                CookieParam.class));
-        assertTrue(Util.isAnnotationPresentExtended(cpAnnotated,
+        assertTrue(Util.isAnnotationPresentExt(cpAnnotated, CookieParam.class));
+        assertTrue(Util.isAnnotationPresentExt(cpAnnotated,
                 javax.ws.rs.CookieParam.class));
     }
 }

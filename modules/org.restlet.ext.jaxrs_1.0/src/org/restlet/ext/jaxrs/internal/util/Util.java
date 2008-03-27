@@ -886,7 +886,7 @@ public class Util {
      *         annotation class is available; ignores the package name
      * @see AccessibleObject#isAnnotationPresent(Class)
      */
-    public static boolean isAnnotationPresentExtended(AnnotatedElement field,
+    public static boolean isAnnotationPresentExt(AnnotatedElement field,
             Class<?> annotation) {
         String annoName = annotation.getName();
         String suffix = annoName.substring(annoName.lastIndexOf('.'));

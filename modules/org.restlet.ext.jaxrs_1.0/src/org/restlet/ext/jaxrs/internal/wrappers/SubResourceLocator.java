@@ -19,10 +19,12 @@ package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -99,7 +101,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
     public ResourceObject createSubResource(ResourceObject resourceObject,
             CallContext callContext, MessageBodyReaderSet mbrs,
             WrapperFactory wrapperFactory,
-            ContextResolverCollection contextResolvers, Logger logger)
+            Collection<ContextResolver<?>> contextResolvers, Logger logger)
             throws InvocationTargetException, MissingAnnotationException,
             WebApplicationException, NoMessageBodyReaderException,
             InstantiateRessourceException, ConvertRepresentationException,
