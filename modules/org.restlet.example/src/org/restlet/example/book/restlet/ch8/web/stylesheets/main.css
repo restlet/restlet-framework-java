@@ -2,7 +2,7 @@
 /* general */
 * {margin:0; padding:0}
 
-html, body {width:100%; height:100%; text-align:center; color:#2e3436; background:#ffffff url(../images/back.gif) repeat-x 0 0}
+html, body {width:100%; height:100%; text-align:center; font:100% "Trebuchet MS", "Lucida Sans", Arial, Helvetica, sans-serif; color:#2e3436; background:#ffffff url(../images/back.gif) repeat-x 0 0}
 acronym {text-decoration:none; font-weight:bold; font-style:normal; cursor:help}
 img {border: none}
 th {padding: 2px;background-color: #555753; color:white; font-weight: bold}
@@ -14,7 +14,7 @@ select {padding:1px;}
 
 /* container */
 #container {
-position:relative; width:700px; margin:0 auto; font:90% "Times New Roman", Times, serif; text-align:left; 
+position:relative; width:700px; margin:0 auto;text-align:left; 
 background:#ffffff;}
 
 #container p {margin:10px 20px 0; line-height:140%; text-align:justify}
@@ -28,7 +28,7 @@ background:#ffffff;}
 /* quickSummary */
 #quickSummary {position:absolute; top:75px; left:280px; width:420px; }
 #quickSummary p {margin:20px 0 0 0; line-height:120%; text-align:right}
-#quickSummary p.p1 {text-indent:0; background:#d3d7cf; color:#292f33; font-variant:small-caps}
+#quickSummary p.p1 {text-indent:0; background:#d3d7cf; color:#292f33;}
 
 /* hello */
 #hello {position:relative; top:10px; left:170px; width:530px; }

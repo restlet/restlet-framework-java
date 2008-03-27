@@ -18,7 +18,10 @@
 
 package org.restlet.example.book.restlet.ch8.resources;
 
+import java.util.Map;
+
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -26,6 +29,8 @@ import org.restlet.example.book.restlet.ch8.Application;
 import org.restlet.example.book.restlet.ch8.RmepGuard;
 import org.restlet.example.book.restlet.ch8.objects.ObjectsFacade;
 import org.restlet.example.book.restlet.ch8.objects.User;
+import org.restlet.ext.freemarker.TemplateRepresentation;
+import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 
 import freemarker.template.Configuration;
@@ -75,9 +80,25 @@ public class BaseResource extends Resource {
      * 
      * @return the Freemarker's configuration object.
      */
-    protected Configuration getFmcConfiguration() {
+    private Configuration getFmcConfiguration() {
         Application application = (Application) getApplication();
         return application.getFmc();
+    }
+
+    /**
+     * Returns a templated representation dedicated to HTML content.
+     * 
+     * @param templateName
+     *                the name of the template.
+     * @param dataModel
+     *                the collection of data processed by the template engine.
+     * @return the representation.
+     */
+    protected Representation getHTMLTemplateRepresentation(String templateName,
+            Map<String, Object> dataModel) {
+        // The template representation is based on Freemarker.
+        return new TemplateRepresentation(templateName, getFmcConfiguration(),
+                dataModel, MediaType.TEXT_HTML);
     }
 
     /**

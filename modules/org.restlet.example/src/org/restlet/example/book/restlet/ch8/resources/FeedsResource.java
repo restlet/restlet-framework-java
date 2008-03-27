@@ -26,11 +26,11 @@ import java.util.TreeMap;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.Feed;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
-import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -55,8 +55,8 @@ public class FeedsResource extends BaseResource {
             setModifiable(true);
             // Get the parent mailbox thanks to its ID taken from the resource's
             // URI.
-            String mailboxId = (String) request.getAttributes()
-                    .get("mailboxId");
+            String mailboxId = Reference.decode((String) request
+                    .getAttributes().get("mailboxId"));
             mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
             if (mailbox != null) {
@@ -102,11 +102,7 @@ public class FeedsResource extends BaseResource {
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
-        TemplateRepresentation representation = new TemplateRepresentation(
-                "feeds.html", getFmcConfiguration(), dataModel, variant
-                        .getMediaType());
-
-        return representation;
+        return getHTMLTemplateRepresentation("feeds.html", dataModel);
     }
 
 }

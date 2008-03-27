@@ -25,7 +25,6 @@ import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -50,11 +49,7 @@ public class MailRootResource extends BaseResource {
         dataModel.put("currentUser", getCurrentUser());
         dataModel.put("rootRef", getRequest().getRootRef());
         
-        TemplateRepresentation representation = new TemplateRepresentation(
-                "mailRoot.html", getFmcConfiguration(), dataModel, variant
-                        .getMediaType());
-
-        return representation;
+        return getHTMLTemplateRepresentation("mailRoot.html", dataModel);
     }
 
 }

@@ -25,11 +25,11 @@ import java.util.TreeMap;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
 import org.restlet.example.book.restlet.ch8.objects.User;
-import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -54,7 +54,8 @@ public class UserResource extends BaseResource {
             setModifiable(true);
             // Get user thanks to its ID taken from the resource's
             // URI.
-            String userId = (String) request.getAttributes().get("userId");
+            String userId = Reference.decode((String) request.getAttributes()
+                    .get("userId"));
             user = getObjectsFacade().getUserById(userId);
 
             if (user != null) {
@@ -89,11 +90,7 @@ public class UserResource extends BaseResource {
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
-        TemplateRepresentation representation = new TemplateRepresentation(
-                "user.html", getFmcConfiguration(), dataModel, variant
-                        .getMediaType());
-
-        return representation;
+        return getHTMLTemplateRepresentation("user.html", dataModel);
     }
 
     /**

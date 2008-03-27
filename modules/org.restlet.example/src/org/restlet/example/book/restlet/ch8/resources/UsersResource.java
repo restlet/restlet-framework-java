@@ -30,7 +30,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.ObjectsException;
 import org.restlet.example.book.restlet.ch8.objects.User;
-import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -96,14 +95,10 @@ public class UsersResource extends BaseResource {
             dataModel.put("lastName", form.getFirstValue("lastName"));
             dataModel.put("login", form.getFirstValue("login"));
             dataModel.put("password", form.getFirstValue("password"));
-
             dataModel.put("errorMessage", e.getMessage());
 
-            TemplateRepresentation representation = new TemplateRepresentation(
-                    "users.html", getFmcConfiguration(), dataModel,
-                    MediaType.TEXT_HTML);
-
-            getResponse().setEntity(representation);
+            getResponse().setEntity(
+                    getHTMLTemplateRepresentation("users.html", dataModel));
         }
     }
 
@@ -118,10 +113,6 @@ public class UsersResource extends BaseResource {
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
-        TemplateRepresentation representation = new TemplateRepresentation(
-                "users.html", getFmcConfiguration(), dataModel, variant
-                        .getMediaType());
-
-        return representation;
+        return getHTMLTemplateRepresentation("users.html", dataModel);
     }
 }

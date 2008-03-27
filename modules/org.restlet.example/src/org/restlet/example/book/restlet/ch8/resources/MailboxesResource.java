@@ -30,7 +30,6 @@ import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
 import org.restlet.example.book.restlet.ch8.objects.ObjectsException;
 import org.restlet.example.book.restlet.ch8.objects.User;
-import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -53,7 +52,6 @@ public class MailboxesResource extends BaseResource {
         if (getCurrentUser() != null) {
             // Authenticated access.
             if (getCurrentUser().isAdministrator()) {
-                setModifiable(true);
                 mailboxes = getObjectsFacade().getMailboxes();
                 users = getObjectsFacade().getUsers();
             } else {
@@ -62,7 +60,7 @@ public class MailboxesResource extends BaseResource {
         }
 
         // Let anybody post new mails to this mailbox.
-        // setModifiable(getCurrentUser() != null);
+        setModifiable(true);
 
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
@@ -94,19 +92,10 @@ public class MailboxesResource extends BaseResource {
             dataModel.put("ownerId", form.getFirstValue("ownerId"));
             dataModel.put("nickname", form.getFirstValue("nickname"));
             dataModel.put("errorMessage", e.getMessage());
-            System.out.println(e.getMessage());
 
-            TemplateRepresentation representation = new TemplateRepresentation(
-                    "mailboxes.html", getFmcConfiguration(), dataModel,
-                    MediaType.TEXT_HTML);
-
-            getResponse().setEntity(representation);
+            getResponse().setEntity(
+                    getHTMLTemplateRepresentation("mailboxes.html", dataModel));
         }
-    }
-
-    @Override
-    public boolean allowPost() {
-        return true;
     }
 
     /**
@@ -121,11 +110,7 @@ public class MailboxesResource extends BaseResource {
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
-        TemplateRepresentation representation = new TemplateRepresentation(
-                "mailboxes.html", getFmcConfiguration(), dataModel, variant
-                        .getMediaType());
-
-        return representation;
+        return getHTMLTemplateRepresentation("mailboxes.html", dataModel);
     }
 
 }

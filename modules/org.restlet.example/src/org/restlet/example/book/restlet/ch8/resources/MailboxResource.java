@@ -25,12 +25,12 @@ import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.Contact;
 import org.restlet.example.book.restlet.ch8.objects.Mail;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
-import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -48,7 +48,8 @@ public class MailboxResource extends BaseResource {
     public MailboxResource(Context context, Request request, Response response) {
         super(context, request, response);
 
-        String mailboxId = (String) request.getAttributes().get("mailboxId");
+        String mailboxId = Reference.decode((String) request.getAttributes()
+                .get("mailboxId"));
         mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
         if (mailbox != null) {
@@ -122,11 +123,7 @@ public class MailboxResource extends BaseResource {
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
-        TemplateRepresentation representation = new TemplateRepresentation(
-                "mailbox.html", getFmcConfiguration(), dataModel, variant
-                        .getMediaType());
-
-        return representation;
+        return getHTMLTemplateRepresentation("mailbox.html", dataModel);
     }
 
     /**

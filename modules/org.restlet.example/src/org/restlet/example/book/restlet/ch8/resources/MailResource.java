@@ -32,12 +32,12 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.Contact;
 import org.restlet.example.book.restlet.ch8.objects.Mail;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
-import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -60,8 +60,8 @@ public class MailResource extends BaseResource {
         if (getCurrentUser() != null) {
             // Authenticated access.
             setModifiable(true);
-            String mailboxId = (String) request.getAttributes()
-                    .get("mailboxId");
+            String mailboxId = Reference.decode((String) request
+                    .getAttributes().get("mailboxId"));
             mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
             if (mailbox != null) {
@@ -112,11 +112,8 @@ public class MailResource extends BaseResource {
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
-        TemplateRepresentation representation = new TemplateRepresentation(
-                "mail_" + mail.getStatus() + ".html", getFmcConfiguration(),
-                dataModel, variant.getMediaType());
-
-        return representation;
+        return getHTMLTemplateRepresentation("mail_" + mail.getStatus()
+                + ".html", dataModel);
     }
 
     /**
@@ -198,11 +195,9 @@ public class MailResource extends BaseResource {
                     dataModel.put("resourceRef", getRequest().getResourceRef());
                     dataModel.put("rootRef", getRequest().getRootRef());
                     dataModel.put("message", builder.toString());
-                    TemplateRepresentation representation = new TemplateRepresentation(
-                            "mail_sending.html", getFmcConfiguration(),
-                            dataModel, MediaType.TEXT_HTML);
-
-                    getResponse().setEntity(representation);
+                    getResponse().setEntity(
+                            getHTMLTemplateRepresentation("mail_"
+                                    + mail.getStatus() + ".html", dataModel));
                 }
             } else {
                 // Still a draft

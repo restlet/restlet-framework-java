@@ -27,12 +27,12 @@ import java.util.TreeMap;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.Feed;
 import org.restlet.example.book.restlet.ch8.objects.Mail;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
-import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
@@ -59,10 +59,9 @@ public class FeedResource extends BaseResource {
             // Authenticated access.
             setModifiable(true);
             // Get the feed and its parent mailbox thanks to their IDs taken
-            // from
-            // the resource's URI.
-            String mailboxId = (String) request.getAttributes()
-                    .get("mailboxId");
+            // from the resource's URI.
+            String mailboxId = Reference.decode((String) request
+                    .getAttributes().get("mailboxId"));
             mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
             if (mailbox != null) {
@@ -141,8 +140,8 @@ public class FeedResource extends BaseResource {
             builder.append("/>");
             dataModel.put("feedHeaderContent", builder.toString());
 
-            representation = new TemplateRepresentation("feed.html",
-                    getFmcConfiguration(), dataModel, variant.getMediaType());
+            representation = getHTMLTemplateRepresentation("feed.html",
+                    dataModel);
         } else if (MediaType.APPLICATION_ATOM_XML.equals(mediaType)) {
 
         }

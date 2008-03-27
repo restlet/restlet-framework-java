@@ -10,15 +10,15 @@
    <body>
       <div id="container">
          <div id="header">
-            <div id="logoRmep"><a href="${rootRef}"><img src="${rootRef}/images/logo.png" alt="Logo Application" /></a>Send mails over HTTP</div>
+            <div id="logoRmep"><a href="${rootRef}" title="Go to the login page"><img src="${rootRef}/images/logo.png" alt="Logo Application" /></a></div>
             
             <div id="quickSummary">
-               <p><span>A simple illustration of <acronym title="REpresentational State Transfert">REST</acronym>-based design relying on the Restlet framework.</span></p>
+               <p><span><acronym title="REpresentational State Transfert">REST</acronym>ful mail application based on the Restlet framework.</span></p>
             </div>
          </div>
 <#if !currentUser??>
 <#-- Anonymous access -->
-         <div id="hello">Hello Anonymous <a href="${rootRef}" title="Sign in">Sign in</a></div>
+         <div id="hello">Hello Anonymous <a href="${rootRef}" title="Sign in" style="padding-right:2px;padding-left: 2px;background-color:#f57900;color:white;">Sign in</a></div>
 <#else>
          <div id="hello">Hello ${currentUser.firstName} ${currentUser.lastName}</div>
 </#if>
