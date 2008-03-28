@@ -19,6 +19,7 @@ package org.restlet.ext.jaxrs.internal.core;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -374,7 +375,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * For use from JAX-RS interface.
      * 
      * @see HttpHeaders#getAcceptableMediaTypes()
-     * @see
+     * @deprecated returns JAX-RS {@link MediaType}s
      */
     @Deprecated
     public List<MediaType> getAcceptableMediaTypes() {
@@ -515,6 +516,14 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      */
     public org.restlet.data.Request getRequest() {
         return request;
+    }
+
+    /**
+     * @see javax.ws.rs.core.HttpHeaders#getRequestHeader(java.lang.String)
+     */
+    public List<String> getRequestHeader(String name) {
+        String[] values = Util.getHttpHeaders(request).getValuesArray(name);
+        return Collections.unmodifiableList(Arrays.asList(values));
     }
 
     /**

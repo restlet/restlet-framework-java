@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
+import javax.ws.rs.core.UriInfo;
 
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
@@ -319,6 +320,21 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public UriBuilder encode(boolean enable) {
         this.encode = enable;
+        return this;
+    }
+
+    /**
+     * Set the extension of the current final path segment to the supplied value
+     * appending an initial "." if necessary.
+     * @param extension the extension
+     * @return the updated UriBuilder
+     * @see UriInfo#getPathExtension
+     * @see javax.ws.rs.core.UriBuilder#extension(java.lang.String)
+     */
+    // @Override
+    public UriBuilder extension(String extension) {
+        CharSequence e = EncodeOrCheck.pathSegmentWithMatrix(extension, encode);
+        addValidPathSegment(e);
         return this;
     }
 

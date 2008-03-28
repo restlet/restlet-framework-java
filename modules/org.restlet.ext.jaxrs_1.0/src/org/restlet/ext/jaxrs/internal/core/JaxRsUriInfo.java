@@ -65,6 +65,11 @@ public class JaxRsUriInfo implements UriInfo {
 
     private String lastAncestorResourceURI;
 
+    private MultivaluedMap<String, String> pathParametersDecoded;
+
+    /** is null, if no templateParameters given on creation */
+    private MultivaluedMap<String, String> pathParametersEncoded;
+
     private List<PathSegment> pathSegmentsDecoded = null;
 
     private List<PathSegment> pathSegmentsEncoded = null;
@@ -76,11 +81,6 @@ public class JaxRsUriInfo implements UriInfo {
     private boolean readOnly = false;
 
     protected Reference reference;
-
-    private MultivaluedMap<String, String> templateParametersDecoded;
-
-    /** is null, if no templateParameters given on creation */
-    private MultivaluedMap<String, String> templateParametersEncoded;
 
     /**
      * Creates a new UriInfo. When using this constructor, the
@@ -188,7 +188,7 @@ public class JaxRsUriInfo implements UriInfo {
             return false;
         if (!this.getPathSegments().equals(other.getPathSegments()))
             return false;
-        if (!Util.equals(this.getTemplateParameters(), other
+        if (!Util.equals(this.getPathParameters(), other
                 .getTemplateParameters()))
             return false;
         return true;
@@ -276,6 +276,14 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
+     * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs(boolean)
+     */
+    public List<String> getAncestorResourceURIs(boolean decode) {
+        return ancestorResourceURIsUnomd;
+        // TODO JaxRsUriBuilder.getAncestorResourceURIs(boolean decode)
+    }
+
+    /**
      * Get the base URI of the application. URIs of resource beans are all
      * relative to this base URI.
      * 
@@ -341,6 +349,68 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
+     * @see javax.ws.rs.core.UriInfo#getPathExtension()
+     */
+    public String getPathExtension() {
+        // TODO JaxRsUriBuilder.getPathExtension()
+        // REQUEST should return "" or null if not?
+        return null;
+    }
+
+    /**
+     * Get the values of any embedded URI template parameters. All sequences of
+     * escaped octets are decoded, equivalent to
+     * <code>getTemplateParameters(true)</code>.
+     * 
+     * @return an unmodifiable map of parameter names and values
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see javax.ws.rs.Path
+     * @see UriInfo#getPathParameters()
+     */
+    public MultivaluedMap<String, String> getPathParameters() {
+        if (this.pathParametersDecoded == null) {
+            MultivaluedMapImpl<String, String> pathParamsDec = new MultivaluedMapImpl<String, String>();
+            for (Map.Entry<String, List<String>> entryEnc : this
+                    .interalGetPathParamsEncoded().entrySet()) {
+                String keyDec = Reference.decode(entryEnc.getKey());
+                List<String> valuesEnc = entryEnc.getValue();
+                List<String> valuesDec = new ArrayList<String>(valuesEnc.size());
+                for (String valueEnc : valuesEnc)
+                    valuesDec.add(Reference.decode(valueEnc));
+                pathParamsDec.put(keyDec, valuesDec);
+            }
+            UnmodifiableMultivaluedMap<String, String> ppd;
+            ppd = UnmodifiableMultivaluedMap.get(pathParamsDec, false);
+            if (isChangeable())
+                return ppd;
+            this.pathParametersDecoded = ppd;
+        }
+        return this.pathParametersDecoded;
+    }
+
+    /**
+     * Get the values of any embedded URI template parameters.
+     * 
+     * @param decode
+     *                controls whether sequences of escaped octets are decoded
+     *                (true) or not (false).
+     * @return an unmodifiable map of parameter names and values
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see javax.ws.rs.Path
+     * @see UriInfo#getPathParameters(boolean)
+     */
+    public MultivaluedMap<String, String> getPathParameters(boolean decode) {
+        if (decode) {
+            return getPathParameters();
+        } else {
+            return UnmodifiableMultivaluedMap
+                    .get(interalGetPathParamsEncoded());
+        }
+    }
+
+    /**
      * Get the path of the current request relative to the base URI as a list of
      * {@link PathSegment}. This method is useful when the path needs to be
      * parsed, particularly when matrix parameters may be present in the path.
@@ -383,6 +453,14 @@ public class JaxRsUriInfo implements UriInfo {
                 this.pathSegmentsEncoded = createPathSegments(decode);
             return pathSegmentsEncoded;
         }
+    }
+
+    /**
+     * @see javax.ws.rs.core.UriInfo#getPlatonicRequestUriBuilder()
+     */
+    public UriBuilder getPlatonicRequestUriBuilder() {
+        // TODO JaxRsUriBuilder.getPlatonicRequestUriBuilder()
+        return null;
     }
 
     /**
@@ -451,26 +529,11 @@ public class JaxRsUriInfo implements UriInfo {
      *                 if called outside the scope of a request
      * @see javax.ws.rs.Path
      * @see UriInfo#getTemplateParameters()
+     * @deprecated Use {@link #getPathParameters()} instead
      */
+    @Deprecated
     public MultivaluedMap<String, String> getTemplateParameters() {
-        if (this.templateParametersDecoded == null) {
-            MultivaluedMapImpl<String, String> templParamsDec = new MultivaluedMapImpl<String, String>();
-            for (Map.Entry<String, List<String>> entryEnc : this
-                    .interalGetPathParamsEncoded().entrySet()) {
-                String keyDec = Reference.decode(entryEnc.getKey());
-                List<String> valuesEnc = entryEnc.getValue();
-                List<String> valuesDec = new ArrayList<String>(valuesEnc.size());
-                for (String valueEnc : valuesEnc)
-                    valuesDec.add(Reference.decode(valueEnc));
-                templParamsDec.put(keyDec, valuesDec);
-            }
-            UnmodifiableMultivaluedMap<String, String> tpd;
-            tpd = UnmodifiableMultivaluedMap.get(templParamsDec, false);
-            if (isChangeable())
-                return tpd;
-            this.templateParametersDecoded = tpd;
-        }
-        return this.templateParametersDecoded;
+        return getPathParameters();
     }
 
     /**
@@ -484,34 +547,40 @@ public class JaxRsUriInfo implements UriInfo {
      *                 if called outside the scope of a request
      * @see javax.ws.rs.Path
      * @see UriInfo#getTemplateParameters(boolean)
+     * @deprecated Use {@link #getPathParameters(boolean)} instead
      */
+    @Deprecated
     public MultivaluedMap<String, String> getTemplateParameters(boolean decode) {
-        if (decode) {
-            return getTemplateParameters();
-        } else {
-            return UnmodifiableMultivaluedMap
-                    .get(interalGetPathParamsEncoded());
-        }
+        return getPathParameters(decode);
     }
 
     @Override
     public int hashCode() {
         return this.getBaseUriStr().hashCode()
                 ^ this.getPathSegments().hashCode()
-                ^ this.getTemplateParameters().hashCode();
+                ^ this.getPathParameters().hashCode();
     }
 
     /**
-     * @return the templateParametersEncoded
+     * @return the pathParametersEncoded
      */
     protected MultivaluedMap<String, String> interalGetPathParamsEncoded() {
-        if (templateParametersEncoded == null)
-            this.templateParametersEncoded = new MultivaluedMapImpl<String, String>();
-        return templateParametersEncoded;
+        if (pathParametersEncoded == null)
+            this.pathParametersEncoded = new MultivaluedMapImpl<String, String>();
+        return pathParametersEncoded;
     }
 
     protected boolean isChangeable() {
         return !this.readOnly;
+    }
+
+    /**
+     * @param pathParametersEncoded
+     *                the pathParametersEncoded to set
+     */
+    protected void setPathParametersEncoded(
+            MultivaluedMap<String, String> templateParametersEncoded) {
+        this.pathParametersEncoded = templateParametersEncoded;
     }
 
     /**
@@ -521,15 +590,6 @@ public class JaxRsUriInfo implements UriInfo {
      */
     protected void setReadOnly() {
         this.readOnly = true;
-    }
-
-    /**
-     * @param templateParametersEncoded
-     *                the templateParametersEncoded to set
-     */
-    protected void setTemplateParametersEncoded(
-            MultivaluedMap<String, String> templateParametersEncoded) {
-        this.templateParametersEncoded = templateParametersEncoded;
     }
 
     @Override

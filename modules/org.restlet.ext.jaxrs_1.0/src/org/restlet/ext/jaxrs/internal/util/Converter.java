@@ -62,7 +62,10 @@ public class Converter {
      * @return the charset
      */
     public static String getCharset(MediaType mediaType) {
-        return mediaType.getParameters().get(CHARSET_PARAM);
+        Map<String, String> parameters = mediaType.getParameters();
+        if(parameters == null)
+            return null;
+        return parameters.get(CHARSET_PARAM);
     }
 
     /**

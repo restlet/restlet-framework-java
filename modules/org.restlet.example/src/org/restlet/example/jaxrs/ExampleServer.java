@@ -50,7 +50,7 @@ public class ExampleServer {
         // attach ApplicationConfig
         application.attach(new ExampleAppConfig());
 
-        // prefer html befor XML, if both is allowed.
+     // prefer html befor XML, if both is allowed by the request. (optional)
         application.setPreferHtml(true);
 
         // Attach the application to the component and start it

@@ -101,10 +101,10 @@ public class RequestService {
     Request request)
     {
         List<Variant> variants = new ArrayList<Variant>();
-        variants.add(new Variant(MediaType.parse("text/html"), "en", null));
-        variants.add(new Variant(MediaType.parse("text/plain"), "en", null));
-        variants.add(new Variant(MediaType.parse("text/html"), "de", null));
-        variants.add(new Variant(MediaType.parse("text/plain"), "de", null));
+        variants.add(new Variant(MediaType.TEXT_HTML_TYPE, "en", null));
+        variants.add(new Variant(MediaType.TEXT_PLAIN_TYPE, "en", null));
+        variants.add(new Variant(MediaType.TEXT_HTML_TYPE, "de", null));
+        variants.add(new Variant(MediaType.TEXT_PLAIN_TYPE, "de", null));
         Variant variant = request.selectVariant(variants);
         if(variant == null)
             return Response.notAcceptable(variants).build();
