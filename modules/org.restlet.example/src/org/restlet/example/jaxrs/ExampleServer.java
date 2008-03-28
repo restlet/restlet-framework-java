@@ -17,13 +17,10 @@
  */
 package org.restlet.example.jaxrs;
 
-import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.HtmlPreferer;
-import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.JaxRsApplication;
 
 /**
  * <p>
@@ -38,34 +35,23 @@ import org.restlet.ext.jaxrs.JaxRsRouter;
  * 
  * @author Stephan Koops
  * @see ExampleAppConfig
- * @see GuardedExample for an example with authentification
+ * @see GuardedExample
  */
 public class ExampleServer {
 
-    /**
-     * @param args
-     * @throws Exception
-     */
     public static void main(String[] args) throws Exception {
-        // This method is build like any Restlet server starting class.
-        // The only difference is in the method createRoot()
+        // create Component (as ever for Restlet)
         Component comp = new Component();
         Server server = comp.getServers().add(Protocol.HTTP, 8182);
 
-        // Create an application
-        Application application = new Application(comp.getContext()) {
-            @Override
-            public Restlet createRoot() {
-                ExampleAppConfig appConfig = new ExampleAppConfig();
-                JaxRsRouter router = new JaxRsRouter(getContext(), appConfig);
-                // some browser request XML with higher quality than HTML.
-                // If you want to change the quality, use this HtmlPreferer
-                // filter. If you do not need it, you can directly return the
-                // router.
-                HtmlPreferer filter = new HtmlPreferer(getContext(), router);
-                return filter;
-            }
-        };
+        // create JAX-RS runtime environment
+        JaxRsApplication application = new JaxRsApplication(comp.getContext());
+
+        // attach ApplicationConfig
+        application.attach(new ExampleAppConfig());
+
+        // prefer html befor XML, if both is allowed.
+        application.setPreferHtml(true);
 
         // Attach the application to the component and start it
         comp.getDefaultHost().attach(application);

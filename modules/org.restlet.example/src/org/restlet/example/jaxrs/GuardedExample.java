@@ -21,16 +21,13 @@ import java.security.Principal;
 
 import javax.ws.rs.core.SecurityContext;
 
-import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Guard;
-import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.AccessControl;
-import org.restlet.ext.jaxrs.HtmlPreferer;
-import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.JaxRsApplication;
 
 /**
  * <p>
@@ -49,7 +46,7 @@ import org.restlet.ext.jaxrs.JaxRsRouter;
  * </p>
  * 
  * @author Stephan Koops
- * @see ExampleServer for an easier example without authentification.
+ * @see ExampleServer
  * @see ExampleAppConfig
  */
 public class GuardedExample {
@@ -79,46 +76,32 @@ public class GuardedExample {
         }
     }
 
-    /**
-     * @param args
-     * @throws Exception
-     */
     public static void main(String[] args) throws Exception {
-        // This method is build like any Restlet server starting class.
-        // The only difference is in the method createRoot()
+        // create Component (as ever for Restlet)
         Component comp = new Component();
         Server server = comp.getServers().add(Protocol.HTTP, 8182);
 
-        // Create an application
-        Application application = new Application(comp.getContext()) {
-            @Override
-            public Restlet createRoot() {
-                // create access controller
-                AccessControl accessControl = new ExampleAccessControl();
-                // create JaxRsRouter
-                JaxRsRouter router = new JaxRsRouter(getContext(),
-                        new ExampleAppConfig(), accessControl);
+        // create JAX-RS runtime environment
+        JaxRsApplication application = new JaxRsApplication(comp.getContext());
 
-                // create Guard for authentication
-                Guard guard = new Guard(getContext(),
-                        ChallengeScheme.HTTP_BASIC, "persons");
-                // set valid users ant it's passwords.
-                guard.getSecrets().put("admin", "adminPW".toCharArray());
-                guard.getSecrets().put("alice", "alicesSecret".toCharArray());
-                guard.getSecrets().put("bob", "bobsSecret".toCharArray());
-                // attach JaxRsRouter to the Guard
-                guard.setNext(router);
+        // create a Guard
+        Guard guard = new Guard(application.getContext(),
+                ChallengeScheme.HTTP_BASIC, "JAX-RS example");
+        // set valid users and thier passwords.
+        guard.getSecrets().put("admin", "adminPW".toCharArray());
+        guard.getSecrets().put("alice", "alicesSecret".toCharArray());
+        guard.getSecrets().put("bob", "bobsSecret".toCharArray());
 
-                // some browser request XML with higher quality than HTML.
-                // If you want to change the quality, use this HtmlPreferer
-                // filter. If not, you can directly return the guard
-                HtmlPreferer filter = new HtmlPreferer(getContext(), guard);
+        // create an AccessControl (see above)
+        ExampleAccessControl accessControl = new ExampleAccessControl();
+        // attach Guard and AccessControl
+        application.setAuthentication(guard, accessControl);
 
-                // return the filter
-                // (or directly the Guard, if you do not need the HtmlPreferer).
-                return filter;
-            }
-        };
+        // attach ApplicationConfig
+        application.attach(new ExampleAppConfig());
+
+        // prefer html befor XML, if both is allowed.
+        application.setPreferHtml(true);
 
         // Attach the application to the component and start it
         comp.getDefaultHost().attach(application);
