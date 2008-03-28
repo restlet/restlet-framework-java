@@ -46,29 +46,31 @@ public class InjectionTestService2 {
     @Context private HttpHeaders httpHeaders;
     
     // LATER @PathParam("id") private int id = Integer.MIN_VALUE;
-    
-    // REQUESTED allow? @HeaderParam("host") private String host; also @QueryParam
-    // and so on. @PathParam ist auch sinvoll, wenn Path z.B. ne id enthaelt.
-    
+
+    // TODO @HeaderParam("host") private String host; also @QueryParam and so on
+    // @PathParam ist auch sinvoll, wenn Path z.B. ne id enthaelt.
+    // also on bean setters.
+    // also for @Context
+
     @GET
     @ProduceMime("text/plain")
     public Response get() {
         String msg = "";
-        if(securityContext == null)
+        if (securityContext == null)
             msg += "\n* securityContext";
-        if(uriInfo == null)
+        if (uriInfo == null)
             msg += "\n* uriInfo";
-        if(request == null)
+        if (request == null)
             msg += "\n* request";
-        if(httpHeaders == null)
+        if (httpHeaders == null)
             msg += "\n* httpHeaders";
         // if(id == Integer.MIN_VALUE)
         //    msg += "\n* id";
-        if(msg.length() > 0)
-            return Response.serverError().entity("missing:"+msg).build();
+        if (msg.length() > 0)
+            return Response.serverError().entity("missing:" + msg).build();
         return Response.ok(String.valueOf("ok")).build();
     }
-    
+
     @Path("sub")
     public SubResource getSub() {
         return new SubResource();

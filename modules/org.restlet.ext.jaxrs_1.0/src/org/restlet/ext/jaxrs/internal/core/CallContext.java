@@ -439,7 +439,6 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @see HttpHeaders#getCookies()
      */
     public Map<String, Cookie> getCookies() {
-        // REQUEST should HttpHeaders#getCookies() return a MultivaluedMap?
         if (this.cookies == null) {
             Map<String, Cookie> cookies = new HashMap<String, Cookie>();
             for (org.restlet.data.Cookie rc : request.getCookies()) {

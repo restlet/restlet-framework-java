@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
@@ -349,6 +350,17 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
+     * Get the request URI extension. The returned string includes any
+     * extensions remove during request pre-processing for the purposes of
+     * URI-based content negotiation. E.g. if the request URI was:
+     * <pre>
+     * http://example.com/resource.xml.en
+     * </pre>
+     * this method would return "xml.en" even if an applications implementation
+     * of {@link ApplicationConfig#getMediaTypeMappings()} returned a map that
+     * included "xml" as a key
+     * 
+     * @return the request URI extension
      * @see javax.ws.rs.core.UriInfo#getPathExtension()
      */
     public String getPathExtension() {

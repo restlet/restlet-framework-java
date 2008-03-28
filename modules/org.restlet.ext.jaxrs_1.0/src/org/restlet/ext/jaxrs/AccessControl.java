@@ -56,7 +56,7 @@ import org.restlet.Guard;
  * </p>
  * <p>
  * <i>The JAX-RS extension as well as the JAX-RS specification are currently
- * under development. You should only use this extension for experimental
+ * under development. You should use this extension only for experimental
  * purpose.</i>
  * <br>
  * For further information see <a href="https://jsr311.dev.java.net/">Java
