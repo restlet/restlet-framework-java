@@ -73,7 +73,10 @@ Changes log
           pipelining when multiple TransformRepresentation are nested.
           Suggested by Marc Portier. 
         - Added a getValuesMap() method to the Series class.
-        
+        - Added "authenticated" property on ChallengeResponse and 
+          refactored Guard and engine to update this property upon
+          authentication. 
+        - Added getPrincipal() method on ChallengeResponse.
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.

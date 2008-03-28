@@ -109,6 +109,12 @@ public class AuthenticationUtils {
             }
         }
 
+        if (request.getChallengeResponse() != null) {
+            // Update the challenge response accordingly
+            request.getChallengeResponse().setAuthenticated(
+                    result == Guard.AUTHENTICATION_VALID);
+        }
+
         return result;
     }
 

@@ -18,6 +18,9 @@
 
 package org.restlet.data;
 
+import java.io.Serializable;
+import java.security.Principal;
+
 import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
@@ -27,20 +30,90 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class ChallengeResponse {
-    /** The challenge scheme. */
-    private ChallengeScheme scheme;
+    /**
+     * Implementation of the Principal interface.
+     * 
+     * @author Stephan Koops
+     */
+    private class PrincipalImpl implements Principal, Serializable {
 
-    /** The user identifier, such as a login name or an access key. */
-    private String identifier;
+        private static final long serialVersionUID = -1842197948591956691L;
 
-    /** The user secret, such as a password or a secret key. */
-    private char[] secret;
+        /** The name of the Principal. */
+        private String name;
+
+        /**
+         * Constructor for deserialization.
+         */
+        @SuppressWarnings("unused")
+        private PrincipalImpl() {
+        }
+
+        /**
+         * Creates a new Principal with the given name
+         * 
+         * @param name
+         *                The name of the Principal; must not be null.
+         */
+        public PrincipalImpl(String name) {
+            if (name == null) {
+                throw new IllegalArgumentException("The name must not be null");
+            }
+
+            this.name = name;
+        }
+
+        @Override
+        public boolean equals(Object another) {
+            if (another == this)
+                return true;
+            if (!(another instanceof Principal))
+                return false;
+            Principal otherPrinc = (Principal) another;
+            return getName().equals(otherPrinc.getName());
+        }
+
+        /**
+         * Returns the name of this principal.
+         * 
+         * @return the name of this principal.
+         */
+        public String getName() {
+            return this.name;
+        }
+
+        @Override
+        public int hashCode() {
+            return this.name.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return getName();
+        }
+    }
+
+    /**
+     * Indicates if the identifier or principal has been authenticated. The
+     * application is responsible for updating this property, relying on a
+     * {@link org.restlet.Guard} or manually.
+     */
+    private boolean authenticated;
 
     /** The raw credentials for custom challenge schemes. */
     private String credentials;
 
+    /** The user identifier, such as a login name or an access key. */
+    private String identifier;
+
     /** The additional scheme parameters. */
     private Series<Parameter> parameters;
+
+    /** The challenge scheme. */
+    private ChallengeScheme scheme;
+
+    /** The user secret, such as a password or a secret key. */
+    private char[] secret;
 
     /**
      * Constructor.
@@ -56,26 +129,6 @@ public final class ChallengeResponse {
         this.credentials = credentials;
         this.identifier = null;
         this.secret = null;
-        this.parameters = null;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param scheme
-     *                The challenge scheme.
-     * @param identifier
-     *                The user identifier, such as a login name or an access
-     *                key.
-     * @param secret
-     *                The user secret, such as a password or a secret key.
-     */
-    public ChallengeResponse(final ChallengeScheme scheme,
-            final String identifier, String secret) {
-        this.scheme = scheme;
-        this.credentials = null;
-        this.identifier = identifier;
-        this.secret = (secret != null) ? secret.toCharArray() : null;
         this.parameters = null;
     }
 
@@ -117,6 +170,26 @@ public final class ChallengeResponse {
         this.identifier = identifier;
         this.secret = null;
         this.parameters = parameters;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param scheme
+     *                The challenge scheme.
+     * @param identifier
+     *                The user identifier, such as a login name or an access
+     *                key.
+     * @param secret
+     *                The user secret, such as a password or a secret key.
+     */
+    public ChallengeResponse(final ChallengeScheme scheme,
+            final String identifier, String secret) {
+        this.scheme = scheme;
+        this.credentials = null;
+        this.identifier = identifier;
+        this.secret = (secret != null) ? secret.toCharArray() : null;
+        this.parameters = null;
     }
 
     /** {@inheritDoc} */
@@ -194,6 +267,29 @@ public final class ChallengeResponse {
     }
 
     /**
+     * Returns the modifiable series of scheme parameters. Creates a new
+     * instance if no one has been set.
+     * 
+     * @return The modifiable series of scheme parameters.
+     */
+    public Series<Parameter> getParameters() {
+        if (this.parameters == null) {
+            this.parameters = new Form();
+        }
+
+        return this.parameters;
+    }
+
+    /**
+     * Gets the principal associated to the identifier property.
+     * 
+     * @return The {@link Principal}.
+     */
+    public Principal getPrincipal() {
+        return new PrincipalImpl(getIdentifier());
+    }
+
+    /**
      * Returns the scheme used.
      * 
      * @return The scheme used.
@@ -211,26 +307,46 @@ public final class ChallengeResponse {
         return this.secret;
     }
 
-    /**
-     * Returns the modifiable series of scheme parameters. Creates a new
-     * instance if no one has been set.
-     * 
-     * @return The modifiable series of scheme parameters.
-     */
-    public Series<Parameter> getParameters() {
-        if (this.parameters == null) {
-            this.parameters = new Form();
-        }
-
-        return this.parameters;
-    }
-
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return Engine.hashCode(getScheme(), getIdentifier(),
                 (getSecret() == null) ? null : new String(getSecret()),
                 getCredentials());
+    }
+
+    /**
+     * Indicates if the identifier or principal has been authenticated. The
+     * application is responsible for updating this property, relying on a
+     * {@link org.restlet.Guard} or manually.
+     * 
+     * @return True if the identifier or principal has been authenticated.
+     */
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
+
+    /**
+     * Indicates if the identifier or principal has been authenticated. The
+     * application is responsible for updating this property, relying on a
+     * {@link org.restlet.Guard} or manually.
+     * 
+     * @param authenticated
+     *                True if the identifier or principal has been
+     *                authenticated.
+     */
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
+    }
+
+    /**
+     * Sets the credential components.
+     * 
+     * @param credentialComponents
+     *                The credential components.
+     */
+    public void setCredentialComponents(Series<Parameter> credentialComponents) {
+        this.parameters = credentialComponents;
     }
 
     /**
@@ -270,8 +386,8 @@ public final class ChallengeResponse {
      * @param secret
      *                The user secret, such as a password or a secret key.
      */
-    public void setSecret(String secret) {
-        this.secret = (secret == null) ? null : secret.toCharArray();
+    public void setSecret(char[] secret) {
+        this.secret = secret;
     }
 
     /**
@@ -280,18 +396,8 @@ public final class ChallengeResponse {
      * @param secret
      *                The user secret, such as a password or a secret key.
      */
-    public void setSecret(char[] secret) {
-        this.secret = secret;
-    }
-
-    /**
-     * Sets the credential components.
-     * 
-     * @param credentialComponents
-     *                The credential components.
-     */
-    public void setCredentialComponents(Series<Parameter> credentialComponents) {
-        this.parameters = credentialComponents;
+    public void setSecret(String secret) {
+        this.secret = (secret == null) ? null : secret.toCharArray();
     }
 
 }

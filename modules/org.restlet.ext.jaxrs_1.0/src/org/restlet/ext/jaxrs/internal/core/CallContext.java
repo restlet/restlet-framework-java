@@ -43,7 +43,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.restlet.Guard;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Conditions;
@@ -416,11 +415,10 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @see SecurityContext#getAuthenticationScheme()
      */
     public String getAuthenticationScheme() {
-        Principal principal = Guard.getPrincipal(request);
-        if (principal == null)
-            return null;
         ChallengeResponse challengeResponse = request.getChallengeResponse();
         if (challengeResponse == null)
+            return null;
+        if (!challengeResponse.isAuthenticated())
             return null;
         ChallengeScheme authScheme = challengeResponse.getScheme();
         if (authScheme == null)
@@ -551,7 +549,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @see SecurityContext#getUserPrincipal()
      */
     public Principal getUserPrincipal() {
-        return Guard.getPrincipal(request);
+        return (request.getChallengeResponse() == null) ? null : request
+                .getChallengeResponse().getPrincipal();
     }
 
     /**
@@ -579,7 +578,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @see SecurityContext#isUserInRole(String)
      */
     public boolean isUserInRole(String role) {
-        Principal principal = Guard.getPrincipal(request);
+        Principal principal = (request.getChallengeResponse() == null) ? null
+                : request.getChallengeResponse().getPrincipal();
         if (this.accessControl == null)
             this.accessControl = ThrowExcAccessControl.getInstance();
         return accessControl.isUserInRole(principal, role);
@@ -604,7 +604,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
         String ppName = pathParamAnnot.value();
         List<String> pathParamValues;
         pathParamValues = interalGetPathParamsEncoded().get(ppName);
-        if(pathParamValues == null)
+        if (pathParamValues == null)
             return EmptyIterator.get();
         return pathParamValues.iterator();
     }
