@@ -62,7 +62,7 @@ public class HttpServerHelper extends ServerHelper {
 
     /**
      * Default constructor. Note that many methods assume that a non-null server
-     * is set to work properly. You can use the {@link #setHelped(T)} method for
+     * is set to work properly. You can use the setHelped(Server) method for
      * this purpose or better rely on the other constructor.
      */
     public HttpServerHelper() {

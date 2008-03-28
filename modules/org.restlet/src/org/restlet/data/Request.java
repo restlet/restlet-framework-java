@@ -228,22 +228,21 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the protocol by first returning the baseRef.schemeProtocol
-     * property if it is set, or the resourceRef.schemeProtocol property
-     * otherwise.
+     * Returns the protocol by first returning the resourceRef.schemeProtocol
+     * property if it is set, or the baseRef.schemeProtocol property otherwise.
      * 
      * @return The protocol or null if not available.
      */
     public Protocol getProtocol() {
-        Protocol result = (getResourceRef().getBaseRef() != null) ? getResourceRef()
-                .getBaseRef().getSchemeProtocol()
-                : null;
+        // Attempt to guess the protocol to use
+        // from the target reference scheme
+        Protocol result = (getResourceRef() != null) ? getResourceRef()
+                .getSchemeProtocol() : null;
 
+        // Fallback: look at base reference scheme
         if (result == null) {
-            // Attempt to guess the protocol to use
-            // from the target reference scheme
-            result = (getResourceRef() != null) ? getResourceRef()
-                    .getSchemeProtocol() : null;
+            result = (getResourceRef().getBaseRef() != null) ? getResourceRef()
+                    .getBaseRef().getSchemeProtocol() : null;
         }
 
         return result;

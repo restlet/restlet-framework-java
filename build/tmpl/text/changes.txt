@@ -22,6 +22,12 @@ Changes log
           Heittman. 
         - Fixed potential NPE in Freemarker extension when the 
           template is provided under the form of a representation.
+        - Request.getProtocol() now returns the protocol of the targetRef 
+          instead of the baseRef when the targetRef itself is absolute.
+          Patch contributed by Jeroen Goubert (Schaubroeck NV).
+        - When using new Reference(baseref, "absolute-path"), calling 
+          getTargetRef() now returns a reference with the baseRef cleared. 
+          Patch contributed by Jeroen Goubert (Schaubroeck NV).
     - API Enhancements
         - Made the org.restlet.util.Resolver generic and used it in 
           Guard to allow the user to provide a secret resolver without

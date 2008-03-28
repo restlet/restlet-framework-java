@@ -85,7 +85,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * 
      * @param mediaType
      *                The representation's media type.
-     * @param xmlDocument
+     * @param xmlSource
      *                A SAX input source to parse.
      */
     public SaxRepresentation(MediaType mediaType, InputSource xmlSource) {
@@ -98,7 +98,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * 
      * @param mediaType
      *                The representation's media type.
-     * @param xmlDocument
+     * @param xmlSource
      *                A JAXP source to parse.
      */
     public SaxRepresentation(MediaType mediaType, SAXSource xmlSource) {

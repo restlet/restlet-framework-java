@@ -1675,7 +1675,7 @@ public class Reference {
                     "Relative references are only usable when a base reference is set.");
         } else {
             // Absolute URI detected
-            result = new Reference(this);
+            result = new Reference(this.internalRef);
         }
 
         // Step 2 - Normalize the target reference

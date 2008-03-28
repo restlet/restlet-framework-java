@@ -60,8 +60,8 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     /**
      * Returns a SAX source.
      * 
-     * @param The
-     *                XML representation to wrap.
+     * @param xmlRepresentation
+     *                The XML representation to wrap.
      * @return A SAX source.
      * @throws IOException
      */
