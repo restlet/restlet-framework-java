@@ -40,6 +40,7 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+import org.restlet.service.TunnelService;
 
 /**
  * Resource supported by a set of context representations (from file system,
@@ -116,6 +117,14 @@ public class DirectoryResource extends Resource {
         // Update the member variables
         this.directory = directory;
         this.relativePart = request.getResourceRef().getRemainingPart();
+
+        // Restore the cut extensions in case the call has been tunnelled.
+        // Should be better to take benefit from this operation.
+        if (getApplication() != null
+                && getApplication().getTunnelService().isExtensionTunnel()) {
+            this.relativePart += request.getAttributes().get(
+                    TunnelService.REF_EXTENSIONS_KEY);
+        }
         setModifiable(getDirectory().isModifiable());
 
         if (this.relativePart.startsWith("/")) {

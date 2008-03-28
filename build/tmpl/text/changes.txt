@@ -83,6 +83,9 @@ Changes log
           refactored Guard and engine to update this property upon
           authentication. 
         - Added getPrincipal() method on ChallengeResponse.
+        - Added support of client preferences tunnelling by extensions.
+          Suggested by Chuck Mortimore and contributed by Stephan 
+          Koops.
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.

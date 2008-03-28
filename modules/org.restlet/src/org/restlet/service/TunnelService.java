@@ -19,12 +19,15 @@
 package org.restlet.service;
 
 import org.restlet.data.ClientInfo;
+import org.restlet.data.Reference;
+import org.restlet.data.Request;
 
 /**
- * Service tunnelling method names or client preferences via query parameters.
- * Clients applications such as browsers can easily override the default values
- * of their client connector by specifying additional query parameters. Here is
- * the list of the default parameter names supported: <table>
+ * Service tunnelling method names or client preferences via query parameters or
+ * extensions. Clients applications such as browsers can easily override the
+ * default values of their client connector by specifying additional query
+ * parameters. Here is the list of the default parameter names supported:
+ * <table>
  * <tr>
  * <th>Property</th>
  * <th>Default name</th>
@@ -63,28 +66,65 @@ import org.restlet.data.ClientInfo;
  * <td>For GET requests, replaces the accepted media type set by the given
  * value.</td>
  * </tr>
- * </table>
+ * </table><br>
+ * The client preferences can also be updated via the extensions (in the meaning
+ * of file extensions: e.g. ".txt") discovered in the resource's URI. This
+ * mechanism relies on the mapping between an extension and a metadata (e.g.
+ * ".txt" => "text/plain") maintained by the MetadataService
+ * {@link MetadataService}.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TunnelService {
-    /** Indicates if the service has been enabled. */
-    private volatile boolean enabled;
 
-    /** Indicates if the method name can be tunneled. */
-    private volatile boolean methodTunnel;
+    /**
+     * Key in the attributes of a {@link Request} ({@link Request#getAttributes()})
+     * for the resource URI without the extensions.<br>
+     * The type of the value is {@link Reference}.
+     * 
+     * @see #REF_ORIGINAL_KEY
+     * @see #REF_EXTENSIONS_KEY
+     * @see #isExtensionTunnel()
+     * @see #setExtensionTunnel(boolean)
+     */
+    public static final String REF_CUT_KEY = "org.restlet.TunnelService.reference.cut";
 
-    /** The name of the parameter containing the method name. */
-    private volatile String methodParameter;
+    /**
+     * Key in the attributes of a {@link Request} ({@link Request#getAttributes()})
+     * for the pulled out extensions.<br>
+     * The type of the value is {@link String}. If no extensions are matched,
+     * the value is "".
+     * 
+     * @see #REF_ORIGINAL_KEY
+     * @see #REF_CUT_KEY
+     * @see #isExtensionTunnel()
+     * @see #setExtensionTunnel(boolean)
+     */
+    public static final String REF_EXTENSIONS_KEY = "org.restlet.TunnelService.reference.extensions";
 
-    /** Indicates if the client preferences can be tunneled. */
-    private volatile boolean preferencesTunnel;
+    /**
+     * Key in the attributes of a {@link Request} ({@link Request#getAttributes()})
+     * for the original resource URI before extraction of known extensions.<br>
+     * The type of the value is {@link Reference}.
+     * 
+     * @see #REF_CUT_KEY
+     * @see #REF_EXTENSIONS_KEY
+     * @see #isExtensionTunnel()
+     * @see #setExtensionTunnel(boolean)
+     */
+    public static final String REF_ORIGINAL_KEY = "org.restlet.TunnelService.reference.original";
 
     /** The name of the parameter containing the accepted character set. */
     private volatile String characterSetParameter;
 
+    /** Indicates if the service has been enabled. */
+    private volatile boolean enabled;
+
     /** The name of the parameter containing the accepted encoding. */
     private volatile String encodingParameter;
+
+    /** Indicates if the client preferences can be tunnelled. */
+    private volatile boolean extensionTunnel;
 
     /** The name of the parameter containing the accepted language. */
     private volatile String languageParameter;
@@ -92,21 +132,54 @@ public class TunnelService {
     /** The name of the parameter containing the accepted media type. */
     private volatile String mediaTypeParameter;
 
+    /** The name of the parameter containing the method name. */
+    private volatile String methodParameter;
+
+    /** Indicates if the method name can be tunnelled. */
+    private volatile boolean methodTunnel;
+
+    /** Indicates if the client preferences can be tunnelled. */
+    private volatile boolean preferencesTunnel;
+
     /**
      * Constructor.
      * 
      * @param enabled
      *                True if the service has been enabled.
      * @param methodTunnel
-     *                Indicates if the method name can be tunneled.
+     *                Indicates if the method name can be tunnelled.
      * @param preferencesTunnel
-     *                Indicates if the client preferences can be tunneled.
+     *                Indicates if the client preferences for a GET request can
+     *                be tunnelled by query parameters and file "extensions".
+     * @deprecated Use this constructor TunnelService(boolean, boolean, boolean,
+     *             boolean) instead.
      */
+    @Deprecated
     public TunnelService(boolean enabled, boolean methodTunnel,
             boolean preferencesTunnel) {
+        this(enabled, methodTunnel, preferencesTunnel, preferencesTunnel);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param enabled
+     *                True if the service has been enabled.
+     * @param methodTunnel
+     *                Indicates if the method name can be tunnelled.
+     * @param preferencesTunnel
+     *                Indicates if the client preferences for a GET request can
+     *                be tunnelled by query parameters.
+     * @param extensionTunnel
+     *                Indicates if the client preferences can be tunnelled by
+     *                file "extensions".
+     */
+    public TunnelService(boolean enabled, boolean methodTunnel,
+            boolean preferencesTunnel, boolean extensionTunnel) {
         this.enabled = enabled;
         this.methodTunnel = methodTunnel;
         this.methodParameter = "method";
+        this.extensionTunnel = extensionTunnel;
         this.preferencesTunnel = preferencesTunnel;
         this.characterSetParameter = "charset";
         this.encodingParameter = "encoding";
@@ -123,7 +196,8 @@ public class TunnelService {
      *                The client to test.
      * @return True if the request from a given client can be tunnelled.
      */
-    public boolean allowClient(ClientInfo client) {
+    public boolean allowClient(@SuppressWarnings("unused")
+    ClientInfo client) {
         return true;
     }
 
@@ -226,18 +300,33 @@ public class TunnelService {
     }
 
     /**
-     * Indicates if the method name can be tunneled.
+     * Indicates if the client preferences can be tunnelled via the extensions.
      * 
-     * @return True if the method name can be tunneled.
+     * @return True if the client preferences can be tunnelled via the
+     *         extensions
+     * @see #REF_CUT_KEY
+     * @see #REF_EXTENSIONS_KEY
+     * @see #REF_ORIGINAL_KEY
+     */
+    public boolean isExtensionTunnel() {
+        return this.extensionTunnel;
+    }
+
+    /**
+     * Indicates if the method name can be tunnelled.
+     * 
+     * @return True if the method name can be tunnelled.
      */
     public boolean isMethodTunnel() {
         return this.methodTunnel;
     }
 
     /**
-     * Indicates if the client preferences can be tunneled.
+     * Indicates if the client preferences can be tunnelled via the query
+     * parameters.
      * 
-     * @return True if the client preferences can be tunneled.
+     * @return True if the client preferences can be tunnelled via the query
+     *         parameters.
      */
     public boolean isPreferencesTunnel() {
         return this.preferencesTunnel;
@@ -300,6 +389,20 @@ public class TunnelService {
     }
 
     /**
+     * Indicates if the client preferences can be tunnelled via the extensions.
+     * 
+     * @param extensionTunnel
+     *                True if the client preferences can be tunnelled via the
+     *                extensions.
+     * @see #REF_CUT_KEY
+     * @see #REF_EXTENSIONS_KEY
+     * @see #REF_ORIGINAL_KEY
+     */
+    public void setExtensionTunnel(boolean extensionTunnel) {
+        this.extensionTunnel = extensionTunnel;
+    }
+
+    /**
      * Sets the name of the parameter containing the accepted language.
      * 
      * @param parameterName
@@ -358,20 +461,22 @@ public class TunnelService {
     }
 
     /**
-     * Indicates if the method name can be tunneled.
+     * Indicates if the method name can be tunnelled.
      * 
      * @param methodTunnel
-     *                True if the method name can be tunneled.
+     *                True if the method name can be tunnelled.
      */
     public void setMethodTunnel(boolean methodTunnel) {
         this.methodTunnel = methodTunnel;
     }
 
     /**
-     * Indicates if the client preferences can be tunneled.
+     * Indicates if the client preferences can be tunnelled via the query
+     * parameters.
      * 
      * @param preferencesTunnel
-     *                True if the client preferences can be tunneled.
+     *                True if the client preferences can be tunnelled via the
+     *                query parameters.
      */
     public void setPreferencesTunnel(boolean preferencesTunnel) {
         this.preferencesTunnel = preferencesTunnel;

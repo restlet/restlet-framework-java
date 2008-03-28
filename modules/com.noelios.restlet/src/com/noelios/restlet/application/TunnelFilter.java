@@ -18,9 +18,16 @@
 
 package com.noelios.restlet.application;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.restlet.Application;
 import org.restlet.Filter;
 import org.restlet.data.CharacterSet;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
@@ -28,8 +35,11 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.service.MetadataService;
+import org.restlet.service.TunnelService;
 
 /**
  * Filter tunnelling browser calls into full REST calls. The request method can
@@ -39,6 +49,29 @@ import org.restlet.data.Response;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TunnelFilter extends Filter {
+    /**
+     * Adds the given {@link Metadata} to the preferences {@link List}.<br>
+     * You have to ensure that the metadata and the list of preferences fit
+     * together.
+     * 
+     * @param metadata
+     *                the preference's metadata.
+     * @param quality
+     *                the preference's quality.
+     * @param preferences
+     *                the list of preferences to update.
+     * @param clearPrefs
+     *                True if the list of preferences need to be cleared.
+     */
+    @SuppressWarnings("unchecked")
+    private static void addPreference(Metadata metadata, float quality,
+            List preferences, boolean clearPrefs) {
+        if (clearPrefs)
+            preferences.clear();
+        Preference<Metadata> pref = new Preference<Metadata>(metadata, quality);
+        preferences.add(pref);
+    }
+
     /** The application. */
     private volatile Application application;
 
@@ -68,100 +101,33 @@ public class TunnelFilter extends Filter {
         Form query = request.getResourceRef().getQueryAsForm(null);
         boolean queryModified = false;
 
-        // Tunnels the extracted attributes into the proper call objects.
-        if (getApplication().getTunnelService().isMethodTunnel()
-                && request.getMethod().equals(Method.POST)) {
-            String methodName = query.getFirstValue(getApplication()
-                    .getTunnelService().getMethodParameter());
+        TunnelService tunnelService = getApplication().getTunnelService();
+        Method method = request.getMethod();
+        if (tunnelService.isMethodTunnel() && method.equals(Method.POST)) {
+            // Tunnels the extracted attributes into the proper call objects.
+            String methodName = query.getFirstValue(tunnelService
+                    .getMethodParameter());
 
             if (methodName != null) {
                 request.setMethod(Method.valueOf(methodName));
 
                 // The parameter is removed from the query
-                query.removeFirst(getApplication().getTunnelService()
-                        .getMethodParameter());
+                query.removeFirst(tunnelService.getMethodParameter());
                 queryModified = true;
             }
         }
 
-        if (request.getMethod().equals(Method.GET)
-                && getApplication().getTunnelService().isPreferencesTunnel()) {
-            // Extract the header values
-            String acceptCharset = query.getFirstValue(getApplication()
-                    .getTunnelService().getCharacterSetParameter());
-            String acceptEncoding = query.getFirstValue(getApplication()
-                    .getTunnelService().getEncodingParameter());
-            String acceptLanguage = query.getFirstValue(getApplication()
-                    .getTunnelService().getLanguageParameter());
-            String acceptMediaType = query.getFirstValue(getApplication()
-                    .getTunnelService().getMediaTypeParameter());
+        if (tunnelService.isPreferencesTunnel()) {
+            // Tunnels the extracted query parameters into the proper client
+            // preferences.
+            queryModified = evaluateQueryParameters(request, query,
+                    tunnelService);
+        }
 
-            // Parse the headers and update the call preferences
-            Metadata metadata = null;
-            if (acceptCharset != null) {
-                metadata = getApplication().getMetadataService().getMetadata(
-                        acceptCharset);
-
-                if (metadata instanceof CharacterSet) {
-                    request.getClientInfo().getAcceptedCharacterSets().clear();
-                    request.getClientInfo().getAcceptedCharacterSets().add(
-                            new Preference<CharacterSet>(
-                                    (CharacterSet) metadata));
-
-                    // The parameter is removed from the query
-                    query.removeFirst(getApplication().getTunnelService()
-                            .getCharacterSetParameter());
-                    queryModified = true;
-                }
-            }
-
-            if (acceptEncoding != null) {
-                metadata = getApplication().getMetadataService().getMetadata(
-                        acceptEncoding);
-
-                if (metadata instanceof Encoding) {
-                    request.getClientInfo().getAcceptedEncodings().clear();
-                    request.getClientInfo().getAcceptedEncodings().add(
-                            new Preference<Encoding>((Encoding) metadata));
-
-                    // The parameter is removed from the query
-                    query.removeFirst(getApplication().getTunnelService()
-                            .getEncodingParameter());
-                    queryModified = true;
-                }
-            }
-
-            if (acceptLanguage != null) {
-                metadata = getApplication().getMetadataService().getMetadata(
-                        acceptLanguage);
-
-                if (metadata instanceof Language) {
-                    request.getClientInfo().getAcceptedLanguages().clear();
-                    request.getClientInfo().getAcceptedLanguages().add(
-                            new Preference<Language>((Language) metadata));
-
-                    // The parameter is removed from the query
-                    query.removeFirst(getApplication().getTunnelService()
-                            .getLanguageParameter());
-                    queryModified = true;
-                }
-            }
-
-            if (acceptMediaType != null) {
-                metadata = getApplication().getMetadataService().getMetadata(
-                        acceptMediaType);
-
-                if (metadata instanceof MediaType) {
-                    request.getClientInfo().getAcceptedMediaTypes().clear();
-                    request.getClientInfo().getAcceptedMediaTypes().add(
-                            new Preference<MediaType>((MediaType) metadata));
-
-                    // The parameter is removed from the query
-                    query.removeFirst(getApplication().getTunnelService()
-                            .getMediaTypeParameter());
-                    queryModified = true;
-                }
-            }
+        if (tunnelService.isExtensionTunnel()) {
+            // Tunnels the extracted extensions into the proper client
+            // preferences.
+            evaluateExtensions(request);
         }
 
         // Update the query if it has been modified
@@ -173,6 +139,186 @@ public class TunnelFilter extends Filter {
     }
 
     /**
+     * Update the client preferences according to the extensions (in the meaning
+     * of file extensions) located in the resource URI. If the extension is
+     * mapped to a {@link Metadata} in the {@link MetadataService}, then the
+     * corresponding accept header is updated and the matched extension is
+     * removed.<br>
+     * See also section 3.6.1 of JAX-RS specification (<a
+     * href="https://jsr311.dev.java.net">https://jsr311.dev.java.net</a>)
+     * 
+     * @param request
+     *                the request to check.
+     */
+    private void evaluateExtensions(Request request) {
+        Reference resourceRef = request.getResourceRef();
+        Reference originalRef = resourceRef.clone();
+        String path = resourceRef.getPath();
+
+        MetadataService metadataService = getApplication().getMetadataService();
+
+        float mediaTypeQuality = 1;
+        float languageQuality = 1;
+        float charsetQuality = 1;
+        float encodingQuality = 1;
+
+        // Stores the cut extensions.
+        StringBuilder cutExts = new StringBuilder();
+
+        int lpsStart = path.lastIndexOf('/') + 1;
+        String[] lpss = path.substring(lpsStart).split("\\.");
+        List<String> lps = new ArrayList<String>(Arrays.asList(lpss));
+        Iterator<String> lpsIter = lps.iterator();
+        if (lpsIter.hasNext()) {
+            lpsIter.next(); // ignore not-extension-part
+            ClientInfo clientInfo = request.getClientInfo();
+            while (lpsIter.hasNext()) {
+                String extension = lpsIter.next();
+                Metadata metadata = metadataService.getMetadata(extension);
+                if (metadata instanceof MediaType) {
+                    addPreference(metadata, mediaTypeQuality, clientInfo
+                            .getAcceptedMediaTypes(), mediaTypeQuality >= 0.99);
+                    mediaTypeQuality *= 0.9;
+                    lpsIter.remove();
+                    cutExts.append('.');
+                    cutExts.append(extension);
+                } else if (metadata instanceof Language) {
+                    addPreference(metadata, languageQuality, clientInfo
+                            .getAcceptedLanguages(), languageQuality >= 0.99);
+                    languageQuality *= 0.9;
+                    lpsIter.remove();
+                    cutExts.append('.');
+                    cutExts.append(extension);
+                } else if (metadata instanceof CharacterSet) {
+                    addPreference(metadata, charsetQuality, clientInfo
+                            .getAcceptedCharacterSets(), charsetQuality >= 0.99);
+                    charsetQuality *= 0.9;
+                    lpsIter.remove();
+                    cutExts.append('.');
+                    cutExts.append(extension);
+                } else if (metadata instanceof Encoding) {
+                    addPreference(metadata, encodingQuality, clientInfo
+                            .getAcceptedEncodings(), encodingQuality >= 0.99);
+                    encodingQuality *= 0.9;
+                    lpsIter.remove();
+                    cutExts.append('.');
+                    cutExts.append(extension);
+                }
+            }
+        }
+
+        // Update the path of the resource's Reference.
+        StringBuilder newPath = new StringBuilder();
+        newPath.append(path, 0, lpsStart);
+        lpsIter = lps.iterator();
+        if (lpsIter.hasNext()) {
+            String pathPart = lpsIter.next();
+            newPath.append(pathPart);
+            while (lpsIter.hasNext()) {
+                String ext = lpsIter.next();
+                newPath.append('.');
+                newPath.append(ext);
+            }
+        }
+        resourceRef.setPath(newPath.toString());
+
+        Map<String, Object> attributes = request.getAttributes();
+        attributes.put(TunnelService.REF_ORIGINAL_KEY, originalRef);
+        attributes.put(TunnelService.REF_CUT_KEY, resourceRef);
+        attributes.put(TunnelService.REF_EXTENSIONS_KEY, cutExts.toString());
+    }
+
+    /**
+     * Update the client preferences according to some query parameters. The
+     * matched query parameters are removed from the query.
+     * 
+     * @param request
+     *                the request to update.
+     * @param query
+     *                the query from where the parameters are extracted.
+     * @param tunnelService
+     *                the TunnelService that defines the names of the query
+     *                parameters.
+     * @return True if the query has been updated, false otherwise.
+     */
+    private boolean evaluateQueryParameters(Request request, Form query,
+            TunnelService tunnelService) {
+        boolean queryModified = false;
+
+        // Extract the header values
+        String acceptCharset = query.getFirstValue(tunnelService
+                .getCharacterSetParameter());
+        String acceptEncoding = query.getFirstValue(tunnelService
+                .getEncodingParameter());
+        String acceptLanguage = query.getFirstValue(tunnelService
+                .getLanguageParameter());
+        String acceptMediaType = query.getFirstValue(tunnelService
+                .getMediaTypeParameter());
+
+        // Parse the headers and update the call preferences
+        Metadata metadata = null;
+        ClientInfo clientInfo = request.getClientInfo();
+        MetadataService metadataService = getApplication().getMetadataService();
+        if (acceptCharset != null) {
+            metadata = metadataService.getMetadata(acceptCharset);
+
+            if (metadata instanceof CharacterSet) {
+                clientInfo.getAcceptedCharacterSets().clear();
+                clientInfo.getAcceptedCharacterSets().add(
+                        new Preference<CharacterSet>((CharacterSet) metadata));
+
+                // The parameter is removed from the query
+                query.removeFirst(tunnelService.getCharacterSetParameter());
+                queryModified = true;
+            }
+        }
+
+        if (acceptEncoding != null) {
+            metadata = metadataService.getMetadata(acceptEncoding);
+
+            if (metadata instanceof Encoding) {
+                clientInfo.getAcceptedEncodings().clear();
+                clientInfo.getAcceptedEncodings().add(
+                        new Preference<Encoding>((Encoding) metadata));
+
+                // The parameter is removed from the query
+                query.removeFirst(tunnelService.getEncodingParameter());
+                queryModified = true;
+            }
+        }
+
+        if (acceptLanguage != null) {
+            metadata = metadataService.getMetadata(acceptLanguage);
+
+            if (metadata instanceof Language) {
+                clientInfo.getAcceptedLanguages().clear();
+                clientInfo.getAcceptedLanguages().add(
+                        new Preference<Language>((Language) metadata));
+
+                // The parameter is removed from the query
+                query.removeFirst(tunnelService.getLanguageParameter());
+                queryModified = true;
+            }
+        }
+
+        if (acceptMediaType != null) {
+            metadata = metadataService.getMetadata(acceptMediaType);
+
+            if (metadata instanceof MediaType) {
+                clientInfo.getAcceptedMediaTypes().clear();
+                clientInfo.getAcceptedMediaTypes().add(
+                        new Preference<MediaType>((MediaType) metadata));
+
+                // The parameter is removed from the query
+                query.removeFirst(tunnelService.getMediaTypeParameter());
+                queryModified = true;
+            }
+        }
+
+        return queryModified;
+    }
+
+    /**
      * Returns the application.
      * 
      * @return The application.
@@ -180,5 +326,4 @@ public class TunnelFilter extends Filter {
     public Application getApplication() {
         return this.application;
     }
-
 }
