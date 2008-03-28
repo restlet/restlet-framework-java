@@ -17,15 +17,12 @@
  */
 package org.restlet.test.jaxrs;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
-import org.restlet.ext.jaxrs.AllowAllAccess;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;

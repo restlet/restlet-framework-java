@@ -29,8 +29,6 @@ import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.AccessControl;
-import org.restlet.ext.jaxrs.AllowAllAccess;
-import org.restlet.ext.jaxrs.ForbidAllAccess;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.server.ServerWrapper;
 import org.restlet.test.jaxrs.services.resources.SecurityContextService;
@@ -81,7 +79,7 @@ public class SecurityContextTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void test2() throws Exception {
-        if (!startServer(ForbidAllAccess.getInstance()))
+        if (!startServer(AccessControl.FORBID_ALL))
             return;
         Response response = get();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
@@ -91,14 +89,14 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void test3() throws Exception {
-        if (!startServer(ForbidAllAccess.getInstance()))
+        if (!startServer(AccessControl.FORBID_ALL))
             return;
         Response response = getAuth(null, "admin", "adminPW");
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
 
     public void test4() throws Exception {
-        if (!startServer(ForbidAllAccess.getInstance()))
+        if (!startServer(AccessControl.FORBID_ALL))
             return;
         Response response = post(null, new Form().getWebRepresentation(),
                 new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "alice",
@@ -108,7 +106,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void test5() throws Exception {
-        if (!startServer(ForbidAllAccess.getInstance()))
+        if (!startServer(AccessControl.FORBID_ALL))
             return;
         Representation postEntity = new Form("abc=def").getWebRepresentation();
         ChallengeResponse cr = new ChallengeResponse(
@@ -119,11 +117,12 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     /**
-     * @see SecurityContextService#post(SecurityContext, javax.ws.rs.core.MultivaluedMap, javax.ws.rs.core.UriInfo)
+     * @see SecurityContextService#post(SecurityContext,
+     *      javax.ws.rs.core.MultivaluedMap, javax.ws.rs.core.UriInfo)
      * @throws Exception
      */
     public void testAllowAll() throws Exception {
-        if(!startServer(AllowAllAccess.getInstance())) // no authorization
+        if (!startServer(AccessControl.ALLOW_ALL)) // no authorization
             return;
         ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
@@ -142,7 +141,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testAuthenticationSchemeBasic() throws Exception {
-        if (!startServer(AllowAllAccess.getInstance()))
+        if (!startServer(AccessControl.ALLOW_ALL))
             return;
         ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
@@ -154,7 +153,7 @@ public class SecurityContextTest extends JaxRsTestCase {
 
     // TESTEN create extra TestCase: DigestAuth does not work
     public void _testAuthenticationSchemeDigest() throws Exception {
-        if (!setAccessControl(AllowAllAccess.getInstance()))
+        if (!setAccessControl(AccessControl.ALLOW_ALL))
             return;
         startServer(ChallengeScheme.HTTP_DIGEST);
         ChallengeResponse cr = new ChallengeResponse(
@@ -166,7 +165,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testForbidAll() throws Exception {
-        if (!startServer(ForbidAllAccess.getInstance()))
+        if (!startServer(AccessControl.FORBID_ALL))
             return;
         Response response = get();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
@@ -238,7 +237,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testUserPrincipalAuth() throws Exception {
-        if (!startServer(AllowAllAccess.getInstance()))
+        if (!startServer(AccessControl.ALLOW_ALL))
             return;
         Response response = getAuth("userPrincipal", "alice", "alicesSecret");
         assertEquals(Status.SUCCESS_OK, response.getStatus());

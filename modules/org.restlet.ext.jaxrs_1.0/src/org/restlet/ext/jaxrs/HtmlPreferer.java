@@ -30,22 +30,29 @@ import org.restlet.data.Response;
 
 /**
  * <p>
- * Some browsers (e.g. Internet Explorer 7.0 and Firefox 2.0) sends as accepted
- * media type XML with a higher quality than html. The consequence is, that a
- * HTTP server sends XML instead of HTML, if it could produce XML. To avoid
- * this, you can use this filter.
+ * Some browsers sends as accepted media type XML with a higher quality than
+ * HTML. The Internet Explorer 7.0 and Firefox 2.0 have this behavior, for
+ * example. The consequence is, that a HTTP server sends XML instead of HTML, if
+ * it could produce XML. To avoid this, you can use this filter.<br>
+ * It is fully independent of the JAX-RS extension, so you can use it
+ * everywhere, were you can use any {@link Filter}.
  * </p>
  * <p>
  * This Filter will increase the qualities for HTML media types (text/html and
  * application/xhtml+xml) higher than both XML types (text/xml and
- * application/xml), if at least one of both is available in a request. The
- * check is implemented in method {@link #shouldChangeToPrefereHtml(Request)}.
- * <br>
- * Requests that not are not effected.
+ * application/xml), if at least one of both is available in a request. <br>
+ * Responses are not changed.
  * </p>
  * <p>
- * You may alter the test if the filter should change the request by subclass
- * this Filter and overrider method {@link #shouldChangeToPrefereHtml(Request)}.
+ * Some informations for developer:<br>
+ * <ul>
+ * <li>The check, if the Request should change is implemented in method
+ * {@link #shouldChangeToPrefereHtml(Request)}. You may alter the test by
+ * subclass this Filter and override that method.</li>
+ * <li>The Request change is implemented in method
+ * {@link #prefereHtml(Request)}. You may alter the changing process by
+ * subclass this Filter and override that method.</li>
+ * </ul>
  * </p>
  * 
  * @author Stephan Koops
@@ -60,6 +67,11 @@ public class HtmlPreferer extends Filter {
 
     private static final int MT_PREF_TEXT_XML = 2;
 
+    /**
+     * The preferences for the HTML and XML datatypes are stored in the request
+     * attributes, available with this key. This pair will be removed after
+     * finish the changes.
+     */
     private static final String MT_QUALITY_ARRAY = "org.restlet.HtmlPreferer.qualities";
 
     /**
@@ -109,6 +121,7 @@ public class HtmlPreferer extends Filter {
     protected int beforeHandle(Request request, Response response) {
         if (shouldChangeToPrefereHtml(request))
             prefereHtml(request);
+        request.getAttributes().remove(MT_QUALITY_ARRAY);
         return super.beforeHandle(request, response);
     }
 

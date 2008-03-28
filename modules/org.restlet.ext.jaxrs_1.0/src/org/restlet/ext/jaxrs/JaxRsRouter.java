@@ -103,7 +103,8 @@ import org.restlet.resource.StringRepresentation;
  * <p>
  * The router choose the JAX-RS resource class and method to use for a request.
  * This class has methods {@link #attach(ApplicationConfig)} like the Restlet
- * {@link Router}.
+ * {@link Router}. Typcally you should instantiate a {@link JaxRsApplication}
+ * to run JAX-RS resource classes.
  * </p>
  * <p>
  * Now some internal informations are following:
@@ -119,9 +120,14 @@ import org.restlet.resource.StringRepresentation;
  * <!--LATER The class JaxRsRouter is not thread save while attach or detach
  * classes.-->
  * </p>
+ * <p>
+ * <i>The JAX-RS extension as well as the JAX-RS specification are currently
+ * under development. You should only use this extension for experimental
+ * purpose.</i>
+ * <br>
  * For further information see <a href="https://jsr311.dev.java.net/">Java
- * Service Request 311</a>. Because the specification is just under development
- * the link is not set to the PDF.
+ * Service Request 311</a>.
+ * </p>
  * 
  * @author Stephan Koops
  */
@@ -163,9 +169,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      *                use method {@link #attach(ApplicationConfig)}.
      * @param accessControl
      *                The AccessControl to use. If you don't need the access
-     *                control, you can use the {@link ForbidAllAccess}, the
-     *                {@link AllowAllAccess} or the
-     *                {@link ThrowExcAccessControl}. See also
+     *                control, you can use the {@link AccessControl#FORBID_ALL},
+     *                the {@link AccessControl#ALLOW_ALL} or the
+     *                {@link AccessControl#REJECT_WITH_ERROR}. See also
      *                {@link #JaxRsRouter(Context, ApplicationConfig)}.
      * @throws IllegalArgumentException
      *                 if the {@link ApplicationConfig} contains invalid data;
@@ -182,7 +188,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         if (accessControl != null)
             this.setAccessControl(accessControl);
         else
-            this.setAccessControl(ThrowExcAccessControl.getInstance());
+            this.setAccessControl(AccessControl.REJECT_WITH_ERROR);
     }
 
     /**
@@ -246,9 +252,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      *                {@link Restlet#Restlet(Context)}.
      * @param accessControl
      *                The AccessControl to use. If you don't need the access
-     *                control, you can use the {@link ForbidAllAccess}, the
-     *                {@link AllowAllAccess} or the
-     *                {@link ThrowExcAccessControl}.
+     *                control, you can use the {@link AccessControl#FORBID_ALL},
+     *                the {@link AccessControl#ALLOW_ALL} or the
+     *                {@link AccessControl#REJECT_WITH_ERROR}.
      * @see #JaxRsRouter(Context, ApplicationConfig, AccessControl)
      */
     public JaxRsRouter(Context context, AccessControl accessControl) {
@@ -296,7 +302,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
                 }
             }
         }
-        this.addExtensionMappings(appConfig.getExtensionMappings());
     }
 
     /**
@@ -408,28 +413,13 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             this.contextResolvers.add(provider);
     }
 
-    /**
-     * @see ApplicationConfig#getExtensionMappings()
-     * @param extensionMappings
-     */
-    @SuppressWarnings("all")
-    private void addExtensionMappings(
-            Map<String, javax.ws.rs.core.MediaType> extensionMappings) {
-        // TODO JaxRsRouter.extensionMappings.
-        // https://jsr311.dev.java.net/servlets/ReadMsg?listName=users&msgNo=77
-        // there is also a solution in Restlet
-        // http://restlet.tigris.org/issues/show_bug.cgi?id=463
-    }
-
-    // methods for initialization ready
-
     @Override
     @SuppressWarnings("unchecked")
     public void start() throws Exception {
         Set<Provider<?>> providers = new HashSet<Provider<?>>();
-        providers.addAll((Collection)this.messageBodyReaders);
-        providers.addAll((Collection)this.messageBodyWriters);
-        providers.addAll((Collection)this.contextResolvers);
+        providers.addAll((Collection) this.messageBodyReaders);
+        providers.addAll((Collection) this.messageBodyWriters);
+        providers.addAll((Collection) this.contextResolvers);
         for (Provider<?> provider : providers)
             provider.init(this.contextResolvers);
         super.start();
@@ -1423,9 +1413,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         if (accessControl == null)
             throw new IllegalArgumentException(
                     "The accessControl must not be null. You can use the "
-                            + AllowAllAccess.class.getName() + ", the "
-                            + ForbidAllAccess.class.getName() + " or the "
-                            + ThrowExcAccessControl.class.getName());
+                            + "AccessControl.FORBID_ALL constant, the "
+                            + "AccessControl.FORBID_ALL constant or the "
+                            + "AccessControl.REJECT_WITH_ERROR constant");
         this.accessControl = accessControl;
     }
 
@@ -1452,5 +1442,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         for (RootResourceClass rrc : this.rootResourceClasses)
             uris.add(rrc.getPathRegExp().getPathPattern());
         return Collections.unmodifiableCollection(uris);
+    }
+
+    /**
+     * Checks, if any root resource class was added or not.
+     * 
+     * @return true, if
+     */
+    public boolean isEmpty() {
+        return this.rootResourceClasses.isEmpty();
     }
 }

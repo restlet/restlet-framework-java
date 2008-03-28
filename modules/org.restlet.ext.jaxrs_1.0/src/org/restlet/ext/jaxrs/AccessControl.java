@@ -20,14 +20,21 @@ package org.restlet.ext.jaxrs;
 import java.security.Principal;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.Guard;
 
 /**
  * <p>
- * Because Restlet does not support its own user and role management (as e.g.
- * the Servlet API), you must implement it, if you need it for JAX-RS.<br>
+ * This interface provides user role checks.
+ * </p>
+ * <p>
+ * Because the Restlet API does not support its own mechanism for role checks
+ * (as e.g. the Servlet API), you must use this inteface if you need role checks
+ * in a JAX-RS application.<br>
  * This interface is used to check, if a user is in a role. Implementations must
  * be thread save.
  * </p>
@@ -38,27 +45,62 @@ import org.restlet.Guard;
  * only method of this interface.
  * </p>
  * <p>
- * If you need user access control, you must give the {@link JaxRsRouter} or the
- * {@link JaxRsApplication} an instance of this interface, see
- * {@link JaxRsRouter#JaxRsRouter(org.restlet.Context, javax.ws.rs.core.ApplicationConfig, AccessControl)},
- * {@link JaxRsRouter#JaxRsRouter(org.restlet.Context, AccessControl)},
- * {@link JaxRsRouter#setAccessControl(AccessControl)} or
- * {@link JaxRsApplication#setAccessControl(AccessControl)} If you not give an
- * instance, every call of {@link SecurityContext#isUserInRole(String)} results
- * in an Internal Server Error, which will get returned to the client (see
- * {@link ThrowExcAccessControl}).
+ * If you need user access control, you must give an instance of this inteface
+ * to the {@link JaxRsApplication}. If you do not give an instance, every call
+ * of {@link SecurityContext#isUserInRole(String)} results in an Internal Server
+ * Error (HTTP status 500), which will get returned to the client (see
+ * {@link #REJECT_WITH_ERROR}).
  * </p>
  * <p>
  * To check if the user is authenticated, use any Restlet {@link Guard}.
  * </p>
+ * <p>
+ * <i>The JAX-RS extension as well as the JAX-RS specification are currently
+ * under development. You should only use this extension for experimental
+ * purpose.</i>
+ * <br>
+ * For further information see <a href="https://jsr311.dev.java.net/">Java
+ * Service Request 311</a>.
+ * </p>
  * 
  * @author Stephan Koops
- * @see ForbidAllAccess
- * @see AllowAllAccess
- * @see ThrowExcAccessControl
  * @see SecurityContext
  */
 public interface AccessControl {
+
+    /**
+     * Access control constant that gives all roles to all principals.
+     */
+    public static final AccessControl ALLOW_ALL = new AccessControl() {
+        public boolean isUserInRole(Principal principal, String role)
+                throws WebApplicationException {
+            return true;
+        }
+    };
+
+    /**
+     * Access control constant that doesn't give any role to any principal.
+     */
+    public static final AccessControl FORBID_ALL = new AccessControl() {
+        public boolean isUserInRole(Principal principal, String role)
+                throws WebApplicationException {
+            return false;
+        }
+    };
+
+    /**
+     * An {@link AccessControl} that throws an WebApplicationExeption with
+     * status 500 (Internal Server Error) for every call on it.
+     */
+    public static final AccessControl REJECT_WITH_ERROR = new AccessControl() {
+        public boolean isUserInRole(Principal principal, String role)
+                throws WebApplicationException {
+            String message = "No access control defined.";
+            ResponseBuilder rb = Response.serverError();
+            rb.entity(message).language("en").type(MediaType.TEXT_HTML_TYPE);
+            throw new WebApplicationException(rb.build());
+        }
+    };
 
     /**
      * Checks, if the user is in the given role, or false if not.<br>

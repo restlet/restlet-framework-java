@@ -19,10 +19,13 @@ package org.restlet.ext.jaxrs;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.MediaType;
 
 import org.restlet.Application;
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Finder;
@@ -30,9 +33,40 @@ import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
+import org.restlet.data.Language;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
+import org.restlet.ext.jaxrs.internal.util.Converter;
+import org.restlet.service.MetadataService;
+import org.restlet.service.TunnelService;
 
 /**
+ * <p>
+ * This is the main class to be used for the instantiation of a JAX-RS runtime
+ * environment.
+ * </p>
+ * <p>
+ * To set up a JAX-RS runtime environment you should instantiate a
+ * {@link JaxRsApplication}.
+ * <ul>
+ * <li>Attach your {@link ApplicationConfig}(s) by calling
+ * {@link #attach(ApplicationConfig)}.</li>
+ * <li> If you need authentication, set a {@link Guard} and perhaps an
+ * {@link AccessControl}, see {@link #setGuard(Guard)} or
+ * {@link #setAuthentication(Guard, AccessControl)}.</li>
+ * <li>If you do not neet the HtmlPreferer, switch it off by calling
+ * {@link #setPreferHtml(boolean) #setUseHtmlPreferer(false)}.</li>
+ * </ul>
+ * At least add the JaxRsApplication to a {@link Component}.
+ * </p>
+ * <p>
+ * <i>The JAX-RS extension as well as the JAX-RS specification are currently
+ * under development. You should only use this extension for experimental
+ * purpose.</i>
+ * <br>
+ * For further information see <a href="https://jsr311.dev.java.net/">Java
+ * Service Request 311</a>.
+ * </p>
+ * 
  * @author Stephan Koops
  */
 public class JaxRsApplication extends Application {
@@ -42,6 +76,9 @@ public class JaxRsApplication extends Application {
 
     /** The {@link JaxRsRouter} to use. */
     private JaxRsRouter jaxRsRouter;
+
+    /** Indicates, if an {@link HtmlPreferer} should be used or not. */
+    private boolean preferHtml = true;
 
     /**
      * Default constructor.
@@ -56,12 +93,90 @@ public class JaxRsApplication extends Application {
     }
 
     /**
-     * attaches the {@link ApplicationConfig} to this Application.
+     * Adds the extension mappings for mediat types and languages, given by the
+     * {@link ApplicationConfig} to the {@link TunnelService}.
      * 
      * @param appConfig
-     * @see JaxRsRouter#attach(ApplicationConfig)
+     *                the ApplicationConfig to read the mappings from.
      */
-    public void attach(ApplicationConfig appConfig) {
+    private void addExtensionMappings(ApplicationConfig appConfig) {
+        MetadataService metadataService = this.getMetadataService();
+        Map<String, MediaType> mediaTypeMapping = appConfig
+                .getExtensionMappings();
+        if (mediaTypeMapping != null) {
+            for (Map.Entry<String, MediaType> e : mediaTypeMapping.entrySet()) {
+                org.restlet.data.MediaType restletMediaType;
+                restletMediaType = Converter.toRestletMediaType(e.getValue());
+                metadataService.addExtension(e.getKey(), restletMediaType);
+            }
+        }
+        Map<String, String> languageMapping = appConfig.getLanguageMappings();
+        if (mediaTypeMapping != null) {
+            for (Map.Entry<String, String> e : languageMapping.entrySet()) {
+                Language language = Language.valueOf(e.getValue());
+                metadataService.addExtension(e.getKey(), language);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Attaches an {@link ApplicationConfig} to this Application.<br>
+     * The providers are available for all root resource classes provided to
+     * this JaxRsRouter. If you won't mix them, instantiate another JaxRsRouter.
+     * </p>
+     * <p>
+     * If the given ApplicationConfig is the first attached ApplicationConfig
+     * (more exactly: if no root resource classes are available), the default
+     * extension mappings are remove an replaced by the given, see
+     * {@link TunnelService}.
+     * </p>
+     * 
+     * @param appConfig
+     *                Contains the classes to load as root resource classes and
+     *                as providers.
+     * @throws IllegalArgumentException
+     *                 if {@link ApplicationConfig} contains non-valid resource
+     *                 classes or non-valid providers, or one of their
+     *                 constructors throws an exception.
+     * @throws NullPointerException
+     *                 if the appConfig is null.
+     * 
+     * @see JaxRsRouter#attach(ApplicationConfig)
+     * @see #attach(ApplicationConfig, boolean)
+     */
+    public void attach(ApplicationConfig appConfig)
+            throws IllegalArgumentException {
+        attach(appConfig, true);
+    }
+
+    /**
+     * Attaches an {@link ApplicationConfig} to this Application.<br>
+     * The providers are available for all root resource classes provided to
+     * this JaxRsRouter. If you won't mix them, instantiate another JaxRsRouter.
+     * 
+     * @param appConfig
+     *                Contains the classes to load as root resource classes and
+     *                as providers.
+     * @param clearMetadataIfFirst
+     *                If this flag is true and the given ApplicationConfig is
+     *                the first attached ApplicationConfig (more exactly: if no
+     *                root resource classes are available), the default
+     *                extension mappings are remove an replaced by the new, see
+     *                {@link TunnelService}
+     * @throws IllegalArgumentException
+     *                 if {@link ApplicationConfig} contains non-valid resource
+     *                 classes or non-valid providers, or one of their
+     *                 constructors throws an exception.
+     * @throws NullPointerException
+     *                 if the appConfig is null.
+     * @see #attach(ApplicationConfig)
+     */
+    public void attach(ApplicationConfig appConfig, boolean clearMetadataIfFirst)
+            throws IllegalArgumentException {
+        if (clearMetadataIfFirst && this.jaxRsRouter.isEmpty())
+            this.getMetadataService().clearExtensions();
+        this.addExtensionMappings(appConfig);
         this.jaxRsRouter.attach(appConfig);
     }
 
@@ -85,15 +200,18 @@ public class JaxRsApplication extends Application {
     }
 
     /**
-     * @return accessControl
-     * @see JaxRsRouter#getAccessControl()
+     * Returns the current AccessControl
+     * 
+     * @return the current AccessControl
      */
     public AccessControl getAccessControl() {
         return this.jaxRsRouter.getAccessControl();
     }
 
     /**
-     * @return the guard
+     * Returns the Guard
+     * 
+     * @return the Guard
      */
     public Guard getGuard() {
         return this.guard;
@@ -103,44 +221,78 @@ public class JaxRsApplication extends Application {
      * Returns an unmodifiable set with the attached root resource classes.
      * 
      * @return an unmodifiable set with the attached root resource classes.
-     * @see JaxRsRouter#getRootResourceClasses()
      */
     public Collection<Class<?>> getRootResources() {
         return this.jaxRsRouter.getRootResourceClasses();
     }
 
     /**
-     * Returns an unmodifiable set of supported URIs (relative).
+     * Returns an unmodifiable set of supported URIs (relative to this
+     * Application).
      * 
      * @return an unmodifiable set of supported URIs (relative).
-     * @see JaxRsRouter#getRootResourceClasses()
      */
     public Collection<String> getRootUris() {
         return this.jaxRsRouter.getRootUris();
     }
 
     /**
-     * This method (should, if ready implemented) return {@link Route} to attach
-     * to a {@link Router}.<br>
-     * The {@link JaxRsRouter} does not allow other Restlets directly between
-     * it. Example: {@link JaxRsRouter} handles http://host/path1. So you can't
+     * <i>This method is planned!</i><br>
+     * It should return {@link Route}s to attach them to a {@link Router}.<br>
+     * The {@link JaxRsRouter} does not allow other Restlets directly beside it.
+     * Example: {@link JaxRsRouter} handles http://host/path1. So you can't
      * directly add another Restlet handling http://host/path2. When addings
      * this {@link Route}s to the main {@link Router} for "host" you can add
      * another {@link Restlet} (e.g. a {@link Directory} or {@link Finder}) for
      * other pathes.
      * 
      * @return an unmodifiable {@link List} of {@link Route}s.
+     * @deprecated planned, but not yet implemented
      */
-    public List<Route> getRoutes() {
+    @Deprecated
+    @SuppressWarnings("unused")
+    private List<Route> getRoutes() {
         throw new NotYetImplementedException();
     }
 
     /**
+     * Returns the state, if a {@link HtmlPreferer} should be used or not.<br>
+     * The default value is true for now, but may change later.
+     * 
+     * @return the state, if a {@link HtmlPreferer} should be used or not.
+     * @see #setPreferHtml(boolean)
+     */
+    public boolean isPreferHtml() {
+        return this.preferHtml;
+    }
+
+    /**
+     * Sets the {@link AccessControl} to use.<br>
+     * If you give an AccessControl, you should also give a Guard.
+     * 
      * @param accessControl
-     * @see JaxRsRouter#setAccessControl(AccessControl)
+     * @see #setAuthentication(Guard, AccessControl)
+     * @see #setGuard(Guard)
      */
     public void setAccessControl(AccessControl accessControl) {
         this.jaxRsRouter.setAccessControl(accessControl);
+    }
+
+    /**
+     * Sets the objects to check the authentication. The {@link Guard} checks
+     * the username and password (e.g.), the {@link AccessControl} manages the
+     * role management for the JAX-RS extension.
+     * 
+     * @param guard
+     *                the Guard to use.
+     * @param accessControl
+     *                the AccessControl to use
+     * @see #setGuard(Guard)
+     * @see #setAccessControl(AccessControl)
+     */
+    public void setAuthentication(Guard guard, AccessControl accessControl) {
+        this.setGuard(guard);
+        this.setAccessControl(accessControl);
     }
 
     /**
@@ -149,9 +301,25 @@ public class JaxRsApplication extends Application {
      * {@link #createRoot()}.
      * 
      * @param guard
-     *                the guard to set
+     *                the Guard to use.
+     * @see #setAuthentication(Guard, AccessControl)
      */
     public void setGuard(Guard guard) {
         this.guard = guard;
+    }
+
+    /**
+     * Sets, if an {@link HtmlPreferer} should be used or not. This setting is
+     * ignored after creation of the root (see {@link #createRoot()}.<br>
+     * The default value is true for now, but may change later.
+     * 
+     * @param preferHtml
+     *                if true, a {@link HtmlPreferer} is used, if false then
+     *                not.
+     * @see #isPreferHtml()
+     * @see HtmlPreferer
+     */
+    public void setPreferHtml(boolean preferHtml) {
+        this.preferHtml = preferHtml;
     }
 }

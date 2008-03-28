@@ -54,7 +54,6 @@ import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.AccessControl;
-import org.restlet.ext.jaxrs.ThrowExcAccessControl;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.EmptyIterator;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
@@ -581,7 +580,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
         Principal principal = (request.getChallengeResponse() == null) ? null
                 : request.getChallengeResponse().getPrincipal();
         if (this.accessControl == null)
-            this.accessControl = ThrowExcAccessControl.getInstance();
+            this.accessControl = AccessControl.REJECT_WITH_ERROR;
         return accessControl.isUserInRole(principal, role);
     }
 
