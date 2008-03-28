@@ -724,7 +724,7 @@ public class Resource extends Handler {
      * <br>
      * 
      * This method is very useful for content negotiation when it is too costly
-     * to initilize all the potential representations. It allows a resource to
+     * to initialize all the potential representations. It allows a resource to
      * simply expose the available variants via the getVariants() method and to
      * actually server the one selected via this method.
      * 
