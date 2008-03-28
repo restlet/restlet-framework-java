@@ -35,32 +35,15 @@ public final class ChallengeResponse {
      * 
      * @author Stephan Koops
      */
-    private class PrincipalImpl implements Principal, Serializable {
+    private final class PrincipalImpl implements Principal, Serializable {
 
         private static final long serialVersionUID = -1842197948591956691L;
-
-        /** The name of the Principal. */
-        private String name;
 
         /**
          * Constructor for deserialization.
          */
         @SuppressWarnings("unused")
         private PrincipalImpl() {
-        }
-
-        /**
-         * Creates a new Principal with the given name
-         * 
-         * @param name
-         *                The name of the Principal; must not be null.
-         */
-        public PrincipalImpl(String name) {
-            if (name == null) {
-                throw new IllegalArgumentException("The name must not be null");
-            }
-
-            this.name = name;
         }
 
         @Override
@@ -79,12 +62,12 @@ public final class ChallengeResponse {
          * @return the name of this principal.
          */
         public String getName() {
-            return this.name;
+            return getIdentifier();
         }
 
         @Override
         public int hashCode() {
-            return this.name.hashCode();
+            return getName().hashCode();
         }
 
         @Override
@@ -286,7 +269,7 @@ public final class ChallengeResponse {
      * @return The {@link Principal}.
      */
     public Principal getPrincipal() {
-        return new PrincipalImpl(getIdentifier());
+        return new PrincipalImpl();
     }
 
     /**
