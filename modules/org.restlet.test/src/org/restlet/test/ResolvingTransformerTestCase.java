@@ -36,6 +36,7 @@ import junit.framework.TestCase;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
@@ -55,19 +56,6 @@ import org.restlet.resource.TransformRepresentation;
  * @author Marc Portier (mpo@outerthought.org)
  */
 public class ResolvingTransformerTestCase extends TestCase {
-
-    private final static String MY_PATH;
-
-    private final static String MY_NAME;
-
-    private final static String MY_BASEPATH;
-    static {
-        MY_PATH = ResolvingTransformerTestCase.class.getName()
-                .replace('.', '/');
-        final int lastPos = MY_PATH.lastIndexOf('/');
-        MY_NAME = MY_PATH.substring(lastPos);
-        MY_BASEPATH = MY_PATH.substring(0, lastPos);
-    }
 
     class AssertResolvingHelper {
 
@@ -118,6 +106,18 @@ public class ResolvingTransformerTestCase extends TestCase {
     class SimpleUriMapApplication extends Application {
         private final Map<String, Representation> uriMap = new HashMap<String, Representation>();
 
+        public SimpleUriMapApplication() {
+            super();
+            // Turn off the useless extension tunnel.
+            getTunnelService().setExtensionTunnel(false);
+        }
+
+        public SimpleUriMapApplication(Context parentContext) {
+            super(parentContext);
+            // Turn off the useless extension tunnel.
+            getTunnelService().setExtensionTunnel(false);
+        }
+
         void add(String uri, Representation rep) {
             this.uriMap.put(uri, rep);
         }
@@ -136,6 +136,20 @@ public class ResolvingTransformerTestCase extends TestCase {
                 }
             };
         }
+    }
+
+    private final static String MY_BASEPATH;
+
+    private final static String MY_NAME;
+
+    private final static String MY_PATH;
+
+    static {
+        MY_PATH = ResolvingTransformerTestCase.class.getName()
+                .replace('.', '/');
+        final int lastPos = MY_PATH.lastIndexOf('/');
+        MY_NAME = MY_PATH.substring(lastPos);
+        MY_BASEPATH = MY_PATH.substring(0, lastPos);
     }
 
     // testing purely the resolver, no active transforming context (ie xslt
@@ -221,7 +235,7 @@ public class ResolvingTransformerTestCase extends TestCase {
         // the riap-authority 'application'
         // This does work though:
         final String xsl2xmlLink = "./3rd.xml"; // and "/three/3rd.xml" would
-                                                // too...
+        // too...
 
         final Representation xml3 = new StringRepresentation(
                 "<?xml version='1.0' ?>" + thirdDocData, MediaType.TEXT_XML);
