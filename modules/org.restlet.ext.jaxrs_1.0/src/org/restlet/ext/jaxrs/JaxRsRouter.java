@@ -23,11 +23,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.WebApplicationException;
@@ -55,9 +53,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateProviderException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRessourceException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRootRessourceException;
+import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
@@ -67,7 +63,6 @@ import org.restlet.ext.jaxrs.internal.provider.ByteArrayProvider;
 import org.restlet.ext.jaxrs.internal.provider.DataSourceProvider;
 import org.restlet.ext.jaxrs.internal.provider.FileProvider;
 import org.restlet.ext.jaxrs.internal.provider.InputStreamProvider;
-import org.restlet.ext.jaxrs.internal.provider.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
 import org.restlet.ext.jaxrs.internal.provider.JaxbProvider;
 import org.restlet.ext.jaxrs.internal.provider.JsonProvider;
@@ -77,6 +72,7 @@ import org.restlet.ext.jaxrs.internal.provider.StreamingOutputProvider;
 import org.restlet.ext.jaxrs.internal.provider.StringProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormFormProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormMmapProvider;
+import org.restlet.ext.jaxrs.internal.util.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.internal.util.MatchingResult;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
@@ -123,8 +119,7 @@ import org.restlet.resource.StringRepresentation;
  * <p>
  * <i>The JAX-RS extension as well as the JAX-RS specification are currently
  * under development. You should use this extension only for experimental
- * purpose.</i>
- * <br>
+ * purpose.</i> <br>
  * For further information see <a href="https://jsr311.dev.java.net/">Java
  * Service Request 311</a>.
  * </p>
@@ -261,6 +256,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         this(context, null, roleChecker);
     }
 
+    // TODO Refactor: delegate throw methods to another class.
+
     /**
      * attaches the classes and providers to this JaxRsRouter. The providers are
      * available for all root resource classes provided to this JaxRsRouter. If
@@ -278,6 +275,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      */
     public void attach(ApplicationConfig appConfig)
             throws IllegalArgumentException {
+        // REQUEST should be defined, what a runtime should do with
+        // non-loadeable rrcs and providers?
         // TODO Interface comparable to other Restlet classes.
         Collection<Class<?>> rrcs = appConfig.getResourceClasses();
         Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
@@ -295,7 +294,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             for (Class<?> providerClass : providerClasses) {
                 try {
                     this.addProvider(providerClass);
-                } catch (InstantiateProviderException ipe) {
+                } catch (InstantiateException ipe) {
                     String msg = "The provider " + providerClass.getName()
                             + " could not be instantiated";
                     throw new IllegalArgumentException(msg, ipe);
@@ -366,7 +365,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             this.addProvider(jaxRsProviderClass);
         } catch (IllegalArgumentException e) {
             throw new ImplementationException(e);
-        } catch (InstantiateProviderException e) {
+        } catch (InstantiateException e) {
             throw new ImplementationException(e);
         }
     }
@@ -382,12 +381,12 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      *                {@link javax.ws.rs.ext.ContextResolver}.
      * @throws IllegalArgumentException
      *                 if the provider is not a valid provider.
-     * @throws InstantiateProviderException
+     * @throws InstantiateException
      * @throws InvocationTargetException
      * @see {@link javax.ws.rs.ext.Provider}
      */
     private void addProvider(Class<?> jaxRsProviderClass)
-            throws IllegalArgumentException, InstantiateProviderException {
+            throws IllegalArgumentException, InstantiateException {
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -400,10 +399,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         try {
             provider = new Provider<Object>(jaxRsProviderClass);
         } catch (InvocationTargetException e) {
-            InstantiateProviderException ipe = new InstantiateProviderException(
-                    e.getMessage());
-            ipe.setStackTrace(e.getCause().getStackTrace());
-            throw ipe;
+            throw new InstantiateException(
+                    "Exception while creating constructor", e);
         }
         if (provider.isWriter())
             this.messageBodyWriters.add(provider);
@@ -541,12 +538,13 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         if (eAndCs.isEmpty())
             handleRootResourceNotFound(u);
         // (e) and (f)
-        RootResourceClass tClass = getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eAndCs);
+        RootResourceClass tClass = AlgorithmUtil
+                .getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eAndCs);
         // (f)
         PathRegExp rMatch = tClass.getPathRegExp();
         MatchingResult matchResult = rMatch.match(u);
         u = matchResult.getFinalCapturingGroup();
-        addPathVarsToMap(matchResult, callContext);
+        AlgorithmUtil.addPathVarsToMap(matchResult, callContext);
         return new RrcAndRemPath(tClass, matchResult.getMatched(), u);
     }
 
@@ -584,7 +582,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         } catch (MissingAnnotationException e) {
             throw handleExecption(e, null, callContext,
                     "Could not create new instance of root resource class");
-        } catch (InstantiateRootRessourceException e) {
+        } catch (InstantiateException e) {
             throw handleExecption(e, null, callContext,
                     "Could not create new instance of root resource class");
         } catch (InvocationTargetException e) {
@@ -633,12 +631,13 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             if (eWithMethod.isEmpty())
                 handleResourceNotFound(o, u);
             // (f) and (g) sort E, use first member of E
-            ResourceMethodOrLocator firstMeth = getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eWithMethod);
+            ResourceMethodOrLocator firstMeth = AlgorithmUtil
+                    .getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eWithMethod);
 
             rMatch = firstMeth.getPathRegExp();
             MatchingResult matchingResult = rMatch.match(u);
 
-            addPathVarsToMap(matchingResult, callContext);
+            AlgorithmUtil.addPathVarsToMap(matchingResult, callContext);
 
             // (h) When Method is resource method
             if (firstMeth instanceof ResourceMethod)
@@ -658,16 +657,16 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
                 throw e;
             } catch (RuntimeException e) {
                 throw handleExecption(e, subResourceLocator, callContext,
-                        "Could not create new instance of root resource class");
+                        "Could not create new instance of resource class");
             } catch (MissingAnnotationException e) {
                 throw handleExecption(e, subResourceLocator, callContext,
-                        "Could not create new instance of root resource class");
-            } catch (InstantiateRessourceException e) {
+                        "Could not create new instance of resource class");
+            } catch (InstantiateException e) {
                 throw handleExecption(e, subResourceLocator, callContext,
-                        "Could not create new instance of root resource class");
+                        "Could not create new instance of resource class");
             } catch (InvocationTargetException e) {
                 throw handleExecption(e, subResourceLocator, callContext,
-                        "Could not create new instance of root resource class");
+                        "Could not create new instance of resource class");
             } catch (NoMessageBodyReaderException nmbre) {
                 throw handleNoMessageBodyReader(callContext, nmbre);
             } catch (ConvertRepresentationException e) {
@@ -721,7 +720,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             handleResourceMethodNotFound(resourceClass, u);
         // (a) 2: remove methods not support the given method
         boolean alsoGet = httpMethod.equals(Method.HEAD);
-        removeNotSupportedHttpMethod(resourceMethods, httpMethod, alsoGet);
+        AlgorithmUtil.removeNotSupportedHttpMethod(resourceMethods, httpMethod,
+                alsoGet);
         if (resourceMethods.isEmpty()) {
             if (httpMethod.equals(Method.OPTIONS)) {
                 Set<Method> allowedMethods = resourceClass.getAllowedMethods(u);
@@ -756,302 +756,16 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             handleNoResourceMethodForAccMediaTypes(httpMethod, resourceClass, u);
         }
         // (b) and (c)
-        ResourceMethod bestResourceMethod = getBestMethod(resourceMethods,
-                givenMediaType, accMediaTypes, httpMethod);
+        ResourceMethod bestResourceMethod = AlgorithmUtil.getBestMethod(
+                resourceMethods, givenMediaType, accMediaTypes, httpMethod);
         MatchingResult mr = bestResourceMethod.getPathRegExp().match(u);
-        addPathVarsToMap(mr, callContext);
+        AlgorithmUtil.addPathVarsToMap(mr, callContext);
         String matchedUriPart = mr.getMatched();
         if (matchedUriPart.length() > 0) {
             Object jaxRsResObj = resObj.getJaxRsResourceObject();
             callContext.addForAncestor(jaxRsResObj, matchedUriPart);
         }
         return new ResObjAndMeth(resObj, bestResourceMethod);
-    }
-
-    /**
-     * Removes the ResourceMethods doesn't support the given method
-     * 
-     * @param resourceMethods
-     * @param httpMethod
-     * @param alsoGet
-     */
-    private void removeNotSupportedHttpMethod(
-            Collection<ResourceMethod> resourceMethods,
-            org.restlet.data.Method httpMethod, boolean alsoGet) {
-        Iterator<ResourceMethod> methodIter = resourceMethods.iterator();
-        while (methodIter.hasNext()) {
-            ResourceMethod resourceMethod = methodIter.next();
-            if (!resourceMethod.isHttpMethodSupported(httpMethod, alsoGet))
-                methodIter.remove();
-        }
-    }
-
-    /**
-     * Sort by using the media type of input data as the primary key and the
-     * media type of output data as the secondary key.<br>
-     * Sorting of media types follows the general rule: x/y < x/* < *<!---->/*,
-     * i.e. a method that explicitly lists one of the requested media types is
-     * sorted before a method that lists *<!---->/*. Quality parameter values
-     * are also used such that x/y;q=1.0 < x/y;q=0.7. <br>
-     * See JSR-311 Spec, section 2.6, Part 3b+c. <br>
-     * Never returns null.
-     * 
-     * @param resourceMethods
-     *                the resourceMethods that provide the required mediaType
-     * @param givenMediaType
-     *                The MediaType of the given entity.
-     * @param accMediaTypes
-     *                The accepted MediaTypes
-     * @param httpMethod
-     *                The HTTP method of the request.
-     * @return Returns the method who best matches the given and accepted media
-     *         type in the request, or null
-     */
-    private ResourceMethod getBestMethod(
-            Collection<ResourceMethod> resourceMethods,
-            MediaType givenMediaType, SortedMetadata<MediaType> accMediaTypes,
-            Method httpMethod) {
-        SortedMetadata<MediaType> givenMediaTypes;
-        if (givenMediaType != null)
-            givenMediaTypes = SortedMetadata.singleton(givenMediaType);
-        else
-            givenMediaTypes = null;
-        // mms = methods that support the given MediaType
-        Map<ResourceMethod, List<MediaType>> mms1;
-        mms1 = findMethodSupportsMime(resourceMethods,
-                ConsOrProdMime.CONSUME_MIME, givenMediaTypes);
-        if (mms1.isEmpty())
-            return Util.getFirstElement(resourceMethods);
-        if (mms1.size() == 1)
-            return Util.getFirstKey(mms1);
-        // check for method with best ProduceMime (secondary key)
-        // mms = Methods support given MediaType and requested MediaType
-        Map<ResourceMethod, List<MediaType>> mms2;
-        mms2 = findMethodSupportsMime(mms1.keySet(),
-                ConsOrProdMime.PRODUCE_MIME, accMediaTypes);
-        if (mms2.isEmpty())
-            return Util.getFirstKey(mms1);
-        if (mms2.size() == 1)
-            return Util.getFirstKey(mms2);
-        for (MediaType accMediaType : accMediaTypes) {
-            ResourceMethod bestMethod = null;
-            for (Map.Entry<ResourceMethod, List<MediaType>> mm : mms2
-                    .entrySet()) {
-                for (MediaType methodMediaType : mm.getValue()) {
-                    if (accMediaType.includes(methodMediaType)) {
-                        ResourceMethod currentMethod = mm.getKey();
-                        if (bestMethod == null) {
-                            bestMethod = currentMethod;
-                        } else {
-                            if (httpMethod.equals(Method.HEAD)) {
-                                // special handling for HEAD
-                                Method bestMethodHttp = bestMethod
-                                        .getHttpMethod();
-                                if (bestMethodHttp.equals(Method.GET)
-                                        && currentMethod.getHttpMethod()
-                                                .equals(Method.HEAD)) {
-                                    // ignore HEAD method
-                                } else if (bestMethod.getHttpMethod().equals(
-                                        Method.HEAD)
-                                        && currentMethod.getHttpMethod()
-                                                .equals(Method.GET)) {
-                                    bestMethod = currentMethod;
-                                } else {
-                                    // use one of the methods, e.g. the first
-                                }
-                            } else {
-                                // use one of the methods, e.g. the first
-                            }
-                        }
-                    }
-                }
-            }
-            if (bestMethod != null)
-                return bestMethod;
-        }
-        return Util.getFirstKey(mms2);
-    }
-
-    /**
-     * @param resourceMethods
-     * @param consumeOrPr_mime
-     * @param mediaType
-     * @return
-     */
-    private Map<ResourceMethod, List<MediaType>> findMethodSupportsMime(
-            Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
-            SortedMetadata<MediaType> mediaTypes) {
-        if (mediaTypes == null || mediaTypes.isEmpty())
-            return findMethodsSupportAllTypes(resourceMethods, inOut);
-        Map<ResourceMethod, List<MediaType>> mms;
-        mms = findMethodsSupportTypeAndSubType(resourceMethods, inOut,
-                mediaTypes);
-        if (mms.isEmpty()) {
-            mms = findMethodsSupportType(resourceMethods, inOut, mediaTypes);
-            if (mms.isEmpty())
-                mms = findMethodsSupportAllTypes(resourceMethods, inOut);
-        }
-        return mms;
-    }
-
-    /**
-     * @param resourceMethods
-     * @param inOut
-     * @param mediaType
-     * @return Never returns null.
-     */
-    private Map<ResourceMethod, List<MediaType>> findMethodsSupportTypeAndSubType(
-            Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
-            SortedMetadata<MediaType> mediaTypes) {
-        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
-        for (ResourceMethod resourceMethod : resourceMethods) {
-            List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
-            for (MediaType resMethMediaType : mimes) {
-                for (MediaType mediaType : mediaTypes)
-                    if (resMethMediaType.equals(mediaType, true))
-                        returnMethods.put(resourceMethod, mimes);
-            }
-        }
-        return returnMethods;
-    }
-
-    /**
-     * @param resourceMethod
-     * @param inOut
-     * @return
-     */
-    private List<MediaType> getConsOrProdMimes(ResourceMethod resourceMethod,
-            ConsOrProdMime inOut) {
-        if (inOut.equals(ConsOrProdMime.CONSUME_MIME))
-            return resourceMethod.getConsumedMimes();
-        List<MediaType> producedMimes = resourceMethod.getProducedMimes();
-        if (producedMimes.isEmpty())
-            return Util.createList(MediaType.ALL);
-        return producedMimes;
-    }
-
-    private Map<ResourceMethod, List<MediaType>> findMethodsSupportType(
-            Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
-            SortedMetadata<MediaType> mediaTypes) {
-        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
-        for (ResourceMethod resourceMethod : resourceMethods) {
-            List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
-            for (MediaType resMethMediaType : mimes) {
-                for (MediaType mediaType : mediaTypes) {
-                    String resMethMainType = resMethMediaType.getMainType();
-                    String wishedMainType = mediaType.getMainType();
-                    if (resMethMainType.equals(wishedMainType))
-                        returnMethods.put(resourceMethod, mimes);
-                }
-            }
-        }
-        return returnMethods;
-    }
-
-    private Map<ResourceMethod, List<MediaType>> findMethodsSupportAllTypes(
-            Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut) {
-        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
-        for (ResourceMethod resourceMethod : resourceMethods) {
-            List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
-            for (MediaType resMethMediaType : mimes) {
-                if (resMethMediaType.equals(MediaType.ALL))
-                    returnMethods.put(resourceMethod, mimes);
-            }
-        }
-        return returnMethods;
-    }
-
-    /**
-     * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
-     * 2008-03-11, Section 3.6, Part 2f+2g
-     * 
-     * @param eWithMethod
-     *                Collection of Sub-ResourceMethods and SubResourceLocators
-     * @return the resource method or sub resource locator, or null, if the Map
-     *         is null or empty.
-     */
-    private ResourceMethodOrLocator getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
-            Collection<ResourceMethodOrLocator> eWithMethod) {
-        if (eWithMethod == null || eWithMethod.isEmpty())
-            return null;
-        Iterator<ResourceMethodOrLocator> srmlIter = eWithMethod.iterator();
-        ResourceMethodOrLocator bestSrml = srmlIter.next();
-        if (eWithMethod.size() == 1)
-            return bestSrml;
-        int bestSrmlChars = Integer.MIN_VALUE;
-        int bestSrmlNoCaptGroups = Integer.MIN_VALUE;
-        for (ResourceMethodOrLocator srml : eWithMethod) {
-            int srmlNoLitChars = srml.getPathRegExp().getNumberOfLiteralChars();
-            int srmlNoCaptGroups = srml.getPathRegExp()
-                    .getNumberOfCapturingGroups();
-            if (srmlNoLitChars > bestSrmlChars) {
-                bestSrml = srml;
-                bestSrmlChars = srmlNoLitChars;
-                bestSrmlNoCaptGroups = srmlNoCaptGroups;
-                continue;
-            }
-            if (srmlNoLitChars == bestSrmlChars) {
-                if (srmlNoCaptGroups > bestSrmlNoCaptGroups) {
-                    bestSrml = srml;
-                    bestSrmlChars = srmlNoLitChars;
-                    bestSrmlNoCaptGroups = srmlNoCaptGroups;
-                    continue;
-                }
-                if (srmlNoCaptGroups == bestSrmlNoCaptGroups) {
-                    if ((srml instanceof ResourceMethod)
-                            && (bestSrml instanceof SubResourceLocator)) {
-                        // prefare methods ahead locators
-                        bestSrml = srml;
-                        bestSrmlChars = srmlNoLitChars;
-                        bestSrmlNoCaptGroups = srmlNoCaptGroups;
-                        continue;
-                    }
-                    // use one the methods
-                }
-            }
-        }
-        return bestSrml;
-    }
-
-    /**
-     * See JSR-311-Spec, Section 2.6 Matching Requests to Resource Methods, item
-     * 1.e
-     * 
-     * @param rrcs
-     *                Collection of root resource classes
-     * @return null, if the Map is null or empty
-     */
-    private RootResourceClass getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
-            Collection<RootResourceClass> rrcs) {
-        if (rrcs == null || rrcs.isEmpty())
-            return null;
-        Iterator<RootResourceClass> rrcIter = rrcs.iterator();
-        RootResourceClass bestRrc = rrcIter.next();
-        if (rrcs.size() == 1)
-            return bestRrc;
-        int bestRrcChars = Integer.MIN_VALUE;
-        int bestRrcNoCaptGroups = Integer.MIN_VALUE;
-        for (RootResourceClass rrc : rrcs) {
-            int rrcNoLitChars = rrc.getPathRegExp().getNumberOfLiteralChars();
-            int rrcNoCaptGroups = rrc.getPathRegExp()
-                    .getNumberOfCapturingGroups();
-            if (rrcNoLitChars > bestRrcChars) {
-                bestRrc = rrc;
-                bestRrcChars = rrcNoLitChars;
-                bestRrcNoCaptGroups = rrcNoCaptGroups;
-                continue;
-            }
-            if (rrcNoLitChars == bestRrcChars) {
-                if (rrcNoCaptGroups > bestRrcNoCaptGroups) {
-                    bestRrc = rrc;
-                    bestRrcChars = rrcNoLitChars;
-                    bestRrcNoCaptGroups = rrcNoCaptGroups;
-                    continue;
-                }
-                // use one of the classes
-            }
-        }
-        return bestRrc;
     }
 
     /**
@@ -1155,6 +869,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
     }
 
     /**
+     * Converts the given entity - returned by the resoure method - to a Restlet
+     * {@link Representation}.
      * 
      * @param entity
      *                the entity to convert.
@@ -1298,25 +1014,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
     }
 
     /**
-     * Adds the matched template parameters to the {@link CallContext}.
-     * 
-     * @param matchResult
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     */
-    private void addPathVarsToMap(MatchingResult matchResult,
-            CallContext callContext) {
-        Map<String, String> variables = matchResult.getVariables();
-        for (Map.Entry<String, String> varEntry : variables.entrySet()) {
-            String key = varEntry.getKey();
-            String value = varEntry.getValue();
-            callContext.addPathParamsEnc(key, value);
-        }
-    }
-
-    /**
      * Structure to return the identiied {@link RootResourceClass}, the
      * remaining path after identifying and the matched template parameters.
      * 
@@ -1373,18 +1070,6 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             this.resourceObject = resourceObject;
             this.resourceMethod = resourceMethod;
         }
-    }
-
-    private enum ConsOrProdMime {
-        /**
-         * Declares that the methods etc. for the consume mime shoud be used
-         */
-        CONSUME_MIME,
-
-        /**
-         * Declares that the methods etc. for the produced mime shoud be used
-         */
-        PRODUCE_MIME
     }
 
     /**

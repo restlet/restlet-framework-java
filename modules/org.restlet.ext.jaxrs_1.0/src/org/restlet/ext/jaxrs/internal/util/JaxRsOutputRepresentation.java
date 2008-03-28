@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.provider;
+package org.restlet.ext.jaxrs.internal.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,7 +25,6 @@ import java.lang.reflect.Type;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
-import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriter;
 import org.restlet.resource.OutputRepresentation;
 

@@ -18,14 +18,16 @@
 package org.restlet.ext.jaxrs.internal.util;
 
 /**
- * This class contains the remaining path for a request.
+ * This class contains the remaining path for a request. It does not contain any
+ * matrix parameter.
  * 
  * @author Stephan Koops
  */
 public class RemainingPath implements Comparable<RemainingPath> {
 
     /**
-     * removes the matrix parameters from the given uri path
+     * removes the matrix parameters from the given uri path.<br>
+     * public for testing only.
      * 
      * @param remainingPart
      * @return the given uri path without the matrix parameters.
@@ -92,9 +94,9 @@ public class RemainingPath implements Comparable<RemainingPath> {
     }
 
     /**
-     * Returns the oath without matrix and query parameters.
+     * Returns the path without matrix and query parameters.
      * 
-     * @return
+     * @return the path without matrix and query parameters.
      */
     public String getWithoutParams() {
         return this.remainingPart;

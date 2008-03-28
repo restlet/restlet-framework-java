@@ -26,7 +26,7 @@ import javax.ws.rs.QueryParam;
  * @author Stephan Koops
  * @see QueryParam
  */
-public class ConvertQueryParamException extends Exception {
+public class ConvertQueryParamException extends JaxRsException {
 
     private static final long serialVersionUID = 131640120766355816L;
 

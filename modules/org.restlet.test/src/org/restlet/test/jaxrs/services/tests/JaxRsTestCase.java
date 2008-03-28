@@ -53,7 +53,6 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.ext.jaxrs.internal.wrappers.ResourceClass;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.server.DirectServerWrapper;
 import org.restlet.test.jaxrs.server.DirectServerWrapperFactory;
@@ -418,7 +417,7 @@ public abstract class JaxRsTestCase extends TestCase {
     public Reference createReference(Class<?> jaxRsClass, String subPath) {
         String path;
         try {
-            path = ResourceClass.getPathTemplate(jaxRsClass);
+            path = Util.getPathTemplate(jaxRsClass);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {

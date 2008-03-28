@@ -25,7 +25,7 @@ import javax.ws.rs.PathParam;
  * @author Stephan Koops
  * @see PathParam
  */
-public class ConvertPathParamException extends Exception {
+public class ConvertPathParamException extends JaxRsException {
 
     private static final long serialVersionUID = 7259271064216490329L;
 

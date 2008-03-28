@@ -17,28 +17,15 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
@@ -47,13 +34,12 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRootRessourceException;
+import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
-import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
+import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
  * Instances represents a root resource class, see chapter 3 of JAX-RS
@@ -85,179 +71,6 @@ public class RootResourceClass extends ResourceClass {
         }
     }
 
-    /**
-     * Checks, if the class is concrete.
-     * 
-     * @param jaxRsClass
-     *                JAX-RS root resource class or JAX-RS provider.
-     * @param typeName
-     *                "root resource class" or "provider"
-     * @throws IllegalArgumentException
-     *                 if the class is not concrete.
-     */
-    public static void checkClassConcrete(Class<?> jaxRsClass, String typeName)
-            throws IllegalArgumentException {
-        int modifiers = jaxRsClass.getModifiers();
-        if (Modifier.isAbstract(modifiers) || Modifier.isInterface(modifiers)) {
-            throw new IllegalArgumentException("The " + typeName + " "
-                    + jaxRsClass.getName() + " is not concrete");
-        }
-    }
-
-    /**
-     * Checks if the parameters for the constructor are valid for a JAX-RS root
-     * resource class.
-     * 
-     * @param paramAnnotationss
-     * @param parameterTypes
-     * @throws IllegalTypeException
-     * @returns true, if the
-     * @throws IllegalTypeException
-     *                 If a parameter is annotated with {@link Context}, but
-     *                 the type is invalid (must be UriInfo, Request or
-     *                 HttpHeaders).
-     */
-    private static boolean checkParamAnnotations(Constructor<?> constr) {
-        Annotation[][] paramAnnotationss = constr.getParameterAnnotations();
-        Class<?>[] parameterTypes = constr.getParameterTypes();
-        for (int i = 0; i < paramAnnotationss.length; i++) {
-            Annotation[] parameterAnnotations = paramAnnotationss[i];
-            Class<?> parameterType = parameterTypes[i];
-            boolean ok = checkParameterAnnotation(parameterAnnotations,
-                    parameterType);
-            if (!ok)
-                return false;
-        }
-        return true;
-    }
-
-    /**
-     * Checks, if the annotations are valid for a runtime environment handled
-     * constructor.
-     * 
-     * @param parameterAnnotations
-     * @param parameterType
-     * @return
-     */
-    private static boolean checkParameterAnnotation(
-            Annotation[] parameterAnnotations, Class<?> parameterType) {
-        if (parameterAnnotations.length == 0)
-            return false;
-        for (Annotation annotation : parameterAnnotations) {
-            Class<? extends Annotation> annotationType = annotation
-                    .annotationType();
-            if (annotationType.equals(HeaderParam.class)) {
-                continue;
-            } else if (annotationType.equals(PathParam.class)) {
-                continue;
-            } else if (annotationType.equals(Context.class)) {
-                if (parameterType.equals(UriInfo.class))
-                    continue;
-                if (parameterType.equals(Request.class))
-                    continue;
-                if (parameterType.equals(HttpHeaders.class))
-                    continue;
-                if (parameterType.equals(SecurityContext.class))
-                    continue;
-                return false;
-            } else if (annotationType.equals(MatrixParam.class)) {
-                continue;
-            } else if (annotationType.equals(QueryParam.class)) {
-                continue;
-            }
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Creates an instance of the root resource class.
-     * 
-     * @param constructor
-     *                the constructor to create an instance with.
-     * @param leaveEncoded
-     *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
-     *                and {@link PathParam}s encoded.
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * @param mbrs
-     *                The Set of all available {@link MessageBodyReader}s in
-     *                the {@link JaxRsRouter}.
-     * @param logger
-     *                The logger to use
-     * @return
-     * @throws MissingAnnotationException
-     * @throws NoMessageBodyReaderException
-     * @throws InstantiateRootRessourceException
-     *                 if the class could not be instantiated.
-     * @throws InvocationTargetException
-     * @throws ConvertCookieParamException
-     * @throws ConvertQueryParamException
-     * @throws ConvertMatrixParamException
-     * @throws ConvertPathParamException
-     * @throws ConvertHeaderParamException
-     * @throws ConvertRepresentationException
-     */
-    public static Object createInstance(Constructor<?> constructor,
-            boolean leaveEncoded, CallContext callContext,
-            MessageBodyReaderSet mbrs, Logger logger)
-            throws MissingAnnotationException, NoMessageBodyReaderException,
-            InstantiateRootRessourceException, InvocationTargetException,
-            ConvertRepresentationException, ConvertHeaderParamException,
-            ConvertPathParamException, ConvertMatrixParamException,
-            ConvertQueryParamException, ConvertCookieParamException {
-        Object[] args;
-        if (constructor.getParameterTypes().length == 0) {
-            args = new Object[0];
-        } else {
-            args = getParameterValues(constructor.getParameterTypes(),
-                    constructor.getGenericParameterTypes(), constructor
-                            .getParameterAnnotations(), leaveEncoded,
-                    callContext, mbrs, logger);
-        }
-        try {
-            return constructor.newInstance(args);
-        } catch (IllegalArgumentException e) {
-            throw new InstantiateRootRessourceException(
-                    "Could not instantiate " + constructor.getDeclaringClass(),
-                    e);
-        } catch (InstantiationException e) {
-            throw new InstantiateRootRessourceException(
-                    "Could not instantiate " + constructor.getDeclaringClass(),
-                    e);
-        } catch (IllegalAccessException e) {
-            throw new InstantiateRootRessourceException(
-                    "Could not instantiate " + constructor.getDeclaringClass(),
-                    e);
-        }
-    }
-
-    /**
-     * @param jaxRsClass
-     * @return Returns the constructor to use for the given root resource class
-     *         (See JSR-311-Spec, section 2.3). If no constructor could be
-     *         found, null is returned. Than try {@link Class#newInstance()}
-     * @throws IllegalTypeException
-     */
-    public static Constructor<?> findJaxRsConstructor(Class<?> jaxRsClass) {
-        Constructor<?> constructor = null;
-        int constructorParamNo = Integer.MIN_VALUE;
-        for (Constructor<?> constr : jaxRsClass.getConstructors()) {
-            if (!Modifier.isPublic(constr.getModifiers()))
-                continue;
-            int constrParamNo = constr.getParameterTypes().length;
-            if (constrParamNo <= constructorParamNo)
-                continue; // ignore this constructor
-            if (!checkParamAnnotations(constr))
-                continue; // ignore this constructor
-            constructor = constr;
-            constructorParamNo = constrParamNo;
-        }
-        return constructor;
-    }
-
     private Constructor<?> constructor;
 
     /**
@@ -284,9 +97,9 @@ public class RootResourceClass extends ResourceClass {
             throws IllegalArgumentException, MissingAnnotationException,
             IllegalPathOnClassException {
         super(jaxRsClass, logger, logger);
-        checkClassConcrete(getJaxRsClass(), "root resource class");
+        Util.checkClassConcrete(getJaxRsClass(), "root resource class");
         checkClassForPathAnnot(jaxRsClass, "root resource class");
-        this.constructor = findJaxRsConstructor(getJaxRsClass());
+        this.constructor = WrapperUtil.findJaxRsConstructor(getJaxRsClass());
         this.constructorLeaveEncoded = leaveEncoded
                 || constructor.isAnnotationPresent(Encoded.class);
     }
@@ -296,19 +109,19 @@ public class RootResourceClass extends ResourceClass {
      * 
      * @param callContext
      *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
+     *                from the called URI, the Restlet
+     *                {@link org.restlet.data.Request} and the Restlet
+     *                {@link org.restlet.data.Response}.
      * @param allResolvers
      *                all available wrapped {@link ContextResolver}s.
      * @param mbrs
      *                The Set of all available {@link MessageBodyReader}s in
-     *                the {@link JaxRsRouter}.
+     *                the {@link org.restlet.ext.jaxrs.JaxRsRouter}.
      * @param logger
      *                The logger to use
      * @return
      * @throws InvocationTargetException
-     * @throws RequestHandledException
-     * @throws InstantiateRootRessourceException
+     * @throws InstantiateException
      * @throws MissingAnnotationException
      * @throws NoMessageBodyReaderException
      * @throws ConvertCookieParamException
@@ -323,19 +136,19 @@ public class RootResourceClass extends ResourceClass {
             Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers,
             MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException,
-            InstantiateRootRessourceException, NoMessageBodyReaderException,
+            InstantiateException, NoMessageBodyReaderException,
             InvocationTargetException, ConvertRepresentationException,
             ConvertHeaderParamException, ConvertPathParamException,
             ConvertMatrixParamException, ConvertQueryParamException,
             ConvertCookieParamException {
         Constructor<?> constructor = this.constructor;
-        Object instance = createInstance(constructor, constructorLeaveEncoded,
-                callContext, mbrs, logger);
+        Object instance = WrapperUtil.createInstance(constructor,
+                constructorLeaveEncoded, callContext, mbrs, logger);
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {
             rootResourceObject.init(callContext, allResolvers);
         } catch (InjectException e) {
-            throw new InstantiateRootRessourceException(e);
+            throw new InstantiateException(e);
         }
         return rootResourceObject;
     }

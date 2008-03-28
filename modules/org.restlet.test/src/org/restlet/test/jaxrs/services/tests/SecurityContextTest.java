@@ -151,7 +151,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         assertEquals(SecurityContext.BASIC_AUTH, entity);
     }
 
-    // TESTEN create extra TestCase: DigestAuth does not work
+    // TESTEN create extra TestCase: DigestAuth does not work.
     public void _testAuthenticationSchemeDigest() throws Exception {
         if (!setRoleChecker(RoleChecker.ALLOW_ALL))
             return;

@@ -52,7 +52,7 @@ public class TestUtils {
 
     public static MediaType createMediaType(String type, String subtype,
             String... keysAndValues) {
-        return Util.createMediaType(type, subtype, keysAndValues);
+        return new MediaType(type, subtype, Util.createMap(keysAndValues));
     }
 
     /**

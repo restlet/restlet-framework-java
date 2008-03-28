@@ -24,13 +24,16 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
@@ -46,7 +49,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  */
 public class JaxRsUriInfo implements UriInfo {
 
-    // TODO throw IllegalStateException if called outside the scope of a request
+    // TODO throw IllegalStateExc if called outside the scope of a request.
 
     private static Logger logger = Logger.getLogger("JaxRsUriInfo.unexpected");
 
@@ -208,7 +211,7 @@ public class JaxRsUriInfo implements UriInfo {
         try {
             return new URI(reference.toString(false, false));
         } catch (URISyntaxException e) {
-            throw Util.handleException(e, logger, "Could not create URI");
+            throw wrapUriSyntaxExc(e, logger, "Could not create URI");
         }
     }
 
@@ -277,11 +280,45 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
+     * Get a read-only list of URIs for ancestor resources. Each entry is a
+     * relative URI that is a partial path that matched a resource class, a
+     * sub-resource method or a sub-resource locator. Entries do not include
+     * query parameters but do include matrix parameters if present in the
+     * request URI. Entries are ordered in reverse request URI matching order,
+     * with the root resource URI last. E.g.:
+     * 
+     * <pre>
+     * &#064;Path(&quot;foo&quot;)
+     * public class FooResource {
+     *   &#064;GET
+     *   public String getFoo() {...}
+     * 
+     *   &#064;Path(&quot;bar&quot;)
+     *   &#064;GET
+     *   public String getFooBar() {...}
+     * </pre>
+     * 
+     * <p>
+     * A request <code>GET /foo</code> would return an empty list since
+     * <code>FooResource</code> is a root resource.
+     * </p>
+     * 
+     * <p>
+     * A request <code>GET /foo/bar</code> would return a list with one entry:
+     * "foo".
+     * </p>
+     * 
+     * @param decode
+     *                controls whether sequences of escaped octets are decoded
+     *                (true) or not (false).
+     * @return a read-only list of URI paths for ancestor resources.
      * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs(boolean)
      */
     public List<String> getAncestorResourceURIs(boolean decode) {
+        // TODO JaxRsUriBuilder.getAncestorResourceURIs(boolean decode).
+        if(decode && !decode)
+            decode = false;
         return ancestorResourceURIsUnomd;
-        // TODO JaxRsUriBuilder.getAncestorResourceURIs(boolean decode)
     }
 
     /**
@@ -295,7 +332,7 @@ public class JaxRsUriInfo implements UriInfo {
         try {
             return new URI(getBaseUriStr());
         } catch (URISyntaxException e) {
-            throw Util.handleException(e, logger, "Could not create URI");
+            throw wrapUriSyntaxExc(e, logger, "Could not create URI");
         }
     }
 
@@ -353,9 +390,11 @@ public class JaxRsUriInfo implements UriInfo {
      * Get the request URI extension. The returned string includes any
      * extensions remove during request pre-processing for the purposes of
      * URI-based content negotiation. E.g. if the request URI was:
+     * 
      * <pre>
      * http://example.com/resource.xml.en
      * </pre>
+     * 
      * this method would return "xml.en" even if an applications implementation
      * of {@link ApplicationConfig#getMediaTypeMappings()} returned a map that
      * included "xml" as a key
@@ -364,8 +403,7 @@ public class JaxRsUriInfo implements UriInfo {
      * @see javax.ws.rs.core.UriInfo#getPathExtension()
      */
     public String getPathExtension() {
-        // TODO JaxRsUriBuilder.getPathExtension()
-        // REQUEST should return "" or null if not?
+        // TODO JaxRsUriBuilder.getPathExtension().
         return null;
     }
 
@@ -468,10 +506,30 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
+     * Get the absolute platonic request URI in the form of a UriBuilder. The
+     * platonic request URI is the request URI minus any extensions that were
+     * removed during request pre-processing for the purposes of URI-based
+     * content negotiation. E.g. if the request URI was:
+     * 
+     * <pre>
+     * http://example.com/resource.xml
+     * </pre>
+     * 
+     * and an applications implementation of
+     * {@link ApplicationConfig#getMediaTypeMappings} returned a map that
+     * included "xml" as a key then the platonic request URI would be:
+     * 
+     * <pre>
+     * http://example.com/resource
+     * </pre>
+     * 
+     * @return a UriBuilder initialized with the absolute platonic request URI
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
      * @see javax.ws.rs.core.UriInfo#getPlatonicRequestUriBuilder()
      */
     public UriBuilder getPlatonicRequestUriBuilder() {
-        // TODO JaxRsUriBuilder.getPlatonicRequestUriBuilder()
+        // TODO JaxRsUriBuilder.getPlatonicRequestUriBuilder().
         return null;
     }
 
@@ -517,7 +575,7 @@ public class JaxRsUriInfo implements UriInfo {
         try {
             return new URI(reference.toString(true, true));
         } catch (URISyntaxException e) {
-            throw Util.handleException(e, logger, "Could not create URI");
+            throw wrapUriSyntaxExc(e, logger, "Could not create URI");
         }
     }
 
@@ -607,5 +665,32 @@ public class JaxRsUriInfo implements UriInfo {
     @Override
     public String toString() {
         return this.reference.toString(true, false);
+    }
+
+    /**
+     * This method throws an {@link WebApplicationException} for Exceptions
+     * where is no planned handling. Logs the exception (warn {@link Level}).
+     * 
+     * @param exc
+     *                the catched URISyntaxException
+     * @param logger
+     *                the logger to log the messade
+     * @param logMessage
+     *                the message to log.
+     * @return Will never return anything, because the generated
+     *         WebApplicationException will be thrown. You an formally throw the
+     *         returned exception (e.g. in a catch block). So the compiler is
+     *         sure, that the method will be left here.
+     * @throws WebApplicationException
+     *                 contains the given {@link Exception}
+     */
+    private WebApplicationException wrapUriSyntaxExc(URISyntaxException exc,
+            Logger logger, String logMessage) throws WebApplicationException {
+        logger.log(Level.WARNING, logMessage, exc);
+        exc.printStackTrace();
+        throw new WebApplicationException(exc, Status.INTERNAL_SERVER_ERROR
+                .getStatusCode());
+        // REQUEST WebApplicationException should also accept a Status
+        // additional to int (two constructors)
     }
 }

@@ -15,12 +15,12 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.provider;
+package org.restlet.ext.jaxrs.internal.wrappers;
 
 import javax.ws.rs.ext.ContextResolver;
 
 /**
- * This {@link ContextResolver} returns ever null. Is is used as defautl, if no
+ * This {@link ContextResolver} returns ever null. Is is used as default, if no
  * one was found.
  * 
  * @author Stephan Koops

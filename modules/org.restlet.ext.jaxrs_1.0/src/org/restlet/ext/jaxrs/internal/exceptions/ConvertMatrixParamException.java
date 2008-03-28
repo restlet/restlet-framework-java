@@ -26,7 +26,7 @@ import javax.ws.rs.MatrixParam;
  * @author Stephan Koops
  * @see MatrixParam 
  */
-public class ConvertMatrixParamException extends Exception {
+public class ConvertMatrixParamException extends JaxRsException {
 
     private static final long serialVersionUID = 6704339151884788476L;
 

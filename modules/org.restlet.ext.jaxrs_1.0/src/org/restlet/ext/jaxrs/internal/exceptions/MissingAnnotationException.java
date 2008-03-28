@@ -19,7 +19,7 @@
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 /**
- * This exception is thrown, if an annotation is missing.
+ * This exception is thrown, if an required annotation is missing.
  * 
  * @author Stephan Koops
  */
@@ -28,15 +28,13 @@ public class MissingAnnotationException extends JaxRsException {
     private static final long serialVersionUID = -1900088092745095670L;
 
     /**
-     * 
-     * @param s
+     * @param message
      */
-    public MissingAnnotationException(String s) {
-        super(s);
+    public MissingAnnotationException(String message) {
+        super(message);
     }
 
     /**
-     * 
      * @param cause
      */
     public MissingAnnotationException(Throwable cause) {
@@ -44,7 +42,6 @@ public class MissingAnnotationException extends JaxRsException {
     }
 
     /**
-     * 
      * @param message
      * @param cause
      */

@@ -27,9 +27,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.internal.wrappers.AbstractJaxRsWrapper;
-import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
-import org.restlet.ext.jaxrs.internal.wrappers.ResourceClass;
 import org.restlet.util.Resolver;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
@@ -57,19 +54,22 @@ public class PathRegExp {
     /**
      * Creates a {@link PathRegExp} for a root resource class.
      * 
-     * @param jaxRsRootResourceClass
-     * @return
+     * @param rrc
+     *                the JAX-RS root resource class
+     * @return the PathRegExp from the given root resource class
      * @throws MissingAnnotationException
-     * @throws IllegalArgumentException
+     *                 if the {@link Path} annotation is missing.
      * @throws IllegalPathOnClassException
+     *                 if the {@link Path} annotation is not valid.
+     * @throws IllegalArgumentException
+     *                 if the rrc is null.
      * @see {@link #EMPTY}
      */
-    public static PathRegExp createForClass(Class<?> jaxRsRootResourceClass)
-            throws MissingAnnotationException, IllegalArgumentException,
-            IllegalPathOnClassException {
+    public static PathRegExp createForClass(Class<?> rrc)
+            throws MissingAnnotationException, IllegalPathOnClassException,
+            IllegalArgumentException {
         try {
-            return new PathRegExp(ResourceClass
-                    .getPathAnnotation(jaxRsRootResourceClass));
+            return new PathRegExp(Util.getPathAnnotation(rrc));
         } catch (IllegalPathException e) {
             throw new IllegalPathOnClassException(e);
         }
@@ -83,15 +83,13 @@ public class PathRegExp {
      * @param annotatedMethod
      * @return the {@link PathRegExp}. Never returns null.
      * @throws IllegalPathOnMethodException
-     * @throws MissingAnnotationException
+     *                 tif the annotation on the method is invalid.
      * @throws IllegalArgumentException
-     *                 if the javaMethod was null
-     * @see {@link #EMPTY}
+     *                 if the method is null.
      */
     public static PathRegExp createForMethod(Method annotatedMethod)
             throws IllegalPathOnMethodException, IllegalArgumentException {
-        Path pathAnnotation = AbstractMethodWrapper
-                .getPathAnnotationOrNull(annotatedMethod);
+        Path pathAnnotation = Util.getPathAnnotationOrNull(annotatedMethod);
         if (pathAnnotation == null)
             return EMPTY;
         try {
@@ -107,13 +105,18 @@ public class PathRegExp {
      * @param path
      * @return
      * @throws IllegalPathException
+     *                 if the found {@link Path} is invalid.
+     * @throws IllegalArgumentException
+     *                 if the path is null.
      */
     private static String getPathPattern(Path path)
             throws IllegalArgumentException, IllegalPathException {
         if (path == null)
             throw new IllegalArgumentException("The path must not be null");
-        String pathPattern = AbstractJaxRsWrapper.getPathTemplate(path);
-        return Util.ensureStartSlash(pathPattern);
+        String pathPattern = Util.getPathTemplate(path);
+        if (pathPattern.startsWith("/"))
+            return pathPattern;
+        return "/" + pathPattern;
     }
 
     private boolean isEmptyOrSlash;
@@ -137,6 +140,7 @@ public class PathRegExp {
      * 
      * @param pathPattern
      * @param limitedToOneSegment
+     * @deprecated public for testing only
      */
     @Deprecated
     public PathRegExp(String pathPattern, boolean limitedToOneSegment) {

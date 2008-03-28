@@ -47,7 +47,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 @Provider
 @ProduceMime({"application/xml", MediaType.TEXT_XML, "application/*+xml"})
 @ConsumeMime({"application/xml", MediaType.TEXT_XML, "application/*+xml"})
-// TODO Jaxb(Element)Provider for application/*+xml
+// TODO Jaxb(Element)Provider for application/*+xml.
 public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
 
     private Logger logger = Logger.getLogger(JaxbElementProvider.class

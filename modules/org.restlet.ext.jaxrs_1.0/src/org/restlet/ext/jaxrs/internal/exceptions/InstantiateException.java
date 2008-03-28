@@ -20,19 +20,45 @@ package org.restlet.ext.jaxrs.internal.exceptions;
 import java.lang.reflect.Method;
 
 /**
- * Thrown if a resource can not be instantiated.
+ * Thrown if a provider, a root resource class or a resource class could not be
+ * instantiated.
  * 
  * @author Stephan Koops
  */
-public class InstantiateRessourceException extends JaxRsException {
+public class InstantiateException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**
-     * 
-     * @param executeMethod
+     * @param message
+     */
+    public InstantiateException(String message) {
+        super(message);
+    }
+
+    /**
      * @param cause
      */
-    public InstantiateRessourceException(Method executeMethod, Throwable cause) {
+    public InstantiateException(Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * @param message
+     * @param cause
+     */
+    public InstantiateException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Use this constructor, if a resource class could not be instantiated.
+     * 
+     * @param executeMethod
+     *                the resource method that should create the resource
+     *                object.
+     * @param cause
+     */
+    public InstantiateException(Method executeMethod, Throwable cause) {
         super("The method " + executeMethod
                 + " could not instantiate a resource class", cause);
     }

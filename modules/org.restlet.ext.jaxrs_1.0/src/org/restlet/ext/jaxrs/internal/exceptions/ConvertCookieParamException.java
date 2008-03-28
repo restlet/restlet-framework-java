@@ -26,7 +26,7 @@ import javax.ws.rs.CookieParam;
  * @author Stephan Koops
  * @see CookieParam
  */
-public class ConvertCookieParamException extends Exception {
+public class ConvertCookieParamException extends JaxRsException {
 
     private static final long serialVersionUID = 9098614715395362234L;
 

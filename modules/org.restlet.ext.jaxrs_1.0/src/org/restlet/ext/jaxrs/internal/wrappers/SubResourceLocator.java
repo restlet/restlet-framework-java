@@ -38,7 +38,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRessourceException;
+import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 
@@ -90,7 +90,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @throws NoMessageBodyReaderException
      * @throws WebApplicationException
      * @throws MissingAnnotationException
-     * @throws InstantiateRessourceException
+     * @throws InstantiateException
      * @throws ConvertCookieParamException
      * @throws ConvertQueryParamException
      * @throws ConvertMatrixParamException
@@ -104,7 +104,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers, Logger logger)
             throws InvocationTargetException, MissingAnnotationException,
             WebApplicationException, NoMessageBodyReaderException,
-            InstantiateRessourceException, ConvertRepresentationException,
+            InstantiateException, ConvertRepresentationException,
             ConvertHeaderParamException, ConvertPathParamException,
             ConvertMatrixParamException, ConvertQueryParamException,
             ConvertCookieParamException {
@@ -113,7 +113,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         if (parameterTypes.length == 0)
             args = new Object[0];
         else
-            args = getParameterValues(parameterTypes, executeMethod
+            args = WrapperUtil.getParameterValues(parameterTypes, executeMethod
                     .getGenericParameterTypes(), annotatedMethod
                     .getParameterAnnotations(), leaveEncoded, callContext,
                     mbrs, logger);
@@ -122,9 +122,9 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             subResObj = executeMethod.invoke(resourceObject
                     .getJaxRsResourceObject(), args);
         } catch (IllegalArgumentException e) {
-            throw new InstantiateRessourceException(executeMethod, e);
+            throw new InstantiateException(executeMethod, e);
         } catch (IllegalAccessException e) {
-            throw new InstantiateRessourceException(executeMethod, e);
+            throw new InstantiateException(executeMethod, e);
         }
         if (subResObj == null) {
             logger
@@ -140,7 +140,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         try {
             subResourceObject.init(callContext, allResolvers);
         } catch (InjectException e) {
-            throw new InstantiateRessourceException(executeMethod, e);
+            throw new InstantiateException(executeMethod, e);
         }
         return subResourceObject;
     }

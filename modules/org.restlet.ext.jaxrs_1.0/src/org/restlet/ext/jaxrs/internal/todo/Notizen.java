@@ -44,8 +44,8 @@ public class Notizen {
     // support and warn about this.
 
     // TESTEN what happens, if ".." or "." in @Path?
-    
-    // TODO file extension mapping with matrix parameters
+
+    // TODO file extension mapping with matrix parameters.
 
     // TESTEN are headers of Response and annotations copiied to a
     // Representation, if a org.restlet.data.Representation is returned?
@@ -57,7 +57,10 @@ public class Notizen {
 
     // REQUESTED disallow entity on sub resource locator?
 
-    // REQUESTED javadoc of PathParam: Template -> Path
-
     // TODO read javadoc of PathSegment again.
+
+    // TODO test again Jersey Implementation.
+
+    // TESTEN create provider for primitive wrapper and check on it's primitive,
+    // also ith no given entity.
 }

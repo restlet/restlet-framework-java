@@ -18,7 +18,8 @@
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 /**
- * Thrown if a constructor or method parameter could not be instantiated.
+ * Thrown if a value for an instance field or a parameter for a constructor, a
+ * resource method or a bean setter could not be instantiated.
  * 
  * @author Stephan Koops
  */
@@ -26,7 +27,6 @@ public class ConvertParameterException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**
-     * 
      * @param message
      */
     private ConvertParameterException(String message) {
@@ -34,7 +34,6 @@ public class ConvertParameterException extends JaxRsException {
     }
 
     /**
-     * 
      * @param cause
      */
     private ConvertParameterException(Throwable cause) {
@@ -42,7 +41,6 @@ public class ConvertParameterException extends JaxRsException {
     }
 
     /**
-     * 
      * @param message
      * @param cause
      */

@@ -28,7 +28,6 @@ public class ImplementationException extends JaxRsRuntimeException {
     private static final long serialVersionUID = 5635188228961655076L;
 
     /**
-     * 
      * @param message
      */
     public ImplementationException(String message) {
@@ -36,7 +35,6 @@ public class ImplementationException extends JaxRsRuntimeException {
     }
 
     /**
-     * 
      * @param cause
      */
     public ImplementationException(Throwable cause) {
@@ -44,7 +42,6 @@ public class ImplementationException extends JaxRsRuntimeException {
     }
 
     /**
-     * 
      * @param message
      * @param cause
      */

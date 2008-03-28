@@ -36,8 +36,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.util.EncodeOrCheck;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
-import org.restlet.ext.jaxrs.internal.wrappers.ResourceClass;
 import org.restlet.util.Resolver;
 import org.restlet.util.Template;
 
@@ -467,7 +465,7 @@ public class JaxRsUriBuilder extends UriBuilder {
                     "The root resource class must not be null");
         String newPathSegment;
         try {
-            newPathSegment = ResourceClass.getPathTemplate(resource);
+            newPathSegment = Util.getPathTemplate(resource);
         } catch (IllegalPathOnClassException e) {
             throw e.getCause();
         } catch (MissingAnnotationException e) {
@@ -515,7 +513,7 @@ public class JaxRsUriBuilder extends UriBuilder {
                 continue;
             String path;
             try {
-                path = AbstractMethodWrapper.getPathTemplate(method);
+                path = Util.getPathTemplate(method);
             } catch (IllegalPathOnMethodException e) {
                 throw e.getCause();
             } catch (MissingAnnotationException e) {
@@ -565,7 +563,7 @@ public class JaxRsUriBuilder extends UriBuilder {
         for (Method method : methods) {
             String validSegment;
             try {
-                validSegment = AbstractMethodWrapper.getPathTemplate(method);
+                validSegment = Util.getPathTemplate(method);
             } catch (MissingAnnotationException e) {
                 throw new IllegalArgumentException(e);
             } catch (IllegalPathException e) {

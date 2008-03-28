@@ -977,7 +977,6 @@ public class JaxRsUriBuilderTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#uri(java.net.URI)}.
      */
     public void testUri() throws Exception {
-        // TODO test again Jersey Implementation
         URI u = new URI("ftp", "test.org", null, null, "fragment");
         uriBuilder1Enc.uri(u);
         assertEqualsURI("ftp://test.org#fragment", uriBuilder1Enc);

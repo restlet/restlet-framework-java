@@ -18,7 +18,9 @@
 
 /**
  * <p>
- * This package contains the exceptions used by the JAX-RS extension.
+ * This package contains the exceptions used by the JAX-RS extension. Because
+ * the author likes specialized, software processable exceptions (but not really
+ * status codes), there are a lot of exception classes.
  * </p>
  * <p>
  * This extension as well as the JAX-RS specification are currently under

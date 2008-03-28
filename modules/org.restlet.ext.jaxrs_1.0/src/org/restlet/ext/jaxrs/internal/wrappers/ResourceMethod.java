@@ -17,14 +17,11 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.HttpMethod;
 import javax.ws.rs.ProduceMime;
 
 import org.restlet.data.MediaType;
@@ -41,48 +38,12 @@ import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 public class ResourceMethod extends AbstractMethodWrapper implements
         ResourceMethodOrLocator {
 
-    /**
-     * Converts the given mimes to a List of MediaTypes. Will never returns
-     * null.
-     * 
-     * @param mimes
-     * @return Returns an unmodifiable List of MediaTypes
-     */
-    static List<MediaType> convertToMediaTypes(String[] mimes) {
-        List<MediaType> mediaTypes = new ArrayList<MediaType>(mimes.length);
-        for (String mime : mimes) {
-            if (mime == null)
-                mediaTypes.add(MediaType.ALL);
-            else
-                mediaTypes.add(MediaType.valueOf(mime));
-        }
-        return Collections.unmodifiableList(mediaTypes);
-    }
-
-    static org.restlet.data.Method getHttpMethod(Method javaMethod) {
-        for (Annotation annotation : javaMethod.getAnnotations()) {
-            Class<? extends Annotation> annoType = annotation.annotationType();
-            HttpMethod httpMethodAnnot = annoType
-                    .getAnnotation(HttpMethod.class);
-            if (httpMethodAnnot != null) {
-                // Annotation of Annotation of the method is the HTTP-Method
-                String httpMethodName = httpMethodAnnot.value();
-                return org.restlet.data.Method.valueOf(httpMethodName);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @see ConsumeMime
-     */
+    /** @see ConsumeMime */
     private List<MediaType> consumedMimes;
 
     private org.restlet.data.Method httpMethod;
 
-    /**
-     * @see ProduceMime
-     */
+    /** @see ProduceMime */
     private List<MediaType> producedMimes;
 
     /**
@@ -123,7 +84,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
             if (consumeMime == null)
                 this.consumedMimes = Collections.singletonList(MediaType.ALL);
             else
-                this.consumedMimes = convertToMediaTypes(consumeMime.value());
+                this.consumedMimes = WrapperUtil.convertToMediaTypes(consumeMime.value());
         }
         return consumedMimes;
     }
@@ -151,7 +112,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
                 produceMime = this.executeMethod.getDeclaringClass()
                         .getAnnotation(ProduceMime.class);
             if (produceMime != null)
-                this.producedMimes = convertToMediaTypes(produceMime.value());
+                this.producedMimes = WrapperUtil.convertToMediaTypes(produceMime.value());
             else
                 this.producedMimes = Collections.emptyList();
         }
@@ -233,7 +194,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
             throw new IllegalArgumentException(
                     "null is not a valid HTTP method");
         if (this.httpMethod == null)
-            this.httpMethod = getHttpMethod(this.annotatedMethod);
+            this.httpMethod = WrapperUtil.getHttpMethod(this.annotatedMethod);
         if (alsoGet && this.httpMethod.equals(org.restlet.data.Method.GET))
             return true;
         return this.httpMethod.equals(requestedMethod);

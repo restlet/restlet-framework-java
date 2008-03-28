@@ -24,7 +24,6 @@ import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
-import javax.ws.rs.Path;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -36,7 +35,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -51,65 +49,6 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * @author Stephan Koops
  */
 public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
-
-    /**
-     * @param method
-     *                the java method to get the &#64;Path from
-     * @param pathRequired
-     * @return the &#64;Path annotation.
-     * @throws IllegalArgumentException
-     *                 if null was given.
-     * @throws MissingAnnotationException
-     *                 if the annotation is not present.
-     */
-    public static Path getPathAnnotation(Method method)
-            throws IllegalArgumentException, MissingAnnotationException {
-        if (method == null)
-            throw new IllegalArgumentException(
-                    "The root resource class must not be null");
-        Path path = method.getAnnotation(Path.class);
-        if (path == null)
-            throw new MissingAnnotationException("The method "
-                    + method.getName() + " does not have an annotation @Path");
-        return path;
-    }
-
-    /**
-     * @param method
-     *                the java method to get the &#64;Path from
-     * @return the &#64;Path annotation or null, if not present.
-     * @throws IllegalArgumentException
-     *                 if null was given
-     */
-    public static Path getPathAnnotationOrNull(Method method)
-            throws IllegalArgumentException {
-        if (method == null)
-            throw new IllegalArgumentException(
-                    "The root resource class must not be null");
-        return method.getAnnotation(Path.class);
-    }
-
-    /**
-     * Returns the path template of the given sub resource locator or sub
-     * resource method. It is encoded (if necessary) and valid.
-     * 
-     * @param method
-     *                the java method
-     * @return the path template
-     * @throws IllegalPathOnMethodException
-     * @throws IllegalArgumentException
-     * @throws MissingAnnotationException
-     */
-    public static String getPathTemplate(Method method)
-            throws IllegalArgumentException, IllegalPathOnMethodException,
-            MissingAnnotationException {
-        Path path = getPathAnnotation(method);
-        try {
-            return AbstractJaxRsWrapper.getPathTemplate(path);
-        } catch (IllegalPathException e) {
-            throw new IllegalPathOnMethodException(e);
-        }
-    }
 
     /**
      * the Java method that should be called. This method could be different
@@ -246,7 +185,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
                 .getParameterAnnotations();
         Class<?>[] paramTypes = executeMethod.getParameterTypes();
         Type[] paramGenericTypes = executeMethod.getGenericParameterTypes();
-        Object[] args = getParameterValues(paramTypes, paramGenericTypes,
+        Object[] args = WrapperUtil.getParameterValues(paramTypes, paramGenericTypes,
                 parameterAnnotationss, leaveEncoded, callContext, mbrs, logger);
         try {
             Object jaxRsResourceObj = resourceObject.getJaxRsResourceObject();

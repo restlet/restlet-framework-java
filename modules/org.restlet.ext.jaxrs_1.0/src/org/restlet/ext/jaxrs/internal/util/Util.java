@@ -20,14 +20,11 @@ package org.restlet.ext.jaxrs.internal.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URI;
+import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
@@ -45,24 +42,24 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.Form;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.JaxRsRuntimeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Engine;
@@ -164,6 +161,26 @@ public class Util {
     }
 
     /**
+     * Checks, if the class is concrete.
+     * 
+     * @param jaxRsClass
+     *                JAX-RS root resource class or JAX-RS provider.
+     * @param typeName
+     *                for the exception message "root resource class" or
+     *                "provider"
+     * @throws IllegalArgumentException
+     *                 if the class is not concrete.
+     */
+    public static void checkClassConcrete(Class<?> jaxRsClass, String typeName)
+            throws IllegalArgumentException {
+        int modifiers = jaxRsClass.getModifiers();
+        if (Modifier.isAbstract(modifiers) || Modifier.isInterface(modifiers)) {
+            throw new IllegalArgumentException("The " + typeName + " "
+                    + jaxRsClass.getName() + " is not concrete");
+        }
+    }
+
+    /**
      * Copies headers into a response.
      * 
      * @param jaxRsHeaders
@@ -186,7 +203,7 @@ public class Util {
                     hValue = null;
                 else if (headerValue instanceof Date)
                     hValue = formatDate((Date) headerValue, false);
-                // TODO temporarily constant not as cookie;
+                // TODO temporarily constant not as cookie.
                 else
                     hValue = headerValue.toString();
                 headers.add(new Parameter(headerName, hValue));
@@ -252,40 +269,6 @@ public class Util {
     }
 
     /**
-     * Copies the non-null components of the supplied URI to the Reference
-     * replacing any existing values for those components.
-     * 
-     * @param uri
-     *                the URI to copy components from.
-     * @param reference
-     *                The Reference to copy the URI data in.
-     * @throws IllegalArgumentException
-     *                 if uri is null
-     * @see javax.ws.rs.core.UriBuilder#uri(URI)
-     */
-    public static void copyUriToReference(URI uri, Reference reference)
-            throws IllegalArgumentException {
-        if (uri == null)
-            throw new IllegalArgumentException("The URI must not be null");
-        if (uri.getScheme() != null)
-            reference.setScheme(uri.getScheme());
-        if (uri.getAuthority() != null)
-            reference.setAuthority(uri.getAuthority());
-        if (uri.getHost() != null)
-            reference.setHostDomain(uri.getHost());
-        if (uri.getUserInfo() != null)
-            reference.setUserInfo(uri.getUserInfo());
-        if (uri.getPort() >= 0)
-            reference.setHostPort(uri.getPort());
-        if (uri.getPath() != null)
-            reference.setPath(uri.getPath());
-        if (uri.getQuery() != null)
-            reference.setQuery(uri.getQuery());
-        if (uri.getFragment() != null)
-            reference.setFragment(uri.getFragment());
-    }
-
-    /**
      * Creates an modifiable Collection with the given Objects in it, and no
      * other objects. nulls will be ignored.
      * 
@@ -333,22 +316,6 @@ public class Util {
     }
 
     /**
-     * Creates a JAX-RS-MediaType.
-     * 
-     * @param type
-     *                main type of the MediaType
-     * @param subtype
-     *                subtype of the MediaType
-     * @param keysAndValues
-     *                parameters (optional)
-     * @return the created MediaType
-     */
-    public static MediaType createMediaType(String type, String subtype,
-            String... keysAndValues) {
-        return new MediaType(type, subtype, Util.createMap(keysAndValues));
-    }
-
-    /**
      * Creates an modifiable Set with the given Object in it, and no other
      * objects. If the given object is null, than an empty Set will returned.
      * 
@@ -378,19 +345,6 @@ public class Util {
         Collection<A> coll2 = new TreeSet<A>(comparator);
         coll2.addAll(collection);
         return coll2;
-    }
-
-    /**
-     * Ensures that the path starts wirh a string. if not, a slash will be added
-     * at the beginning.
-     * 
-     * @param path
-     * @return
-     */
-    public static String ensureStartSlash(String path) {
-        if (path.startsWith("/"))
-            return path;
-        return "/" + path;
     }
 
     /**
@@ -762,26 +716,131 @@ public class Util {
     }
 
     /**
-     * This method throws an {@link WebApplicationException} for Exceptions
-     * where is no planned handling. Logs the exception (warn {@link Level}).
-     * 
-     * @param e
-     *                the catched Exception
-     * @param logger
-     *                the logger to log the messade
-     * @param logMessage
-     *                the message to log.
-     * @return Will never return anyithing, because the generated exceptions
-     *         will be thrown. You an formally thro the returned exception (e.g.
-     *         in a catch block). So the compiler is sure, that the method will
-     *         be left here.
+     * @param jaxRsClass
+     * @return the path annotation or null, if no is present and requirePath is
+     *         false.
+     * @throws MissingAnnotationException
+     *                 if the path annotation is missing
+     * @throws IllegalArgumentException
+     *                 if the jaxRsClass is null.
      */
-    public static RuntimeException handleException(Exception e, Logger logger,
-            String logMessage) {
-        logger.log(Level.WARNING, logMessage, e);
-        e.printStackTrace();
-        throw new WebApplicationException(e, Status.SERVER_ERROR_INTERNAL
-                .getCode());
+    public static Path getPathAnnotation(Class<?> jaxRsClass)
+            throws MissingAnnotationException, IllegalArgumentException {
+        if (jaxRsClass == null)
+            throw new IllegalArgumentException(
+                    "The jaxRsClass must not be null");
+        Path path = jaxRsClass.getAnnotation(Path.class);
+        if (path == null)
+            throw new MissingAnnotationException(
+                    "The root resource class does not have a @Path annotation");
+        return path;
+    }
+
+    /**
+     * @param method
+     *                the java method to get the &#64;Path from
+     * @param pathRequired
+     * @return the &#64;Path annotation.
+     * @throws IllegalArgumentException
+     *                 if null was given.
+     * @throws MissingAnnotationException
+     *                 if the annotation is not present.
+     */
+    public static Path getPathAnnotation(Method method)
+            throws IllegalArgumentException, MissingAnnotationException {
+        if (method == null)
+            throw new IllegalArgumentException(
+                    "The root resource class must not be null");
+        Path path = method.getAnnotation(Path.class);
+        if (path == null)
+            throw new MissingAnnotationException("The method "
+                    + method.getName() + " does not have an annotation @Path");
+        return path;
+    }
+
+    /**
+     * @param method
+     *                the java method to get the &#64;Path from
+     * @return the &#64;Path annotation or null, if not present.
+     * @throws IllegalArgumentException
+     *                 if the method is null.
+     */
+    public static Path getPathAnnotationOrNull(Method method)
+            throws IllegalArgumentException {
+        if (method == null)
+            throw new IllegalArgumentException(
+                    "The root resource class must not be null");
+        return method.getAnnotation(Path.class);
+    }
+
+    /**
+     * @param resource
+     * @return Returns the path template as String. Never returns null.
+     * @throws IllegalPathOnClassException
+     * @throws MissingAnnotationException
+     * @throws IllegalArgumentException
+     */
+    public static String getPathTemplate(Class<?> resource)
+            throws IllegalPathOnClassException, MissingAnnotationException,
+            IllegalArgumentException {
+        try {
+            return getPathTemplate(Util.getPathAnnotation(resource));
+        } catch (IllegalPathException e) {
+            throw new IllegalPathOnClassException(e);
+        }
+    }
+
+    /**
+     * Returns the path template of the given sub resource locator or sub
+     * resource method. It is encoded (if necessary) and valid.
+     * 
+     * @param method
+     *                the java method
+     * @return the path template
+     * @throws IllegalPathOnMethodException
+     * @throws IllegalArgumentException
+     * @throws MissingAnnotationException
+     */
+    public static String getPathTemplate(Method method)
+            throws IllegalArgumentException, IllegalPathOnMethodException,
+            MissingAnnotationException {
+        Path path = getPathAnnotation(method);
+        try {
+            return getPathTemplate(path);
+        } catch (IllegalPathException e) {
+            throw new IllegalPathOnMethodException(e);
+        }
+    }
+
+    /**
+     * Returns the path from the annotation. It will be encoded if necessary. If
+     * it should not be encoded, this method checks, if all characters are
+     * valid.
+     * 
+     * @param path
+     *                The {@link Path} annotation. Must not be null.
+     * @return the encoded path template
+     * @throws IllegalPathException
+     * @see Path#encode()
+     */
+    public static String getPathTemplate(Path path) throws IllegalPathException {
+        // LATER EncodeOrCheck.path(CharSequence)
+        String pathTemplate = path.value();
+        if (pathTemplate.contains(";"))
+            throw new IllegalPathException(path,
+                    "A path must not contain a semicolon");
+        if (path.encode()) {
+            pathTemplate = EncodeOrCheck.encodeNotBraces(pathTemplate, false)
+                    .toString();
+        } else {
+            try {
+                EncodeOrCheck.checkForInvalidUriChars(pathTemplate, -1,
+                        "path template");
+            } catch (IllegalArgumentException iae) {
+                throw new IllegalPathException(path, iae);
+            }
+        }
+        return pathTemplate;
     }
 
     /**
@@ -870,31 +929,6 @@ public class Util {
                     "Error while invoking post construct method " + javaMethod,
                     cause);
         }
-    }
-
-    /**
-     * Checks, if an annotation with the same name as the given annotation is
-     * available, with ignoring the package name.<br>
-     * Example: a call of
-     * <code>isAnnotationPresent(anyField, {@link javax.ws.rs.HeaderParam}.class)</code>
-     * returns also true, if the element is annotated with
-     * {@link org.restlet.ext.jaxrs.HeaderParam}
-     * 
-     * @param field
-     * @param annotation
-     * @return Returns true, if an annotation with the same name as the given
-     *         annotation class is available; ignores the package name
-     * @see AccessibleObject#isAnnotationPresent(Class)
-     */
-    public static boolean isAnnotationPresentExt(AnnotatedElement field,
-            Class<?> annotation) {
-        String annoName = annotation.getName();
-        String suffix = annoName.substring(annoName.lastIndexOf('.'));
-        for (Annotation anno : field.getDeclaredAnnotations()) {
-            if (anno.annotationType().getName().endsWith(suffix))
-                return true;
-        }
-        return false;
     }
 
     /**
@@ -1005,19 +1039,5 @@ public class Util {
         int collSize = coll.size();
         Object[] array = (Object[]) Array.newInstance(arrayType, collSize);
         return coll.toArray(array);
-    }
-
-    /**
-     * Returns the given object as String. If null was given, null is returned.
-     * 
-     * @param object
-     *                the object to convert to String.
-     * @return the object as String, or null, if null was given
-     * @see Object#toString()
-     */
-    public static String toString(Object object) {
-        if (object == null)
-            return null;
-        return object.toString();
     }
 }

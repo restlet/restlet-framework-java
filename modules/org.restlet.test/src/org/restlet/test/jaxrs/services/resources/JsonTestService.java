@@ -52,9 +52,10 @@ public class JsonTestService {
 
     @GET
     @Path("person")
-    @ProduceMime({TEXT_XML, APPLICATION_XML, APPLICATION_JSON})
-    public Person getPerson(@QueryParam("firstname") String firstname,
-            @QueryParam("lastname") String lastname) {
+    @ProduceMime( { TEXT_XML, APPLICATION_XML, APPLICATION_JSON })
+    public Person getPerson(@QueryParam("firstname")
+    String firstname, @QueryParam("lastname")
+    String lastname) {
         return new Person(firstname, lastname);
     }
 
@@ -64,9 +65,9 @@ public class JsonTestService {
     public String getString() {
         return "{name:value}";
     }
-    
-    // TODO is defined what should happens if an resource method staticly throws
-    // Exceptions?
+
+    // REQUEST (check first) what should happens if an resource method signature
+    // throws Exceptions?
     @POST
     @Path("JSONObject")
     @ConsumeMime(APPLICATION_JSON)

@@ -20,8 +20,8 @@ package org.restlet.ext.jaxrs.internal.exceptions;
 import javax.ws.rs.core.Context;
 
 /**
- * This kind of exception is thrown, when the object could not be injected in a
- * field annotated with {@link Context} (or perhaps other annotations).
+ * This kind of exception is thrown, when an object could not be injected in a
+ * field or bean setter annotated with {@link Context} or other annotations.
  * 
  * @author Stephan Koops
  */
@@ -29,7 +29,6 @@ public class InjectException extends JaxRsException {
     private static final long serialVersionUID = 6796414811480666857L;
 
     /**
-     * 
      * @param message
      * @param cause
      */

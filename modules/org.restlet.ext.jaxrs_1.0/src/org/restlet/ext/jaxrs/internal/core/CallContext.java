@@ -71,7 +71,7 @@ import org.restlet.util.Series;
 public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
         HttpHeaders, SecurityContext {
 
-    // TODO throw IllegalStateException if called outside the scope of a request
+    // TODO throw IllegalStateExc if called outside the scope of a request.
 
     /**
      * Iterator to return the values for a matrix parameter.
@@ -520,6 +520,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
     /**
      * @see javax.ws.rs.core.HttpHeaders#getRequestHeader(java.lang.String)
      */
+    @SuppressWarnings("all")
+    // LATER remove if updated to 0.8
     public List<String> getRequestHeader(String name) {
         String[] values = Util.getHttpHeaders(request).getValuesArray(name);
         return Collections.unmodifiableList(Arrays.asList(values));

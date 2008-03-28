@@ -17,10 +17,8 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
-import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.EMPTY_FIELD_ARRAY;
 import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getContextResolver;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -39,7 +37,6 @@ import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.HeaderParam;
-import javax.ws.rs.HttpMethod;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -60,7 +57,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
@@ -79,63 +75,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  */
 public class ResourceClass extends AbstractJaxRsWrapper {
 
-    private static final String JAX_RS_PACKAGE_PREFIX = "javax.ws.rs";
-
-    /**
-     * 
-     * @param javaMethod
-     *                Java method, class or something like that.
-     * @return true, if the given accessible object is annotated with any
-     *         JAX-RS-Annotation.
-     */
-    static boolean checkForJaxRsAnnotations(Method javaMethod) {
-        for (Annotation annotation : javaMethod.getAnnotations()) {
-            Class<? extends Annotation> annoType = annotation.annotationType();
-            if (annoType.getName().startsWith(JAX_RS_PACKAGE_PREFIX))
-                return true;
-            if (annoType.isAnnotationPresent(HttpMethod.class))
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param jaxRsClass
-     * @return the path annotation or null, if no is present and requirePath is
-     *         false.
-     * @throws MissingAnnotationException
-     *                 if the
-     * @throws IllegalArgumentException
-     *                 if the jaxRsClass is null and requirePath is true.
-     */
-    public static Path getPathAnnotation(Class<?> jaxRsClass)
-            throws MissingAnnotationException, IllegalArgumentException {
-        if (jaxRsClass == null)
-            throw new IllegalArgumentException(
-                    "The jaxRsClass must not be null");
-        Path path = jaxRsClass.getAnnotation(Path.class);
-        if (path == null)
-            throw new MissingAnnotationException(
-                    "The root resource class does not have a @Path annotation");
-        return path;
-    }
-
-    /**
-     * @param resource
-     * @return Returns the path template as String. Never returns null.
-     * @throws IllegalPathOnClassException
-     * @throws MissingAnnotationException
-     * @throws IllegalArgumentException
-     */
-    public static String getPathTemplate(Class<?> resource)
-            throws IllegalPathOnClassException, MissingAnnotationException,
-            IllegalArgumentException {
-        try {
-            return getPathTemplate(getPathAnnotation(resource));
-        } catch (IllegalPathException e) {
-            throw new IllegalPathOnClassException(e);
-        }
-    }
+    private static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
 
     /**
      * Caches the allowed methods (unmodifiable) for given remainingParts.
@@ -162,32 +102,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     /**
      * <p>
      * This array contains the fields in this class in which are annotated to
-     * inject an {@link ContextResolver}.
-     * </p>
-     * <p>
-     * Must be initiated with the other fields starting with initFields.
-     * </p>
-     * 
-     * @see ContextResolver
-     */
-    private Field[] injectFieldsContextResolvers;
-
-    /**
-     * <p>
-     * This array contains the fields in this class in which are annotated to
-     * inject an {@link MessageBodyWorkers}.
-     * </p>
-     * <p>
-     * Must be initiated with the other fields starting with initFields.
-     * </p>
-     * 
-     * @see MessageBodyWorkers
-     */
-    private Field[] injectFieldsMbWorkers;
-
-    /**
-     * <p>
-     * This array contains the fields in this class in which are annotated to
      * inject an {@link CallContext}.
      * </p>
      * <p>
@@ -206,6 +120,19 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * </p>
      */
     private Field[] injectFieldsConditions;
+
+    /**
+     * <p>
+     * This array contains the fields in this class in which are annotated to
+     * inject an {@link ContextResolver}.
+     * </p>
+     * <p>
+     * Must be initiated with the other fields starting with initFields.
+     * </p>
+     * 
+     * @see ContextResolver
+     */
+    private Field[] injectFieldsContextResolvers;
 
     /**
      * <p>
@@ -238,6 +165,19 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * </p>
      */
     private Field[] injectFieldsMatrixParam;
+
+    /**
+     * <p>
+     * This array contains the fields in this class in which are annotated to
+     * inject an {@link MessageBodyWorkers}.
+     * </p>
+     * <p>
+     * Must be initiated with the other fields starting with initFields.
+     * </p>
+     * 
+     * @see MessageBodyWorkers
+     */
+    private Field[] injectFieldsMbWorkers;
 
     /**
      * <p>
@@ -307,6 +247,25 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             IllegalPathOnClassException, MissingAnnotationException {
         super(PathRegExp.createForClass(jaxRsClass));
         this.init(jaxRsClass, logger);
+    }
+
+    /**
+     * Warn, if one of the message parameters is primitive.
+     * 
+     * @param execMethod
+     * @param logger
+     */
+    private void checkForPrimitiveParameters(Method execMethod, Logger logger) {
+        Class<?>[] paramTypes = execMethod.getParameterTypes();
+        for (Class<?> paramType : paramTypes) {
+            if (paramType.isPrimitive()) {
+                logger.config("The method " + execMethod
+                        + " contains a primitive parameter " + paramType + ".");
+                logger
+                        .config("It is recommended to use it's wrapper class. If no value could be read from the request, now you would got the default value. If you use the wrapper class, you would get null.");
+                break;
+            }
+        }
     }
 
     /**
@@ -385,7 +344,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     private Method getAnnotatedJavaMethod(Method javaMethod) {
         if (javaMethod == null)
             return null;
-        boolean useMethod = checkForJaxRsAnnotations(javaMethod);
+        boolean useMethod = WrapperUtil.checkForJaxRsAnnotations(javaMethod);
         if (useMethod)
             return javaMethod;
         Class<?> methodClass = javaMethod.getDeclaringClass();
@@ -520,6 +479,109 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     }
 
     /**
+     * Initiates the resource object:
+     * <ul>
+     * <li>Injects all the supported dependencies into the the given resource
+     * object of this class.</li>
+     * <li>Calls the method annotated with &#64;{@link PostConstruct}, see
+     * JSR-250.</li>
+     * </ul>
+     * 
+     * @param resourceObject
+     * @param callContext
+     *                The CallContext to get the dependencies from.
+     * @param allResolvers
+     *                all available wrapped {@link ContextResolver}s.
+     * @throws InjectException
+     *                 if the injection was not possible. See
+     *                 {@link InjectException#getCause()} for the reason.
+     * @throws ConvertCookieParamException
+     * @throws ConvertHeaderParamException
+     * @throws ConvertMatrixParamException
+     * @throws ConvertPathParamException
+     * @throws ConvertQueryParamException
+     */
+    void init(
+            ResourceObject resourceObject,
+            CallContext callContext,
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers)
+            throws InjectException, WebApplicationException,
+            ConvertCookieParamException, ConvertHeaderParamException,
+            ConvertMatrixParamException, ConvertPathParamException,
+            ConvertQueryParamException {
+        Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
+        for (Field contextField : this.injectFieldsCallContext) {
+            Util.inject(jaxRsResObj, contextField, callContext);
+        }
+        for (Field field : this.injectFieldsContextResolvers) {
+            ContextResolver<?> contextResolver;
+            contextResolver = getContextResolver(field, allResolvers);
+            Util.inject(jaxRsResObj, field, contextResolver);
+        }
+        for (Field mbwField : this.injectFieldsMbWorkers) {
+            Object messageBodyWorkers = null;
+            Util.inject(jaxRsResObj, mbwField, messageBodyWorkers);
+            // TODO inject MessageBodyWorker to resource classes.
+        }
+        for (Field clientInfoField : this.injectFieldsClientInfo) {
+            ClientInfo clientInfo = callContext.getRequest().getClientInfo();
+            Util.inject(jaxRsResObj, clientInfoField, clientInfo);
+        }
+        for (Field conditionsField : this.injectFieldsConditions) {
+            Conditions conditions = callContext.getRequest().getConditions();
+            Util.inject(jaxRsResObj, conditionsField, conditions);
+        }
+        for (Field cpf : this.injectFieldsCookieParam) {
+            CookieParam headerParam = cpf.getAnnotation(CookieParam.class);
+            DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = cpf.getType();
+            Type paramGenericType = cpf.getGenericType();
+            Object value = WrapperUtil.getCookieParamValue(convTo,
+                    paramGenericType, headerParam, defaultValue, callContext);
+            Util.inject(jaxRsResObj, cpf, value);
+        }
+        for (Field hpf : this.injectFieldsHeaderParam) {
+            HeaderParam headerParam = hpf.getAnnotation(HeaderParam.class);
+            DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = hpf.getType();
+            Type paramGenericType = hpf.getGenericType();
+            Object value = WrapperUtil.getHeaderParamValue(convTo,
+                    paramGenericType, headerParam, defaultValue, callContext);
+            Util.inject(jaxRsResObj, hpf, value);
+        }
+        for (Field mpf : this.injectFieldsMatrixParam) {
+            MatrixParam headerParam = mpf.getAnnotation(MatrixParam.class);
+            DefaultValue defaultValue = mpf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = mpf.getType();
+            Type paramGenericType = mpf.getGenericType();
+            Object value = WrapperUtil.getMatrixParamValue(convTo,
+                    paramGenericType, headerParam, leaveEncoded, defaultValue,
+                    callContext);
+            Util.inject(jaxRsResObj, mpf, value);
+        }
+        for (Field ppf : this.injectFieldsPathParam) {
+            PathParam headerParam = ppf.getAnnotation(PathParam.class);
+            DefaultValue defaultValue = ppf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = ppf.getType();
+            Type paramGenericType = ppf.getGenericType();
+            Object value = WrapperUtil.getPathParamValue(convTo,
+                    paramGenericType, headerParam, leaveEncoded, defaultValue,
+                    callContext);
+            Util.inject(jaxRsResObj, ppf, value);
+        }
+        for (Field cpf : this.injectFieldsQueryParam) {
+            QueryParam headerParam = cpf.getAnnotation(QueryParam.class);
+            DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
+            Class<?> convTo = cpf.getType();
+            Type paramGenericType = cpf.getGenericType();
+            Object value = WrapperUtil.getQueryParamValue(convTo,
+                    paramGenericType, headerParam, leaveEncoded, defaultValue,
+                    callContext, Logger.getAnonymousLogger());
+            Util.inject(jaxRsResObj, cpf, value);
+        }
+    }
+
+    /**
      * initiates the fields to cache thie fields that needs injection.
      * 
      * @throws SecurityException
@@ -551,15 +613,15 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                         ifContRs.add(field);
                     else
                         ifContext.add(field);
-                } else if (Util.isAnnotationPresentExt(field, PathParam.class))
+                } else if (field.isAnnotationPresent(PathParam.class))
                     ifPathParam.add(field);
-                else if (Util.isAnnotationPresentExt(field, CookieParam.class))
+                else if (field.isAnnotationPresent(CookieParam.class))
                     ifCookieParam.add(field);
-                else if (Util.isAnnotationPresentExt(field, HeaderParam.class))
+                else if (field.isAnnotationPresent(HeaderParam.class))
                     ifHeaderParam.add(field);
-                else if (Util.isAnnotationPresentExt(field, MatrixParam.class))
+                else if (field.isAnnotationPresent(MatrixParam.class))
                     ifMatrixParam.add(field);
-                else if (Util.isAnnotationPresentExt(field, QueryParam.class))
+                else if (field.isAnnotationPresent(QueryParam.class))
                     ifQueryParam.add(field);
             }
             jaxRsClass2 = jaxRsClass2.getSuperclass();
@@ -587,7 +649,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                 continue;
             Path path = annotatedMethod.getAnnotation(Path.class);
             org.restlet.data.Method httpMethod;
-            httpMethod = ResourceMethod.getHttpMethod(annotatedMethod);
+            httpMethod = WrapperUtil.getHttpMethod(annotatedMethod);
             try {
                 if (httpMethod != null) {
                     if (!checkResMethodVolatileOrNotPublic(execMethod, logger))
@@ -618,124 +680,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         this.subResourceLocators = subResLocs;
         this.subResourceMethods = subRsesMeths;
         this.subResourceMethodsAndLocators = srmls;
-    }
-
-    /**
-     * Warn, if one of the message parameters is primitive.
-     * 
-     * @param execMethod
-     * @param logger
-     */
-    private void checkForPrimitiveParameters(Method execMethod, Logger logger) {
-        Class<?>[] paramTypes = execMethod.getParameterTypes();
-        for (Class<?> paramType : paramTypes) {
-            if (paramType.isPrimitive()) {
-                logger.config("The method " + execMethod
-                        + " contains a primitive parameter " + paramType + ".");
-                logger
-                        .config("It is recommended to use it's wrapper class. If no value could be read from the request, now you would got the default value. If you use the wrapper class, you would get null.");
-                break;
-            }
-        }
-    }
-
-    /**
-     * Initiates the resource object:
-     * <ul>
-     * <li>Injects all the supported dependencies into the the given resource
-     * object of this class.</li>
-     * <li>Calls the method annotated with &#64;{@link PostConstruct}, see
-     * JSR-250.</li>
-     * </ul>
-     * 
-     * @param resourceObject
-     * @param callContext
-     *                The CallContext to get the dependencies from.
-     * @param allResolvers
-     *                all available wrapped {@link ContextResolver}s.
-     * @throws InjectException
-     *                 if the injection was not possible. See
-     *                 {@link InjectException#getCause()} for the reason.
-     * @throws ConvertCookieParamException
-     * @throws ConvertHeaderParamException
-     * @throws ConvertMatrixParamException
-     * @throws ConvertPathParamException
-     * @throws ConvertQueryParamException
-     */
-    void init(ResourceObject resourceObject, CallContext callContext,
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers)
-            throws InjectException, WebApplicationException,
-            ConvertCookieParamException, ConvertHeaderParamException,
-            ConvertMatrixParamException, ConvertPathParamException,
-            ConvertQueryParamException {
-        Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
-        for (Field contextField : this.injectFieldsCallContext) {
-            Util.inject(jaxRsResObj, contextField, callContext);
-        }
-        for (Field field : this.injectFieldsContextResolvers) {
-            ContextResolver<?> contextResolver;
-            contextResolver = getContextResolver(field, allResolvers);
-            Util.inject(jaxRsResObj, field, contextResolver);
-        }
-        for (Field mbwField : this.injectFieldsMbWorkers) {
-            Object messageBodyWorkers = null;
-            Util.inject(jaxRsResObj, mbwField, messageBodyWorkers);
-            // TODO inject MessageBodyWorker to resource classes
-        }
-        for (Field clientInfoField : this.injectFieldsClientInfo) {
-            ClientInfo clientInfo = callContext.getRequest().getClientInfo();
-            Util.inject(jaxRsResObj, clientInfoField, clientInfo);
-        }
-        for (Field conditionsField : this.injectFieldsConditions) {
-            Conditions conditions = callContext.getRequest().getConditions();
-            Util.inject(jaxRsResObj, conditionsField, conditions);
-        }
-        for (Field cpf : this.injectFieldsCookieParam) {
-            CookieParam headerParam = cpf.getAnnotation(CookieParam.class);
-            DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = cpf.getType();
-            Type paramGenericType = cpf.getGenericType();
-            Object value = getCookieParamValue(convTo, paramGenericType,
-                    headerParam, defaultValue, callContext);
-            Util.inject(jaxRsResObj, cpf, value);
-        }
-        for (Field hpf : this.injectFieldsHeaderParam) {
-            HeaderParam headerParam = hpf.getAnnotation(HeaderParam.class);
-            DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = hpf.getType();
-            Type paramGenericType = hpf.getGenericType();
-            Object value = getHeaderParamValue(convTo, paramGenericType,
-                    headerParam, defaultValue, callContext);
-            Util.inject(jaxRsResObj, hpf, value);
-        }
-        for (Field mpf : this.injectFieldsMatrixParam) {
-            MatrixParam headerParam = mpf.getAnnotation(MatrixParam.class);
-            DefaultValue defaultValue = mpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = mpf.getType();
-            Type paramGenericType = mpf.getGenericType();
-            Object value = getMatrixParamValue(convTo, paramGenericType,
-                    headerParam, leaveEncoded, defaultValue, callContext);
-            Util.inject(jaxRsResObj, mpf, value);
-        }
-        for (Field ppf : this.injectFieldsPathParam) {
-            PathParam headerParam = ppf.getAnnotation(PathParam.class);
-            DefaultValue defaultValue = ppf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = ppf.getType();
-            Type paramGenericType = ppf.getGenericType();
-            Object value = getPathParamValue(convTo, paramGenericType,
-                    headerParam, leaveEncoded, defaultValue, callContext);
-            Util.inject(jaxRsResObj, ppf, value);
-        }
-        for (Field cpf : this.injectFieldsQueryParam) {
-            QueryParam headerParam = cpf.getAnnotation(QueryParam.class);
-            DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = cpf.getType();
-            Type paramGenericType = cpf.getGenericType();
-            Object value = getQueryParamValue(convTo, paramGenericType,
-                    headerParam, leaveEncoded, defaultValue, callContext,
-                    Logger.getAnonymousLogger());
-            Util.inject(jaxRsResObj, cpf, value);
-        }
     }
 
     @Override

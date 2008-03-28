@@ -43,7 +43,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateRootRessourceException;
+import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -70,6 +70,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      */
     private javax.ws.rs.ext.ContextResolver<T> contextResolver;
 
+    private Object jaxRsProvider;
+
     private List<org.restlet.data.MediaType> producedMimes;
 
     /**
@@ -79,8 +81,6 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     private javax.ws.rs.ext.MessageBodyReader<T> reader;
 
     private javax.ws.rs.ext.MessageBodyWriter<T> writer;
-
-    private Object jaxRsProvider;
 
     /**
      * Construct a wrapper for a Provider
@@ -102,8 +102,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
-        RootResourceClass.checkClassConcrete(jaxRsProviderClass, "provider");
-        Constructor<?> providerConstructor = RootResourceClass
+        Util.checkClassConcrete(jaxRsProviderClass, "provider");
+        Constructor<?> providerConstructor = WrapperUtil
                 .findJaxRsConstructor(jaxRsProviderClass);
         try {
             this.jaxRsProvider = createInstance(providerConstructor,
@@ -180,13 +180,13 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             ConvertMatrixParamException, ConvertQueryParamException,
             ConvertCookieParamException {
         try {
-            return RootResourceClass.createInstance(providerConstructor, false,
+            return WrapperUtil.createInstance(providerConstructor, false,
                     null, null, null);
         } catch (MissingAnnotationException e) {
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (InstantiateRootRessourceException e) {
+        } catch (InstantiateException e) {
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
@@ -217,7 +217,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         if (consumedMimes == null) {
             ConsumeMime pm = reader.getClass().getAnnotation(ConsumeMime.class);
             if (pm != null)
-                this.consumedMimes = ResourceMethod.convertToMediaTypes(pm
+                this.consumedMimes = WrapperUtil.convertToMediaTypes(pm
                         .value());
             else
                 this.consumedMimes = Collections.singletonList(MediaType.ALL);
@@ -227,6 +227,17 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
 
     public T getContext(Class<?> type) {
         return contextResolver.getContext(type);
+    }
+
+    /**
+     * Returns the JAX-RS provider as {@link ContextResolver}, if the provider
+     * is a ContextResolver, otherwise null.
+     * 
+     * @return
+     * @see org.restlet.ext.jaxrs.internal.wrappers.ContextResolver#getJaxRsContextResolver()
+     */
+    public javax.ws.rs.ext.ContextResolver<?> getJaxRsContextResolver() {
+        return this.contextResolver;
     }
 
     /**
@@ -240,7 +251,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             ProduceMime pm = writer.getClass().getAnnotation(ProduceMime.class);
             if (pm != null) {
                 String[] pmStr = pm.value();
-                this.producedMimes = ResourceMethod.convertToMediaTypes(pmStr);
+                this.producedMimes = WrapperUtil.convertToMediaTypes(pmStr);
             } else {
                 this.producedMimes = Collections.singletonList(MediaType.ALL);
             }
@@ -308,7 +319,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
                 } else if (fieldType.equals(MessageBodyWorkers.class)) {
                     field.setAccessible(true);
                     Object toInject = null;
-                    // TODO inject MessageBodyWorker to provider
+                    // TODO inject MessageBodyWorker to provider.
                     Util.inject(this.jaxRsProvider, field, toInject);
                 }
             }
@@ -469,16 +480,5 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             OutputStream entityStream) throws IOException {
         writer.writeTo(object, type, genericType, annotations, mediaType,
                 httpHeaders, entityStream);
-    }
-
-    /**
-     * Returns the JAX-RS provider as {@link ContextResolver}, if the provider
-     * is a ContextResolver, otherwise null.
-     * 
-     * @return
-     * @see org.restlet.ext.jaxrs.internal.wrappers.ContextResolver#getJaxRsContextResolver()
-     */
-    public javax.ws.rs.ext.ContextResolver<?> getJaxRsContextResolver() {
-        return this.contextResolver;
     }
 }

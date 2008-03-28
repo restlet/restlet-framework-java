@@ -27,7 +27,6 @@ public class IllegalTypeException extends JaxRsException {
     private static final long serialVersionUID = 6796414811480666857L;
 
     /**
-     * 
      * @param message
      */
     public IllegalTypeException(String message) {
@@ -35,7 +34,6 @@ public class IllegalTypeException extends JaxRsException {
     }
 
     /**
-     * 
      * @param cause
      */
     public IllegalTypeException(Throwable cause) {
@@ -43,12 +41,10 @@ public class IllegalTypeException extends JaxRsException {
     }
 
     /**
-     * 
      * @param message
      * @param cause
      */
     public IllegalTypeException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

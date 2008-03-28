@@ -18,7 +18,7 @@
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 /**
- * Thrown if a constructor or method parameter could not be instantiated.
+ * Thrown if the entity could not be deserialized.
  * 
  * @author Stephan Koops
  */
@@ -26,7 +26,6 @@ public class ConvertRepresentationException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**
-     * 
      * @param message
      */
     private ConvertRepresentationException(String message) {
@@ -34,7 +33,6 @@ public class ConvertRepresentationException extends JaxRsException {
     }
 
     /**
-     * 
      * @param cause
      */
     private ConvertRepresentationException(Throwable cause) {
@@ -42,7 +40,6 @@ public class ConvertRepresentationException extends JaxRsException {
     }
 
     /**
-     * 
      * @param message
      * @param cause
      */

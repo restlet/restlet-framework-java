@@ -19,10 +19,10 @@
 /**
  * <p>
  * This package contains the default providers for this JAX-RS runtime
- * environment and other classes belonging to the providers.
+ * environment.
  * </p>
  * <p>
- * This extension as well as the JAX-RS specification are currently under
+ * The JAX-RS extension as well as the JAX-RS specification are currently under
  * development. You should only use this extension for experimental purpose.
  * </p>
  * 

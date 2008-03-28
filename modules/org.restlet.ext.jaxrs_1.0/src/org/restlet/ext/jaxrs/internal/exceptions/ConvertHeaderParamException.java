@@ -26,7 +26,7 @@ import javax.ws.rs.HeaderParam;
  * @author Stephan Koops
  * @see HeaderParam
  */
-public class ConvertHeaderParamException extends Exception {
+public class ConvertHeaderParamException extends JaxRsException {
 
     private static final long serialVersionUID = -2880948194279374251L;
 

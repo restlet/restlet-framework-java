@@ -71,19 +71,6 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
     }
 
     /**
-     * Copies the data from the {@link InputStream} the {@link OutputStream}.
-     * 
-     * @param inputStream
-     * @param outputStream
-     * @throws IOException
-     */
-    @Deprecated
-    protected void copyStream(InputStream inputStream, OutputStream outputStream)
-            throws IOException {
-        Util.copyStream(inputStream, outputStream);
-    }
-
-    /**
      * Returns the size of the given objects.
      * 
      * @param object
