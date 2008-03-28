@@ -54,7 +54,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
-import org.restlet.ext.jaxrs.AccessControl;
+import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.EmptyIterator;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
@@ -145,7 +145,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
 
     private List<MediaType> acceptedMediaTypes;
 
-    private AccessControl accessControl;
+    private RoleChecker roleChecker;
 
     private SortedMetadata<org.restlet.data.MediaType> accMediaTypes;
 
@@ -171,8 +171,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      *                The template parameters. Must not be null.
      * @param response
      *                The Restlet response
-     * @param accessControl
-     *                The accessControl is needed to check, if a user is in a
+     * @param roleChecker
+     *                The roleChecker is needed to check, if a user is in a
      *                role, see {@link #isUserInRole(String)}. If null was
      *                given here and
      *                {@link SecurityContext#isUserInRole(String)} is called,
@@ -180,7 +180,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      *                response.
      */
     public CallContext(org.restlet.data.Request request,
-            org.restlet.data.Response response, AccessControl accessControl) {
+            org.restlet.data.Response response, RoleChecker roleChecker) {
         super((request == null) ? null : request.getResourceRef(), false);
 
         if (response == null)
@@ -189,12 +189,12 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
         if (request == null)
             throw new IllegalArgumentException(
                     "The Restlet Request must not be null");
-        if (accessControl == null)
+        if (roleChecker == null)
             throw new IllegalArgumentException(
-                    "The AccessControl must not be null.");
+                    "The RoleChecker must not be null.");
         this.request = request;
         this.response = response;
-        this.accessControl = accessControl;
+        this.roleChecker = roleChecker;
         this.accMediaTypes = new SortedMetadata<org.restlet.data.MediaType>(
                 request.getClientInfo().getAcceptedMediaTypes());
     }
@@ -587,9 +587,9 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
     public boolean isUserInRole(String role) {
         Principal principal = (request.getChallengeResponse() == null) ? null
                 : request.getChallengeResponse().getPrincipal();
-        if (this.accessControl == null)
-            this.accessControl = AccessControl.REJECT_WITH_ERROR;
-        return accessControl.isUserInRole(principal, role);
+        if (this.roleChecker == null)
+            this.roleChecker = RoleChecker.REJECT_WITH_ERROR;
+        return roleChecker.isInRole(principal, role);
     }
 
     /**

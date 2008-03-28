@@ -27,7 +27,7 @@ import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.AccessControl;
+import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 
 /**
@@ -39,7 +39,7 @@ import org.restlet.ext.jaxrs.JaxRsApplication;
  */
 public class RestletServerWrapper implements ServerWrapper {
 
-    private AccessControl accessControl;
+    private RoleChecker roleChecker;
 
     private Component component;
 
@@ -47,21 +47,14 @@ public class RestletServerWrapper implements ServerWrapper {
     }
 
     /**
-     * @return the accessControl
-     */
-    public AccessControl getAccessControl() {
-        return accessControl;
-    }
-
-    /**
-     * @param accessControl
-     *                the accessControl to set. May be null to not require
+     * @param roleChecker
+     *                the roleChecker to set. May be null to not require
      *                authentication.
      * @throws IllegalArgumentException
      */
-    public boolean setAccessControl(AccessControl accessControl)
+    public boolean setRoleChecker(RoleChecker roleChecker)
             throws IllegalArgumentException {
-        this.accessControl = accessControl;
+        this.roleChecker = roleChecker;
         return true;
     }
 
@@ -82,10 +75,10 @@ public class RestletServerWrapper implements ServerWrapper {
         if (contextParameter != null)
             comp.getContext().getParameters().add(contextParameter);
         comp.getServers().add(protocol, 0);
-        final AccessControl accessControl = this.accessControl;
+        final RoleChecker roleChecker = this.roleChecker;
         final Context context = comp.getContext();
         Application application1 = createApplication(context, appConfig,
-                challengeScheme, accessControl);
+                challengeScheme, roleChecker);
 
         // Create an application
         Application application = application1;
@@ -101,16 +94,16 @@ public class RestletServerWrapper implements ServerWrapper {
      * @param context
      * @param appConfig
      * @param challengeScheme
-     * @param accessControl
+     * @param roleChecker
      * @return
      */
     public static Application createApplication(Context context,
             final ApplicationConfig appConfig,
             final ChallengeScheme challengeScheme,
-            final AccessControl accessControl) {
+            final RoleChecker roleChecker) {
         JaxRsApplication application = new JaxRsApplication(context);
-        if (accessControl != null) {
-            application.setAccessControl(accessControl);
+        if (roleChecker != null) {
+            application.setRoleChecker(roleChecker);
             Guard guard = createGuard(context, challengeScheme);
             application.setGuard(guard);
         }

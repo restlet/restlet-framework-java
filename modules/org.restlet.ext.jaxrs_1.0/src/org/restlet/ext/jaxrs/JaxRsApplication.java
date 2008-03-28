@@ -36,6 +36,7 @@ import org.restlet.Router;
 import org.restlet.data.Language;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
+import org.restlet.ext.jaxrs.internal.util.HtmlPreferer;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
 
@@ -51,18 +52,17 @@ import org.restlet.service.TunnelService;
  * <li>Attach your {@link ApplicationConfig}(s) by calling
  * {@link #attach(ApplicationConfig)}.</li>
  * <li> If you need authentication, set a {@link Guard} and perhaps an
- * {@link AccessControl}, see {@link #setGuard(Guard)} or
- * {@link #setAuthentication(Guard, AccessControl)}.</li>
- * <li>If you do not neet the HtmlPreferer, switch it off by calling
- * {@link #setPreferHtml(boolean) #setUseHtmlPreferer(false)}.</li>
+ * {@link RoleChecker}, see {@link #setGuard(Guard)} or
+ * {@link #setAuthentication(Guard, RoleChecker)}.</li>
+ * <li>If you do not need preferation of HTML before XML, switch it off by
+ * calling {@link #setPreferHtml(boolean) #setUseHtmlPreferer(false)}.</li>
  * </ul>
  * At least add the JaxRsApplication to a {@link Component}.
  * </p>
  * <p>
  * <i>The JAX-RS extension as well as the JAX-RS specification are currently
- * under development. You should only use this extension for experimental
- * purpose.</i>
- * <br>
+ * under development. You should use this extension only for experimental
+ * purpose.</i> <br>
  * For further information see <a href="https://jsr311.dev.java.net/">Java
  * Service Request 311</a>.
  * </p>
@@ -83,7 +83,6 @@ public class JaxRsApplication extends Application {
     /**
      * Default constructor.
      * 
-     * @see JaxRsRouter#JaxRsRouter(Context)
      * @param parentContext
      *                The parent component context.
      */
@@ -142,7 +141,6 @@ public class JaxRsApplication extends Application {
      * @throws NullPointerException
      *                 if the appConfig is null.
      * 
-     * @see JaxRsRouter#attach(ApplicationConfig)
      * @see #attach(ApplicationConfig, boolean)
      */
     public void attach(ApplicationConfig appConfig)
@@ -174,9 +172,10 @@ public class JaxRsApplication extends Application {
      */
     public void attach(ApplicationConfig appConfig, boolean clearMetadataIfFirst)
             throws IllegalArgumentException {
-        // waiting for patch
-        // if (clearMetadataIfFirst && this.jaxRsRouter.isEmpty())
-        //    this.getMetadataService().clearExtensions();
+        if (clearMetadataIfFirst && this.jaxRsRouter.isEmpty()) {
+            // this.getMetadataService().clearExtensions();
+            // wait for a patch
+        }
         this.addExtensionMappings(appConfig);
         this.jaxRsRouter.attach(appConfig);
     }
@@ -201,12 +200,12 @@ public class JaxRsApplication extends Application {
     }
 
     /**
-     * Returns the current AccessControl
+     * Returns the current RoleChecker
      * 
-     * @return the current AccessControl
+     * @return the current RoleChecker
      */
-    public AccessControl getAccessControl() {
-        return this.jaxRsRouter.getAccessControl();
+    public RoleChecker getRoleChecker() {
+        return this.jaxRsRouter.getRoleChecker();
     }
 
     /**
@@ -268,32 +267,32 @@ public class JaxRsApplication extends Application {
     }
 
     /**
-     * Sets the {@link AccessControl} to use.<br>
-     * If you give an AccessControl, you should also give a Guard.
+     * Sets the {@link RoleChecker} to use.<br>
+     * If you give an RoleChecker, you should also give a Guard.
      * 
-     * @param accessControl
-     * @see #setAuthentication(Guard, AccessControl)
+     * @param roleChecker
+     * @see #setAuthentication(Guard, RoleChecker)
      * @see #setGuard(Guard)
      */
-    public void setAccessControl(AccessControl accessControl) {
-        this.jaxRsRouter.setAccessControl(accessControl);
+    public void setRoleChecker(RoleChecker roleChecker) {
+        this.jaxRsRouter.setRoleChecker(roleChecker);
     }
 
     /**
      * Sets the objects to check the authentication. The {@link Guard} checks
-     * the username and password (e.g.), the {@link AccessControl} manages the
+     * the username and password (e.g.), the {@link RoleChecker} manages the
      * role management for the JAX-RS extension.
      * 
      * @param guard
      *                the Guard to use.
-     * @param accessControl
-     *                the AccessControl to use
+     * @param roleChecker
+     *                the RoleChecker to use
      * @see #setGuard(Guard)
-     * @see #setAccessControl(AccessControl)
+     * @see #setRoleChecker(RoleChecker)
      */
-    public void setAuthentication(Guard guard, AccessControl accessControl) {
+    public void setAuthentication(Guard guard, RoleChecker roleChecker) {
         this.setGuard(guard);
-        this.setAccessControl(accessControl);
+        this.setRoleChecker(roleChecker);
     }
 
     /**
@@ -303,15 +302,20 @@ public class JaxRsApplication extends Application {
      * 
      * @param guard
      *                the Guard to use.
-     * @see #setAuthentication(Guard, AccessControl)
+     * @see #setAuthentication(Guard, RoleChecker)
      */
     public void setGuard(Guard guard) {
         this.guard = guard;
     }
 
     /**
-     * Sets, if an {@link HtmlPreferer} should be used or not. This setting is
-     * ignored after creation of the root (see {@link #createRoot()}.<br>
+     * Some browsers (e.g. Internet Explorer 7.0 and Firefox 2.0) sends as
+     * accepted media type XML with a higher quality than HTML. The consequence
+     * is, that a HTTP server sends XML instead of HTML, if it could produce
+     * XML. To avoid this, set this property to true, or false, if you want
+     * default behaviour.<br>
+     * This setting is ignored after creation of the root (see
+     * {@link #createRoot()}.<br>
      * The default value is true for now, but may change later.
      * 
      * @param preferHtml

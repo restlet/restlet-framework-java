@@ -139,7 +139,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      */
     private Set<RootResourceClass> rootResourceClasses = new HashSet<RootResourceClass>();
 
-    private AccessControl accessControl;
+    private RoleChecker roleChecker;
 
     private MessageBodyReaderSet messageBodyReaders = new MessageBodyReaderSet();
 
@@ -167,11 +167,11 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      *                Contains the classes to load as root resource classes and
      *                as providers. You could add more {@link ApplicationConfig}s;
      *                use method {@link #attach(ApplicationConfig)}.
-     * @param accessControl
-     *                The AccessControl to use. If you don't need the access
-     *                control, you can use the {@link AccessControl#FORBID_ALL},
-     *                the {@link AccessControl#ALLOW_ALL} or the
-     *                {@link AccessControl#REJECT_WITH_ERROR}. See also
+     * @param roleChecker
+     *                The RoleChecker to use. If you don't need the access
+     *                control, you can use the {@link RoleChecker#FORBID_ALL},
+     *                the {@link RoleChecker#ALLOW_ALL} or the
+     *                {@link RoleChecker#REJECT_WITH_ERROR}. See also
      *                {@link #JaxRsRouter(Context, ApplicationConfig)}.
      * @throws IllegalArgumentException
      *                 if the {@link ApplicationConfig} contains invalid data;
@@ -179,16 +179,16 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      *                 information.
      */
     public JaxRsRouter(Context context, ApplicationConfig appConfig,
-            AccessControl accessControl) throws IllegalArgumentException {
+            RoleChecker roleChecker) throws IllegalArgumentException {
         super(context);
         this.wrapperFactory = new WrapperFactory(getContext().getLogger());
         this.loadDefaultProviders();
         if (appConfig != null)
             this.attach(appConfig);
-        if (accessControl != null)
-            this.setAccessControl(accessControl);
+        if (roleChecker != null)
+            this.setRoleChecker(roleChecker);
         else
-            this.setAccessControl(AccessControl.REJECT_WITH_ERROR);
+            this.setRoleChecker(RoleChecker.REJECT_WITH_ERROR);
     }
 
     /**
@@ -202,7 +202,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * returned with HTTP status 500 (Internal Server Error), see
      * {@link SecurityContext#isUserInRole(String)}. If you want to use the
      * access control, use constructor
-     * {@link #JaxRsRouter(Context, ApplicationConfig, AccessControl)}.
+     * {@link #JaxRsRouter(Context, ApplicationConfig, RoleChecker)}.
      * </p>
      * 
      * @param context
@@ -216,7 +216,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      *                 if the {@link ApplicationConfig} contains invalid data;
      *                 see {@link #attach(ApplicationConfig)} for detailed
      *                 information.
-     * @see #JaxRsRouter(Context, ApplicationConfig, AccessControl)
+     * @see #JaxRsRouter(Context, ApplicationConfig, RoleChecker)
      */
     public JaxRsRouter(Context context, ApplicationConfig appConfig)
             throws IllegalArgumentException {
@@ -235,7 +235,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      *                the context from the parent, see
      *                {@link Restlet#Restlet(Context)}.
      * @see #JaxRsRouter(Context, ApplicationConfig)
-     * @see #JaxRsRouter(Context, ApplicationConfig, AccessControl)
+     * @see #JaxRsRouter(Context, ApplicationConfig, RoleChecker)
      */
     public JaxRsRouter(Context context) {
         this(context, null, null);
@@ -245,20 +245,20 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * Creates a new JaxRsRouter with the given Context. Only the default
      * providers are loaded. No {@link ApplicationConfig} is loaded, use
      * {@link #attach(ApplicationConfig)} to attach some, or use constructor
-     * {@link #JaxRsRouter(Context, ApplicationConfig, AccessControl)}.
+     * {@link #JaxRsRouter(Context, ApplicationConfig, RoleChecker)}.
      * 
      * @param context
      *                the context from the parent, see
      *                {@link Restlet#Restlet(Context)}.
-     * @param accessControl
-     *                The AccessControl to use. If you don't need the access
-     *                control, you can use the {@link AccessControl#FORBID_ALL},
-     *                the {@link AccessControl#ALLOW_ALL} or the
-     *                {@link AccessControl#REJECT_WITH_ERROR}.
-     * @see #JaxRsRouter(Context, ApplicationConfig, AccessControl)
+     * @param roleChecker
+     *                The RoleChecker to use. If you don't need the access
+     *                control, you can use the {@link RoleChecker#FORBID_ALL},
+     *                the {@link RoleChecker#ALLOW_ALL} or the
+     *                {@link RoleChecker#REJECT_WITH_ERROR}.
+     * @see #JaxRsRouter(Context, ApplicationConfig, RoleChecker)
      */
-    public JaxRsRouter(Context context, AccessControl accessControl) {
-        this(context, null, accessControl);
+    public JaxRsRouter(Context context, RoleChecker roleChecker) {
+        this(context, null, roleChecker);
     }
 
     /**
@@ -442,7 +442,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         ResourceObject resourceObject = null;
         try {
             CallContext callContext = new CallContext(request, response,
-                    this.accessControl);
+                    this.roleChecker);
             try {
                 ResObjAndMeth resObjAndMeth;
                 try {
@@ -1388,35 +1388,35 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
     }
 
     /**
-     * Gets the currently used {@link AccessControl}.
+     * Gets the currently used {@link RoleChecker}.
      * 
-     * @return the currently used AccessControl.
-     * @see #setAccessControl(AccessControl)
+     * @return the currently used RoleChecker.
+     * @see #setRoleChecker(RoleChecker)
      */
-    public AccessControl getAccessControl() {
-        return accessControl;
+    public RoleChecker getRoleChecker() {
+        return roleChecker;
     }
 
     /**
-     * Sets the {@link AccessControl} to use.
+     * Sets the {@link RoleChecker} to use.
      * 
-     * @param accessControl
-     *                the accessControl to set.
+     * @param roleChecker
+     *                the roleChecker to set.
      * @throws IllegalArgumentException
-     *                 If the given accessControl is null, an
+     *                 If the given roleChecker is null, an
      *                 {@link IllegalArgumentException} is thrown.
-     * @see AccessControl
-     * @see #getAccessControl()
+     * @see RoleChecker
+     * @see #getRoleChecker()
      */
-    public void setAccessControl(AccessControl accessControl)
+    public void setRoleChecker(RoleChecker roleChecker)
             throws IllegalArgumentException {
-        if (accessControl == null)
+        if (roleChecker == null)
             throw new IllegalArgumentException(
-                    "The accessControl must not be null. You can use the "
-                            + "AccessControl.FORBID_ALL constant, the "
-                            + "AccessControl.FORBID_ALL constant or the "
-                            + "AccessControl.REJECT_WITH_ERROR constant");
-        this.accessControl = accessControl;
+                    "The roleChecker must not be null. You can use the "
+                            + "RoleChecker.FORBID_ALL constant, the "
+                            + "RoleChecker.FORBID_ALL constant or the "
+                            + "RoleChecker.REJECT_WITH_ERROR constant");
+        this.roleChecker = roleChecker;
     }
 
     /**

@@ -23,7 +23,7 @@ import org.restlet.Component;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.AccessControl;
+import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.test.jaxrs.services.tests.JaxRsTestCase;
 
 /**
@@ -72,10 +72,10 @@ public interface ServerWrapper {
     public int getPort();
 
     /**
-     * Sets the {@link AccessControl} to use.
+     * Sets the {@link RoleChecker} to use.
      * 
-     * @param accessControl
-     * @return true if the {@link AccessControl} could be set, otherwise false.
+     * @param roleChecker
+     * @return true if the {@link RoleChecker} could be set, otherwise false.
      */
-    public boolean setAccessControl(AccessControl accessControl);
+    public boolean setRoleChecker(RoleChecker roleChecker);
 }

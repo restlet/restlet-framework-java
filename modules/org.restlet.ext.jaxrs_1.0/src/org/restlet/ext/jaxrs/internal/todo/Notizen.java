@@ -29,30 +29,35 @@ public class Notizen {
 
     // LATER alle LATERs in Masterarbeit uebernehmen
 
-    // TODO look for warnings in tests and put them away.
+    // LATER look for warnings in tests and put them away.
 
-    // TODO When writing responses, implementations SHOULD respect
+    // LATER When writing responses, implementations SHOULD respect
     // application-supplied character set metadata and SHOULD use UTF-8 if a
     // character set is not specified by the application or if the application
     // specifies a character set that is unsupported.
 
-    // TODO JaxRsComponent
+    // LATER JaxRsComponent
     // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc17
     // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc19
-    
+
     // TODO @Context and so on only in objects created by the runtime.
     // support and warn about this.
-    
+
     // TESTEN what happens, if ".." or "." in @Path?
     
-    // REQUEST Spec, section 5.1.3. (Content Negotiation and Preconditions):
+    // TODO file extension mapping with matrix parameters
+
+    // TESTEN are headers of Response and annotations copiied to a
+    // Representation, if a org.restlet.data.Representation is returned?
+
+    // REQUESTED Spec, section 5.1.3. (Content Negotiation and Preconditions):
     // request.evaluatePRECONDITIONS(...); null is not necessary
-    
+
     // REQUESTED @Context on type PathSegment ?
-    
-    // REQUEST disallow entity on sub resource locator?
-    
-    // REQUEST javadoc of PathParam: Template -> Path
-    
-    // TODO read javadoc of PathSegment again. 
+
+    // REQUESTED disallow entity on sub resource locator?
+
+    // REQUESTED javadoc of PathParam: Template -> Path
+
+    // TODO read javadoc of PathSegment again.
 }

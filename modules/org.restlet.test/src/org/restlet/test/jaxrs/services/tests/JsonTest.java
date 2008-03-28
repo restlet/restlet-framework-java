@@ -18,9 +18,17 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.core.ApplicationConfig;
+import static javax.ws.rs.core.MediaType.*;
 
 import junit.framework.AssertionFailedError;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
@@ -53,6 +61,31 @@ public class JsonTest extends JaxRsTestCase {
         runServerUntilKeyPressed(new JsonTest());
     }
 
+    @Override
+    protected ApplicationConfig getAppConfig() {
+        ApplicationConfig appConfig = new ApplicationConfig() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getResourceClasses() {
+                return (Set) Collections.singleton(getRootResourceClass());
+            }
+
+            @SuppressWarnings("all")
+            public Map<String, javax.ws.rs.core.MediaType> getExtensionMappings() {
+                return getMediaTypeMappings();
+            }
+
+            @SuppressWarnings("all")
+            public Map<String, javax.ws.rs.core.MediaType> getMediaTypeMappings() {
+                Map<String, javax.ws.rs.core.MediaType> mediaMap = new HashMap<String, javax.ws.rs.core.MediaType>();
+                mediaMap.put("xml", APPLICATION_XML_TYPE);
+                mediaMap.put("json", APPLICATION_JSON_TYPE);
+                return mediaMap;
+            }
+        };
+        return appConfig;
+    }
+
     public void testGetJsonObject() throws Exception {
         Response response = get("JSONObject");
         sysOutEntityIfError(response);
@@ -68,6 +101,24 @@ public class JsonTest extends JaxRsTestCase {
     public void testGetPersonJson() throws Exception {
         Response response = get("person?firstname=Angela&lastname=Merkel",
                 MediaType.APPLICATION_JSON);
+        checkJsonResponse(response);
+
+        response = get("person.json?firstname=Angela&lastname=Merkel",
+                MediaType.TEXT_XML);
+        checkJsonResponse(response);
+
+        response = get("person.json?firstname=Angela&lastname=Merkel",
+                MediaType.IMAGE_GIF);
+        checkJsonResponse(response);
+    }
+
+    /**
+     * @param response
+     * @throws JSONException
+     * @throws IOException
+     */
+    private void checkJsonResponse(Response response) throws JSONException,
+            IOException {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         JSONObject jsonObject = new JSONObject(response.getEntity().getText());

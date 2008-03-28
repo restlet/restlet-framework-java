@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.test.jaxrs;
+package org.restlet.test.jaxrs.util;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Request;
-import org.restlet.ext.jaxrs.HtmlPreferer;
+import org.restlet.ext.jaxrs.internal.util.HtmlPreferer;
 
 import junit.framework.TestCase;
 

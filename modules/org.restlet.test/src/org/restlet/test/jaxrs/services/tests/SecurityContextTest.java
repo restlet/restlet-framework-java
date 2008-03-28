@@ -28,7 +28,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.jaxrs.AccessControl;
+import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.server.ServerWrapper;
 import org.restlet.test.jaxrs.services.resources.SecurityContextService;
@@ -49,12 +49,12 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     /**
-     * @param accessControl
+     * @param roleChecker
      * @return true, if it could be set, or false if not.
      */
-    private boolean setAccessControl(AccessControl accessControl) {
+    private boolean setRoleChecker(RoleChecker roleChecker) {
         ServerWrapper serverWrapper = getServerWrapper();
-        return serverWrapper.setAccessControl(accessControl);
+        return serverWrapper.setRoleChecker(roleChecker);
     }
 
     @Override
@@ -63,11 +63,11 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     /**
-     * @param accessControl
+     * @param roleChecker
      * @throws Exception
      */
-    private boolean startServer(AccessControl accessControl) throws Exception {
-        if (!setAccessControl(accessControl))
+    private boolean startServer(RoleChecker roleChecker) throws Exception {
+        if (!setRoleChecker(roleChecker))
             return false;
         startServer();
         return true;
@@ -79,7 +79,7 @@ public class SecurityContextTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void test2() throws Exception {
-        if (!startServer(AccessControl.FORBID_ALL))
+        if (!startServer(RoleChecker.FORBID_ALL))
             return;
         Response response = get();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
@@ -89,14 +89,14 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void test3() throws Exception {
-        if (!startServer(AccessControl.FORBID_ALL))
+        if (!startServer(RoleChecker.FORBID_ALL))
             return;
         Response response = getAuth(null, "admin", "adminPW");
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
 
     public void test4() throws Exception {
-        if (!startServer(AccessControl.FORBID_ALL))
+        if (!startServer(RoleChecker.FORBID_ALL))
             return;
         Response response = post(null, new Form().getWebRepresentation(),
                 new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "alice",
@@ -106,7 +106,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void test5() throws Exception {
-        if (!startServer(AccessControl.FORBID_ALL))
+        if (!startServer(RoleChecker.FORBID_ALL))
             return;
         Representation postEntity = new Form("abc=def").getWebRepresentation();
         ChallengeResponse cr = new ChallengeResponse(
@@ -122,7 +122,7 @@ public class SecurityContextTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void testAllowAll() throws Exception {
-        if (!startServer(AccessControl.ALLOW_ALL)) // no authorization
+        if (!startServer(RoleChecker.ALLOW_ALL)) // no authorization
             return;
         ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
@@ -141,7 +141,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testAuthenticationSchemeBasic() throws Exception {
-        if (!startServer(AccessControl.ALLOW_ALL))
+        if (!startServer(RoleChecker.ALLOW_ALL))
             return;
         ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
@@ -153,7 +153,7 @@ public class SecurityContextTest extends JaxRsTestCase {
 
     // TESTEN create extra TestCase: DigestAuth does not work
     public void _testAuthenticationSchemeDigest() throws Exception {
-        if (!setAccessControl(AccessControl.ALLOW_ALL))
+        if (!setRoleChecker(RoleChecker.ALLOW_ALL))
             return;
         startServer(ChallengeScheme.HTTP_DIGEST);
         ChallengeResponse cr = new ChallengeResponse(
@@ -165,7 +165,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testForbidAll() throws Exception {
-        if (!startServer(AccessControl.FORBID_ALL))
+        if (!startServer(RoleChecker.FORBID_ALL))
             return;
         Response response = get();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
@@ -178,13 +178,13 @@ public class SecurityContextTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void testNoRoles() throws Exception {
-        AccessControl exampleAuthorizator = new AccessControl() {
+        RoleChecker exampleAuthorizator = new RoleChecker() {
             /**
              * @return true, if the role name and the username starts with the
              *         same char.
-             * @see AccessControl#isUserInRole(String)
+             * @see RoleChecker#isUserInRole(String)
              */
-            public boolean isUserInRole(Principal principal, String role) {
+            public boolean isInRole(Principal principal, String role) {
                 if (principal == null)
                     throw new IllegalArgumentException("No principal given");
                 if (role == null)
@@ -237,7 +237,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testUserPrincipalAuth() throws Exception {
-        if (!startServer(AccessControl.ALLOW_ALL))
+        if (!startServer(RoleChecker.ALLOW_ALL))
             return;
         Response response = getAuth("userPrincipal", "alice", "alicesSecret");
         assertEquals(Status.SUCCESS_OK, response.getStatus());

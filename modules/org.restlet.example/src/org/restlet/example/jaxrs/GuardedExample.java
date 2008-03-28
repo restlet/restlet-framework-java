@@ -26,7 +26,7 @@ import org.restlet.Guard;
 import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.AccessControl;
+import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 
 /**
@@ -52,18 +52,18 @@ import org.restlet.ext.jaxrs.JaxRsApplication;
 public class GuardedExample {
 
     /**
-     * An example {@link AccessControl}. This example allows anything to user
+     * An example {@link RoleChecker}. This example allows anything to user
      * admin and only read to any other user. <br>
-     * This AccessControl isn't used by the resources.
+     * This RoleChecker isn't used by the resources.
      * 
      * @author Stephan Koops
      */
-    private static final class ExampleAccessControl implements AccessControl {
+    private static final class ExampleRoleChecker implements RoleChecker {
         /**
-         * @see AccessControl#isUserInRole(Principal, String)
+         * @see RoleChecker#isInRole(Principal, String)
          * @see SecurityContext#isUserInRole(String)
          */
-        public boolean isUserInRole(Principal principal, String role) {
+        public boolean isInRole(Principal principal, String role) {
             // access database or whatever
             // example: user "admin" has all roles
             if (principal.getName().equalsIgnoreCase("admin"))
@@ -92,10 +92,10 @@ public class GuardedExample {
         guard.getSecrets().put("alice", "alicesSecret".toCharArray());
         guard.getSecrets().put("bob", "bobsSecret".toCharArray());
 
-        // create an AccessControl (see above)
-        ExampleAccessControl accessControl = new ExampleAccessControl();
-        // attach Guard and AccessControl
-        application.setAuthentication(guard, accessControl);
+        // create an RoleChecker (see above)
+        ExampleRoleChecker roleChecker = new ExampleRoleChecker();
+        // attach Guard and RoleChecker
+        application.setAuthentication(guard, roleChecker);
 
         // attach ApplicationConfig
         application.attach(new ExampleAppConfig());

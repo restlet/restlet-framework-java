@@ -41,7 +41,7 @@ import org.restlet.Guard;
  * <p>
  * This interface is used by {@link SecurityContext#isUserInRole(String)}. The
  * JAX-RS runtime delegates this method call along with the {@link Principal} of
- * the HTTP request to method {@link #isUserInRole(Principal, String)}, the
+ * the HTTP request to method {@link #isInRole(Principal, String)}, the
  * only method of this interface.
  * </p>
  * <p>
@@ -66,13 +66,13 @@ import org.restlet.Guard;
  * @author Stephan Koops
  * @see SecurityContext
  */
-public interface AccessControl {
+public interface RoleChecker {
 
     /**
      * Access control constant that gives all roles to all principals.
      */
-    public static final AccessControl ALLOW_ALL = new AccessControl() {
-        public boolean isUserInRole(Principal principal, String role)
+    public static final RoleChecker ALLOW_ALL = new RoleChecker() {
+        public boolean isInRole(Principal principal, String role)
                 throws WebApplicationException {
             return true;
         }
@@ -81,19 +81,19 @@ public interface AccessControl {
     /**
      * Access control constant that doesn't give any role to any principal.
      */
-    public static final AccessControl FORBID_ALL = new AccessControl() {
-        public boolean isUserInRole(Principal principal, String role)
+    public static final RoleChecker FORBID_ALL = new RoleChecker() {
+        public boolean isInRole(Principal principal, String role)
                 throws WebApplicationException {
             return false;
         }
     };
 
     /**
-     * An {@link AccessControl} that throws an WebApplicationExeption with
+     * An {@link RoleChecker} that throws an WebApplicationExeption with
      * status 500 (Internal Server Error) for every call on it.
      */
-    public static final AccessControl REJECT_WITH_ERROR = new AccessControl() {
-        public boolean isUserInRole(Principal principal, String role)
+    public static final RoleChecker REJECT_WITH_ERROR = new RoleChecker() {
+        public boolean isInRole(Principal principal, String role)
                 throws WebApplicationException {
             String message = "No access control defined.";
             ResponseBuilder rb = Response.serverError();
@@ -116,6 +116,6 @@ public interface AccessControl {
      *                 {@link WebApplicationException}.
      * @see SecurityContext#isUserInRole(String)
      */
-    public boolean isUserInRole(Principal principal, String role)
+    public boolean isInRole(Principal principal, String role)
             throws WebApplicationException;
 }

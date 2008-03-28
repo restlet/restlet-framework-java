@@ -23,7 +23,7 @@ import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.AccessControl;
+import org.restlet.ext.jaxrs.RoleChecker;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
@@ -35,7 +35,7 @@ import org.restlet.ext.jaxrs.AccessControl;
  */
 public class DirectServerWrapper implements ServerWrapper {
 
-    private AccessControl accessControl;
+    private RoleChecker roleChecker;
 
     private Restlet connector;
 
@@ -43,21 +43,14 @@ public class DirectServerWrapper implements ServerWrapper {
     }
 
     /**
-     * @return the accessControl
-     */
-    public AccessControl getAccessControl() {
-        return accessControl;
-    }
-
-    /**
-     * @param accessControl
-     *                the accessControl to set. May be null to not require
+     * @param roleChecker
+     *                the roleChecker to set. May be null to not require
      *                authentication.
      * @throws IllegalArgumentException
      */
-    public boolean setAccessControl(AccessControl accessControl)
+    public boolean setRoleChecker(RoleChecker roleChecker)
             throws IllegalArgumentException {
-        this.accessControl = accessControl;
+        this.roleChecker = roleChecker;
         return true;
     }
 
@@ -69,7 +62,7 @@ public class DirectServerWrapper implements ServerWrapper {
             ChallengeScheme challengeScheme, Parameter contextParameter)
             throws Exception {
         connector = RestletServerWrapper.createApplication(null, appConfig,
-                challengeScheme, accessControl);
+                challengeScheme, roleChecker);
     }
 
     public void stopServer() throws Exception {

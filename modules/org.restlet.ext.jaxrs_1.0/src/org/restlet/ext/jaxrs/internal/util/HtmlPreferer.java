@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs;
+package org.restlet.ext.jaxrs.internal.util;
 
 import java.util.List;
 import java.util.Map;
@@ -58,6 +58,9 @@ import org.restlet.data.Response;
  * @author Stephan Koops
  */
 public class HtmlPreferer extends Filter {
+    
+    // LATER move HtmlPreferer to the TunnelFilter
+    // see http://restlet.tigris.org/issues/show_bug.cgi?id=455
 
     private static final int MT_PREF_APP_XHTML = 1;
 
@@ -73,15 +76,6 @@ public class HtmlPreferer extends Filter {
      * finish the changes.
      */
     private static final String MT_QUALITY_ARRAY = "org.restlet.HtmlPreferer.qualities";
-
-    /**
-     * Creates a new {@link HtmlPreferer}. You should use constructor
-     * {@link #HtmlPreferer(Context)} or {@link #HtmlPreferer(Context, Restlet)}.
-     */
-    @Deprecated
-    public HtmlPreferer() {
-        super();
-    }
 
     /**
      * Creates a new {@link HtmlPreferer}. You can give also the next restlet
