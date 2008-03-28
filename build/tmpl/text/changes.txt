@@ -72,6 +72,8 @@ Changes log
         - TransformRepresentation has been refactored to support SAX
           pipelining when multiple TransformRepresentation are nested.
           Suggested by Marc Portier. 
+        - Added a getValuesMap() method to the Series class.
+        
     - NRE and Extension Enhancements
         - Made the ServerServlet.create*() method protected instead of 
           public.

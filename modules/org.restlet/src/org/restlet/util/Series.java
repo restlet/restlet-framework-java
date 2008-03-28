@@ -21,6 +21,7 @@ package org.restlet.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -358,6 +359,25 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
 
         for (int i = 0; i < params.size(); i++) {
             result[i] = params.get(i).getValue();
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a map of name, value pairs. The order of the map keys is
+     * respected based on the series order. When a name has multiple values,
+     * only the first one is put in the map.
+     * 
+     * @return The map of name, value pairs.
+     */
+    public Map<String, String> getValuesMap() {
+        Map<String, String> result = new LinkedHashMap<String, String>();
+
+        for (Parameter param : this) {
+            if (!result.containsKey(param.getName())) {
+                result.put(param.getName(), param.getValue());
+            }
         }
 
         return result;
