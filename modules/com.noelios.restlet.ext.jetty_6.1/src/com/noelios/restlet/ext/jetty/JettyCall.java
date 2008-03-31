@@ -46,10 +46,10 @@ import com.noelios.restlet.http.HttpServerCall;
  */
 public class JettyCall extends HttpServerCall {
     /** The wrapped Jetty HTTP connection. */
-    private HttpConnection connection;
+    private volatile HttpConnection connection;
 
     /** Indicates if the request headers were parsed and added. */
-    private boolean requestHeadersAdded;
+    private volatile boolean requestHeadersAdded;
 
     /**
      * Constructor.

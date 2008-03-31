@@ -97,6 +97,122 @@ import com.noelios.restlet.Engine;
  * @author Thierry Boileau
  */
 public class JdbcClientHelper extends ClientHelper {
+    /**
+     * Pooling data source which remembers its connection properties and URI.
+     */
+    private static class ConnectionSource extends PoolingDataSource {
+        /** The connection properties. */
+        protected Properties properties;
+
+        /** The connection URI. */
+        protected String uri;
+
+        /**
+         * Constructor.
+         * 
+         * @param uri
+         *                The connection URI.
+         * @param properties
+         *                The connection properties.
+         */
+        public ConnectionSource(String uri, Properties properties) {
+            super(createConnectionPool(uri, properties));
+            this.uri = uri;
+            this.properties = properties;
+        }
+
+        /**
+         * Returns the connection properties.
+         * 
+         * @return The connection properties.
+         */
+        public Properties getProperties() {
+            return properties;
+        }
+
+        /**
+         * Returns the connection URI.
+         * 
+         * @return The connection URI.
+         */
+        public String getUri() {
+            return uri;
+        }
+    }
+
+    /**
+     * Creates an uniform call.
+     * 
+     * @param jdbcURI
+     *                The database's JDBC URI (ex:
+     *                jdbc:mysql://[hostname]/[database]).
+     * @param request
+     *                The request to send (valid XML request).
+     */
+    public static Request create(String jdbcURI, Representation request) {
+        Request result = new Request();
+        result.getClientInfo().setAgent(Engine.VERSION_HEADER);
+        result.setMethod(Method.POST);
+        result.setResourceRef(jdbcURI);
+        result.setEntity(request);
+        return result;
+    }
+
+    /**
+     * Creates a connection pool for a given connection configuration.
+     * 
+     * @param uri
+     *                The connection URI.
+     * @param properties
+     *                The connection properties.
+     * @return The new connection pool.
+     */
+    protected static ObjectPool createConnectionPool(String uri,
+            Properties properties) {
+        // Create an ObjectPool that will serve as the actual pool of
+        // connections
+        ObjectPool result = new GenericObjectPool(null);
+
+        // Create a ConnectionFactory that the pool will use to create
+        // Connections
+        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
+                uri, properties);
+
+        // Create the PoolableConnectionFactory, which wraps the "real"
+        // Connections created by the ConnectionFactory with
+        // the classes that implement the pooling functionality.
+        PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
+                connectionFactory, result, null, null, false, false);
+
+        // To remove warnings
+        poolableConnectionFactory.getPool();
+
+        return result;
+    }
+
+    /**
+     * Escapes quotes in a SQL query.
+     * 
+     * @param query
+     *                The SQL query to escape.
+     * @return The escaped SQL query.
+     */
+    public static String sqlEncode(String query) {
+        StringBuilder result = new StringBuilder(query.length() + 10);
+        char currentChar;
+
+        for (int i = 0; i < query.length(); i++) {
+            currentChar = query.charAt(i);
+            if (currentChar == '\'') {
+                result.append("''");
+            } else {
+                result.append(currentChar);
+            }
+        }
+
+        return result.toString();
+    }
+
     /** Map of connection factories. */
     private volatile List<ConnectionSource> connectionSources;
 
@@ -116,20 +232,55 @@ public class JdbcClientHelper extends ClientHelper {
     }
 
     /**
-     * Creates an uniform call.
+     * Returns a JDBC connection.
      * 
-     * @param jdbcURI
-     *                The database's JDBC URI (ex:
-     *                jdbc:mysql://[hostname]/[database]).
-     * @param request
-     *                The request to send (valid XML request).
+     * @param uri
+     *                The connection URI.
+     * @param properties
+     *                The connection properties.
+     * @param usePooling
+     *                Indicates if the connection pooling should be used.
+     * @return The JDBC connection.
+     * @throws SQLException
      */
-    public static Request create(String jdbcURI, Representation request) {
-        Request result = new Request();
-        result.getClientInfo().setAgent(Engine.VERSION_HEADER);
-        result.setMethod(Method.POST);
-        result.setResourceRef(jdbcURI);
-        result.setEntity(request);
+    protected Connection getConnection(String uri, Properties properties,
+            boolean usePooling) throws SQLException {
+        Connection result = null;
+
+        if (usePooling) {
+            for (ConnectionSource c : connectionSources) {
+                // Check if the connection URI is identical
+                // and if the same number of properties is present
+                if ((result == null) && c.getUri().equalsIgnoreCase(uri)
+                        && (properties.size() == c.getProperties().size())) {
+                    // Check that the properties tables are equivalent
+                    boolean equal = true;
+                    for (Object key : c.getProperties().keySet()) {
+                        if (equal && properties.containsKey(key)) {
+                            equal = equal
+                                    && (properties.get(key).equals(c
+                                            .getProperties().get(key)));
+                        } else {
+                            equal = false;
+                        }
+                    }
+
+                    if (equal) {
+                        result = c.getConnection();
+                    }
+                }
+            }
+
+            if (result == null) {
+                // No existing connection source found
+                ConnectionSource cs = new ConnectionSource(uri, properties);
+                this.connectionSources.add(cs);
+                result = cs.getConnection();
+            }
+        } else {
+            result = DriverManager.getConnection(uri, properties);
+        }
+
         return result;
     }
 
@@ -275,156 +426,5 @@ public class JdbcClientHelper extends ClientHelper {
         }
         return result;
 
-    }
-
-    /**
-     * Returns a JDBC connection.
-     * 
-     * @param uri
-     *                The connection URI.
-     * @param properties
-     *                The connection properties.
-     * @param usePooling
-     *                Indicates if the connection pooling should be used.
-     * @return The JDBC connection.
-     * @throws SQLException
-     */
-    protected Connection getConnection(String uri, Properties properties,
-            boolean usePooling) throws SQLException {
-        Connection result = null;
-
-        if (usePooling) {
-            for (ConnectionSource c : connectionSources) {
-                // Check if the connection URI is identical
-                // and if the same number of properties is present
-                if ((result == null) && c.getUri().equalsIgnoreCase(uri)
-                        && (properties.size() == c.getProperties().size())) {
-                    // Check that the properties tables are equivalent
-                    boolean equal = true;
-                    for (Object key : c.getProperties().keySet()) {
-                        if (equal && properties.containsKey(key)) {
-                            equal = equal
-                                    && (properties.get(key).equals(c
-                                            .getProperties().get(key)));
-                        } else {
-                            equal = false;
-                        }
-                    }
-
-                    if (equal) {
-                        result = c.getConnection();
-                    }
-                }
-            }
-
-            if (result == null) {
-                // No existing connection source found
-                ConnectionSource cs = new ConnectionSource(uri, properties);
-                this.connectionSources.add(cs);
-                result = cs.getConnection();
-            }
-        } else {
-            result = DriverManager.getConnection(uri, properties);
-        }
-
-        return result;
-    }
-
-    /**
-     * Escapes quotes in a SQL query.
-     * 
-     * @param query
-     *                The SQL query to escape.
-     * @return The escaped SQL query.
-     */
-    public static String sqlEncode(String query) {
-        StringBuilder result = new StringBuilder(query.length() + 10);
-        char currentChar;
-
-        for (int i = 0; i < query.length(); i++) {
-            currentChar = query.charAt(i);
-            if (currentChar == '\'') {
-                result.append("''");
-            } else {
-                result.append(currentChar);
-            }
-        }
-
-        return result.toString();
-    }
-
-    /**
-     * Creates a connection pool for a given connection configuration.
-     * 
-     * @param uri
-     *                The connection URI.
-     * @param properties
-     *                The connection properties.
-     * @return The new connection pool.
-     */
-    protected static ObjectPool createConnectionPool(String uri,
-            Properties properties) {
-        // Create an ObjectPool that will serve as the actual pool of
-        // connections
-        ObjectPool result = new GenericObjectPool(null);
-
-        // Create a ConnectionFactory that the pool will use to create
-        // Connections
-        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
-                uri, properties);
-
-        // Create the PoolableConnectionFactory, which wraps the "real"
-        // Connections created by the ConnectionFactory with
-        // the classes that implement the pooling functionality.
-        PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
-                connectionFactory, result, null, null, false, false);
-
-        // To remove warnings
-        poolableConnectionFactory.getPool();
-
-        return result;
-    }
-
-    /**
-     * Pooling data source which remembers its connection properties and URI.
-     */
-    private static class ConnectionSource extends PoolingDataSource {
-        /** The connection URI. */
-        protected String uri;
-
-        /** The connection properties. */
-        protected Properties properties;
-
-        /**
-         * Constructor.
-         * 
-         * @param uri
-         *                The connection URI.
-         * @param properties
-         *                The connection properties.
-         */
-        public ConnectionSource(String uri, Properties properties) {
-            super(createConnectionPool(uri, properties));
-            this.uri = uri;
-            this.properties = properties;
-        }
-
-        /**
-         * Returns the connection URI.
-         * 
-         * @return The connection URI.
-         */
-        public String getUri() {
-            return uri;
-        }
-
-        /**
-         * Returns the connection properties.
-         * 
-         * @return The connection properties.
-         */
-        public Properties getProperties() {
-            return properties;
-        }
     }
 }

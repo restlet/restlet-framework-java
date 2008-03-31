@@ -33,40 +33,40 @@ import org.restlet.util.DateUtils;
  */
 public class Entry {
     /** The authors of the entry. */
-    private List<Person> authors;
+    private volatile List<Person> authors;
 
     /** The categories associated with the entry. */
-    private List<Category> categories;
+    private volatile List<Category> categories;
 
     /** Contains or links to the content of the entry. */
-    private Content content;
+    private volatile Content content;
 
     /** The contributors to the entry. */
-    private List<Person> contributors;
+    private volatile List<Person> contributors;
 
     /** Permanent, universally unique identifier for the entry. */
-    private String id;
+    private volatile String id;
 
     /** The references from the entry to Web resources. */
-    private List<Link> links;
+    private volatile List<Link> links;
 
     /** Moment associated with an event early in the life cycle of the entry. */
-    private Date published;
+    private volatile Date published;
 
     /** Information about rights held in and over an entry. */
-    private Text rights;
+    private volatile Text rights;
 
     /** Source feed's metadata if the entry was copied from another feed. */
-    private Source source;
+    private volatile Source source;
 
     /** Short summary, abstract, or excerpt of the entry. */
-    private String summary;
+    private volatile String summary;
 
     /** The human-readable title for the entry. */
-    private Text title;
+    private volatile Text title;
 
     /** Most recent moment when the entry was modified in a significant way. */
-    private Date updated;
+    private volatile Date updated;
 
     /**
      * Constructor.
@@ -121,7 +121,7 @@ public class Entry {
      * Sets the content of the entry or links to it.
      * 
      * @param content
-     *            The content of the entry or links to it.
+     *                The content of the entry or links to it.
      */
     public void setContent(Content content) {
         this.content = content;
@@ -151,7 +151,8 @@ public class Entry {
      * Sets the permanent, universally unique identifier for the entry.
      * 
      * @param id
-     *            The permanent, universally unique identifier for the entry.
+     *                The permanent, universally unique identifier for the
+     *                entry.
      */
     public void setId(String id) {
         this.id = id;
@@ -172,7 +173,7 @@ public class Entry {
      * Returns the first available link with a given relation type.
      * 
      * @param rel
-     *            The relation type to match.
+     *                The relation type to match.
      * @return The first available link with a given relation type.
      */
     public Link getLink(Relation rel) {
@@ -207,8 +208,8 @@ public class Entry {
      * entry.
      * 
      * @param published
-     *            The moment associated with an event early in the life cycle of
-     *            the entry.
+     *                The moment associated with an event early in the life
+     *                cycle of the entry.
      */
     public void setPublished(Date published) {
         this.published = DateUtils.unmodifiable(published);
@@ -227,7 +228,7 @@ public class Entry {
      * Sets the information about rights held in and over an entry.
      * 
      * @param rights
-     *            The information about rights held in and over an entry.
+     *                The information about rights held in and over an entry.
      */
     public void setRights(Text rights) {
         this.rights = rights;
@@ -249,8 +250,8 @@ public class Entry {
      * feed.
      * 
      * @param source
-     *            The source feed's metadata if the entry was copied from
-     *            another feed.
+     *                The source feed's metadata if the entry was copied from
+     *                another feed.
      */
     public void setSource(Source source) {
         this.source = source;
@@ -269,7 +270,7 @@ public class Entry {
      * Sets the short summary, abstract, or excerpt of the entry.
      * 
      * @param summary
-     *            The short summary, abstract, or excerpt of the entry.
+     *                The short summary, abstract, or excerpt of the entry.
      */
     public void setSummary(String summary) {
         this.summary = summary;
@@ -288,7 +289,7 @@ public class Entry {
      * Sets the human-readable title for the entry.
      * 
      * @param title
-     *            The human-readable title for the entry.
+     *                The human-readable title for the entry.
      */
     public void setTitle(Text title) {
         this.title = title;
@@ -310,8 +311,8 @@ public class Entry {
      * way.
      * 
      * @param updated
-     *            The most recent moment when the entry was modified in a
-     *            significant way.
+     *                The most recent moment when the entry was modified in a
+     *                significant way.
      */
     public void setUpdated(Date updated) {
         this.updated = DateUtils.unmodifiable(updated);

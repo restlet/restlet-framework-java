@@ -33,14 +33,14 @@ import org.springframework.core.io.AbstractResource;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SpringResource extends AbstractResource {
-    /** The wrapped representation. */
-    private final Representation representation;
-
     /** The description. */
     private final String description;
 
     /** Indicates if the representation has already been read. */
-    private boolean read = false;
+    private volatile boolean read = false;
+
+    /** The wrapped representation. */
+    private final Representation representation;
 
     /**
      * Constructor.
@@ -71,6 +71,15 @@ public class SpringResource extends AbstractResource {
     }
 
     /**
+     * This implementation compares the underlying InputStream.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return (obj == this || (obj instanceof SpringResource && ((SpringResource) obj).representation
+                .equals(this.representation)));
+    }
+
+    /**
      * This implementation always returns <code>true</code>.
      */
     @Override
@@ -79,11 +88,12 @@ public class SpringResource extends AbstractResource {
     }
 
     /**
-     * This implementation always returns <code>true</code>.
+     * Returns the description.
+     * 
+     * @return The description.
      */
-    @Override
-    public boolean isOpen() {
-        return true;
+    public String getDescription() {
+        return this.description;
     }
 
     /**
@@ -102,29 +112,19 @@ public class SpringResource extends AbstractResource {
     }
 
     /**
-     * Returns the description.
-     * 
-     * @return The description.
-     */
-    public String getDescription() {
-        return this.description;
-    }
-
-    /**
-     * This implementation compares the underlying InputStream.
-     */
-    @Override
-    public boolean equals(Object obj) {
-        return (obj == this || (obj instanceof SpringResource && ((SpringResource) obj).representation
-                .equals(this.representation)));
-    }
-
-    /**
      * This implementation returns the hash code of the underlying InputStream.
      */
     @Override
     public int hashCode() {
         return this.representation.hashCode();
+    }
+
+    /**
+     * This implementation always returns <code>true</code>.
+     */
+    @Override
+    public boolean isOpen() {
+        return true;
     }
 
 }

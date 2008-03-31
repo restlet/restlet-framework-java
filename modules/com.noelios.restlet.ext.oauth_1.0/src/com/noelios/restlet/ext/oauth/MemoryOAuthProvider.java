@@ -43,9 +43,9 @@ public class MemoryOAuthProvider implements OAuthProvider {
 
     // TODO: Mutexes.
     // TODO: LRU collections.
-    private Map<String, OAuthConsumer> consumers = new HashMap<String, OAuthConsumer>();
+    private final Map<String, OAuthConsumer> consumers = new HashMap<String, OAuthConsumer>();
 
-    private Set<OAuthAccessor> tokens = new HashSet<OAuthAccessor>();
+    private final Set<OAuthAccessor> tokens = new HashSet<OAuthAccessor>();
 
     public OAuthAccessor getAccessor(OAuthMessage requestMessage) {
         String consumer_token = null;

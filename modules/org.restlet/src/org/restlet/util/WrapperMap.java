@@ -33,13 +33,13 @@ import java.util.TreeMap;
  */
 public class WrapperMap<K, V> implements Map<K, V> {
     /** The delegate map. */
-    private Map<K, V> delegate;
+    private final Map<K, V> delegate;
 
     /**
      * Constructor.
      */
     public WrapperMap() {
-        this.delegate = null;
+        this.delegate = new TreeMap<K, V>();
     }
 
     /**
@@ -120,10 +120,6 @@ public class WrapperMap<K, V> implements Map<K, V> {
      * @return The delegate list.
      */
     protected Map<K, V> getDelegate() {
-        if (this.delegate == null) {
-            this.delegate = new TreeMap<K, V>();
-        }
-
         return this.delegate;
     }
 

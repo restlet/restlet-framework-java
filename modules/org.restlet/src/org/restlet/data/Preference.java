@@ -27,13 +27,13 @@ import org.restlet.util.Series;
  */
 public final class Preference<T extends Metadata> {
     /** The metadata associated with this preference. */
-    private T metadata;
-
-    /** The quality/preference level. */
-    private float quality;
+    private volatile T metadata;
 
     /** The modifiable list of parameters. */
-    private Series<Parameter> parameters;
+    private volatile Series<Parameter> parameters;
+
+    /** The quality/preference level. */
+    private volatile float quality;
 
     /**
      * Constructor.

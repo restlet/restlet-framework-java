@@ -72,13 +72,13 @@ import org.restlet.service.TunnelService;
 public class JaxRsApplication extends Application {
 
     /** the {@link Guard} to use. May be null. */
-    private Guard guard;
+    private volatile Guard guard;
 
     /** The {@link JaxRsRouter} to use. */
-    private JaxRsRouter jaxRsRouter;
+    private volatile JaxRsRouter jaxRsRouter;
 
     /** Indicates, if an {@link HtmlPreferer} should be used or not. */
-    private boolean preferHtml = true;
+    private volatile boolean preferHtml = true;
 
     /**
      * Default constructor.
@@ -200,21 +200,21 @@ public class JaxRsApplication extends Application {
     }
 
     /**
-     * Returns the current RoleChecker
-     * 
-     * @return the current RoleChecker
-     */
-    public RoleChecker getRoleChecker() {
-        return this.jaxRsRouter.getRoleChecker();
-    }
-
-    /**
      * Returns the Guard
      * 
      * @return the Guard
      */
     public Guard getGuard() {
         return this.guard;
+    }
+
+    /**
+     * Returns the current RoleChecker
+     * 
+     * @return the current RoleChecker
+     */
+    public RoleChecker getRoleChecker() {
+        return this.jaxRsRouter.getRoleChecker();
     }
 
     /**
@@ -267,18 +267,6 @@ public class JaxRsApplication extends Application {
     }
 
     /**
-     * Sets the {@link RoleChecker} to use.<br>
-     * If you give an RoleChecker, you should also give a Guard.
-     * 
-     * @param roleChecker
-     * @see #setAuthentication(Guard, RoleChecker)
-     * @see #setGuard(Guard)
-     */
-    public void setRoleChecker(RoleChecker roleChecker) {
-        this.jaxRsRouter.setRoleChecker(roleChecker);
-    }
-
-    /**
      * Sets the objects to check the authentication. The {@link Guard} checks
      * the username and password (e.g.), the {@link RoleChecker} manages the
      * role management for the JAX-RS extension.
@@ -326,5 +314,17 @@ public class JaxRsApplication extends Application {
      */
     public void setPreferHtml(boolean preferHtml) {
         this.preferHtml = preferHtml;
+    }
+
+    /**
+     * Sets the {@link RoleChecker} to use.<br>
+     * If you give an RoleChecker, you should also give a Guard.
+     * 
+     * @param roleChecker
+     * @see #setAuthentication(Guard, RoleChecker)
+     * @see #setGuard(Guard)
+     */
+    public void setRoleChecker(RoleChecker roleChecker) {
+        this.jaxRsRouter.setRoleChecker(roleChecker);
     }
 }

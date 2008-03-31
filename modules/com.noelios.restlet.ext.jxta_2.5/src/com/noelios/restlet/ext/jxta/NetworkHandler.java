@@ -59,9 +59,9 @@ public class NetworkHandler {
 
     private static final String CONFIG_PASSWORD = "pwd";
 
-    private Network network = null;
+    private volatile Network network = null;
 
-    private NetworkListener listener = null;
+    private volatile NetworkListener listener = null;
 
     public NetworkHandler() {
         this.listener = new NetworkListener();

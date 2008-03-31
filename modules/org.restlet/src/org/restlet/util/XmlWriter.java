@@ -360,47 +360,47 @@ public final class XmlWriter extends XMLFilterImpl {
     /**
      * The prefixes table.
      */
-    private Map<String, String> prefixTable;
+    private volatile Map<String, String> prefixTable;
 
     /**
      * The forced declarations table.
      */
-    private Map<String, Boolean> forcedDeclTable;
+    private volatile Map<String, Boolean> forcedDeclTable;
 
     /**
      * The document declarations table.
      */
-    private Map<String, String> doneDeclTable;
+    private volatile Map<String, String> doneDeclTable;
 
     /**
      * The element level.
      */
-    private int elementLevel = 0;
+    private volatile int elementLevel = 0;
 
     /**
      * The namespace support.
      */
-    private NamespaceSupport nsSupport;
+    private volatile NamespaceSupport nsSupport;
 
     /**
      * The prefix counter.
      */
-    private int prefixCounter = 0;
+    private volatile int prefixCounter = 0;
 
     /**
      * The underlying writer.
      */
-    private Writer output;
+    private volatile Writer output;
 
-    private Object state = SEEN_NOTHING;
+    private volatile Object state = SEEN_NOTHING;
 
-    private Stack<Object> stateStack = new Stack<Object>();
+    private volatile Stack<Object> stateStack = new Stack<Object>();
 
-    private boolean dataFormat = false;
+    private volatile boolean dataFormat = false;
 
-    private int indentStep = 0;
+    private volatile int indentStep = 0;
 
-    private int depth = 0;
+    private volatile int depth = 0;
 
     /**
      * Create a new XML writer.

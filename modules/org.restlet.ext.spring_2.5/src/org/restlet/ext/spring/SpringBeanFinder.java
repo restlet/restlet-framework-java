@@ -30,10 +30,10 @@ import org.springframework.beans.factory.BeanFactoryAware;
  */
 public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
     /** The parent bean factory. */
-    private BeanFactory beanFactory;
+    private volatile BeanFactory beanFactory;
 
     /** The bean name. */
-    private String beanName;
+    private volatile String beanName;
 
     /**
      * Default constructor.

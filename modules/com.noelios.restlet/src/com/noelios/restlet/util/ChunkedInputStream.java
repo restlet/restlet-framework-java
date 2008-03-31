@@ -37,15 +37,15 @@ public class ChunkedInputStream extends InputStream {
 
     private static final int PUSHBBACK_BUFFER_SIZE = 2;
 
+    private volatile long chunkSize;
+
+    private volatile boolean done;
+
+    private volatile boolean initialized;
+
+    private volatile long position;
+
     private final PushbackInputStream source;
-
-    private boolean initialized;
-
-    private boolean done;
-
-    private long position;
-
-    private long chunkSize;
 
     /**
      * Constructor.
@@ -61,26 +61,21 @@ public class ChunkedInputStream extends InputStream {
         this.chunkSize = 0;
     }
 
-    /**
-     * Read a byte from the chunked stream
-     */
-    @Override
-    public int read() throws IOException {
-        int result = -1;
-
-        initialize();
-
-        if (!done) {
-            if (chunkAvailable()) {
-                result = source.read();
-                position++;
-            } else {
-                initializeChunk();
-                return read();
-            }
+    private void checkCRLF() throws IOException {
+        int cr = source.read();
+        int lf = source.read();
+        if (cr != '\r' && lf != '\n') {
+            source.unread(lf);
+            source.unread(cr);
         }
+    }
 
-        return result;
+    /**
+     * @return True if a chunk is available. False if a new one needs to be
+     *         initialized
+     */
+    private boolean chunkAvailable() {
+        return position < chunkSize;
     }
 
     /**
@@ -106,14 +101,6 @@ public class ChunkedInputStream extends InputStream {
     }
 
     /**
-     * @return True if a chunk is available. False if a new one needs to be
-     *         initialized
-     */
-    private boolean chunkAvailable() {
-        return position < chunkSize;
-    }
-
-    /**
      * Initialize the next chunk in the stream
      * 
      * @throws IOException
@@ -124,6 +111,28 @@ public class ChunkedInputStream extends InputStream {
         if (chunkSize == 0) {
             done = true;
         }
+    }
+
+    /**
+     * Read a byte from the chunked stream
+     */
+    @Override
+    public int read() throws IOException {
+        int result = -1;
+
+        initialize();
+
+        if (!done) {
+            if (chunkAvailable()) {
+                result = source.read();
+                position++;
+            } else {
+                initializeChunk();
+                return read();
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -172,14 +181,5 @@ public class ChunkedInputStream extends InputStream {
             buffer.write(b);
         }
         return new String(buffer.toByteArray());
-    }
-
-    private void checkCRLF() throws IOException {
-        int cr = source.read();
-        int lf = source.read();
-        if (cr != '\r' && lf != '\n') {
-            source.unread(lf);
-            source.unread(cr);
-        }
     }
 }

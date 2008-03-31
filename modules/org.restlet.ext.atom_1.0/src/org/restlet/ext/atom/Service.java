@@ -209,17 +209,17 @@ public class Service extends SaxRepresentation {
     /**
      * The client HTTP dispatcher.
      */
-    private Uniform clientDispatcher;
+    private volatile Uniform clientDispatcher;
 
     /**
      * The reference.
      */
-    private Reference reference;
+    private volatile Reference reference;
 
     /**
      * The list of workspaces.
      */
-    private List<Workspace> workspaces;
+    private volatile List<Workspace> workspaces;
 
     /**
      * Constructor.

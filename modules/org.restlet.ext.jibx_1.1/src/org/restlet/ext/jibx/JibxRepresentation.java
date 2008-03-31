@@ -74,19 +74,19 @@ public class JibxRepresentation<T> extends XmlRepresentation {
 
     /** Class for target binding. */
     @SuppressWarnings("unchecked")
-    private Class bindingClass;
+    private volatile Class bindingClass;
 
     /** The binding name to use. */
-    private String bindingName;
+    private volatile String bindingName;
 
     /** The document encoding to use for marshalling (default is UTF-8). */
-    private String encoding = "UTF-8";
+    private volatile String encoding = "UTF-8";
 
     /** The wrapped Java object. */
-    private T object;
+    private volatile T object;
 
     /** The source XML representation. */
-    private Representation xmlRepresentation;
+    private volatile Representation xmlRepresentation;
 
     /**
      * Creates a JIBX representation from an existing Java object. This allows a
@@ -129,16 +129,11 @@ public class JibxRepresentation<T> extends XmlRepresentation {
      *                The XML wrapped in a representation.
      * @param bindingClass
      *                The Target Java class for binding.
-     * @param bindingName
-     *                The name of the JIBX binding to use.
      */
     @SuppressWarnings("unchecked")
     public JibxRepresentation(Representation xmlRepresentation,
-            Class bindingClass, String bindingName) {
-        super(xmlRepresentation.getMediaType());
-        this.xmlRepresentation = xmlRepresentation;
-        this.bindingClass = bindingClass;
-        this.bindingName = bindingName;
+            Class bindingClass) {
+        this(xmlRepresentation, bindingClass, null);
     }
 
     /**
@@ -149,11 +144,16 @@ public class JibxRepresentation<T> extends XmlRepresentation {
      *                The XML wrapped in a representation.
      * @param bindingClass
      *                The Target Java class for binding.
+     * @param bindingName
+     *                The name of the JIBX binding to use.
      */
     @SuppressWarnings("unchecked")
     public JibxRepresentation(Representation xmlRepresentation,
-            Class bindingClass) {
-        this(xmlRepresentation, bindingClass, null);
+            Class bindingClass, String bindingName) {
+        super(xmlRepresentation.getMediaType());
+        this.xmlRepresentation = xmlRepresentation;
+        this.bindingClass = bindingClass;
+        this.bindingName = bindingName;
     }
 
     @Override

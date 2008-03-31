@@ -58,13 +58,14 @@ import org.restlet.resource.Variant;
 public abstract class Engine {
 
     /** Classloader to use for dynamic class loading. */
-    private static ClassLoader classloader = Engine.class.getClassLoader();
+    private static volatile ClassLoader classloader = Engine.class
+            .getClassLoader();
 
     /** The registered engine. */
-    private static Engine instance = null;
+    private static volatile Engine instance = null;
 
     /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(Engine.class
+    private static final Logger logger = Logger.getLogger(Engine.class
             .getCanonicalName());
 
     /** Major version number. */

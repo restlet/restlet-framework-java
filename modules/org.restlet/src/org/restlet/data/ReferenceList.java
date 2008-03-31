@@ -34,8 +34,8 @@ import org.restlet.util.WrapperList;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ReferenceList extends WrapperList<Reference> {
-    /** The list identifier. */
-    private Reference identifier;
+    /** The list's identifier. */
+    private volatile Reference identifier;
 
     /**
      * Constructor.

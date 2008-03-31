@@ -33,7 +33,7 @@ public class JdbcResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** The JDBC statement. */
-    private transient Statement statement;
+    private volatile transient Statement statement;
 
     /**
      * Constructor.

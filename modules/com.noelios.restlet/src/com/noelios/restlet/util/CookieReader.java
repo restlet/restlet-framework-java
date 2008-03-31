@@ -37,11 +37,11 @@ import com.noelios.restlet.http.HttpUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class CookieReader extends HeaderReader {
-    private static final String NAME_VERSION = "$Version";
+    private static final String NAME_DOMAIN = "$Domain";
 
     private static final String NAME_PATH = "$Path";
 
-    private static final String NAME_DOMAIN = "$Domain";
+    private static final String NAME_SET_ACCESS_RESTRICTED = "httpOnly";
 
     private static final String NAME_SET_COMMENT = "comment";
 
@@ -61,18 +61,18 @@ public class CookieReader extends HeaderReader {
 
     private static final String NAME_SET_SECURE = "secure";
 
-    private static final String NAME_SET_ACCESS_RESTRICTED = "httpOnly";
-
     private static final String NAME_SET_VERSION = "version";
 
-    /** The logger to use. */
-    private Logger logger;
+    private static final String NAME_VERSION = "$Version";
 
     /** The cached pair. Used by the readPair() method. */
-    private Parameter cachedPair;
+    private volatile Parameter cachedPair;
 
     /** The global cookie specification version. */
-    private int globalVersion;
+    private volatile int globalVersion;
+
+    /** The logger to use. */
+    private volatile Logger logger;
 
     /**
      * Constructor.

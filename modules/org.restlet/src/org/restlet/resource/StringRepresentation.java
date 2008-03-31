@@ -39,7 +39,7 @@ import org.restlet.data.MediaType;
 public class StringRepresentation extends StreamRepresentation {
 
     /** The string value. */
-    private CharSequence text;
+    private volatile CharSequence text;
 
     /**
      * Constructor. The following metadata are used by default: "text/plain"

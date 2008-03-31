@@ -175,6 +175,8 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
      * performance across calls using the same schema (package).
      */
     private class Unmarshaller {
+        private final String pkg;
+
         // Use thread identity to preserve safety of access to unmarshallers.
         private final ThreadLocal<javax.xml.bind.Unmarshaller> unmarshaller = new ThreadLocal<javax.xml.bind.Unmarshaller>() {
             @Override
@@ -190,8 +192,6 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
                 return m;
             }
         };
-
-        private final String pkg;
 
         // This is a factory class.
         Unmarshaller(String pkg) {
@@ -308,37 +308,26 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
         return result;
     }
 
-    /** The wrapped Java object. */
-    private T object;
-
     /**
      * The list of Java package names that contain schema derived class and/or
      * Java to schema (JAXB-annotated) mapped classes.
      */
-    private String contextPath;
-
-    /** The JAXB validation event handler. */
-    private ValidationEventHandler validationEventHandler;
-
-    /** The source XML representation. */
-    private Representation xmlRepresentation;
+    private volatile String contextPath;
 
     /**
      * Indicates if the resulting XML data should be formatted with line breaks
      * and indentation. Defaults to false.
      */
-    private boolean formattedOutput;
+    private volatile boolean formattedOutput;
 
-    /**
-     * Creates a JAXB representation from an existing JAXB content tree with
-     * {@link MediaType#APPLICATION_XML}.
-     * 
-     * @param object
-     *                The Java object.
-     */
-    public JaxbRepresentation(T object) {
-        this(MediaType.APPLICATION_XML, object);
-    }
+    /** The wrapped Java object. */
+    private volatile T object;
+
+    /** The JAXB validation event handler. */
+    private volatile ValidationEventHandler validationEventHandler;
+
+    /** The source XML representation. */
+    private volatile Representation xmlRepresentation;
 
     /**
      * Creates a JAXB representation from an existing JAXB content tree.
@@ -355,6 +344,47 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
                 .getName() : null;
         this.validationEventHandler = null;
         this.xmlRepresentation = null;
+    }
+
+    /**
+     * Creates a new JAXB representation, converting the input XML into a Java
+     * content tree. The XML is validated.
+     * 
+     * @param xmlRepresentation
+     *                The XML wrapped in a representation.
+     * @param type
+     *                The type to convert to.
+     * 
+     * @throws JAXBException
+     *                 If the incoming XML does not validate against the schema.
+     * @throws IOException
+     *                 If unmarshalling XML fails.
+     */
+    @SuppressWarnings("unchecked")
+    public JaxbRepresentation(Representation xmlRepresentation, Class<T> type) {
+        this(xmlRepresentation, type.getPackage().getName(), null);
+    }
+
+    /**
+     * Creates a new JAXB representation, converting the input XML into a Java
+     * content tree. The XML is validated.
+     * 
+     * @param xmlRepresentation
+     *                The XML wrapped in a representation.
+     * @param type
+     *                The type to convert to.
+     * @param validationHandler
+     *                A handler for dealing with validation failures.
+     * 
+     * @throws JAXBException
+     *                 If the incoming XML does not validate against the schema.
+     * @throws IOException
+     *                 If unmarshalling XML fails.
+     */
+    @SuppressWarnings("unchecked")
+    public JaxbRepresentation(Representation xmlRepresentation, Class<T> type,
+            ValidationEventHandler validationHandler) {
+        this(xmlRepresentation, type.getPackage().getName(), validationHandler);
     }
 
     /**
@@ -405,44 +435,14 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
     }
 
     /**
-     * Creates a new JAXB representation, converting the input XML into a Java
-     * content tree. The XML is validated.
+     * Creates a JAXB representation from an existing JAXB content tree with
+     * {@link MediaType#APPLICATION_XML}.
      * 
-     * @param xmlRepresentation
-     *                The XML wrapped in a representation.
-     * @param type
-     *                The type to convert to.
-     * 
-     * @throws JAXBException
-     *                 If the incoming XML does not validate against the schema.
-     * @throws IOException
-     *                 If unmarshalling XML fails.
+     * @param object
+     *                The Java object.
      */
-    @SuppressWarnings("unchecked")
-    public JaxbRepresentation(Representation xmlRepresentation, Class<T> type) {
-        this(xmlRepresentation, type.getPackage().getName(), null);
-    }
-
-    /**
-     * Creates a new JAXB representation, converting the input XML into a Java
-     * content tree. The XML is validated.
-     * 
-     * @param xmlRepresentation
-     *                The XML wrapped in a representation.
-     * @param type
-     *                The type to convert to.
-     * @param validationHandler
-     *                A handler for dealing with validation failures.
-     * 
-     * @throws JAXBException
-     *                 If the incoming XML does not validate against the schema.
-     * @throws IOException
-     *                 If unmarshalling XML fails.
-     */
-    @SuppressWarnings("unchecked")
-    public JaxbRepresentation(Representation xmlRepresentation, Class<T> type,
-            ValidationEventHandler validationHandler) {
-        this(xmlRepresentation, type.getPackage().getName(), validationHandler);
+    public JaxbRepresentation(T object) {
+        this(MediaType.APPLICATION_XML, object);
     }
 
     @Override

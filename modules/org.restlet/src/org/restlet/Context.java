@@ -43,7 +43,7 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Context {
-    private static ThreadLocal<Context> CURRENT = new ThreadLocal<Context>();
+    private static final ThreadLocal<Context> CURRENT = new ThreadLocal<Context>();
 
     /**
      * Returns the context associated to the current thread.

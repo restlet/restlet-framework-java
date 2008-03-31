@@ -34,19 +34,19 @@ import org.restlet.resource.StringRepresentation;
  */
 public abstract class Message {
     /** The modifiable attributes map. */
-    private Map<String, Object> attributes;
+    private volatile Map<String, Object> attributes;
 
     /** The payload of the message. */
-    private Representation entity;
+    private volatile Representation entity;
 
     /** The optional cached DOM representation. */
-    private DomRepresentation domRepresentation;
+    private volatile DomRepresentation domRepresentation;
 
     /** The optional cached Form. */
-    private Form form;
+    private volatile Form form;
 
     /** The optional cached SAX representation. */
-    private SaxRepresentation saxRepresentation;
+    private volatile SaxRepresentation saxRepresentation;
 
     /**
      * Constructor.

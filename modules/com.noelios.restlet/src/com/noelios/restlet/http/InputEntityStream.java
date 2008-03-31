@@ -27,10 +27,10 @@ import java.io.InputStream;
 public class InputEntityStream extends InputStream {
 
     /** The source stream. */
-    private InputStream source;
+    private volatile InputStream source;
 
     /** The total size that should be read from the source stream. */
-    private long availableSize;
+    private volatile long availableSize;
 
     /**
      * Constructor.

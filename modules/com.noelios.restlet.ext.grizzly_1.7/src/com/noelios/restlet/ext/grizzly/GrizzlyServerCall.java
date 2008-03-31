@@ -54,14 +54,14 @@ import com.sun.grizzly.util.SSLOutputWriter;
  */
 public class GrizzlyServerCall extends HttpServerCall {
 
-    /** The underlying socket channel. */
-    private final SocketChannel socketChannel;
+    /** The NIO byte buffer. */
+    private final ByteBuffer byteBuffer;
 
     /** Recycled stream. */
     private final ByteBufferInputStream requestStream;
 
-    /** The NIO byte buffer. */
-    private final ByteBuffer byteBuffer;
+    /** The underlying socket channel. */
+    private final SocketChannel socketChannel;
 
     /**
      * Constructor.
@@ -157,6 +157,40 @@ public class GrizzlyServerCall extends HttpServerCall {
         return this.socketChannel;
     }
 
+    @Override
+    public String getSslCipherSuite() {
+        Socket socket = this.socketChannel.socket();
+        if (socket instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) socket;
+            SSLSession sslSession = sslSocket.getSession();
+            if (sslSession != null) {
+                return sslSession.getCipherSuite();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Certificate> getSslClientCertificates() {
+        Socket socket = this.socketChannel.socket();
+        if (socket instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) socket;
+            SSLSession sslSession = sslSocket.getSession();
+            if (sslSession != null) {
+                try {
+                    List<Certificate> clientCertificates = Arrays
+                            .asList(sslSession.getPeerCertificates());
+
+                    return clientCertificates;
+                } catch (SSLPeerUnverifiedException e) {
+                    getLogger().log(Level.FINE,
+                            "Can't get the client certificates.", e);
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Return the underlying socket channel.
      * 
@@ -202,39 +236,5 @@ public class GrizzlyServerCall extends HttpServerCall {
         }
 
         buffer.clear();
-    }
-
-    @Override
-    public List<Certificate> getSslClientCertificates() {
-        Socket socket = this.socketChannel.socket();
-        if (socket instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) socket;
-            SSLSession sslSession = sslSocket.getSession();
-            if (sslSession != null) {
-                try {
-                    List<Certificate> clientCertificates = Arrays
-                            .asList(sslSession.getPeerCertificates());
-
-                    return clientCertificates;
-                } catch (SSLPeerUnverifiedException e) {
-                    getLogger().log(Level.FINE,
-                            "Can't get the client certificates.", e);
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public String getSslCipherSuite() {
-        Socket socket = this.socketChannel.socket();
-        if (socket instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) socket;
-            SSLSession sslSession = sslSocket.getSession();
-            if (sslSession != null) {
-                return sslSession.getCipherSuite();
-            }
-        }
-        return null;
     }
 }

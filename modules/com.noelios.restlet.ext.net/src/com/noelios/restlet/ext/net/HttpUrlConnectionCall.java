@@ -50,10 +50,10 @@ import com.noelios.restlet.http.HttpClientCall;
 public class HttpUrlConnectionCall extends HttpClientCall {
 
     /** The wrapped HTTP URL connection. */
-    private HttpURLConnection connection;
+    private volatile HttpURLConnection connection;
 
     /** Indicates if the response headers were added. */
-    private boolean responseHeadersAdded;
+    private volatile boolean responseHeadersAdded;
 
     /**
      * Constructor.

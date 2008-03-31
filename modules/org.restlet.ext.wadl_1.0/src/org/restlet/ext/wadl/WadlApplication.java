@@ -55,10 +55,10 @@ import org.w3c.dom.Node;
 public class WadlApplication extends Application {
 
     /** The WADL base reference. */
-    private Reference baseRef;
+    private volatile Reference baseRef;
 
     /** The router to Resource classes. */
-    private Router router;
+    private volatile Router router;
 
     /**
      * Creates an application described using a WADL document. Creates a router

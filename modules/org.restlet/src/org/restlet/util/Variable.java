@@ -62,19 +62,19 @@ public final class Variable {
     public static final int TYPE_WORD = 12;
 
     /** The default value to use if the key couldn't be found in the model. */
-    private String defaultValue;
+    private volatile String defaultValue;
 
     /**
      * Indicates if the value is fixed, in which case the "defaultValue"
      * property is always used.
      */
-    private boolean fixed;
+    private volatile boolean fixed;
 
     /** Indicates if the variable is required or optional. */
-    private boolean required;
+    private volatile boolean required;
 
     /** The type of variable. See TYPE_* constants. */
-    private int type;
+    private volatile int type;
 
     /**
      * Default constructor. Type is TYPE_ALL, default value is "", required is

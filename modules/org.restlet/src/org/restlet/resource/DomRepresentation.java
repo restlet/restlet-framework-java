@@ -45,10 +45,10 @@ import org.xml.sax.SAXException;
  */
 public class DomRepresentation extends XmlRepresentation {
     /** The wrapped DOM document. */
-    private Document dom;
+    private volatile Document dom;
 
     /** The source XML representation. */
-    private Representation xmlRepresentation;
+    private volatile Representation xmlRepresentation;
 
     /**
      * Constructor for an empty document.
@@ -86,6 +86,33 @@ public class DomRepresentation extends XmlRepresentation {
         this.xmlRepresentation = xmlRepresentation;
     }
 
+    /**
+     * Creates a new JAXP Transformer object that will be used to serialize this
+     * DOM. This method may be overridden in order to set custom properties on
+     * the Transformer.
+     * 
+     * @return The transformer to be used for serialization.
+     */
+    protected Transformer createTransformer() throws IOException {
+        try {
+            Transformer transformer = TransformerFactory.newInstance()
+                    .newTransformer();
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+
+            if (getDocument().getDoctype() != null) {
+                transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
+                        getDocument().getDoctype().getSystemId());
+                transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
+                        getDocument().getDoctype().getPublicId());
+            }
+
+            return transformer;
+        } catch (TransformerConfigurationException tce) {
+            throw new IOException("Couldn't write the XML representation: "
+                    + tce.getMessage());
+        }
+    }
+
     @Override
     public Object evaluate(String expression, QName returnType)
             throws Exception {
@@ -118,33 +145,6 @@ public class DomRepresentation extends XmlRepresentation {
         }
 
         return this.dom;
-    }
-
-    /**
-     * Creates a new JAXP Transformer object that will be used to serialize this
-     * DOM. This method may be overridden in order to set custom properties on
-     * the Transformer.
-     * 
-     * @return The transformer to be used for serialization.
-     */
-    protected Transformer createTransformer() throws IOException {
-        try {
-            Transformer transformer = TransformerFactory.newInstance()
-                    .newTransformer();
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-
-            if (getDocument().getDoctype() != null) {
-                transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
-                        getDocument().getDoctype().getSystemId());
-                transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
-                        getDocument().getDoctype().getPublicId());
-            }
-
-            return transformer;
-        } catch (TransformerConfigurationException tce) {
-            throw new IOException("Couldn't write the XML representation: "
-                    + tce.getMessage());
-        }
     }
 
     /**

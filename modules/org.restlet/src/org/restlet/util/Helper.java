@@ -46,7 +46,7 @@ public abstract class Helper<T extends Restlet> {
     /**
      * The helped Restlet.
      */
-    private T helped;
+    private volatile T helped;
 
     /**
      * Constructor.

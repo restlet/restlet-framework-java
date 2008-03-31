@@ -34,7 +34,7 @@ import org.restlet.util.ByteUtils;
  */
 public class ReadableRepresentation extends ChannelRepresentation {
     /** Obtain a suitable logger. */
-    private static Logger logger = Logger
+    private static final Logger logger = Logger
             .getLogger(ReadableRepresentation.class.getCanonicalName());
 
     /** The representation's input stream. */
@@ -81,16 +81,6 @@ public class ReadableRepresentation extends ChannelRepresentation {
     }
 
     /**
-     * Sets the readable channel.
-     * 
-     * @param channel
-     *                The readable channel.
-     */
-    public void setChannel(ReadableByteChannel channel) {
-        this.channel = channel;
-    }
-
-    /**
      * Closes and releases the readable channel.
      */
     @Override
@@ -106,6 +96,16 @@ public class ReadableRepresentation extends ChannelRepresentation {
             this.channel = null;
         }
         super.release();
+    }
+
+    /**
+     * Sets the readable channel.
+     * 
+     * @param channel
+     *                The readable channel.
+     */
+    public void setChannel(ReadableByteChannel channel) {
+        this.channel = channel;
     }
 
     @Override

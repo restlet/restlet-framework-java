@@ -30,20 +30,20 @@ public class Text {
     /**
      * The content type.
      */
-    private MediaType type;
+    private volatile MediaType type;
 
     /**
      * The content.
      */
-    private String content;
+    private volatile String content;
 
     /**
      * Constructor.
      * 
      * @param type
-     *            The content type.
+     *                The content type.
      * @param content
-     *            The content.
+     *                The content.
      */
     public Text(MediaType type, String content) {
         this.type = type;
@@ -54,7 +54,7 @@ public class Text {
      * Constructor.
      * 
      * @param type
-     *            The content type.
+     *                The content type.
      */
     public Text(MediaType type) {
         this(type, null);
@@ -73,7 +73,7 @@ public class Text {
      * Sets the content type.
      * 
      * @param type
-     *            The content type.
+     *                The content type.
      */
     public void setType(MediaType type) {
         this.type = type;
@@ -92,7 +92,7 @@ public class Text {
      * Sets the content.
      * 
      * @param content
-     *            The content.
+     *                The content.
      */
     public void setContent(String content) {
         this.content = content;

@@ -62,11 +62,11 @@ public class RowSetRepresentation extends OutputRepresentation {
         return result;
     }
 
-    /** Inner WebRowSet Instance. */
-    private WebRowSet webRowSet;
-
     /** JdbcResult instance that gives access to the resultSet. */
-    private JdbcResult jdbcResult;
+    private volatile JdbcResult jdbcResult;
+
+    /** Inner WebRowSet Instance. */
+    private volatile WebRowSet webRowSet;
 
     /**
      * Constructor.

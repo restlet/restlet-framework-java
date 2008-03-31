@@ -29,22 +29,22 @@ import org.restlet.data.Reference;
  */
 public class Link {
     /** Contains the link's IRI. */
-    private Reference href;
+    private volatile Reference href;
 
     /** Indicates the link's relation type */
-    private Relation rel;
+    private volatile Relation rel;
 
     /** Advisory media type. */
-    private MediaType type;
+    private volatile MediaType type;
 
     /** Language of the resource pointed to by the href attribute. */
-    private Language hrefLang;
+    private volatile Language hrefLang;
 
     /** Human-readable information about the link. */
-    private String title;
+    private volatile String title;
 
     /** Advisory length of the linked content in octets. */
-    private long length;
+    private volatile long length;
 
     /**
      * Constructor.
@@ -71,7 +71,7 @@ public class Link {
      * Sets the link's IRI.
      * 
      * @param href
-     *            The link's IRI.
+     *                The link's IRI.
      */
     public void setHref(Reference href) {
         this.href = href;
@@ -90,7 +90,7 @@ public class Link {
      * Sets the link's relation type.
      * 
      * @param rel
-     *            The link's relation type.
+     *                The link's relation type.
      */
     public void setRel(Relation rel) {
         this.rel = rel;
@@ -109,7 +109,7 @@ public class Link {
      * Sets the advisoty media type.
      * 
      * @param type
-     *            The advisoty media type.
+     *                The advisoty media type.
      */
     public void setType(MediaType type) {
         this.type = type;
@@ -128,7 +128,8 @@ public class Link {
      * Sets the language of the resource pointed to by the href attribute.
      * 
      * @param hrefLang
-     *            The language of the resource pointed to by the href attribute.
+     *                The language of the resource pointed to by the href
+     *                attribute.
      */
     public void setHrefLang(Language hrefLang) {
         this.hrefLang = hrefLang;
@@ -147,7 +148,7 @@ public class Link {
      * Sets the human-readable information about the link.
      * 
      * @param title
-     *            The human-readable information about the link.
+     *                The human-readable information about the link.
      */
     public void setTitle(String title) {
         this.title = title;
@@ -166,7 +167,7 @@ public class Link {
      * Sets the advisory length of the linked content in octets.
      * 
      * @param length
-     *            The advisory length of the linked content in octets.
+     *                The advisory length of the linked content in octets.
      */
     public void setLength(long length) {
         this.length = length;

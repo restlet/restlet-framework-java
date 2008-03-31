@@ -90,7 +90,7 @@ public final class ChallengeScheme extends Metadata {
     }
 
     /** The technical name. */
-    private String technicalName;
+    private volatile String technicalName;
 
     /**
      * Constructor.

@@ -59,13 +59,13 @@ import com.noelios.restlet.http.HttpClientCall;
 public class HttpMethodCall extends HttpClientCall {
 
     /** The associated HTTP client. */
-    private HttpClientHelper clientHelper;
+    private volatile HttpClientHelper clientHelper;
 
     /** The wrapped HTTP method. */
-    private HttpMethod httpMethod;
+    private volatile HttpMethod httpMethod;
 
     /** Indicates if the response headers were added. */
-    private boolean responseHeadersAdded;
+    private volatile boolean responseHeadersAdded;
 
     /**
      * Constructor.

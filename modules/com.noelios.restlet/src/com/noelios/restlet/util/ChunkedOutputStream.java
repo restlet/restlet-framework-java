@@ -37,17 +37,27 @@ public class ChunkedOutputStream extends OutputStream {
 
     private static final int DEFAULT_CHUNK_SIZE = 2048;
 
-    /** The destination output stream. */
-    private final OutputStream destination;
-
     /** The byte buffer. */
     private final byte[] buffer;
 
     /** The number of bytes written. */
-    private int bytesWritten;
+    private volatile int bytesWritten;
 
     /** Indicate if the stream is closed. */
-    private boolean closed;
+    private volatile boolean closed;
+
+    /** The destination output stream. */
+    private final OutputStream destination;
+
+    /**
+     * Convenience constructor to use a default chunk size size of 2048.
+     * 
+     * @param destination
+     * @see #ChunkedOutputStream(OutputStream, int)
+     */
+    public ChunkedOutputStream(OutputStream destination) {
+        this(destination, DEFAULT_CHUNK_SIZE);
+    }
 
     /**
      * @param destination
@@ -63,21 +73,10 @@ public class ChunkedOutputStream extends OutputStream {
     }
 
     /**
-     * Convenience constructor to use a default chunk size size of 2048.
-     * 
-     * @param destination
-     * @see #ChunkedOutputStream(OutputStream, int)
+     * @return True if the current chunk is full.
      */
-    public ChunkedOutputStream(OutputStream destination) {
-        this(destination, DEFAULT_CHUNK_SIZE);
-    }
-
-    @Override
-    public void write(int b) throws IOException {
-        if (chunkFull()) {
-            writeChunk();
-        }
-        buffer[bytesWritten++] = (byte) b;
+    private boolean chunkFull() {
+        return bytesWritten == buffer.length;
     }
 
     /**
@@ -102,6 +101,31 @@ public class ChunkedOutputStream extends OutputStream {
     public void flush() throws IOException {
         writeChunk();
         destination.flush();
+    }
+
+    /**
+     * Reset the internal buffer.
+     */
+    private void reset() {
+        bytesWritten = 0;
+    }
+
+    @Override
+    public void write(int b) throws IOException {
+        if (chunkFull()) {
+            writeChunk();
+        }
+        buffer[bytesWritten++] = (byte) b;
+    }
+
+    /**
+     * Write the buffer contents.
+     * 
+     * @throws IOException
+     */
+    private void writeBuffer() throws IOException {
+        destination.write(buffer, 0, bytesWritten);
+        HttpUtils.writeCRLF(destination);
     }
 
     /**
@@ -136,29 +160,5 @@ public class ChunkedOutputStream extends OutputStream {
     private void writePosition() throws IOException {
         destination.write(Integer.toHexString(bytesWritten).getBytes());
         HttpUtils.writeCRLF(destination);
-    }
-
-    /**
-     * Write the buffer contents.
-     * 
-     * @throws IOException
-     */
-    private void writeBuffer() throws IOException {
-        destination.write(buffer, 0, bytesWritten);
-        HttpUtils.writeCRLF(destination);
-    }
-
-    /**
-     * Reset the internal buffer.
-     */
-    private void reset() {
-        bytesWritten = 0;
-    }
-
-    /**
-     * @return True if the current chunk is full.
-     */
-    private boolean chunkFull() {
-        return bytesWritten == buffer.length;
     }
 }

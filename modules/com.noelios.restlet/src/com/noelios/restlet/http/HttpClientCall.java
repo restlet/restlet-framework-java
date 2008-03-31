@@ -178,7 +178,7 @@ public abstract class HttpClientCall extends HttpCall {
     }
 
     /** The parent HTTP client helper. */
-    private HttpClientHelper helper;
+    private volatile HttpClientHelper helper;
 
     /**
      * Constructor setting the request address to the local host.

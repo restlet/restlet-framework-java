@@ -1,4 +1,5 @@
 package org.restlet.example.book.restlet.ch4;
+
 import org.restlet.Client;
 import org.restlet.Restlet;
 import org.restlet.Server;
@@ -14,6 +15,7 @@ public class TestPost {
     public static void main(String[] args) throws Exception {
 
         Restlet restlet = new Restlet() {
+            @Override
             public void handle(Request request, Response response) {
                 System.out.println(request.getMethod());
                 System.out.println(request.isEntityAvailable());
@@ -27,7 +29,8 @@ public class TestPost {
         Client client = new Client(Protocol.HTTP);
         // Instantiates a request with a method and the resource's URI
         Request request = new Request(Method.POST, "http://localhost:8080");
-        request.setEntity(new StringRepresentation("lkkjlljllkj", MediaType.APPLICATION_FLASH));
+        request.setEntity(new StringRepresentation("lkkjlljllkj",
+                MediaType.APPLICATION_FLASH));
 
         // Sends the request and gets the response
         Response response = client.handle(request);

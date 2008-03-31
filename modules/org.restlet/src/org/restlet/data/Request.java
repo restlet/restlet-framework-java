@@ -72,34 +72,34 @@ public class Request extends Message {
     }
 
     /** The authentication response sent by a client to an origin server. */
-    private ChallengeResponse challengeResponse;
+    private volatile ChallengeResponse challengeResponse;
 
     /** The client-specific information. */
-    private ClientInfo clientInfo;
+    private volatile ClientInfo clientInfo;
 
     /** The condition data. */
-    private Conditions conditions;
+    private volatile Conditions conditions;
 
     /** Indicates if the call came over a confidential channel. */
-    private boolean confidential;
+    private volatile boolean confidential;
 
     /** The cookies provided by the client. */
-    private Series<Cookie> cookies;
+    private volatile Series<Cookie> cookies;
 
     /** The host reference. */
-    private Reference hostRef;
+    private volatile Reference hostRef;
 
     /** The method. */
-    private Method method;
+    private volatile Method method;
 
     /** The referrer reference. */
-    private Reference referrerRef;
+    private volatile Reference referrerRef;
 
     /** The resource reference. */
-    private Reference resourceRef;
+    private volatile Reference resourceRef;
 
     /** The application root reference. */
-    private Reference rootRef;
+    private volatile Reference rootRef;
 
     /**
      * Constructor.

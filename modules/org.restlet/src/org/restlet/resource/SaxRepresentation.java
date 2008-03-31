@@ -54,7 +54,7 @@ import org.xml.sax.InputSource;
 public class SaxRepresentation extends XmlRepresentation {
 
     /** The SAX source. */
-    private SAXSource source;
+    private volatile SAXSource source;
 
     /**
      * Constructor.

@@ -46,7 +46,7 @@ import org.restlet.resource.Representation;
  */
 public class WrapperRepresentation extends Representation {
     /** The wrapped representation. */
-    private Representation wrappedRepresentation;
+    private final Representation wrappedRepresentation;
 
     /**
      * Constructor.

@@ -67,7 +67,7 @@ public abstract class HttpServerCall extends HttpCall {
     }
 
     /** Indicates if the "host" header was already parsed. */
-    private boolean hostParsed;
+    private volatile boolean hostParsed;
 
     /**
      * Constructor.

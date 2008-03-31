@@ -31,26 +31,26 @@ import org.restlet.util.Engine;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class ClientInfo {
-    /** The IP addresses. */
-    private List<String> addresses;
-
-    /** The agent name. */
-    private String agent;
-
-    /** The port number. */
-    private int port;
-
     /** The character set preferences. */
-    private List<Preference<CharacterSet>> acceptedCharacterSets;
+    private volatile List<Preference<CharacterSet>> acceptedCharacterSets;
 
     /** The encoding preferences. */
-    private List<Preference<Encoding>> acceptedEncodings;
+    private volatile List<Preference<Encoding>> acceptedEncodings;
 
     /** The language preferences. */
-    private List<Preference<Language>> acceptedLanguages;
+    private volatile List<Preference<Language>> acceptedLanguages;
 
     /** The media preferences. */
-    private List<Preference<MediaType>> acceptedMediaTypes;
+    private volatile List<Preference<MediaType>> acceptedMediaTypes;
+
+    /** The IP addresses. */
+    private volatile List<String> addresses;
+
+    /** The agent name. */
+    private volatile String agent;
+
+    /** The port number. */
+    private volatile int port;
 
     /**
      * Constructor.

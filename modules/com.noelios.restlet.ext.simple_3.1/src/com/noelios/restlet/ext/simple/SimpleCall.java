@@ -54,15 +54,15 @@ public class SimpleCall extends HttpServerCall {
     /**
      * Simple Request.
      */
-    private Request request;
+    private volatile Request request;
 
     /** Indicates if the request headers were parsed and added. */
-    private boolean requestHeadersAdded;
+    private volatile boolean requestHeadersAdded;
 
     /**
      * Simple Response.
      */
-    private Response response;
+    private volatile Response response;
 
     /**
      * Constructs this class with the specified {@link simple.http.Request} and

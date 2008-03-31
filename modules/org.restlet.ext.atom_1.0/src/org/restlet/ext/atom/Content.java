@@ -29,13 +29,13 @@ import org.restlet.resource.Representation;
  */
 public class Content {
     /** Representation for inline content. */
-    private Representation inlineContent;
+    private volatile Representation inlineContent;
 
     /** Reference to the external representation. */
-    private Reference externalRef;
+    private volatile Reference externalRef;
 
     /** Expected media type of the external content. */
-    private MediaType externalType;
+    private volatile MediaType externalType;
 
     /**
      * Constructor.
@@ -77,7 +77,7 @@ public class Content {
      * Sets the representation for inline content.
      * 
      * @param inlineContent
-     *            The representation for inline content.
+     *                The representation for inline content.
      */
     public void setInlineContent(Representation inlineContent) {
         this.inlineContent = inlineContent;
@@ -96,7 +96,7 @@ public class Content {
      * Sets the reference to the external representation.
      * 
      * @param externalRef
-     *            The reference to the external representation.
+     *                The reference to the external representation.
      */
     public void setExternalRef(Reference externalRef) {
         this.externalRef = externalRef;
@@ -115,7 +115,7 @@ public class Content {
      * Sets the expected media type of the external content.
      * 
      * @param externalType
-     *            The expected media type of the external content.
+     *                The expected media type of the external content.
      */
     public void setExternalType(MediaType externalType) {
         this.externalType = externalType;

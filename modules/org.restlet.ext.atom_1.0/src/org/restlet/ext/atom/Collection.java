@@ -34,22 +34,22 @@ public class Collection {
     /**
      * The parent workspace.
      */
-    private Workspace workspace;
+    private volatile Workspace workspace;
 
     /**
      * The title.
      */
-    private String title;
+    private volatile String title;
 
     /**
      * The hypertext reference.
      */
-    private Reference href;
+    private volatile Reference href;
 
     /**
      * The type of members.
      */
-    private MemberType memberType;
+    private volatile MemberType memberType;
 
     /**
      * Constructor.

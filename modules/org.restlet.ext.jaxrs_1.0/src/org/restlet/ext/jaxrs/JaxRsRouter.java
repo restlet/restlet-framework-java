@@ -132,13 +132,13 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * This set must only changed by adding a root resource class to this
      * JaxRsRouter.
      */
-    private Set<RootResourceClass> rootResourceClasses = new HashSet<RootResourceClass>();
+    private volatile Set<RootResourceClass> rootResourceClasses = new HashSet<RootResourceClass>();
 
-    private RoleChecker roleChecker;
+    private volatile RoleChecker roleChecker;
 
-    private MessageBodyReaderSet messageBodyReaders = new MessageBodyReaderSet();
+    private volatile MessageBodyReaderSet messageBodyReaders = new MessageBodyReaderSet();
 
-    private MessageBodyWriterSet messageBodyWriters = new MessageBodyWriterSet();
+    private volatile MessageBodyWriterSet messageBodyWriters = new MessageBodyWriterSet();
 
     /**
      * This {@link Set} contains the available
@@ -148,7 +148,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      */
     private final Collection<ContextResolver<?>> contextResolvers = new HashSet<ContextResolver<?>>();
 
-    private WrapperFactory wrapperFactory;
+    private volatile WrapperFactory wrapperFactory;
 
     /**
      * Creates a new JaxRsRouter with the {@link ApplicationConfig}. You can

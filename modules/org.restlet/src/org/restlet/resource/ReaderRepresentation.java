@@ -34,8 +34,8 @@ import org.restlet.util.ByteUtils;
  */
 public class ReaderRepresentation extends CharacterRepresentation {
     /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(ReaderRepresentation.class
-            .getCanonicalName());
+    private static final Logger logger = Logger
+            .getLogger(ReaderRepresentation.class.getCanonicalName());
 
     /** The representation's reader. */
     private volatile Reader reader;

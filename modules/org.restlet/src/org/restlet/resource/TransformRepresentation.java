@@ -105,22 +105,22 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /** The JAXP transformer output properties. */
-    private Map<String, String> outputProperties;
+    private volatile Map<String, String> outputProperties;
 
     /** The JAXP transformer parameters. */
-    private Map<String, Object> parameters;
+    private volatile Map<String, Object> parameters;
 
     /** The source representation to transform. */
-    private Representation sourceRepresentation;
+    private volatile Representation sourceRepresentation;
 
     /** The template to be used and reused. */
-    private Templates templates;
+    private volatile Templates templates;
 
     /** The XSLT transform sheet to apply to message entities. */
-    private Representation transformSheet;
+    private volatile Representation transformSheet;
 
     /** The URI resolver. */
-    private URIResolver uriResolver;
+    private volatile URIResolver uriResolver;
 
     /**
      * Constructor. Note that a default URI resolver will be created based on

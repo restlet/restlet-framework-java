@@ -26,18 +26,35 @@ package org.restlet.data;
  */
 public final class Protocol extends Metadata {
 
+    /** SMTP protocol. */
+    public static final Protocol SMTP = new Protocol("smtp", "SMTP",
+            "Simple Mail Transfer Protocol", 25);
+
+    /** SMTP with STARTTLS protocol (started with a plain socket). */
+    public static final Protocol SMTP_STARTTLS = new Protocol("smtp",
+            "SMTP_STARTTLS",
+            "Simple Mail Transfer Protocol (starting a TLS encryption)", 25);
+
+    /** SMTPS protocol (via SSL/TLS socket). */
+    public static final Protocol SMTPS = new Protocol("smtps", "SMTPS",
+            "Simple Mail Transfer Protocol (Secure)", 465);
+
     /** Indicates that the port number is undefined. */
     public static final int UNKNOWN_PORT = -1;
 
-    /** All protocols wildcard. */
-    public static final Protocol ALL = new Protocol("all", "ALL",
-            "Wildcard for all protocols", UNKNOWN_PORT);
+    /** Local Web Archive access protocol. */
+    public static final Protocol WAR = new Protocol("war", "WAR",
+            "Web Archive Access Protocol", UNKNOWN_PORT);
 
     /**
      * AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS.
      */
     public static final Protocol AJP = new Protocol("ajp", "AJP",
             "Apache Jakarta Protocol", 8009);
+
+    /** All protocols wildcard. */
+    public static final Protocol ALL = new Protocol("all", "ALL",
+            "Wildcard for all protocols", UNKNOWN_PORT);
 
     /**
      * CLAP (ClassLoader Access Protocol) is a custom scheme to access to
@@ -51,10 +68,6 @@ public final class Protocol extends Metadata {
      */
     public static final Protocol CLAP = new Protocol("clap", "CLAP",
             "Class Loader Access Protocol", UNKNOWN_PORT);
-
-    /** Local Web Archive access protocol. */
-    public static final Protocol WAR = new Protocol("war", "WAR",
-            "Web Archive Access Protocol", UNKNOWN_PORT);
 
     /**
      * FILE is a standard scheme to access to representations stored in the file
@@ -109,19 +122,6 @@ public final class Protocol extends Metadata {
     public static final Protocol RIAP = new Protocol("riap", "RIAP",
             "Restlet Internal Access Protocol", UNKNOWN_PORT);
 
-    /** SMTP protocol. */
-    public static final Protocol SMTP = new Protocol("smtp", "SMTP",
-            "Simple Mail Transfer Protocol", 25);
-
-    /** SMTP with STARTTLS protocol (started with a plain socket). */
-    public static final Protocol SMTP_STARTTLS = new Protocol("smtp",
-            "SMTP_STARTTLS",
-            "Simple Mail Transfer Protocol (starting a TLS encryption)", 25);
-
-    /** SMTPS protocol (via SSL/TLS socket). */
-    public static final Protocol SMTPS = new Protocol("smtps", "SMTPS",
-            "Simple Mail Transfer Protocol (Secure)", 465);
-
     /**
      * Creates the protocol associated to a URI scheme name. If an existing
      * constant exists then it is returned, otherwise a new instance is created.
@@ -167,11 +167,11 @@ public final class Protocol extends Metadata {
         return result;
     }
 
-    /** The scheme name. */
-    private String schemeName;
-
     /** The default port if known or -1. */
-    private int defaultPort;
+    private volatile int defaultPort;
+
+    /** The scheme name. */
+    private volatile String schemeName;
 
     /**
      * Constructor.

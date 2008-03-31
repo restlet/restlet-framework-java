@@ -30,27 +30,27 @@ public class Person {
     /**
      * Human-readable name.
      */
-    private String name;
+    private volatile String name;
 
     /**
      * IRI associated with the person.
      */
-    private Reference uri;
+    private volatile Reference uri;
 
     /**
      * Email address associated with the person.
      */
-    private String email;
+    private volatile String email;
 
     /**
      * Constructor.
      * 
      * @param name
-     *            The name.
+     *                The name.
      * @param uri
-     *            The URI reference.
+     *                The URI reference.
      * @param email
-     *            The email address.
+     *                The email address.
      */
     public Person(String name, Reference uri, String email) {
         this.name = name;
@@ -96,7 +96,7 @@ public class Person {
      * Sets the human-readable name.
      * 
      * @param name
-     *            The human-readable name.
+     *                The human-readable name.
      */
     public void setName(String name) {
         this.name = name;
@@ -106,7 +106,7 @@ public class Person {
      * Sets the IRI associated with the person.
      * 
      * @param uri
-     *            The IRI associated with the person.
+     *                The IRI associated with the person.
      */
     public void setUri(Reference uri) {
         this.uri = uri;
@@ -116,7 +116,7 @@ public class Person {
      * Sets the email address.
      * 
      * @param email
-     *            The email address.
+     *                The email address.
      */
     public void setEmail(String email) {
         this.email = email;

@@ -51,13 +51,13 @@ import com.noelios.restlet.http.HttpServerCall;
  */
 public class ServletCall extends HttpServerCall {
     /** The HTTP Servlet request to wrap. */
-    private HttpServletRequest request;
+    private volatile HttpServletRequest request;
 
     /** The HTTP Servlet response to wrap. */
-    private HttpServletResponse response;
+    private volatile HttpServletResponse response;
 
     /** The request headers. */
-    private Series<Parameter> requestHeaders;
+    private volatile Series<Parameter> requestHeaders;
 
     /**
      * Constructor.

@@ -57,7 +57,18 @@ public class FileRepresentation extends Representation {
     }
 
     /** The file handle. */
-    private File file;
+    private volatile File file;
+
+    /**
+     * Constructor that does not set an expiration date for {@code file}
+     * 
+     * @param file
+     * @param mediaType
+     * @see #FileRepresentation(File, MediaType, int)
+     */
+    public FileRepresentation(File file, MediaType mediaType) {
+        this(file, mediaType, -1);
+    }
 
     /**
      * Constructor. If a positive "timeToLive" parameter is given, then the
@@ -90,6 +101,17 @@ public class FileRepresentation extends Representation {
     }
 
     /**
+     * Constructor that does not set an expiration date for {@code path}
+     * 
+     * @param path
+     * @param mediaType
+     * @see #FileRepresentation(String, MediaType, int)
+     */
+    public FileRepresentation(String path, MediaType mediaType) {
+        this(path, mediaType, -1);
+    }
+
+    /**
      * Constructor.
      * 
      * @param path
@@ -102,28 +124,6 @@ public class FileRepresentation extends Representation {
      */
     public FileRepresentation(String path, MediaType mediaType, int timeToLive) {
         this(createFile(path), mediaType, timeToLive);
-    }
-
-    /**
-     * Constructor that does not set an expiration date for {@code file}
-     * 
-     * @param file
-     * @param mediaType
-     * @see #FileRepresentation(File, MediaType, int)
-     */
-    public FileRepresentation(File file, MediaType mediaType) {
-        this(file, mediaType, -1);
-    }
-
-    /**
-     * Constructor that does not set an expiration date for {@code path}
-     * 
-     * @param path
-     * @param mediaType
-     * @see #FileRepresentation(String, MediaType, int)
-     */
-    public FileRepresentation(String path, MediaType mediaType) {
-        this(path, mediaType, -1);
     }
 
     /**

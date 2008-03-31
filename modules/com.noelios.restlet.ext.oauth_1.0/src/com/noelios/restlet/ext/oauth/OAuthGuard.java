@@ -18,8 +18,6 @@
 
 package com.noelios.restlet.ext.oauth;
 
-import java.util.logging.Logger;
-
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthMessage;
 
@@ -42,9 +40,7 @@ public class OAuthGuard extends Guard {
     public static final ChallengeScheme SCHEME = new ChallengeScheme(
             "HTTP_OAuth", "OAuth");
 
-    static final Logger logger = Logger.getLogger(OAuthGuard.class.getName());
-
-    private OAuthProvider provider;
+    private volatile OAuthProvider provider;
 
     /**
      * Constructor.

@@ -73,28 +73,28 @@ public class Response extends Message {
     }
 
     /** The set of methods allowed on the requested resource. */
-    private Set<Method> allowedMethods;
+    private volatile Set<Method> allowedMethods;
 
     /** The authentication request sent by an origin server to a client. */
-    private ChallengeRequest challengeRequest;
+    private volatile ChallengeRequest challengeRequest;
 
     /** The cookie settings provided by the server. */
-    private Series<CookieSetting> cookieSettings;
+    private volatile Series<CookieSetting> cookieSettings;
 
     /** The set of dimensions on which the response entity may vary. */
-    private Set<Dimension> dimensions;
+    private volatile Set<Dimension> dimensions;
 
     /** The reference used for redirections or creations. */
-    private Reference locationRef;
+    private volatile Reference locationRef;
 
     /** The associated request. */
-    private Request request;
+    private volatile Request request;
 
     /** The server-specific information. */
-    private ServerInfo serverInfo;
+    private volatile ServerInfo serverInfo;
 
     /** The status. */
-    private Status status;
+    private volatile Status status;
 
     /**
      * Constructor.

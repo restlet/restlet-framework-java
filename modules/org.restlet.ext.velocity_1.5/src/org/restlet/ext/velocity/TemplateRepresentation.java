@@ -40,27 +40,14 @@ import org.restlet.resource.OutputRepresentation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TemplateRepresentation extends OutputRepresentation {
-    /** The template's name. */
-    private String templateName;
+    /** The template's data model. */
+    private volatile Map<String, Object> dataModel;
 
     /** The Velocity engine. */
-    private VelocityEngine engine;
+    private volatile VelocityEngine engine;
 
-    /** The template's data model. */
-    private Map<String, Object> dataModel;
-
-    /**
-     * Constructor.
-     * 
-     * @param templateName
-     *                The Velocity template's name. The full path is resolved by
-     *                the configuration.
-     * @param mediaType
-     *                The representation's media type.
-     */
-    public TemplateRepresentation(String templateName, MediaType mediaType) {
-        this(templateName, new TreeMap<String, Object>(), mediaType);
-    }
+    /** The template's name. */
+    private volatile String templateName;
 
     /**
      * Constructor.
@@ -82,12 +69,16 @@ public class TemplateRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Returns the Velocity engine.
+     * Constructor.
      * 
-     * @return The Velocity engine.
+     * @param templateName
+     *                The Velocity template's name. The full path is resolved by
+     *                the configuration.
+     * @param mediaType
+     *                The representation's media type.
      */
-    public VelocityEngine getEngine() {
-        return this.engine;
+    public TemplateRepresentation(String templateName, MediaType mediaType) {
+        this(templateName, new TreeMap<String, Object>(), mediaType);
     }
 
     /**
@@ -97,6 +88,15 @@ public class TemplateRepresentation extends OutputRepresentation {
      */
     public Map<String, Object> getDataModel() {
         return this.dataModel;
+    }
+
+    /**
+     * Returns the Velocity engine.
+     * 
+     * @return The Velocity engine.
+     */
+    public VelocityEngine getEngine() {
+        return this.engine;
     }
 
     /**

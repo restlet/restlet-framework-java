@@ -26,14 +26,14 @@ import org.restlet.util.Engine;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Cookie extends Parameter {
-    /** The version number. */
-    private int version;
+    /** The domain name. */
+    private volatile String domain;
 
     /** The validity path. */
-    private String path;
+    private volatile String path;
 
-    /** The domain name. */
-    private String domain;
+    /** The version number. */
+    private volatile int version;
 
     /**
      * Constructor.

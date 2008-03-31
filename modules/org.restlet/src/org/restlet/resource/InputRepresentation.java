@@ -34,8 +34,8 @@ import org.restlet.util.ByteUtils;
  */
 public class InputRepresentation extends StreamRepresentation {
     /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(InputRepresentation.class
-            .getCanonicalName());
+    private static final Logger logger = Logger
+            .getLogger(InputRepresentation.class.getCanonicalName());
 
     /** The representation's stream. */
     private volatile InputStream stream;

@@ -42,17 +42,17 @@ import org.restlet.util.DateUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class Conditions {
-    /** The "if-modified-since" condition */
-    private Date modifiedSince;
-
-    /** The "if-unmodified-since" condition */
-    private Date unmodifiedSince;
-
     /** The "if-match" condition */
-    private List<Tag> match;
+    private volatile List<Tag> match;
+
+    /** The "if-modified-since" condition */
+    private volatile Date modifiedSince;
 
     /** The "if-none-match" condition */
-    private List<Tag> noneMatch;
+    private volatile List<Tag> noneMatch;
+
+    /** The "if-unmodified-since" condition */
+    private volatile Date unmodifiedSince;
 
     /**
      * Constructor.

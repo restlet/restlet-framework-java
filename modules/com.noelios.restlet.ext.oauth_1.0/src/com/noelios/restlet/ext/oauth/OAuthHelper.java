@@ -45,6 +45,9 @@ import com.noelios.restlet.authentication.AuthenticationHelper;
  */
 public class OAuthHelper extends AuthenticationHelper {
 
+    private static final Logger logger = Logger.getLogger(OAuthHelper.class
+            .getName());
+
     /**
      * Constructor.
      */
@@ -101,7 +104,7 @@ public class OAuthHelper extends AuthenticationHelper {
             }
         }
 
-        OAuthGuard.logger.fine("Got OAuth parameters " + parameters);
+        logger.fine("Got OAuth parameters " + parameters);
 
         return new ArrayList<OAuth.Parameter>(parameters);
     }

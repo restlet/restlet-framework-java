@@ -1,4 +1,5 @@
 package org.restlet.example.book.restlet.ch4;
+
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
@@ -18,9 +19,9 @@ public class SimpleHttpServerWithApplication {
             public synchronized Restlet createRoot() {
                 // Tiens le router récupère le contexte de l'application
                 Router router = new Router(getContext());
-                
-                Resource resource = new Resource(){
-                    
+
+                Resource resource = new Resource() {
+
                 };
 
                 // Creates a Restlet whose response to each request is "Hello,

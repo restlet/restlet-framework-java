@@ -78,16 +78,16 @@ public class StreamClientCall extends HttpClientCall {
     }
 
     /** The request entity output stream. */
-    private OutputStream requestEntityStream;
+    private volatile OutputStream requestEntityStream;
 
     /** The request output stream. */
-    private OutputStream requestStream;
+    private volatile OutputStream requestStream;
 
     /** The response input stream. */
-    private InputStream responseStream;
+    private volatile InputStream responseStream;
 
     /** The request socket */
-    private Socket socket;
+    private volatile Socket socket;
 
     /**
      * Constructor.

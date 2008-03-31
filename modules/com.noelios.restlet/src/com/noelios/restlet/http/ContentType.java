@@ -35,12 +35,12 @@ public class ContentType {
     /**
      * The content media type.
      */
-    private MediaType mediaType;
+    private volatile MediaType mediaType;
 
     /**
      * The content character set.
      */
-    private CharacterSet characterSet;
+    private volatile CharacterSet characterSet;
 
     /**
      * Constructor.

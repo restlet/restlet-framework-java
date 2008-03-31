@@ -81,10 +81,10 @@ public class RestletFrameworkServlet extends FrameworkServlet {
     private static final long serialVersionUID = 1L;
 
     /** The converter of Servlet calls into Restlet equivalents. */
-    private ServletConverter converter;
+    private volatile ServletConverter converter;
 
     /** The bean name of the target Restlet. */
-    private String targetRestletBeanName;
+    private volatile String targetRestletBeanName;
 
     @Override
     protected void doService(HttpServletRequest request,

@@ -118,19 +118,19 @@ public abstract class Representation extends Variant {
     }
 
     /** Indicates if the representation's content is available. */
-    private boolean available;
+    private volatile boolean available;
 
     /** Indicates if the representation is downloadable. */
-    private boolean downloadable;
+    private volatile boolean downloadable;
 
     /**
      * Indicates the suggested download file name for the representation's
      * content.
      */
-    private String downloadName;
+    private volatile String downloadName;
 
     /** Indicates if the representation's content is transient. */
-    private boolean isTransient;
+    private volatile boolean isTransient;
 
     /**
      * Default constructor.

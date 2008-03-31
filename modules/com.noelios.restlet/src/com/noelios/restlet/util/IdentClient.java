@@ -40,10 +40,10 @@ public class IdentClient {
     private static final int SO_TIMEOUT = 500;
 
     /** The remote host type. */
-    private String hostType;
+    private volatile String hostType;
 
     /** The user identifier. */
-    private String userIdentifier;
+    private volatile String userIdentifier;
 
     /**
      * Constructor.

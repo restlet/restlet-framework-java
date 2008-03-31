@@ -17,13 +17,13 @@ public class ReadableEntityChannel extends SelectableChannel implements
         ReadableByteChannel {
 
     /** The byte buffer remaining from previous read processing. */
-    private ByteBuffer remainingBuffer;
+    private volatile ByteBuffer remainingBuffer;
 
     /** The source channel. */
-    private SelectableChannel source;
+    private volatile SelectableChannel source;
 
     /** The total size that should be read from the source channel. */
-    private long availableSize;
+    private volatile long availableSize;
 
     /**
      * Constructor.

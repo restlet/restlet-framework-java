@@ -51,8 +51,9 @@ import org.restlet.util.Template;
  * patterns. Finally, you can modify the list of routes while handling incoming
  * calls as the delegation code is ensured to be thread-safe.
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part11">Tutorial: Routers and
- *      hierarchical URIs</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part11">Tutorial:
+ *      Routers and hierarchical URIs</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Router extends Restlet {
@@ -100,7 +101,7 @@ public class Router extends Restlet {
     public static final int RANDOM = 5;
 
     /** The default matching mode to use when selecting routes based on URIs. */
-    private int defaultMatchingMode;
+    private volatile int defaultMatchingMode;
 
     /** The default route tested if no other one was available. */
     private volatile Route defaultRoute;

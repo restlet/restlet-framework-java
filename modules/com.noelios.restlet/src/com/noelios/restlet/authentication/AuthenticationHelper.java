@@ -38,13 +38,13 @@ import org.restlet.util.Series;
 public abstract class AuthenticationHelper {
 
     /** The supported challenge scheme. */
-    private ChallengeScheme challengeScheme;
+    private volatile ChallengeScheme challengeScheme;
 
     /** Indicates if client side authentication is supported. */
-    private boolean clientSide;
+    private volatile boolean clientSide;
 
     /** Indicates if server side authentication is supported. */
-    private boolean serverSide;
+    private volatile boolean serverSide;
 
     /**
      * Constructor.
@@ -131,21 +131,6 @@ public abstract class AuthenticationHelper {
     }
 
     /**
-     * Formats the parameters of a challenge request, to be appended to the
-     * scheme technical name and realm.
-     * 
-     * @param sb
-     *                The string builder to update.
-     * @param parameters
-     *                The parameters to format.
-     * @param request
-     *                The challenger request.
-     */
-    public void formatParameters(StringBuilder sb,
-            Series<Parameter> parameters, ChallengeRequest request) {
-    }
-
-    /**
      * Formats a challenge response as raw credentials.
      * 
      * @param challenge
@@ -186,6 +171,21 @@ public abstract class AuthenticationHelper {
     public abstract void formatCredentials(StringBuilder sb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders);
+
+    /**
+     * Formats the parameters of a challenge request, to be appended to the
+     * scheme technical name and realm.
+     * 
+     * @param sb
+     *                The string builder to update.
+     * @param parameters
+     *                The parameters to format.
+     * @param request
+     *                The challenger request.
+     */
+    public void formatParameters(StringBuilder sb,
+            Series<Parameter> parameters, ChallengeRequest request) {
+    }
 
     /**
      * Returns the supported challenge scheme.

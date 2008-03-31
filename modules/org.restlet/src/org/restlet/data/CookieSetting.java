@@ -31,18 +31,18 @@ public final class CookieSetting extends Cookie {
      * Currently this toggles the non-standard but widely supported HttpOnly
      * cookie parameter.
      */
-    private boolean accessRestricted;
+    private volatile boolean accessRestricted;
 
     /** The user's comment. */
-    private String comment;
+    private volatile String comment;
 
     /**
      * The maximum age in seconds. Use 0 to discard an existing cookie.
      */
-    private int maxAge;
+    private volatile int maxAge;
 
     /** Indicates if cookie should only be transmitted by secure means. */
-    private boolean secure;
+    private volatile boolean secure;
 
     /**
      * Default constructor.

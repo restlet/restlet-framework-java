@@ -44,7 +44,7 @@ import org.restlet.resource.SaxRepresentation;
  */
 public class WrapperRequest extends Request {
     /** The wrapped request. */
-    private Request wrappedRequest;
+    private final Request wrappedRequest;
 
     /**
      * Constructor.
@@ -149,8 +149,9 @@ public class WrapperRequest extends Request {
     }
 
     /**
-     * Returns the entity as a DOM representation.<br> Note that this triggers
-     * the parsing of the entity into a reusable DOM document stored in memory.<br>
+     * Returns the entity as a DOM representation.<br>
+     * Note that this triggers the parsing of the entity into a reusable DOM
+     * document stored in memory.<br>
      * This method and the related getEntity*() methods can only be invoked
      * once.
      * 
@@ -166,9 +167,10 @@ public class WrapperRequest extends Request {
      * the Application's converter service. If you want to use this method to
      * facilitate the processing of request entities, you need to provide a
      * custom implementation of the ConverterService class, overriding the
-     * toObject(Representation) method. <br> Note that this triggers the
-     * parsing of the entity.<br> This method and the related getEntity*()
-     * methods can only be invoked once.
+     * toObject(Representation) method. <br>
+     * Note that this triggers the parsing of the entity.<br>
+     * This method and the related getEntity*() methods can only be invoked
+     * once.
      * 
      * @return The entity as a higher-level object.
      * @deprecated Since 1.1, the ConverterService is deprecated, with no
@@ -183,11 +185,11 @@ public class WrapperRequest extends Request {
     }
 
     /**
-     * Returns the entity as a SAX representation.<br> Note that this kind of
-     * representation can only be parsed once. If you evaluate an XPath
-     * expression, it can also only be done once. If you need to reuse the
-     * entity multiple times, consider using the getEntityAsDom() method
-     * instead.
+     * Returns the entity as a SAX representation.<br>
+     * Note that this kind of representation can only be parsed once. If you
+     * evaluate an XPath expression, it can also only be done once. If you need
+     * to reuse the entity multiple times, consider using the getEntityAsDom()
+     * method instead.
      * 
      * @return The entity as a SAX representation.
      */

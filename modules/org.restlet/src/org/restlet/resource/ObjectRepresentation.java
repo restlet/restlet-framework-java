@@ -36,7 +36,7 @@ import org.restlet.data.MediaType;
 public class ObjectRepresentation<T extends Serializable> extends
         OutputRepresentation {
     /** The serializable object. */
-    private T object;
+    private volatile T object;
 
     /**
      * Constructor reading the object from a serialized representation. This

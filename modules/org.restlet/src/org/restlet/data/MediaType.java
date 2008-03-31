@@ -88,9 +88,6 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_JSON = register(
             "application/json", "JavaScript Object Notation document");
 
-    public static final MediaType APPLICATION_OCTET_STREAM = register(
-            "application/octet-stream", "Raw octet stream");
-
     public static final MediaType APPLICATION_LATEX = register(
             "application/x-latex", "LaTeX");
 
@@ -99,6 +96,9 @@ public final class MediaType extends Metadata {
 
     public static final MediaType APPLICATION_MATHML_XML = register(
             "application/mathml+xml", "Mathml XML document");
+
+    public static final MediaType APPLICATION_OCTET_STREAM = register(
+            "application/octet-stream", "Raw octet stream");
 
     public static final MediaType APPLICATION_PDF = register("application/pdf",
             "Adobe PDF document");
@@ -238,11 +238,11 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_HTML = register("text/html",
             "HTML document");
 
-    public static final MediaType TEXT_JAVASCRIPT = register("text/javascript",
-            "Javascript document");
-
     public static final MediaType TEXT_J2ME_APP_DESCRIPTOR = register(
             "text/vnd.sun.j2me.app-descriptor", "J2ME Application Descriptor");
+
+    public static final MediaType TEXT_JAVASCRIPT = register("text/javascript",
+            "Javascript document");
 
     public static final MediaType TEXT_PLAIN = register("text/plain",
             "Plain text");
@@ -262,11 +262,11 @@ public final class MediaType extends Metadata {
     public static final MediaType VIDEO_AVI = register("video/x-msvideo",
             "AVI video");
 
-    public static final MediaType VIDEO_MPEG = register("video/mpeg",
-            "MPEG video");
-
     public static final MediaType VIDEO_MP4 = register("video/mp4",
             "MPEG-4 video");
+
+    public static final MediaType VIDEO_MPEG = register("video/mpeg",
+            "MPEG video");
 
     public static final MediaType VIDEO_QUICKTIME = register("video/quicktime",
             "Quicktime video");
@@ -324,6 +324,18 @@ public final class MediaType extends Metadata {
     }
 
     /**
+     * Returns the known media types map.
+     * 
+     * @return the known media types map.
+     */
+    private static Map<String, MediaType> getTypes() {
+        if (types == null) {
+            types = new HashMap<String, MediaType>();
+        }
+        return types;
+    }
+
+    /**
      * Register a media type as a known type that can later be retrieved using
      * {@link #valueOf(String)}. If the type already exists, the existing type
      * is returned, otherwise a new instance is created.
@@ -367,7 +379,7 @@ public final class MediaType extends Metadata {
     }
 
     /** The list of parameters. */
-    private Series<Parameter> parameters;
+    private volatile Series<Parameter> parameters;
 
     /**
      * Constructor.
@@ -600,17 +612,5 @@ public final class MediaType extends Metadata {
             }
         }
         return sb.toString();
-    }
-
-    /**
-     * Returns the known media types map.
-     * 
-     * @return the known media types map.
-     */
-    private static Map<String, MediaType> getTypes() {
-        if (types == null) {
-            types = new HashMap<String, MediaType>();
-        }
-        return types;
     }
 }

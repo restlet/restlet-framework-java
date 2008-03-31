@@ -43,14 +43,24 @@ import org.restlet.util.WrapperRepresentation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class EncodeRepresentation extends WrapperRepresentation {
+    /**
+     * Returns the list of supported encodings.
+     * 
+     * @return The list of supported encodings.
+     */
+    public static List<Encoding> getSupportedEncodings() {
+        return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE,
+                Encoding.ZIP, Encoding.IDENTITY);
+    }
+
     /** Indicates if the encoding can happen. */
-    private boolean canEncode;
+    private volatile boolean canEncode;
 
     /** The encoding to apply. */
-    private Encoding encoding;
+    private volatile Encoding encoding;
 
     /** The applied encodings. */
-    private List<Encoding> encodings;
+    private volatile List<Encoding> encodings;
 
     /**
      * Constructor.
@@ -78,24 +88,18 @@ public class EncodeRepresentation extends WrapperRepresentation {
     }
 
     /**
-     * Returns the size in bytes of the encoded representation if known,
-     * UNKNOWN_SIZE (-1) otherwise.
+     * Returns a readable byte channel. If it is supported by a file a read-only
+     * instance of FileChannel is returned.
      * 
-     * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+     * @return A readable byte channel.
      */
     @Override
-    public long getSize() {
-        long result = UNKNOWN_SIZE;
-
+    public ReadableByteChannel getChannel() throws IOException {
         if (canEncode()) {
-            if (this.encoding.equals(Encoding.IDENTITY)) {
-                result = getWrappedRepresentation().getSize();
-            }
+            return ByteUtils.getChannel(getStream());
         } else {
-            result = getWrappedRepresentation().getSize();
+            return getWrappedRepresentation().getChannel();
         }
-
-        return result;
     }
 
     /**
@@ -109,22 +113,22 @@ public class EncodeRepresentation extends WrapperRepresentation {
             encodings = new WrapperList<Encoding>() {
 
                 @Override
-                public void add(int index, Encoding element) {
-                    if (element == null) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null encoding.");
-                    } else {
-                        super.add(index, element);
-                    }
-                }
-
-                @Override
                 public boolean add(Encoding element) {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
                     } else {
                         return super.add(element);
+                    }
+                }
+
+                @Override
+                public void add(int index, Encoding element) {
+                    if (element == null) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    } else {
+                        super.add(index, element);
                     }
                 }
 
@@ -172,18 +176,24 @@ public class EncodeRepresentation extends WrapperRepresentation {
     }
 
     /**
-     * Returns a readable byte channel. If it is supported by a file a read-only
-     * instance of FileChannel is returned.
+     * Returns the size in bytes of the encoded representation if known,
+     * UNKNOWN_SIZE (-1) otherwise.
      * 
-     * @return A readable byte channel.
+     * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      */
     @Override
-    public ReadableByteChannel getChannel() throws IOException {
+    public long getSize() {
+        long result = UNKNOWN_SIZE;
+
         if (canEncode()) {
-            return ByteUtils.getChannel(getStream());
+            if (this.encoding.equals(Encoding.IDENTITY)) {
+                result = getWrappedRepresentation().getSize();
+            }
         } else {
-            return getWrappedRepresentation().getChannel();
+            result = getWrappedRepresentation().getSize();
         }
+
+        return result;
     }
 
     /**
@@ -201,18 +211,23 @@ public class EncodeRepresentation extends WrapperRepresentation {
     }
 
     /**
-     * Writes the representation to a byte channel.
+     * Converts the representation to a string value. Be careful when using this
+     * method as the conversion of large content to a string fully stored in
+     * memory can result in OutOfMemoryErrors being thrown.
      * 
-     * @param writableChannel
-     *                A writable byte channel.
+     * @return The representation as a string value.
      */
     @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
+    public String getText() throws IOException {
+        String result = null;
+
         if (canEncode()) {
-            write(ByteUtils.getStream(writableChannel));
+            result = ByteUtils.toString(getStream(), getCharacterSet());
         } else {
-            getWrappedRepresentation().write(writableChannel);
+            result = getWrappedRepresentation().getText();
         }
+
+        return result;
     }
 
     /**
@@ -248,32 +263,17 @@ public class EncodeRepresentation extends WrapperRepresentation {
     }
 
     /**
-     * Converts the representation to a string value. Be careful when using this
-     * method as the conversion of large content to a string fully stored in
-     * memory can result in OutOfMemoryErrors being thrown.
+     * Writes the representation to a byte channel.
      * 
-     * @return The representation as a string value.
+     * @param writableChannel
+     *                A writable byte channel.
      */
     @Override
-    public String getText() throws IOException {
-        String result = null;
-
+    public void write(WritableByteChannel writableChannel) throws IOException {
         if (canEncode()) {
-            result = ByteUtils.toString(getStream(), getCharacterSet());
+            write(ByteUtils.getStream(writableChannel));
         } else {
-            result = getWrappedRepresentation().getText();
+            getWrappedRepresentation().write(writableChannel);
         }
-
-        return result;
-    }
-
-    /**
-     * Returns the list of supported encodings.
-     * 
-     * @return The list of supported encodings.
-     */
-    public static List<Encoding> getSupportedEncodings() {
-        return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE,
-                Encoding.ZIP, Encoding.IDENTITY);
     }
 }

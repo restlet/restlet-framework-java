@@ -81,22 +81,22 @@ public final class ChallengeResponse {
      * application is responsible for updating this property, relying on a
      * {@link org.restlet.Guard} or manually.
      */
-    private boolean authenticated;
+    private volatile boolean authenticated;
 
     /** The raw credentials for custom challenge schemes. */
-    private String credentials;
+    private volatile String credentials;
 
     /** The user identifier, such as a login name or an access key. */
-    private String identifier;
+    private volatile String identifier;
 
     /** The additional scheme parameters. */
-    private Series<Parameter> parameters;
+    private volatile Series<Parameter> parameters;
 
     /** The challenge scheme. */
-    private ChallengeScheme scheme;
+    private volatile ChallengeScheme scheme;
 
     /** The user secret, such as a password or a secret key. */
-    private char[] secret;
+    private volatile char[] secret;
 
     /**
      * Constructor.

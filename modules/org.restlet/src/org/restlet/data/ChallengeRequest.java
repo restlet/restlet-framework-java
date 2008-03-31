@@ -28,13 +28,13 @@ import org.restlet.util.Series;
  */
 public final class ChallengeRequest {
     /** The challenge scheme. */
-    private ChallengeScheme scheme;
+    private volatile ChallengeScheme scheme;
 
     /** The authentication realm. */
-    private String realm;
+    private volatile String realm;
 
     /** The additional scheme parameters. */
-    private Series<Parameter> parameters;
+    private volatile Series<Parameter> parameters;
 
     /**
      * Constructor.

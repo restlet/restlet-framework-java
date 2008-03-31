@@ -49,40 +49,40 @@ public class Feed extends SaxRepresentation {
     public final static String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 
     /** The authors of the feed. */
-    private List<Person> authors;
+    private volatile List<Person> authors;
 
     /** The categories associated with the feed. */
-    private List<Category> categories;
+    private volatile List<Category> categories;
 
     /** The contributors to the feed. */
-    private List<Person> contributors;
+    private volatile List<Person> contributors;
 
     /** The agent used to generate a feed. */
-    private Generator generator;
+    private volatile Generator generator;
 
     /** Image that provides iconic visual identification for a feed. */
-    private Reference icon;
+    private volatile Reference icon;
 
     /** Permanent, universally unique identifier for the feed. */
-    private String id;
+    private volatile String id;
 
     /** The references from the entry to Web resources. */
-    private List<Link> links;
+    private volatile List<Link> links;
 
     /** Image that provides visual identification for a feed. */
-    private Reference logo;
+    private volatile Reference logo;
 
     /** Information about rights held in and over an entry. */
-    private Text rights;
+    private volatile Text rights;
 
     /** Short summary, abstract, or excerpt of an entry. */
-    private Text subtitle;
+    private volatile Text subtitle;
 
     /** The human-readable title for the entry. */
-    private Text title;
+    private volatile Text title;
 
     /** Most recent moment when the entry was modified in a significant way. */
-    private Date updated;
+    private volatile Date updated;
 
     /**
      * Individual entries, acting as a components for associated metadata and
@@ -114,7 +114,7 @@ public class Feed extends SaxRepresentation {
      * Constructor.
      * 
      * @param xmlFeed
-     *            The XML feed document.
+     *                The XML feed document.
      * @throws IOException
      */
     public Feed(Representation xmlFeed) throws IOException {
@@ -126,7 +126,7 @@ public class Feed extends SaxRepresentation {
      * Writes the representation to a XML writer.
      * 
      * @param writer
-     *            The XML writer to write to.
+     *                The XML writer to write to.
      * @throws IOException
      */
     @Override
@@ -180,7 +180,7 @@ public class Feed extends SaxRepresentation {
      * Sets the agent used to generate a feed.
      * 
      * @param generator
-     *            The agent used to generate a feed.
+     *                The agent used to generate a feed.
      */
     public void setGenerator(Generator generator) {
         this.generator = generator;
@@ -199,8 +199,8 @@ public class Feed extends SaxRepresentation {
      * Sets the image that provides iconic visual identification for a feed.
      * 
      * @param icon
-     *            The image that provides iconic visual identification for a
-     *            feed.
+     *                The image that provides iconic visual identification for a
+     *                feed.
      */
     public void setIcon(Reference icon) {
         this.icon = icon;
@@ -219,7 +219,8 @@ public class Feed extends SaxRepresentation {
      * Sets the permanent, universally unique identifier for the entry.
      * 
      * @param id
-     *            The permanent, universally unique identifier for the entry.
+     *                The permanent, universally unique identifier for the
+     *                entry.
      */
     public void setId(String id) {
         this.id = id;
@@ -249,7 +250,7 @@ public class Feed extends SaxRepresentation {
      * Sets the image that provides visual identification for a feed.
      * 
      * @param logo
-     *            The image that provides visual identification for a feed.
+     *                The image that provides visual identification for a feed.
      */
     public void setLogo(Reference logo) {
         this.logo = logo;
@@ -268,7 +269,7 @@ public class Feed extends SaxRepresentation {
      * Sets the information about rights held in and over an entry.
      * 
      * @param rights
-     *            The information about rights held in and over an entry.
+     *                The information about rights held in and over an entry.
      */
     public void setRights(Text rights) {
         this.rights = rights;
@@ -287,7 +288,7 @@ public class Feed extends SaxRepresentation {
      * Sets the short summary, abstract, or excerpt of an entry.
      * 
      * @param subtitle
-     *            The short summary, abstract, or excerpt of an entry.
+     *                The short summary, abstract, or excerpt of an entry.
      */
     public void setSubtitle(Text subtitle) {
         this.subtitle = subtitle;
@@ -306,7 +307,7 @@ public class Feed extends SaxRepresentation {
      * Sets the human-readable title for the entry.
      * 
      * @param title
-     *            The human-readable title for the entry.
+     *                The human-readable title for the entry.
      */
     public void setTitle(Text title) {
         this.title = title;
@@ -328,8 +329,8 @@ public class Feed extends SaxRepresentation {
      * way.
      * 
      * @param updated
-     *            The most recent moment when the entry was modified in a
-     *            significant way.
+     *                The most recent moment when the entry was modified in a
+     *                significant way.
      */
     public void setUpdated(Date updated) {
         this.updated = DateUtils.unmodifiable(updated);
@@ -398,20 +399,20 @@ public class Feed extends SaxRepresentation {
          * Receive notification of the beginning of an element.
          * 
          * @param uri
-         *            The Namespace URI, or the empty string if the element has
-         *            no Namespace URI or if Namespace processing is not being
-         *            performed.
+         *                The Namespace URI, or the empty string if the element
+         *                has no Namespace URI or if Namespace processing is not
+         *                being performed.
          * @param localName
-         *            The local name (without prefix), or the empty string if
-         *            Namespace processing is not being performed.
+         *                The local name (without prefix), or the empty string
+         *                if Namespace processing is not being performed.
          * @param qName
-         *            The qualified name (with prefix), or the empty string if
-         *            qualified names are not available.
+         *                The qualified name (with prefix), or the empty string
+         *                if qualified names are not available.
          * @param attrs
-         *            The attributes attached to the element. If there are no
-         *            attributes, it shall be an empty Attributes object. The
-         *            value of this object after startElement returns is
-         *            undefined.
+         *                The attributes attached to the element. If there are
+         *                no attributes, it shall be an empty Attributes object.
+         *                The value of this object after startElement returns is
+         *                undefined.
          */
         @Override
         public void startElement(String uri, String localName, String qName,
@@ -538,7 +539,7 @@ public class Feed extends SaxRepresentation {
          * Receive notification of the beginning of a text element.
          * 
          * @param attrs
-         *            The attributes attached to the element.
+         *                The attributes attached to the element.
          */
         public void startTextElement(Attributes attrs) {
             currentText = new Text(getMediaType(attrs.getValue("", "type")));
@@ -548,7 +549,7 @@ public class Feed extends SaxRepresentation {
          * Returns a media type from an Atom type attribute.
          * 
          * @param type
-         *            The Atom type attribute.
+         *                The Atom type attribute.
          * @return The media type.
          */
         private MediaType getMediaType(String type) {
@@ -573,11 +574,11 @@ public class Feed extends SaxRepresentation {
          * Receive notification of character data.
          * 
          * @param ch
-         *            The characters from the XML document.
+         *                The characters from the XML document.
          * @param start
-         *            The start position in the array.
+         *                The start position in the array.
          * @param length
-         *            The number of characters to read from the array.
+         *                The number of characters to read from the array.
          */
         @Override
         public void characters(char[] ch, int start, int length)
@@ -589,15 +590,15 @@ public class Feed extends SaxRepresentation {
          * Receive notification of the end of an element.
          * 
          * @param uri
-         *            The Namespace URI, or the empty string if the element has
-         *            no Namespace URI or if Namespace processing is not being
-         *            performed.
+         *                The Namespace URI, or the empty string if the element
+         *                has no Namespace URI or if Namespace processing is not
+         *                being performed.
          * @param localName
-         *            The local name (without prefix), or the empty string if
-         *            Namespace processing is not being performed.
+         *                The local name (without prefix), or the empty string
+         *                if Namespace processing is not being performed.
          * @param qName
-         *            The qualified XML name (with prefix), or the empty string
-         *            if qualified names are not available.
+         *                The qualified XML name (with prefix), or the empty
+         *                string if qualified names are not available.
          */
         @Override
         public void endElement(String uri, String localName, String qName)

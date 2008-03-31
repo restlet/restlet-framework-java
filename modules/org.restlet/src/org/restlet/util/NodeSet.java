@@ -33,7 +33,7 @@ import org.w3c.dom.NodeList;
 public class NodeSet extends AbstractList<Node> implements List<Node>, NodeList {
 
     /** The wrapped node list. */
-    private NodeList nodes;
+    private volatile NodeList nodes;
 
     /**
      * Constructor.

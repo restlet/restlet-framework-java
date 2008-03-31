@@ -29,10 +29,10 @@ import com.noelios.restlet.http.HttpUtils;
  */
 public class HeaderReader {
     /** The header to read. */
-    private String header;
+    private volatile String header;
 
     /** The current read index (or -1 if not reading anymore). */
-    private int index;
+    private volatile int index;
 
     /**
      * Constructor.
@@ -43,96 +43,6 @@ public class HeaderReader {
     public HeaderReader(String header) {
         this.header = header;
         this.index = ((header == null) || (header.length() == 0)) ? -1 : 0;
-    }
-
-    /**
-     * Reads the next character.
-     * 
-     * @return The next character.
-     */
-    public int read() {
-        int result = -1;
-
-        if (index != -1) {
-            result = this.header.charAt(index++);
-            if (index >= this.header.length())
-                index = -1;
-        }
-
-        return result;
-    }
-
-    /**
-     * Read the next value of a multi-value header. It skips separator commas
-     * and spaces.
-     * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2">HTTP
-     *      parsing rule</a>
-     * @return The next value or null.
-     */
-    public String readValue() {
-        StringBuilder sb = null;
-        int next = read();
-
-        // Skip leading spaces
-        while ((next != -1) && isLinearWhiteSpace(next)) {
-            next = read();
-        }
-
-        while ((next != -1) && !isValueSeparator(next)) {
-            if (sb == null)
-                sb = new StringBuilder();
-            sb.append((char) next);
-            next = read();
-        }
-
-        // Remove trailing spaces
-        if (sb != null) {
-            for (int i = sb.length() - 1; (i >= 0)
-                    && isLinearWhiteSpace(sb.charAt(i)); i--) {
-                sb.deleteCharAt(i);
-            }
-        }
-
-        return (sb == null) ? null : sb.toString();
-    }
-
-    /**
-     * Indicates if the given character is a value separator.
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is a value separator.
-     */
-    protected boolean isValueSeparator(int character) {
-        return (character == ',');
-    }
-
-    /**
-     * Indicates if the given character is a value separator.
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is a value separator.
-     */
-    protected boolean isLinearWhiteSpace(int character) {
-        return (HttpUtils.isCarriageReturn(character)
-                || HttpUtils.isSpace(character)
-                || HttpUtils.isLineFeed(character) || HttpUtils
-                .isHorizontalTab(character));
-    }
-
-    /**
-     * Reads the next quoted string.
-     * 
-     * @return The next quoted string.
-     * @throws IOException
-     */
-    protected String readQuotedString() throws IOException {
-        StringBuilder sb = new StringBuilder();
-        appendQuotedString(sb);
-        return sb.toString();
     }
 
     /**
@@ -172,6 +82,96 @@ public class HeaderReader {
                         "Invalid character detected in quoted string. Please check your value");
             }
         }
+    }
+
+    /**
+     * Indicates if the given character is a value separator.
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is a value separator.
+     */
+    protected boolean isLinearWhiteSpace(int character) {
+        return (HttpUtils.isCarriageReturn(character)
+                || HttpUtils.isSpace(character)
+                || HttpUtils.isLineFeed(character) || HttpUtils
+                .isHorizontalTab(character));
+    }
+
+    /**
+     * Indicates if the given character is a value separator.
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is a value separator.
+     */
+    protected boolean isValueSeparator(int character) {
+        return (character == ',');
+    }
+
+    /**
+     * Reads the next character.
+     * 
+     * @return The next character.
+     */
+    public int read() {
+        int result = -1;
+
+        if (index != -1) {
+            result = this.header.charAt(index++);
+            if (index >= this.header.length())
+                index = -1;
+        }
+
+        return result;
+    }
+
+    /**
+     * Reads the next quoted string.
+     * 
+     * @return The next quoted string.
+     * @throws IOException
+     */
+    protected String readQuotedString() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        appendQuotedString(sb);
+        return sb.toString();
+    }
+
+    /**
+     * Read the next value of a multi-value header. It skips separator commas
+     * and spaces.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2">HTTP
+     *      parsing rule</a>
+     * @return The next value or null.
+     */
+    public String readValue() {
+        StringBuilder sb = null;
+        int next = read();
+
+        // Skip leading spaces
+        while ((next != -1) && isLinearWhiteSpace(next)) {
+            next = read();
+        }
+
+        while ((next != -1) && !isValueSeparator(next)) {
+            if (sb == null)
+                sb = new StringBuilder();
+            sb.append((char) next);
+            next = read();
+        }
+
+        // Remove trailing spaces
+        if (sb != null) {
+            for (int i = sb.length() - 1; (i >= 0)
+                    && isLinearWhiteSpace(sb.charAt(i)); i--) {
+                sb.deleteCharAt(i);
+            }
+        }
+
+        return (sb == null) ? null : sb.toString();
     }
 
 }

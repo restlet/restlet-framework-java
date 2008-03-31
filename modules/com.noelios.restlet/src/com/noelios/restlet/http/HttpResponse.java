@@ -32,18 +32,18 @@ import com.noelios.restlet.Engine;
  */
 public class HttpResponse extends Response {
     /** The low-level HTTP call. */
-    private HttpServerCall httpCall;
+    private volatile HttpServerCall httpCall;
 
     /** Indicates if the server data was parsed and added. */
-    private boolean serverAdded;
+    private volatile boolean serverAdded;
 
     /**
      * Constructor.
      * 
      * @param httpCall
-     *            The low-level HTTP server call.
+     *                The low-level HTTP server call.
      * @param request
-     *            The associated high-level request.
+     *                The associated high-level request.
      */
     public HttpResponse(HttpServerCall httpCall, Request request) {
         super(request);

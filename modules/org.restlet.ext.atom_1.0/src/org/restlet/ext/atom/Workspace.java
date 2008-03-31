@@ -30,23 +30,23 @@ public class Workspace {
     /**
      * The parent service.
      */
-    private Service service;
+    private volatile Service service;
 
     /**
      * The title.
      */
-    private String title;
+    private volatile String title;
 
     /**
      * The list of collections.
      */
-    private List<Collection> collections;
+    private volatile List<Collection> collections;
 
     /**
      * Constructor.
      * 
      * @param service
-     *            The parent service.
+     *                The parent service.
      */
     public Workspace(Service service) {
         this(service, null);
@@ -56,9 +56,9 @@ public class Workspace {
      * Constructor.
      * 
      * @param service
-     *            The parent service.
+     *                The parent service.
      * @param title
-     *            The title.
+     *                The title.
      */
     public Workspace(Service service, String title) {
         this.service = service;
@@ -78,7 +78,7 @@ public class Workspace {
      * Sets the parent service.
      * 
      * @param service
-     *            The parent service.
+     *                The parent service.
      */
     public void setService(Service service) {
         this.service = service;
@@ -97,7 +97,7 @@ public class Workspace {
      * Sets the title.
      * 
      * @param title
-     *            The title.
+     *                The title.
      */
     public void setTitle(String title) {
         this.title = title;

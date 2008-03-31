@@ -46,7 +46,7 @@ import org.restlet.resource.SaxRepresentation;
  */
 public class WrapperResponse extends Response {
     /** The wrapped response. */
-    private Response wrappedResponse;
+    private final Response wrappedResponse;
 
     /**
      * Constructor.

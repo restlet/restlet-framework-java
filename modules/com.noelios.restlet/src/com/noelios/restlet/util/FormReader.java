@@ -40,17 +40,17 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class FormReader {
-    /** The form stream. */
-    private InputStream stream;
-
-    /** The logger to use. */
-    private Logger logger;
+    /** The encoding to use, decoding is enabled, see {@link #decode}. */
+    private volatile CharacterSet characterSet;
 
     /** Indicates if the parameters should be decoded. */
-    private boolean decode;
+    private volatile boolean decode;
 
-    /** The encoding to use, decoding is enabled, see {@link #decode}. */
-    private CharacterSet characterSet;
+    /** The logger to use. */
+    private volatile Logger logger;
+
+    /** The form stream. */
+    private volatile InputStream stream;
 
     /**
      * Constructor.<br>
@@ -77,6 +77,20 @@ public class FormReader {
     }
 
     /**
+     * Constructor. Will leave the parsed data encoded.
+     * 
+     * @param logger
+     *                The logger.
+     * @param query
+     *                The query string.
+     */
+    public FormReader(Logger logger, String query) {
+        this.decode = false;
+        this.logger = logger;
+        this.stream = new ByteArrayInputStream(query.getBytes());
+    }
+
+    /**
      * Constructor.
      * 
      * @param logger
@@ -95,64 +109,68 @@ public class FormReader {
     }
 
     /**
-     * Constructor. Will leave the parsed data encoded.
+     * Adds the parameters into a given form.
      * 
-     * @param logger
-     *                The logger.
-     * @param query
-     *                The query string.
+     * @param form
+     *                The target form.
      */
-    public FormReader(Logger logger, String query) {
-        this.decode = false;
-        this.logger = logger;
-        this.stream = new ByteArrayInputStream(query.getBytes());
+    public void addParameters(Form form) {
+        boolean readNext = true;
+        Parameter param = null;
+
+        // Let's read all form parameters
+        try {
+            while (readNext) {
+                param = readNextParameter();
+
+                if (param != null) {
+                    // Add parsed parameter to the form
+                    form.add(param);
+                } else {
+                    // Last parameter parsed
+                    readNext = false;
+                }
+            }
+        } catch (IOException ioe) {
+            getLogger()
+                    .log(
+                            Level.WARNING,
+                            "Unable to parse a form parameter. Skipping the remaining parameters.",
+                            ioe);
+        }
+
+        try {
+            this.stream.close();
+        } catch (IOException ioe) {
+            getLogger().log(Level.WARNING,
+                    "Unable to close the form input stream", ioe);
+        }
     }
 
     /**
-     * Reads the parameters with the given name. If multiple values are found, a
-     * list is returned created.
+     * Returns the logger.
      * 
-     * @param name
-     *                The parameter name to match.
-     * @return The parameter value or list of values.
+     * @return The logger.
+     */
+    private Logger getLogger() {
+        if (this.logger == null)
+            this.logger = Logger.getLogger(FormReader.class.getCanonicalName());
+        return this.logger;
+    }
+
+    /**
+     * Reads all the parameters.
+     * 
+     * @return The form read.
      * @throws IOException
      *                 If the parameters could not be read.
      */
-    @SuppressWarnings("unchecked")
-    public Object readParameter(String name) throws IOException {
+    public Form read() throws IOException {
+        Form result = new Form();
         Parameter param = readNextParameter();
-        Object result = null;
 
         while (param != null) {
-            if (param.getName().equals(name)) {
-                if (result != null) {
-                    List<Object> values = null;
-
-                    if (result instanceof List) {
-                        // Multiple values already found for this parameter
-                        values = (List) result;
-                    } else {
-                        // Second value found for this parameter
-                        // Create a list of values
-                        values = new ArrayList<Object>();
-                        values.add(result);
-                        result = values;
-                    }
-
-                    if (param.getValue() == null) {
-                        values.add(Series.EMPTY_VALUE);
-                    } else {
-                        values.add(param.getValue());
-                    }
-                } else {
-                    if (param.getValue() == null) {
-                        result = Series.EMPTY_VALUE;
-                    } else {
-                        result = param.getValue();
-                    }
-                }
-            }
-
+            result.add(param);
             param = readNextParameter();
         }
 
@@ -182,60 +200,6 @@ public class FormReader {
 
         this.stream.close();
         return result;
-    }
-
-    /**
-     * Reads the parameters whose name is a key in the given map. If a matching
-     * parameter is found, its value is put in the map. If multiple values are
-     * found, a list is created and set in the map.
-     * 
-     * @param parameters
-     *                The parameters map controlling the reading.
-     * @throws IOException
-     *                 If the parameters could not be read.
-     */
-    @SuppressWarnings("unchecked")
-    public void readParameters(Map<String, Object> parameters)
-            throws IOException {
-        Parameter param = readNextParameter();
-        Object currentValue = null;
-
-        while (param != null) {
-            if (parameters.containsKey(param.getName())) {
-                currentValue = parameters.get(param.getName());
-
-                if (currentValue != null) {
-                    List<Object> values = null;
-
-                    if (currentValue instanceof List) {
-                        // Multiple values already found for this parameter
-                        values = (List) currentValue;
-                    } else {
-                        // Second value found for this parameter
-                        // Create a list of values
-                        values = new ArrayList<Object>();
-                        values.add(currentValue);
-                        parameters.put(param.getName(), values);
-                    }
-
-                    if (param.getValue() == null) {
-                        values.add(Series.EMPTY_VALUE);
-                    } else {
-                        values.add(param.getValue());
-                    }
-                } else {
-                    if (param.getValue() == null) {
-                        parameters.put(param.getName(), Series.EMPTY_VALUE);
-                    } else {
-                        parameters.put(param.getName(), param.getValue());
-                    }
-                }
-            }
-
-            param = readNextParameter();
-        }
-
-        this.stream.close();
     }
 
     /**
@@ -303,18 +267,50 @@ public class FormReader {
     }
 
     /**
-     * Reads all the parameters.
+     * Reads the parameters with the given name. If multiple values are found, a
+     * list is returned created.
      * 
-     * @return The form read.
+     * @param name
+     *                The parameter name to match.
+     * @return The parameter value or list of values.
      * @throws IOException
      *                 If the parameters could not be read.
      */
-    public Form read() throws IOException {
-        Form result = new Form();
+    @SuppressWarnings("unchecked")
+    public Object readParameter(String name) throws IOException {
         Parameter param = readNextParameter();
+        Object result = null;
 
         while (param != null) {
-            result.add(param);
+            if (param.getName().equals(name)) {
+                if (result != null) {
+                    List<Object> values = null;
+
+                    if (result instanceof List) {
+                        // Multiple values already found for this parameter
+                        values = (List) result;
+                    } else {
+                        // Second value found for this parameter
+                        // Create a list of values
+                        values = new ArrayList<Object>();
+                        values.add(result);
+                        result = values;
+                    }
+
+                    if (param.getValue() == null) {
+                        values.add(Series.EMPTY_VALUE);
+                    } else {
+                        values.add(param.getValue());
+                    }
+                } else {
+                    if (param.getValue() == null) {
+                        result = Series.EMPTY_VALUE;
+                    } else {
+                        result = param.getValue();
+                    }
+                }
+            }
+
             param = readNextParameter();
         }
 
@@ -323,52 +319,56 @@ public class FormReader {
     }
 
     /**
-     * Adds the parameters into a given form.
+     * Reads the parameters whose name is a key in the given map. If a matching
+     * parameter is found, its value is put in the map. If multiple values are
+     * found, a list is created and set in the map.
      * 
-     * @param form
-     *                The target form.
+     * @param parameters
+     *                The parameters map controlling the reading.
+     * @throws IOException
+     *                 If the parameters could not be read.
      */
-    public void addParameters(Form form) {
-        boolean readNext = true;
-        Parameter param = null;
+    @SuppressWarnings("unchecked")
+    public void readParameters(Map<String, Object> parameters)
+            throws IOException {
+        Parameter param = readNextParameter();
+        Object currentValue = null;
 
-        // Let's read all form parameters
-        try {
-            while (readNext) {
-                param = readNextParameter();
+        while (param != null) {
+            if (parameters.containsKey(param.getName())) {
+                currentValue = parameters.get(param.getName());
 
-                if (param != null) {
-                    // Add parsed parameter to the form
-                    form.add(param);
+                if (currentValue != null) {
+                    List<Object> values = null;
+
+                    if (currentValue instanceof List) {
+                        // Multiple values already found for this parameter
+                        values = (List) currentValue;
+                    } else {
+                        // Second value found for this parameter
+                        // Create a list of values
+                        values = new ArrayList<Object>();
+                        values.add(currentValue);
+                        parameters.put(param.getName(), values);
+                    }
+
+                    if (param.getValue() == null) {
+                        values.add(Series.EMPTY_VALUE);
+                    } else {
+                        values.add(param.getValue());
+                    }
                 } else {
-                    // Last parameter parsed
-                    readNext = false;
+                    if (param.getValue() == null) {
+                        parameters.put(param.getName(), Series.EMPTY_VALUE);
+                    } else {
+                        parameters.put(param.getName(), param.getValue());
+                    }
                 }
             }
-        } catch (IOException ioe) {
-            getLogger()
-                    .log(
-                            Level.WARNING,
-                            "Unable to parse a form parameter. Skipping the remaining parameters.",
-                            ioe);
+
+            param = readNextParameter();
         }
 
-        try {
-            this.stream.close();
-        } catch (IOException ioe) {
-            getLogger().log(Level.WARNING,
-                    "Unable to close the form input stream", ioe);
-        }
-    }
-
-    /**
-     * Returns the logger.
-     * 
-     * @return The logger.
-     */
-    private Logger getLogger() {
-        if (this.logger == null)
-            this.logger = Logger.getLogger(FormReader.class.getCanonicalName());
-        return this.logger;
+        this.stream.close();
     }
 }

@@ -49,7 +49,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
     public static final int TYPE_MEDIA_TYPE = 4;
 
     /** The type of metadata read. */
-    private int type;
+    private volatile int type;
 
     /**
      * Constructor.
@@ -62,6 +62,131 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
     public PreferenceReader(int type, String header) {
         super(header);
         this.type = type;
+    }
+
+    /**
+     * Creates a new preference.
+     * 
+     * @param metadata
+     *                The metadata name.
+     * @param parameters
+     *                The parameters list.
+     * @return The new preference.
+     */
+    @SuppressWarnings("unchecked")
+    protected Preference<T> createPreference(CharSequence metadata,
+            Series<Parameter> parameters) {
+        Preference<T> result;
+
+        if (parameters == null) {
+            result = new Preference<T>();
+
+            switch (type) {
+            case TYPE_CHARACTER_SET:
+                result.setMetadata((T) CharacterSet
+                        .valueOf(metadata.toString()));
+                break;
+
+            case TYPE_ENCODING:
+                result.setMetadata((T) Encoding.valueOf(metadata.toString()));
+                break;
+
+            case TYPE_LANGUAGE:
+                result.setMetadata((T) Language.valueOf(metadata.toString()));
+                break;
+
+            case TYPE_MEDIA_TYPE:
+                result.setMetadata((T) MediaType.valueOf(metadata.toString()));
+                break;
+            }
+        } else {
+            Series<Parameter> mediaParams = extractMediaParams(parameters);
+            float quality = extractQuality(parameters);
+            result = new Preference<T>(null, quality, parameters);
+
+            switch (type) {
+            case TYPE_CHARACTER_SET:
+                result.setMetadata((T) new CharacterSet(metadata.toString()));
+                break;
+
+            case TYPE_ENCODING:
+                result.setMetadata((T) new Encoding(metadata.toString()));
+                break;
+
+            case TYPE_LANGUAGE:
+                result.setMetadata((T) new Language(metadata.toString()));
+                break;
+
+            case TYPE_MEDIA_TYPE:
+                result.setMetadata((T) new MediaType(metadata.toString(),
+                        mediaParams));
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Extract the media parameters. Only leave as the quality parameter if
+     * found. Modifies the parameters list.
+     * 
+     * @param parameters
+     *                All the preference parameters.
+     * @return The media parameters.
+     */
+    protected Series<Parameter> extractMediaParams(Series<Parameter> parameters) {
+        Series<Parameter> result = null;
+        boolean qualityFound = false;
+        Parameter param = null;
+
+        if (parameters != null) {
+            result = new Form();
+
+            for (Iterator<Parameter> iter = parameters.iterator(); !qualityFound
+                    && iter.hasNext();) {
+                param = iter.next();
+
+                if (param.getName().equals("q")) {
+                    qualityFound = true;
+                } else {
+                    iter.remove();
+                    result.add(param);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Extract the quality value. If the value is not found, 1 is returned.
+     * 
+     * @param parameters
+     *                The preference parameters.
+     * @return The quality value.
+     */
+    protected float extractQuality(Series<Parameter> parameters) {
+        float result = 1F;
+        boolean found = false;
+
+        if (parameters != null) {
+            Parameter param = null;
+            for (Iterator<Parameter> iter = parameters.iterator(); !found
+                    && iter.hasNext();) {
+                param = iter.next();
+                if (param.getName().equals("q")) {
+                    result = PreferenceUtils.parseQuality(param.getValue());
+                    found = true;
+
+                    // Remove the quality parameter as we will directly store it
+                    // in the Preference object
+                    iter.remove();
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -219,131 +344,6 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
 
                 nextChar = (nextIndex < nextValue.length()) ? nextValue
                         .charAt(nextIndex++) : -1;
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Extract the media parameters. Only leave as the quality parameter if
-     * found. Modifies the parameters list.
-     * 
-     * @param parameters
-     *                All the preference parameters.
-     * @return The media parameters.
-     */
-    protected Series<Parameter> extractMediaParams(Series<Parameter> parameters) {
-        Series<Parameter> result = null;
-        boolean qualityFound = false;
-        Parameter param = null;
-
-        if (parameters != null) {
-            result = new Form();
-
-            for (Iterator<Parameter> iter = parameters.iterator(); !qualityFound
-                    && iter.hasNext();) {
-                param = iter.next();
-
-                if (param.getName().equals("q")) {
-                    qualityFound = true;
-                } else {
-                    iter.remove();
-                    result.add(param);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Extract the quality value. If the value is not found, 1 is returned.
-     * 
-     * @param parameters
-     *                The preference parameters.
-     * @return The quality value.
-     */
-    protected float extractQuality(Series<Parameter> parameters) {
-        float result = 1F;
-        boolean found = false;
-
-        if (parameters != null) {
-            Parameter param = null;
-            for (Iterator<Parameter> iter = parameters.iterator(); !found
-                    && iter.hasNext();) {
-                param = iter.next();
-                if (param.getName().equals("q")) {
-                    result = PreferenceUtils.parseQuality(param.getValue());
-                    found = true;
-
-                    // Remove the quality parameter as we will directly store it
-                    // in the Preference object
-                    iter.remove();
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Creates a new preference.
-     * 
-     * @param metadata
-     *                The metadata name.
-     * @param parameters
-     *                The parameters list.
-     * @return The new preference.
-     */
-    @SuppressWarnings("unchecked")
-    protected Preference<T> createPreference(CharSequence metadata,
-            Series<Parameter> parameters) {
-        Preference<T> result;
-
-        if (parameters == null) {
-            result = new Preference<T>();
-
-            switch (type) {
-            case TYPE_CHARACTER_SET:
-                result.setMetadata((T) CharacterSet
-                        .valueOf(metadata.toString()));
-                break;
-
-            case TYPE_ENCODING:
-                result.setMetadata((T) Encoding.valueOf(metadata.toString()));
-                break;
-
-            case TYPE_LANGUAGE:
-                result.setMetadata((T) Language.valueOf(metadata.toString()));
-                break;
-
-            case TYPE_MEDIA_TYPE:
-                result.setMetadata((T) MediaType.valueOf(metadata.toString()));
-                break;
-            }
-        } else {
-            Series<Parameter> mediaParams = extractMediaParams(parameters);
-            float quality = extractQuality(parameters);
-            result = new Preference<T>(null, quality, parameters);
-
-            switch (type) {
-            case TYPE_CHARACTER_SET:
-                result.setMetadata((T) new CharacterSet(metadata.toString()));
-                break;
-
-            case TYPE_ENCODING:
-                result.setMetadata((T) new Encoding(metadata.toString()));
-                break;
-
-            case TYPE_LANGUAGE:
-                result.setMetadata((T) new Language(metadata.toString()));
-                break;
-
-            case TYPE_MEDIA_TYPE:
-                result.setMetadata((T) new MediaType(metadata.toString(),
-                        mediaParams));
-                break;
             }
         }
 

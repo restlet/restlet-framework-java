@@ -43,87 +43,9 @@ import freemarker.template.TemplateException;
  */
 public class TemplateRepresentation extends OutputRepresentation {
 
-    /** The template. */
-    private Template template;
-
-    /** The template's data model. */
-    private Object dataModel;
-
     /** The logger instance to use. */
-    private static Logger logger = Logger
+    private static final Logger logger = Logger
             .getLogger(TemplateRepresentation.class.getName());
-
-    /**
-     * Constructor.
-     * 
-     * @param templateName
-     *                The FreeMarker template's name. The full path is resolved
-     *                by the configuration.
-     * @param config
-     *                The FreeMarker configuration.
-     * @param dataModel
-     *                The template's data model.
-     * @param mediaType
-     *                The representation's media type.
-     */
-    public TemplateRepresentation(String templateName, Configuration config,
-            Object dataModel, MediaType mediaType) {
-        this(getTemplate(templateName, config), dataModel, mediaType);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param templateRepresentation
-     *                The FreeMarker template provided via a representation.
-     * @param config
-     *                The FreeMarker configuration.
-     * @param dataModel
-     *                The template's data model.
-     * @param mediaType
-     *                The representation's media type.
-     */
-    public TemplateRepresentation(Representation templateRepresentation,
-            Configuration config, Object dataModel, MediaType mediaType) {
-        this(getTemplate(templateRepresentation, config), dataModel, mediaType);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param template
-     *                The FreeMarker template.
-     * @param dataModel
-     *                The template's data model.
-     * @param mediaType
-     *                The representation's media type.
-     */
-    public TemplateRepresentation(Template template, Object dataModel,
-            MediaType mediaType) {
-        super(mediaType);
-        this.template = template;
-        this.dataModel = dataModel;
-    }
-
-    /**
-     * Returns a FreeMarker template from its name and a configuration.
-     * 
-     * @param templateName
-     *                The template name.
-     * @param config
-     *                The FreeMarker configuration.
-     * @return The template or null if not found.
-     */
-    private static Template getTemplate(String templateName,
-            Configuration config) {
-        try {
-            return config.getTemplate(templateName);
-        } catch (IOException e) {
-            logger.warning("Unable to get the template " + templateName + ". Error message: "
-                    + e.getMessage());
-            return null;
-        }
-    }
 
     /**
      * Returns a FreeMarker template from a representation and a configuration.
@@ -151,10 +73,87 @@ public class TemplateRepresentation extends OutputRepresentation {
             logger
                     .warning("Unable to get the template from the representation "
                             + templateRepresentation.getIdentifier()
-                            + ". Error message: "
-                            + e.getMessage());
+                            + ". Error message: " + e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Returns a FreeMarker template from its name and a configuration.
+     * 
+     * @param templateName
+     *                The template name.
+     * @param config
+     *                The FreeMarker configuration.
+     * @return The template or null if not found.
+     */
+    private static Template getTemplate(String templateName,
+            Configuration config) {
+        try {
+            return config.getTemplate(templateName);
+        } catch (IOException e) {
+            logger.warning("Unable to get the template " + templateName
+                    + ". Error message: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /** The template's data model. */
+    private volatile Object dataModel;
+
+    /** The template. */
+    private volatile Template template;
+
+    /**
+     * Constructor.
+     * 
+     * @param templateRepresentation
+     *                The FreeMarker template provided via a representation.
+     * @param config
+     *                The FreeMarker configuration.
+     * @param dataModel
+     *                The template's data model.
+     * @param mediaType
+     *                The representation's media type.
+     */
+    public TemplateRepresentation(Representation templateRepresentation,
+            Configuration config, Object dataModel, MediaType mediaType) {
+        this(getTemplate(templateRepresentation, config), dataModel, mediaType);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param templateName
+     *                The FreeMarker template's name. The full path is resolved
+     *                by the configuration.
+     * @param config
+     *                The FreeMarker configuration.
+     * @param dataModel
+     *                The template's data model.
+     * @param mediaType
+     *                The representation's media type.
+     */
+    public TemplateRepresentation(String templateName, Configuration config,
+            Object dataModel, MediaType mediaType) {
+        this(getTemplate(templateName, config), dataModel, mediaType);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param template
+     *                The FreeMarker template.
+     * @param dataModel
+     *                The template's data model.
+     * @param mediaType
+     *                The representation's media type.
+     */
+    public TemplateRepresentation(Template template, Object dataModel,
+            MediaType mediaType) {
+        super(mediaType);
+        this.template = template;
+        this.dataModel = dataModel;
     }
 
     /**

@@ -42,13 +42,13 @@ import com.noelios.restlet.util.KeepAliveOutputStream;
 public class StreamServerCall extends HttpServerCall {
 
     /** The request entity stream */
-    private InputStream requestEntityStream;
+    private volatile InputStream requestEntityStream;
 
     /** The request input stream. */
     private final InputStream requestStream;
 
     /** The response entity output stream. */
-    private OutputStream responseEntityStream;
+    private volatile OutputStream responseEntityStream;
 
     /** The response output stream. */
     private final OutputStream responseStream;

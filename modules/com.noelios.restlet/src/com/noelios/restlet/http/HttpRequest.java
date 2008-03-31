@@ -47,29 +47,29 @@ import com.noelios.restlet.util.PreferenceUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpRequest extends Request {
-    /** The context of the HTTP server connector that issued the call. */
-    private Context context;
-
-    /** The low-level HTTP call. */
-    private HttpCall httpCall;
-
     /** Indicates if the client data was parsed and added. */
-    private boolean clientAdded;
+    private volatile boolean clientAdded;
 
     /** Indicates if the conditions were parsed and added. */
-    private boolean conditionAdded;
+    private volatile boolean conditionAdded;
+
+    /** The context of the HTTP server connector that issued the call. */
+    private volatile Context context;
 
     /** Indicates if the cookies were parsed and added. */
-    private boolean cookiesAdded;
+    private volatile boolean cookiesAdded;
 
     /** Indicates if the request entity was added. */
-    private boolean entityAdded;
+    private volatile boolean entityAdded;
+
+    /** The low-level HTTP call. */
+    private volatile HttpCall httpCall;
 
     /** Indicates if the referrer was parsed and added. */
-    private boolean referrerAdded;
+    private volatile boolean referrerAdded;
 
     /** Indicates if the security data was parsed and added. */
-    private boolean securityAdded;
+    private volatile boolean securityAdded;
 
     /**
      * Constructor.
@@ -126,6 +126,25 @@ public class HttpRequest extends Request {
                         + httpCall.getRequestUri()));
             }
         }
+    }
+
+    @Override
+    public ChallengeResponse getChallengeResponse() {
+        ChallengeResponse result = super.getChallengeResponse();
+
+        if (!this.securityAdded) {
+            // Extract the header value
+            String authorization = getHttpCall().getRequestHeaders().getValues(
+                    HttpConstants.HEADER_AUTHORIZATION);
+
+            // Set the challenge response
+            result = AuthenticationUtils.parseResponse(this, this.context
+                    .getLogger(), authorization);
+            setChallengeResponse(result);
+            this.securityAdded = true;
+        }
+
+        return result;
     }
 
     /**
@@ -314,15 +333,6 @@ public class HttpRequest extends Request {
     }
 
     /**
-     * Returns the low-level HTTP call.
-     * 
-     * @return The low-level HTTP call.
-     */
-    public HttpCall getHttpCall() {
-        return this.httpCall;
-    }
-
-    /**
      * Returns the cookies provided by the client.
      * 
      * @return The cookies provided by the client.
@@ -374,6 +384,15 @@ public class HttpRequest extends Request {
     }
 
     /**
+     * Returns the low-level HTTP call.
+     * 
+     * @return The low-level HTTP call.
+     */
+    public HttpCall getHttpCall() {
+        return this.httpCall;
+    }
+
+    /**
      * Returns the referrer reference if available.
      * 
      * @return The referrer reference.
@@ -391,25 +410,6 @@ public class HttpRequest extends Request {
         }
 
         return super.getReferrerRef();
-    }
-
-    @Override
-    public ChallengeResponse getChallengeResponse() {
-        ChallengeResponse result = super.getChallengeResponse();
-
-        if (!this.securityAdded) {
-            // Extract the header value
-            String authorization = getHttpCall().getRequestHeaders().getValues(
-                    HttpConstants.HEADER_AUTHORIZATION);
-
-            // Set the challenge response
-            result = AuthenticationUtils.parseResponse(this, this.context
-                    .getLogger(), authorization);
-            setChallengeResponse(result);
-            this.securityAdded = true;
-        }
-
-        return result;
     }
 
     @Override

@@ -49,17 +49,28 @@ public class Variant {
     @Deprecated
     public static final long UNKNOWN_SIZE = -1L;
 
-    /** The natural language(s) of the intended audience for this variant. */
-    private List<Language> languages;
-
-    /** The media type. */
-    private MediaType mediaType;
-
     /** The character set or null if not applicable. */
-    private CharacterSet characterSet;
+    private volatile CharacterSet characterSet;
 
     /** The additional content codings applied to the entity-body. */
-    private List<Encoding> encodings;
+    private volatile List<Encoding> encodings;
+
+    /** The expiration date. */
+    private volatile Date expirationDate;
+
+    /**
+     * The identifier.
+     */
+    private volatile Reference identifier;
+
+    /** The natural language(s) of the intended audience for this variant. */
+    private volatile List<Language> languages;
+
+    /** The media type. */
+    private volatile MediaType mediaType;
+
+    /** The modification date. */
+    private volatile Date modificationDate;
 
     /**
      * The expected size. Dynamic representations can have any size, but
@@ -67,21 +78,10 @@ public class Variant {
      * is specified by the user, it has a higher priority than any size that can
      * be guessed by the representation (like a file size).
      */
-    private long size;
-
-    /** The expiration date. */
-    private Date expirationDate;
-
-    /** The modification date. */
-    private Date modificationDate;
+    private volatile long size;
 
     /** The tag. */
-    private Tag tag;
-
-    /**
-     * The identifier.
-     */
-    private Reference identifier;
+    private volatile Tag tag;
 
     /**
      * Default constructor.

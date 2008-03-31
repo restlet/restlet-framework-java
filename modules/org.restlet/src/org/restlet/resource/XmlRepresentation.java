@@ -129,10 +129,10 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     }
 
     /** Indicates if processing is namespace aware. */
-    private boolean namespaceAware;
+    private volatile boolean namespaceAware;
 
     /** Internal map of namespaces. */
-    private Map<String, String> namespaces;
+    private volatile Map<String, String> namespaces;
 
     /**
      * Constructor.

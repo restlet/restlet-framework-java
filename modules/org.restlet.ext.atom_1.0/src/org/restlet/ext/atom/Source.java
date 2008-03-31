@@ -32,40 +32,40 @@ import org.restlet.util.DateUtils;
  */
 public class Source {
     /** The authors of the entry. */
-    private List<Person> authors;
+    private volatile List<Person> authors;
 
     /** The categories associated with the entry. */
-    private List<Category> categories;
+    private volatile List<Category> categories;
 
     /** The contributors to the entry. */
-    private List<Person> contributors;
+    private volatile List<Person> contributors;
 
     /** The agent used to generate a feed. */
-    private Generator generator;
+    private volatile Generator generator;
 
     /** Image that provides iconic visual identification for a feed. */
-    private Reference icon;
+    private volatile Reference icon;
 
     /** Permanent, universally unique identifier for the entry. */
-    private String id;
+    private volatile String id;
 
     /** The references from the entry to Web resources. */
-    private List<Link> links;
+    private volatile List<Link> links;
 
     /** Image that provides visual identification for a feed. */
-    private Reference logo;
+    private volatile Reference logo;
 
     /** Information about rights held in and over an entry. */
-    private Text rights;
+    private volatile Text rights;
 
     /** Short summary, abstract, or excerpt of an entry. */
-    private Text subtitle;
+    private volatile Text subtitle;
 
     /** The human-readable title for the entry. */
-    private Text title;
+    private volatile Text title;
 
     /** Most recent moment when the entry was modified in a significant way. */
-    private Date updated;
+    private volatile Date updated;
 
     /**
      * Constructor.
@@ -131,7 +131,7 @@ public class Source {
      * Sets the agent used to generate a feed.
      * 
      * @param generator
-     *            The agent used to generate a feed.
+     *                The agent used to generate a feed.
      */
     public void setGenerator(Generator generator) {
         this.generator = generator;
@@ -150,8 +150,8 @@ public class Source {
      * Sets the image that provides iconic visual identification for a feed.
      * 
      * @param icon
-     *            The image that provides iconic visual identification for a
-     *            feed.
+     *                The image that provides iconic visual identification for a
+     *                feed.
      */
     public void setIcon(Reference icon) {
         this.icon = icon;
@@ -170,7 +170,8 @@ public class Source {
      * Sets the permanent, universally unique identifier for the entry.
      * 
      * @param id
-     *            The permanent, universally unique identifier for the entry.
+     *                The permanent, universally unique identifier for the
+     *                entry.
      */
     public void setId(String id) {
         this.id = id;
@@ -200,7 +201,7 @@ public class Source {
      * Sets the image that provides visual identification for a feed.
      * 
      * @param logo
-     *            The image that provides visual identification for a feed.
+     *                The image that provides visual identification for a feed.
      */
     public void setLogo(Reference logo) {
         this.logo = logo;
@@ -219,7 +220,7 @@ public class Source {
      * Sets the information about rights held in and over an entry.
      * 
      * @param rights
-     *            The information about rights held in and over an entry.
+     *                The information about rights held in and over an entry.
      */
     public void setRights(Text rights) {
         this.rights = rights;
@@ -238,7 +239,7 @@ public class Source {
      * Sets the short summary, abstract, or excerpt of an entry.
      * 
      * @param subtitle
-     *            The short summary, abstract, or excerpt of an entry.
+     *                The short summary, abstract, or excerpt of an entry.
      */
     public void setSubtitle(Text subtitle) {
         this.subtitle = subtitle;
@@ -257,7 +258,7 @@ public class Source {
      * Sets the human-readable title for the entry.
      * 
      * @param title
-     *            The human-readable title for the entry.
+     *                The human-readable title for the entry.
      */
     public void setTitle(Text title) {
         this.title = title;
@@ -279,8 +280,8 @@ public class Source {
      * way.
      * 
      * @param updated
-     *            The most recent moment when the entry was modified in a
-     *            significant way.
+     *                The most recent moment when the entry was modified in a
+     *                significant way.
      */
     public void setUpdated(Date updated) {
         this.updated = DateUtils.unmodifiable(updated);

@@ -52,7 +52,7 @@ public final class Language extends Metadata {
             "Spanish language");
 
     /** The metadata main list of subtags taken from the metadata name. */
-    private List<String> subTags;
+    private volatile List<String> subTags;
 
     /**
      * Returns the language associated to a name. If an existing constant exists

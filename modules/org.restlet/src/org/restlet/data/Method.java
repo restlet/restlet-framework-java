@@ -272,7 +272,7 @@ public final class Method extends Metadata {
     }
 
     /** The URI of the specification describing the method. */
-    private String uri;
+    private volatile String uri;
 
     /**
      * Constructor.
@@ -283,10 +283,6 @@ public final class Method extends Metadata {
      */
     public Method(final String name) {
         this(name, null, null);
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
     }
 
     /**
@@ -338,5 +334,9 @@ public final class Method extends Metadata {
     @Override
     public int hashCode() {
         return (getName() == null) ? 0 : getName().hashCode();
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }

@@ -110,8 +110,98 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
         getProtocols().add(Protocol.HTTPS);
     }
 
+    /**
+     * Creates a low-level HTTP client call from a high-level uniform call.
+     * 
+     * @param request
+     *                The high-level request.
+     * @return A low-level HTTP client call.
+     */
+    @Override
+    public HttpClientCall create(Request request) {
+        HttpClientCall result = null;
+
+        try {
+            result = new HttpMethodCall(this, request.getMethod().toString(),
+                    request.getResourceRef().toString(), request
+                            .isEntityAvailable());
+        } catch (IOException ioe) {
+            getLogger().log(Level.WARNING,
+                    "Unable to create the HTTP client call", ioe);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the timeout in milliseconds used when retrieving an HTTP
+     * connection from the HTTP connection manager.
+     * 
+     * @return The timeout in milliseconds used when retrieving an HTTP
+     *         connection from the HTTP connection manager.
+     */
+    public int getConnectionManagerTimeout() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "connectionManagerTimeout", "0"));
+    }
+
     public HttpClient getHttpClient() {
         return this.httpClient;
+    }
+
+    /**
+     * Returns the maximum number of connections that will be created for any
+     * particular host.
+     * 
+     * @return The maximum number of connections that will be created for any
+     *         particular host.
+     */
+    public int getMaxConnectionsPerHost() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "maxConnectionsPerHost", "2"));
+    }
+
+    /**
+     * Returns the maximum number of active connections.
+     * 
+     * @return The maximum number of active connections.
+     */
+    public int getMaxTotalConnections() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "maxTotalConnections", "20"));
+    }
+
+    /**
+     * Returns the read timeout value. A timeout of zero is interpreted as an
+     * infinite timeout.
+     * 
+     * @return The read timeout value.
+     */
+    public int getReadTimeout() {
+        return Integer.parseInt(getParameters().getFirstValue("readTimeout",
+                "0"));
+    }
+
+    /**
+     * Returns the minimum idle time, in milliseconds, for connections to be
+     * closed when stopping the connector.
+     * 
+     * @return The minimum idle time, in milliseconds, for connections to be
+     *         closed when stopping the connector.
+     */
+    public int getStopIdleTimeout() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "stopIdleTimeout", "1000"));
+    }
+
+    /**
+     * Indicates if the protocol will automatically follow redirects.
+     * 
+     * @return True if the protocol will automatically follow redirects.
+     */
+    public boolean isFollowRedirects() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "followRedirects", "false"));
     }
 
     @Override
@@ -139,96 +229,6 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
     public void stop() throws Exception {
         getHttpClient().getHttpConnectionManager().closeIdleConnections(
                 getStopIdleTimeout());
-    }
-
-    /**
-     * Creates a low-level HTTP client call from a high-level uniform call.
-     * 
-     * @param request
-     *                The high-level request.
-     * @return A low-level HTTP client call.
-     */
-    @Override
-    public HttpClientCall create(Request request) {
-        HttpClientCall result = null;
-
-        try {
-            result = new HttpMethodCall(this, request.getMethod().toString(),
-                    request.getResourceRef().toString(), request
-                            .isEntityAvailable());
-        } catch (IOException ioe) {
-            getLogger().log(Level.WARNING,
-                    "Unable to create the HTTP client call", ioe);
-        }
-
-        return result;
-    }
-
-    /**
-     * Indicates if the protocol will automatically follow redirects.
-     * 
-     * @return True if the protocol will automatically follow redirects.
-     */
-    public boolean isFollowRedirects() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
-                "followRedirects", "false"));
-    }
-
-    /**
-     * Returns the maximum number of connections that will be created for any
-     * particular host.
-     * 
-     * @return The maximum number of connections that will be created for any
-     *         particular host.
-     */
-    public int getMaxConnectionsPerHost() {
-        return Integer.parseInt(getParameters().getFirstValue(
-                "maxConnectionsPerHost", "2"));
-    }
-
-    /**
-     * Returns the maximum number of active connections.
-     * 
-     * @return The maximum number of active connections.
-     */
-    public int getMaxTotalConnections() {
-        return Integer.parseInt(getParameters().getFirstValue(
-                "maxTotalConnections", "20"));
-    }
-
-    /**
-     * Returns the timeout in milliseconds used when retrieving an HTTP
-     * connection from the HTTP connection manager.
-     * 
-     * @return The timeout in milliseconds used when retrieving an HTTP
-     *         connection from the HTTP connection manager.
-     */
-    public int getConnectionManagerTimeout() {
-        return Integer.parseInt(getParameters().getFirstValue(
-                "connectionManagerTimeout", "0"));
-    }
-
-    /**
-     * Returns the minimum idle time, in milliseconds, for connections to be
-     * closed when stopping the connector.
-     * 
-     * @return The minimum idle time, in milliseconds, for connections to be
-     *         closed when stopping the connector.
-     */
-    public int getStopIdleTimeout() {
-        return Integer.parseInt(getParameters().getFirstValue(
-                "stopIdleTimeout", "1000"));
-    }
-
-    /**
-     * Returns the read timeout value. A timeout of zero is interpreted as an
-     * infinite timeout.
-     * 
-     * @return The read timeout value.
-     */
-    public int getReadTimeout() {
-        return Integer.parseInt(getParameters().getFirstValue("readTimeout",
-                "0"));
     }
 
 }

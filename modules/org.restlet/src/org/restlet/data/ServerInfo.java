@@ -25,13 +25,13 @@ package org.restlet.data;
  */
 public final class ServerInfo {
     /** The IP address. */
-    private String address;
+    private volatile String address;
 
     /** The agent name. */
-    private String agent;
+    private volatile String agent;
 
     /** The port number. */
-    private int port;
+    private volatile int port;
 
     /**
      * Constructor.
