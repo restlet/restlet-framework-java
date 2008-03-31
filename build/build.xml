@@ -165,9 +165,9 @@
       <pathelement path="${classes}/${mod-net-id}" />
       <pathelement path="${mod}/${mod-net-id}/src" />
 
-      <path refid="mod-simple-path" />
-      <pathelement path="${classes}/${mod-simple-id}" />
-      <pathelement path="${mod}/${mod-simple-id}/src" />
+      <path refid="mod-jetty-path" />
+      <pathelement path="${classes}/${mod-jetty-id}" />
+      <pathelement path="${mod}/${mod-jetty-id}/src" />
 
       <path refid="mod-freemarker-path" />
       <pathelement path="${classes}/${mod-freemarker-id}" />
