@@ -38,54 +38,57 @@ import org.restlet.util.Helper;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ServletWarClient extends Client {
-    /** The helper provided by the implementation. */
-    private Helper helper;
+	/** The helper provided by the implementation. */
+	private Helper helper;
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     */
-    public ServletWarClient(Context context,
-            javax.servlet.ServletContext servletContext) {
-        super(context, (List<Protocol>) null);
-        getProtocols().add(Protocol.WAR);
-        this.helper = new ServletWarClientHelper(this, servletContext);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param context
+	 *            The context.
+	 */
+	public ServletWarClient(Context context,
+			javax.servlet.ServletContext servletContext) {
+		super(context, (List<Protocol>) null);
+		getProtocols().add(Protocol.WAR);
+		this.helper = new ServletWarClientHelper(this, servletContext);
+	}
 
-    /**
-     * Returns the helper provided by the implementation.
-     * 
-     * @return The helper provided by the implementation.
-     */
-    private Helper getHelper() {
-        return this.helper;
-    }
+	/**
+	 * Returns the helper provided by the implementation.
+	 * 
+	 * @return The helper provided by the implementation.
+	 */
+	private Helper getHelper() {
+		return this.helper;
+	}
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    public void handle(Request request, Response response) {
-        init(request, response);
-        getHelper().handle(request, response);
-    }
+	/**
+	 * Handles a call.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
+	 */
+	@Override
+	public void handle(Request request, Response response) {
+		init(request, response);
+		getHelper().handle(request, response);
+	}
 
-    /** Start callback. */
-    public void start() throws Exception {
-        super.start();
-        getHelper().start();
-    }
+	/** Start callback. */
+	@Override
+	public void start() throws Exception {
+		super.start();
+		getHelper().start();
+	}
 
-    /** Stop callback. */
-    public void stop() throws Exception {
-        getHelper().stop();
-        super.stop();
-    }
+	/** Stop callback. */
+	@Override
+	public void stop() throws Exception {
+		getHelper().stop();
+		super.stop();
+	}
 
 }

@@ -389,6 +389,7 @@ public class ServerServlet extends HttpServlet {
      * @param response
      *            The HTTP Servlet response.
      */
+	@Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpServerHelper helper = getServer(request);

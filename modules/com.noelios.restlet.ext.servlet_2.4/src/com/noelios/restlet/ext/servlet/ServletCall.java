@@ -105,6 +105,7 @@ public class ServletCall extends HttpServerCall {
 	 * 
 	 * @return The server domain name.
 	 */
+	@Override
 	public String getHostDomain() {
 		return getRequest().getServerName();
 	}
@@ -114,6 +115,7 @@ public class ServletCall extends HttpServerCall {
 	 * 
 	 * @return The request method.
 	 */
+	@Override
 	public String getMethod() {
 		return getRequest().getMethod();
 	}
@@ -123,6 +125,7 @@ public class ServletCall extends HttpServerCall {
 	 * 
 	 * @return The server protocol.
 	 */
+	@Override
 	public Protocol getProtocol() {
 		return Protocol.valueOf(getRequest().getScheme());
 	}
@@ -141,6 +144,7 @@ public class ServletCall extends HttpServerCall {
 	 * 
 	 * @return The request entity channel if it exists.
 	 */
+	@Override
 	public ReadableByteChannel getRequestChannel() {
 		// Can't do anything
 		return null;
@@ -152,6 +156,7 @@ public class ServletCall extends HttpServerCall {
 	 * @return The list of request headers.
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public Series<Parameter> getRequestHeaders() {
 		if (this.requestHeaders == null) {
 			this.requestHeaders = new Form();
@@ -179,6 +184,7 @@ public class ServletCall extends HttpServerCall {
 	 * 
 	 * @return The request entity stream if it exists.
 	 */
+	@Override
 	public InputStream getRequestStream() {
 		try {
 			return getRequest().getInputStream();
@@ -192,6 +198,7 @@ public class ServletCall extends HttpServerCall {
 	 * 
 	 * @return The full request URI.
 	 */
+	@Override
 	public String getRequestUri() {
 		String queryString = getRequest().getQueryString();
 
@@ -216,6 +223,7 @@ public class ServletCall extends HttpServerCall {
 	 * 
 	 * @return The response channel if it exists.
 	 */
+	@Override
 	public WritableByteChannel getResponseChannel() {
 		// Can't do anything
 		return null;
@@ -226,6 +234,7 @@ public class ServletCall extends HttpServerCall {
 	 * 
 	 * @return The response stream if it exists.
 	 */
+	@Override
 	public OutputStream getResponseStream() {
 		try {
 			return getResponse().getOutputStream();
@@ -240,6 +249,7 @@ public class ServletCall extends HttpServerCall {
 	 * 
 	 * @return The response address.
 	 */
+	@Override
 	public String getServerAddress() {
 		return getRequest().getLocalAddr();
 	}
@@ -249,6 +259,7 @@ public class ServletCall extends HttpServerCall {
 	 * 
 	 * @return The server port.
 	 */
+	@Override
 	public int getServerPort() {
 		return getRequest().getServerPort();
 	}
@@ -270,6 +281,7 @@ public class ServletCall extends HttpServerCall {
 	 * 
 	 * @return True if the request was made using a confidential mean.<br/>
 	 */
+	@Override
 	public boolean isConfidential() {
 		return getRequest().isSecure();
 	}
@@ -281,6 +293,7 @@ public class ServletCall extends HttpServerCall {
 	 * @param response
 	 *            The high-level response.
 	 */
+	@Override
 	public void sendResponse(Response response) throws IOException {
 		// Add the response headers
 		Parameter header;
@@ -293,7 +306,7 @@ public class ServletCall extends HttpServerCall {
 		// Set the status code in the response. We do this after adding the
 		// headers because when we have to rely on the 'sendError' method,
 		// the Servlet containers are expected to commit their response.
-		if (Status.isError(getStatusCode()) && (response == null)) {
+		if (Status.isError(getStatusCode()) && (response.getEntity() == null)) {
 			try {
 				getResponse().sendError(getStatusCode(), getReasonPhrase());
 			} catch (IOException ioe) {

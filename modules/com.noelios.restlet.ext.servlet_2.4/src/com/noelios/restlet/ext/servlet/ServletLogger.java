@@ -47,6 +47,7 @@ public class ServletLogger extends Logger {
      * @param record
      *            The LogRecord to be published
      */
+	@Override
     public void log(LogRecord record) {
         getContext().log(record.getMessage(), record.getThrown());
     }
