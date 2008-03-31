@@ -278,13 +278,15 @@
       <path refid="mod-json-path" />
       <path refid="mod-jaxrs-path" />
       <path refid="mod-freemarker-path" />
-      <path refid="mod-jaxb-path" />
+      <path refid="mod-velocity-path" />
+   	  <path refid="mod-jaxb-path" />
       <path refid="mod-jibx-path" />
    	  <pathelement path="${mod}/${mod-jaxrs-id}/src" />
       <pathelement path="${classes}/${mod-jaxrs-id}" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <pathelement path="${classes}/${mod-json-id}" />
       <pathelement path="${classes}/${mod-freemarker-id}" />
+      <pathelement path="${classes}/${mod-velocity-id}" />
       <pathelement path="${classes}/${mod-jaxb-id}" />
       <pathelement path="${classes}/${mod-jibx-id}" />
       <fileset dir="${lib}/${lib-db4o-id}" includes="*.jar" />
