@@ -176,11 +176,6 @@ public class StreamServerCall extends HttpServerCall {
 
     @Override
     public void writeResponseHead(Response response) throws IOException {
-        if (shouldResponseBeChunked(response)) {
-            getResponseHeaders().add(HttpConstants.HEADER_TRANSFER_ENCODING,
-                    "chunked");
-        }
-
-        writeResponseHead(getResponseStream());
+        writeResponseHead(response, getResponseStream());
     }
 }

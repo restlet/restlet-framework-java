@@ -197,7 +197,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     @Override
     public void testGrizzlyAndApache() throws Exception {
-        // super.testGrizzlyAndApache();
+        super.testGrizzlyAndApache();
     }
 
     @Override
@@ -211,8 +211,23 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
+    public void testInternalAndApache() throws Exception {
+        super.testInternalAndApache();
+    }
+
+    @Override
     public void testInternalAndInternal() throws Exception {
-        super.testInternalAndInternal();
+        // super.testInternalAndInternal();
+    }
+
+    @Override
+    public void testInternalAndJdkNet() throws Exception {
+        // super.testInternalAndJdkNet();
+    }
+
+    @Override
+    public void testJettyAndApache() throws Exception {
+        super.testJettyAndApache();
     }
 
     @Override
@@ -224,10 +239,25 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
+    public void testJettyAndJdkNet() throws Exception {
+        super.testJettyAndJdkNet();
+    }
+
+    @Override
+    public void testSimpleAndApache() throws Exception {
+        super.testSimpleAndApache();
+    }
+
+    @Override
     public void testSimpleAndInternal() throws Exception {
         // Simple will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
         checkedForChunkedResponse = false;
         super.testSimpleAndInternal();
+    }
+
+    @Override
+    public void testSimpleAndJdkNet() throws Exception {
+        super.testSimpleAndJdkNet();
     }
 }

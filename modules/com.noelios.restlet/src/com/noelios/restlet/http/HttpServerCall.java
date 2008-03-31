@@ -410,24 +410,27 @@ public abstract class HttpServerCall extends HttpCall {
                     if (connectorService != null)
                         connectorService.beforeSend(entity);
 
-                    writeResponseBody(entity);
+                    WritableByteChannel responseEntityChannel = getResponseEntityChannel();
+                    OutputStream responseEntityStream = getResponseEntityStream();
+                    writeResponseBody(entity, responseEntityChannel,
+                            responseEntityStream);
 
                     if (connectorService != null)
                         connectorService.afterSend(entity);
-                }
 
-                if (getResponseEntityStream() != null) {
-                    try {
-                        getResponseEntityStream().flush();
-                        getResponseEntityStream().close();
-                    } catch (IOException ioe) {
-                        // The stream was probably already closed by the
-                        // connector. Probably ok, low message priority.
-                        getLogger()
-                                .log(
-                                        Level.FINE,
-                                        "Exception while flushing and closing the entity stream.",
-                                        ioe);
+                    if (responseEntityStream != null) {
+                        try {
+                            responseEntityStream.flush();
+                            responseEntityStream.close();
+                        } catch (IOException ioe) {
+                            // The stream was probably already closed by the
+                            // connector. Probably ok, low message priority.
+                            getLogger()
+                                    .log(
+                                            Level.FINE,
+                                            "Exception while flushing and closing the entity stream.",
+                                            ioe);
+                        }
                     }
                 }
             } finally {
@@ -461,23 +464,27 @@ public abstract class HttpServerCall extends HttpCall {
      *                The representation to write as entity of the body.
      * @throws IOException
      */
-    public void writeResponseBody(Representation entity) throws IOException {
+    public void writeResponseBody(Representation entity,
+            WritableByteChannel responseEntityChannel,
+            OutputStream responseEntityStream) throws IOException {
         // Send the entity to the client
-        if (getResponseEntityChannel() != null) {
-            entity.write(getResponseEntityChannel());
-        } else if (getResponseEntityStream() != null) {
-            entity.write(getResponseEntityStream());
+        if (responseEntityChannel != null) {
+            entity.write(responseEntityChannel);
+        } else if (responseEntityStream != null) {
+            entity.write(responseEntityStream);
         }
     }
 
     /**
      * Writes the response head to the given output stream.
      * 
+     * @param response
+     *                The response.
      * @param headStream
      *                The output stream to write to.
      * @throws IOException
      */
-    protected void writeResponseHead(OutputStream headStream)
+    protected void writeResponseHead(Response response, OutputStream headStream)
             throws IOException {
         // Write the status line
         headStream.write(getVersion().getBytes());
@@ -491,6 +498,12 @@ public abstract class HttpServerCall extends HttpCall {
         // We don't support persistent connections yet
         getResponseHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
                 isServerKeepAlive());
+
+        // Check if 'Transfer-Encoding' header should be set
+        if (shouldResponseBeChunked(response)) {
+            getResponseHeaders().add(HttpConstants.HEADER_TRANSFER_ENCODING,
+                    "chunked");
+        }
 
         // Write the response headers
         for (Parameter header : getResponseHeaders()) {

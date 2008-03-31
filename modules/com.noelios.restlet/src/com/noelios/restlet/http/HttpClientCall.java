@@ -362,8 +362,9 @@ public abstract class HttpClientCall extends HttpCall {
                         result = is;
                     }
                 }
-            } catch (IOException e) {
-                getLogger().finer("End of response entity stream.");
+            } catch (IOException ioe) {
+                getLogger().log(Level.FINER, "End of response entity stream.",
+                        ioe);
             }
         }
 

@@ -39,10 +39,11 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Server;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
+import org.restlet.util.ByteUtils;
 
 import com.noelios.restlet.http.HttpServerCall;
 import com.noelios.restlet.util.ChunkedInputStream;
+import com.noelios.restlet.util.ChunkedOutputStream;
 import com.sun.grizzly.util.ByteBufferInputStream;
 import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.SSLOutputWriter;
@@ -57,7 +58,7 @@ public class GrizzlyServerCall extends HttpServerCall {
     /** The NIO byte buffer. */
     private final ByteBuffer byteBuffer;
 
-    /** Recycled stream. */
+    /** Recycled request stream. */
     private final ByteBufferInputStream requestStream;
 
     /** The underlying socket channel. */
@@ -140,12 +141,23 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public WritableByteChannel getResponseEntityChannel() {
-        return getWritableChannel();
+        if (isResponseChunked()) {
+            // Leave chunked encoding to the stream mode
+            return null;
+        } else {
+            return getWritableChannel();
+        }
     }
 
     @Override
     public OutputStream getResponseEntityStream() {
-        return null;
+        if (isResponseChunked()) {
+            return new ChunkedOutputStream(ByteUtils
+                    .getStream(getWritableChannel()));
+        } else {
+            // Leave normal encoding to the channel mode
+            return null;
+        }
     }
 
     /**
@@ -219,14 +231,9 @@ public class GrizzlyServerCall extends HttpServerCall {
     }
 
     @Override
-    public void writeResponseBody(Representation entity) throws IOException {
-        entity.write(getResponseEntityChannel());
-    }
-
-    @Override
     public void writeResponseHead(Response response) throws IOException {
         ByteArrayOutputStream headStream = new ByteArrayOutputStream(8192);
-        writeResponseHead(headStream);
+        writeResponseHead(response, headStream);
         ByteBuffer buffer = ByteBuffer.wrap(headStream.toByteArray());
 
         if (isConfidential()) {

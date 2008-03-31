@@ -223,12 +223,15 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
         getHttpClient().getParams()
                 .setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
         getHttpClient().getParams().setSoTimeout(getReadTimeout());
+
+        getLogger().info("Starting the HTTP client");
     }
 
     @Override
     public void stop() throws Exception {
         getHttpClient().getHttpConnectionManager().closeIdleConnections(
                 getStopIdleTimeout());
+        getLogger().info("Stopping the HTTP client");
     }
 
 }

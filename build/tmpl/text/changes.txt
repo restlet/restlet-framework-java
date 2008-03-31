@@ -113,6 +113,8 @@ Changes log
         - HTTPS server connectors expose new attributes related 
           to SSL: "org.restlet.https.cipherSuite" and 
           "org.restlet.https.keySize". Contributed by Bruno Harbulot.
+        - Improved the Grizzly connector to support returning chunked
+          responses.
     - Misc
         - Reformatting of the changes log. Contributed by Avi Flax.
         - All Component subclasses now use a main method that throws 

@@ -104,17 +104,6 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
     }
 
     /**
-     * Returns the hostname verifier by looking up the
-     * "org.restlet.ssl.hostnameVerifier" attribute of the client's context.
-     * 
-     * @return The hostname verifier or null.
-     */
-    public HostnameVerifier getHostnameVerifier() {
-        return (HostnameVerifier) getContext().getAttributes().get(
-                "org.restlet.ssl.hostnameVerifier");
-    }
-
-    /**
      * Creates a low-level HTTP client call from a high-level uniform call.
      * 
      * @param request
@@ -151,13 +140,36 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
     }
 
     /**
-     * Indicates if the protocol will automatically follow redirects.
+     * Returns the timeout value, in milliseconds, to be used when opening a
+     * communications link to the resource referenced. 0 means infinite timeout.
      * 
-     * @return True if the protocol will automatically follow redirects.
+     * @return The connection timeout value.
      */
-    public boolean isFollowRedirects() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
-                "followRedirects", "false"));
+    public int getConnectTimeout() {
+        return Integer.parseInt(getParameters().getFirstValue("connectTimeout",
+                "0"));
+    }
+
+    /**
+     * Returns the hostname verifier by looking up the
+     * "org.restlet.ssl.hostnameVerifier" attribute of the client's context.
+     * 
+     * @return The hostname verifier or null.
+     */
+    public HostnameVerifier getHostnameVerifier() {
+        return (HostnameVerifier) getContext().getAttributes().get(
+                "org.restlet.ssl.hostnameVerifier");
+    }
+
+    /**
+     * Returns the read timeout value. A timeout of zero is interpreted as an
+     * infinite timeout.
+     * 
+     * @return The read timeout value.
+     */
+    public int getReadTimeout() {
+        return Integer.parseInt(getParameters().getFirstValue("readTimeout",
+                "0"));
     }
 
     /**
@@ -173,6 +185,16 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
     }
 
     /**
+     * Indicates if the protocol will automatically follow redirects.
+     * 
+     * @return True if the protocol will automatically follow redirects.
+     */
+    public boolean isFollowRedirects() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "followRedirects", "false"));
+    }
+
+    /**
      * Indicates if the protocol is allowed to use caching whenever it can.
      * 
      * @return True if the protocol is allowed to use caching whenever it can.
@@ -182,25 +204,16 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
                 "false"));
     }
 
-    /**
-     * Returns the timeout value, in milliseconds, to be used when opening a
-     * communications link to the resource referenced. 0 means infinite timeout.
-     * 
-     * @return The connection timeout value.
-     */
-    public int getConnectTimeout() {
-        return Integer.parseInt(getParameters().getFirstValue("connectTimeout",
-                "0"));
+    @Override
+    public synchronized void start() throws Exception {
+        super.start();
+        getLogger().info("Starting the HTTP client");
     }
 
-    /**
-     * Returns the read timeout value. A timeout of zero is interpreted as an
-     * infinite timeout.
-     * 
-     * @return The read timeout value.
-     */
-    public int getReadTimeout() {
-        return Integer.parseInt(getParameters().getFirstValue("readTimeout",
-                "0"));
+    @Override
+    public synchronized void stop() throws Exception {
+        super.stop();
+        getLogger().info("Stopping the HTTP client");
     }
+
 }
