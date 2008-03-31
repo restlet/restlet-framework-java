@@ -227,6 +227,7 @@ public abstract class JettyServerHelper extends
          * @param connection
          *            The connection to handle.
          */
+    	@Override
         public void handle(HttpConnection connection) throws IOException,
                 ServletException {
             helper.handle(new JettyCall(helper.getServer(), connection));

@@ -80,120 +80,122 @@ import com.noelios.restlet.http.HttpServerHelper;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class AsyncWebServerHelper extends HttpServerHelper implements
-        ServiceContainer {
-    /**
-     * Indicates if the server is acting in HTTPS mode.
-     */
-    private boolean confidential;
+		ServiceContainer {
+	/**
+	 * Indicates if the server is acting in HTTPS mode.
+	 */
+	private boolean confidential;
 
-    /**
-     * The AsyncWeb transport layer.
-     */
-    private Transport transport;
+	/**
+	 * The AsyncWeb transport layer.
+	 */
+	private Transport transport;
 
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server to help.
-     * @param confidential
-     *            Indicates if the server is acting in HTTPS mode.
-     */
-    public AsyncWebServerHelper(Server server, boolean confidential) {
-        super(server);
-        this.confidential = confidential;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param server
+	 *            The server to help.
+	 * @param confidential
+	 *            Indicates if the server is acting in HTTPS mode.
+	 */
+	public AsyncWebServerHelper(Server server, boolean confidential) {
+		super(server);
+		this.confidential = confidential;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.safehaus.asyncweb.container.ServiceContainer#addServiceHandler(org.safehaus.asyncweb.container.ServiceHandler)
-     */
-    public void addServiceHandler(ServiceHandler serviceHandler) {
-        throw new UnsupportedOperationException(
-                "This container accepts no service handlers");
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.safehaus.asyncweb.container.ServiceContainer#addServiceHandler(org.safehaus.asyncweb.container.ServiceHandler)
+	 */
+	public void addServiceHandler(ServiceHandler serviceHandler) {
+		throw new UnsupportedOperationException(
+				"This container accepts no service handlers");
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.safehaus.asyncweb.container.ServiceContainer#addTransport(org.safehaus.asyncweb.transport.Transport)
-     */
-    public void addTransport(Transport transport) {
-        throw new UnsupportedOperationException(
-                "This container is bound to a transport");
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.safehaus.asyncweb.container.ServiceContainer#addTransport(org.safehaus.asyncweb.transport.Transport)
+	 */
+	public void addTransport(Transport transport) {
+		throw new UnsupportedOperationException(
+				"This container is bound to a transport");
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.safehaus.asyncweb.container.ServiceContainer#dispatchRequest(org.safehaus.asyncweb.request.AsyncWebRequest)
-     */
-    public void dispatchRequest(AsyncWebRequest request) {
-        HttpResponse response = request.createHttpResponse();
-        HttpServerCall call = new AsyncWebServerCall(getServer(), request,
-                response, confidential);
-        handle(call);
-        request.commitResponse(response);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.safehaus.asyncweb.container.ServiceContainer#dispatchRequest(org.safehaus.asyncweb.request.AsyncWebRequest)
+	 */
+	public void dispatchRequest(AsyncWebRequest request) {
+		HttpResponse response = request.createHttpResponse();
+		HttpServerCall call = new AsyncWebServerCall(getServer(), request,
+				response, confidential);
+		handle(call);
+		request.commitResponse(response);
+	}
 
-    /** Starts the Connector. */
-    @SuppressWarnings("unchecked")
-    public void start() throws ContainerLifecycleException {
-        try {
-            getTransport().start();
-        } catch (TransportException ex) {
-            getLogger().log(Level.WARNING, "Failed to start the transport", ex);
-            throw new ContainerLifecycleException(
-                    "Failed to start the transport", ex);
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Failed to start the AsyncWeb HTTP Server", e);
-            throw new ContainerLifecycleException(
-                    "Failed to start the AsyncWeb HTTP Server", e);
-        }
-    }
+	/** Starts the Connector. */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void start() throws ContainerLifecycleException {
+		try {
+			getTransport().start();
+		} catch (TransportException ex) {
+			getLogger().log(Level.WARNING, "Failed to start the transport", ex);
+			throw new ContainerLifecycleException(
+					"Failed to start the transport", ex);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING,
+					"Failed to start the AsyncWeb HTTP Server", e);
+			throw new ContainerLifecycleException(
+					"Failed to start the AsyncWeb HTTP Server", e);
+		}
+	}
 
-    /** Stops the Connector. */
-    @SuppressWarnings("unchecked")
-    public void stop() {
-        try {
-            getTransport().stop();
-        } catch (TransportException ex) {
-            getLogger().log(Level.WARNING, "Failed to stop transport", ex);
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Failed to start the AsyncWeb HTTP Server", e);
-        }
-    }
+	/** Stops the Connector. */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void stop() {
+		try {
+			getTransport().stop();
+		} catch (TransportException ex) {
+			getLogger().log(Level.WARNING, "Failed to stop transport", ex);
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING,
+					"Failed to start the AsyncWeb HTTP Server", e);
+		}
+	}
 
-    /**
-     * Returns the number of worker threads to employ.
-     * 
-     * @return The number of worker threads to employ.
-     */
-    public int getIoWorkerCount() {
-        return Integer.parseInt(getParameters().getFirstValue("ioWorkerCount",
-                "2"));
-    }
+	/**
+	 * Returns the number of worker threads to employ.
+	 * 
+	 * @return The number of worker threads to employ.
+	 */
+	public int getIoWorkerCount() {
+		return Integer.parseInt(getParameters().getFirstValue("ioWorkerCount",
+				"2"));
+	}
 
-    /**
-     * Sets the AsyncWeb transport layer.
-     * 
-     * @param transport
-     *            The AsyncWeb transport layer.
-     */
-    protected void setTransport(Transport transport) {
-        this.transport = transport;
-    }
+	/**
+	 * Sets the AsyncWeb transport layer.
+	 * 
+	 * @param transport
+	 *            The AsyncWeb transport layer.
+	 */
+	protected void setTransport(Transport transport) {
+		this.transport = transport;
+	}
 
-    /**
-     * Returns the AsyncWeb transport layer.
-     * 
-     * @return The AsyncWeb transport layer.
-     */
-    protected Transport getTransport() {
-        return this.transport;
-    }
+	/**
+	 * Returns the AsyncWeb transport layer.
+	 * 
+	 * @return The AsyncWeb transport layer.
+	 */
+	protected Transport getTransport() {
+		return this.transport;
+	}
 
 }

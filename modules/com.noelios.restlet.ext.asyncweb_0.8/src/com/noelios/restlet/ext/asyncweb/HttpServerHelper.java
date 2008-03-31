@@ -42,25 +42,26 @@ import org.safehaus.asyncweb.transport.nio.NIOTransport;
  *         href="http://www.semagia.com/">Semagia</a>
  */
 public class HttpServerHelper extends AsyncWebServerHelper {
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *            The server to help.
-     */
-    public HttpServerHelper(Server server) {
-        super(server, false);
-        getProtocols().add(Protocol.HTTP);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param server
+	 *            The server to help.
+	 */
+	public HttpServerHelper(Server server) {
+		super(server, false);
+		getProtocols().add(Protocol.HTTP);
+	}
 
-    /** Starts the Connector. */
-    public void start() throws ContainerLifecycleException {
-        NIOTransport nio = new NIOTransport();
-        nio.setPort(getServer().getPort());
-        nio.setServiceContainer(this);
-        nio.setIoWorkerCount(getIoWorkerCount());
-        setTransport(nio);
-        super.start();
-    }
+	/** Starts the Connector. */
+	@Override
+	public void start() throws ContainerLifecycleException {
+		NIOTransport nio = new NIOTransport();
+		nio.setPort(getServer().getPort());
+		nio.setServiceContainer(this);
+		nio.setIoWorkerCount(getIoWorkerCount());
+		setTransport(nio);
+		super.start();
+	}
 
 }

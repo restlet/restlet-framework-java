@@ -86,6 +86,7 @@ public class JettyCall extends HttpServerCall {
 	 * 
 	 * @return The request method.
 	 */
+	@Override
 	public String getMethod() {
 		return getConnection().getRequest().getMethod();
 	}
@@ -95,6 +96,7 @@ public class JettyCall extends HttpServerCall {
 	 * 
 	 * @return The request entity channel if it exists.
 	 */
+	@Override
 	public ReadableByteChannel getRequestChannel() {
 		return null;
 	}
@@ -104,6 +106,7 @@ public class JettyCall extends HttpServerCall {
 	 * 
 	 * @return The list of request headers.
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Series<Parameter> getRequestHeaders() {
 		Series<Parameter> result = super.getRequestHeaders();
@@ -133,6 +136,7 @@ public class JettyCall extends HttpServerCall {
 	 * 
 	 * @return The request entity stream if it exists.
 	 */
+	@Override
 	public InputStream getRequestStream() {
 		try {
 			return getConnection().getRequest().getInputStream();
@@ -147,6 +151,7 @@ public class JettyCall extends HttpServerCall {
 	 * 
 	 * @return The URI on the request line.
 	 */
+	@Override
 	public String getRequestUri() {
 		return getConnection().getRequest().getUri().toString();
 	}
@@ -156,6 +161,7 @@ public class JettyCall extends HttpServerCall {
 	 * 
 	 * @return The response channel if it exists.
 	 */
+	@Override
 	public WritableByteChannel getResponseChannel() {
 		return null;
 	}
@@ -165,6 +171,7 @@ public class JettyCall extends HttpServerCall {
 	 * 
 	 * @return The response stream if it exists.
 	 */
+	@Override
 	public OutputStream getResponseStream() {
 		try {
 			return getConnection().getResponse().getOutputStream();
@@ -179,6 +186,7 @@ public class JettyCall extends HttpServerCall {
 	 * 
 	 * @return The response address.
 	 */
+	@Override
 	public String getServerAddress() {
 		return getConnection().getRequest().getLocalAddr();
 	}
@@ -188,6 +196,7 @@ public class JettyCall extends HttpServerCall {
 	 * 
 	 * @return True if the request was made using a confidential mean.<br/>
 	 */
+	@Override
 	public boolean isConfidential() {
 		return getConnection().getRequest().isSecure();
 	}
@@ -206,7 +215,7 @@ public class JettyCall extends HttpServerCall {
 		// Set the status code in the response. We do this after adding the
 		// headers because when we have to rely on the 'sendError' method,
 		// the Servlet containers are expected to commit their response.
-		if (Status.isError(getStatusCode()) && (response == null)) {
+		if (Status.isError(getStatusCode()) && (response.getEntity() == null)) {
 			try {
 				getConnection().getResponse().sendError(getStatusCode(),
 						getReasonPhrase());
