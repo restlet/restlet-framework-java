@@ -19,7 +19,6 @@
 package org.restlet.service;
 
 import org.restlet.data.ClientInfo;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 
 /**
@@ -80,7 +79,7 @@ public class TunnelService {
     /**
      * Key in the attributes of a {@link Request} ({@link Request#getAttributes()})
      * for the resource URI without the extensions.<br>
-     * The type of the value is {@link Reference}.
+     * The type of the value is {@link String}.
      * 
      * @see #REF_ORIGINAL_KEY
      * @see #REF_EXTENSIONS_KEY
@@ -93,7 +92,7 @@ public class TunnelService {
      * Key in the attributes of a {@link Request} ({@link Request#getAttributes()})
      * for the pulled out extensions.<br>
      * The type of the value is {@link String}. If no extensions are matched,
-     * the value is "".
+     * the value is null.
      * 
      * @see #REF_ORIGINAL_KEY
      * @see #REF_CUT_KEY
@@ -105,7 +104,7 @@ public class TunnelService {
     /**
      * Key in the attributes of a {@link Request} ({@link Request#getAttributes()})
      * for the original resource URI before extraction of known extensions.<br>
-     * The type of the value is {@link Reference}.
+     * The type of the value is {@link String}.
      * 
      * @see #REF_CUT_KEY
      * @see #REF_EXTENSIONS_KEY

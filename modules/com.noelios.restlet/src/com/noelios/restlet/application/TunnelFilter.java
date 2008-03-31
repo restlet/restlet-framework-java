@@ -152,7 +152,7 @@ public class TunnelFilter extends Filter {
      */
     private void evaluateExtensions(Request request) {
         Reference resourceRef = request.getResourceRef();
-        Reference originalRef = resourceRef.clone();
+        String originalRef = resourceRef.toString();
         String path = resourceRef.getPath();
 
         MetadataService metadataService = getApplication().getMetadataService();
@@ -222,10 +222,15 @@ public class TunnelFilter extends Filter {
         }
         resourceRef.setPath(newPath.toString());
 
+        String cutExtsStr = null;
+        if (cutExts.length() > 1)
+            cutExtsStr = cutExts.substring(1); // ignore first "."
+
         Map<String, Object> attributes = request.getAttributes();
         attributes.put(TunnelService.REF_ORIGINAL_KEY, originalRef);
-        attributes.put(TunnelService.REF_CUT_KEY, resourceRef);
-        attributes.put(TunnelService.REF_EXTENSIONS_KEY, cutExts.toString());
+        attributes.put(TunnelService.REF_CUT_KEY, resourceRef.toString());
+        attributes.put(TunnelService.REF_EXTENSIONS_KEY, cutExtsStr);
+
     }
 
     /**

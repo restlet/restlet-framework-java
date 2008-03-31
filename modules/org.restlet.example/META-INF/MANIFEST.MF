@@ -10,4 +10,7 @@ Require-Bundle: com.noelios.restlet,
  org.restlet.ext.jaxrs;visibility:=reexport,
  org.junit4,
  com.db4o,
- org.restlet.ext.freemarker
+ org.restlet.ext.freemarker,
+ org.restlet.ext.velocity,
+ org.restlet.ext.jaxb,
+ org.restlet.ext.jibx

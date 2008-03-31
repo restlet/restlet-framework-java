@@ -37,7 +37,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -126,9 +125,9 @@ public class TunnelFilterTestCase extends TestCase {
     private void check(String expectedCut, String expectedExtensions) {
         assertEquals(expectedCut, request.getResourceRef().toString());
         Map<String, Object> attributes = request.getAttributes();
-        Reference reference = new Reference(this.lastCreatedReference);
-        assertEquals(reference, attributes.get(REF_ORIGINAL_KEY));
-        assertEquals(new Reference(expectedCut), attributes.get(REF_CUT_KEY));
+        assertEquals(this.lastCreatedReference, attributes
+                .get(REF_ORIGINAL_KEY));
+        assertEquals(expectedCut, attributes.get(REF_CUT_KEY));
         assertEquals(expectedExtensions, attributes.get(REF_EXTENSIONS_KEY));
     }
 
@@ -141,8 +140,6 @@ public class TunnelFilterTestCase extends TestCase {
      */
     private void checkFromPath(String expectedSubPathCut,
             String expectedExtension) {
-        if (expectedExtension == null)
-            expectedExtension = "";
         if (expectedSubPathCut == null)
             check(this.lastCreatedReference, expectedExtension);
         else
@@ -243,7 +240,7 @@ public class TunnelFilterTestCase extends TestCase {
     public void testExtMappingOn() {
         createGet(UNEFFECTED);
         filter();
-        check(UNEFFECTED, "");
+        check(UNEFFECTED, null);
         assertLanguages();
         assertCharSets();
         assertCharSets();
@@ -251,7 +248,7 @@ public class TunnelFilterTestCase extends TestCase {
 
         createGet(EFFECTED);
         filter();
-        check("http://example.org/adf.asdf/af", ".html");
+        check("http://example.org/adf.asdf/af", "html");
         assertMediaTypes(MediaType.TEXT_HTML);
         assertLanguages();
         assertCharSets();
@@ -275,7 +272,7 @@ public class TunnelFilterTestCase extends TestCase {
 
         createGetFromPath("hksf.afsdf.html");
         filter();
-        checkFromPath("hksf.afsdf", ".html");
+        checkFromPath("hksf.afsdf", "html");
         assertMediaTypes(MediaType.TEXT_HTML);
         assertLanguages();
         assertEncodings();
@@ -283,7 +280,7 @@ public class TunnelFilterTestCase extends TestCase {
 
         createGetFromPath("hksf.afsdf.html.txt");
         filter();
-        checkFromPath("hksf.afsdf", ".html.txt");
+        checkFromPath("hksf.afsdf", "html.txt");
         assertMediaTypes(MediaType.TEXT_HTML, MediaType.TEXT_PLAIN);
         assertLanguages();
         assertEncodings();
@@ -291,7 +288,7 @@ public class TunnelFilterTestCase extends TestCase {
 
         createGetFromPath("hksf.html.afsdf.txt");
         filter();
-        checkFromPath("hksf.afsdf", ".html.txt");
+        checkFromPath("hksf.afsdf", "html.txt");
         assertMediaTypes(MediaType.TEXT_HTML, MediaType.TEXT_PLAIN);
         assertLanguages();
         assertEncodings();
@@ -299,7 +296,7 @@ public class TunnelFilterTestCase extends TestCase {
 
         createGetFromPath("hksf.html.afsdf.txt.en.fr");
         filter();
-        checkFromPath("hksf.afsdf", ".html.txt.en.fr");
+        checkFromPath("hksf.afsdf", "html.txt.en.fr");
         assertMediaTypes(MediaType.TEXT_HTML, MediaType.TEXT_PLAIN);
         assertLanguages(Language.ENGLISH, Language.FRENCH);
         assertEncodings();
