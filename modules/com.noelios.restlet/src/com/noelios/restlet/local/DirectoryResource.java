@@ -122,8 +122,11 @@ public class DirectoryResource extends Resource {
         // Should be better to take benefit from this operation.
         if (getApplication() != null
                 && getApplication().getTunnelService().isExtensionTunnel()) {
-            this.relativePart += request.getAttributes().get(
+            String string = (String) request.getAttributes().get(
                     TunnelService.REF_EXTENSIONS_KEY);
+            if (string != null && string.length() > 0) {
+                this.relativePart += "." + string;
+            }
         }
         setModifiable(getDirectory().isModifiable());
 
