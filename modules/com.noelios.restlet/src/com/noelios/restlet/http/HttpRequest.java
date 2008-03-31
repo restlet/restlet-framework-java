@@ -132,6 +132,7 @@ public class HttpRequest extends Request {
      * 
      * @return The client-specific information.
      */
+	@Override
     public ClientInfo getClientInfo() {
         ClientInfo result = super.getClientInfo();
 
@@ -211,6 +212,7 @@ public class HttpRequest extends Request {
      * 
      * @return The condition data applying to this call.
      */
+	@Override
     public Conditions getConditions() {
         Conditions result = super.getConditions();
 
@@ -324,6 +326,7 @@ public class HttpRequest extends Request {
      * 
      * @return The cookies provided by the client.
      */
+	@Override
     public Series<Cookie> getCookies() {
         Series<Cookie> result = super.getCookies();
 
@@ -359,6 +362,7 @@ public class HttpRequest extends Request {
      * 
      * @return The representation provided by the client.
      */
+	@Override
     public Representation getEntity() {
         if (!this.entityAdded) {
             setEntity(((HttpServerCall) getHttpCall()).getRequestEntity());
@@ -373,6 +377,7 @@ public class HttpRequest extends Request {
      * 
      * @return The referrer reference.
      */
+	@Override
     public Reference getReferrerRef() {
         if (!this.referrerAdded) {
             String referrerValue = getHttpCall().getRequestHeaders().getValues(

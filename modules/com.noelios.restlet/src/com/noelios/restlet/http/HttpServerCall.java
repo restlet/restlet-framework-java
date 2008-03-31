@@ -167,6 +167,7 @@ public abstract class HttpServerCall extends HttpCall {
      * 
      * @return The host domain name.
      */
+	@Override
     public String getHostDomain() {
         if (!hostParsed)
             parseHost();
@@ -178,6 +179,7 @@ public abstract class HttpServerCall extends HttpCall {
      * 
      * @return The host port.
      */
+	@Override
     public int getHostPort() {
         if (!hostParsed)
             parseHost();

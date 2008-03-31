@@ -149,6 +149,7 @@ public class DomRepresentation extends XmlRepresentation {
      * @param outputStream
      *                The output stream.
      */
+	@Override
     public void write(OutputStream outputStream) throws IOException {
         try {
             if (getDocument() != null) {

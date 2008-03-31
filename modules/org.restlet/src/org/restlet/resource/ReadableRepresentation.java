@@ -72,6 +72,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
      * 
      * @return A readable byte channel.
      */
+	@Override
     public synchronized ReadableByteChannel getChannel() throws IOException {
         ReadableByteChannel result = this.readableChannel;
         this.readableChannel = null;
@@ -85,6 +86,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
      * @param writableChannel
      *            A writable byte channel.
      */
+	@Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         ByteUtils.write(getChannel(), writableChannel);
     }

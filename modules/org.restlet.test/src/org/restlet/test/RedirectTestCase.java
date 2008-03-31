@@ -33,80 +33,81 @@ import org.restlet.resource.StringRepresentation;
 
 /**
  * Unit tests for the RedirectRestlet.
- *
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class RedirectTestCase extends TestCase {
-    /**
-     * Tests the cookies parsing.
-     */
-    public void testRedirect() throws Exception {
-        // Create components
-        Component clientComponent = new Component();
-        Component proxyComponent = new Component();
-        Component originComponent = new Component();
+	/**
+	 * Tests the cookies parsing.
+	 */
+	public void testRedirect() throws Exception {
+		// Create components
+		Component clientComponent = new Component();
+		Component proxyComponent = new Component();
+		Component originComponent = new Component();
 
-        // Create the client connectors
-        clientComponent.getClients().add(Protocol.HTTP);
-        proxyComponent.getClients().add(Protocol.HTTP);
+		// Create the client connectors
+		clientComponent.getClients().add(Protocol.HTTP);
+		proxyComponent.getClients().add(Protocol.HTTP);
 
-        // Create the proxy Restlet
-        String target = "http://localhost:9090{rr}";
-        Redirector proxy = new Redirector(proxyComponent.getContext(), target,
-                Redirector.MODE_DISPATCHER);
+		// Create the proxy Restlet
+		String target = "http://localhost:9090{rr}";
+		Redirector proxy = new Redirector(proxyComponent.getContext(), target,
+				Redirector.MODE_DISPATCHER);
 
-        // Create a new Restlet that will display some path information.
-        Restlet trace = new Restlet(originComponent.getContext()) {
-            public void handle(Request request, Response response) {
-                // Print the requested URI path
-                String message = "Resource URI:  " + request.getResourceRef()
-                        + '\n' + "Base URI:      "
-                        + request.getResourceRef().getBaseRef() + '\n'
-                        + "Remaining part: "
-                        + request.getResourceRef().getRemainingPart() + '\n'
-                        + "Method name:   " + request.getMethod() + '\n';
-                response.setEntity(new StringRepresentation(message,
-                        MediaType.TEXT_PLAIN));
-            }
-        };
+		// Create a new Restlet that will display some path information.
+		Restlet trace = new Restlet(originComponent.getContext()) {
+			@Override
+			public void handle(Request request, Response response) {
+				// Print the requested URI path
+				String message = "Resource URI:  " + request.getResourceRef()
+						+ '\n' + "Base URI:      "
+						+ request.getResourceRef().getBaseRef() + '\n'
+						+ "Remaining part: "
+						+ request.getResourceRef().getRemainingPart() + '\n'
+						+ "Method name:   " + request.getMethod() + '\n';
+				response.setEntity(new StringRepresentation(message,
+						MediaType.TEXT_PLAIN));
+			}
+		};
 
-        // Set the component roots
-        proxyComponent.getDefaultHost().attach("", proxy);
-        originComponent.getDefaultHost().attach("", trace);
+		// Set the component roots
+		proxyComponent.getDefaultHost().attach("", proxy);
+		originComponent.getDefaultHost().attach("", trace);
 
-        // Create the server connectors
-        proxyComponent.getServers().add(Protocol.HTTP, 8182);
-        originComponent.getServers().add(Protocol.HTTP, 9090);
+		// Create the server connectors
+		proxyComponent.getServers().add(Protocol.HTTP, 8182);
+		originComponent.getServers().add(Protocol.HTTP, 9090);
 
-        // Now, let's start the components!
-        originComponent.start();
-        proxyComponent.start();
-        clientComponent.start();
+		// Now, let's start the components!
+		originComponent.start();
+		proxyComponent.start();
+		clientComponent.start();
 
-        // Tests
-        Context context = clientComponent.getContext();
-        String uri = "http://localhost:8182/?foo=bar";
-        testCall(context, Method.GET, uri);
-        testCall(context, Method.DELETE, uri);
+		// Tests
+		Context context = clientComponent.getContext();
+		String uri = "http://localhost:8182/?foo=bar";
+		testCall(context, Method.GET, uri);
+		testCall(context, Method.DELETE, uri);
 
-        uri = "http://localhost:8182/abcd/efgh/ijkl?foo=bar&foo=beer";
-        testCall(context, Method.GET, uri);
-        testCall(context, Method.DELETE, uri);
+		uri = "http://localhost:8182/abcd/efgh/ijkl?foo=bar&foo=beer";
+		testCall(context, Method.GET, uri);
+		testCall(context, Method.DELETE, uri);
 
-        uri = "http://localhost:8182/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";
-        testCall(context, Method.GET, uri);
+		uri = "http://localhost:8182/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";
+		testCall(context, Method.GET, uri);
 
-        // Stop the components
-        clientComponent.stop();
-        originComponent.stop();
-        proxyComponent.stop();
-    }
+		// Stop the components
+		clientComponent.stop();
+		originComponent.stop();
+		proxyComponent.stop();
+	}
 
-    private void testCall(Context context, Method method, String uri)
-            throws Exception {
-        Response response = context.getDispatcher().handle(
-                new Request(method, uri));
-        assertNotNull(response.getEntity());
-        response.getEntity().write(System.out);
-    }
+	private void testCall(Context context, Method method, String uri)
+			throws Exception {
+		Response response = context.getDispatcher().handle(
+				new Request(method, uri));
+		assertNotNull(response.getEntity());
+		response.getEntity().write(System.out);
+	}
 }

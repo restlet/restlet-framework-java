@@ -89,6 +89,7 @@ public class ObjectRepresentation extends OutputRepresentation {
      * @param outputStream
      *            The stream to use when writing.
      */
+	@Override
     public void write(OutputStream outputStream) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(outputStream);
         oos.writeObject(getObject());

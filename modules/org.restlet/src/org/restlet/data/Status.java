@@ -939,6 +939,7 @@ public final class Status extends Metadata {
      * 
      * @return The description.
      */
+	@Override
     public String getDescription() {
         String result = super.getDescription();
 
@@ -1107,6 +1108,7 @@ public final class Status extends Metadata {
      * 
      * @return The name of this status.
      */
+	@Override
     public String getName() {
         String result = super.getName();
 
@@ -1515,6 +1517,7 @@ public final class Status extends Metadata {
      * 
      * @return The name of the status followed by its HTTP code.
      */
+	@Override
     public String toString() {
         return getName() + " (" + this.code + ")";
     }

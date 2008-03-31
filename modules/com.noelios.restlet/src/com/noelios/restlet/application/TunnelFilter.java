@@ -71,6 +71,7 @@ public class TunnelFilter extends Filter {
      * @param response
      *            The response to update.
      */
+	@Override
     public void beforeHandle(Request request, Response response) {
         super.beforeHandle(request, response);
         Form query = request.getResourceRef().getQueryAsForm(null);

@@ -258,6 +258,7 @@ public class DirectoryResource extends Resource {
      * 
      * @return True if the method is allowed.
      */
+	@Override
     public boolean allowDelete() {
         return getDirectory().isModifiable();
     }
@@ -268,6 +269,7 @@ public class DirectoryResource extends Resource {
      * 
      * @return True if the method is allowed.
      */
+	@Override
     public boolean allowPut() {
         return getDirectory().isModifiable();
     }
@@ -289,6 +291,7 @@ public class DirectoryResource extends Resource {
     /**
      * Asks the resource to delete itself and all its representations.
      */
+	@Override
     public void delete() {
         Status status;
 
@@ -345,6 +348,7 @@ public class DirectoryResource extends Resource {
      * @param variant
      *                A new or updated variant representation.
      */
+	@Override
     public void put(Representation variant) {
         Status status;
 
@@ -421,6 +425,7 @@ public class DirectoryResource extends Resource {
      * 
      * @return The representation variants.
      */
+	@Override
     public List<Variant> getVariants() {
         List<Variant> results = super.getVariants();
 

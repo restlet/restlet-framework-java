@@ -84,6 +84,7 @@ public final class ByteUtils {
         // Creates a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
         Thread writer = new Thread() {
+        	@Override
             public void run() {
                 try {
                     WritableByteChannel wbc = pipe.sink();
@@ -129,6 +130,7 @@ public final class ByteUtils {
             // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
             Thread writer = new Thread() {
+            	@Override
                 public void run() {
                     try {
                         OutputStream os = pipe.getOutputStream();
@@ -309,6 +311,7 @@ public final class ByteUtils {
             return new InputStream() {
                 private boolean endReached = false;
 
+            	@Override
                 public int read() throws IOException {
                     try {
                         if (endReached)
@@ -338,6 +341,7 @@ public final class ByteUtils {
          */
         public OutputStream getOutputStream() {
             return new OutputStream() {
+            	@Override
                 public void write(int b) throws IOException {
                     try {
                         if (!queue.offer(b, QUEUE_TIMEOUT, TimeUnit.SECONDS)) {

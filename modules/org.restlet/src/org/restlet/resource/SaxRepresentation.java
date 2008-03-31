@@ -145,6 +145,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * @param outputStream
      *            The output stream.
      */
+	@Override
     public void write(OutputStream outputStream) throws IOException {
         write(new XmlWriter(outputStream, "UTF-8"));
     }

@@ -95,6 +95,7 @@ public class ServerHelper extends ConnectorHelper {
      * @param response
      *            The response to update.
      */
+	@Override
     public void handle(Request request, Response response) {
         getServer().handle(request, response);
     }

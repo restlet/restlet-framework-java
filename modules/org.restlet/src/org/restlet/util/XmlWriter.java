@@ -561,6 +561,7 @@ public final class XmlWriter extends XMLFilterImpl {
 	 *                restlet further down the filter chain raises an exception.
 	 * @see org.xml.sax.ContentHandler#characters
 	 */
+	@Override
 	public void characters(char ch[], int start, int len) throws SAXException {
 		characters(isDataFormat(), ch, start, len);
 	}
@@ -872,6 +873,7 @@ public final class XmlWriter extends XMLFilterImpl {
 	 *                further down the filter chain raises an exception.
 	 * @see org.xml.sax.ContentHandler#endDocument
 	 */
+	@Override
 	public void endDocument() throws SAXException {
 		write('\n');
 		super.endDocument();
@@ -941,6 +943,7 @@ public final class XmlWriter extends XMLFilterImpl {
 	 *                further down the filter chain raises an exception.
 	 * @see org.xml.sax.ContentHandler#endElement
 	 */
+	@Override
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
 		if (isDataFormat()) {
@@ -1094,6 +1097,7 @@ public final class XmlWriter extends XMLFilterImpl {
 	 *                restlet further down the filter chain raises an exception.
 	 * @see org.xml.sax.ContentHandler#ignorableWhitespace
 	 */
+	@Override
 	public void ignorableWhitespace(char ch[], int start, int length)
 			throws SAXException {
 		writeEsc(ch, start, length, false);
@@ -1134,6 +1138,7 @@ public final class XmlWriter extends XMLFilterImpl {
 	 *                further down the filter chain raises an exception.
 	 * @see org.xml.sax.ContentHandler#processingInstruction
 	 */
+	@Override
 	public void processingInstruction(String target, String data)
 			throws SAXException {
 		write("<?");
@@ -1244,6 +1249,7 @@ public final class XmlWriter extends XMLFilterImpl {
 	 *                restlet further down the filter chain raises an exception.
 	 * @see org.xml.sax.ContentHandler#startDocument
 	 */
+	@Override
 	public void startDocument() throws SAXException {
 		reset();
 		write("<?xml version=\"1.0\" standalone=\"yes\"?>\n\n");
@@ -1312,6 +1318,7 @@ public final class XmlWriter extends XMLFilterImpl {
 	 *                restlet further down the filter chain raises an exception.
 	 * @see org.xml.sax.ContentHandler#startElement
 	 */
+	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes atts) throws SAXException {
 		if (isDataFormat()) {

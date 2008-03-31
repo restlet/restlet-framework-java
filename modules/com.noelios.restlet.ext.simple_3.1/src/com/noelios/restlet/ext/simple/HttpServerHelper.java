@@ -46,6 +46,7 @@ public class HttpServerHelper extends SimpleServerHelper {
 	}
 
 	/** Starts the Restlet. */
+	@Override
 	public void start() throws Exception {
 		String addr = getServer().getAddress();
 		if (addr != null) {

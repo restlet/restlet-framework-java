@@ -46,6 +46,7 @@ public abstract class ChannelRepresentation extends Representation {
      * 
      * @return A stream with the representation's content.
      */
+	@Override
     public InputStream getStream() throws IOException {
         return ByteUtils.getStream(getChannel());
     }
@@ -56,6 +57,7 @@ public abstract class ChannelRepresentation extends Representation {
      * @param outputStream
      *            The output stream.
      */
+	@Override
     public void write(OutputStream outputStream) throws IOException {
         write(ByteUtils.getChannel(outputStream));
     }

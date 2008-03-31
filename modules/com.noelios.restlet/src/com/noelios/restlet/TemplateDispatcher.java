@@ -31,62 +31,63 @@ import org.restlet.util.Template;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TemplateDispatcher extends Uniform {
-    /** The helper dispatcher. */
-    private Uniform helper;
+	/** The helper dispatcher. */
+	private Uniform helper;
 
-    /** The parent context. */
-    private Context context;
+	/** The parent context. */
+	private Context context;
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The parent context.
-     * @param helper
-     *            The helper dispatcher.
-     */
-    public TemplateDispatcher(Context context, Uniform helper) {
-        this.context = context;
-        this.helper = helper;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param context
+	 *            The parent context.
+	 * @param helper
+	 *            The helper dispatcher.
+	 */
+	public TemplateDispatcher(Context context, Uniform helper) {
+		this.context = context;
+		this.helper = helper;
+	}
 
-    /**
-     * Returns the parent context.
-     * 
-     * @return The parent context.
-     */
-    public Context getContext() {
-        return this.context;
-    }
+	/**
+	 * Returns the parent context.
+	 * 
+	 * @return The parent context.
+	 */
+	public Context getContext() {
+		return this.context;
+	}
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    public void handle(Request request, Response response) {
-        Protocol protocol = request.getProtocol();
+	/**
+	 * Handles a call.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
+	 */
+	@Override
+	public void handle(Request request, Response response) {
+		Protocol protocol = request.getProtocol();
 
-        if (protocol == null) {
-            throw new UnsupportedOperationException(
-                    "Unable to determine the protocol to use for this call.");
-        } else {
-            String targetUri = request.getResourceRef().toString(true, false);
+		if (protocol == null) {
+			throw new UnsupportedOperationException(
+					"Unable to determine the protocol to use for this call.");
+		} else {
+			String targetUri = request.getResourceRef().toString(true, false);
 
-            if (targetUri.contains("{")) {
-                // Template URI detected, create the template
-                Template template = new Template(getContext().getLogger(),
-                        targetUri);
+			if (targetUri.contains("{")) {
+				// Template URI detected, create the template
+				Template template = new Template(getContext().getLogger(),
+						targetUri);
 
-                // Set the formatted target URI
-                request.setResourceRef(template.format(request, response));
-            }
+				// Set the formatted target URI
+				request.setResourceRef(template.format(request, response));
+			}
 
-            // Actually dispatch the formatted URI
-            this.helper.handle(request, response);
-        }
-    }
+			// Actually dispatch the formatted URI
+			this.helper.handle(request, response);
+		}
+	}
 }

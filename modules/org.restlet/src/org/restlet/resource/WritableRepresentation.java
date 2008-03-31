@@ -48,6 +48,7 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
      * 
      * @return A readable byte channel.
      */
+	@Override
     public ReadableByteChannel getChannel() throws IOException {
         return ByteUtils.getChannel(this);
     }
@@ -61,6 +62,7 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
      *            A writable byte channel.
      * @throws IOException
      */
+	@Override
     public abstract void write(WritableByteChannel writableChannel)
             throws IOException;
 

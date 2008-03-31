@@ -125,6 +125,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @return A stream with the representation's content.
      * @throws IOException
      */
+	@Override
     public InputStream getStream() throws IOException {
         if (getText() != null) {
             if (getCharacterSet() != null) {
@@ -145,6 +146,7 @@ public class StringRepresentation extends StreamRepresentation {
      *
      * @return The representation as a string value.
      */
+	@Override
     public String getText() {
         return (this.text == null) ? null : this.text.toString();
     }
@@ -166,6 +168,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @param characterSet
      *            The character set or null if not applicable.
      */
+	@Override
     public void setCharacterSet(CharacterSet characterSet) {
         super.setCharacterSet(characterSet);
         updateSize();
@@ -200,6 +203,7 @@ public class StringRepresentation extends StreamRepresentation {
      *            The output stream.
      * @throws IOException
      */
+	@Override
     public void write(OutputStream outputStream) throws IOException {
         if (getText() != null) {
             OutputStreamWriter osw = null;

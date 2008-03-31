@@ -136,6 +136,7 @@ public class Directory extends Finder {
 	 *            The response to filter.
 	 * @return The target resource if available or null.
 	 */
+	@Override
 	public Resource findTarget(Request request, Response response) {
 		try {
 			return Engine.getInstance().createDirectoryResource(this, request,

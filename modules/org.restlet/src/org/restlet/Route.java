@@ -174,6 +174,7 @@ public class Route extends Filter {
      * @param response
      *            The response to filter.
      */
+	@Override
     protected void beforeHandle(Request request, Response response) {
         // 1 - Parse the template variables and adjust the base reference
         if (getTemplate() != null) {

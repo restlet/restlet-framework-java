@@ -70,6 +70,7 @@ public class InputRepresentation extends StreamRepresentation {
      * 
      * @return A stream with the representation's content.
      */
+	@Override
     public synchronized InputStream getStream() throws IOException {
         InputStream result = this.inputStream;
         this.inputStream = null;
@@ -84,6 +85,7 @@ public class InputRepresentation extends StreamRepresentation {
      * 
      * @return The representation as a string value.
      */
+	@Override
     public String getText() throws IOException {
         return ByteUtils.toString(getStream(), this.getCharacterSet());
     }
@@ -94,6 +96,7 @@ public class InputRepresentation extends StreamRepresentation {
      * @param outputStream
      *            The output stream.
      */
+	@Override
     public void write(OutputStream outputStream) throws IOException {
         ByteUtils.write(getStream(), outputStream);
     }

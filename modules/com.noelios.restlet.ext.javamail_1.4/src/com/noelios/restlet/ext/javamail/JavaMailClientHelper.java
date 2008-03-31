@@ -127,6 +127,7 @@ public class JavaMailClientHelper extends ClientHelper {
      * @param response
      *            The response to update.
      */
+	@Override
     public void handle(Request request, Response response) {
         try {
             // Parse the SMTP URI

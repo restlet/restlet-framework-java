@@ -42,158 +42,165 @@ import com.noelios.restlet.http.HttpServerCall;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SimpleCall extends HttpServerCall {
-    /**
-     * Simple Request.
-     */
-    private Request request;
+	/**
+	 * Simple Request.
+	 */
+	private Request request;
 
-    /**
-     * Simple Response.
-     */
-    private Response response;
+	/**
+	 * Simple Response.
+	 */
+	private Response response;
 
-    /** Indicates if the request headers were parsed and added. */
-    private boolean requestHeadersAdded;
+	/** Indicates if the request headers were parsed and added. */
+	private boolean requestHeadersAdded;
 
-    /**
-     * Constructs this class with the specified {@link simple.http.Request} and
-     * {@link simple.http.Response}.
-     * 
-     * @param server
-     *            The parent server.
-     * @param request
-     *            Request to wrap.
-     * @param response
-     *            Response to wrap.
-     * @param confidential
-     *            Indicates if this call is acting in HTTP or HTTPS mode.
-     */
-    SimpleCall(Server server, Request request, Response response,
-            boolean confidential) {
-        super(server);
-        this.request = request;
-        this.response = response;
-        setConfidential(confidential);
-        this.requestHeadersAdded = false;
-    }
+	/**
+	 * Constructs this class with the specified {@link simple.http.Request} and
+	 * {@link simple.http.Response}.
+	 * 
+	 * @param server
+	 *            The parent server.
+	 * @param request
+	 *            Request to wrap.
+	 * @param response
+	 *            Response to wrap.
+	 * @param confidential
+	 *            Indicates if this call is acting in HTTP or HTTPS mode.
+	 */
+	SimpleCall(Server server, Request request, Response response,
+			boolean confidential) {
+		super(server);
+		this.request = request;
+		this.response = response;
+		setConfidential(confidential);
+		this.requestHeadersAdded = false;
+	}
 
-    @Override
-    public String getClientAddress() {
-        return request.getInetAddress().getHostAddress();
-    }
+	@Override
+	public String getClientAddress() {
+		return request.getInetAddress().getHostAddress();
+	}
 
-    @Override
-    public int getClientPort() {
-        Socket sock = (Socket) request
-                .getAttribute(SimplePipelineFactory.PROPERTY_SOCKET);
-        return (sock != null) ? sock.getPort() : -1;
-    }
+	@Override
+	public int getClientPort() {
+		Socket sock = (Socket) request
+				.getAttribute(SimplePipelineFactory.PROPERTY_SOCKET);
+		return (sock != null) ? sock.getPort() : -1;
+	}
 
-    /**
-     * Returns the request method.
-     * 
-     * @return The request method.
-     */
-    public String getMethod() {
-        return request.getMethod();
-    }
+	/**
+	 * Returns the request method.
+	 * 
+	 * @return The request method.
+	 */
+	@Override
+	public String getMethod() {
+		return request.getMethod();
+	}
 
-    /**
-     * Returns the request entity channel if it exists.
-     * 
-     * @return The request entity channel if it exists.
-     */
-    public ReadableByteChannel getRequestChannel() {
-        // Unsupported.
-        return null;
-    }
+	/**
+	 * Returns the request entity channel if it exists.
+	 * 
+	 * @return The request entity channel if it exists.
+	 */
+	@Override
+	public ReadableByteChannel getRequestChannel() {
+		// Unsupported.
+		return null;
+	}
 
-    /**
-     * Returns the list of request headers.
-     * 
-     * @return The list of request headers.
-     */
-    public Series<Parameter> getRequestHeaders() {
-        Series<Parameter> result = super.getRequestHeaders();
+	/**
+	 * Returns the list of request headers.
+	 * 
+	 * @return The list of request headers.
+	 */
+	@Override
+	public Series<Parameter> getRequestHeaders() {
+		Series<Parameter> result = super.getRequestHeaders();
 
-        if (!this.requestHeadersAdded) {
-            int headerCount = request.headerCount();
-            for (int i = 0; i < headerCount; i++) {
-                result.add(new Parameter(request.getName(i), request
-                        .getValue(i)));
-            }
+		if (!this.requestHeadersAdded) {
+			int headerCount = request.headerCount();
+			for (int i = 0; i < headerCount; i++) {
+				result.add(new Parameter(request.getName(i), request
+						.getValue(i)));
+			}
 
-            this.requestHeadersAdded = true;
-        }
+			this.requestHeadersAdded = true;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns the request entity stream if it exists.
-     * 
-     * @return The request entity stream if it exists.
-     */
-    public InputStream getRequestStream() {
-        try {
-            return request.getInputStream();
-        } catch (IOException ex) {
-            return null;
-        }
-    }
+	/**
+	 * Returns the request entity stream if it exists.
+	 * 
+	 * @return The request entity stream if it exists.
+	 */
+	@Override
+	public InputStream getRequestStream() {
+		try {
+			return request.getInputStream();
+		} catch (IOException ex) {
+			return null;
+		}
+	}
 
-    /**
-     * Returns the full request URI.
-     * 
-     * @return The full request URI.
-     */
-    public String getRequestUri() {
-        return request.getURI();
-    }
+	/**
+	 * Returns the full request URI.
+	 * 
+	 * @return The full request URI.
+	 */
+	@Override
+	public String getRequestUri() {
+		return request.getURI();
+	}
 
-    /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
-    public WritableByteChannel getResponseChannel() {
-        // Unsupported.
-        return null;
-    }
+	/**
+	 * Returns the response channel if it exists.
+	 * 
+	 * @return The response channel if it exists.
+	 */
+	@Override
+	public WritableByteChannel getResponseChannel() {
+		// Unsupported.
+		return null;
+	}
 
-    /**
-     * Returns the response stream if it exists.
-     * 
-     * @return The response stream if it exists.
-     */
-    public OutputStream getResponseStream() {
-        try {
-            return response.getOutputStream();
-        } catch (IOException ex) {
-            return null;
-        }
-    }
+	/**
+	 * Returns the response stream if it exists.
+	 * 
+	 * @return The response stream if it exists.
+	 */
+	@Override
+	public OutputStream getResponseStream() {
+		try {
+			return response.getOutputStream();
+		} catch (IOException ex) {
+			return null;
+		}
+	}
 
-    @Override
-    public String getVersion() {
-        return request.getMajor() + "." + request.getMinor();
-    }
+	@Override
+	public String getVersion() {
+		return request.getMajor() + "." + request.getMinor();
+	}
 
-    @Override
-    public void writeResponseHead(org.restlet.data.Response restletResponse)
-            throws IOException {
-        response.clear();
-        for (Parameter header : getResponseHeaders()) {
-            response.add(header.getName(), header.getValue());
-        }
+	@Override
+	public void writeResponseHead(org.restlet.data.Response restletResponse)
+			throws IOException {
+		response.clear();
+		for (Parameter header : getResponseHeaders()) {
+			response.add(header.getName(), header.getValue());
+		}
 
-        // Set the status
-        response.setCode(getStatusCode());
-        response.setText(getReasonPhrase());
+		// Set the status
+		response.setCode(getStatusCode());
+		response.setText(getReasonPhrase());
 
-        // To ensure that Simple doesn't switch to chunked encoding
-        if (restletResponse.getEntity() == null) {
-            response.setContentLength(0);
-        }
-    }
+		// To ensure that Simple doesn't switch to chunked encoding
+		if (restletResponse.getEntity() == null) {
+			response.setContentLength(0);
+		}
+	}
 }

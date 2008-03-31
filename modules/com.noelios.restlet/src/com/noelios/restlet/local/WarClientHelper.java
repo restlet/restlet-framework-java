@@ -94,6 +94,7 @@ public class WarClientHelper extends FileClientHelper {
      * @param response
      *                The response to update.
      */
+	@Override
     public void handle(Request request, Response response) {
         String scheme = request.getResourceRef().getScheme();
 

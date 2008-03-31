@@ -73,6 +73,7 @@ public class ClientRoute extends Route {
      *            The response to score.
      * @return The score for a given call (between 0 and 1.0).
      */
+	@Override
     public float score(Request request, Response response) {
         float result = 0F;
 

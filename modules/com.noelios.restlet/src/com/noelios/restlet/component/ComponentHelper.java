@@ -74,6 +74,7 @@ public class ComponentHelper extends ChainHelper {
      *                The JDK's logger name to use for contextual logging.
      * @return The new context.
      */
+	@Override
     public Context createContext(String loggerName) {
         return new ComponentContext(this, Logger.getLogger(loggerName));
     }
@@ -113,6 +114,7 @@ public class ComponentHelper extends ChainHelper {
      * @param response
      *                The response to update.
      */
+	@Override
     public void handle(Request request, Response response) {
         if (getFirst() != null) {
             getFirst().handle(request, response);
@@ -126,6 +128,7 @@ public class ComponentHelper extends ChainHelper {
     }
 
     /** Start callback. */
+	@Override
     public void start() throws Exception {
         // Initialization of services
         Filter lastFilter = null;
@@ -264,6 +267,7 @@ public class ComponentHelper extends ChainHelper {
     }
 
     /** Stop callback. */
+	@Override
     public void stop() throws Exception {
         // Stop the server's router
         getServerRouter().stop();

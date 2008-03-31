@@ -33,55 +33,59 @@ import org.restlet.util.Helper;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ConnectorHelper extends Helper {
-    /** The protocols simultaneously supported. */
-    private List<Protocol> protocols;
+	/** The protocols simultaneously supported. */
+	private List<Protocol> protocols;
 
-    /**
-     * Constructor.
-     */
-    public ConnectorHelper() {
-        this.protocols = null;
-    }
+	/**
+	 * Constructor.
+	 */
+	public ConnectorHelper() {
+		this.protocols = null;
+	}
 
-    /**
-     * Returns the protocols simultaneously supported.
-     * 
-     * @return The protocols simultaneously supported.
-     */
-    public List<Protocol> getProtocols() {
-        if (this.protocols == null)
-            this.protocols = new ArrayList<Protocol>();
-        return this.protocols;
-    }
+	/**
+	 * Returns the protocols simultaneously supported.
+	 * 
+	 * @return The protocols simultaneously supported.
+	 */
+	public List<Protocol> getProtocols() {
+		if (this.protocols == null)
+			this.protocols = new ArrayList<Protocol>();
+		return this.protocols;
+	}
 
-    /**
-     * Creates a new context.
-     * 
-     * @param loggerName
-     *            The JDK's logger name to use for contextual logging.
-     * @return The new context.
-     */
-    public Context createContext(String loggerName) {
-        return null;
-    }
+	/**
+	 * Creates a new context.
+	 * 
+	 * @param loggerName
+	 *            The JDK's logger name to use for contextual logging.
+	 * @return The new context.
+	 */
+	@Override
+	public Context createContext(String loggerName) {
+		return null;
+	}
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    public void handle(Request request, Response response) {
-    }
+	/**
+	 * Handles a call.
+	 * 
+	 * @param request
+	 *            The request to handle.
+	 * @param response
+	 *            The response to update.
+	 */
+	@Override
+	public void handle(Request request, Response response) {
+	}
 
-    /** Start hook. */
-    public void start() throws Exception {
-    }
+	/** Start hook. */
+	@Override
+	public void start() throws Exception {
+	}
 
-    /** Stop callback. */
-    public void stop() throws Exception {
-    }
+	/** Stop callback. */
+	@Override
+	public void stop() throws Exception {
+	}
 
 }

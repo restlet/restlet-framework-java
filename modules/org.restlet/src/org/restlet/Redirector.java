@@ -124,6 +124,7 @@ public class Redirector extends Restlet {
      * @param response
      *            The response to update.
      */
+	@Override
     public void handle(Request request, Response response) {
         // Generate the target reference
         Reference targetRef = getTargetRef(request, response);

@@ -50,6 +50,7 @@ public class ServerRouter extends Router {
     }
 
     /** Starts the Restlet. */
+	@Override
     public void start() throws Exception {
         // Attach all virtual hosts
         for (VirtualHost host : getComponent().getHosts()) {
@@ -64,6 +65,7 @@ public class ServerRouter extends Router {
 
         // If no host matches, display and error page with a precise message
         Restlet noHostMatched = new Restlet(getComponent().getContext()) {
+        	@Override
             public void handle(Request request, Response response) {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
                         "No virtual host could handle the request");

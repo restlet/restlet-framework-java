@@ -102,6 +102,7 @@ public class Restlet extends Uniform {
      * @param response
      *                The response to update.
      */
+	@Override
     public void handle(Request request, Response response) {
         init(request, response);
     }

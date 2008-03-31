@@ -117,6 +117,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * @param outputStream
      *            The stream to use when writing.
      */
+	@Override
     public void write(OutputStream outputStream) throws IOException {
         Writer tmplWriter = null;
 

@@ -189,6 +189,7 @@ public class Guard extends Filter {
      * @param response
      *                The response to update.
      */
+	@Override
     public void doHandle(Request request, Response response) {
         switch (authenticate(request)) {
         case 1:
