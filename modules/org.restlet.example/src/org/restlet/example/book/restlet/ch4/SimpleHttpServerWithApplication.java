@@ -8,7 +8,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Resource;
 
 public class SimpleHttpServerWithApplication {
     public static void main(String[] args) {
@@ -17,12 +16,9 @@ public class SimpleHttpServerWithApplication {
 
             @Override
             public synchronized Restlet createRoot() {
-                // Tiens le router récupère le contexte de l'application
+                // TODO note that the router is intantiated with the
+                // application's context.
                 Router router = new Router(getContext());
-
-                Resource resource = new Resource() {
-
-                };
 
                 // Creates a Restlet whose response to each request is "Hello,
                 // world".
@@ -33,7 +29,7 @@ public class SimpleHttpServerWithApplication {
                                 .setEntity("hello, world", MediaType.TEXT_PLAIN);
                     }
                 };
-
+                router.attach(restlet);
                 return router;
             }
         };
