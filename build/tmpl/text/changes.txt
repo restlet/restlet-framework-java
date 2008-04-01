@@ -19,7 +19,7 @@ Changes log
 
 [Other changes] 
  - Added condition on javadocs flag for the stage-classic task in the Ant 
-   build script. reported by Kevin Conaway.
+   build script. Reported by Kevin Conaway.
 
 1.0.8 (2008-02-29)
 [Bugs fixed]
