@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+ - 1.1 Milestone 3 (2008-04-01)
     - Bugs fixed
         - Fixed setRedirectRef(String) method which wasn't supporting 
           relative URIs when no base reference was available on the 
