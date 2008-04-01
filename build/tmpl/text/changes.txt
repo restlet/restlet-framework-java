@@ -5,6 +5,13 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+
+[Enhancements]
+
+[Other changes] 
+
+1.0.9 (2008-04-01)
+[Bugs fixed]
  - Fixed potential NPE in Server.stop() method. Reported by Andrew Cowling.
  - Prevented potential NPE in DomRepresentation constructor
    if a null representation is passed. Reported by Dhabaleswar Jena.
