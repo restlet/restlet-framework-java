@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - Spring Framework
+Bundle-SymbolicName: org.restlet.ext.spring
+Bundle-Version: 1.1
+Bundle-Vendor: Noelios Consulting
+Require-Bundle: org.restlet;visibility:=reexport,
+ org.springframework;visibility:=reexport
+Export-Package: org.restlet.ext.spring

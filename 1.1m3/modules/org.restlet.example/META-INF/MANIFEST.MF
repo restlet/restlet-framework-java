@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Examples
+Bundle-SymbolicName: org.restlet.example
+Bundle-Version: 1.1
+Bundle-Vendor: Noelios Consulting
+Export-Package: org.restlet.example
+Require-Bundle: com.noelios.restlet,
+ org.restlet.ext.json;visibility:=reexport,
+ org.restlet.ext.jaxrs;visibility:=reexport,
+ org.junit4,
+ com.db4o,
+ org.restlet.ext.freemarker,
+ org.restlet.ext.velocity,
+ org.restlet.ext.jaxb,
+ org.restlet.ext.jibx

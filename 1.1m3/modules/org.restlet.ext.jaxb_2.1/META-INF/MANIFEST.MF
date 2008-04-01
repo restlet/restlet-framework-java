@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - JAXB
+Bundle-SymbolicName: org.restlet.ext.jaxb
+Bundle-Version: 1.1
+Bundle-Vendor: Noelios Consulting
+Require-Bundle: javax.xml.bind;visibility:=reexport,
+ javax.xml.stream;visibility:=reexport,
+ org.restlet;visibility:=reexport
+Export-Package: org.restlet.ext.jaxb

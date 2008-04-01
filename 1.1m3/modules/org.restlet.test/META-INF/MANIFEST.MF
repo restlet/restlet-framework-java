@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet API - Tests
+Bundle-SymbolicName: org.restlet.test
+Bundle-Version: 1.1
+Bundle-Vendor: Noelios Consulting
+Require-Bundle: com.noelios.restlet.ext.grizzly,
+ com.noelios.restlet.ext.jetty,
+ com.noelios.restlet.ext.net,
+ org.junit4;visibility:=reexport,
+ org.restlet.example;visibility:=reexport,
+ org.restlet.ext.atom;visibility:=reexport,
+ org.restlet.ext.freemarker;visibility:=reexport,
+ org.restlet.ext.jaxrs;visibility:=reexport,
+ org.restlet.ext.velocity;visibility:=reexport,
+ org.restlet.ext.spring;visibility:=reexport,
+ org.restlet.ext.wadl;visibility:=reexport,
+ org.restlet.ext.jaxb;visibility:=reexport
+

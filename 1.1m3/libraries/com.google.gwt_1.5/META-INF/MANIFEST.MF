@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Google Web Toolkit
+Bundle-SymbolicName: com.google.gwt
+Bundle-Version: 1.5
+Bundle-ClassPath: com.google.gwt.jar
+Bundle-Vendor: Google Inc.
+Export-Package: com.google.gwt

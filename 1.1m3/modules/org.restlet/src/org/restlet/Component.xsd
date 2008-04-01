@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.restlet.org/schemas/1.1/Component"
+	xmlns:tns="http://www.restlet.org/schemas/1.1/Component"
+	elementFormDefault="qualified">
+
+	<!--  
+		* Copyright 2005-2008 Noelios Consulting.
+		* 
+		* The contents of this file are subject to the terms of the Common Development
+		* and Distribution License (the "License"). You may not use this file except in
+		* compliance with the License.
+		* 
+		* You can obtain a copy of the license at
+		* http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+		* language governing permissions and limitations under the License.
+		* 
+		* When distributing Covered Code, include this CDDL HEADER in each file and
+		* include the License file at http://www.opensource.org/licenses/cddl1.txt If
+		* applicable, add the following below this CDDL HEADER, with the fields
+		* enclosed by brackets "[]" replaced with your own identifying information:
+		* Portions Copyright [yyyy] [name of copyright owner]
+	-->
+
+	<!--
+		* ===================================================
+		* Schema for the configuration of a Restlet Component 
+		* ===================================================
+	-->
+
+	<element name="component" type="tns:ComponentType" />
+
+	<complexType name="AttachType">
+		<attribute name="uriPattern" type="string" use="optional" />
+		<attribute name="targetClass" type="string" use="optional" />
+		<attribute name="targetDescriptor" type="string" use="optional" />
+		<attribute name="default" type="boolean" use="optional" />
+		<attribute name="matchingMode" type="int" use="optional" />
+		<attribute name="defaultVariableType" type="int" use="optional" />
+	</complexType>
+
+	<complexType name="ClientType">
+		<complexContent>
+			<extension base="tns:ConnectorType" />
+		</complexContent>
+	</complexType>
+
+	<complexType name="ComponentType">
+		<sequence>
+			<element name="client" type="tns:ClientType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<element name="defaultHost" type="tns:VirtualHostType"
+				minOccurs="0" maxOccurs="1" />
+			<element name="host" type="tns:VirtualHostType"
+				minOccurs="0" maxOccurs="unbounded" />
+			<element name="internalRouter" type="tns:RouterType"
+				minOccurs="0" maxOccurs="1" />
+			<element name="logService" type="tns:LogServiceType"
+				minOccurs="0" maxOccurs="1" />
+			<element name="server" type="tns:ServerType" minOccurs="0"
+				maxOccurs="unbounded" />
+			<element name="statusService" type="tns:StatusServiceType"
+				minOccurs="0" maxOccurs="1" />
+		</sequence>
+	</complexType>
+
+	<complexType name="ConnectorType" abstract="true">
+		<attribute name="protocol" type="string" use="optional" />
+		<attribute name="protocols" type="tns:ProtocolListType"
+			use="optional">
+		</attribute>
+	</complexType>
+
+	<complexType name="LogServiceType">
+		<attribute name="enabled" type="boolean" use="optional" />
+		<attribute name="identityCheck" type="boolean" use="optional" />
+		<attribute name="logFormat" type="string" use="optional" />
+		<attribute name="loggerName" type="string" use="optional" />
+	</complexType>
+
+	<complexType name="RouterType">
+		<sequence>
+			<element name="attach" type="tns:AttachType" minOccurs="1"
+				maxOccurs="unbounded" />
+		</sequence>
+
+		<attribute name="defaultMatchingMode" type="int" use="optional" />
+		<attribute name="maxAttempts" type="int" use="optional" />
+		<attribute name="requiredScore" type="float" use="optional" />
+		<attribute name="retryDelay" type="long" use="optional" />
+		<attribute name="routingMode" type="int" use="optional" />
+	</complexType>
+
+	<complexType name="ServerType">
+		<complexContent>
+			<extension base="tns:ConnectorType">
+				<attribute name="address" type="string" use="optional" />
+				<attribute name="port" type="int" use="optional" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="StatusServiceType">
+		<attribute name="contactEmail" type="string" use="optional" />
+		<attribute name="enabled" type="boolean" use="optional" />
+		<attribute name="homeRef" type="string" use="optional" />
+		<attribute name="overwrite" type="boolean" use="optional" />
+	</complexType>
+
+	<complexType name="VirtualHostType">
+		<complexContent>
+			<extension base="tns:RouterType">
+				<attribute name="hostDomain" type="string"
+					use="optional" />
+				<attribute name="hostPort" type="string" use="optional" />
+				<attribute name="hostScheme" type="string"
+					use="optional" />
+				<attribute name="name" type="string" use="optional" />
+				<attribute name="resourceDomain" type="string"
+					use="optional" />
+				<attribute name="resourcePort" type="string"
+					use="optional" />
+				<attribute name="resourceScheme" type="string"
+					use="optional" />
+				<attribute name="serverAddress" type="string"
+					use="optional" />
+				<attribute name="serverPort" type="string"
+					use="optional" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<simpleType name="ProtocolListType">
+		<list itemType="token" />
+	</simpleType>
+
+</schema>

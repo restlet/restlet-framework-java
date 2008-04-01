@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Noelios Restlet Engine - Extension - GWT
+Bundle-SymbolicName: com.noelios.restlet.ext.gwt
+Bundle-Version: 1.1
+Bundle-Vendor: Noelios Consulting
+Require-Bundle: com.noelios.restlet.ext.servlet;visibility:=reexport
+Export-Package: com.noelios.restlet.ext.gwt
