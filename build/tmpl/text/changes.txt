@@ -16,23 +16,27 @@ Changes log
         - Fixed directory redirections in DirectoryResource class.
         - Fixed NPE in RestletFrameworkServlet. Reported by Yuri de Wit
           and fixed by Rhett Sutphin.
-        - Fixed socket closing issues with the internal HTTP connectors.
-          Reported and fixed by Kevin Conaway.
+        - Fixed socket closing issues with the internal HTTP 
+          connectors. Reported and fixed by Kevin Conaway.
         - Fixed potential NPE in CLAP connector. Reported by Rob 
           Heittman. 
         - Fixed potential NPE in Freemarker extension when the 
           template is provided under the form of a representation.
-        - Request.getProtocol() now returns the protocol of the targetRef 
-          instead of the baseRef when the targetRef itself is absolute.
-          Patch contributed by Jeroen Goubert (Schaubroeck NV).
+        - Request.getProtocol() now returns the protocol of the 
+          targetRef instead of the baseRef when the targetRef itself is
+          absolute. Patch contributed by Jeroen Goubert (Schaubroeck).
         - When using new Reference(baseref, "absolute-path"), calling 
-          getTargetRef() now returns a reference with the baseRef cleared. 
-          Patch contributed by Jeroen Goubert (Schaubroeck NV).
+          getTargetRef() now returns a reference with the baseRef 
+          cleared. Patch contributed by Jeroen Goubert (Schaubroeck).
     - API Enhancements
+        - Added OAuth extension as a pluggable authentication scheme.
+          Contributed by Adam Rosien.
+        - Added XDB extension providing integration with Oracle 
+          embedded JVM. Contributed by Marcelo Ochoa.
         - Made the org.restlet.util.Resolver generic and used it in 
           Guard to allow the user to provide a secret resolver without
           needing to subclass Guard.
-        - DomRepresentation.getDocument() new creates a new empty 
+        - DomRepresentation.getDocument() now creates a new empty 
           document if no document is available or can't be parsed.
         - Reference class now enforces the usage of valid URI 
           characters only. Suggested by Avi Flax.
@@ -132,7 +136,7 @@ Changes log
         - Updated Reference's Javadocs to mention that getters do not 
           automatically do URI decoding. Suggested by Paul J. Lucas.
         - Refactored NRE helpers hiearchy to take advantage of generics
-          and remove duplicatations.
+          and remove duplications.
         - Added SSL unit test contributed by Bruno Harbulot.
         - Completed the list of known media-types with Tomcat's 
           entries. Reported and contributed by Alex Milowski.
@@ -149,6 +153,7 @@ Changes log
           the request/reponse related ones. This will allow the usage
           of separate reader / worker / writer threads to work on the
           same request/response cycle. Reported by Tim Peierls.
+
  - 1.1 Milestone 2 (2008-02-29)
     - Bugs fixed
         - Fixed NPE in Connector class. Reported by Rob Heittman and
