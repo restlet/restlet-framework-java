@@ -173,7 +173,8 @@ public class JaxRsApplication extends Application {
     public void attach(ApplicationConfig appConfig, boolean clearMetadataIfFirst)
             throws IllegalArgumentException {
         if (clearMetadataIfFirst && this.jaxRsRouter.isEmpty()) {
-            this.getMetadataService().clearExtensions();
+            // this.getMetadataService().clearExtensions();
+            // wait for patch
         }
         this.addExtensionMappings(appConfig);
         this.jaxRsRouter.attach(appConfig);
