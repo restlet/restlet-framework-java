@@ -38,8 +38,10 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
         MessageBodyReaderSet {
 
     private volatile List<MessageBodyReader<?>> messageBodyReaders = new ArrayList<MessageBodyReader<?>>();
+    // LATER allow concurent access.
 
     private volatile List<MessageBodyWriter<?>> messageBodyWriters = new ArrayList<MessageBodyWriter<?>>();
+    // LATER allow concurent access.
 
     /**
      * Adds the given provider to this EntityProviders. If the Provider is not

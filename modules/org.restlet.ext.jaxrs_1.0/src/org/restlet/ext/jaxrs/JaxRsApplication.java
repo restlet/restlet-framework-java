@@ -173,8 +173,7 @@ public class JaxRsApplication extends Application {
     public void attach(ApplicationConfig appConfig, boolean clearMetadataIfFirst)
             throws IllegalArgumentException {
         if (clearMetadataIfFirst && this.jaxRsRouter.isEmpty()) {
-            // this.getMetadataService().clearExtensions();
-            // wait for a patch
+            this.getMetadataService().clearExtensions();
         }
         this.addExtensionMappings(appConfig);
         this.jaxRsRouter.attach(appConfig);
@@ -326,5 +325,15 @@ public class JaxRsApplication extends Application {
      */
     public void setRoleChecker(RoleChecker roleChecker) {
         this.jaxRsRouter.setRoleChecker(roleChecker);
+    }
+
+    /**
+     * Returns the exception handler for this JaxRsApplication. You may change
+     * the Restlets for some exception handling.
+     * 
+     * @return the exception handler for this JaxRsApplication.
+     */
+    public ExceptionHandler getExcHandler() {
+        return this.jaxRsRouter.getExcHandler();
     }
 }

@@ -107,10 +107,10 @@ import org.restlet.resource.StringRepresentation;
  * <ul>
  * <li>The variable names in this class are often the same as in the
  * JAX-RS-Definition.</li>
- * <li>This class is a subclass of {@link JaxRsRouterHelpMethods}. The methods
- * to handle exceptions while identifying the method that should handle the
- * request and in other situations are moved to that super class. So this class
- * contains only the real logic code and is more well arranged. </li>
+ * <li>This class is a subclass of {@link ExceptionHandler}. The methods to
+ * handle exceptions while identifying the method that should handle the request
+ * and in other situations are moved to that super class. So this class contains
+ * only the real logic code and is more well arranged. </li>
  * </ul>
  * <p>
  * <!--LATER The class JaxRsRouter is not thread save while attach or detach
@@ -126,17 +126,19 @@ import org.restlet.resource.StringRepresentation;
  * 
  * @author Stephan Koops
  */
-public class JaxRsRouter extends JaxRsRouterHelpMethods {
+public class JaxRsRouter extends Restlet {
 
     /**
      * This set must only changed by adding a root resource class to this
      * JaxRsRouter.
      */
-    private volatile Set<RootResourceClass> rootResourceClasses = new HashSet<RootResourceClass>();
+    private final Set<RootResourceClass> rootResourceClasses = new HashSet<RootResourceClass>();
+
+    // LATER allow concurent access.
 
     private volatile RoleChecker roleChecker;
 
-    private volatile EntityProviders entityProviders = new EntityProviders();
+    private final EntityProviders entityProviders = new EntityProviders();
 
     /**
      * This {@link Set} contains the available
@@ -146,7 +148,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      */
     private final Collection<ContextResolver<?>> contextResolvers = new HashSet<ContextResolver<?>>();
 
-    private volatile WrapperFactory wrapperFactory;
+    private final WrapperFactory wrapperFactory;
+
+    private final ExceptionHandler excHandler;
 
     /**
      * Creates a new JaxRsRouter with the {@link ApplicationConfig}. You can
@@ -174,7 +178,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
     public JaxRsRouter(Context context, ApplicationConfig appConfig,
             RoleChecker roleChecker) throws IllegalArgumentException {
         super(context);
-        this.wrapperFactory = new WrapperFactory(getContext().getLogger());
+        this.excHandler = new ExceptionHandler(getLogger());
+        this.wrapperFactory = new WrapperFactory(getLogger());
         this.loadDefaultProviders();
         if (appConfig != null)
             this.attach(appConfig);
@@ -451,7 +456,11 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
                 invokeMethodAndHandleResult(resourceMethod, resourceObject,
                         callContext);
             } catch (WebApplicationException e) {
-                handleWebAppExc(e, callContext, null);
+                // the message of the Exception is not used in the
+                // WebApplicationException
+                jaxRsRespToRestletResp(e.getResponse(), callContext, null);
+                // LATER MediaType rausfinden
+                throw new RequestHandledException();
                 // Exception was handled and data were set into the Response.
             }
         } catch (RequestHandledException e) {
@@ -531,7 +540,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         }
         // (d)
         if (eAndCs.isEmpty())
-            handleRootResourceNotFound(u);
+            excHandler.rootResourceNotFound(u);
         // (e) and (f)
         RootResourceClass tClass = AlgorithmUtil
                 .getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eAndCs);
@@ -570,31 +579,31 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         } catch (WebApplicationException e) {
             throw e;
         } catch (NoMessageBodyReaderException e) {
-            throw handleNoMessageBodyReader(callContext, e);
+            throw excHandler.noMessageBodyReader(callContext, e);
         } catch (RuntimeException e) {
-            throw handleExecption(e, null, callContext,
+            throw excHandler.runtimeExecption(e, null, callContext,
                     "Could not create new instance of root resource class");
         } catch (MissingAnnotationException e) {
-            throw handleExecption(e, null, callContext,
+            throw excHandler.missingAnnotation(e, callContext,
                     "Could not create new instance of root resource class");
         } catch (InstantiateException e) {
-            throw handleExecption(e, null, callContext,
+            throw excHandler.instantiateExecption(e, callContext,
                     "Could not create new instance of root resource class");
         } catch (InvocationTargetException e) {
-            throw handleExecption(e, null, callContext,
+            throw excHandler.invocationTargetExecption(e, callContext,
                     "Could not create new instance of root resource class");
         } catch (ConvertRepresentationException e) {
-            throw handleConvertRepresentationExc(e);
+            throw excHandler.convertRepresentationExc(e);
         } catch (ConvertHeaderParamException e) {
-            throw handleConvertHeaderParamExc(e);
+            throw excHandler.convertHeaderParamExc(e);
         } catch (ConvertPathParamException e) {
-            throw handleConvertPathParamExc(e);
+            throw excHandler.convertPathParamExc(e);
         } catch (ConvertMatrixParamException e) {
-            throw handleConvertMatrixParamExc(e);
+            throw excHandler.convertMatrixParamExc(e);
         } catch (ConvertQueryParamException e) {
-            throw handleConvertQueryParamExc(e);
+            throw excHandler.convertQueryParamExc(e);
         } catch (ConvertCookieParamException e) {
-            throw handleConvertCookieParamExc(e);
+            throw excHandler.convertCookieParamExc(e);
         }
         Object jaxRsResObj1 = o.getJaxRsResourceObject();
         callContext.addForAncestor(jaxRsResObj1, rrcAndRemPath.matchedUriPath);
@@ -624,7 +633,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             }
             // (e) If E is empty -> HTTP 404
             if (eWithMethod.isEmpty())
-                handleResourceNotFound(o, u);
+                excHandler.resourceNotFound(o, u);
             // (f) and (g) sort E, use first member of E
             ResourceMethodOrLocator firstMeth = AlgorithmUtil
                     .getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eWithMethod);
@@ -650,31 +659,32 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             } catch (WebApplicationException e) {
                 throw e;
             } catch (RuntimeException e) {
-                throw handleExecption(e, subResourceLocator, callContext,
+                throw excHandler.runtimeExecption(e, subResourceLocator,
+                        callContext,
                         "Could not create new instance of resource class");
             } catch (MissingAnnotationException e) {
-                throw handleExecption(e, subResourceLocator, callContext,
+                throw excHandler.missingAnnotation(e, callContext,
                         "Could not create new instance of resource class");
             } catch (InstantiateException e) {
-                throw handleExecption(e, subResourceLocator, callContext,
+                throw excHandler.instantiateExecption(e, callContext,
                         "Could not create new instance of resource class");
             } catch (InvocationTargetException e) {
-                throw handleExecption(e, subResourceLocator, callContext,
+                throw excHandler.invocationTargetExecption(e, callContext,
                         "Could not create new instance of resource class");
             } catch (NoMessageBodyReaderException nmbre) {
-                throw handleNoMessageBodyReader(callContext, nmbre);
+                throw excHandler.noMessageBodyReader(callContext, nmbre);
             } catch (ConvertRepresentationException e) {
-                throw handleConvertRepresentationExc(e);
+                throw excHandler.convertRepresentationExc(e);
             } catch (ConvertHeaderParamException e) {
-                throw handleConvertHeaderParamExc(e);
+                throw excHandler.convertHeaderParamExc(e);
             } catch (ConvertPathParamException e) {
-                throw handleConvertPathParamExc(e);
+                throw excHandler.convertPathParamExc(e);
             } catch (ConvertMatrixParamException e) {
-                throw handleConvertMatrixParamExc(e);
+                throw excHandler.convertMatrixParamExc(e);
             } catch (ConvertQueryParamException e) {
-                throw handleConvertQueryParamExc(e);
+                throw excHandler.convertQueryParamExc(e);
             } catch (ConvertCookieParamException e) {
-                throw handleConvertCookieParamExc(e);
+                throw excHandler.convertCookieParamExc(e);
             }
             resClass = o.getResourceClass();
             // (j) Go to step 2a (repeat for)
@@ -711,7 +721,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         Collection<ResourceMethod> resourceMethods = resourceClass
                 .getMethodsForPath(u);
         if (resourceMethods.isEmpty())
-            handleResourceMethodNotFound(resourceClass, u);
+            excHandler.resourceMethodNotFound(resourceClass, u);
         // (a) 2: remove methods not support the given method
         boolean alsoGet = httpMethod.equals(Method.HEAD);
         AlgorithmUtil.removeNotSupportedHttpMethod(resourceMethods, httpMethod,
@@ -723,7 +733,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
                         allowedMethods);
                 throw new RequestHandledException();
             }
-            handleMethodNotAllowed(httpMethod, resourceClass, u);
+            excHandler.methodNotAllowed(httpMethod, resourceClass, u);
         }
         // (a) 3
         if (givenMediaType != null) {
@@ -734,7 +744,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
                     methodIter.remove();
             }
             if (resourceMethods.isEmpty())
-                handleUnsupportedMediaType(httpMethod, resourceClass, u,
+                excHandler.unsupportedMediaType(httpMethod, resourceClass, u,
                         givenMediaType);
         }
         // (a) 4
@@ -747,7 +757,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
                 methodIter.remove();
         }
         if (resourceMethods.isEmpty()) {
-            handleNoResourceMethodForAccMediaTypes(httpMethod, resourceClass, u);
+            excHandler.noResourceMethodForAccMediaTypes(httpMethod,
+                    resourceClass, u);
         }
         // (b) and (c)
         ResourceMethod bestResourceMethod = AlgorithmUtil.getBestMethod(
@@ -781,31 +792,31 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             throw e;
         } catch (InvocationTargetException ite) {
             // LATER if RuntimeException, then propagate and not handle here?
-            throw handleExecption(ite, resourceMethod, callContext,
+            throw excHandler.invocationTargetExecption(ite, callContext,
                     "Exception in resource method");
         } catch (RuntimeException e) {
-            throw handleExecption(e, resourceMethod, callContext,
+            throw excHandler.runtimeExecption(e, resourceMethod, callContext,
                     "Can not invoke the resource method");
         } catch (MethodInvokeException e) {
-            throw handleExecption(e, resourceMethod, callContext,
+            throw excHandler.methodInvokeException(e, callContext,
                     "Can not invoke the resource method");
         } catch (MissingAnnotationException e) {
-            throw handleExecption(e, resourceMethod, callContext,
+            throw excHandler.missingAnnotation(e, callContext,
                     "Can not invoke the resource method");
         } catch (NoMessageBodyReaderException nmbre) {
-            throw handleNoMessageBodyReader(callContext, nmbre);
+            throw excHandler.noMessageBodyReader(callContext, nmbre);
         } catch (ConvertRepresentationException e) {
-            throw handleConvertRepresentationExc(e);
+            throw excHandler.convertRepresentationExc(e);
         } catch (ConvertHeaderParamException e) {
-            throw handleConvertHeaderParamExc(e);
+            throw excHandler.convertHeaderParamExc(e);
         } catch (ConvertPathParamException e) {
-            throw handleConvertPathParamExc(e);
+            throw excHandler.convertPathParamExc(e);
         } catch (ConvertMatrixParamException e) {
-            throw handleConvertMatrixParamExc(e);
+            throw excHandler.convertMatrixParamExc(e);
         } catch (ConvertQueryParamException e) {
-            throw handleConvertQueryParamExc(e);
+            throw excHandler.convertQueryParamExc(e);
         } catch (ConvertCookieParamException e) {
-            throw handleConvertCookieParamExc(e);
+            throw excHandler.convertCookieParamExc(e);
         }
         Response restletResponse = callContext.getResponse();
         if (result == null) { // no representation
@@ -841,10 +852,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * Converts the given JAX-RS {@link javax.ws.rs.core.Response} to a Restlet
      * {@link Response}.
      * 
-     * @see JaxRsRouterHelpMethods#jaxRsRespToRestletResp(javax.ws.rs.core.Response,
+     * @see ExceptionHandler#jaxRsRespToRestletResp(javax.ws.rs.core.Response,
      *      CallContext, AbstractMethodWrapper)
      */
-    @Override
     void jaxRsRespToRestletResp(javax.ws.rs.core.Response jaxRsResponse,
             CallContext callContext, AbstractMethodWrapper resourceMethod)
             throws RequestHandledException {
@@ -916,8 +926,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         MessageBodyWriter<?> mbw = mbws.getBestWriter(respMediaTypes,
                 accMediaTypes);
         if (mbw == null)
-            handleNoMessageBodyWriter(callContext.getResponse(), accMediaTypes,
-                    entityClass);
+            excHandler.noMessageBodyWriter(callContext.getResponse(),
+                    accMediaTypes, entityClass);
         MediaType mediaType;
         if (responseMediaType != null)
             mediaType = responseMediaType;
@@ -974,8 +984,8 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
                     m.add(MediaType.getMostSpecific(prod, acc));
         // 6.
         if (m.isEmpty())
-            handleNotAcceptableWhileDetermineMediaType(
-                    callContext.getRequest(), callContext.getResponse());
+            excHandler.notAcceptableWhileDetermineMediaType(callContext
+                    .getRequest(), callContext.getResponse());
         return m;
     }
 
@@ -1001,7 +1011,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))
             return MediaType.APPLICATION_OCTET_STREAM;
         // 9.
-        throw handleNotAcceptableWhileDetermineMediaType(callContext
+        throw excHandler.notAcceptableWhileDetermineMediaType(callContext
                 .getRequest(), callContext.getResponse());
     }
 
@@ -1128,5 +1138,14 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      */
     public boolean isEmpty() {
         return this.rootResourceClasses.isEmpty();
+    }
+
+    /**
+     * Returns the exception handler for this JaxRsRouter.
+     * 
+     * @return the exception handler for this JaxRsRouter.
+     */
+    public ExceptionHandler getExcHandler() {
+        return this.excHandler;
     }
 }

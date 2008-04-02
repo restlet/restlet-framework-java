@@ -21,11 +21,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -39,6 +39,9 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
+import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
@@ -49,33 +52,14 @@ import org.restlet.ext.jaxrs.internal.wrappers.ResourceObject;
 import org.restlet.resource.StringRepresentation;
 
 /**
- * This class contains only the methods to handle exceptions while identifying
- * the method that should handle the request and in other situations. Therefor
- * it contains some Restlets that handles this exceptions. The
- * {@link JaxRsRouter} is a subclass of this class. By moving all this methods
- * and so on to this super class, the class {@link JaxRsRouter} contains only
- * the real logic code and is more well arranged.
+ * This class contains the methods to handle exceptions occuring in the
+ * {@link JaxRsRouter}, e.g. while identifying the method that should handle
+ * the request.<br>
+ * Therefor it contains some Restlets that handles this exceptions.
  * 
  * @author Stephan Koops
  */
-abstract class JaxRsRouterHelpMethods extends Restlet {
-
-    /**
-     * This exception is thrown, when the algorithm "Matching Requests to
-     * Resource Methods" in Section 2.5 of JSR-311-Spec could not find a method.
-     * 
-     * @author Stephan Koops
-     */
-    class CouldNotFindMethodException extends Exception {
-        private static final long serialVersionUID = -8436314060905405146L;
-
-        Restlet errorRestlet;
-
-        CouldNotFindMethodException(Restlet errorRestlet, String message) {
-            super(message);
-            this.errorRestlet = errorRestlet;
-        }
-    }
+public class ExceptionHandler {
 
     /**
      * Instances of this class have a given status they return, when
@@ -169,8 +153,98 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
 
     private volatile Restlet errorRestletUnsupportedMediaType = DEFAULT_UNSUPPORTED_MEDIA_TYPE_RESTLET;
 
-    JaxRsRouterHelpMethods(Context context) {
-        super(context);
+    private final Logger logger;
+
+    ExceptionHandler(Logger logger) {
+        this.logger = logger;
+    }
+
+    /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException convertCookieParamExc(
+            ConvertCookieParamException cpe) throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response
+                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        StringWriter stw = new StringWriter();
+        cpe.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cpe, rb.build());
+    }
+
+    /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException convertHeaderParamExc(
+            ConvertHeaderParamException cpe) throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response
+                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        StringWriter stw = new StringWriter();
+        cpe.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cpe, rb.build());
+    }
+
+    /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException convertMatrixParamExc(
+            ConvertMatrixParamException cpe) throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
+        StringWriter stw = new StringWriter();
+        cpe.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cpe, rb.build());
+    }
+
+    /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException convertPathParamExc(ConvertPathParamException cpe)
+            throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
+        StringWriter stw = new StringWriter();
+        cpe.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cpe, rb.build());
+    }
+
+    /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException convertQueryParamExc(ConvertQueryParamException cpe)
+            throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response
+                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        StringWriter stw = new StringWriter();
+        cpe.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cpe, rb.build());
+    }
+
+    /**
+     * @param cpe
+     * @throws WebApplicationException
+     */
+    RequestHandledException convertRepresentationExc(
+            ConvertRepresentationException cre) throws WebApplicationException {
+        // LATER use Restlet to handle
+        ResponseBuilder rb = javax.ws.rs.core.Response
+                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        StringWriter stw = new StringWriter();
+        cre.printStackTrace(new PrintWriter(stw));
+        rb.entity(stw.toString());
+        throw new WebApplicationException(cre, rb.build());
     }
 
     /**
@@ -230,99 +304,10 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
     }
 
     /**
-     * @param cpe
-     * @throws WebApplicationException
-     */
-    RequestHandledException handleConvertQueryParamExc(
-            ConvertQueryParamException cpe) throws WebApplicationException {
-        // LATER use Restlet to handle
-        ResponseBuilder rb = javax.ws.rs.core.Response
-                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
-        StringWriter stw = new StringWriter();
-        cpe.printStackTrace(new PrintWriter(stw));
-        rb.entity(stw.toString());
-        throw new WebApplicationException(cpe, rb.build());
-    }
-
-    /**
-     * @param cpe
-     * @throws WebApplicationException
-     */
-    RequestHandledException handleConvertMatrixParamExc(
-            ConvertMatrixParamException cpe) throws WebApplicationException {
-        // LATER use Restlet to handle
-        ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
-        StringWriter stw = new StringWriter();
-        cpe.printStackTrace(new PrintWriter(stw));
-        rb.entity(stw.toString());
-        throw new WebApplicationException(cpe, rb.build());
-    }
-
-    /**
-     * @param cpe
-     * @throws WebApplicationException
-     */
-    RequestHandledException handleConvertHeaderParamExc(
-            ConvertHeaderParamException cpe) throws WebApplicationException {
-        // LATER use Restlet to handle
-        ResponseBuilder rb = javax.ws.rs.core.Response
-                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
-        StringWriter stw = new StringWriter();
-        cpe.printStackTrace(new PrintWriter(stw));
-        rb.entity(stw.toString());
-        throw new WebApplicationException(cpe, rb.build());
-    }
-
-    /**
-     * @param cpe
-     * @throws WebApplicationException
-     */
-    RequestHandledException handleConvertPathParamExc(
-            ConvertPathParamException cpe) throws WebApplicationException {
-        // LATER use Restlet to handle
-        ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
-        StringWriter stw = new StringWriter();
-        cpe.printStackTrace(new PrintWriter(stw));
-        rb.entity(stw.toString());
-        throw new WebApplicationException(cpe, rb.build());
-    }
-
-    /**
-     * @param cpe
-     * @throws WebApplicationException
-     */
-    RequestHandledException handleConvertCookieParamExc(
-            ConvertCookieParamException cpe) throws WebApplicationException {
-        // LATER use Restlet to handle
-        ResponseBuilder rb = javax.ws.rs.core.Response
-                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
-        StringWriter stw = new StringWriter();
-        cpe.printStackTrace(new PrintWriter(stw));
-        rb.entity(stw.toString());
-        throw new WebApplicationException(cpe, rb.build());
-    }
-
-    /**
-     * @param cpe
-     * @throws WebApplicationException
-     */
-    RequestHandledException handleConvertRepresentationExc(
-            ConvertRepresentationException cre) throws WebApplicationException {
-        // LATER use Restlet to handle
-        ResponseBuilder rb = javax.ws.rs.core.Response
-                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
-        StringWriter stw = new StringWriter();
-        cre.printStackTrace(new PrintWriter(stw));
-        rb.entity(stw.toString());
-        throw new WebApplicationException(cre, rb.build());
-    }
-
-    /**
      * Handles the given Exception, catched by an invoke of a resource method or
      * a creation if a sub resource object.
      * 
      * @param exception
-     * @param resourceMethod
      * @param callContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
@@ -334,17 +319,61 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
      *                 the request was handled.
      * @throws RequestHandledException
      */
-    RequestHandledException handleExecption(Throwable exception,
-            AbstractMethodWrapper resourceMethod, CallContext callContext,
+    RequestHandledException instantiateExecption(
+            InstantiateException exception, CallContext callContext,
             String logMessage) throws RequestHandledException {
-        if (exception instanceof InvocationTargetException)
-            exception = exception.getCause();
-        if (exception instanceof WebApplicationException) {
-            WebApplicationException webAppExc = (WebApplicationException) exception;
-            throw handleWebAppExc(webAppExc, callContext, resourceMethod);
-        }
         callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-        getLogger().log(Level.WARNING, logMessage, exception.getCause());
+        logger.log(Level.WARNING, logMessage, exception.getCause());
+        exception.printStackTrace();
+        throw new RequestHandledException();
+    }
+
+    /**
+     * Handles the given Exception, catched by an invoke of a resource method or
+     * a creation if a sub resource object.
+     * 
+     * @param exception
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
+     * @param methodName
+     * @param logMessage
+     * @throws RequestHandledException
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
+     * @throws RequestHandledException
+     */
+    RequestHandledException invocationTargetExecption(
+            InvocationTargetException exception, CallContext callContext,
+            String logMessage) throws RequestHandledException {
+        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+        logger.log(Level.WARNING, logMessage, exception.getCause());
+        exception.printStackTrace();
+        throw new RequestHandledException();
+    }
+
+    /**
+     * Handles the given Exception, catched by an invoke of a resource method or
+     * a creation if a sub resource object.
+     * 
+     * @param exception
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
+     * @param methodName
+     * @param logMessage
+     * @throws RequestHandledException
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
+     * @throws RequestHandledException
+     */
+    RequestHandledException methodInvokeException(
+            MethodInvokeException exception, CallContext callContext,
+            String logMessage) throws RequestHandledException {
+        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+        logger.log(Level.WARNING, logMessage, exception.getCause());
         exception.printStackTrace();
         throw new RequestHandledException();
     }
@@ -355,7 +384,7 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
      * @param u
      * @throws CouldNotFindMethodException
      */
-    void handleMethodNotAllowed(org.restlet.data.Method httpMethod,
+    void methodNotAllowed(org.restlet.data.Method httpMethod,
             ResourceClass resourceClass, RemainingPath u)
             throws CouldNotFindMethodException {
         throw new CouldNotFindMethodException(errorRestletMethodNotAllowed,
@@ -365,13 +394,38 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
     }
 
     /**
+     * Handles the given Exception, catched by an invoke of a resource method or
+     * a creation if a sub resource object.
+     * 
+     * @param exception
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
+     * @param methodName
+     * @param logMessage
+     * @throws RequestHandledException
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
+     * @throws RequestHandledException
+     */
+    RequestHandledException missingAnnotation(
+            MissingAnnotationException exception, CallContext callContext,
+            String logMessage) throws RequestHandledException {
+        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+        logger.log(Level.WARNING, logMessage, exception);
+        exception.printStackTrace();
+        throw new RequestHandledException();
+    }
+
+    /**
      * @param response
      * @param mediaType
      * @param paramType
      * @return formally the type of thrown Exception
      * @throws RequestHandledException
      */
-    RequestHandledException handleNoMessageBodyReader(CallContext callContext,
+    RequestHandledException noMessageBodyReader(CallContext callContext,
             NoMessageBodyReaderException nmbre) throws RequestHandledException {
         // LATER Restlet fuer throw
         Response response = callContext.getResponse();
@@ -384,7 +438,7 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
         throw new RequestHandledException();
     }
 
-    RequestHandledException handleNoMessageBodyWriter(Response response,
+    RequestHandledException noMessageBodyWriter(Response response,
             SortedMetadata<MediaType> accMediaTypes, Class<?> paramType)
             throws RequestHandledException {
         // LATER Restlet fuer throw
@@ -402,9 +456,9 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
      * @param u
      * @throws CouldNotFindMethodException
      */
-    void handleNoResourceMethodForAccMediaTypes(
-            org.restlet.data.Method httpMethod, ResourceClass resourceClass,
-            RemainingPath u) throws CouldNotFindMethodException {
+    void noResourceMethodForAccMediaTypes(org.restlet.data.Method httpMethod,
+            ResourceClass resourceClass, RemainingPath u)
+            throws CouldNotFindMethodException {
         // LATER return MediaTypes are supported.
         throw new CouldNotFindMethodException(
                 errorRestletNoResourceMethodForAcceptedMediaType,
@@ -414,7 +468,7 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
                         + " and the given and accepted media types");
     }
 
-    RequestHandledException handleNotAcceptableWhileDetermineMediaType(
+    RequestHandledException notAcceptableWhileDetermineMediaType(
             Request request, Response response) throws RequestHandledException {
         errorRestletNoResourceMethodForAcceptedMediaType.handle(request,
                 response);
@@ -429,8 +483,8 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
      * @param u
      * @throws CouldNotFindMethodException
      */
-    void handleResourceMethodNotFound(ResourceClass resourceClass,
-            RemainingPath u) throws CouldNotFindMethodException {
+    void resourceMethodNotFound(ResourceClass resourceClass, RemainingPath u)
+            throws CouldNotFindMethodException {
         throw new CouldNotFindMethodException(
                 errorRestletResourceMethodNotFound,
                 "there is no method on class " + resourceClass.getName()
@@ -442,7 +496,7 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
      * @param u
      * @throws CouldNotFindMethodException
      */
-    void handleResourceNotFound(ResourceObject o, RemainingPath u)
+    void resourceNotFound(ResourceObject o, RemainingPath u)
             throws CouldNotFindMethodException {
         throw new CouldNotFindMethodException(
                 errorRestletResourceNotFound,
@@ -456,65 +510,41 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
      * @param u
      * @throws CouldNotFindMethodException
      */
-    void handleRootResourceNotFound(RemainingPath u)
+    void rootResourceNotFound(RemainingPath u)
             throws CouldNotFindMethodException {
         throw new CouldNotFindMethodException(errorRestletRootResourceNotFound,
                 "No root resource class found for realtiv path " + u);
     }
 
     /**
-     * @param httpMethod
-     * @param resourceClass
-     * @param u
-     * @param givenMediaType
-     * @throws CouldNotFindMethodException
-     */
-    void handleUnsupportedMediaType(org.restlet.data.Method httpMethod,
-            ResourceClass resourceClass, RemainingPath u,
-            MediaType givenMediaType) throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(errorRestletUnsupportedMediaType,
-                "there is no java method on class "
-                        + resourceClass.getName()
-                        + " supporting the http method "
-                        + httpMethod
-                        + " on an "
-                        + (u.isEmptyOrSlash() ? "empty remaining path"
-                                : (" remaining path " + u))
-                        + " and the given media type " + givenMediaType);
-    }
-
-    /**
-     * Handles the given {@link WebApplicationException}.
+     * Handles the given Exception, catched by an invoke of a resource method or
+     * a creation if a sub resource object.
      * 
-     * @param webAppExc
-     *                The {@link WebApplicationException} to handle
+     * @param exception
+     *                the exception to log
+     * @param jaxRsMethod
+     *                the called method when the exception occurs. May be null.
      * @param callContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
+     * @param logMessage
+     * @param methodName
      * @throws RequestHandledException
      *                 throws this message to exit the method and indicate, that
      *                 the request was handled.
+     * @throws RequestHandledException
      */
-    RequestHandledException handleWebAppExc(WebApplicationException webAppExc,
-            CallContext callContext, AbstractMethodWrapper resourceMethod)
-            throws RequestHandledException {
-        // the message of the Exception is not used in the
-        // WebApplicationException
-        jaxRsRespToRestletResp(webAppExc.getResponse(), callContext,
-                resourceMethod);
-        // LATER MediaType rausfinden
+    RequestHandledException runtimeExecption(RuntimeException exception,
+            AbstractMethodWrapper jaxRsMethod, CallContext callContext,
+            String logMessage) throws RequestHandledException {
+        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+        if (jaxRsMethod != null)
+            logMessage = jaxRsMethod + ": " + logMessage;
+        logger.log(Level.WARNING, jaxRsMethod + ": " + logMessage, exception);
+        exception.printStackTrace();
         throw new RequestHandledException();
     }
-
-    /**
-     * Converts the given JAX-RS {@link javax.ws.rs.core.Response} to a Restlet
-     * {@link Response}.
-     */
-    abstract void jaxRsRespToRestletResp(
-            javax.ws.rs.core.Response jaxRsResponse, CallContext callContext,
-            AbstractMethodWrapper resourceMethod)
-            throws RequestHandledException;
 
     /**
      * Set the Restlet to handle the request if the method is not allowed for
@@ -644,5 +674,26 @@ abstract class JaxRsRouterHelpMethods extends Restlet {
             this.errorRestletUnsupportedMediaType = DEFAULT_UNSUPPORTED_MEDIA_TYPE_RESTLET;
         else
             this.errorRestletUnsupportedMediaType = errorRestletUnsupportedMediaType;
+    }
+
+    /**
+     * @param httpMethod
+     * @param resourceClass
+     * @param u
+     * @param givenMediaType
+     * @throws CouldNotFindMethodException
+     */
+    void unsupportedMediaType(org.restlet.data.Method httpMethod,
+            ResourceClass resourceClass, RemainingPath u,
+            MediaType givenMediaType) throws CouldNotFindMethodException {
+        throw new CouldNotFindMethodException(errorRestletUnsupportedMediaType,
+                "there is no java method on class "
+                        + resourceClass.getName()
+                        + " supporting the http method "
+                        + httpMethod
+                        + " on an "
+                        + (u.isEmptyOrSlash() ? "empty remaining path"
+                                : (" remaining path " + u))
+                        + " and the given media type " + givenMediaType);
     }
 }

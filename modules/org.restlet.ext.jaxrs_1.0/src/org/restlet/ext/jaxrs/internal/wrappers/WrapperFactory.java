@@ -31,9 +31,10 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
  */
 public class WrapperFactory {
 
-    private Logger logger;
+    private final Logger logger;
 
     private final Map<Class<?>, ResourceClass> resourceClasses = new HashMap<Class<?>, ResourceClass>();
+    // LATER allow concurent access.
 
     /**
      * @param logger

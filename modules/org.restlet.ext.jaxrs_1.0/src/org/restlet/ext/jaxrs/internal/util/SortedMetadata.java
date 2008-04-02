@@ -39,7 +39,7 @@ import org.restlet.data.Preference;
  */
 public class SortedMetadata<T extends Metadata> implements Iterable<T> {
 
-    private List<Collection<T>> metadatas;
+    private final List<Collection<T>> metadatas;
 
     /**
      * Creates a new SortedMetadata from the given Metadata.
