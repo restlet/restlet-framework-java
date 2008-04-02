@@ -134,6 +134,8 @@ public class WrapperUtil {
     private static final Collection<Class<? extends Annotation>> VALID_ANNOTATIONS = createValidAnnotations();
 
     /**
+     * Checks, if the given annotation is annotated with at least one JAX-RS
+     * related annotation.
      * 
      * @param javaMethod
      *                Java method, class or something like that.
@@ -143,7 +145,7 @@ public class WrapperUtil {
     static boolean checkForJaxRsAnnotations(Method javaMethod) {
         for (Annotation annotation : javaMethod.getAnnotations()) {
             Class<? extends Annotation> annoType = annotation.annotationType();
-            if (annoType.getName().startsWith(WrapperUtil.JAX_RS_PACKAGE_PREFIX))
+            if (annoType.getName().startsWith(JAX_RS_PACKAGE_PREFIX))
                 return true;
             if (annoType.isAnnotationPresent(HttpMethod.class))
                 return true;
@@ -217,7 +219,7 @@ public class WrapperUtil {
     }
 
     /**
-     * converts the given value without any decoding.
+     * Converts the given value without any decoding.
      * 
      * @param paramClass
      * @param paramValue
@@ -419,8 +421,12 @@ public class WrapperUtil {
     }
 
     /**
+     * Creates the collection for the given
+     * {@link ParameterizedType parametrized Type}.<br>
+     * If the given type do not represent an collection, null is returned.
+     * 
      * @param type
-     * @return
+     * @return the created collection or null.
      */
     private static <A> Collection<A> createColl(ParameterizedType type) {
         Type rawType = type.getRawType();
@@ -432,28 +438,37 @@ public class WrapperUtil {
             return new TreeSet<A>();
         else if (rawType.equals(Collection.class)) {
             Logger logger = Logger.getAnonymousLogger();
-            logger.config(WrapperUtil.COLL_PARAM_NOT_DEFAULT);
+            logger.config(COLL_PARAM_NOT_DEFAULT);
             return new ArrayList<A>();
         }
         return null;
     }
 
     /**
+     * Creates a concrete instance of the given {@link Representation} subtype.
+     * It must contain a constructor with one parameter of type
+     * {@link Representation}.
+     * 
+     * @param representationType
+     *                the class to instantiate
      * @param entity
+     *                the Representation to use for the constructor.
+     * @param logger
+     *                the logger to use
      * @return the created representation, or null, if it could not be
      *         converted.
-     * @throws ConvertParameterException
+     * @throws ConvertRepresentationException
      */
     private static Object createConcreteRepresentationInstance(
-            Class<?> paramType, Representation entity, Logger logger)
+            Class<?> representationType, Representation entity, Logger logger)
             throws ConvertRepresentationException {
-        if (paramType.equals(Representation.class))
+        if (representationType.equals(Representation.class))
             return entity;
         Constructor<?> constr;
         try {
-            constr = paramType.getConstructor(Representation.class);
+            constr = representationType.getConstructor(Representation.class);
         } catch (SecurityException e) {
-            logger.warning("The constructor " + paramType
+            logger.warning("The constructor " + representationType
                     + "(Representation) is not accessable.");
             return null;
         } catch (NoSuchMethodException e) {
@@ -462,7 +477,7 @@ public class WrapperUtil {
         try {
             return constr.newInstance(entity);
         } catch (Exception e) {
-            throw ConvertRepresentationException.object(paramType,
+            throw ConvertRepresentationException.object(representationType,
                     "the message body", e);
         }
     }
@@ -518,17 +533,14 @@ public class WrapperUtil {
         try {
             return constructor.newInstance(args);
         } catch (IllegalArgumentException e) {
-            throw new InstantiateException(
-                    "Could not instantiate " + constructor.getDeclaringClass(),
-                    e);
+            throw new InstantiateException("Could not instantiate "
+                    + constructor.getDeclaringClass(), e);
         } catch (InstantiationException e) {
-            throw new InstantiateException(
-                    "Could not instantiate " + constructor.getDeclaringClass(),
-                    e);
+            throw new InstantiateException("Could not instantiate "
+                    + constructor.getDeclaringClass(), e);
         } catch (IllegalAccessException e) {
-            throw new InstantiateException(
-                    "Could not instantiate " + constructor.getDeclaringClass(),
-                    e);
+            throw new InstantiateException("Could not instantiate "
+                    + constructor.getDeclaringClass(), e);
         }
     }
 
@@ -540,11 +552,12 @@ public class WrapperUtil {
     }
 
     /**
+     * Finds the constructor to use by the JAX-RS runtime.
+     * 
      * @param jaxRsClass
      * @return Returns the constructor to use for the given root resource class
-     *         (See JSR-311-Spec, section 2.3). If no constructor could be
-     *         found, null is returned. Than try {@link Class#newInstance()}
-     * @throws IllegalTypeException
+     *         or provider. If no constructor could be found, null is returned.
+     *         Than try {@link Class#newInstance()}
      */
     static Constructor<?> findJaxRsConstructor(Class<?> jaxRsClass) {
         Constructor<?> constructor = null;
@@ -608,6 +621,8 @@ public class WrapperUtil {
     }
 
     /**
+     * Creates the value of a cookie as the given type.
+     * 
      * @param paramClass
      *                the class to convert to
      * @param paramGenericType
@@ -674,10 +689,10 @@ public class WrapperUtil {
             return convertParamValuesFromParam(paramClass, paramGenericType,
                     new ParamValueIter((Series) cookies.subList(cookieName)),
                     getValue(cookies.getFirst(cookieName)), defaultValue, true);
+            // leaveEncoded = true -> not change
         } catch (ConvertParameterException e) {
             throw new ConvertCookieParamException(e);
         }
-        // leaveEncoded = true -> not change
     }
 
     /**
@@ -707,6 +722,12 @@ public class WrapperUtil {
         }
     }
 
+    /**
+     * Returns the HTTP method related to the given java method.
+     * 
+     * @param javaMethod
+     * @return
+     */
     static org.restlet.data.Method getHttpMethod(Method javaMethod) {
         for (Annotation annotation : javaMethod.getAnnotations()) {
             Class<? extends Annotation> annoType = annotation.annotationType();
@@ -812,8 +833,7 @@ public class WrapperUtil {
             }
             if (annoType.equals(PathParam.class)) {
                 return getPathParamValue(paramClass, paramGenericType,
-                        (PathParam) annotation, leaveEncoded, defaultValue,
-                        callContext);
+                        (PathParam) annotation, leaveEncoded, callContext);
             }
             if (annoType.equals(MatrixParam.class)) {
                 return getMatrixParamValue(paramClass, paramGenericType,
@@ -992,15 +1012,13 @@ public class WrapperUtil {
      *                the generic type to convert to
      * @param pathParam
      * @param leaveEncoded
-     * @param defaultValue
      * @param callContext
      * @param logger
      * @return
      * @throws ConvertPathParamException
      */
     static Object getPathParamValue(Class<?> paramClass, Type paramGenericType,
-            PathParam pathParam, boolean leaveEncoded,
-            DefaultValue defaultValue, CallContext callContext)
+            PathParam pathParam, boolean leaveEncoded, CallContext callContext)
             throws ConvertPathParamException {
         // LATER testen Path-Param: List<String> (see PathParamTest.testGet3())
         // TODO @PathParam("x") PathSegment allowed.
@@ -1008,10 +1026,13 @@ public class WrapperUtil {
         String pathParamValue = callContext.getLastPathParamEnc(pathParam);
         Iterator<String> pathParamValueIter = callContext
                 .pathParamEncIter(pathParam);
+        // REQUEST What should happens, if no PathParam could be found?
+        // Internal Server Error? It could be that someone request a qPathParam
+        // value of a prior @Path, but this is not good IMO.
+        // perhaps add another attribute to @PathParam, which allows it.
         try {
             return convertParamValuesFromParam(paramClass, paramGenericType,
-                    pathParamValueIter, pathParamValue, defaultValue,
-                    leaveEncoded);
+                    pathParamValueIter, pathParamValue, null, leaveEncoded);
         } catch (ConvertParameterException e) {
             throw new ConvertPathParamException(e);
         }

@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Path;
@@ -335,19 +334,6 @@ public class Util {
     }
 
     /**
-     * @param <A>
-     * @param collection
-     * @param comparator
-     * @return
-     */
-    public static <A> Collection<A> createTreeSet(Collection<A> collection,
-            Comparator<A> comparator) {
-        Collection<A> coll2 = new TreeSet<A>(comparator);
-        coll2.addAll(collection);
-        return coll2;
-    }
-
-    /**
      * Check if the given objects are equal. Can deal with null references. if
      * both elements are null, than the result is true.
      * 
@@ -362,7 +348,7 @@ public class Util {
     }
 
     /**
-     * Converte the given Date into a String. Copied from
+     * Converts the given Date into a String. Copied from
      * {@link com.noelios.restlet.HttpCall}.
      * 
      * @param date
@@ -380,16 +366,19 @@ public class Util {
     }
 
     /**
+     * Returns the first element of the given collection. Throws an exception if
+     * the collection is empty.
+     * 
      * @param coll
      * @param <A>
      * @return Returns the first Element of the collection
-     * @throws IndexOutOfBoundsException
-     *                 If the list is empty
+     * @throws NoSuchElementException
+     *                 If the collection is empty.
      */
     public static <A> A getFirstElement(Collection<A> coll)
-            throws IndexOutOfBoundsException {
+            throws NoSuchElementException {
         if (coll.isEmpty())
-            throw new IndexOutOfBoundsException(
+            throw new NoSuchElementException(
                     "The Collection is empty; you can't get the first element of it.");
         if (coll instanceof LinkedList)
             return ((LinkedList<A>) coll).getFirst();
@@ -399,14 +388,17 @@ public class Util {
     }
 
     /**
+     * Returns the first element of the given {@link Iterable}. Throws an
+     * exception if the {@link Iterable} is empty.
+     * 
      * @param coll
      * @param <A>
      * @return Returns the first Element of the collection
-     * @throws IndexOutOfBoundsException
-     *                 If the list is empty
+     * @throws NoSuchElementException
+     *                 If the collection is empty
      */
     public static <A> A getFirstElement(Iterable<A> coll)
-            throws IndexOutOfBoundsException {
+            throws NoSuchElementException {
         if (coll instanceof LinkedList)
             return ((LinkedList<A>) coll).getFirst();
         if (coll instanceof List)
@@ -415,6 +407,9 @@ public class Util {
     }
 
     /**
+     * Returns the first element of the {@link List}. Throws an exception if
+     * the list is empty.
+     * 
      * @param list
      * @param <A>
      * @return Returns the first Element of the collection
@@ -432,14 +427,15 @@ public class Util {
     }
 
     /**
+     * Returns the first element of the given {@link Iterable}. Returns null,
+     * if the {@link Iterable} is empty.
+     * 
      * @param coll
      * @param <A>
-     * @return Returns the first Element of the collection
-     * @throws IndexOutOfBoundsException
-     *                 If the list is empty
+     * @return the first element of the collection, or null if the iterable is
+     *         empty.
      */
-    public static <A> A getFirstElementOrNull(Iterable<A> coll)
-            throws IndexOutOfBoundsException {
+    public static <A> A getFirstElementOrNull(Iterable<A> coll) {
         if (coll instanceof LinkedList) {
             LinkedList<A> linkedList = ((LinkedList<A>) coll);
             if (linkedList.isEmpty())
@@ -460,12 +456,13 @@ public class Util {
     }
 
     /**
+     * Returns the first entry of the given {@link Map}. Throws an exception if
+     * the Map is empty.
+     * 
      * @param map
      * @param <K>
      * @param <V>
-     * @return Returns the first element, returned by the iterator over the
-     *         map.entrySet()
-     * 
+     * @return the first entry of the given {@link Map}.
      * @throws NoSuchElementException
      *                 If the map is empty.
      */
@@ -475,12 +472,13 @@ public class Util {
     }
 
     /**
-     * @return Returns the first element, returned by the iterator over the
-     *         map.keySet()
+     * Returns the key of the first entry of the given {@link Map}. Throws an
+     * exception if the Map is empty.
      * 
      * @param map
      * @param <K>
      * @param <V>
+     * @return the key of the first entry of the given {@link Map}.
      * @throws NoSuchElementException
      *                 If the map is empty.
      */
@@ -490,11 +488,13 @@ public class Util {
     }
 
     /**
-     * @return Returns the first element, returned by the iterator over the
-     *         map.values()
+     * Returns the value of the first entry of the given {@link Map}. Throws an
+     * exception if the Map is empty.
+     * 
      * @param map
      * @param <K>
      * @param <V>
+     * @return the value of the first entry of the given {@link Map}.
      * @throws NoSuchElementException
      *                 If the map is empty.
      */
@@ -504,8 +504,10 @@ public class Util {
     }
 
     /**
+     * Returns the HTTP headers of the Restlet {@link Request} as {@link Form}.
+     * 
      * @param request
-     * @return Returns the HTTP-Headers-Form from the Request.
+     * @return Returns the HTTP headers of the Request.
      */
     public static Form getHttpHeaders(Request request) {
         Form headers = (Form) request.getAttributes().get(
@@ -518,9 +520,10 @@ public class Util {
     }
 
     /**
+     * Returns the HTTP headers of the Restlet {@link Response} as {@link Form}.
+     * 
      * @param response
-     *                a Restlet response
-     * @return Returns the HTTP-Headers-Form from the Response.
+     * @return Returns the HTTP headers of the Response.
      */
     public static Form getHttpHeaders(Response response) {
         Form headers = (Form) response.getAttributes().get(
@@ -553,9 +556,12 @@ public class Util {
     }
 
     /**
+     * Returns the last element of the given {@link Iterable}. Throws an
+     * exception if the given iterable is empty.
+     * 
      * @param iterable
      * @param <A>
-     * @return Returns the last Element of the {@link Iterable}
+     * @return Returns the last element of the {@link Iterable}
      * @throws IndexOutOfBoundsException
      *                 If the {@link Iterable} is a {@link List} and its is
      *                 empty.
@@ -575,9 +581,12 @@ public class Util {
     }
 
     /**
+     * Returns the last element of the given {@link Iterator}. Throws an
+     * exception if the given iterator is empty.
+     * 
      * @param iter
      * @param <A>
-     * @return Returns the last Element of the {@link Iterator}.
+     * @return Returns the last element of the {@link Iterator}.
      * @throws NoSuchElementException
      *                 If the {@link Iterator} is empty.
      */
@@ -590,9 +599,12 @@ public class Util {
     }
 
     /**
+     * Returns the last element of the given {@link List}. Throws an exception
+     * if the given list is empty.
+     * 
      * @param list
      * @param <A>
-     * @return Returns the last Element of the list
+     * @return Returns the last element of the list
      * @throws IndexOutOfBoundsException
      *                 If the list is empty
      */
@@ -604,7 +616,8 @@ public class Util {
     }
 
     /**
-     * Returns the last element of the given Iterable, or null, if it is empty.
+     * Returns the last element of the given {@link Iterable}, or null, if the
+     * iterable is empty. Returns null, if the iterable is empty.
      * 
      * @param iterable
      * @param <A>
@@ -632,11 +645,12 @@ public class Util {
     }
 
     /**
+     * Returns the last element of the given {@link Iterator}, or null, if the
+     * iterator is empty. Returns null, if the iterator is empty.
+     * 
      * @param iter
      * @param <A>
      * @return Returns the last Element of the {@link Iterator}.
-     * @throws NoSuchElementException
-     *                 If the {@link Iterator} is empty.
      */
     public static <A> A getLastElementOrNull(Iterator<A> iter) {
         A e = null;
@@ -716,9 +730,13 @@ public class Util {
     }
 
     /**
+     * Returns the &#64;{@link Path} annotation of the given root resource
+     * class.
+     * 
      * @param jaxRsClass
-     * @return the path annotation or null, if no is present and requirePath is
-     *         false.
+     *                the root resource class.
+     * @return the &#64;{@link Path} annotation of the given root resource
+     *         class.
      * @throws MissingAnnotationException
      *                 if the path annotation is missing
      * @throws IllegalArgumentException
@@ -737,9 +755,12 @@ public class Util {
     }
 
     /**
+     * Returns the &#64;{@link Path} annotation of the given sub resource
+     * locator. Throws an exception if no &#64;{@link Path} annotation is
+     * available.
+     * 
      * @param method
      *                the java method to get the &#64;Path from
-     * @param pathRequired
      * @return the &#64;Path annotation.
      * @throws IllegalArgumentException
      *                 if null was given.
@@ -759,6 +780,9 @@ public class Util {
     }
 
     /**
+     * Returns the &#64;{@link Path} annotation of the given sub resource
+     * locator. Returns null if no &#64;{@link Path} annotation is available.
+     * 
      * @param method
      *                the java method to get the &#64;Path from
      * @return the &#64;Path annotation or null, if not present.
@@ -774,6 +798,8 @@ public class Util {
     }
 
     /**
+     * Returns the perhaps decoded template of the path annotation.
+     * 
      * @param resource
      * @return Returns the path template as String. Never returns null.
      * @throws IllegalPathOnClassException
@@ -932,7 +958,7 @@ public class Util {
     }
 
     /**
-     * Checks, if the list is empty.
+     * Checks, if the list is empty or null.
      * 
      * @param list
      * @return true, if the list is empty or null, or false, if the list
@@ -944,7 +970,7 @@ public class Util {
     }
 
     /**
-     * Tests, if the given array is empty. Will not throw a
+     * Tests, if the given array is empty or null. Will not throw a
      * NullPointerException.
      * 
      * @param array
@@ -959,11 +985,12 @@ public class Util {
     }
 
     /**
-     * Tests, if the given String is empty or "/". Will not throw a
+     * Tests, if the given String is null, empty or "/". Will not throw a
      * NullPointerException.
      * 
      * @param string
-     * @return Returns true, if the given string ist null, empty or equals "/"
+     * @return Returns true, if the given string ist null, empty or equals "/",
+     *         otherwise false.
      */
     public static boolean isEmptyOrSlash(String string) {
         return string == null || string.length() == 0 || string.equals("/");
