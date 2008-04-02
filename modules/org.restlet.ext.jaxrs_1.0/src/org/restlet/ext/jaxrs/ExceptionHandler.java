@@ -155,8 +155,11 @@ public class ExceptionHandler {
 
     private final Logger logger;
 
-    ExceptionHandler(Logger logger) {
-        this.logger = logger;
+    private final JaxRsRouter jaxRsRouter;
+
+    ExceptionHandler(JaxRsRouter jaxRsRouter) {
+        this.jaxRsRouter = jaxRsRouter;
+        this.logger = jaxRsRouter.getLogger();
     }
 
     /**
@@ -347,9 +350,16 @@ public class ExceptionHandler {
     RequestHandledException invocationTargetExecption(
             InvocationTargetException exception, CallContext callContext,
             String logMessage) throws RequestHandledException {
-        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-        logger.log(Level.WARNING, logMessage, exception.getCause());
-        exception.printStackTrace();
+        Throwable cause = exception.getCause();
+        if (cause instanceof WebApplicationException) {
+            javax.ws.rs.core.Response jaxRsResp;
+            jaxRsResp = ((WebApplicationException) cause).getResponse();
+            jaxRsRouter.jaxRsRespToRestletResp(jaxRsResp, callContext, null);
+        } else {
+            callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+            logger.log(Level.WARNING, logMessage, cause);
+            exception.printStackTrace();
+        }
         throw new RequestHandledException();
     }
 

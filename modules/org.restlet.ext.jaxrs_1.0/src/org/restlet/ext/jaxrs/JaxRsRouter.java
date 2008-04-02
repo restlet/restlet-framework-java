@@ -178,7 +178,7 @@ public class JaxRsRouter extends Restlet {
     public JaxRsRouter(Context context, ApplicationConfig appConfig,
             RoleChecker roleChecker) throws IllegalArgumentException {
         super(context);
-        this.excHandler = new ExceptionHandler(getLogger());
+        this.excHandler = new ExceptionHandler(this);
         this.wrapperFactory = new WrapperFactory(getLogger());
         this.loadDefaultProviders();
         if (appConfig != null)
@@ -852,11 +852,17 @@ public class JaxRsRouter extends Restlet {
      * Converts the given JAX-RS {@link javax.ws.rs.core.Response} to a Restlet
      * {@link Response}.
      * 
+     * @param jaxRsResponse
+     * @param callContext
+     * @param jaxRsMethod
+     *                the method creating the response. May be null.
+     * @throws RequestHandledException
+     * 
      * @see ExceptionHandler#jaxRsRespToRestletResp(javax.ws.rs.core.Response,
      *      CallContext, AbstractMethodWrapper)
      */
     void jaxRsRespToRestletResp(javax.ws.rs.core.Response jaxRsResponse,
-            CallContext callContext, AbstractMethodWrapper resourceMethod)
+            CallContext callContext, AbstractMethodWrapper jaxRsMethod)
             throws RequestHandledException {
         Response restletResponse = callContext.getResponse();
         restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
@@ -865,9 +871,10 @@ public class JaxRsRouter extends Restlet {
         MediaType respMediaType = null;
         if (mediaTypeStr != null)
             respMediaType = MediaType.valueOf(mediaTypeStr.toString());
-        restletResponse.setEntity(convertToRepresentation(jaxRsResponse
-                .getEntity(), resourceMethod, callContext, respMediaType,
-                jaxRsResponse.getMetadata()));
+        Object jaxRsEntity = jaxRsResponse.getEntity();
+        Representation repr = convertToRepresentation(jaxRsEntity, jaxRsMethod,
+                callContext, respMediaType, jaxRsResponse.getMetadata());
+        restletResponse.setEntity(repr);
         Util.copyResponseHeaders(jaxRsResponse.getMetadata(), restletResponse,
                 getLogger());
     }
