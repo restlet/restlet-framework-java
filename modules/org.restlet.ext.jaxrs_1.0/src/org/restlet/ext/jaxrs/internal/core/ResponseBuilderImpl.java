@@ -222,7 +222,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
             else if (value instanceof Cookie)
                 this.cookie(new NewCookie((Cookie) value));
             else if (value instanceof CharSequence)
-                this.cookie(NewCookie.parse(value.toString()));
+                this.cookie(NewCookie.valueOf(value.toString()));
             else
                 throw new IllegalArgumentException(
                         "A Cookie must be of type NewCookie or String");
@@ -369,7 +369,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder type(String type) {
-        return type(MediaType.parse(type));
+        return type(MediaType.valueOf(type));
     }
 
     /**

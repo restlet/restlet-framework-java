@@ -23,6 +23,42 @@ package org.restlet.ext.jaxrs.internal.todo;
  * @author Stephan Koops
  */
 public class Notizen {
+    
+    // REQUEST Provider for File-Upload by a browser (multipart/form-data)
+    
+    // TODO @Context and so on only in objects created by the runtime.
+    // support and warn about this.
+
+    // TESTEN what happens, if ".." or "." in @Path?
+    
+    // TODO rename @DefaultValue to @Default? it's shorter
+
+    // TODO file extension mapping with matrix parameters.
+
+    // TESTEN are headers of Response and annotations copiied to a
+    // Representation, if a org.restlet.data.Representation is returned?
+
+    // REQUESTED Spec, section 5.1.3. (Content Negotiation and Preconditions):
+    // request.evaluatePRECONDITIONS(...); null is not necessary
+
+    // REQUESTED @Context on type PathSegment ?
+
+    // REQUESTED disallow entity on sub resource locator?
+
+    // TODO read javadoc of PathSegment again.
+
+    // TODO test again Jersey Implementation.
+    
+    // TODO bean setter (look for details?)
+    
+    // TODO @Context have to be ThreadLocal
+
+    // TESTEN create provider for primitive wrapper and check on it's primitive,
+    // also with no given entity.
+    
+    // TODO propagate RuntimeExcpetions to Restlet. 
+    // TODO warn for declared Exceptions
+
     // LATER An implementation MUST allow other runtime exceptions to propagate
     // to the underlying container. This allows existing container facilities
     // (e.g. a Servlet filter) to be used to handle the error if desired.
@@ -40,27 +76,5 @@ public class Notizen {
     // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc17
     // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc19
 
-    // TODO @Context and so on only in objects created by the runtime.
-    // support and warn about this.
-
-    // TESTEN what happens, if ".." or "." in @Path?
-
-    // TODO file extension mapping with matrix parameters.
-
-    // TESTEN are headers of Response and annotations copiied to a
-    // Representation, if a org.restlet.data.Representation is returned?
-
-    // REQUESTED Spec, section 5.1.3. (Content Negotiation and Preconditions):
-    // request.evaluatePRECONDITIONS(...); null is not necessary
-
-    // REQUESTED @Context on type PathSegment ?
-
-    // REQUESTED disallow entity on sub resource locator?
-
-    // TODO read javadoc of PathSegment again.
-
-    // TODO test again Jersey Implementation.
-
-    // TESTEN create provider for primitive wrapper and check on it's primitive,
-    // also ith no given entity.
+    // LATER Entity-Provider for org.restlet.data.Representation
 }

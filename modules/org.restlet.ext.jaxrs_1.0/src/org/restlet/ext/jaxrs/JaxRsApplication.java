@@ -101,7 +101,7 @@ public class JaxRsApplication extends Application {
     private void addExtensionMappings(ApplicationConfig appConfig) {
         MetadataService metadataService = this.getMetadataService();
         Map<String, MediaType> mediaTypeMapping = appConfig
-                .getExtensionMappings();
+                .getMediaTypeMappings();
         if (mediaTypeMapping != null) {
             for (Map.Entry<String, MediaType> e : mediaTypeMapping.entrySet()) {
                 org.restlet.data.MediaType restletMediaType;

@@ -18,7 +18,9 @@
 package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -45,12 +47,9 @@ public class InjectionTestService2 {
     
     @Context private HttpHeaders httpHeaders;
     
-    // LATER @PathParam("id") private int id = Integer.MIN_VALUE;
+    @PathParam("id") private Integer id;
 
-    // TODO @HeaderParam("host") private String host; also @QueryParam and so on
-    // @PathParam ist auch sinvoll, wenn Path z.B. ne id enthaelt.
-    // also on bean setters.
-    // also for @Context
+    @HeaderParam("host") private String host;
 
     @GET
     @ProduceMime("text/plain")
@@ -64,15 +63,12 @@ public class InjectionTestService2 {
             msg += "\n* request";
         if (httpHeaders == null)
             msg += "\n* httpHeaders";
-        // if(id == Integer.MIN_VALUE)
-        //    msg += "\n* id";
+        if(id == null)
+            msg += "\n* id";
+        if(host == null)
+            msg += "\n* host";
         if (msg.length() > 0)
             return Response.serverError().entity("missing:" + msg).build();
         return Response.ok(String.valueOf("ok")).build();
-    }
-
-    @Path("sub")
-    public SubResource getSub() {
-        return new SubResource();
     }
 }

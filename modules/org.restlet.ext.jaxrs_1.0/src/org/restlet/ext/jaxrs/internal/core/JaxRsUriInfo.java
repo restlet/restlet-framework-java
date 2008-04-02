@@ -192,8 +192,7 @@ public class JaxRsUriInfo implements UriInfo {
             return false;
         if (!this.getPathSegments().equals(other.getPathSegments()))
             return false;
-        if (!Util.equals(this.getPathParameters(), other
-                .getTemplateParameters()))
+        if (!Util.equals(this.getPathParameters(), other.getPathParameters()))
             return false;
         return true;
     }
@@ -316,7 +315,7 @@ public class JaxRsUriInfo implements UriInfo {
      */
     public List<String> getAncestorResourceURIs(boolean decode) {
         // TODO JaxRsUriBuilder.getAncestorResourceURIs(boolean decode).
-        if(decode && !decode)
+        if (decode && !decode)
             decode = false;
         return ancestorResourceURIsUnomd;
     }

@@ -383,7 +383,7 @@ public class WrapperUtil {
                 return repr;
         }
         MediaType mediaType = entity.getMediaType();
-        MessageBodyReader<?> mbr = mbrs.getBest(mediaType, paramType,
+        MessageBodyReader<?> mbr = mbrs.getBestReader(mediaType, paramType,
                 genericType, annotations);
         if (mbr == null)
             throw new NoMessageBodyReaderException(mediaType, paramType);
@@ -908,19 +908,6 @@ public class WrapperUtil {
                 // Precondition failed), the MessageBodyReader s not required to
                 // be called and does not need time for the conversion
                 // TODO ensure Representation.release().
-                // REQUESTED can we add a method if a MessageBodyReader and/or
-                // writer will possibly change the headers:
-                // enum MessageBodyReader.Header.CHANGED, READ, NOT_NEEDED
-                // if it is not needed, null could be given for the headers
-                // instead of a Map.
-                // Same for MessageBodyWriter: Headers could be written before
-                // writeTo starts: The headers could be sent to client, while
-                // JAX-RS runtime environment is working between header writing
-                // and body writing.
-                // REQUESTED Request.getEntity: converts entity only if needed.
-                // If the entity is not required (e.g. prec failed) it could be
-                // not converted, if no headers are needed. (The last is the
-                // case in the most cases, I think.)
             }
             args[i] = arg;
         }

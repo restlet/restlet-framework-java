@@ -64,12 +64,6 @@ public class InjectionTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 
-    public void testGetSub() {
-        Response response = get("sub");
-        super.sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-    }
-
     public void testGetWithIndex() throws IOException {
         Response response = get("two/56");
         super.sysOutEntityIfError(response);

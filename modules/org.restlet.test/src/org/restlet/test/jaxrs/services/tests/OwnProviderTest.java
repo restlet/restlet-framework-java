@@ -19,8 +19,6 @@ package org.restlet.test.jaxrs.services.tests;
 
 import java.util.Set;
 
-import javax.ws.rs.core.ApplicationConfig;
-
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -41,22 +39,14 @@ public class OwnProviderTest extends JaxRsTestCase {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected ApplicationConfig getAppConfig() {
-        return new ApplicationConfig() {
-            @Override
-            public Set<Class<?>> getResourceClasses() {
-                return (Set) TestUtils.createSet(getRootResourceClass());
-            }
-
-            @Override
-            public Set<Class<?>> getProviderClasses() {
-                return (Set) TestUtils.createSet(CrazyTypeProvider.class);
-            }
-        };
+    @SuppressWarnings("all")
+    public Set<Class<?>> getProvClasses() {
+        return (Set)TestUtils.createSet(CrazyTypeProvider.class);
     }
 
-    @SuppressWarnings("deprecation")
+    /**
+     * @see OwnProviderTestService#get()
+     */
     public void test1() throws Exception {
         Response response = get();
         super.sysOutEntityIfError(response);

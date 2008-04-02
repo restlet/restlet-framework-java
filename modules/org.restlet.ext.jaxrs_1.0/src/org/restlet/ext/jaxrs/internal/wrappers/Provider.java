@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -34,6 +33,7 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.MessageBodyWorkers;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
@@ -180,8 +180,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             ConvertMatrixParamException, ConvertQueryParamException,
             ConvertCookieParamException {
         try {
-            return WrapperUtil.createInstance(providerConstructor, false,
-                    null, null, null);
+            return WrapperUtil.createInstance(providerConstructor, false, null,
+                    null, null);
         } catch (MissingAnnotationException e) {
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
@@ -217,8 +217,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         if (consumedMimes == null) {
             ConsumeMime pm = reader.getClass().getAnnotation(ConsumeMime.class);
             if (pm != null)
-                this.consumedMimes = WrapperUtil.convertToMediaTypes(pm
-                        .value());
+                this.consumedMimes = WrapperUtil
+                        .convertToMediaTypes(pm.value());
             else
                 this.consumedMimes = Collections.singletonList(MediaType.ALL);
         }
@@ -238,6 +238,20 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      */
     public javax.ws.rs.ext.ContextResolver<?> getJaxRsContextResolver() {
         return this.contextResolver;
+    }
+
+    /**
+     * @see org.restlet.ext.jaxrs.internal.wrappers.MessageBodyReader#getJaxRsReader()
+     */
+    public javax.ws.rs.ext.MessageBodyReader<T> getJaxRsReader() {
+        return this.reader;
+    }
+
+    /**
+     * @see org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriter#getJaxRsWriter()
+     */
+    public javax.ws.rs.ext.MessageBodyWriter<T> getJaxRsWriter() {
+        return this.writer;
     }
 
     /**
@@ -284,13 +298,16 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * 
      * @param allResolvers
      *                all available wrapped {@link ContextResolver}s.
+     * @param messageBodyWorkers
+     *                The {@link javax.ws.rs.ext.MessageBodyReader}s and
+     *                {@link javax.ws.rs.ext.MessageBodyWriter}s.
      * @throws InjectException
      */
     @SuppressWarnings("unused")
     public void init(
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers)
-            throws InjectException {
-        injectContext(allResolvers);
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers,
+            MessageBodyWorkers messageBodyWorkers) throws InjectException {
+        injectContext(allResolvers, messageBodyWorkers);
     }
 
     /**
@@ -298,33 +315,18 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * 
      * @param allResolvers
      *                all available wrapped {@link ContextResolver}s.
+     * @param messageBodyWorkers
+     *                the {@link MessageBodyReader}s and
+     *                {@link MessageBodyWriter}s.
      * @throws InjectException
      */
     private void injectContext(
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers)
-            throws InjectException {
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers,
+            MessageBodyWorkers messageBodyWorkers) throws InjectException {
         Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
-        do {
-            for (Field field : providerClass.getDeclaredFields()) {
-                if (!field.isAnnotationPresent(Context.class))
-                    continue;
-                Class<?> fieldType = field.getType();
-                if (fieldType.equals(ContextResolver.class)) {
-                    field.setAccessible(true);
-                    ContextResolver<?> injectCR;
-                    jaxRsProvider.toString(); // avoid trouble, don't ask why
-                    injectCR = WrapperUtil.getContextResolver(field,
-                            allResolvers);
-                    Util.inject(this.jaxRsProvider, field, injectCR);
-                } else if (fieldType.equals(MessageBodyWorkers.class)) {
-                    field.setAccessible(true);
-                    Object toInject = null;
-                    // TODO inject MessageBodyWorker to provider.
-                    Util.inject(this.jaxRsProvider, field, toInject);
-                }
-            }
-            providerClass = providerClass.getSuperclass();
-        } while (providerClass != null);
+        ContextInjector iph = new ContextInjector(providerClass);
+        iph.inject(this.jaxRsProvider, null, allResolvers, messageBodyWorkers);
+        // TODO give ThreadLocal CallContext
     }
 
     /**

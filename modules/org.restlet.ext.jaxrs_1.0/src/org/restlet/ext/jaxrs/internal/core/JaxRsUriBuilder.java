@@ -329,7 +329,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      * @see UriInfo#getPathExtension
      * @see javax.ws.rs.core.UriBuilder#extension(java.lang.String)
      */
-    // @Override
+    @Override
     public UriBuilder extension(String extension) {
         CharSequence e = EncodeOrCheck.pathSegmentWithMatrix(extension, encode);
         addValidPathSegment(e);

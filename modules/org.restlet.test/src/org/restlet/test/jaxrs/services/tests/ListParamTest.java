@@ -91,8 +91,11 @@ public class ListParamTest extends JaxRsTestCase {
         }
     }
 
+    /**
+     * @see ListParamService#getPath(String, java.util.SortedSet)
+     */
     public void testPathParams() throws IOException {
-        if(jaxRxImplementorCheck(1, 4))
+        if (jaxRxImplementorCheck(5, 4))
             return;
         Response response = get("path/p1/p2/pp1/pp2");
         checkPathParam(response);
@@ -100,6 +103,9 @@ public class ListParamTest extends JaxRsTestCase {
         response = get("path/p1/p2/pp2/pp1");
         checkPathParam(response);
     }
+
+    // REQUEST is @Path("{p}/{p}") allowed? same path var names? IMO only, if
+    // same value. Corresponds to back references of regular expressions.
 
     /**
      * @param response
@@ -117,5 +123,4 @@ public class ListParamTest extends JaxRsTestCase {
         response = get("query?q=q2&q=q1&qq=qq2&qq=qq1");
         assertEquals("q=q2\nqq=[qq2, qq1]", response.getEntity().getText());
     }
-
 }

@@ -149,8 +149,12 @@ public class WrappedRequestForHttpHeaders implements
                 return rt;
         }
         Series<Parameter> headers = getHeaders();
-        if (headers != null)
-            return headers.getFirst(headerName).getValue();
+        if (headers != null) {
+            Parameter first = headers.getFirst(headerName);
+            if(first == null)
+                return null;
+            return first.getValue();
+        }
         return null;
     }
 

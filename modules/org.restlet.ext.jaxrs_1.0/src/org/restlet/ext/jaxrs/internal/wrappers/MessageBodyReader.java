@@ -31,10 +31,26 @@ import org.restlet.data.MediaType;
  * Class to wrap a {@link javax.ws.rs.ext.MessageBodyWriter}
  * 
  * @author Stephan Koops
- * @param <T> the java type to convert.
+ * @param <T>
+ *                the java type to convert to.
  */
 @SuppressWarnings("unchecked")
 public interface MessageBodyReader<T> {
+
+    /**
+     * Returns the list of produced {@link MediaType}s of the wrapped
+     * {@link javax.ws.rs.ext.MessageBodyWriter}.
+     * 
+     * @return List of produced {@link MediaType}s.
+     */
+    public List<MediaType> getConsumedMimes();
+
+    /**
+     * Returns the JAX-RS {@link javax.ws.rs.ext.MessageBodyReader}.
+     * 
+     * @return the JAX-RS MessageBodyReader
+     */
+    public javax.ws.rs.ext.MessageBodyReader<T> getJaxRsReader();
 
     /**
      * Checks, if this MessageBodyReader could read the given type.
@@ -70,14 +86,6 @@ public interface MessageBodyReader<T> {
             javax.ws.rs.core.MediaType mediaType, Annotation[] annotations,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException;
-
-    /**
-     * Returns the list of produced {@link MediaType}s of the wrapped
-     * {@link javax.ws.rs.ext.MessageBodyWriter}.
-     * 
-     * @return List of produced {@link MediaType}s.
-     */
-    public List<MediaType> getConsumedMimes();
 
     /**
      * Checks, if this MessageBodyReader supports the given MediaType.

@@ -59,6 +59,7 @@ import org.restlet.test.jaxrs.server.DirectServerWrapperFactory;
 import org.restlet.test.jaxrs.server.RestletServerWrapperFactory;
 import org.restlet.test.jaxrs.server.ServerWrapper;
 import org.restlet.test.jaxrs.server.ServerWrapperFactory;
+import org.restlet.test.jaxrs.services.providers.CrazyTypeProvider;
 import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
@@ -531,8 +532,20 @@ public abstract class JaxRsTestCase extends TestCase {
             public Set<Class<?>> getResourceClasses() {
                 return (Set) Collections.singleton(getRootResourceClass());
             }
+            @Override
+            public Set<Class<?>> getProviderClasses() {
+                return (Set) getProvClasses();
+            }
         };
         return appConfig;
+    }
+
+    /**
+     * @return
+     * @see #getAppConfig()
+     */
+    protected Set<Class<?>> getProvClasses() {
+        return Collections.emptySet();
     }
 
     public Response getAuth(String subPath, String username, String pw) {

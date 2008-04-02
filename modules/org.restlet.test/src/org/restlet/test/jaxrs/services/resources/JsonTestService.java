@@ -66,8 +66,6 @@ public class JsonTestService {
         return "{name:value}";
     }
 
-    // REQUEST (check first) what should happens if an resource method signature
-    // throws Exceptions?
     @POST
     @Path("JSONObject")
     @ConsumeMime(APPLICATION_JSON)

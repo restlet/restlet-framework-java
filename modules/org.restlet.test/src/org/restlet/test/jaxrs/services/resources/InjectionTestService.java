@@ -65,41 +65,4 @@ public class InjectionTestService {
             return Response.serverError().entity("missing:"+msg).build();
         return Response.ok("ok").build();
     }
-    
-    @Path("sub")
-    public SubResource getSub() {
-        return new SubResource();
-    }
-}
-
-class SubResource
-{
-    @Context private SecurityContext securityContext;
-    
-    @Context private UriInfo uriInfo;
-    
-    @Context private Request request;
-    
-    @Context private HttpHeaders httpHeaders;
-    
-    // @HeaderParam("host") private String host;
-    
-    @GET
-    @ProduceMime("text/plain")
-    public Response get() {
-        String msg = "";
-        if(securityContext == null)
-            msg += "\n* securityContext";
-        if(uriInfo == null)
-            msg += "\n* uriInfo";
-        if(request == null)
-            msg += "\n* request";
-        if(httpHeaders == null)
-            msg += "\n* httpHeaders";
-        //if(host == null)
-        //    msg += "\n* host";
-        if(msg.length() > 0)
-            return Response.serverError().entity("missing:"+msg).build();
-        return Response.ok("ok").build();
-    }
 }

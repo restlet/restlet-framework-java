@@ -51,15 +51,6 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
 
     /**
-     * the Java method that should be called. This method could be different
-     * from the method containing the annotations, see section 2.5 "Annotation
-     * Inheritance" of JSR-311-spec.
-     * 
-     * @see #annotatedMethod
-     */
-    Method executeMethod;
-
-    /**
      * the Java method that should be referenced for annotations. This method
      * could be different from the method is called fro executing, see section
      * 2.5 "Annotation Inheritance" of JSR-311-spec.
@@ -67,6 +58,15 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @see #executeMethod
      */
     Method annotatedMethod;
+
+    /**
+     * the Java method that should be called. This method could be different
+     * from the method containing the annotations, see section 2.5 "Annotation
+     * Inheritance" of JSR-311-spec.
+     * 
+     * @see #annotatedMethod
+     */
+    Method executeMethod;
 
     /**
      * is true, if the wrapped java method or its class is annotated with
@@ -85,7 +85,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         this.annotatedMethod = annotatedMethod;
         this.annotatedMethod.setAccessible(true);
         this.resourceClass = resourceClass;
-        if (resourceClass.leaveEncoded
+        if (resourceClass.isLeaveEncoded()
                 || annotatedMethod.isAnnotationPresent(Encoded.class))
             this.leaveEncoded = true;
         else
@@ -109,16 +109,6 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      */
     public Type getGenericReturnType() {
         return executeMethod.getGenericReturnType();
-    }
-
-    /**
-     * Returns the return type of the wrapped method.
-     * 
-     * @return the return type of the wrapped method.
-     * @see Method#getReturnType()
-     */
-    public Class<? extends Object> getReturnType() {
-        return executeMethod.getReturnType();
     }
 
     /**
@@ -147,6 +137,16 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      */
     public ResourceClass getResourceClass() {
         return this.resourceClass;
+    }
+
+    /**
+     * Returns the return type of the wrapped method.
+     * 
+     * @return the return type of the wrapped method.
+     * @see Method#getReturnType()
+     */
+    public Class<? extends Object> getReturnType() {
+        return executeMethod.getReturnType();
     }
 
     /**

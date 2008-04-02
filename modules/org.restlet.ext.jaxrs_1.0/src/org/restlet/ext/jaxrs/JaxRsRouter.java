@@ -81,9 +81,9 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.util.WrappedRequestForHttpHeaders;
 import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.internal.wrappers.ContextResolver;
-import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyReaderSet;
+import org.restlet.ext.jaxrs.internal.wrappers.EntityProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriter;
-import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriterSet;
+import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriterSubSet;
 import org.restlet.ext.jaxrs.internal.wrappers.Provider;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceClass;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
@@ -136,9 +136,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
 
     private volatile RoleChecker roleChecker;
 
-    private volatile MessageBodyReaderSet messageBodyReaders = new MessageBodyReaderSet();
-
-    private volatile MessageBodyWriterSet messageBodyWriters = new MessageBodyWriterSet();
+    private volatile EntityProviders entityProviders = new EntityProviders();
 
     /**
      * This {@link Set} contains the available
@@ -293,7 +291,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         if (providerClasses != null) {
             for (Class<?> providerClass : providerClasses) {
                 try {
-                    this.addProvider(providerClass);
+                    this.addProvider(providerClass, false);
                 } catch (InstantiateException ipe) {
                     String msg = "The provider " + providerClass.getName()
                             + " could not be instantiated";
@@ -362,7 +360,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
 
     private void addDefaultProvider(Class<?> jaxRsProviderClass) {
         try {
-            this.addProvider(jaxRsProviderClass);
+            this.addProvider(jaxRsProviderClass, true);
         } catch (IllegalArgumentException e) {
             throw new ImplementationException(e);
         } catch (InstantiateException e) {
@@ -385,8 +383,9 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * @throws InvocationTargetException
      * @see {@link javax.ws.rs.ext.Provider}
      */
-    private void addProvider(Class<?> jaxRsProviderClass)
-            throws IllegalArgumentException, InstantiateException {
+    private void addProvider(Class<?> jaxRsProviderClass,
+            boolean defaultProvider) throws IllegalArgumentException,
+            InstantiateException {
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -402,10 +401,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             throw new InstantiateException(
                     "Exception while creating constructor", e);
         }
-        if (provider.isWriter())
-            this.messageBodyWriters.add(provider);
-        if (provider.isReader())
-            this.messageBodyReaders.add(provider);
+        this.entityProviders.add(provider, defaultProvider);
         if (provider.isContextResolver())
             this.contextResolvers.add(provider);
     }
@@ -414,11 +410,10 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
     @SuppressWarnings("unchecked")
     public void start() throws Exception {
         Set<Provider<?>> providers = new HashSet<Provider<?>>();
-        providers.addAll((Collection) this.messageBodyReaders);
-        providers.addAll((Collection) this.messageBodyWriters);
+        this.entityProviders.addAllTo(providers);
         providers.addAll((Collection) this.contextResolvers);
         for (Provider<?> provider : providers)
-            provider.init(this.contextResolvers);
+            provider.init(this.contextResolvers, this.entityProviders);
         super.start();
     }
 
@@ -571,7 +566,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         // LATER Do I use dynamic proxies, to inject instance variables?
         try {
             o = rrc.createInstance(callContext, contextResolvers,
-                    this.messageBodyReaders, getLogger());
+                    this.entityProviders, getLogger());
         } catch (WebApplicationException e) {
             throw e;
         } catch (NoMessageBodyReaderException e) {
@@ -651,8 +646,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
                 o = subResourceLocator.createSubResource(o, callContext,
-                        this.messageBodyReaders, wrapperFactory,
-                        contextResolvers, getLogger());
+                        this.entityProviders, wrapperFactory, getLogger());
             } catch (WebApplicationException e) {
                 throw e;
             } catch (RuntimeException e) {
@@ -782,7 +776,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         Object result;
         try {
             result = resourceMethod.invoke(resourceObject, callContext,
-                    this.messageBodyReaders, getLogger());
+                    this.entityProviders, getLogger());
         } catch (WebApplicationException e) {
             throw e;
         } catch (InvocationTargetException ite) {
@@ -907,20 +901,20 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
             genericReturnType = resourceMethod.getGenericReturnType();
             methodAnnotations = resourceMethod.getAnnotations();
         }
-        MessageBodyWriterSet mbws = this.messageBodyWriters.subSet(entityClass,
-                genericReturnType, methodAnnotations);
+        MessageBodyWriterSubSet mbws = entityProviders.writerSubSet(
+                entityClass, genericReturnType, methodAnnotations);
         SortedMetadata<MediaType> accMediaTypes = callContext
                 .getAccMediaTypes();
-        List<MediaType> possMediaTypes;
+        List<MediaType> respMediaTypes;
         if (responseMediaType != null)
-            possMediaTypes = Collections.singletonList(responseMediaType);
+            respMediaTypes = Collections.singletonList(responseMediaType);
         else if (resourceMethod instanceof ResourceMethod)
-            possMediaTypes = determineMediaType16(
+            respMediaTypes = determineMediaType16(
                     (ResourceMethod) resourceMethod, mbws, callContext);
         else
-            possMediaTypes = Collections.singletonList(MediaType.TEXT_PLAIN);
-        mbws = mbws.subSet(possMediaTypes);
-        MessageBodyWriter<?> mbw = mbws.getBest(accMediaTypes);
+            respMediaTypes = Collections.singletonList(MediaType.TEXT_PLAIN);
+        MessageBodyWriter<?> mbw = mbws.getBestWriter(respMediaTypes,
+                accMediaTypes);
         if (mbw == null)
             handleNoMessageBodyWriter(callContext.getResponse(), accMediaTypes,
                     entityClass);
@@ -928,7 +922,7 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
         if (responseMediaType != null)
             mediaType = responseMediaType;
         else
-            mediaType = determineMediaType79(possMediaTypes, callContext);
+            mediaType = determineMediaType79(respMediaTypes, callContext);
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
                 callContext.getResponse(), jaxRsRespHeaders, getLogger());
         return new JaxRsOutputRepresentation(entity, genericReturnType,
@@ -953,30 +947,28 @@ public class JaxRsRouter extends JaxRsRouterHelpMethods {
      * @throws RequestHandledException
      */
     private List<MediaType> determineMediaType16(ResourceMethod resourceMethod,
-            MessageBodyWriterSet mbwsForEntityClass, CallContext callContext)
+            MessageBodyWriterSubSet mbwsForEntityClass, CallContext callContext)
             throws RequestHandledException {
         SortedMetadata<MediaType> accMediaTypes = callContext
                 .getAccMediaTypes();
         // 1. Gather the set of producible media types P:
         // (a) + (b)
-        List<MediaType> p = resourceMethod.getProducedMimes();
+        Collection<MediaType> p = resourceMethod.getProducedMimes();
         // 1. (c)
         if (p.isEmpty()) {
-            p = new ArrayList<MediaType>();
-            for (MessageBodyWriter<?> messageBodyWriter : mbwsForEntityClass)
-                p.addAll(messageBodyWriter.getProducedMimes());
+            p = mbwsForEntityClass.getAllProducibleMediaTypes();
+            // 2.
+            if (p.isEmpty())
+                return Collections.singletonList(MediaType.ALL);
         }
-        // 2.
-        if (p.isEmpty())
-            return Collections.singletonList(MediaType.ALL);
         // 3. Obtain the acceptable media types A. If A = {}, set A = {'*/*'}
         if (accMediaTypes.isEmpty())
             accMediaTypes = SortedMetadata.getMediaTypeAll();
         // 4. Sort P and A: a is already sorted.
-        p = Util.sortByConcreteness(p);
+        List<MediaType> pSorted = Util.sortByConcreteness(p);
         // 5.
         List<MediaType> m = new ArrayList<MediaType>();
-        for (MediaType prod : p)
+        for (MediaType prod : pSorted)
             for (MediaType acc : accMediaTypes)
                 if (prod.isCompatible(acc))
                     m.add(MediaType.getMostSpecific(prod, acc));

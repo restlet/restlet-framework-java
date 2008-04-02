@@ -37,12 +37,31 @@ import org.restlet.data.MediaType;
 public interface MessageBodyWriter<T> {
 
     /**
+     * Returns the JAX-RS {@link javax.ws.rs.ext.MessageBodyWriter}.
+     * 
+     * @return the JAX-RS MessageBodyWriter
+     */
+    public javax.ws.rs.ext.MessageBodyWriter<T> getJaxRsWriter();
+
+    /**
      * Returns the list of produced {@link MediaType}s of the wrapped
      * {@link javax.ws.rs.ext.MessageBodyWriter}.
      * 
      * @return List of produced {@link MediaType}s.
      */
     public List<MediaType> getProducedMimes();
+
+    /**
+     * Called before <code>writeTo</code> to ascertain the length in bytes of
+     * the serialized form of <code>t</code>. A non-negative return value is
+     * used in a HTTP <code>Content-Length</code> header.
+     * 
+     * @param t
+     *                the type
+     * @return length in bytes or -1 if the length cannot be determined in
+     *         advance
+     */
+    public long getSize(T t);
 
     /**
      * Checks, if the given class could be written by this MessageBodyWriter.
@@ -66,18 +85,6 @@ public interface MessageBodyWriter<T> {
      *         supported, otherwise false.
      */
     public boolean supportAtLeastOne(Iterable<MediaType> mediaTypes);
-
-    /**
-     * Called before <code>writeTo</code> to ascertain the length in bytes of
-     * the serialized form of <code>t</code>. A non-negative return value is
-     * used in a HTTP <code>Content-Length</code> header.
-     * 
-     * @param t
-     *                the type
-     * @return length in bytes or -1 if the length cannot be determined in
-     *         advance
-     */
-    public long getSize(T t);
 
     /**
      * Write a type to an HTTP response. The response header map is mutable but

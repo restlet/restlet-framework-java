@@ -19,12 +19,10 @@ package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -37,7 +35,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
-import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
@@ -81,8 +78,6 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                the {@link JaxRsRouter}.
      * @param wrapperFactory
      *                factory to create wrappers.
-     * @param allResolvers
-     *                all available wrapped {@link ContextResolver}s.
      * @param logger
      *                The logger to use
      * @return Returns the wrapped sub resource object.
@@ -100,8 +95,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
             CallContext callContext, MessageBodyReaderSet mbrs,
-            WrapperFactory wrapperFactory,
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers, Logger logger)
+            WrapperFactory wrapperFactory, Logger logger)
             throws InvocationTargetException, MissingAnnotationException,
             WebApplicationException, NoMessageBodyReaderException,
             InstantiateException, ConvertRepresentationException,
@@ -133,15 +127,8 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             rb.entity("The sub resource object is null. That is not allowed");
             throw new WebApplicationException(rb.build());
         }
-        ResourceClass resourceClass = wrapperFactory.getResourceClass(subResObj
-                .getClass());
-        ResourceObject subResourceObject = new ResourceObject(subResObj,
-                resourceClass);
-        try {
-            subResourceObject.init(callContext, allResolvers);
-        } catch (InjectException e) {
-            throw new InstantiateException(executeMethod, e);
-        }
-        return subResourceObject;
+        ResourceClass resourceClass;
+        resourceClass = wrapperFactory.getResourceClass(subResObj.getClass());
+        return new ResourceObject(subResObj, resourceClass);
     }
 }

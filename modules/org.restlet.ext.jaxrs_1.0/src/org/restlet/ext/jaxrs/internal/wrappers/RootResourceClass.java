@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
-import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
@@ -79,6 +78,8 @@ public class RootResourceClass extends ResourceClass {
      */
     private boolean constructorLeaveEncoded;
 
+    private IntoRrcInjector injectHelper;
+
     /**
      * Creates a wrapper for the given JAX-RS root resource class.
      * 
@@ -99,8 +100,9 @@ public class RootResourceClass extends ResourceClass {
         super(jaxRsClass, logger, logger);
         Util.checkClassConcrete(getJaxRsClass(), "root resource class");
         checkClassForPathAnnot(jaxRsClass, "root resource class");
+        this.injectHelper = new IntoRrcInjector(jaxRsClass, isLeaveEncoded());
         this.constructor = WrapperUtil.findJaxRsConstructor(getJaxRsClass());
-        this.constructorLeaveEncoded = leaveEncoded
+        this.constructorLeaveEncoded = this.isLeaveEncoded()
                 || constructor.isAnnotationPresent(Encoded.class);
     }
 
@@ -113,9 +115,10 @@ public class RootResourceClass extends ResourceClass {
      *                {@link org.restlet.data.Request} and the Restlet
      *                {@link org.restlet.data.Response}.
      * @param allResolvers
-     *                all available wrapped {@link ContextResolver}s.
-     * @param mbrs
-     *                The Set of all available {@link MessageBodyReader}s in
+     *                all available wrapped
+     *                {@link javax.ws.rs.ext.ContextResolver}s.
+     * @param entityProviders
+     *                The available {@link MessageBodyReader}s in
      *                the {@link org.restlet.ext.jaxrs.JaxRsRouter}.
      * @param logger
      *                The logger to use
@@ -131,22 +134,21 @@ public class RootResourceClass extends ResourceClass {
      * @throws ConvertHeaderParamException
      * @throws ConvertRepresentationException
      */
-    public ResourceObject createInstance(
-            CallContext callContext,
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers,
-            MessageBodyReaderSet mbrs, Logger logger)
-            throws MissingAnnotationException,
-            InstantiateException, NoMessageBodyReaderException,
-            InvocationTargetException, ConvertRepresentationException,
-            ConvertHeaderParamException, ConvertPathParamException,
-            ConvertMatrixParamException, ConvertQueryParamException,
-            ConvertCookieParamException {
+    public ResourceObject createInstance(CallContext callContext,
+            Collection<ContextResolver<?>> allResolvers,
+            EntityProviders entityProviders, Logger logger)
+            throws MissingAnnotationException, InstantiateException,
+            NoMessageBodyReaderException, InvocationTargetException,
+            ConvertRepresentationException, ConvertHeaderParamException,
+            ConvertPathParamException, ConvertMatrixParamException,
+            ConvertQueryParamException, ConvertCookieParamException {
         Constructor<?> constructor = this.constructor;
         Object instance = WrapperUtil.createInstance(constructor,
-                constructorLeaveEncoded, callContext, mbrs, logger);
+                constructorLeaveEncoded, callContext, entityProviders, logger);
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {
-            rootResourceObject.init(callContext, allResolvers);
+            this.injectHelper.inject(rootResourceObject, callContext,
+                    allResolvers, entityProviders);
         } catch (InjectException e) {
             throw new InstantiateException(e);
         }

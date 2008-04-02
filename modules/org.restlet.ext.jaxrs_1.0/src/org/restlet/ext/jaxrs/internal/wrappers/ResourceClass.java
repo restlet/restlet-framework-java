@@ -17,12 +17,8 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
-import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getContextResolver;
-
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,37 +29,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
 
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Conditions;
-import org.restlet.ext.jaxrs.internal.core.CallContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
-import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
-import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
  * Instances represents a root resource class.
@@ -75,129 +48,10 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  */
 public class ResourceClass extends AbstractJaxRsWrapper {
 
-    private static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
-
     /**
      * Caches the allowed methods (unmodifiable) for given remainingParts.
      */
     private Map<RemainingPath, Set<org.restlet.data.Method>> allowedMethods = new HashMap<RemainingPath, Set<org.restlet.data.Method>>();
-
-    /**
-     * <p>
-     * This array contains the fields in this class in which are annotated to
-     * inject an {@link CallContext}.<br>
-     * (Array is round about 10 times faster than the list.)
-     * </p>
-     * <p>
-     * Must be initiated with the other fields starting with initFields.
-     * </p>
-     * 
-     * @see UriInfo
-     * @see SecurityContext
-     * @see Request
-     * @see HttpHeaders
-     */
-    private Field[] injectFieldsCallContext;
-
-    /**
-     * <p>
-     * This array contains the fields in this class in which are annotated to
-     * inject an {@link CallContext}.
-     * </p>
-     * <p>
-     * Must bei initiated with the other fields starting with initFields.
-     * </p>
-     */
-    private Field[] injectFieldsClientInfo;
-
-    /**
-     * <p>
-     * This array contains the fields in this class in which are annotated to
-     * inject an {@link CallContext}.
-     * </p>
-     * <p>
-     * Must bei initiated with the other fields starting with initFields.
-     * </p>
-     */
-    private Field[] injectFieldsConditions;
-
-    /**
-     * <p>
-     * This array contains the fields in this class in which are annotated to
-     * inject an {@link ContextResolver}.
-     * </p>
-     * <p>
-     * Must be initiated with the other fields starting with initFields.
-     * </p>
-     * 
-     * @see ContextResolver
-     */
-    private Field[] injectFieldsContextResolvers;
-
-    /**
-     * <p>
-     * Fields of the wrapped JAX-RS resource class to inject a cookie parameter.
-     * </p>
-     * <p>
-     * Must bei initiated with the other fields starting with initFields.
-     * </p>
-     */
-    private Field[] injectFieldsCookieParam;
-
-    // LATER chaching, not new for every resource class creation
-
-    /**
-     * <p>
-     * Fields of the wrapped JAX-RS resource class to inject a header parameter.
-     * </p>
-     * <p>
-     * Must bei initiated with the other fields starting with initFields.
-     * </p>
-     */
-    private Field[] injectFieldsHeaderParam;
-
-    /**
-     * <p>
-     * Fields of the wrapped JAX-RS resource class to inject a matrix parameter.
-     * </p>
-     * <p>
-     * Must bei initiated with the other fields starting with initFields.
-     * </p>
-     */
-    private Field[] injectFieldsMatrixParam;
-
-    /**
-     * <p>
-     * This array contains the fields in this class in which are annotated to
-     * inject an {@link MessageBodyWorkers}.
-     * </p>
-     * <p>
-     * Must be initiated with the other fields starting with initFields.
-     * </p>
-     * 
-     * @see MessageBodyWorkers
-     */
-    private Field[] injectFieldsMbWorkers;
-
-    /**
-     * <p>
-     * Fields of the wrapped JAX-RS resource class to inject a path parameter.
-     * </p>
-     * <p>
-     * Must bei initiated with the other fields starting with initFields.
-     * </p>
-     */
-    private Field[] injectFieldsPathParam;
-
-    /**
-     * <p>
-     * Fields of the wrapped JAX-RS resource class to inject a query parameter.
-     * </p>
-     * <p>
-     * Must bei initiated with the other fields starting with initFields.
-     * </p>
-     */
-    private Field[] injectFieldsQueryParam;
 
     protected Class<?> jaxRsClass;
 
@@ -205,7 +59,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * is true, if the resource class is annotated with &#64;Path. Is available
      * after constructor was running.
      */
-    boolean leaveEncoded;
+    private boolean leaveEncoded;
 
     private Collection<SubResourceLocator> subResourceLocators;
 
@@ -224,6 +78,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     ResourceClass(Class<?> jaxRsClass, Logger logger) {
         super();
+        this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         this.init(jaxRsClass, logger);
     }
 
@@ -473,169 +328,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     private void init(Class<?> jaxRsClass, Logger logger) {
         this.jaxRsClass = jaxRsClass;
-        this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         initResourceMethodsAndLocators(logger);
-        initInjectFields();
-    }
-
-    /**
-     * Initiates the resource object:
-     * <ul>
-     * <li>Injects all the supported dependencies into the the given resource
-     * object of this class.</li>
-     * <li>Calls the method annotated with &#64;{@link PostConstruct}, see
-     * JSR-250.</li>
-     * </ul>
-     * 
-     * @param resourceObject
-     * @param callContext
-     *                The CallContext to get the dependencies from.
-     * @param allResolvers
-     *                all available wrapped {@link ContextResolver}s.
-     * @throws InjectException
-     *                 if the injection was not possible. See
-     *                 {@link InjectException#getCause()} for the reason.
-     * @throws ConvertCookieParamException
-     * @throws ConvertHeaderParamException
-     * @throws ConvertMatrixParamException
-     * @throws ConvertPathParamException
-     * @throws ConvertQueryParamException
-     */
-    void init(
-            ResourceObject resourceObject,
-            CallContext callContext,
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers)
-            throws InjectException, WebApplicationException,
-            ConvertCookieParamException, ConvertHeaderParamException,
-            ConvertMatrixParamException, ConvertPathParamException,
-            ConvertQueryParamException {
-        Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
-        for (Field contextField : this.injectFieldsCallContext) {
-            Util.inject(jaxRsResObj, contextField, callContext);
-        }
-        for (Field field : this.injectFieldsContextResolvers) {
-            ContextResolver<?> contextResolver;
-            contextResolver = getContextResolver(field, allResolvers);
-            Util.inject(jaxRsResObj, field, contextResolver);
-        }
-        for (Field mbwField : this.injectFieldsMbWorkers) {
-            Object messageBodyWorkers = null;
-            Util.inject(jaxRsResObj, mbwField, messageBodyWorkers);
-            // TODO inject MessageBodyWorker to resource classes.
-        }
-        for (Field clientInfoField : this.injectFieldsClientInfo) {
-            ClientInfo clientInfo = callContext.getRequest().getClientInfo();
-            Util.inject(jaxRsResObj, clientInfoField, clientInfo);
-        }
-        for (Field conditionsField : this.injectFieldsConditions) {
-            Conditions conditions = callContext.getRequest().getConditions();
-            Util.inject(jaxRsResObj, conditionsField, conditions);
-        }
-        for (Field cpf : this.injectFieldsCookieParam) {
-            CookieParam headerParam = cpf.getAnnotation(CookieParam.class);
-            DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = cpf.getType();
-            Type paramGenericType = cpf.getGenericType();
-            Object value = WrapperUtil.getCookieParamValue(convTo,
-                    paramGenericType, headerParam, defaultValue, callContext);
-            Util.inject(jaxRsResObj, cpf, value);
-        }
-        for (Field hpf : this.injectFieldsHeaderParam) {
-            HeaderParam headerParam = hpf.getAnnotation(HeaderParam.class);
-            DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = hpf.getType();
-            Type paramGenericType = hpf.getGenericType();
-            Object value = WrapperUtil.getHeaderParamValue(convTo,
-                    paramGenericType, headerParam, defaultValue, callContext);
-            Util.inject(jaxRsResObj, hpf, value);
-        }
-        for (Field mpf : this.injectFieldsMatrixParam) {
-            MatrixParam headerParam = mpf.getAnnotation(MatrixParam.class);
-            DefaultValue defaultValue = mpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = mpf.getType();
-            Type paramGenericType = mpf.getGenericType();
-            Object value = WrapperUtil.getMatrixParamValue(convTo,
-                    paramGenericType, headerParam, leaveEncoded, defaultValue,
-                    callContext);
-            Util.inject(jaxRsResObj, mpf, value);
-        }
-        for (Field ppf : this.injectFieldsPathParam) {
-            PathParam headerParam = ppf.getAnnotation(PathParam.class);
-            DefaultValue defaultValue = ppf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = ppf.getType();
-            Type paramGenericType = ppf.getGenericType();
-            Object value = WrapperUtil.getPathParamValue(convTo,
-                    paramGenericType, headerParam, leaveEncoded, defaultValue,
-                    callContext);
-            Util.inject(jaxRsResObj, ppf, value);
-        }
-        for (Field cpf : this.injectFieldsQueryParam) {
-            QueryParam headerParam = cpf.getAnnotation(QueryParam.class);
-            DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
-            Class<?> convTo = cpf.getType();
-            Type paramGenericType = cpf.getGenericType();
-            Object value = WrapperUtil.getQueryParamValue(convTo,
-                    paramGenericType, headerParam, leaveEncoded, defaultValue,
-                    callContext, Logger.getAnonymousLogger());
-            Util.inject(jaxRsResObj, cpf, value);
-        }
-    }
-
-    /**
-     * initiates the fields to cache thie fields that needs injection.
-     * 
-     * @throws SecurityException
-     */
-    private void initInjectFields() {
-        List<Field> ifContext = new ArrayList<Field>(3);
-        List<Field> ifMbWorkers = new ArrayList<Field>(1);
-        List<Field> ifContRs = new ArrayList<Field>(1);
-        List<Field> ifClientInfo = new ArrayList<Field>(1);
-        List<Field> ifConditions = new ArrayList<Field>(1);
-        List<Field> ifCookieParam = new ArrayList<Field>(1);
-        List<Field> ifHeaderParam = new ArrayList<Field>(1);
-        List<Field> ifMatrixParam = new ArrayList<Field>(1);
-        List<Field> ifPathParam = new ArrayList<Field>(1);
-        List<Field> ifQueryParam = new ArrayList<Field>(1);
-        Class<?> jaxRsClass2 = this.jaxRsClass;
-        do {
-            for (Field field : jaxRsClass2.getDeclaredFields()) {
-                field.setAccessible(true);
-                if (field.isAnnotationPresent(Context.class)) {
-                    Class<?> fieldType = field.getType();
-                    if (fieldType.equals(ClientInfo.class))
-                        ifClientInfo.add(field);
-                    else if (fieldType.equals(Conditions.class))
-                        ifConditions.add(field);
-                    else if (fieldType.equals(MessageBodyWorkers.class))
-                        ifMbWorkers.add(field);
-                    else if (fieldType.equals(ContextResolver.class))
-                        ifContRs.add(field);
-                    else
-                        ifContext.add(field);
-                } else if (field.isAnnotationPresent(PathParam.class))
-                    ifPathParam.add(field);
-                else if (field.isAnnotationPresent(CookieParam.class))
-                    ifCookieParam.add(field);
-                else if (field.isAnnotationPresent(HeaderParam.class))
-                    ifHeaderParam.add(field);
-                else if (field.isAnnotationPresent(MatrixParam.class))
-                    ifMatrixParam.add(field);
-                else if (field.isAnnotationPresent(QueryParam.class))
-                    ifQueryParam.add(field);
-            }
-            jaxRsClass2 = jaxRsClass2.getSuperclass();
-        } while (jaxRsClass2 != null);
-        this.injectFieldsCallContext = ifContext.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsMbWorkers = ifMbWorkers.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsContextResolvers = ifContRs.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsClientInfo = ifClientInfo.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsConditions = ifConditions.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsCookieParam = ifCookieParam.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsHeaderParam = ifHeaderParam.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsMatrixParam = ifMatrixParam.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsPathParam = ifPathParam.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsQueryParam = ifQueryParam.toArray(EMPTY_FIELD_ARRAY);
     }
 
     private void initResourceMethodsAndLocators(Logger logger) {
@@ -680,6 +373,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         this.subResourceLocators = subResLocs;
         this.subResourceMethods = subRsesMeths;
         this.subResourceMethodsAndLocators = srmls;
+    }
+
+    /**
+     * @return the leaveEncoded
+     */
+    boolean isLeaveEncoded() {
+        return this.leaveEncoded;
     }
 
     @Override
