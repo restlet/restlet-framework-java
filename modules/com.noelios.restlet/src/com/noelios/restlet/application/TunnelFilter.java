@@ -127,7 +127,7 @@ public class TunnelFilter extends Filter {
         if (tunnelService.isExtensionTunnel()) {
             // Tunnels the extracted extensions into the proper client
             // preferences.
-            evaluateExtensions(request);
+            evaluateExtensions(request, tunnelService.isMatrixParamsEnabled());
         }
 
         // Update the query if it has been modified
@@ -150,7 +150,7 @@ public class TunnelFilter extends Filter {
      * @param request
      *                the request to check.
      */
-    private void evaluateExtensions(Request request) {
+    private void evaluateExtensions(Request request, boolean matrixParamsEnabled) {
         Reference resourceRef = request.getResourceRef();
         String originalRef = resourceRef.toString();
         String path = resourceRef.getPath();
@@ -166,9 +166,18 @@ public class TunnelFilter extends Filter {
         StringBuilder cutExts = new StringBuilder();
 
         int lpsStart = path.lastIndexOf('/') + 1;
-        String[] lpss = path.substring(lpsStart).split("\\.");
-        List<String> lps = new ArrayList<String>(Arrays.asList(lpss));
-        Iterator<String> lpsIter = lps.iterator();
+        String lps = path.substring(lpsStart);
+        String matrixParams = "";
+        if (matrixParamsEnabled) {
+            int lpsEnd = lps.indexOf(';');
+            if (lpsEnd >= 0) {
+                matrixParams = lps.substring(lpsEnd);
+                lps = lps.substring(0, lpsEnd);
+            }
+        }
+        String[] lpssa = lps.split("\\.");
+        List<String> lpss = new ArrayList<String>(Arrays.asList(lpssa));
+        Iterator<String> lpsIter = lpss.iterator();
         if (lpsIter.hasNext()) {
             lpsIter.next(); // ignore not-extension-part
             ClientInfo clientInfo = request.getClientInfo();
@@ -210,7 +219,7 @@ public class TunnelFilter extends Filter {
         // Update the path of the resource's Reference.
         StringBuilder newPath = new StringBuilder();
         newPath.append(path, 0, lpsStart);
-        lpsIter = lps.iterator();
+        lpsIter = lpss.iterator();
         if (lpsIter.hasNext()) {
             String pathPart = lpsIter.next();
             newPath.append(pathPart);
@@ -220,6 +229,7 @@ public class TunnelFilter extends Filter {
                 newPath.append(ext);
             }
         }
+        newPath.append(matrixParams);
         resourceRef.setPath(newPath.toString());
 
         String cutExtsStr = null;

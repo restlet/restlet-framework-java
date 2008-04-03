@@ -39,6 +39,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.service.TunnelService;
 
 import com.noelios.restlet.application.TunnelFilter;
 
@@ -308,6 +309,28 @@ public class TunnelFilterTestCase extends TestCase {
         assertMediaTypes();
         assertLanguages();
         assertEncodings();
+        assertCharSets();
+    }
+
+    public void testWithMatrixParam() {
+        TunnelService tunnelService = tunnelFilter.getApplication()
+                .getTunnelService();
+        tunnelService.setMatrixParametersEnabled(false);
+        createGet(EFFECTED + ";abcdef");
+        filter();
+        check(EFFECTED + ";abcdef", null);
+        assertMediaTypes();
+        assertLanguages();
+        assertCharSets();
+        assertCharSets();
+
+        tunnelService.setMatrixParametersEnabled(true);
+        createGet(EFFECTED + ";abcdef");
+        filter();
+        check("http://example.org/adf.asdf/af;abcdef", "html");
+        assertMediaTypes(MediaType.TEXT_HTML);
+        assertLanguages();
+        assertCharSets();
         assertCharSets();
     }
 }
