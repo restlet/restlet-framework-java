@@ -179,7 +179,7 @@ class IntoRrcInjector extends ContextInjector {
         }
         for (Field ppf : this.injectFieldsPathParam) {
             PathParam headerParam = ppf.getAnnotation(PathParam.class);
-            // REQUEST forbid @DefaultValue on @PathParam
+            // REQUESTED forbid @DefaultValue on @PathParam
             Class<?> convTo = ppf.getType();
             Type paramGenericType = ppf.getGenericType();
             Object value = WrapperUtil.getPathParamValue(convTo,

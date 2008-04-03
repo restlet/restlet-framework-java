@@ -1026,7 +1026,7 @@ public class WrapperUtil {
         String pathParamValue = callContext.getLastPathParamEnc(pathParam);
         Iterator<String> pathParamValueIter = callContext
                 .pathParamEncIter(pathParam);
-        // REQUEST What should happens, if no PathParam could be found?
+        // REQUESTED What should happens, if no PathParam could be found?
         // Internal Server Error? It could be that someone request a qPathParam
         // value of a prior @Path, but this is not good IMO.
         // perhaps add another attribute to @PathParam, which allows it.

@@ -104,7 +104,7 @@ public class ListParamTest extends JaxRsTestCase {
         checkPathParam(response);
     }
 
-    // REQUEST is @Path("{p}/{p}") allowed? same path var names? IMO only, if
+    // REQUESTED is @Path("{p}/{p}") allowed? same path var names? IMO only, if
     // same value. Corresponds to back references of regular expressions.
 
     /**

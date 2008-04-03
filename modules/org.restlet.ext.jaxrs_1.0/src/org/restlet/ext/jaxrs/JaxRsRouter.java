@@ -278,7 +278,7 @@ public class JaxRsRouter extends Restlet {
      */
     public void attach(ApplicationConfig appConfig)
             throws IllegalArgumentException {
-        // REQUEST should be defined, what a runtime should do with
+        // REQUESTED should be defined, what a runtime should do with
         // non-loadeable rrcs and providers?
         // TODO Interface comparable to other Restlet classes.
         Collection<Class<?>> rrcs = appConfig.getResourceClasses();
@@ -572,7 +572,6 @@ public class JaxRsRouter extends Restlet {
         RootResourceClass rrc = rrcAndRemPath.rrc;
         PathRegExp rMatch = rrc.getPathRegExp();
         ResourceObject o;
-        // LATER Do I use dynamic proxies, to inject instance variables?
         try {
             o = rrc.createInstance(callContext, contextResolvers,
                     this.entityProviders, getLogger());

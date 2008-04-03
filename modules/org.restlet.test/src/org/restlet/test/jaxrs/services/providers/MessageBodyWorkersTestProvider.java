@@ -60,10 +60,10 @@ public class MessageBodyWorkersTestProvider implements
         return Person.class.isAssignableFrom(type);
     }
 
-    // REQUEST If Entity Providers could be combined by the MessageBodyWrokers,
+    // REQUESTED If Entity Providers could be combined by the MessageBodyWrokers,
     // than the entity providers must not close the streams.
 
-    // REQUEST param order on MessageBodyWorkers the same as on entity providers
+    // REQUESTED param order on MessageBodyWorkers the same as on entity providers
 
     /**
      * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],

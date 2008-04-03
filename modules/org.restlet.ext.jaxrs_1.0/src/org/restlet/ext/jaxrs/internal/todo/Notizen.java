@@ -24,14 +24,14 @@ package org.restlet.ext.jaxrs.internal.todo;
  */
 public class Notizen {
     
-    // REQUEST Provider for File-Upload by a browser (multipart/form-data)
+    // REQUESTED Provider for File-Upload by a browser (multipart/form-data)
     
     // TODO @Context and so on only in objects created by the runtime.
     // support and warn about this.
 
     // TESTEN what happens, if ".." or "." in @Path?
     
-    // TODO rename @DefaultValue to @Default? it's shorter
+    // REQUEST rename @DefaultValue to @Default? it's shorter
 
     // TODO file extension mapping with matrix parameters.
 
@@ -43,7 +43,8 @@ public class Notizen {
 
     // REQUESTED @Context on type PathSegment ?
 
-    // REQUESTED disallow entity on sub resource locator?
+    // TODO disallow entity on sub resource locator
+    // to master thesis. When was this updated?
 
     // TODO read javadoc of PathSegment again.
 

@@ -18,6 +18,7 @@
 package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
@@ -45,7 +46,7 @@ public class InjectionTestService {
     
     @Context private HttpHeaders httpHeaders;
     
-    // LATER @HeaderParam("host") private String host;
+    @HeaderParam("host") private String host;
     
     @GET
     @ProduceMime("text/plain")
@@ -59,8 +60,8 @@ public class InjectionTestService {
             msg += "\n* request";
         if(httpHeaders == null)
             msg += "\n* httpHeaders";
-        //if(host == null)
-        //    msg += "\n* host";
+        if(host == null)
+            msg += "\n* host";
         if(msg.length() > 0)
             return Response.serverError().entity("missing:"+msg).build();
         return Response.ok("ok").build();
