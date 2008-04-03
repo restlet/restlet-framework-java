@@ -127,7 +127,8 @@ public class TunnelFilter extends Filter {
         if (tunnelService.isExtensionTunnel()) {
             // Tunnels the extracted extensions into the proper client
             // preferences.
-            evaluateExtensions(request, tunnelService.isMatrixParamsEnabled());
+            evaluateExtensions(request, tunnelService
+                    .isMatrixParametersEnabled());
         }
 
         // Update the query if it has been modified
