@@ -4,6 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - API Enhancements
+        - Enabled matrix parameters when tunnelling extensions. 
+          Contributed by Stephan Koops.
 
  - 1.1 Milestone 3 (2008-04-01)
     - Bugs fixed
