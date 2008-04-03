@@ -63,7 +63,7 @@ public class Converter {
      */
     public static String getCharset(MediaType mediaType) {
         Map<String, String> parameters = mediaType.getParameters();
-        if(parameters == null)
+        if (parameters == null)
             return null;
         return parameters.get(CHARSET_PARAM);
     }
@@ -349,7 +349,7 @@ public class Converter {
      */
     public static Form toFormEncoded(String queryString, Logger logger) {
         Form form = new Form();
-        Engine.getInstance().parse(logger, form, queryString, null, false);
+        Engine.getInstance().parse(logger, form, queryString, null, false, '&');
         return form;
     }
 }

@@ -127,8 +127,7 @@ public class TunnelFilter extends Filter {
         if (tunnelService.isExtensionTunnel()) {
             // Tunnels the extracted extensions into the proper client
             // preferences.
-            evaluateExtensions(request, tunnelService
-                    .isMatrixParametersEnabled());
+            evaluateExtensions(request);
         }
 
         // Update the query if it has been modified
@@ -140,18 +139,18 @@ public class TunnelFilter extends Filter {
     }
 
     /**
-     * Update the client preferences according to the extensions (in the meaning
-     * of file extensions) located in the resource URI. If the extension is
-     * mapped to a {@link Metadata} in the {@link MetadataService}, then the
+     * Updates the client preferences according to the extensions (in the
+     * meaning of file extensions) located in the resource URI. If the extension
+     * is mapped to a {@link Metadata} in the {@link MetadataService}, then the
      * corresponding accept header is updated and the matched extension is
      * removed.<br>
      * See also section 3.6.1 of JAX-RS specification (<a
      * href="https://jsr311.dev.java.net">https://jsr311.dev.java.net</a>)
      * 
      * @param request
-     *                the request to check.
+     *                The request to check.
      */
-    private void evaluateExtensions(Request request, boolean matrixParamsEnabled) {
+    private void evaluateExtensions(Request request) {
         Reference resourceRef = request.getResourceRef();
         String originalRef = resourceRef.toString();
         String path = resourceRef.getPath();
@@ -169,13 +168,12 @@ public class TunnelFilter extends Filter {
         int lpsStart = path.lastIndexOf('/') + 1;
         String lps = path.substring(lpsStart);
         String matrixParams = "";
-        if (matrixParamsEnabled) {
-            int lpsEnd = lps.indexOf(';');
-            if (lpsEnd >= 0) {
-                matrixParams = lps.substring(lpsEnd);
-                lps = lps.substring(0, lpsEnd);
-            }
+        int lpsEnd = lps.indexOf(';');
+        if (lpsEnd >= 0) {
+            matrixParams = lps.substring(lpsEnd);
+            lps = lps.substring(0, lpsEnd);
         }
+
         String[] lpssa = lps.split("\\.");
         List<String> lpss = new ArrayList<String>(Arrays.asList(lpssa));
         Iterator<String> lpsIter = lpss.iterator();

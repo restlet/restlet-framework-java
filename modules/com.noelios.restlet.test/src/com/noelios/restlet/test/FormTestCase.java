@@ -45,7 +45,7 @@ public class FormTestCase extends TestCase {
 
         String query = form.encode(CharacterSet.UTF_8);
         Form newForm = new FormReader(Logger.getLogger(FormTestCase.class
-                .getCanonicalName()), query, CharacterSet.UTF_8).read();
+                .getCanonicalName()), query, CharacterSet.UTF_8, '&').read();
         String newQuery = newForm.encode(CharacterSet.UTF_8);
         assertEquals(query, newQuery);
     }

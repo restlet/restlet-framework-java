@@ -128,19 +128,6 @@ public class TunnelService {
     /** The name of the parameter containing the accepted language. */
     private volatile String languageParameter;
 
-    /**
-     * If the extension tunnel is enabled, this property indicates if matrix
-     * parameters should be considered.<br>
-     * Example with the following URI:
-     * http://www.example.org/path/resource.xml;matrixParamName1=matrixParamValue1;mpName2=mpValue2<br>
-     * If enabled, this will be changed to
-     * http://www.example.org/path/resource;matrixParamName1=matrixParamValue1;mpName2=mpValue2
-     * and the Accept header is text/xml.<br>
-     * If disabled, this will (typically) let uneffected, because no mapping for
-     * the extension "xml;matrixParamName1=...." is available.
-     */
-    private volatile boolean matrixParametersEnabled;
-
     /** The name of the parameter containing the accepted media type. */
     private volatile String mediaTypeParameter;
 
@@ -325,15 +312,6 @@ public class TunnelService {
     }
 
     /**
-     * Indicates if the matrix parameters are enabled.
-     * 
-     * @return True if the matrix parameters are enabled.
-     */
-    public boolean isMatrixParametersEnabled() {
-        return matrixParametersEnabled;
-    }
-
-    /**
      * Indicates if the method name can be tunnelled.
      * 
      * @return True if the method name can be tunnelled.
@@ -445,16 +423,6 @@ public class TunnelService {
      */
     public void setLanguageParameter(String parameterName) {
         this.languageParameter = parameterName;
-    }
-
-    /**
-     * Indicates if the matrix parameters should be enabled.
-     * 
-     * @param matrixParametersEnabled
-     *                True if the matrix parameters should be enabled.
-     */
-    public void setMatrixParametersEnabled(boolean matrixParametersEnabled) {
-        this.matrixParametersEnabled = matrixParametersEnabled;
     }
 
     /**

@@ -947,16 +947,16 @@ public class Engine extends org.restlet.util.Engine {
     @Override
     public void parse(Logger logger, Form form, Representation webForm) {
         if (webForm != null) {
-            FormUtils.parsePost(logger, form, webForm);
+            FormUtils.parse(logger, form, webForm);
         }
     }
 
     @Override
     public void parse(Logger logger, Form form, String queryString,
-            CharacterSet characterSet, boolean decode) {
+            CharacterSet characterSet, boolean decode, char separator) {
         if ((queryString != null) && !queryString.equals("")) {
-            FormUtils.parseQuery(logger, form, queryString, characterSet,
-                    decode);
+            FormUtils.parse(logger, form, queryString, characterSet, decode,
+                    separator);
         }
     }
 

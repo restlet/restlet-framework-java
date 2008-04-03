@@ -4,9 +4,18 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
     - API Enhancements
-        - Enabled matrix parameters when tunnelling extensions. 
+        - Matrix parameters are now supported by the Reference and the
+          Form classes. Added many new methods, similar to the ones 
+          available for query strings.
+        - Added Reference.hasFragment(), hasMatrix(), hasQuery() and
+          hasScheme() methods.
+        - Matrix parameters are now ignored by tunnel service. 
           Contributed by Stephan Koops.
+        - 
+    - NRE and Extension Enhancements
+    - Misc
 
  - 1.1 Milestone 3 (2008-04-01)
     - Bugs fixed

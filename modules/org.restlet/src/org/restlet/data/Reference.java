@@ -769,7 +769,7 @@ public class Reference {
      * @return The fragment identifier.
      */
     public String getFragment() {
-        if (fragmentIndex != -1) {
+        if (hasFragment()) {
             return this.internalRef.substring(fragmentIndex + 1);
         } else {
             return null;
@@ -797,14 +797,14 @@ public class Reference {
      * @return The hierarchical part .
      */
     public String getHierarchicalPart() {
-        if (schemeIndex != -1) {
+        if (hasScheme()) {
             // Scheme found
-            if (queryIndex != -1) {
+            if (hasQuery()) {
                 // Query found
                 return this.internalRef.substring(schemeIndex + 1, queryIndex);
             } else {
                 // No query found
-                if (fragmentIndex != -1) {
+                if (hasFragment()) {
                     // Fragment found
                     return this.internalRef.substring(schemeIndex + 1,
                             fragmentIndex);
@@ -815,11 +815,11 @@ public class Reference {
             }
         } else {
             // No scheme found
-            if (queryIndex != -1) {
+            if (hasQuery()) {
                 // Query found
                 return this.internalRef.substring(0, queryIndex);
             } else {
-                if (fragmentIndex != -1) {
+                if (hasFragment()) {
                     // Fragment found
                     return this.internalRef.substring(0, fragmentIndex);
                 } else {
@@ -959,7 +959,7 @@ public class Reference {
      * @return The absolute resource identifier, without the fragment.
      */
     public String getIdentifier() {
-        if (fragmentIndex != -1) {
+        if (hasFragment()) {
             // Fragment found
             return this.internalRef.substring(0, fragmentIndex);
         } else {
@@ -1014,11 +1014,89 @@ public class Reference {
      * @param decode
      *                Indicates if the result should be decoded using the
      *                {@link #decode(String)} method.
+     * @param excludeMatrix
+     * @return The optionnally decoded last segment.
+     * @see #getLastSegment()
+     */
+    public String getLastSegment(boolean decode, boolean excludeMatrix) {
+        String result = getLastSegment();
+
+        if (excludeMatrix && (result != null)) {
+            int matrixIndex = result.indexOf(';');
+
+            if (matrixIndex != -1) {
+
+            }
+        }
+
+        return decode ? decode(result) : result;
+    }
+
+    /**
+     * Returns the optionnally decoded last segment.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
      * @return The optionnally decoded last segment.
      * @see #getLastSegment()
      */
     public String getLastSegment(boolean decode) {
-        return decode ? decode(getLastSegment()) : getLastSegment();
+        return getLastSegment(decode, false);
+    }
+
+    /**
+     * Returns the optional matrix for hierarchical identifiers.A matrix part
+     * starts after the first ';' character of the last path segment. It is a
+     * sequence of 'name=value' parameters separated by ';' characters. The
+     * value can be ommited.<br>
+     * Note that no URI decoding is done by this method.
+     * 
+     * @return The matrix or null.
+     */
+    public String getMatrix() {
+        String lastSegment = getLastSegment();
+        int matrixIndex = lastSegment.indexOf(';');
+
+        if (matrixIndex != -1) {
+            return lastSegment.substring(matrixIndex + 1);
+        } else {
+            // No matrix found
+            return null;
+        }
+    }
+
+    /**
+     * Returns the optionnally decoded matrix.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @return The optionnally decoded matrix.
+     * @see #getMatrix()
+     */
+    public String getMatrix(boolean decode) {
+        return decode ? decode(getMatrix()) : getMatrix();
+    }
+
+    /**
+     * Returns the optional matrix as a form.
+     * 
+     * @return The optional matrix component as a form.
+     */
+    public Form getMatrixAsForm() {
+        return new Form(getMatrix(), ';');
+    }
+
+    /**
+     * Returns the optional matrix as a form submission.
+     * 
+     * @param characterSet
+     *                The supported character encoding.
+     * @return The optional matrix as a form.
+     */
+    public Form getMatrixAsForm(CharacterSet characterSet) {
+        return new Form(getMatrix(), characterSet, ';');
     }
 
     /**
@@ -1115,9 +1193,9 @@ public class Reference {
      * @return The query component or null.
      */
     public String getQuery() {
-        if (queryIndex != -1) {
+        if (hasQuery()) {
             // Query found
-            if (fragmentIndex != -1) {
+            if (hasFragment()) {
                 if (queryIndex < fragmentIndex) {
                     // Fragment found and query sign not inside fragment
                     return this.internalRef.substring(queryIndex + 1,
@@ -1449,7 +1527,7 @@ public class Reference {
      * @return The scheme component.
      */
     public String getScheme() {
-        if (schemeIndex != -1) {
+        if (hasScheme()) {
             // Scheme found
             return this.internalRef.substring(0, schemeIndex);
         } else {
@@ -1489,9 +1567,9 @@ public class Reference {
     public String getSchemeSpecificPart() {
         String result = null;
 
-        if (schemeIndex != -1) {
+        if (hasScheme()) {
             // Scheme found
-            if (fragmentIndex != -1) {
+            if (hasFragment()) {
                 // Fragment found
                 result = this.internalRef.substring(schemeIndex + 1,
                         fragmentIndex);
@@ -1721,6 +1799,15 @@ public class Reference {
     }
 
     /**
+     * Indicates if this reference has a fragment identifier.
+     * 
+     * @return True if there is a fragment identifier.
+     */
+    public boolean hasFragment() {
+        return (fragmentIndex != -1);
+    }
+
+    /**
      * Returns a hash code value for the object.
      * 
      * @return A hash code value for the object.
@@ -1728,6 +1815,34 @@ public class Reference {
     @Override
     public int hashCode() {
         return (this.internalRef == null) ? 0 : this.internalRef.hashCode();
+    }
+
+    /**
+     * Indicates if this reference has a matrix.
+     * 
+     * @return True if there is a matrix.
+     * @see #getMatrix()
+     */
+    public boolean hasMatrix() {
+        return (getLastSegment().indexOf(';') != -1);
+    }
+
+    /**
+     * Indicates if this reference has a query component.
+     * 
+     * @return True if there is a query.
+     */
+    public boolean hasQuery() {
+        return (queryIndex != -1);
+    }
+
+    /**
+     * Indicates if this reference has a scheme component.
+     * 
+     * @return True if there is a scheme component.
+     */
+    public boolean hasScheme() {
+        return (schemeIndex != -1);
     }
 
     /**
@@ -1997,7 +2112,7 @@ public class Reference {
             throw new IllegalArgumentException(
                     "Illegal '#' character detected in parameter");
         } else {
-            if (fragmentIndex != -1) {
+            if (hasFragment()) {
                 // Existing fragment
                 if (fragment != null) {
                     this.internalRef = this.internalRef.substring(0,
@@ -2118,7 +2233,7 @@ public class Reference {
             throw new IllegalArgumentException(
                     "Illegal '#' character detected in parameter");
         } else {
-            if (fragmentIndex != -1) {
+            if (hasFragment()) {
                 // Fragment found
                 this.internalRef = identifier
                         + this.internalRef.substring(fragmentIndex);
@@ -2219,9 +2334,9 @@ public class Reference {
         checkValidity(query);
         boolean emptyQueryString = (query == null || query.length() <= 0);
 
-        if (queryIndex != -1) {
+        if (hasQuery()) {
             // Query found
-            if (fragmentIndex != -1) {
+            if (hasFragment()) {
                 // Fragment found
                 if (!emptyQueryString) {
                     this.internalRef = this.internalRef.substring(0,
@@ -2245,7 +2360,7 @@ public class Reference {
             }
         } else {
             // No query found
-            if (fragmentIndex != -1) {
+            if (hasFragment()) {
                 // Fragment found
                 if (!emptyQueryString) {
                     this.internalRef = this.internalRef.substring(0,
@@ -2286,13 +2401,13 @@ public class Reference {
             relativePart = "";
         }
 
-        if (schemeIndex == -1) {
+        if (!hasScheme()) {
             // This is a relative reference, no scheme found
-            if (queryIndex != -1) {
+            if (hasQuery()) {
                 // Query found
                 this.internalRef = relativePart
                         + this.internalRef.substring(queryIndex);
-            } else if (fragmentIndex != -1) {
+            } else if (hasFragment()) {
                 // Fragment found
                 this.internalRef = relativePart
                         + this.internalRef.substring(fragmentIndex);
@@ -2320,7 +2435,7 @@ public class Reference {
             scheme = scheme.toLowerCase();
         }
 
-        if (schemeIndex != -1) {
+        if (hasScheme()) {
             // Scheme found
             if (scheme != null) {
                 this.internalRef = scheme
@@ -2355,9 +2470,9 @@ public class Reference {
             schemeSpecificPart = "";
         }
 
-        if (schemeIndex != -1) {
+        if (hasScheme()) {
             // Scheme found
-            if (fragmentIndex != -1) {
+            if (hasFragment()) {
                 // Fragment found
                 this.internalRef = this.internalRef.substring(0,
                         schemeIndex + 1)
@@ -2371,7 +2486,7 @@ public class Reference {
             }
         } else {
             // No scheme found
-            if (fragmentIndex != -1) {
+            if (hasFragment()) {
                 // Fragment found
                 this.internalRef = schemeSpecificPart
                         + this.internalRef.substring(fragmentIndex);
@@ -2450,7 +2565,7 @@ public class Reference {
             if (fragment) {
                 return this.internalRef;
             } else {
-                if (fragmentIndex != -1) {
+                if (hasFragment()) {
                     return this.internalRef.substring(0, fragmentIndex);
                 } else {
                     return this.internalRef;
@@ -2458,8 +2573,8 @@ public class Reference {
             }
         } else {
             if (fragment) {
-                if (queryIndex != -1) {
-                    if (fragmentIndex != -1) {
+                if (hasQuery()) {
+                    if (hasFragment()) {
                         return this.internalRef.substring(0, queryIndex) + "#"
                                 + getFragment();
                     } else {
@@ -2469,10 +2584,10 @@ public class Reference {
                     return this.internalRef;
                 }
             } else {
-                if (queryIndex != -1) {
+                if (hasQuery()) {
                     return this.internalRef.substring(0, queryIndex);
                 } else {
-                    if (fragmentIndex != -1) {
+                    if (hasFragment()) {
                         return this.internalRef.substring(0, fragmentIndex);
                     } else {
                         return this.internalRef;
@@ -2502,7 +2617,7 @@ public class Reference {
 
             this.queryIndex = this.internalRef.indexOf('?');
             this.fragmentIndex = this.internalRef.indexOf('#');
-            if ((this.queryIndex != -1) && (this.fragmentIndex != -1)
+            if (hasQuery() && hasFragment()
                     && (this.queryIndex > this.fragmentIndex)) {
                 // Query sign inside fragment
                 this.queryIndex = -1;

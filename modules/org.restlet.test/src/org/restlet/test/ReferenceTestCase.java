@@ -21,6 +21,7 @@ package org.restlet.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.Form;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 
@@ -553,6 +554,37 @@ public class ReferenceTestCase extends RestletTestCase {
         }
 
         fail("An exception should have been thrown");
+    }
+
+    public void testMatrix() {
+        Reference ref1 = new Reference(
+                "http://domain.tld/whatever/a=1;b=2;c=4?x=a&y=b");
+        Reference ref2 = new Reference(
+                "http://domain.tld/whatever/a=1/foo;b=2;c=4;d?x=a&y=b");
+        Reference ref3 = new Reference(
+                "http://domain.tld/whatever/a=1;b=2;c=4/foo?x=a&y=b");
+
+        assertTrue(ref1.hasMatrix());
+        assertTrue(ref2.hasMatrix());
+        assertFalse(ref3.hasMatrix());
+
+        assertEquals("b=2;c=4", ref1.getMatrix());
+        assertEquals("b=2;c=4;d", ref2.getMatrix());
+
+        Form form1 = ref1.getMatrixAsForm();
+        assertEquals("2", form1.getFirstValue("b"));
+        assertEquals("4", form1.getFirstValue("c"));
+
+        Form form2 = ref1.getMatrixAsForm();
+        assertEquals("2", form2.getFirstValue("b"));
+        assertEquals("4", form2.getFirstValue("c"));
+        assertNull(form2.getFirstValue("d"));
+
+        Form newForm = new Form();
+        newForm.add("a", "1");
+        newForm.add("b", "2");
+        newForm.add("c", "4");
+        assertEquals("a=1;b=2;c=4", newForm.getMatrixString());
     }
 
 }

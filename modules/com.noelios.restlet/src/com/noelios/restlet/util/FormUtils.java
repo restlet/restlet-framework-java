@@ -36,28 +36,31 @@ import org.restlet.resource.Representation;
  */
 public class FormUtils {
     /**
-     * Parses a query into a given form.
+     * Parses a parameters string into a given form.
      * 
      * @param logger
      *                The logger.
      * @param form
      *                The target form.
-     * @param query
-     *                Query string.
+     * @param parametersString
+     *                The parameters string.
      * @param characterSet
      *                The supported character encoding.
      * @param decode
      *                Indicates if the query parameters should be decoded using
      *                the given character set.
+     * @param separator
+     *                The separator character to append between parameters.
      */
-    public static void parseQuery(Logger logger, Form form, String query,
-            CharacterSet characterSet, boolean decode) {
+    public static void parse(Logger logger, Form form, String parametersString,
+            CharacterSet characterSet, boolean decode, char separator) {
         FormReader fr = null;
 
         if (decode) {
-            fr = new FormReader(logger, query, characterSet);
+            fr = new FormReader(logger, parametersString, characterSet,
+                    separator);
         } else {
-            fr = new FormReader(logger, query);
+            fr = new FormReader(logger, parametersString, separator);
         }
 
         fr.addParameters(form);
@@ -73,7 +76,7 @@ public class FormUtils {
      * @param post
      *                The posted form.
      */
-    public static void parsePost(Logger logger, Form form, Representation post) {
+    public static void parse(Logger logger, Form form, Representation post) {
         if (post.isAvailable()) {
             FormReader fr = null;
             try {
@@ -101,19 +104,22 @@ public class FormUtils {
      * 
      * @param logger
      *                The logger.
-     * @param query
+     * @param parametersString
      *                The query string.
      * @param parameters
      *                The parameters map controlling the reading.
      * @param characterSet
      *                The supported character encoding.
+     * @param separator
+     *                The separator character to append between parameters.
      * @throws IOException
      *                 If the parameters could not be read.
      */
-    public static void getParameters(Logger logger, String query,
-            Map<String, Object> parameters, CharacterSet characterSet)
-            throws IOException {
-        new FormReader(logger, query, characterSet).readParameters(parameters);
+    public static void getParameters(Logger logger, String parametersString,
+            Map<String, Object> parameters, CharacterSet characterSet,
+            char separator) throws IOException {
+        new FormReader(logger, parametersString, characterSet, separator)
+                .readParameters(parameters);
     }
 
     /**
@@ -151,12 +157,15 @@ public class FormUtils {
      *                The parameter name to match.
      * @param characterSet
      *                The supported character encoding.
+     * @param separator
+     *                The separator character to append between parameters.
      * @return The parameter.
      * @throws IOException
      */
     public static Parameter getFirstParameter(Logger logger, String query,
-            String name, CharacterSet characterSet) throws IOException {
-        return new FormReader(logger, query, characterSet)
+            String name, CharacterSet characterSet, char separator)
+            throws IOException {
+        return new FormReader(logger, query, characterSet, separator)
                 .readFirstParameter(name);
     }
 
@@ -195,13 +204,16 @@ public class FormUtils {
      *                The parameter name to match.
      * @param characterSet
      *                The supported character encoding.
+     * @param separator
+     *                The separator character to append between parameters.
      * @return The parameter value or list of values.
      * @throws IOException
      *                 If the parameters could not be read.
      */
     public static Object getParameter(Logger logger, String query, String name,
-            CharacterSet characterSet) throws IOException {
-        return new FormReader(logger, query, characterSet).readParameter(name);
+            CharacterSet characterSet, char separator) throws IOException {
+        return new FormReader(logger, query, characterSet, separator)
+                .readParameter(name);
     }
 
     /**

@@ -52,6 +52,9 @@ public class FormReader {
     /** The form stream. */
     private volatile InputStream stream;
 
+    /** The separator character used between parameters. */
+    private volatile char separator;
+
     /**
      * Constructor.<br>
      * In case the representation does not define a character set, the UTF-8
@@ -69,6 +72,8 @@ public class FormReader {
         this.decode = true;
         this.logger = logger;
         this.stream = representation.getStream();
+        this.separator = '&';
+
         if (representation.getCharacterSet() != null) {
             this.characterSet = representation.getCharacterSet();
         } else {
@@ -81,13 +86,15 @@ public class FormReader {
      * 
      * @param logger
      *                The logger.
-     * @param query
-     *                The query string.
+     * @param parametersString
+     *                The parameters string.
      */
-    public FormReader(Logger logger, String query) {
+    public FormReader(Logger logger, String parametersString, char separator) {
         this.decode = false;
         this.logger = logger;
-        this.stream = new ByteArrayInputStream(query.getBytes());
+        this.stream = new ByteArrayInputStream(parametersString.getBytes());
+        this.characterSet = null;
+        this.separator = separator;
     }
 
     /**
@@ -95,17 +102,19 @@ public class FormReader {
      * 
      * @param logger
      *                The logger.
-     * @param query
-     *                The query string.
+     * @param parametersString
+     *                The parameters string.
      * @param characterSet
      *                The supported character encoding. Set to null to leave the
      *                data encoded.
      */
-    public FormReader(Logger logger, String query, CharacterSet characterSet) {
+    public FormReader(Logger logger, String parametersString,
+            CharacterSet characterSet, char separator) {
         this.decode = true;
         this.logger = logger;
-        this.stream = new ByteArrayInputStream(query.getBytes());
+        this.stream = new ByteArrayInputStream(parametersString.getBytes());
         this.characterSet = characterSet;
+        this.separator = separator;
     }
 
     /**
@@ -231,7 +240,7 @@ public class FormReader {
                             throw new IOException(
                                     "Empty parameter name detected. Please check your form data");
                         }
-                    } else if ((nextChar == '&') || (nextChar == -1)) {
+                    } else if ((nextChar == this.separator) || (nextChar == -1)) {
                         if (nameBuffer.length() > 0) {
                             result = FormUtils.create(nameBuffer, null,
                                     this.decode, characterSet);
@@ -245,7 +254,7 @@ public class FormReader {
                         nameBuffer.append((char) nextChar);
                     }
                 } else if (readingValue) {
-                    if ((nextChar == '&') || (nextChar == -1)) {
+                    if ((nextChar == this.separator) || (nextChar == -1)) {
                         if (valueBuffer.length() > 0) {
                             result = FormUtils.create(nameBuffer, valueBuffer,
                                     this.decode, characterSet);

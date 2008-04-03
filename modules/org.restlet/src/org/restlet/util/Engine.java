@@ -426,22 +426,25 @@ public abstract class Engine {
             Representation representation);
 
     /**
-     * Parses an URL encoded query string into a given form.
+     * Parses a parameters string to parse into a given form.
      * 
      * @param logger
      *                The logger to use.
      * @param form
      *                The target form.
-     * @param queryString
-     *                Query string.
+     * @param parametersString
+     *                The parameters string to parse.
      * @param characterSet
      *                The supported character encoding.
      * @param decode
-     *                Indicates if the query parameters should be decoded using
-     *                the given character set.
+     *                Indicates if the parameters should be decoded using the
+     *                given character set.
+     * @param separator
+     *                The separator character to append between parameters.
      */
-    public abstract void parse(Logger logger, Form form, String queryString,
-            CharacterSet characterSet, boolean decode);
+    public abstract void parse(Logger logger, Form form,
+            String parametersString, CharacterSet characterSet, boolean decode,
+            char separator);
 
     /**
      * Parses the given Content Type.

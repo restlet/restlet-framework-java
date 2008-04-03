@@ -86,8 +86,26 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(Logger logger, String queryString, CharacterSet characterSet) {
-        Engine.getInstance().parse(logger, this, queryString, characterSet,
-                true);
+        this(logger, queryString, characterSet, '&');
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param logger
+     *                The logger to use.
+     * @param parametersString
+     *                The parameters string to parse.
+     * @param characterSet
+     *                The supported character encoding.
+     * @param separator
+     *                The separator character to append between parameters.
+     * @throws IOException
+     */
+    public Form(Logger logger, String parametersString,
+            CharacterSet characterSet, char separator) {
+        Engine.getInstance().parse(logger, this, parametersString,
+                characterSet, true, separator);
     }
 
     /**
@@ -110,8 +128,21 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(String queryString) {
-        this(Logger.getLogger(Form.class.getCanonicalName()), queryString,
-                CharacterSet.UTF_8);
+        this(queryString, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Constructor. Uses UTF-8 as the character set for encoding non-ASCII
+     * characters.
+     * 
+     * @param parametersString
+     *                The parameters string to parse.
+     * @param separator
+     *                The separator character to append between parameters.
+     * @throws IOException
+     */
+    public Form(String parametersString, char separator) {
+        this(parametersString, CharacterSet.UTF_8, separator);
     }
 
     /**
@@ -124,8 +155,24 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(String queryString, CharacterSet characterSet) {
-        this(Logger.getLogger(Form.class.getCanonicalName()), queryString,
-                characterSet);
+        this(queryString, characterSet, '&');
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param parametersString
+     *                The parameters string to parse.
+     * @param characterSet
+     *                The supported character encoding.
+     * @param separator
+     *                The separator character to append between parameters.
+     * @throws IOException
+     */
+    public Form(String parametersString, CharacterSet characterSet,
+            char separator) {
+        this(Logger.getLogger(Form.class.getCanonicalName()), parametersString,
+                characterSet, separator);
     }
 
     @Override
@@ -139,6 +186,78 @@ public class Form extends Series<Parameter> {
             return new Form(delegate);
         else
             return new Form();
+    }
+
+    /**
+     * Encodes the form using the standard URI encoding mechanism and the UTF-8
+     * character set.
+     * 
+     * @return The encoded form.
+     * @throws IOException
+     */
+    public String encode() throws IOException {
+        return encode(CharacterSet.UTF_8);
+    }
+
+    /**
+     * URL encodes the form. The '&' character is used as a separator.
+     * 
+     * @param characterSet
+     *                The supported character encoding.
+     * @return The encoded form.
+     * @throws IOException
+     */
+    public String encode(CharacterSet characterSet) throws IOException {
+        return encode(characterSet, '&');
+    }
+
+    /**
+     * URL encodes the form.
+     * 
+     * @param characterSet
+     *                The supported character encoding.
+     * @param separator
+     *                The separator character to append between parameters.
+     * @return The encoded form.
+     * @throws IOException
+     */
+    public String encode(CharacterSet characterSet, char separator)
+            throws IOException {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < size(); i++) {
+            if (i > 0)
+                sb.append(separator);
+            get(i).encode(sb, characterSet);
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Formats the form as a matrix path string. Uses UTF-8 as the character set
+     * for encoding non-ASCII characters.
+     * 
+     * @return The form as a matrix string.
+     * @see http://www.w3.org/DesignIssues/MatrixURIs.html
+     */
+    public String getMatrixString() {
+        return getMatrixString(CharacterSet.UTF_8);
+    }
+
+    /**
+     * Formats the form as a query string.
+     * 
+     * @param characterSet
+     *                The supported character encoding.
+     * @return The form as a matrix string.
+     * @see http://www.w3.org/DesignIssues/MatrixURIs.html
+     */
+    public String getMatrixString(CharacterSet characterSet) {
+        try {
+            return encode(characterSet, ';');
+        } catch (IOException ioe) {
+            return null;
+        }
     }
 
     /**
@@ -188,35 +307,6 @@ public class Form extends Series<Parameter> {
     public Representation getWebRepresentation(CharacterSet characterSet) {
         return new StringRepresentation(getQueryString(characterSet),
                 MediaType.APPLICATION_WWW_FORM, null, characterSet);
-    }
-
-    /**
-     * Encodes the form using the standard URI encoding mechanism and the UTF-8
-     * character set.
-     * 
-     * @return The encoded form.
-     * @throws IOException
-     */
-    public String encode() throws IOException {
-        return encode(CharacterSet.UTF_8);
-    }
-
-    /**
-     * URL encodes the form.
-     * 
-     * @param characterSet
-     *                The supported character encoding.
-     * @return The encoded form.
-     * @throws IOException
-     */
-    public String encode(CharacterSet characterSet) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < size(); i++) {
-            if (i > 0)
-                sb.append('&');
-            get(i).encode(sb, characterSet);
-        }
-        return sb.toString();
     }
 
 }
