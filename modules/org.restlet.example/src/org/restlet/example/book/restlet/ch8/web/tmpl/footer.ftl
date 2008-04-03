@@ -10,11 +10,8 @@
    <body>
       <div id="container">
          <div id="header">
-            <div id="logoRmep"><a href="${rootRef}" title="Go to the login page"><img src="${rootRef}/images/logo.png" alt="Logo Application" /></a></div>
-            
-            <div id="quickSummary">
-               <p><span><acronym title="REpresentational State Transfert">REST</acronym>ful mail application based on the Restlet framework.</span></p>
-            </div>
+            <a href="${rootRef}" title="Go to the login page"><img src="${rootRef}/images/logo.png" alt="Logo Application" /></a>
+            <span id="quickSummary"><acronym title="REpresentational State Transfert">REST</acronym>ful mail application based on the Restlet framework.</span>
          </div>
 <#if !currentUser??>
 <#-- Anonymous access -->
@@ -29,13 +26,10 @@
          <div id="menu">
             ${menu}
          </div>
-<!--
-         <div id="footer">
-            <small>
-               Copyright &copy; 2005-2008 <a href="http://www.noelios.com">Noelios Consulting</a>
-            </small>
-         </div>	
--->
       </div>
+      <div id="footer">
+         <a href="http://www.noelios.com" title="Noelios Consulting site"><img src="${rootRef}/images/logoNoelios.png" alt="Logo Noelios" /></a>
+         <small>Copyright &copy; 2008 <a href="http://www.noelios.com" title="Noelios Consulting site">Noelios Consulting</a></small>
+      </div>	
    </body>
 </html>
