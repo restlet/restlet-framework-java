@@ -31,6 +31,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.ext.jaxrs.internal.util.Util;
+
 /**
  * Provider for {@link DataSource}s.
  * 
@@ -53,7 +55,7 @@ public class DataSourceProvider extends AbstractProvider<DataSource> {
      */
     @Override
     public DataSource readFrom(Class<DataSource> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return new ByteArrayDataSource(entityStream, mediaType.toString());
@@ -74,6 +76,6 @@ public class DataSourceProvider extends AbstractProvider<DataSource> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         InputStream inputStream = dataSource.getInputStream();
-        super.copyAndCloseStream(inputStream, entityStream);
+        Util.copyStream(inputStream, entityStream);
     }
 }

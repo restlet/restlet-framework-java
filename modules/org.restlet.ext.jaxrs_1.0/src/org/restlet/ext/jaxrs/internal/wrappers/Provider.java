@@ -45,6 +45,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
@@ -92,19 +93,22 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                 instantiated or what ever.
      * @throws InvocationTargetException
      *                 if the constructor throws an Throwable
+     * @throws MissingConstructorException
+     *                 if no valid constructor could be found
      * @see javax.ws.rs.ext.MessageBodyReader
      * @see javax.ws.rs.ext.MessageBodyWriter
      * @see javax.ws.rs.ext.ContextResolver
      */
     @SuppressWarnings("unchecked")
     public Provider(Class<?> jaxRsProviderClass)
-            throws IllegalArgumentException, InvocationTargetException {
+            throws IllegalArgumentException, InvocationTargetException,
+            MissingConstructorException {
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
         Util.checkClassConcrete(jaxRsProviderClass, "provider");
-        Constructor<?> providerConstructor = WrapperUtil
-                .findJaxRsConstructor(jaxRsProviderClass);
+        Constructor<?> providerConstructor = WrapperUtil.findJaxRsConstructor(
+                jaxRsProviderClass, "provider");
         try {
             this.jaxRsProvider = createInstance(providerConstructor,
                     jaxRsProviderClass);
@@ -411,7 +415,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             javax.ws.rs.core.MediaType mediaType, Annotation[] annotations,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return this.reader.readFrom(type, genericType, mediaType, annotations,
+        return this.reader.readFrom(type, genericType, annotations, mediaType,
                 httpHeaders, entityStream);
     }
 

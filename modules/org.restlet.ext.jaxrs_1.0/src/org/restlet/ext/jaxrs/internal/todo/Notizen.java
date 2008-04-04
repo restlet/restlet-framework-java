@@ -23,42 +23,32 @@ package org.restlet.ext.jaxrs.internal.todo;
  * @author Stephan Koops
  */
 public class Notizen {
-    
-    // REQUESTED Provider for File-Upload by a browser (multipart/form-data)
-    
-    // TODO @Context and so on only in objects created by the runtime.
-    // support and warn about this.
+
+    // TODO Provider for File-Upload by a browser (multipart/form-data)
 
     // TESTEN what happens, if ".." or "." in @Path?
-    
-    // REQUEST rename @DefaultValue to @Default? it's shorter
 
-    // TODO file extension mapping with matrix parameters.
+    // REQUESTED rename @DefaultValue to @Default? it's shorter
+
+    // TODO alle mailing-Lists neu laden
 
     // TESTEN are headers of Response and annotations copiied to a
     // Representation, if a org.restlet.data.Representation is returned?
 
-    // REQUESTED Spec, section 5.1.3. (Content Negotiation and Preconditions):
-    // request.evaluatePRECONDITIONS(...); null is not necessary
-
     // REQUESTED @Context on type PathSegment ?
-
-    // TODO disallow entity on sub resource locator
-    // to master thesis. When was this updated?
 
     // TODO read javadoc of PathSegment again.
 
     // TODO test again Jersey Implementation.
-    
-    // TODO bean setter (look for details?)
-    
+
     // TODO @Context have to be ThreadLocal
 
     // TESTEN create provider for primitive wrapper and check on it's primitive,
     // also with no given entity.
-    
-    // TODO propagate RuntimeExcpetions to Restlet. 
-    // TODO warn for declared Exceptions
+
+    // TODO propagate RuntimeExcpetions to Restlet.
+
+    // LATER warn if primitve on @*Param: perhaps null?
 
     // LATER An implementation MUST allow other runtime exceptions to propagate
     // to the underlying container. This allows existing container facilities

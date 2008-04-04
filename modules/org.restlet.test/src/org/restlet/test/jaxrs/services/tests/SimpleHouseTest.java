@@ -41,6 +41,22 @@ public class SimpleHouseTest extends JaxRsTestCase {
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
     }
 
+    public void testGetNull() throws Exception {
+        Response response = get("null");
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+        Representation entity = response.getEntity();
+        if(entity != null)
+            assertEquals(null, entity.getText());
+    }
+
+    public void testGetNullWithMediaType() throws Exception {
+        Response response = get("nullWithMediaType");
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+        Representation entity = response.getEntity();
+        if(entity != null)
+            assertEquals(null, entity.getText());
+    }
+
     public void testGetPlainText() throws Exception {
         Response response = get(MediaType.TEXT_PLAIN);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -56,20 +72,10 @@ public class SimpleHouseTest extends JaxRsTestCase {
         assertEquals(SimpleHouse.RERP_PLAIN_TEXT, entity.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
     }
-
-    public void testGetNull() throws Exception {
-        Response response = get("null");
-        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
-        Representation entity = response.getEntity();
-        if(entity != null)
-            assertEquals(null, entity.getText());
-    }
-
-    public void testGetNullWithMediaType() throws Exception {
-        Response response = get("nullWithMediaType");
-        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
-        Representation entity = response.getEntity();
-        if(entity != null)
-            assertEquals(null, entity.getText());
+    
+    public void testSubWithEntity() throws Exception {
+        Response response = get("subWithEntity");
+        assertTrue(response.getStatus().isServerError());
+        assertEquals(Status.SERVER_ERROR_INTERNAL, response.getStatus());
     }
 }

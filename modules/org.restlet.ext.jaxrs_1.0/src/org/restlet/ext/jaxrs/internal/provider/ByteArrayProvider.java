@@ -29,6 +29,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.ext.jaxrs.internal.util.Util;
+
 /**
  * {@link Provider} to read and write byte[].
  * 
@@ -47,11 +49,11 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
 
     @Override
     public byte[] readFrom(Class<byte[]> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        copyAndCloseStream(entityStream, baos);
+        Util.copyStream(entityStream, baos);
         return baos.toByteArray();
     }
 

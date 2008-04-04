@@ -36,6 +36,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -93,15 +94,18 @@ public class RootResourceClass extends ResourceClass {
      * @throws MissingAnnotationException
      *                 if the class is not annotated with &#64;Path.
      * @throws IllegalPathOnClassException
+     * @throws MissingConstructorException
+     *                 if no valid constructor could be found
      */
     RootResourceClass(Class<?> jaxRsClass, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException,
-            IllegalPathOnClassException {
+            IllegalPathOnClassException, MissingConstructorException {
         super(jaxRsClass, logger, logger);
         Util.checkClassConcrete(getJaxRsClass(), "root resource class");
         checkClassForPathAnnot(jaxRsClass, "root resource class");
         this.injectHelper = new IntoRrcInjector(jaxRsClass, isLeaveEncoded());
-        this.constructor = WrapperUtil.findJaxRsConstructor(getJaxRsClass());
+        this.constructor = WrapperUtil.findJaxRsConstructor(getJaxRsClass(),
+                "root resource class");
         this.constructorLeaveEncoded = this.isLeaveEncoded()
                 || constructor.isAnnotationPresent(Encoded.class);
     }
@@ -118,8 +122,8 @@ public class RootResourceClass extends ResourceClass {
      *                all available wrapped
      *                {@link javax.ws.rs.ext.ContextResolver}s.
      * @param entityProviders
-     *                The available {@link MessageBodyReader}s in
-     *                the {@link org.restlet.ext.jaxrs.JaxRsRouter}.
+     *                The available {@link MessageBodyReader}s in the
+     *                {@link org.restlet.ext.jaxrs.JaxRsRouter}.
      * @param logger
      *                The logger to use
      * @return

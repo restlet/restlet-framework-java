@@ -29,6 +29,8 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.ext.jaxrs.internal.util.Util;
+
 /**
  * This Provider is used to read directly from an {@link InputStream}.
  * 
@@ -53,7 +55,7 @@ public class InputStreamProvider extends AbstractProvider<InputStream> {
      */
     @Override
     public InputStream readFrom(Class<InputStream> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return entityStream;
@@ -76,6 +78,6 @@ public class InputStreamProvider extends AbstractProvider<InputStream> {
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        copyAndCloseStream(inputStream, entityStream);
+        Util.copyStream(inputStream, entityStream);
     }
 }

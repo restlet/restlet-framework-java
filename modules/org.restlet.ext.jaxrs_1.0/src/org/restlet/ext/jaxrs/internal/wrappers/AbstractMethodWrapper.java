@@ -36,7 +36,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
-import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
@@ -52,8 +51,8 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
 
     /**
      * the Java method that should be referenced for annotations. This method
-     * could be different from the method is called fro executing, see section
-     * 2.5 "Annotation Inheritance" of JSR-311-spec.
+     * could be different from the method is called for executing, see section
+     * 3.6 "Annotation Inheritance" of JSR-311-spec.
      * 
      * @see #executeMethod
      */
@@ -61,7 +60,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
 
     /**
      * the Java method that should be called. This method could be different
-     * from the method containing the annotations, see section 2.5 "Annotation
+     * from the method containing the annotations, see section 3.6 "Annotation
      * Inheritance" of JSR-311-spec.
      * 
      * @see #annotatedMethod
@@ -133,7 +132,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
     }
 
     /**
-     * @return Retuns the resource class
+     * @return Returns the resource class of this method.
      */
     public ResourceClass getResourceClass() {
         return this.resourceClass;
@@ -154,6 +153,9 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * response.
      * 
      * @param resourceObject
+     * @param allowEntity
+     *                true, if the entity is allowed for this method, false if
+     *                not.
      * @param callContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
@@ -162,8 +164,10 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      *                The Set of all available {@link MessageBodyReader}s in
      *                the {@link JaxRsRouter}.
      * @param logger
-     * @return the unwrapped returned onject by the wrapped method.
-     * @throws MethodInvokeException
+     * @return the unwrapped returned object by the wrapped method.
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
      * @throws InvocationTargetException
      * @throws NoMessageBodyReaderException
      * @throws MissingAnnotationException
@@ -174,29 +178,27 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @throws ConvertHeaderParamException
      * @throws ConvertRepresentationException
      */
-    public Object invoke(ResourceObject resourceObject,
+    protected Object invoke(ResourceObject resourceObject, boolean allowEntity,
             CallContext callContext, MessageBodyReaderSet mbrs, Logger logger)
-            throws MethodInvokeException, InvocationTargetException,
+            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException,
             MissingAnnotationException, NoMessageBodyReaderException,
             ConvertRepresentationException, ConvertHeaderParamException,
             ConvertPathParamException, ConvertMatrixParamException,
             ConvertQueryParamException, ConvertCookieParamException {
-        Annotation[][] parameterAnnotationss = annotatedMethod
-                .getParameterAnnotations();
-        Class<?>[] paramTypes = executeMethod.getParameterTypes();
-        Type[] paramGenericTypes = executeMethod.getGenericParameterTypes();
-        Object[] args = WrapperUtil.getParameterValues(paramTypes, paramGenericTypes,
-                parameterAnnotationss, leaveEncoded, callContext, mbrs, logger);
-        try {
-            Object jaxRsResourceObj = resourceObject.getJaxRsResourceObject();
-            return executeMethod.invoke(jaxRsResourceObj, args);
-        } catch (IllegalArgumentException e) {
-            throw new MethodInvokeException(
-                    "Could not invoke " + executeMethod, e);
-        } catch (IllegalAccessException e) {
-            throw new MethodInvokeException(
-                    "Could not invoke " + executeMethod, e);
+        Object[] args;
+        Class<?>[] parameterTypes = this.executeMethod.getParameterTypes();
+        if (parameterTypes.length == 0) {
+            args = new Object[0];
+        } else {
+            Type[] genParamTypes = executeMethod.getGenericParameterTypes();
+            Annotation[][] paramAnnos = annotatedMethod
+                    .getParameterAnnotations();
+            args = WrapperUtil.getParameterValues(parameterTypes,
+                    genParamTypes, paramAnnos, allowEntity, leaveEncoded,
+                    callContext, mbrs, logger);
         }
+        Object jaxRsResourceObj = resourceObject.getJaxRsResourceObject();
+        return executeMethod.invoke(jaxRsResourceObj, args);
     }
 
     @Override

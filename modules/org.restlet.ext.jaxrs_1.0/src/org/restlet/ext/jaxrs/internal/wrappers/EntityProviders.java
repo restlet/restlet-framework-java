@@ -71,8 +71,8 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
      */
     @SuppressWarnings("unchecked")
     public <T> javax.ws.rs.ext.MessageBodyReader<T> getMessageBodyReader(
-            javax.ws.rs.core.MediaType mediaType, Class<T> type,
-            Type genericType, Annotation[] annotations) {
+            Class<T> type, Type genericType,
+            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType) {
         MediaType restletMediaType = Converter.toRestletMediaType(mediaType);
         MessageBodyReader<?> mbr;
         mbr = getBestReader(restletMediaType, type, genericType, annotations);
@@ -85,8 +85,8 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
      */
     @SuppressWarnings("unchecked")
     public <T> javax.ws.rs.ext.MessageBodyWriter<T> getMessageBodyWriter(
-            javax.ws.rs.core.MediaType mediaType, Class<T> type,
-            Type genericType, Annotation[] annotations) {
+            Class<T> type, Type genericType,
+            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType) {
         Collection<MediaType> restletMediaTypes = Collections
                 .singleton(Converter.toRestletMediaType(mediaType));
         List<MessageBodyWriter> mbws = (List) this.messageBodyWriters;

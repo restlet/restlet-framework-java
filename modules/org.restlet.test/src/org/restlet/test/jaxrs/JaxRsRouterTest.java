@@ -79,13 +79,12 @@ public class JaxRsRouterTest extends TestCase {
             JaxRsRouter router = new JaxRsRouter(null, appConfig);
             fail("Attach two root resource classes with the same @Path must raise an Excption");
         } catch (IllegalArgumentException e) {
+            "".toString();
             // wunderful, exception raised :-)
         }
     }
 
     public void test3() {
-        if(true) // LATER ungueltigen Pfad feststellen
-            return;
         ApplicationConfig appConfig = new ApplicationConfig() {
             @Override
             public Set<Class<?>> getResourceClasses() {
@@ -94,15 +93,14 @@ public class JaxRsRouterTest extends TestCase {
         };
         try {
             JaxRsRouter router = new JaxRsRouter(null, appConfig);
-            fail("must not fail");
+            fail("must throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
+            "".toString();
             // wunderful, exception raised :-)
         }
     }
 
     public void test4() {
-        if(true) // LATER ungueltigen Pfad feststellen
-            return;
         ApplicationConfig appConfig = new ApplicationConfig() {
             @Override
             public Set<Class<?>> getResourceClasses() {
@@ -111,8 +109,9 @@ public class JaxRsRouterTest extends TestCase {
         };
         try {
             JaxRsRouter router = new JaxRsRouter(null, appConfig);
-            fail("must not fail");
+            fail("must throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
+            "".toString();
             // wunderful, exception raised :-)
         }
     }
@@ -126,7 +125,7 @@ public class JaxRsRouterTest extends TestCase {
         };
         try {
             JaxRsRouter router = new JaxRsRouter(null, appConfig);
-            fail("must not fail");
+            fail("must throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // wunderful, exception raised :-)
         }

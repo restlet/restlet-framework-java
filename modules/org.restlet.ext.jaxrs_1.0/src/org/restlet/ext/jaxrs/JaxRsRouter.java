@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.ApplicationConfig;
@@ -52,10 +53,10 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
-import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.internal.provider.BufferedReaderProvider;
@@ -259,8 +260,6 @@ public class JaxRsRouter extends Restlet {
         this(context, null, roleChecker);
     }
 
-    // TODO Refactor: delegate throw methods to another class.
-
     /**
      * attaches the classes and providers to this JaxRsRouter. The providers are
      * available for all root resource classes provided to this JaxRsRouter. If
@@ -278,99 +277,100 @@ public class JaxRsRouter extends Restlet {
      */
     public void attach(ApplicationConfig appConfig)
             throws IllegalArgumentException {
-        // REQUESTED should be defined, what a runtime should do with
-        // non-loadeable rrcs and providers?
         // TODO Interface comparable to other Restlet classes.
         Collection<Class<?>> rrcs = appConfig.getResourceClasses();
         Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
         if (rrcs == null || rrcs.isEmpty())
             throw new IllegalArgumentException(
                     "The ApplicationConfig must return root resource classes");
+        boolean everythingFine = true;
         for (Class<?> rrc : rrcs) {
-            try {
-                this.addRootResourceClass(rrc);
-            } catch (MissingAnnotationException e) {
-                getLogger().warning(e.getMessage());
-            }
+            everythingFine &= this.addRootResourceClass(rrc);
         }
         if (providerClasses != null) {
             for (Class<?> providerClass : providerClasses) {
-                try {
-                    this.addProvider(providerClass, false);
-                } catch (InstantiateException ipe) {
-                    String msg = "The provider " + providerClass.getName()
-                            + " could not be instantiated";
-                    throw new IllegalArgumentException(msg, ipe);
-                }
+                everythingFine &= this.addProvider(providerClass, false);
             }
         }
     }
 
     /**
      * Will use the given JAX-RS root resource class. Intended for internal use
-     * only. Use the method {@link #attach(ApplicationConfig)}.
+     * only. Use the method {@link #attach(ApplicationConfig)}.<br>
+     * If the given class is not a valid root resource class, a warning is
+     * logged and false is returned.
      * 
      * @param rootResourceClass
      *                the JAX-RS root resource class to add. If the root
      *                resource class is already available in this JaxRsRouter,
      *                it is ignored for later calls of this method.
-     * @throws IllegalArgumentException
-     *                 if the class is not a valid root resource class, or if
-     *                 there is already a root resource class with the given
-     *                 name, which is not the same root resource class.
-     * @throws MissingAnnotationException
-     *                 if the class is not annotated with &#64;Path.
+     * @return true if the class is added or was already included, or false if
+     *         the given class is not a valid root resource class (a warning was
+     *         logged).
      * @see {@link #attach(ApplicationConfig)}
      */
-    private void addRootResourceClass(Class<?> rootResourceClass)
-            throws IllegalArgumentException, MissingAnnotationException {
+    private boolean addRootResourceClass(Class<?> rootResourceClass) {
         RootResourceClass newRrc;
         try {
             newRrc = wrapperFactory.getRootResourceClass(rootResourceClass);
         } catch (IllegalPathOnClassException e) {
-            throw new IllegalArgumentException("The root resource class "
-                    + rootResourceClass.getName()
-                    + " is annotated with an illegal path: " + e.getPath()
-                    + ". (" + e.getMessage() + ")", e);
+            getLogger().warning(
+                    "The root resource class " + rootResourceClass.getName()
+                            + " is annotated with an illegal path: "
+                            + e.getPath() + ". (" + e.getMessage() + ")");
+            return false;
+        } catch (IllegalArgumentException e) {
+            getLogger().log(
+                    Level.WARNING,
+                    "The root resource class " + rootResourceClass.getName()
+                            + " is not a valud root resource class: "
+                            + e.getMessage(), e);
+            return false;
+        } catch (MissingAnnotationException e) {
+            getLogger().log(
+                    Level.WARNING,
+                    "The root resource class " + rootResourceClass.getName()
+                            + " is not a valud root resource class: "
+                            + e.getMessage(), e);
+            return false;
+        } catch (MissingConstructorException e) {
+            getLogger().warning(
+                    "The root resource class " + rootResourceClass.getName()
+                            + " has no valid constructor");
+            return false;
         }
         // LATER use CopyOnWriteList
         PathRegExp uriTempl = newRrc.getPathRegExp();
         for (RootResourceClass rrc : this.rootResourceClasses) {
-            if (rrc.getJaxRsClass().equals(rootResourceClass))
-                return;
-            if (rrc.getPathRegExp().equals(uriTempl))
-                throw new IllegalArgumentException(
+            if (rrc.getJaxRsClass().equals(rootResourceClass)) {
+                return true;
+            }
+            if (rrc.getPathRegExp().equals(uriTempl)) {
+                getLogger().warning(
                         "There is already a root resource class with path "
                                 + uriTempl.getPathPattern());
+                return false;
+            }
         }
         rootResourceClasses.add(newRrc);
+        return true;
     }
 
     private void loadDefaultProviders() {
-        this.addDefaultProvider(BufferedReaderProvider.class);
-        this.addDefaultProvider(ByteArrayProvider.class);
-        this.addDefaultProvider(DataSourceProvider.class);
-        this.addDefaultProvider(FileProvider.class);
-        this.addDefaultProvider(InputStreamProvider.class);
-        this.addDefaultProvider(JaxbElementProvider.class);
-        this.addDefaultProvider(JaxbProvider.class);
-        this.addDefaultProvider(JsonProvider.class);
-        this.addDefaultProvider(ReaderProvider.class);
-        this.addDefaultProvider(StreamingOutputProvider.class);
-        this.addDefaultProvider(StringProvider.class);
-        this.addDefaultProvider(WwwFormFormProvider.class);
-        this.addDefaultProvider(WwwFormMmapProvider.class);
-        this.addDefaultProvider(SourceProvider.class);
-    }
-
-    private void addDefaultProvider(Class<?> jaxRsProviderClass) {
-        try {
-            this.addProvider(jaxRsProviderClass, true);
-        } catch (IllegalArgumentException e) {
-            throw new ImplementationException(e);
-        } catch (InstantiateException e) {
-            throw new ImplementationException(e);
-        }
+        this.addProvider(BufferedReaderProvider.class, true);
+        this.addProvider(ByteArrayProvider.class, true);
+        this.addProvider(DataSourceProvider.class, true);
+        this.addProvider(FileProvider.class, true);
+        this.addProvider(InputStreamProvider.class, true);
+        this.addProvider(JaxbElementProvider.class, true);
+        this.addProvider(JaxbProvider.class, true);
+        this.addProvider(JsonProvider.class, true);
+        this.addProvider(ReaderProvider.class, true);
+        this.addProvider(StreamingOutputProvider.class, true);
+        this.addProvider(StringProvider.class, true);
+        this.addProvider(WwwFormFormProvider.class, true);
+        this.addProvider(WwwFormMmapProvider.class, true);
+        this.addProvider(SourceProvider.class, true);
     }
 
     /**
@@ -383,14 +383,11 @@ public class JaxRsRouter extends Restlet {
      *                {@link javax.ws.rs.ext.MessageBodyReader} or
      *                {@link javax.ws.rs.ext.ContextResolver}.
      * @throws IllegalArgumentException
-     *                 if the provider is not a valid provider.
-     * @throws InstantiateException
-     * @throws InvocationTargetException
+     *                 if null was given
      * @see {@link javax.ws.rs.ext.Provider}
      */
-    private void addProvider(Class<?> jaxRsProviderClass,
-            boolean defaultProvider) throws IllegalArgumentException,
-            InstantiateException {
+    private boolean addProvider(Class<?> jaxRsProviderClass,
+            boolean defaultProvider) {
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -402,13 +399,26 @@ public class JaxRsRouter extends Restlet {
         Provider<?> provider;
         try {
             provider = new Provider<Object>(jaxRsProviderClass);
-        } catch (InvocationTargetException e) {
-            throw new InstantiateException(
-                    "Exception while creating constructor", e);
+        } catch (InvocationTargetException ite) {
+            String msg = "ignore provider " + jaxRsProviderClass.getName()
+                    + ", because an exception occured while instantiating";
+            getLogger().log(Level.WARNING, msg, ite);
+            return false;
+        } catch (IllegalArgumentException iae) {
+            String msg = "ignore provider " + jaxRsProviderClass.getName()
+                    + ", because it could not be instantiated";
+            getLogger().log(Level.WARNING, msg, iae);
+            return false;
+        } catch (MissingConstructorException mce) {
+            String msg = "ignore provider " + jaxRsProviderClass.getName()
+                    + ", because no valid constructor was found";
+            getLogger().warning(msg);
+            return false;
         }
         this.entityProviders.add(provider, defaultProvider);
         if (provider.isContextResolver())
             this.contextResolvers.add(provider);
+        return true;
     }
 
     @Override
@@ -584,7 +594,7 @@ public class JaxRsRouter extends Restlet {
                     "Could not create new instance of root resource class");
         } catch (MissingAnnotationException e) {
             throw excHandler.missingAnnotation(e, callContext,
-                    "Could not create new instance of root resource class");
+                    "Could not create new instance of "+rrc);
         } catch (InstantiateException e) {
             throw excHandler.instantiateExecption(e, callContext,
                     "Could not create new instance of root resource class");
@@ -801,7 +811,7 @@ public class JaxRsRouter extends Restlet {
                     "Can not invoke the resource method");
         } catch (MissingAnnotationException e) {
             throw excHandler.missingAnnotation(e, callContext,
-                    "Can not invoke the resource method");
+                    "Can not invoke the "+resourceMethod);
         } catch (NoMessageBodyReaderException nmbre) {
             throw excHandler.noMessageBodyReader(callContext, nmbre);
         } catch (ConvertRepresentationException e) {

@@ -102,19 +102,9 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             ConvertHeaderParamException, ConvertPathParamException,
             ConvertMatrixParamException, ConvertQueryParamException,
             ConvertCookieParamException {
-        Object[] args;
-        Class<?>[] parameterTypes = this.executeMethod.getParameterTypes();
-        if (parameterTypes.length == 0)
-            args = new Object[0];
-        else
-            args = WrapperUtil.getParameterValues(parameterTypes, executeMethod
-                    .getGenericParameterTypes(), annotatedMethod
-                    .getParameterAnnotations(), leaveEncoded, callContext,
-                    mbrs, logger);
         Object subResObj;
         try {
-            subResObj = executeMethod.invoke(resourceObject
-                    .getJaxRsResourceObject(), args);
+            subResObj = invoke(resourceObject, false, callContext, mbrs, logger);
         } catch (IllegalArgumentException e) {
             throw new InstantiateException(executeMethod, e);
         } catch (IllegalAccessException e) {

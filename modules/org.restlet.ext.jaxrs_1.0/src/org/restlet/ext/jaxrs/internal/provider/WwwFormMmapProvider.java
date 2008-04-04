@@ -34,6 +34,7 @@ import javax.ws.rs.ext.Provider;
 import org.restlet.data.Form;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.internal.util.Converter;
+import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 
@@ -79,7 +80,7 @@ public class WwwFormMmapProvider extends
             OutputStream entityStream) throws IOException {
         Form form = Converter.toForm(mmap);
         Representation formRepr = form.getWebRepresentation();
-        super.copyAndCloseStream(formRepr.getStream(), entityStream);
+        Util.copyStream(formRepr.getStream(), entityStream);
     }
 
     /**
@@ -89,7 +90,7 @@ public class WwwFormMmapProvider extends
     @Override
     public MultivaluedMap<String, String> readFrom(
             Class<MultivaluedMap<String, String>> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpResponseHeaders,
             InputStream entityStream) throws IOException {
         org.restlet.data.MediaType restletMediaType = Converter

@@ -17,16 +17,30 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
+import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
+import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 
 /**
@@ -84,7 +98,8 @@ public class ResourceMethod extends AbstractMethodWrapper implements
             if (consumeMime == null)
                 this.consumedMimes = Collections.singletonList(MediaType.ALL);
             else
-                this.consumedMimes = WrapperUtil.convertToMediaTypes(consumeMime.value());
+                this.consumedMimes = WrapperUtil
+                        .convertToMediaTypes(consumeMime.value());
         }
         return consumedMimes;
     }
@@ -112,11 +127,55 @@ public class ResourceMethod extends AbstractMethodWrapper implements
                 produceMime = this.executeMethod.getDeclaringClass()
                         .getAnnotation(ProduceMime.class);
             if (produceMime != null)
-                this.producedMimes = WrapperUtil.convertToMediaTypes(produceMime.value());
+                this.producedMimes = WrapperUtil
+                        .convertToMediaTypes(produceMime.value());
             else
                 this.producedMimes = Collections.emptyList();
         }
         return producedMimes;
+    }
+
+    /**
+     * Invokes the method and returned the created representation for the
+     * response.
+     * 
+     * @param resourceObject
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
+     * @param mbrs
+     *                The Set of all available {@link MessageBodyReader}s in
+     *                the {@link JaxRsRouter}.
+     * @param logger
+     * @return the unwrapped returned object by the wrapped method.
+     * @throws MethodInvokeException
+     * @throws InvocationTargetException
+     * @throws NoMessageBodyReaderException
+     * @throws MissingAnnotationException
+     * @throws ConvertCookieParamException
+     * @throws ConvertQueryParamException
+     * @throws ConvertMatrixParamException
+     * @throws ConvertPathParamException
+     * @throws ConvertHeaderParamException
+     * @throws ConvertRepresentationException
+     */
+    public Object invoke(ResourceObject resourceObject,
+            CallContext callContext, MessageBodyReaderSet mbrs, Logger logger)
+            throws MethodInvokeException, InvocationTargetException,
+            MissingAnnotationException, NoMessageBodyReaderException,
+            ConvertRepresentationException, ConvertHeaderParamException,
+            ConvertPathParamException, ConvertMatrixParamException,
+            ConvertQueryParamException, ConvertCookieParamException {
+        try {
+            return invoke(resourceObject, true, callContext, mbrs, logger);
+        } catch (IllegalArgumentException e) {
+            throw new MethodInvokeException(
+                    "Could not invoke " + executeMethod, e);
+        } catch (IllegalAccessException e) {
+            throw new MethodInvokeException(
+                    "Could not invoke " + executeMethod, e);
+        }
     }
 
     /**

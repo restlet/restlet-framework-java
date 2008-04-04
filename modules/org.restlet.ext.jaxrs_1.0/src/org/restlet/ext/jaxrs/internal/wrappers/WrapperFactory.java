@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 
 /**
  * A WrapperFactory creates and caches some of the wrapper objects.
@@ -34,6 +35,7 @@ public class WrapperFactory {
     private final Logger logger;
 
     private final Map<Class<?>, ResourceClass> resourceClasses = new HashMap<Class<?>, ResourceClass>();
+
     // LATER allow concurent access.
 
     /**
@@ -69,10 +71,13 @@ public class WrapperFactory {
      * @throws MissingAnnotationException
      *                 if the class is not annotated with &#64;Path.
      * @throws IllegalPathOnClassException
+     * @throws MissingConstructorException
+     *                 if no valid constructor could be found.
      */
     public RootResourceClass getRootResourceClass(
             Class<?> jaxRsRootResourceClass) throws IllegalArgumentException,
-            MissingAnnotationException, IllegalPathOnClassException {
+            MissingAnnotationException, IllegalPathOnClassException,
+            MissingConstructorException {
         return new RootResourceClass(jaxRsRootResourceClass, logger);
     }
 }

@@ -52,6 +52,8 @@ class ContextInjector {
 
     protected static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
 
+    // TODO bean setter for @Context (look for details)
+    
     /**
      * <p>
      * This array contains the fields in this class in which are annotated to
@@ -192,7 +194,6 @@ class ContextInjector {
         }
         for (Field mbwField : this.injectFieldsMbWorkers) {
             Util.inject(jaxRsResObj, mbwField, messageBodyWorkers);
-            // TODO inject MessageBodyWorker to resource classes.
         }
         for (Field contextField : this.injectFieldsCallContext) {
             if (callContext == null)

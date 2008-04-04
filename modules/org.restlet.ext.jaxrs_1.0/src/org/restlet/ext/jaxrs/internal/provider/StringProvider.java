@@ -63,7 +63,7 @@ public class StringProvider extends AbstractProvider<CharSequence> {
 
     @Override
     public String readFrom(Class<CharSequence> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return Util.copyToStringBuilder(entityStream).toString();

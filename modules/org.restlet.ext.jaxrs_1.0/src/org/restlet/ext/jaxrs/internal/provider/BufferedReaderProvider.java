@@ -50,7 +50,7 @@ public class BufferedReaderProvider implements
      *      MultivaluedMap, InputStream)
      */
     public BufferedReader readFrom(Class<BufferedReader> type,
-            Type genericType, MediaType mediaType, Annotation[] annotations,
+            Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return new BufferedReader(new InputStreamReader(entityStream));

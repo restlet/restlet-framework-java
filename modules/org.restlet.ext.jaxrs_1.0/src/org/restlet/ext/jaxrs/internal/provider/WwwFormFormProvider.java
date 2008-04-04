@@ -31,6 +31,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.restlet.data.Form;
 import org.restlet.ext.jaxrs.internal.util.Converter;
+import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 
@@ -74,16 +75,16 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         Representation formRepr = form.getWebRepresentation();
-        super.copyAndCloseStream(formRepr.getStream(), entityStream);
+        Util.copyStream(formRepr.getStream(), entityStream);
     }
 
     /**
-     * @see AbstractProvider#readFrom(Class, Type, MediaType, Annotation[],
+     * @see AbstractProvider#readFrom(Class, Type, Annotation[], MediaType,
      *      MultivaluedMap, InputStream)
      */
     @Override
     public Form readFrom(Class<Form> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpResponseHeaders,
             InputStream entityStream) throws IOException {
         org.restlet.data.MediaType restletMediaType = Converter

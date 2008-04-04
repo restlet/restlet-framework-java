@@ -67,7 +67,7 @@ public class JsonProvider extends AbstractProvider<Object> {
      */
     @Override
     public Object readFrom(Class<Object> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         final String jsonString;

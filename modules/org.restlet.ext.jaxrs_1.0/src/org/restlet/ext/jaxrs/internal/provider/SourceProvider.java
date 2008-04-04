@@ -67,7 +67,7 @@ public class SourceProvider extends AbstractProvider<Source> {
      */
     @Override
     public Source readFrom(Class<Source> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return new StreamSource(entityStream);

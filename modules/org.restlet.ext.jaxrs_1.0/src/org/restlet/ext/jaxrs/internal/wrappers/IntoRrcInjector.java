@@ -17,6 +17,12 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getCookieParamValue;
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getHeaderParamValue;
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getMatrixParamValue;
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getPathParamValue;
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getQueryParamValue;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -30,8 +36,6 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import org.restlet.ext.jaxrs.internal.wrappers.ContextResolver;
-
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWorkers;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -52,6 +56,8 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * @author Stephan Koops
  */
 class IntoRrcInjector extends ContextInjector {
+
+    // TODO bean setter for @*Param (look for details)
 
     /**
      * <p>
@@ -154,8 +160,8 @@ class IntoRrcInjector extends ContextInjector {
             DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
             Class<?> convTo = cpf.getType();
             Type paramGenericType = cpf.getGenericType();
-            Object value = WrapperUtil.getCookieParamValue(convTo,
-                    paramGenericType, headerParam, defaultValue, callContext);
+            Object value = getCookieParamValue(convTo, paramGenericType,
+                    headerParam, defaultValue, callContext);
             Util.inject(jaxRsResObj, cpf, value);
         }
         for (Field hpf : this.injectFieldsHeaderParam) {
@@ -163,8 +169,8 @@ class IntoRrcInjector extends ContextInjector {
             DefaultValue defaultValue = hpf.getAnnotation(DefaultValue.class);
             Class<?> convTo = hpf.getType();
             Type paramGenericType = hpf.getGenericType();
-            Object value = WrapperUtil.getHeaderParamValue(convTo,
-                    paramGenericType, headerParam, defaultValue, callContext);
+            Object value = getHeaderParamValue(convTo, paramGenericType,
+                    headerParam, defaultValue, callContext);
             Util.inject(jaxRsResObj, hpf, value);
         }
         for (Field mpf : this.injectFieldsMatrixParam) {
@@ -172,18 +178,17 @@ class IntoRrcInjector extends ContextInjector {
             DefaultValue defaultValue = mpf.getAnnotation(DefaultValue.class);
             Class<?> convTo = mpf.getType();
             Type paramGenericType = mpf.getGenericType();
-            Object value = WrapperUtil.getMatrixParamValue(convTo,
-                    paramGenericType, headerParam, leaveEncoded, defaultValue,
-                    callContext);
+            Object value = getMatrixParamValue(convTo, paramGenericType,
+                    headerParam, leaveEncoded, defaultValue, callContext);
             Util.inject(jaxRsResObj, mpf, value);
         }
         for (Field ppf : this.injectFieldsPathParam) {
             PathParam headerParam = ppf.getAnnotation(PathParam.class);
-            // REQUESTED forbid @DefaultValue on @PathParam
+            DefaultValue defaultValue = ppf.getAnnotation(DefaultValue.class);
             Class<?> convTo = ppf.getType();
             Type paramGenericType = ppf.getGenericType();
-            Object value = WrapperUtil.getPathParamValue(convTo,
-                    paramGenericType, headerParam, leaveEncoded, callContext);
+            Object value = getPathParamValue(convTo, paramGenericType,
+                    headerParam, leaveEncoded, defaultValue, callContext);
             Util.inject(jaxRsResObj, ppf, value);
         }
         for (Field cpf : this.injectFieldsQueryParam) {
@@ -191,9 +196,9 @@ class IntoRrcInjector extends ContextInjector {
             DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);
             Class<?> convTo = cpf.getType();
             Type paramGenericType = cpf.getGenericType();
-            Object value = WrapperUtil.getQueryParamValue(convTo,
-                    paramGenericType, headerParam, leaveEncoded, defaultValue,
-                    callContext, Logger.getAnonymousLogger());
+            Object value = getQueryParamValue(convTo, paramGenericType,
+                    headerParam, leaveEncoded, defaultValue, callContext,
+                    Logger.getAnonymousLogger());
             Util.inject(jaxRsResObj, cpf, value);
         }
     }

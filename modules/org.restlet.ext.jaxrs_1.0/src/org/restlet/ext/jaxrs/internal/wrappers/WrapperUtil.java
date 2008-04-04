@@ -75,6 +75,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -399,6 +400,8 @@ public class WrapperUtil {
         } catch (IOException e) {
             throw ConvertRepresentationException.object(paramType,
                     "the message body", e);
+        } finally {
+            entity.release();
         }
     }
 
@@ -527,7 +530,7 @@ public class WrapperUtil {
         } else {
             args = getParameterValues(constructor.getParameterTypes(),
                     constructor.getGenericParameterTypes(), constructor
-                            .getParameterAnnotations(), leaveEncoded,
+                            .getParameterAnnotations(), false, leaveEncoded,
                     callContext, mbrs, logger);
         }
         try {
@@ -555,11 +558,16 @@ public class WrapperUtil {
      * Finds the constructor to use by the JAX-RS runtime.
      * 
      * @param jaxRsClass
+     *                the root resource or provider class.
+     * @param rrcOrProvider
+     *                "root resource class" or "provider"
      * @return Returns the constructor to use for the given root resource class
      *         or provider. If no constructor could be found, null is returned.
      *         Than try {@link Class#newInstance()}
+     * @throws MissingConstructorException
      */
-    static Constructor<?> findJaxRsConstructor(Class<?> jaxRsClass) {
+    static Constructor<?> findJaxRsConstructor(Class<?> jaxRsClass,
+            String rrcOrProvider) throws MissingConstructorException {
         Constructor<?> constructor = null;
         int constructorParamNo = Integer.MIN_VALUE;
         for (Constructor<?> constr : jaxRsClass.getConstructors()) {
@@ -573,7 +581,9 @@ public class WrapperUtil {
             constructor = constr;
             constructorParamNo = constrParamNo;
         }
-        return constructor;
+        if (constructor != null)
+            return constructor;
+        throw new MissingConstructorException(jaxRsClass, rrcOrProvider);
     }
 
     /**
@@ -827,13 +837,15 @@ public class WrapperUtil {
                 else
                     return callContext;
             }
+            // LATER ignore @Encoded for @HeaderParam and @CookieParam and warn.
             if (annoType.equals(HeaderParam.class)) {
                 return getHeaderParamValue(paramClass, paramGenericType,
                         (HeaderParam) annotation, defaultValue, callContext);
             }
             if (annoType.equals(PathParam.class)) {
                 return getPathParamValue(paramClass, paramGenericType,
-                        (PathParam) annotation, leaveEncoded, callContext);
+                        (PathParam) annotation, leaveEncoded, defaultValue,
+                        callContext);
             }
             if (annoType.equals(MatrixParam.class)) {
                 return getMatrixParamValue(paramClass, paramGenericType,
@@ -865,6 +877,8 @@ public class WrapperUtil {
      * @param paramAnnotationss
      *                the array of arrays of annotations for the method or
      *                constructor.
+     * @param allowEntity
+     *                true, if the entity is allowed, or false if not.
      * @param leaveEncoded
      *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
      *                and {@link PathParam}s encoded.
@@ -889,7 +903,7 @@ public class WrapperUtil {
      */
     static Object[] getParameterValues(Class<?>[] paramTypes,
             Type[] paramGenericTypes, Annotation[][] paramAnnotationss,
-            boolean leaveEncoded, CallContext callContext,
+            boolean allowEntity, boolean leaveEncoded, CallContext callContext,
             MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException, NoMessageBodyReaderException,
             ConvertHeaderParamException, ConvertPathParamException,
@@ -899,7 +913,6 @@ public class WrapperUtil {
         if (paramNo == 0)
             return new Object[0];
         Object[] args = new Object[paramNo];
-        boolean annotRequired = false;
         if (logger == null)
             logger = Logger.getAnonymousLogger();
         for (int i = 0; i < args.length; i++) {
@@ -911,23 +924,11 @@ public class WrapperUtil {
                 arg = getParameterValue(paramAnnotations, paramType,
                         paramGenericType, callContext, logger, leaveEncoded, i);
             } catch (MissingAnnotationException ionae) {
-                if (annotRequired)
+                if (!allowEntity)
                     throw ionae;
-                annotRequired = true;
-                // TODO check, if the result could be read multiple (i.e. in
-                // some sub resource locators and again in the resource method
-                // or double in the resource method.
-                // if yes, save converted Representation to CallContext,
-                // (not possible e.g. for InputStream and Reader)
+                allowEntity = false;
                 arg = convertRepresentation(callContext, paramType,
                         paramGenericType, paramAnnotations, mbrs, logger);
-                // TODO convert representation before first access, because
-                // MessageBodyReader may change headers.
-                // This is another argument against changing the headers in an
-                // EntityProvider. If the entity is not needed (e.g.
-                // Precondition failed), the MessageBodyReader s not required to
-                // be called and does not need time for the conversion
-                // TODO ensure Representation.release().
             }
             args[i] = arg;
         }
@@ -1012,27 +1013,23 @@ public class WrapperUtil {
      *                the generic type to convert to
      * @param pathParam
      * @param leaveEncoded
+     * @param defaultValue
      * @param callContext
      * @param logger
      * @return
      * @throws ConvertPathParamException
      */
     static Object getPathParamValue(Class<?> paramClass, Type paramGenericType,
-            PathParam pathParam, boolean leaveEncoded, CallContext callContext)
+            PathParam pathParam, boolean leaveEncoded,
+            DefaultValue defaultValue, CallContext callContext)
             throws ConvertPathParamException {
         // LATER testen Path-Param: List<String> (see PathParamTest.testGet3())
         // TODO @PathParam("x") PathSegment allowed.
-
         String pathParamValue = callContext.getLastPathParamEnc(pathParam);
-        Iterator<String> pathParamValueIter = callContext
-                .pathParamEncIter(pathParam);
-        // REQUESTED What should happens, if no PathParam could be found?
-        // Internal Server Error? It could be that someone request a qPathParam
-        // value of a prior @Path, but this is not good IMO.
-        // perhaps add another attribute to @PathParam, which allows it.
+        Iterator<String> ppvIter = callContext.pathParamEncIter(pathParam);
         try {
             return convertParamValuesFromParam(paramClass, paramGenericType,
-                    pathParamValueIter, pathParamValue, null, leaveEncoded);
+                    ppvIter, pathParamValue, defaultValue, leaveEncoded);
         } catch (ConvertParameterException e) {
             throw new ConvertPathParamException(e);
         }

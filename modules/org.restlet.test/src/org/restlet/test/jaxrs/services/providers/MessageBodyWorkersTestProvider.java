@@ -60,11 +60,6 @@ public class MessageBodyWorkersTestProvider implements
         return Person.class.isAssignableFrom(type);
     }
 
-    // REQUESTED If Entity Providers could be combined by the MessageBodyWrokers,
-    // than the entity providers must not close the streams.
-
-    // REQUESTED param order on MessageBodyWorkers the same as on entity providers
-
     /**
      * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
      *      MediaType, MultivaluedMap, OutputStream)
@@ -75,14 +70,14 @@ public class MessageBodyWorkersTestProvider implements
             OutputStream entityStream) throws IOException {
         MessageBodyWriter<Person> mbw;
         mbw = messageBodyWorkers.getMessageBodyWriter(
-                MediaType.APPLICATION_XML_TYPE, Person.class, Person.class,
-                annotations);
+                Person.class, Person.class, annotations,
+                MediaType.APPLICATION_XML_TYPE);
         mbw.writeTo(t, Person.class, Person.class, annotations,
                 MediaType.APPLICATION_XML_TYPE, httpHeaders, entityStream);
 
         MediaType mediaType2 = new MediaType("application", "crazyType");
-        mbw = messageBodyWorkers.getMessageBodyWriter(mediaType2, Person.class,
-                Person.class, annotations);
+        mbw = messageBodyWorkers.getMessageBodyWriter(Person.class, Person.class,
+                annotations, mediaType2);
         mbw.writeTo(t, Person.class, Person.class, annotations, mediaType2,
                 httpHeaders, entityStream);
     }

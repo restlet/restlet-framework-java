@@ -113,6 +113,7 @@ public class PathRegExp {
             throws IllegalArgumentException, IllegalPathException {
         if (path == null)
             throw new IllegalArgumentException("The path must not be null");
+        // LATER @Path("{p}/abc/{p}") is allowed and p may be != p
         String pathPattern = Util.getPathTemplate(path);
         if (pathPattern.startsWith("/"))
             return pathPattern;

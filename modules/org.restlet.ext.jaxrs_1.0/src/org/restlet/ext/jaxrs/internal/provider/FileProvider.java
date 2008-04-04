@@ -56,16 +56,12 @@ public class FileProvider extends AbstractProvider<File> {
      */
     @Override
     public File readFrom(Class<File> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        try {
-            File file = File.createTempFile("FileProvider", ".tmp");
-            Util.copyStream(entityStream, new FileOutputStream(file));
-            return file;
-        } finally {
-            entityStream.close();
-        }
+        File file = File.createTempFile("FileProvider", ".tmp");
+        Util.copyStream(entityStream, new FileOutputStream(file));
+        return file;
     }
 
     /**
@@ -86,6 +82,6 @@ public class FileProvider extends AbstractProvider<File> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         InputStream inputStream = new FileInputStream(file);
-        copyAndCloseStream(inputStream, entityStream);
+        Util.copyStream(inputStream, entityStream);
     }
 }

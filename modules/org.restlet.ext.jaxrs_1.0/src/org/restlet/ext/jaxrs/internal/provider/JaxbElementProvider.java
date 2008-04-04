@@ -103,7 +103,7 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
     @Override
     @SuppressWarnings("unchecked")
     public JAXBElement<?> readFrom(Class<JAXBElement<?>> type,
-            Type genericType, MediaType mediaType, Annotation[] annotations,
+            Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpResponseHeaders,
             InputStream entityStream) throws IOException {
         ParameterizedType pt = (ParameterizedType) genericType;

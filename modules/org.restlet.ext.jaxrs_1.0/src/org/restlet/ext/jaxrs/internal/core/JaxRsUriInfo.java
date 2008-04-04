@@ -687,9 +687,6 @@ public class JaxRsUriInfo implements UriInfo {
             Logger logger, String logMessage) throws WebApplicationException {
         logger.log(Level.WARNING, logMessage, exc);
         exc.printStackTrace();
-        throw new WebApplicationException(exc, Status.INTERNAL_SERVER_ERROR
-                .getStatusCode());
-        // REQUESTED WebApplicationException should also accept a Status
-        // additional to int (two constructors)
+        throw new WebApplicationException(exc, Status.INTERNAL_SERVER_ERROR);
     }
 }

@@ -423,8 +423,9 @@ public class ExceptionHandler {
             MissingAnnotationException exception, CallContext callContext,
             String logMessage) throws RequestHandledException {
         callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-        logger.log(Level.WARNING, logMessage, exception);
-        exception.printStackTrace();
+        if (exception != null)
+            logMessage += ": " + exception.getMessage();
+        logger.log(Level.WARNING, logMessage);
         throw new RequestHandledException();
     }
 

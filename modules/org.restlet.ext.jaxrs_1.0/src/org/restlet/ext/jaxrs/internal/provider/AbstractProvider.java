@@ -30,8 +30,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import org.restlet.ext.jaxrs.internal.util.Util;
-
 /**
  * This abstract class ease the development of {@link MessageBodyReader}s and
  * {@link MessageBodyWriter}.
@@ -59,15 +57,6 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
         if (exc == null)
             throw new IOException(message);
         throw new IOException(message + ": " + exc.getMessage());
-    }
-
-    protected void copyAndCloseStream(InputStream inputStream,
-            OutputStream outputStream) throws IOException {
-        try {
-            Util.copyStream(inputStream, outputStream);
-        } finally {
-            inputStream.close();
-        }
     }
 
     /**
@@ -102,7 +91,7 @@ public abstract class AbstractProvider<T> implements MessageBodyWriter<T>,
      *      java.io.InputStream)
      */
     public abstract T readFrom(Class<T> type, Type genericType,
-            MediaType mediaType, Annotation[] annotations,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpResponseHeaders,
             InputStream entityStream) throws IOException;
 
