@@ -295,7 +295,7 @@ public abstract class JaxRsTestCase extends TestCase {
             String subPath, Collection accMediaTypes,
             ChallengeResponse challengeResponse) {
         Reference reference = createReference(klasse, subPath);
-        return accessServer(httpMethod, reference, accMediaTypes,
+        return accessServer(httpMethod, reference, accMediaTypes, null,
                 challengeResponse, null, null, null);
     }
 
@@ -327,18 +327,20 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     protected Response accessServer(Method httpMethod, Reference reference) {
-        return accessServer(httpMethod, reference, null, null, null, null, null);
+        return accessServer(httpMethod, reference, null, null, null, null,
+                null, null);
     }
 
     @SuppressWarnings("unchecked")
     protected Response accessServer(Method httpMethod, Reference reference,
-            Collection accMediaTypes, ChallengeResponse challengeResponse,
-            Representation entity, Collection<Cookie> addCookies,
-            Collection<Parameter> addHeaders) {
+            Collection accMediaTypes, Representation entity,
+            ChallengeResponse challengeResponse, Conditions conditions,
+            Collection<Cookie> addCookies, Collection<Parameter> addHeaders) {
         Request request = new Request(httpMethod, reference);
         addAcceptedMediaTypes(request, accMediaTypes);
         request.setChallengeResponse(challengeResponse);
         request.setEntity(entity);
+        request.setConditions(conditions);
         if (addCookies != null)
             request.getCookies().addAll(addCookies);
         if (addHeaders != null) {
@@ -475,7 +477,7 @@ public abstract class JaxRsTestCase extends TestCase {
             mediaTypes.add(mediaType);
         }
         return accessServer(Method.GET, reference, mediaTypes, null, null,
-                null, null);
+                null, null, null);
     }
 
     public Response get(MediaType accMediaType) {
@@ -504,17 +506,18 @@ public abstract class JaxRsTestCase extends TestCase {
 
     public Response get(String subPath, Cookie cookie) {
         return accessServer(Method.GET, createReference(getRootResourceClass(),
-                subPath), null, null, null, TestUtils.createList(cookie), null);
+                subPath), null, null, null, null, TestUtils.createList(cookie),
+                null);
     }
 
     public Response getWithCookies(String subPath, Collection<Cookie> cookies) {
         return accessServer(Method.GET, createReference(getRootResourceClass(),
-                subPath), null, null, null, cookies, null);
+                subPath), null, null, null, null, cookies, null);
     }
 
     public Response getWithHeaders(String subPath, Collection<Parameter> headers) {
         return accessServer(Method.GET, createReference(getRootResourceClass(),
-                subPath), null, null, null, null, headers);
+                subPath), null, null, null, null, null, headers);
     }
 
     public Response get(String subPath, MediaType accMediaType) {
@@ -532,6 +535,7 @@ public abstract class JaxRsTestCase extends TestCase {
             public Set<Class<?>> getResourceClasses() {
                 return (Set) Collections.singleton(getRootResourceClass());
             }
+
             @Override
             public Set<Class<?>> getProviderClasses() {
                 return (Set) getProvClasses();
@@ -607,20 +611,26 @@ public abstract class JaxRsTestCase extends TestCase {
     public Response post(String subPath, Representation entity,
             ChallengeResponse cr) {
         return accessServer(Method.POST, createReference(
-                getRootResourceClass(), subPath), null, cr, entity, null, null);
+                getRootResourceClass(), subPath), null, entity, cr, null, null,
+                null);
     }
 
     @SuppressWarnings("unchecked")
     public Response post(String subPath, Representation entity,
             Collection accMediaTypes, ChallengeResponse challengeResponse) {
         return accessServer(Method.POST, createReference(
-                getRootResourceClass(), subPath), accMediaTypes,
-                challengeResponse, entity, null, null);
+                getRootResourceClass(), subPath), accMediaTypes, entity,
+                challengeResponse, null, null, null);
     }
 
-    public Response put(String subPath, Conditions conditions) {
-        return accessServer(Method.PUT, getRootResourceClass(), subPath,
-                conditions, null);
+    public Response put(String subPath, Representation entity) {
+        return put(subPath, entity, null);
+    }
+
+    public Response put(String subPath, Representation entity,
+            Conditions conditions) {
+        return accessServer(Method.PUT, createReference(getRootResourceClass(),
+                subPath), null, entity, null, conditions, null, null);
     }
 
     public void setServerWrapper(ServerWrapper serverWrapper) {

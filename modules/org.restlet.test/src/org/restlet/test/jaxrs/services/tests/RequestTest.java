@@ -106,9 +106,12 @@ public class RequestTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 
+    /**
+     * @see RequestService#put(Request)
+     */
     public void testDateAndEntityTag1Put() throws Exception {
         Conditions cond = createConditions(BEFORE, getDatastoreETag());
-        Response response = put("date", cond);
+        Response response = put("date", null, cond);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 
@@ -120,7 +123,7 @@ public class RequestTest extends JaxRsTestCase {
 
     public void testDateAndEntityTag2Put() throws Exception {
         Conditions conditions = createConditions(AFTER, getDatastoreETag());
-        Response response = put("date", conditions);
+        Response response = put("date", null, conditions);
         assertEquals(PREC_FAILED, response.getStatus());
         assertTrue("Entity must contain \"was not modified\"", response
                 .getEntity().getText().contains(
@@ -142,7 +145,7 @@ public class RequestTest extends JaxRsTestCase {
 
     public void testDateAndEntityTag3Put() throws Exception {
         Conditions conditions = createConditions(BEFORE, new Tag("shkhsdk"));
-        Response response = put("date", conditions);
+        Response response = put("date", null, conditions);
         assertEquals(PREC_FAILED, response.getStatus());
         String entityText = response.getEntity().getText();
         assertTrue(
@@ -168,7 +171,7 @@ public class RequestTest extends JaxRsTestCase {
 
     public void testDateAndEntityTag4Put() throws Exception {
         Conditions conditions = createConditions(AFTER, new Tag("shkhsdk"));
-        Response response = put("date", conditions);
+        Response response = put("date", null, conditions);
         assertEquals(PREC_FAILED, response.getStatus());
         String entityText = response.getEntity().getText();
         assertTrue(
@@ -300,12 +303,12 @@ public class RequestTest extends JaxRsTestCase {
     public void testPutModifiedSince() throws Exception {
         Conditions conditions = new Conditions();
         conditions.setModifiedSince(BEFORE);
-        Response response = put("date", conditions);
+        Response response = put("date", null, conditions);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         conditions = new Conditions();
         conditions.setModifiedSince(AFTER);
-        response = put("date", conditions);
+        response = put("date", null, conditions);
         assertEquals(PREC_FAILED, response.getStatus());
         assertTrue("Entity must contain \"was not modified\"", response
                 .getEntity().getText().contains(
@@ -315,12 +318,12 @@ public class RequestTest extends JaxRsTestCase {
     public void testPutUnmodifiedSince() throws Exception {
         Conditions conditions = new Conditions();
         conditions.setUnmodifiedSince(AFTER);
-        Response response = put("date", conditions);
+        Response response = put("date", null, conditions);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
 
         conditions = new Conditions();
         conditions.setUnmodifiedSince(BEFORE);
-        response = put("date", conditions);
+        response = put("date", null, conditions);
         assertEquals(PREC_FAILED, response.getStatus());
         String respEntity = response.getEntity().getText();
         assertTrue("Entity must contain \"was not modified\"", respEntity

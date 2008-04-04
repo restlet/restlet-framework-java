@@ -17,7 +17,11 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Set;
+
 import org.restlet.data.Response;
+import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.test.jaxrs.services.providers.ParamConstructorProvider;
 import org.restlet.test.jaxrs.services.resources.IllegalConstructorResource;
 
 /**
@@ -31,6 +35,12 @@ public class IllegalConstructorTest extends JaxRsTestCase {
     @Override
     protected Class<?> getRootResourceClass() {
         return IllegalConstructorResource.class;
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    protected Set<Class<?>> getProvClasses() {
+        return (Set)Util.createSet(ParamConstructorProvider.class);
     }
 
     public void testNullSubResource() throws Exception {

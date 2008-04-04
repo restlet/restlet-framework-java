@@ -52,6 +52,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
@@ -399,18 +400,31 @@ public class JaxRsRouter extends Restlet {
         Provider<?> provider;
         try {
             provider = new Provider<Object>(jaxRsProviderClass);
+        } catch (InstantiateException e) {
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
+                    + "Could not instantiate the Provider, class "
+                    + jaxRsProviderClass.getName();
+            getLogger().log(Level.WARNING, msg, e);
+            return false;
+        } catch (IllegalAnnotationException e) {
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
+                    + "Could not instantiate the Provider, class "
+                    + jaxRsProviderClass.getName() + ", because "
+                    + e.getMessage();
+            getLogger().log(Level.WARNING, msg);
+            return false;
         } catch (InvocationTargetException ite) {
-            String msg = "ignore provider " + jaxRsProviderClass.getName()
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
                     + ", because an exception occured while instantiating";
             getLogger().log(Level.WARNING, msg, ite);
             return false;
         } catch (IllegalArgumentException iae) {
-            String msg = "ignore provider " + jaxRsProviderClass.getName()
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
                     + ", because it could not be instantiated";
             getLogger().log(Level.WARNING, msg, iae);
             return false;
         } catch (MissingConstructorException mce) {
-            String msg = "ignore provider " + jaxRsProviderClass.getName()
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
                     + ", because no valid constructor was found";
             getLogger().warning(msg);
             return false;
@@ -594,7 +608,7 @@ public class JaxRsRouter extends Restlet {
                     "Could not create new instance of root resource class");
         } catch (MissingAnnotationException e) {
             throw excHandler.missingAnnotation(e, callContext,
-                    "Could not create new instance of "+rrc);
+                    "Could not create new instance of " + rrc);
         } catch (InstantiateException e) {
             throw excHandler.instantiateExecption(e, callContext,
                     "Could not create new instance of root resource class");
@@ -811,7 +825,7 @@ public class JaxRsRouter extends Restlet {
                     "Can not invoke the resource method");
         } catch (MissingAnnotationException e) {
             throw excHandler.missingAnnotation(e, callContext,
-                    "Can not invoke the "+resourceMethod);
+                    "Can not invoke the " + resourceMethod);
         } catch (NoMessageBodyReaderException nmbre) {
             throw excHandler.noMessageBodyReader(callContext, nmbre);
         } catch (ConvertRepresentationException e) {

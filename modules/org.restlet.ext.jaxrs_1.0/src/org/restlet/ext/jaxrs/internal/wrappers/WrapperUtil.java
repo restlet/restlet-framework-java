@@ -72,6 +72,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -490,6 +491,10 @@ public class WrapperUtil {
      * 
      * @param constructor
      *                the constructor to create an instance with.
+     * @param onlyContextAnnot
+     *                if true, only the annotations &#64;{@link Context} is
+     *                allowed, especially &#64;*Param is not allowed. Otherwise
+     *                also &#64;*Param is allowed.
      * @param leaveEncoded
      *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
      *                and {@link PathParam}s encoded.
@@ -514,24 +519,25 @@ public class WrapperUtil {
      * @throws ConvertPathParamException
      * @throws ConvertHeaderParamException
      * @throws ConvertRepresentationException
+     * @throws IllegalAnnotationException
      */
     static Object createInstance(Constructor<?> constructor,
-            boolean leaveEncoded, CallContext callContext,
-            MessageBodyReaderSet mbrs, Logger logger)
+            boolean onlyContextAnnot, boolean leaveEncoded,
+            CallContext callContext, MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException, NoMessageBodyReaderException,
             InstantiateException, InvocationTargetException,
             ConvertRepresentationException, ConvertHeaderParamException,
             ConvertPathParamException, ConvertMatrixParamException,
-            ConvertQueryParamException, ConvertCookieParamException {
-        // TESTEN what happens if @*Param on Provider constructor.
+            ConvertQueryParamException, ConvertCookieParamException,
+            IllegalAnnotationException {
         Object[] args;
         if (constructor.getParameterTypes().length == 0) {
             args = new Object[0];
         } else {
             args = getParameterValues(constructor.getParameterTypes(),
                     constructor.getGenericParameterTypes(), constructor
-                            .getParameterAnnotations(), false, leaveEncoded,
-                    callContext, mbrs, logger);
+                            .getParameterAnnotations(), false,
+                    onlyContextAnnot, leaveEncoded, callContext, mbrs, logger);
         }
         try {
             return constructor.newInstance(args);
@@ -789,8 +795,10 @@ public class WrapperUtil {
      *                annotations on the paramIter
      * @param paramClass
      *                the wished type
-     * @param genericParamType
-     *                the generic type to convert to
+     * @param onlyContextAnnot
+     *                if true, only the annotations &#64;{@link Context} is
+     *                allowed, especially &#64;*Param is not allowed. Otherwise
+     *                also &#64;*Param is allowed.
      * @param callContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
@@ -800,6 +808,8 @@ public class WrapperUtil {
      *                and {@link PathParam}s encoded.
      * @param indexForExcMessages
      *                the index of the parameter, for exception messages.
+     * @param genericParamType
+     *                the generic type to convert to
      * @param jaxRsRouter
      * @return the parameter value
      * @throws MissingAnnotationException
@@ -811,14 +821,16 @@ public class WrapperUtil {
      * @throws ConvertMatrixParamException
      * @throws ConvertQueryParamException
      * @throws ConvertCookieParamException
+     * @throws IllegalAnnotationException
      */
     private static Object getParameterValue(Annotation[] paramAnnotations,
             Class<?> paramClass, Type paramGenericType,
-            CallContext callContext, Logger logger, boolean leaveEncoded,
-            int indexForExcMessages) throws MissingAnnotationException,
-            ConvertHeaderParamException, ConvertPathParamException,
-            ConvertMatrixParamException, ConvertQueryParamException,
-            ConvertCookieParamException {
+            boolean onlyContextAnnot, CallContext callContext, Logger logger,
+            boolean leaveEncoded, int indexForExcMessages)
+            throws MissingAnnotationException, ConvertHeaderParamException,
+            ConvertPathParamException, ConvertMatrixParamException,
+            ConvertQueryParamException, ConvertCookieParamException,
+            IllegalAnnotationException {
         DefaultValue defaultValue = null;
         for (Annotation annot : paramAnnotations) {
             Class<? extends Annotation> annotationType = annot.annotationType();
@@ -839,25 +851,35 @@ public class WrapperUtil {
             }
             // LATER ignore @Encoded for @HeaderParam and @CookieParam and warn.
             if (annoType.equals(HeaderParam.class)) {
+                if (onlyContextAnnot)
+                    throw new IllegalAnnotationException(annotation);
                 return getHeaderParamValue(paramClass, paramGenericType,
                         (HeaderParam) annotation, defaultValue, callContext);
             }
             if (annoType.equals(PathParam.class)) {
+                if (onlyContextAnnot)
+                    throw new IllegalAnnotationException(annotation);
                 return getPathParamValue(paramClass, paramGenericType,
                         (PathParam) annotation, leaveEncoded, defaultValue,
                         callContext);
             }
             if (annoType.equals(MatrixParam.class)) {
+                if (onlyContextAnnot)
+                    throw new IllegalAnnotationException(annotation);
                 return getMatrixParamValue(paramClass, paramGenericType,
                         (MatrixParam) annotation, leaveEncoded, defaultValue,
                         callContext);
             }
             if (annoType.equals(QueryParam.class)) {
+                if (onlyContextAnnot)
+                    throw new IllegalAnnotationException(annotation);
                 return getQueryParamValue(paramClass, paramGenericType,
                         (QueryParam) annotation, leaveEncoded, defaultValue,
                         callContext, logger);
             }
             if (annoType.equals(CookieParam.class)) {
+                if (onlyContextAnnot)
+                    throw new IllegalAnnotationException(annotation);
                 return getCookieParamValue(paramClass, paramGenericType,
                         (CookieParam) annotation, defaultValue, callContext);
             }
@@ -879,6 +901,10 @@ public class WrapperUtil {
      *                constructor.
      * @param allowEntity
      *                true, if the entity is allowed, or false if not.
+     * @param onlyContextAnnot
+     *                if true, only the annotations &#64;{@link Context} is
+     *                allowed, especially &#64;*Param is not allowed. Otherwise
+     *                also &#64;*Param is allowed.
      * @param leaveEncoded
      *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
      *                and {@link PathParam}s encoded.
@@ -900,15 +926,18 @@ public class WrapperUtil {
      * @throws ConvertPathParamException
      * @throws ConvertHeaderParamException
      * @throws ConvertRepresentationException
+     * @throws IllegalAnnotationException
      */
     static Object[] getParameterValues(Class<?>[] paramTypes,
             Type[] paramGenericTypes, Annotation[][] paramAnnotationss,
-            boolean allowEntity, boolean leaveEncoded, CallContext callContext,
+            boolean allowEntity, boolean onlyContextAnnot,
+            boolean leaveEncoded, CallContext callContext,
             MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException, NoMessageBodyReaderException,
             ConvertHeaderParamException, ConvertPathParamException,
             ConvertMatrixParamException, ConvertQueryParamException,
-            ConvertCookieParamException, ConvertRepresentationException {
+            ConvertCookieParamException, ConvertRepresentationException,
+            IllegalAnnotationException {
         int paramNo = paramTypes.length;
         if (paramNo == 0)
             return new Object[0];
@@ -922,7 +951,8 @@ public class WrapperUtil {
             Annotation[] paramAnnotations = paramAnnotationss[i];
             try {
                 arg = getParameterValue(paramAnnotations, paramType,
-                        paramGenericType, callContext, logger, leaveEncoded, i);
+                        paramGenericType, onlyContextAnnot, callContext,
+                        logger, leaveEncoded, i);
             } catch (MissingAnnotationException ionae) {
                 if (!allowEntity)
                     throw ionae;

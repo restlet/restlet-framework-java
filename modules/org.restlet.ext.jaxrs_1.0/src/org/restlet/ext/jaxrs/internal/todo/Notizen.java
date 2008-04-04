@@ -32,9 +32,6 @@ public class Notizen {
 
     // TODO alle mailing-Lists neu laden
 
-    // TESTEN are headers of Response and annotations copiied to a
-    // Representation, if a org.restlet.data.Representation is returned?
-
     // REQUESTED @Context on type PathSegment ?
 
     // TODO read javadoc of PathSegment again.
@@ -42,9 +39,6 @@ public class Notizen {
     // TODO test again Jersey Implementation.
 
     // TODO @Context have to be ThreadLocal
-
-    // TESTEN create provider for primitive wrapper and check on it's primitive,
-    // also with no given entity.
 
     // TODO propagate RuntimeExcpetions to Restlet.
 

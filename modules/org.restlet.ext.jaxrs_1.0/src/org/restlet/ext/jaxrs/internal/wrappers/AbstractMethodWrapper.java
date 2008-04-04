@@ -35,7 +35,9 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
+import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
@@ -193,9 +195,14 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             Type[] genParamTypes = executeMethod.getGenericParameterTypes();
             Annotation[][] paramAnnos = annotatedMethod
                     .getParameterAnnotations();
-            args = WrapperUtil.getParameterValues(parameterTypes,
-                    genParamTypes, paramAnnos, allowEntity, leaveEncoded,
-                    callContext, mbrs, logger);
+            try {
+                args = WrapperUtil.getParameterValues(parameterTypes,
+                        genParamTypes, paramAnnos, allowEntity, false,
+                        leaveEncoded, callContext, mbrs, logger);
+            } catch (IllegalAnnotationException e) {
+                // should not be possible here
+                throw new ImplementationException(e);
+            }
         }
         Object jaxRsResourceObj = resourceObject.getJaxRsResourceObject();
         return executeMethod.invoke(jaxRsResourceObj, args);

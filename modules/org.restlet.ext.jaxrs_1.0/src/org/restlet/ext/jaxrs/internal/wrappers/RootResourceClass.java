@@ -32,6 +32,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
@@ -147,8 +148,14 @@ public class RootResourceClass extends ResourceClass {
             ConvertPathParamException, ConvertMatrixParamException,
             ConvertQueryParamException, ConvertCookieParamException {
         Constructor<?> constructor = this.constructor;
-        Object instance = WrapperUtil.createInstance(constructor,
-                constructorLeaveEncoded, callContext, entityProviders, logger);
+        Object instance;
+        try {
+            instance = WrapperUtil.createInstance(constructor,
+                    false, constructorLeaveEncoded, callContext, entityProviders, logger);
+        } catch (IllegalAnnotationException iae) {
+            // should not be possible here
+            throw new InstantiateException(iae);
+        }
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {
             this.injectHelper.inject(rootResourceObject, callContext,

@@ -42,6 +42,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -95,6 +96,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                 if the constructor throws an Throwable
      * @throws MissingConstructorException
      *                 if no valid constructor could be found
+     * @throws IllegalAnnotationException
+     * @throws InstantiateException
      * @see javax.ws.rs.ext.MessageBodyReader
      * @see javax.ws.rs.ext.MessageBodyWriter
      * @see javax.ws.rs.ext.ContextResolver
@@ -102,47 +105,16 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     @SuppressWarnings("unchecked")
     public Provider(Class<?> jaxRsProviderClass)
             throws IllegalArgumentException, InvocationTargetException,
-            MissingConstructorException {
+            MissingConstructorException, InstantiateException,
+            IllegalAnnotationException {
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
         Util.checkClassConcrete(jaxRsProviderClass, "provider");
         Constructor<?> providerConstructor = WrapperUtil.findJaxRsConstructor(
                 jaxRsProviderClass, "provider");
-        try {
-            this.jaxRsProvider = createInstance(providerConstructor,
-                    jaxRsProviderClass);
-        } catch (ConvertRepresentationException e) {
-            // should be not possible here
-            throw new IllegalArgumentException(
-                    "Could not instantiate the Provider, class "
-                            + jaxRsProviderClass.getName(), e);
-        } catch (ConvertHeaderParamException e) {
-            // should be not possible here
-            throw new IllegalArgumentException(
-                    "Could not instantiate the Provider, class "
-                            + jaxRsProviderClass.getName(), e);
-        } catch (ConvertPathParamException e) {
-            // should be not possible here
-            throw new IllegalArgumentException(
-                    "Could not instantiate the Provider, class "
-                            + jaxRsProviderClass.getName(), e);
-        } catch (ConvertMatrixParamException e) {
-            // should be not possible here
-            throw new IllegalArgumentException(
-                    "Could not instantiate the Provider, class "
-                            + jaxRsProviderClass.getName(), e);
-        } catch (ConvertQueryParamException e) {
-            // should be not possible here
-            throw new IllegalArgumentException(
-                    "Could not instantiate the Provider, class "
-                            + jaxRsProviderClass.getName(), e);
-        } catch (ConvertCookieParamException e) {
-            // should be not possible here
-            throw new IllegalArgumentException(
-                    "Could not instantiate the Provider, class "
-                            + jaxRsProviderClass.getName(), e);
-        }
+        this.jaxRsProvider = createInstance(providerConstructor,
+                jaxRsProviderClass);
         boolean isProvider = false;
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyWriter) {
             this.writer = (javax.ws.rs.ext.MessageBodyWriter<T>) jaxRsProvider;
@@ -170,31 +142,54 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      *                 if the constructor throws an Throwable
-     * @throws ConvertCookieParamException
-     * @throws ConvertQueryParamException
-     * @throws ConvertMatrixParamException
-     * @throws ConvertPathParamException
-     * @throws ConvertHeaderParamException
-     * @throws ConvertRepresentationException
+     * @throws IllegalAnnotationException
+     * @throws InstantiateException
+     * @throws NoMessageBodyReaderException
      */
     private Object createInstance(Constructor<?> providerConstructor,
             Class<?> jaxRsProviderClass) throws IllegalArgumentException,
-            InvocationTargetException, ConvertRepresentationException,
-            ConvertHeaderParamException, ConvertPathParamException,
-            ConvertMatrixParamException, ConvertQueryParamException,
-            ConvertCookieParamException {
+            InvocationTargetException, InstantiateException,
+            IllegalAnnotationException {
         try {
-            return WrapperUtil.createInstance(providerConstructor, false, null,
-                    null, null);
+            return WrapperUtil.createInstance(providerConstructor, true, false,
+                    null, null, null);
         } catch (MissingAnnotationException e) {
-            throw new IllegalArgumentException(
-                    "Could not instantiate the Provider, class "
-                            + jaxRsProviderClass.getName(), e);
-        } catch (InstantiateException e) {
+            // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
         } catch (NoMessageBodyReaderException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (ConvertRepresentationException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (ConvertHeaderParamException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (ConvertPathParamException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (ConvertMatrixParamException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (ConvertQueryParamException e) {
+            // should be not possible here
+            throw new IllegalArgumentException(
+                    "Could not instantiate the Provider, class "
+                            + jaxRsProviderClass.getName(), e);
+        } catch (ConvertCookieParamException e) {
+            // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);

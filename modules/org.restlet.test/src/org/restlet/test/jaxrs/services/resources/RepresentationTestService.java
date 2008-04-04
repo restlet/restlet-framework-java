@@ -49,19 +49,19 @@ public class RepresentationTestService {
         return getString();
     }
 
+    @GET
+    @Path("reprString")
+    @ProduceMime("text/plain")
+    public StringRepresentation getString() {
+        return new StringRepresentation("jgkghkg");
+    }
+
     @POST
     @Path("repr")
     public Response post(Representation representation) throws IOException {
         String type = representation.getMediaType().toString();
         String entity = representation.getText();
         return Response.ok(entity).type(type).build();
-    }
-
-    @GET
-    @Path("reprString")
-    @ProduceMime("text/plain")
-    public StringRepresentation getString() {
-        return new StringRepresentation("jgkghkg");
     }
 
     @POST
