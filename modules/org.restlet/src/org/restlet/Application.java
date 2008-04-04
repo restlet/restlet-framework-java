@@ -146,7 +146,7 @@ public class Application extends Restlet {
         this.decoderService = new DecoderService(true);
         this.metadataService = new MetadataService();
         this.statusService = new StatusService(true);
-        this.tunnelService = new TunnelService(true, true, true, true);
+        this.tunnelService = new TunnelService(true, true, true);
     }
 
     /**

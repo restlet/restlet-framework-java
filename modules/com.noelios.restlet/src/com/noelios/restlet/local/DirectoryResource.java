@@ -121,13 +121,16 @@ public class DirectoryResource extends Resource {
         // Restore the cut extensions in case the call has been tunnelled.
         // Should be better to take benefit from this operation.
         if (getApplication() != null
-                && getApplication().getTunnelService().isExtensionTunnel()) {
-            String string = (String) request.getAttributes().get(
-                    TunnelService.REF_EXTENSIONS_KEY);
-            if (string != null && string.length() > 0) {
-                this.relativePart += "." + string;
+                && getApplication().getTunnelService().isExtensionsTunnel()) {
+            Reference originalRef = (Reference) request.getAttributes().get(
+                    TunnelService.ATTRIBUTE_ORIGINAL_REF);
+
+            if (originalRef != null) {
+                originalRef.setBaseRef(request.getResourceRef().getBaseRef());
+                this.relativePart = originalRef.getRemainingPart();
             }
         }
+
         setModifiable(getDirectory().isModifiable());
 
         if (this.relativePart.startsWith("/")) {

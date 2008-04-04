@@ -763,6 +763,58 @@ public class Reference {
     }
 
     /**
+     * Returns the optional extensions for hierarchical identifiers. An
+     * extensions part starts after the first '.' character of the last path
+     * segment and ends with either the end of the segment of with the first ';'
+     * character (matrix start). It is a token similar to file extensions
+     * separated by '.' characters. The value can be ommited.<br>
+     * Note that no URI decoding is done by this method.
+     * 
+     * @return The extensions or null.
+     * @see #getExtensionsAsArray()
+     * @see #setExtensions(String)
+     */
+    public String getExtensions() {
+        String result = null;
+        String lastSegment = getLastSegment();
+
+        if (lastSegment != null) {
+            int extensionIndex = lastSegment.indexOf('.');
+            int matrixIndex = lastSegment.indexOf(';');
+
+            if (extensionIndex != -1) {
+                // Extensions found
+                if (matrixIndex != -1) {
+                    result = lastSegment.substring(extensionIndex + 1,
+                            matrixIndex);
+                } else {
+                    // No matrix found
+                    result = lastSegment.substring(extensionIndex + 1);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the extensions as an array or null if no extension is found.
+     * 
+     * @return The extensions as an array or null if no extension is found.
+     * @see #getExtensions()
+     */
+    public String[] getExtensionsAsArray() {
+        String[] result = null;
+        String extensions = getExtensions();
+
+        if (extensions != null) {
+            result = extensions.split("\\.");
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the fragment identifier.<br>
      * Note that no URI decoding is done by this method.
      * 
@@ -1014,6 +1066,19 @@ public class Reference {
      * @param decode
      *                Indicates if the result should be decoded using the
      *                {@link #decode(String)} method.
+     * @return The optionnally decoded last segment.
+     * @see #getLastSegment()
+     */
+    public String getLastSegment(boolean decode) {
+        return getLastSegment(decode, false);
+    }
+
+    /**
+     * Returns the optionnally decoded last segment.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
      * @param excludeMatrix
      * @return The optionnally decoded last segment.
      * @see #getLastSegment()
@@ -1025,7 +1090,7 @@ public class Reference {
             int matrixIndex = result.indexOf(';');
 
             if (matrixIndex != -1) {
-
+                result = result.substring(0, matrixIndex);
             }
         }
 
@@ -1033,20 +1098,7 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded last segment.
-     * 
-     * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
-     * @return The optionnally decoded last segment.
-     * @see #getLastSegment()
-     */
-    public String getLastSegment(boolean decode) {
-        return getLastSegment(decode, false);
-    }
-
-    /**
-     * Returns the optional matrix for hierarchical identifiers.A matrix part
+     * Returns the optional matrix for hierarchical identifiers. A matrix part
      * starts after the first ';' character of the last path segment. It is a
      * sequence of 'name=value' parameters separated by ';' characters. The
      * value can be ommited.<br>
@@ -1799,6 +1851,20 @@ public class Reference {
     }
 
     /**
+     * Indicates if this reference has file-like extensions on its last path
+     * segment.
+     * 
+     * @return True if there is are extensions.
+     * @see #getExtensions()
+     */
+    public boolean hasExtensions() {
+        int extensionsIndex = getLastSegment().indexOf('.');
+        int matrixIndex = getLastSegment().indexOf(';');
+        return (extensionsIndex != -1)
+                && ((matrixIndex == -1) || (extensionsIndex < matrixIndex));
+    }
+
+    /**
      * Indicates if this reference has a fragment identifier.
      * 
      * @return True if there is a fragment identifier.
@@ -2097,6 +2163,95 @@ public class Reference {
     }
 
     /**
+     * Sets the extensions for hierarchical identifiers. An extensions part
+     * starts after the first '.' character of the last path segment and ends
+     * with either the end of the segment of with the first ';' character
+     * (matrix start). It is a token similar to file extensions separated by '.'
+     * characters. The value can be ommited.<br>
+     * Note that no URI decoding is done by this method.
+     * 
+     * @param extensions
+     *                The extensions to set or null (without leading or trailing
+     *                dots).
+     * @see #getExtensions()
+     * @see #getExtensionsAsArray()
+     * @see #setExtensions(String[])
+     */
+    public void setExtensions(String extensions) {
+        String lastSegment = getLastSegment();
+
+        if (lastSegment != null) {
+            int extensionIndex = lastSegment.indexOf('.');
+            int matrixIndex = lastSegment.indexOf(';');
+            StringBuilder sb = new StringBuilder();
+
+            if (extensionIndex != -1) {
+                // Extensions found
+                sb.append(lastSegment.substring(0, extensionIndex));
+
+                if ((extensions != null) && (extensions.length() > 0)) {
+                    sb.append('.').append(extensions);
+                }
+
+                if (matrixIndex != -1) {
+                    sb.append(lastSegment.substring(matrixIndex));
+                }
+            } else {
+                // Extensions not found
+                if ((extensions != null) && (extensions.length() > 0)) {
+                    if (matrixIndex != -1) {
+                        // Matrix found, make sure we append it
+                        // after the extensions
+                        sb.append(lastSegment.substring(0, matrixIndex))
+                                .append('.').append(extensions).append(
+                                        lastSegment.substring(matrixIndex));
+                    } else {
+                        // No matrix found, just append the extensions
+                        sb.append(lastSegment).append('.').append(extensions);
+                    }
+                } else {
+                    // No change necessary
+                    sb.append(lastSegment);
+                }
+            }
+
+            // Finally update the last segment
+            setLastSegment(sb.toString());
+        } else {
+            setLastSegment('.' + extensions);
+        }
+    }
+
+    /**
+     * Sets the extensions based on an array of extension tokens (without dots).
+     * 
+     * @param extensions
+     *                The array of extensions.
+     * @see #getExtensions()
+     * @see #getExtensionsAsArray()
+     * @see #setExtensions(String)
+     */
+    public void setExtensions(String[] extensions) {
+        String exts = null;
+
+        if (extensions != null) {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < extensions.length; i++) {
+                if (i > 0) {
+                    sb.append('.');
+                }
+
+                sb.append(extensions[i]);
+            }
+
+            exts = sb.toString();
+        }
+
+        setExtensions(exts);
+    }
+
+    /**
      * Sets the fragment identifier.
      * 
      * @param fragment
@@ -2243,6 +2398,25 @@ public class Reference {
             }
 
             updateIndexes();
+        }
+    }
+
+    /**
+     * Sets the last segment of the path. If no path is available, then it
+     * creates one and adds a slash in front of the given last segmetn. <br>
+     * Note that no URI decoding is done by this method.
+     * 
+     * @param lastSegment
+     *                The last segment of a hierarchical path.
+     */
+    public void setLastSegment(String lastSegment) {
+        String path = getPath();
+        int lastSlashIndex = path.lastIndexOf('/');
+
+        if (lastSlashIndex != -1) {
+            setPath(path.substring(0, lastSlashIndex + 1) + lastSegment);
+        } else {
+            setPath('/' + lastSegment);
         }
     }
 
@@ -2508,9 +2682,11 @@ public class Reference {
      */
     public void setSegments(List<String> segments) {
         StringBuilder sb = new StringBuilder();
+
         for (String segment : segments) {
             sb.append('/').append(segment);
         }
+
         setPath(sb.toString());
     }
 

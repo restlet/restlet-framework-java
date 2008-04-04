@@ -109,13 +109,13 @@ public class ResolvingTransformerTestCase extends TestCase {
         public SimpleUriMapApplication() {
             super();
             // Turn off the useless extension tunnel.
-            getTunnelService().setExtensionTunnel(false);
+            getTunnelService().setExtensionsTunnel(false);
         }
 
         public SimpleUriMapApplication(Context parentContext) {
             super(parentContext);
             // Turn off the useless extension tunnel.
-            getTunnelService().setExtensionTunnel(false);
+            getTunnelService().setExtensionsTunnel(false);
         }
 
         void add(String uri, Representation rep) {

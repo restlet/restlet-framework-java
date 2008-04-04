@@ -6,14 +6,19 @@ Changes log
 - @version-full@ (@release-date@)
     - Bugs fixed
     - API Enhancements
-        - Matrix parameters are now supported by the Reference and the
-          Form classes. Added many new methods, similar to the ones 
-          available for query strings.
-        - Added Reference.hasFragment(), hasMatrix(), hasQuery() and
-          hasScheme() methods.
+        - Matrix parameters are now fully supported by the Reference 
+          and the Form classes. Added many new methods, similar to the
+          ones available for query strings.
+        - File-like extensions are now fully supported by the Reference
+          class. See getExtensions(), getExtensionsAsArray() and setter
+          methods. 
+        - Added Reference.hasExtensions(), hasFragment(), hasMatrix(), 
+          hasQuery() and hasScheme() methods.
         - Matrix parameters are now ignored by tunnel service. 
           Contributed by Stephan Koops.
-        - 
+        - Refactored the TunnelService implementation, renamed the 
+          "extensionTunnel" to "extensionsTunnel" and added the
+          "queryTunnel" property for consistency. 
     - NRE and Extension Enhancements
     - Misc
 

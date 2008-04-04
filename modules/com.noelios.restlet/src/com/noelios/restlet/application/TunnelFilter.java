@@ -18,12 +18,6 @@
 
 package com.noelios.restlet.application;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.restlet.Application;
 import org.restlet.Filter;
 import org.restlet.data.CharacterSet;
@@ -49,28 +43,6 @@ import org.restlet.service.TunnelService;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TunnelFilter extends Filter {
-    /**
-     * Adds the given {@link Metadata} to the preferences {@link List}.<br>
-     * You have to ensure that the metadata and the list of preferences fit
-     * together.
-     * 
-     * @param metadata
-     *                the preference's metadata.
-     * @param quality
-     *                the preference's quality.
-     * @param preferences
-     *                the list of preferences to update.
-     * @param clearPrefs
-     *                True if the list of preferences need to be cleared.
-     */
-    @SuppressWarnings("unchecked")
-    private static void addPreference(Metadata metadata, float quality,
-            List preferences, boolean clearPrefs) {
-        if (clearPrefs)
-            preferences.clear();
-        Preference<Metadata> pref = new Preference<Metadata>(metadata, quality);
-        preferences.add(pref);
-    }
 
     /** The application. */
     private volatile Application application;
@@ -86,250 +58,27 @@ public class TunnelFilter extends Filter {
         this.application = application;
     }
 
-    /**
-     * Allows filtering before its handling by the target Restlet. Does nothing
-     * by default.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     * @return The continuation status.
-     */
     @Override
     public int beforeHandle(Request request, Response response) {
-        Form query = request.getResourceRef().getQueryAsForm(null);
+        Reference originalRef = new Reference(request.getResourceRef()
+                .toString());
         boolean queryModified = false;
+        boolean extensionsModified = false;
 
-        TunnelService tunnelService = getApplication().getTunnelService();
-        Method method = request.getMethod();
-        if (tunnelService.isMethodTunnel() && method.equals(Method.POST)) {
-            // Tunnels the extracted attributes into the proper call objects.
-            String methodName = query.getFirstValue(tunnelService
-                    .getMethodParameter());
-
-            if (methodName != null) {
-                request.setMethod(Method.valueOf(methodName));
-
-                // The parameter is removed from the query
-                query.removeFirst(tunnelService.getMethodParameter());
-                queryModified = true;
-            }
+        if (getTunnelService().isQueryTunnel()) {
+            queryModified = processQuery(request);
         }
 
-        if (tunnelService.isPreferencesTunnel()) {
-            // Tunnels the extracted query parameters into the proper client
-            // preferences.
-            queryModified = evaluateQueryParameters(request, query,
-                    tunnelService);
+        if (getTunnelService().isExtensionsTunnel()) {
+            extensionsModified = processExtensions(request);
         }
 
-        if (tunnelService.isExtensionTunnel()) {
-            // Tunnels the extracted extensions into the proper client
-            // preferences.
-            evaluateExtensions(request);
-        }
-
-        // Update the query if it has been modified
-        if (queryModified) {
-            request.getResourceRef().setQuery(query.getQueryString(null));
+        if (queryModified || extensionsModified) {
+            request.getAttributes().put(TunnelService.ATTRIBUTE_ORIGINAL_REF,
+                    originalRef);
         }
 
         return CONTINUE;
-    }
-
-    /**
-     * Updates the client preferences according to the extensions (in the
-     * meaning of file extensions) located in the resource URI. If the extension
-     * is mapped to a {@link Metadata} in the {@link MetadataService}, then the
-     * corresponding accept header is updated and the matched extension is
-     * removed.<br>
-     * See also section 3.6.1 of JAX-RS specification (<a
-     * href="https://jsr311.dev.java.net">https://jsr311.dev.java.net</a>)
-     * 
-     * @param request
-     *                The request to check.
-     */
-    private void evaluateExtensions(Request request) {
-        Reference resourceRef = request.getResourceRef();
-        String originalRef = resourceRef.toString();
-        String path = resourceRef.getPath();
-
-        MetadataService metadataService = getApplication().getMetadataService();
-
-        float mediaTypeQuality = 1;
-        float languageQuality = 1;
-        float charsetQuality = 1;
-        float encodingQuality = 1;
-
-        // Stores the cut extensions.
-        StringBuilder cutExts = new StringBuilder();
-
-        int lpsStart = path.lastIndexOf('/') + 1;
-        String lps = path.substring(lpsStart);
-        String matrixParams = "";
-        int lpsEnd = lps.indexOf(';');
-        if (lpsEnd >= 0) {
-            matrixParams = lps.substring(lpsEnd);
-            lps = lps.substring(0, lpsEnd);
-        }
-
-        String[] lpssa = lps.split("\\.");
-        List<String> lpss = new ArrayList<String>(Arrays.asList(lpssa));
-        Iterator<String> lpsIter = lpss.iterator();
-        if (lpsIter.hasNext()) {
-            lpsIter.next(); // ignore not-extension-part
-            ClientInfo clientInfo = request.getClientInfo();
-            while (lpsIter.hasNext()) {
-                String extension = lpsIter.next();
-                Metadata metadata = metadataService.getMetadata(extension);
-                if (metadata instanceof MediaType) {
-                    addPreference(metadata, mediaTypeQuality, clientInfo
-                            .getAcceptedMediaTypes(), mediaTypeQuality >= 0.99);
-                    mediaTypeQuality *= 0.9;
-                    lpsIter.remove();
-                    cutExts.append('.');
-                    cutExts.append(extension);
-                } else if (metadata instanceof Language) {
-                    addPreference(metadata, languageQuality, clientInfo
-                            .getAcceptedLanguages(), languageQuality >= 0.99);
-                    languageQuality *= 0.9;
-                    lpsIter.remove();
-                    cutExts.append('.');
-                    cutExts.append(extension);
-                } else if (metadata instanceof CharacterSet) {
-                    addPreference(metadata, charsetQuality, clientInfo
-                            .getAcceptedCharacterSets(), charsetQuality >= 0.99);
-                    charsetQuality *= 0.9;
-                    lpsIter.remove();
-                    cutExts.append('.');
-                    cutExts.append(extension);
-                } else if (metadata instanceof Encoding) {
-                    addPreference(metadata, encodingQuality, clientInfo
-                            .getAcceptedEncodings(), encodingQuality >= 0.99);
-                    encodingQuality *= 0.9;
-                    lpsIter.remove();
-                    cutExts.append('.');
-                    cutExts.append(extension);
-                }
-            }
-        }
-
-        // Update the path of the resource's Reference.
-        StringBuilder newPath = new StringBuilder();
-        newPath.append(path, 0, lpsStart);
-        lpsIter = lpss.iterator();
-        if (lpsIter.hasNext()) {
-            String pathPart = lpsIter.next();
-            newPath.append(pathPart);
-            while (lpsIter.hasNext()) {
-                String ext = lpsIter.next();
-                newPath.append('.');
-                newPath.append(ext);
-            }
-        }
-        newPath.append(matrixParams);
-        resourceRef.setPath(newPath.toString());
-
-        String cutExtsStr = null;
-        if (cutExts.length() > 1)
-            cutExtsStr = cutExts.substring(1); // ignore first "."
-
-        Map<String, Object> attributes = request.getAttributes();
-        attributes.put(TunnelService.REF_ORIGINAL_KEY, originalRef);
-        attributes.put(TunnelService.REF_CUT_KEY, resourceRef.toString());
-        attributes.put(TunnelService.REF_EXTENSIONS_KEY, cutExtsStr);
-
-    }
-
-    /**
-     * Update the client preferences according to some query parameters. The
-     * matched query parameters are removed from the query.
-     * 
-     * @param request
-     *                the request to update.
-     * @param query
-     *                the query from where the parameters are extracted.
-     * @param tunnelService
-     *                the TunnelService that defines the names of the query
-     *                parameters.
-     * @return True if the query has been updated, false otherwise.
-     */
-    private boolean evaluateQueryParameters(Request request, Form query,
-            TunnelService tunnelService) {
-        boolean queryModified = false;
-
-        // Extract the header values
-        String acceptCharset = query.getFirstValue(tunnelService
-                .getCharacterSetParameter());
-        String acceptEncoding = query.getFirstValue(tunnelService
-                .getEncodingParameter());
-        String acceptLanguage = query.getFirstValue(tunnelService
-                .getLanguageParameter());
-        String acceptMediaType = query.getFirstValue(tunnelService
-                .getMediaTypeParameter());
-
-        // Parse the headers and update the call preferences
-        Metadata metadata = null;
-        ClientInfo clientInfo = request.getClientInfo();
-        MetadataService metadataService = getApplication().getMetadataService();
-        if (acceptCharset != null) {
-            metadata = metadataService.getMetadata(acceptCharset);
-
-            if (metadata instanceof CharacterSet) {
-                clientInfo.getAcceptedCharacterSets().clear();
-                clientInfo.getAcceptedCharacterSets().add(
-                        new Preference<CharacterSet>((CharacterSet) metadata));
-
-                // The parameter is removed from the query
-                query.removeFirst(tunnelService.getCharacterSetParameter());
-                queryModified = true;
-            }
-        }
-
-        if (acceptEncoding != null) {
-            metadata = metadataService.getMetadata(acceptEncoding);
-
-            if (metadata instanceof Encoding) {
-                clientInfo.getAcceptedEncodings().clear();
-                clientInfo.getAcceptedEncodings().add(
-                        new Preference<Encoding>((Encoding) metadata));
-
-                // The parameter is removed from the query
-                query.removeFirst(tunnelService.getEncodingParameter());
-                queryModified = true;
-            }
-        }
-
-        if (acceptLanguage != null) {
-            metadata = metadataService.getMetadata(acceptLanguage);
-
-            if (metadata instanceof Language) {
-                clientInfo.getAcceptedLanguages().clear();
-                clientInfo.getAcceptedLanguages().add(
-                        new Preference<Language>((Language) metadata));
-
-                // The parameter is removed from the query
-                query.removeFirst(tunnelService.getLanguageParameter());
-                queryModified = true;
-            }
-        }
-
-        if (acceptMediaType != null) {
-            metadata = metadataService.getMetadata(acceptMediaType);
-
-            if (metadata instanceof MediaType) {
-                clientInfo.getAcceptedMediaTypes().clear();
-                clientInfo.getAcceptedMediaTypes().add(
-                        new Preference<MediaType>((MediaType) metadata));
-
-                // The parameter is removed from the query
-                query.removeFirst(tunnelService.getMediaTypeParameter());
-                queryModified = true;
-            }
-        }
-
-        return queryModified;
     }
 
     /**
@@ -340,4 +89,224 @@ public class TunnelFilter extends Filter {
     public Application getApplication() {
         return this.application;
     }
+
+    /**
+     * Returns the metadata associated to the given extension using the
+     * {@link MetadataService}.
+     * 
+     * @param extension
+     *                The extension to lookup.
+     * @return The matched metadata.
+     */
+    private Metadata getMetadata(String extension) {
+        return getMetadataService().getMetadata(extension);
+    }
+
+    /**
+     * Returns the metadata service of the parent application.
+     * 
+     * @return The metadata service of the parent application.
+     */
+    public MetadataService getMetadataService() {
+        return getApplication().getMetadataService();
+    }
+
+    /**
+     * Returns the tunnel service of the parent application.
+     * 
+     * @return The tunnel service of the parent application.
+     */
+    public TunnelService getTunnelService() {
+        return getApplication().getTunnelService();
+    }
+
+    /**
+     * Updates the client preferences based on file-like extensions. The matched
+     * extensions are removed from the last segment.
+     * 
+     * See also section 3.6.1 of JAX-RS specification (<a
+     * href="https://jsr311.dev.java.net">https://jsr311.dev.java.net</a>)
+     * 
+     * @param request
+     *                The request to update.
+     * @return True if the query has been updated, false otherwise.
+     */
+    private boolean processExtensions(Request request) {
+        TunnelService tunnelService = getTunnelService();
+        boolean extensionsModified = false;
+
+        // Tunnel the client preferences
+        if (tunnelService.isPreferencesTunnel()) {
+            Reference resourceRef = request.getResourceRef();
+
+            if (resourceRef.hasExtensions()) {
+                ClientInfo clientInfo = request.getClientInfo();
+                boolean encodingFound = false;
+                boolean characterSetFound = false;
+                boolean mediaTypeFound = false;
+                boolean languageFound = false;
+                String[] extensions = resourceRef.getExtensionsAsArray();
+                StringBuilder sb = new StringBuilder();
+                boolean extensionAdded = false;
+                Metadata metadata = null;
+
+                // We look at the extensions starting from the latest one
+                // because they have a higher priority.
+                for (int i = extensions.length - 1; i >= 0; i--) {
+                    metadata = getMetadata(extensions[i]);
+
+                    if (!characterSetFound
+                            && (metadata instanceof CharacterSet)) {
+                        updateMetadata(clientInfo, metadata);
+                        characterSetFound = true;
+                    } else if (!encodingFound && (metadata instanceof Encoding)) {
+                        updateMetadata(clientInfo, metadata);
+                        encodingFound = true;
+                    } else if (!languageFound && (metadata instanceof Language)) {
+                        updateMetadata(clientInfo, metadata);
+                        languageFound = true;
+                    } else if (!mediaTypeFound
+                            && (metadata instanceof MediaType)) {
+                        updateMetadata(clientInfo, metadata);
+                        mediaTypeFound = true;
+                    } else {
+                        // The extension didn't match any metadata or
+                        // matched a metadata which was already updated
+                        // by another extension with a higher priority
+                        if (extensionAdded) {
+                            sb.insert(0, '.');
+                        }
+
+                        sb.insert(0, extensions[i]);
+                        extensionAdded = true;
+                    }
+                }
+
+                // Update the extensions if necessary
+                if (characterSetFound || encodingFound || languageFound
+                        || mediaTypeFound) {
+                    resourceRef.setExtensions(sb.toString());
+                    extensionsModified = true;
+                }
+            }
+        }
+
+        return extensionsModified;
+    }
+
+    /**
+     * Updates the request method and client preferences based on query
+     * parameters. The matched parameters are removed from the query.
+     * 
+     * @param request
+     *                The request to update.
+     * @return True if the query has been updated, false otherwise.
+     */
+    private boolean processQuery(Request request) {
+        TunnelService tunnelService = getTunnelService();
+        boolean queryModified = false;
+        Reference resourceRef = request.getResourceRef();
+
+        if (resourceRef.hasQuery()) {
+            Form query = resourceRef.getQueryAsForm(null);
+
+            // Tunnel the request method
+            Method method = request.getMethod();
+            if (tunnelService.isMethodTunnel() && method.equals(Method.POST)) {
+                String methodName = query.getFirstValue(tunnelService
+                        .getMethodParameter());
+
+                if (methodName != null) {
+                    request.setMethod(Method.valueOf(methodName));
+                    query.removeFirst(tunnelService.getMethodParameter());
+                    queryModified = true;
+                }
+            }
+
+            // Tunnel the client preferences
+            if (tunnelService.isPreferencesTunnel()) {
+                // Get the parameter names to look for
+                String charSetParameter = tunnelService
+                        .getCharacterSetParameter();
+                String encodingParameter = tunnelService.getEncodingParameter();
+                String languageParameter = tunnelService.getLanguageParameter();
+                String mediaTypeParameter = tunnelService
+                        .getMediaTypeParameter();
+
+                // Get the preferences from the query
+                String acceptedCharSet = query.getFirstValue(charSetParameter);
+                String acceptedEncoding = query
+                        .getFirstValue(encodingParameter);
+                String acceptedLanguage = query
+                        .getFirstValue(languageParameter);
+                String acceptedMediaType = query
+                        .getFirstValue(mediaTypeParameter);
+
+                // Updates the client preferences
+                ClientInfo clientInfo = request.getClientInfo();
+                Metadata metadata = getMetadata(acceptedCharSet);
+                if (metadata instanceof CharacterSet) {
+                    updateMetadata(clientInfo, metadata);
+                    query.removeFirst(charSetParameter);
+                }
+
+                metadata = getMetadata(acceptedEncoding);
+                if (metadata instanceof Encoding) {
+                    updateMetadata(clientInfo, metadata);
+                    query.removeFirst(encodingParameter);
+                }
+
+                metadata = getMetadata(acceptedLanguage);
+                if (metadata instanceof Language) {
+                    updateMetadata(clientInfo, metadata);
+                    query.removeFirst(languageParameter);
+                }
+
+                metadata = getMetadata(acceptedMediaType);
+                if (metadata instanceof MediaType) {
+                    updateMetadata(clientInfo, metadata);
+                    query.removeFirst(mediaTypeParameter);
+                }
+            }
+
+            // Update the query if it has been modified
+            if (queryModified) {
+                request.getResourceRef().setQuery(query.getQueryString(null));
+            }
+        }
+
+        return queryModified;
+    }
+
+    /**
+     * Updates the client info with the given metadata. It clears exisiting
+     * preferences for the same type of metadata if necessary.
+     * 
+     * @param clientInfo
+     *                The client info to update.
+     * @param metadata
+     *                The metadata to use.
+     */
+    private void updateMetadata(ClientInfo clientInfo, Metadata metadata) {
+        if (metadata != null) {
+            if (metadata instanceof CharacterSet) {
+                clientInfo.getAcceptedCharacterSets().clear();
+                clientInfo.getAcceptedCharacterSets().add(
+                        new Preference<CharacterSet>((CharacterSet) metadata));
+            } else if (metadata instanceof Encoding) {
+                clientInfo.getAcceptedEncodings().clear();
+                clientInfo.getAcceptedEncodings().add(
+                        new Preference<Encoding>((Encoding) metadata));
+            } else if (metadata instanceof Language) {
+                clientInfo.getAcceptedLanguages().clear();
+                clientInfo.getAcceptedLanguages().add(
+                        new Preference<Language>((Language) metadata));
+            } else if (metadata instanceof MediaType) {
+                clientInfo.getAcceptedMediaTypes().clear();
+                clientInfo.getAcceptedMediaTypes().add(
+                        new Preference<MediaType>((MediaType) metadata));
+            }
+        }
+    }
+
 }
