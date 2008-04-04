@@ -64,8 +64,8 @@ public class MatrixParamTestService2 {
     @GET
     @ProduceMime(MediaType.TEXT_PLAIN)
     @Path("encodedWithDefault")
-    public String encodedList(@Encoded @DefaultValue("default") 
-            @MatrixParam("m") List<String> cc) {
+    public String encodedList(
+            @Encoded @DefaultValue("default") @MatrixParam("m") List<String> cc) {
         return cc.toString();
     }
 }

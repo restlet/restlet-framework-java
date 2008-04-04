@@ -19,7 +19,6 @@ package org.restlet.ext.jaxrs;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -155,11 +154,8 @@ public class ExceptionHandler {
 
     private final Logger logger;
 
-    private final JaxRsRouter jaxRsRouter;
-
-    ExceptionHandler(JaxRsRouter jaxRsRouter) {
-        this.jaxRsRouter = jaxRsRouter;
-        this.logger = jaxRsRouter.getLogger();
+    ExceptionHandler(Logger logger) {
+        this.logger = logger;
     }
 
     /**
@@ -328,38 +324,6 @@ public class ExceptionHandler {
         callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
         logger.log(Level.WARNING, logMessage, exception.getCause());
         exception.printStackTrace();
-        throw new RequestHandledException();
-    }
-
-    /**
-     * Handles the given Exception, catched by an invoke of a resource method or
-     * a creation if a sub resource object.
-     * 
-     * @param exception
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * @param methodName
-     * @param logMessage
-     * @throws RequestHandledException
-     *                 throws this message to exit the method and indicate, that
-     *                 the request was handled.
-     * @throws RequestHandledException
-     */
-    RequestHandledException invocationTargetExecption(
-            InvocationTargetException exception, CallContext callContext,
-            String logMessage) throws RequestHandledException {
-        Throwable cause = exception.getCause();
-        if (cause instanceof WebApplicationException) {
-            javax.ws.rs.core.Response jaxRsResp;
-            jaxRsResp = ((WebApplicationException) cause).getResponse();
-            jaxRsRouter.jaxRsRespToRestletResp(jaxRsResp, callContext, null);
-        } else {
-            callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
-            logger.log(Level.WARNING, logMessage, cause);
-            exception.printStackTrace();
-        }
         throw new RequestHandledException();
     }
 

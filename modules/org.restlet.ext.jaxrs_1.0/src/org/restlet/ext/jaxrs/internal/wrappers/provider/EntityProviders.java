@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.wrappers;
+package org.restlet.ext.jaxrs.internal.wrappers.provider;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -27,7 +27,7 @@ import java.util.Set;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.util.Converter;
-import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyReader;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
 
 /**
  * Contains the entity providers and has some methods to pick the wished out.

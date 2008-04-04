@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.wrappers;
+package org.restlet.ext.jaxrs.internal.wrappers.provider;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +32,9 @@ import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyWorkers;
 
 import org.restlet.data.MediaType;
@@ -49,6 +51,8 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.ext.jaxrs.internal.wrappers.ContextInjector;
+import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
 
 /**
  * Wraps a JAX-RS provider, see chapter 4 of JAX-RS specification.
@@ -59,7 +63,8 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * @see javax.ws.rs.ext.Provider
  */
 public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
-        org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<T> {
+        org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver<T>,
+        ExceptionMapper<T> {
 
     /**
      * the mimes this MessageBodyReader consumes.
@@ -71,6 +76,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * {@link ContextResolver}
      */
     private javax.ws.rs.ext.ContextResolver<T> contextResolver;
+
+    private javax.ws.rs.ext.ExceptionMapper<T> excMapper;
 
     private Object jaxRsProvider;
 
@@ -122,6 +129,10 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         }
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyReader) {
             this.reader = (javax.ws.rs.ext.MessageBodyReader<T>) jaxRsProvider;
+            isProvider = true;
+        }
+        if (jaxRsProvider instanceof javax.ws.rs.ext.ExceptionMapper) {
+            this.excMapper = (javax.ws.rs.ext.ExceptionMapper<T>) jaxRsProvider;
             isProvider = true;
         }
         if (jaxRsProvider instanceof javax.ws.rs.ext.ContextResolver) {
@@ -229,25 +240,37 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     }
 
     /**
+     * Returns the {@link ExceptionMapper}, or null, if this provider is not an
+     * {@link ExceptionMapper}.
+     * 
+     * @return the {@link ExceptionMapper}, or null, if this provider is not an
+     *         {@link ExceptionMapper}.
+     */
+    @SuppressWarnings("unchecked")
+    public ExceptionMapper<? extends Throwable> getExcMapper() {
+        return (ExceptionMapper) excMapper;
+    }
+
+    /**
      * Returns the JAX-RS provider as {@link ContextResolver}, if the provider
      * is a ContextResolver, otherwise null.
      * 
      * @return
-     * @see org.restlet.ext.jaxrs.internal.wrappers.ContextResolver#getJaxRsContextResolver()
+     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver#getJaxRsContextResolver()
      */
     public javax.ws.rs.ext.ContextResolver<?> getJaxRsContextResolver() {
         return this.contextResolver;
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.internal.wrappers.MessageBodyReader#getJaxRsReader()
+     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader#getJaxRsReader()
      */
     public javax.ws.rs.ext.MessageBodyReader<T> getJaxRsReader() {
         return this.reader;
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriter#getJaxRsWriter()
+     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter#getJaxRsWriter()
      */
     public javax.ws.rs.ext.MessageBodyWriter<T> getJaxRsWriter() {
         return this.writer;
@@ -304,7 +327,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      */
     @SuppressWarnings("unused")
     public void init(
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers,
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver<?>> allResolvers,
             MessageBodyWorkers messageBodyWorkers) throws InjectException {
         injectContext(allResolvers, messageBodyWorkers);
     }
@@ -320,7 +343,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @throws InjectException
      */
     private void injectContext(
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers,
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver<?>> allResolvers,
             MessageBodyWorkers messageBodyWorkers) throws InjectException {
         Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
         ContextInjector iph = new ContextInjector(providerClass);
@@ -337,6 +360,16 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      */
     public boolean isContextResolver() {
         return this.contextResolver != null;
+    }
+
+    /**
+     * Checks, if this provider represents an {@link ExceptionMapper}.
+     * 
+     * @return true, if this provider is an {@link ExceptionMapper}, or false
+     *         if not.
+     */
+    public boolean isExceptionMapper() {
+        return excMapper != null;
     }
 
     /**
@@ -444,6 +477,13 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
                 return true;
         }
         return false;
+    }
+
+    /**
+     * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
+     */
+    public Response toResponse(T exception) {
+        return excMapper.toResponse(exception);
     }
 
     @Override

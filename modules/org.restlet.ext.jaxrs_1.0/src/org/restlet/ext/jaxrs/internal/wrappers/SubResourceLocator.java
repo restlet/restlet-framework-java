@@ -38,6 +38,8 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 
 /**
  * A method of a resource class that is used to locate sub-resources of the

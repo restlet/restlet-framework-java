@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
+import javax.ws.rs.WebApplicationException;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -42,6 +43,8 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 
 /**
  * An abstract wrapper class. Contains some a static methods to use from
@@ -182,11 +185,12 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      */
     protected Object invoke(ResourceObject resourceObject, boolean allowEntity,
             CallContext callContext, MessageBodyReaderSet mbrs, Logger logger)
-            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException,
-            MissingAnnotationException, NoMessageBodyReaderException,
-            ConvertRepresentationException, ConvertHeaderParamException,
-            ConvertPathParamException, ConvertMatrixParamException,
-            ConvertQueryParamException, ConvertCookieParamException {
+            throws IllegalArgumentException, IllegalAccessException,
+            InvocationTargetException, MissingAnnotationException,
+            NoMessageBodyReaderException, ConvertRepresentationException,
+            ConvertHeaderParamException, ConvertPathParamException,
+            ConvertMatrixParamException, ConvertQueryParamException,
+            ConvertCookieParamException, WebApplicationException {
         Object[] args;
         Class<?>[] parameterTypes = this.executeMethod.getParameterTypes();
         if (parameterTypes.length == 0) {

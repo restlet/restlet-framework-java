@@ -41,6 +41,9 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
 
 /**
  * Instances represents a root resource class, see chapter 3 of JAX-RS

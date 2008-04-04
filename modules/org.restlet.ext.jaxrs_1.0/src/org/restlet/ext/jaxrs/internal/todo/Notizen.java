@@ -27,10 +27,10 @@ public class Notizen {
     // TODO Provider for File-Upload by a browser (multipart/form-data)
 
     // TESTEN what happens, if ".." or "." in @Path?
+    
+    // TESTEN what happens, if WebAppExc or header change in MessageBodyWriter?
 
     // REQUESTED rename @DefaultValue to @Default? it's shorter
-
-    // TODO alle mailing-Lists neu laden
 
     // REQUESTED @Context on type PathSegment ?
 

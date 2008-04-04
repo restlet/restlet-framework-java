@@ -48,6 +48,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver;
 
 /**
  * Helper class to inject into fields for &#64;*Param into root resource

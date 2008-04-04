@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.wrappers;
+package org.restlet.ext.jaxrs.internal.wrappers.provider;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -15,30 +15,32 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.wrappers;
+package org.restlet.ext.jaxrs.internal.wrappers.provider;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
+import org.restlet.data.MediaType;
 
 /**
- * Wraps a {@link javax.ws.rs.ext.ContextResolver}.
+ * Contains a List of wrapped {@link javax.ws.rs.ext.MessageBodyReader}s.
  * 
  * @author Stephan Koops
- * @param <T> the java type to get its context.
- * @see javax.ws.rs.ext.ContextResolver
  */
-public interface ContextResolver<T> {
-    /**
-     * Get a context of type <code>T</code> that is applicable to the supplied
-     * type.
-     * 
-     * @param type
-     *                the class of object for which a context is desired
-     * @return a context for the supplied type or <code>null<code> if a 
-     * context for the supplied type is not available from this provider.
-     * @see javax.ws.rs.ext.ContextResolver#getContext(Class)
-     */
-    public T getContext(Class<?> type);
+public interface MessageBodyReaderSet {
 
     /**
-     * @return
+     * Returns the best {@link MessageBodyReader} in this Set.
+     * 
+     * @param mediaType
+     *                The {@link MediaType}, that should be supported.
+     * @param paramType
+     * @param genericType
+     * @param annotations
+     * 
+     * @return The first {@link MessageBodyReader} of this Set. Returns null, if
+     *         this Set is empty.
      */
-    public javax.ws.rs.ext.ContextResolver<?> getJaxRsContextResolver();
+    public MessageBodyReader<?> getBestReader(MediaType mediaType,
+            Class<?> paramType, Type genericType, Annotation[] annotations);
 }

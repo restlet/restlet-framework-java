@@ -25,7 +25,7 @@ import java.lang.reflect.Type;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
-import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriter;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
 import org.restlet.resource.OutputRepresentation;
 
 /**

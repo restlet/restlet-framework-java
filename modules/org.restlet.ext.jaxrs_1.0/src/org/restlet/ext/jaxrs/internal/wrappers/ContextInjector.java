@@ -48,7 +48,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * @author Stephan Koops
  * @see IntoRrcInjector
  */
-class ContextInjector {
+public class ContextInjector {
 
     protected static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
 
@@ -123,7 +123,7 @@ class ContextInjector {
      * @param jaxRsClass
      * @throws ImplementationException
      */
-    ContextInjector(Class<?> jaxRsClass) {
+    public ContextInjector(Class<?> jaxRsClass) {
         init(jaxRsClass);
     }
 
@@ -182,10 +182,10 @@ class ContextInjector {
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
      */
-    protected void inject(
+    public void inject(
             Object jaxRsResObj,
             CallContext callContext,
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.ContextResolver<?>> allResolvers,
+            Collection<org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver<?>> allResolvers,
             MessageBodyWorkers messageBodyWorkers) throws InjectException {
         for (Field field : this.injectFieldsContextResolvers) {
             ContextResolver<?> contextResolver;

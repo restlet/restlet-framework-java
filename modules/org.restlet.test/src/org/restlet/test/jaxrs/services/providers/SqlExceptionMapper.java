@@ -15,38 +15,29 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.wrappers;
+package org.restlet.test.jaxrs.services.providers;
 
-import java.util.Collection;
+import java.sql.SQLException;
 
-import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+
+import org.restlet.test.jaxrs.services.tests.ThrowExceptionTest;
 
 /**
- * Collection, if multiple context resolvers are possible for injection.
- * 
  * @author Stephan Koops
+ * @see ThrowExceptionTest
  */
-public class ContextResolverCollection implements ContextResolver<Object> {
+@Provider
+public class SqlExceptionMapper implements ExceptionMapper<SQLException> {
 
-    private Collection<ContextResolver<?>> resolvers;
-
-    /**
-     * @param resolvers
-     */
-    public ContextResolverCollection(Collection<ContextResolver<?>> resolvers) {
-        this.resolvers = resolvers;
-    }
+    public static final String MESSAGE = "Database error";
 
     /**
-     * @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class)
+     * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
      */
-    @SuppressWarnings("unchecked")
-    public Object getContext(Class<?> type) {
-        for (ContextResolver<?> cr : resolvers) {
-            Object context = cr.getContext(type);
-            if (context != null)
-                return context;
-        }
-        return null;
+    public Response toResponse(SQLException exception) {
+        return Response.serverError().entity(MESSAGE).build();
     }
 }

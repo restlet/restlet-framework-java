@@ -82,11 +82,6 @@ import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.util.WrappedRequestForHttpHeaders;
 import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
-import org.restlet.ext.jaxrs.internal.wrappers.ContextResolver;
-import org.restlet.ext.jaxrs.internal.wrappers.EntityProviders;
-import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriter;
-import org.restlet.ext.jaxrs.internal.wrappers.MessageBodyWriterSubSet;
-import org.restlet.ext.jaxrs.internal.wrappers.Provider;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceClass;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethodOrLocator;
@@ -94,6 +89,12 @@ import org.restlet.ext.jaxrs.internal.wrappers.ResourceObject;
 import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
 import org.restlet.ext.jaxrs.internal.wrappers.SubResourceLocator;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExceptionMappers;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriterSubSet;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.Provider;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
@@ -154,6 +155,8 @@ public class JaxRsRouter extends Restlet {
 
     private final ExceptionHandler excHandler;
 
+    private final ExceptionMappers excMapper = new ExceptionMappers();
+
     /**
      * Creates a new JaxRsRouter with the {@link ApplicationConfig}. You can
      * add more {@link ApplicationConfig}s; use method
@@ -180,7 +183,7 @@ public class JaxRsRouter extends Restlet {
     public JaxRsRouter(Context context, ApplicationConfig appConfig,
             RoleChecker roleChecker) throws IllegalArgumentException {
         super(context);
-        this.excHandler = new ExceptionHandler(this);
+        this.excHandler = new ExceptionHandler(getLogger());
         this.wrapperFactory = new WrapperFactory(getLogger());
         this.loadDefaultProviders();
         if (appConfig != null)
@@ -432,6 +435,8 @@ public class JaxRsRouter extends Restlet {
         this.entityProviders.add(provider, defaultProvider);
         if (provider.isContextResolver())
             this.contextResolvers.add(provider);
+        if (provider.isExceptionMapper())
+            this.excMapper.add(provider);
         return true;
     }
 
@@ -503,10 +508,11 @@ public class JaxRsRouter extends Restlet {
      * @return (Sub)Resource Method
      * @throws CouldNotFindMethodException
      * @throws RequestHandledException
+     * @throws WebApplicationException
      */
     private ResObjAndMeth matchingRequestToResourceMethod(
             CallContext callContext) throws CouldNotFindMethodException,
-            RequestHandledException {
+            RequestHandledException, WebApplicationException {
         Request restletRequest = callContext.getRequest();
         // Part 1
         RemainingPath u = new RemainingPath(restletRequest.getResourceRef()
@@ -587,6 +593,7 @@ public class JaxRsRouter extends Restlet {
      *                Restlet {@link Response}.
      * @return Resource Object
      * @throws RequestHandledException
+     * @throws WebApplicationException
      */
     private ResObjAndRemPath obtainObjectThatHandleRequest(
             RrcAndRemPath rrcAndRemPath, CallContext callContext)
@@ -613,8 +620,7 @@ public class JaxRsRouter extends Restlet {
             throw excHandler.instantiateExecption(e, callContext,
                     "Could not create new instance of root resource class");
         } catch (InvocationTargetException e) {
-            throw excHandler.invocationTargetExecption(e, callContext,
-                    "Could not create new instance of root resource class");
+            throw invocationTargetExecption(e, callContext, null);
         } catch (ConvertRepresentationException e) {
             throw excHandler.convertRepresentationExc(e);
         } catch (ConvertHeaderParamException e) {
@@ -692,8 +698,8 @@ public class JaxRsRouter extends Restlet {
                 throw excHandler.instantiateExecption(e, callContext,
                         "Could not create new instance of resource class");
             } catch (InvocationTargetException e) {
-                throw excHandler.invocationTargetExecption(e, callContext,
-                        "Could not create new instance of resource class");
+                throw invocationTargetExecption(e, callContext,
+                        subResourceLocator);
             } catch (NoMessageBodyReaderException nmbre) {
                 throw excHandler.noMessageBodyReader(callContext, nmbre);
             } catch (ConvertRepresentationException e) {
@@ -803,10 +809,14 @@ public class JaxRsRouter extends Restlet {
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
+     * @throws RequestHandledException
+     *                 if the request is already handled
+     * @throws WebApplicationException
+     *                 if a JAX-RS class throws an WebApplicationException
      */
     private void invokeMethodAndHandleResult(ResourceMethod resourceMethod,
             ResourceObject resourceObject, CallContext callContext)
-            throws RequestHandledException {
+            throws RequestHandledException, WebApplicationException {
         Object result;
         try {
             result = resourceMethod.invoke(resourceObject, callContext,
@@ -814,9 +824,7 @@ public class JaxRsRouter extends Restlet {
         } catch (WebApplicationException e) {
             throw e;
         } catch (InvocationTargetException ite) {
-            // LATER if RuntimeException, then propagate and not handle here?
-            throw excHandler.invocationTargetExecption(ite, callContext,
-                    "Exception in resource method");
+            throw invocationTargetExecption(ite, callContext, resourceMethod);
         } catch (RuntimeException e) {
             throw excHandler.runtimeExecption(e, resourceMethod, callContext,
                     "Can not invoke the resource method");
@@ -903,6 +911,32 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
+     * Handles the given Exception, catched by an invoke of a resource method or
+     * a creation if a sub resource object.
+     * 
+     * @param ite
+     * @param callContext
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
+     * @param resourceMethod
+     *                TODO
+     * @param methodName
+     * @throws RequestHandledException
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
+     * @throws RequestHandledException
+     */
+    RequestHandledException invocationTargetExecption(
+            InvocationTargetException ite, CallContext callContext,
+            AbstractMethodWrapper resourceMethod)
+            throws RequestHandledException {
+        javax.ws.rs.core.Response jaxRsResp = excMapper.convert(ite);
+        jaxRsRespToRestletResp(jaxRsResp, callContext, resourceMethod);
+        throw new RequestHandledException();
+    }
+
+    /**
      * Converts the given entity - returned by the resoure method - to a Restlet
      * {@link Representation}.
      * 
@@ -921,7 +955,8 @@ public class JaxRsRouter extends Restlet {
      * @param jaxRsRespHeaders
      *                The headers added to the {@link javax.ws.rs.core.Response}
      *                by the {@link ResponseBuilder}.
-     * @return
+     * @return the corresponding Restlet Representation. Returns
+     *         <code>null</code> only if null was given.
      * @throws RequestHandledException
      */
     @SuppressWarnings("unchecked")

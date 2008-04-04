@@ -33,8 +33,7 @@ import org.restlet.test.jaxrs.services.resources.DoublePath2;
 import org.restlet.test.jaxrs.services.resources.SimpleTrain;
 
 /**
- * 
- * @author Stephan
+ * @author Stephan Koops
  * @see JaxRsRouter
  * @see DoublePath1
  * @see DoublePaths

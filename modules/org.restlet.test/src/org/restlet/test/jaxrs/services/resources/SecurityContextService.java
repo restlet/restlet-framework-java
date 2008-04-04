@@ -31,8 +31,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 
-import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.tests.SecurityContextTest;
 
 /**
@@ -43,17 +44,19 @@ import org.restlet.test.jaxrs.services.tests.SecurityContextTest;
 @Path("/SecurityContextTestService")
 public class SecurityContextService {
 
+    @Context private SecurityContext securityContext;
+    
     @GET
     @ProduceMime("text/plain")
-    public String get(@Context SecurityContext securityContext) {
+    public String get() {
         if (!securityContext.isUserInRole("bad"))
             throw new WebApplicationException(403);
         return "das darfst Du";
     }
 
     @POST
-    public Response post(@Context SecurityContext securityContext,
-            MultivaluedMap<String, String> entity, @Context UriInfo uriInfo) {
+    public Response post(MultivaluedMap<String, String> entity, 
+            @Context UriInfo uriInfo) {
         if (!securityContext.isUserInRole("bat"))
             throw new WebApplicationException(403);
         entity.toString(); // typically the entity will be stored in the DB.
@@ -66,16 +69,16 @@ public class SecurityContextService {
     @GET
     @Path("authenticationScheme")
     @ProduceMime("text/plain")
-    public String getAuthenticationScheme(@Context SecurityContext securityContext) {
+    public String getAuthenticationScheme() {
         return securityContext.getAuthenticationScheme();
     }
 
     @GET
     @Path("userPrincipal")
     @ProduceMime("text/plain")
-    public String getUserPrincipal(@Context SecurityContext securityContext) {
+    public String getUserPrincipal() {
         Principal principal = securityContext.getUserPrincipal();
-        if(principal == null)
+        if (principal == null)
             return "-";
         return principal.getName();
     }
@@ -83,9 +86,13 @@ public class SecurityContextService {
     @GET
     @Path("secure")
     @ProduceMime("text/plain")
-    public String isSecure(@Context SecurityContext securityContext) {
-        if (!securityContext.isSecure())
-            throw new WebApplicationException(Status.CLIENT_ERROR_NOT_FOUND.getCode());
+    public String isSecure(@Context UriInfo uriInfo) {
+        if (!securityContext.isSecure()) {
+            ResponseBuilder rb = Response.status(Status.MOVED_PERMANENTLY);
+            rb.entity("You must use a secure connection");
+            rb.location(uriInfo.getRequestUriBuilder().scheme("https").build());
+            throw new WebApplicationException(rb.build());
+        }
         return "wonderful! It's a secure request.";
     }
 }

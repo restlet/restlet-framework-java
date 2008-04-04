@@ -80,6 +80,10 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolverCollection;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 
@@ -228,13 +232,19 @@ public class WrapperUtil {
      * @param defaultValue
      * @return
      * @throws ConvertParameterException
+     * @throws WebApplicationException
+     *                 if the conversion method throws an
+     *                 WebApplicationException.
      */
     private static Object convertParamValueFromParam(Class<?> paramClass,
             String paramValue, DefaultValue defaultValue)
-            throws ConvertParameterException {
+            throws ConvertParameterException, WebApplicationException {
+        WebApplicationException constructorWae = null;
         try {
             Constructor<?> constr = paramClass.getConstructor(String.class);
             return constr.newInstance(paramValue);
+        } catch (WebApplicationException wae) {
+            constructorWae = wae;
         } catch (Exception e) {
             // try valueOf(String) as next step
         }
@@ -249,12 +259,22 @@ public class WrapperUtil {
         try {
             return valueOf.invoke(null, paramValue);
         } catch (IllegalArgumentException e) {
+            if (constructorWae != null)
+                throw constructorWae;
             throw ConvertParameterException.object(paramClass, paramValue, e);
         } catch (IllegalAccessException e) {
+            if (constructorWae != null)
+                throw constructorWae;
             throw ConvertParameterException.object(paramClass, paramValue, e);
-        } catch (InvocationTargetException e) {
+        } catch (InvocationTargetException ite) {
+            if (constructorWae != null)
+                throw constructorWae;
+            Throwable cause = ite.getCause();
+            if (cause instanceof WebApplicationException)
+                throw (WebApplicationException) cause;
+            // REQUESTED ExceptionMapper also for Exc while @*Param conversion?
             if ((paramValue == null || paramValue.length() <= 0)
-                    && (e.getCause() instanceof IllegalArgumentException)) {
+                    && (ite.getCause() instanceof IllegalArgumentException)) {
                 if (defaultValue == null)
                     return null;
                 else {
@@ -262,7 +282,7 @@ public class WrapperUtil {
                     return convertParamValueFromParam(paramClass, dfv, null);
                 }
             }
-            throw ConvertParameterException.object(paramClass, paramValue, e);
+            throw ConvertParameterException.object(paramClass, paramValue, ite);
         }
     }
 
@@ -371,12 +391,17 @@ public class WrapperUtil {
      * @return
      * @throws NoMessageBodyReaderException
      * @throws ConvertRepresentationException
+     * @throws InvocationTargetException
+     *                 if the constructor of the {@link Representation} subclass
+     *                 throws an Exception.
+     * @throws WebApplicationException
      */
     @SuppressWarnings("unchecked")
     static Object convertRepresentation(CallContext callContext,
             Class<?> paramType, Type genericType, Annotation[] annotations,
             MessageBodyReaderSet mbrs, Logger logger)
-            throws NoMessageBodyReaderException, ConvertRepresentationException {
+            throws NoMessageBodyReaderException, WebApplicationException,
+            ConvertRepresentationException, InvocationTargetException {
         Representation entity = callContext.getRequest().getEntity();
         if (entity == null)
             return null;
@@ -398,6 +423,8 @@ public class WrapperUtil {
                     .toJaxRsMediaType(mediaType, entity.getCharacterSet());
             return mbr.readFrom((Class) paramType, genericType, jaxRsMediaType,
                     annotations, httpHeaders, entity.getStream());
+        } catch (WebApplicationException wae) {
+            throw wae; // TESTEN WebApplicationEception in MessageBodyReader
         } catch (IOException e) {
             throw ConvertRepresentationException.object(paramType,
                     "the message body", e);
@@ -413,7 +440,7 @@ public class WrapperUtil {
      * @param mimes
      * @return Returns an unmodifiable List of MediaTypes
      */
-    static List<MediaType> convertToMediaTypes(String[] mimes) {
+    public static List<MediaType> convertToMediaTypes(String[] mimes) {
         List<MediaType> mediaTypes = new ArrayList<MediaType>(mimes.length);
         for (String mime : mimes) {
             if (mime == null)
@@ -462,10 +489,11 @@ public class WrapperUtil {
      * @return the created representation, or null, if it could not be
      *         converted.
      * @throws ConvertRepresentationException
+     * @throws InvocationTargetException
      */
     private static Object createConcreteRepresentationInstance(
             Class<?> representationType, Representation entity, Logger logger)
-            throws ConvertRepresentationException {
+            throws ConvertRepresentationException, InvocationTargetException {
         if (representationType.equals(Representation.class))
             return entity;
         Constructor<?> constr;
@@ -480,7 +508,13 @@ public class WrapperUtil {
         }
         try {
             return constr.newInstance(entity);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            throw ConvertRepresentationException.object(representationType,
+                    "the message body", e);
+        } catch (InstantiationException e) {
+            throw ConvertRepresentationException.object(representationType,
+                    "the message body", e);
+        } catch (IllegalAccessException e) {
             throw ConvertRepresentationException.object(representationType,
                     "the message body", e);
         }
@@ -521,7 +555,7 @@ public class WrapperUtil {
      * @throws ConvertRepresentationException
      * @throws IllegalAnnotationException
      */
-    static Object createInstance(Constructor<?> constructor,
+    public static Object createInstance(Constructor<?> constructor,
             boolean onlyContextAnnot, boolean leaveEncoded,
             CallContext callContext, MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException, NoMessageBodyReaderException,
@@ -572,7 +606,7 @@ public class WrapperUtil {
      *         Than try {@link Class#newInstance()}
      * @throws MissingConstructorException
      */
-    static Constructor<?> findJaxRsConstructor(Class<?> jaxRsClass,
+    public static Constructor<?> findJaxRsConstructor(Class<?> jaxRsClass,
             String rrcOrProvider) throws MissingConstructorException {
         Constructor<?> constructor = null;
         int constructorParamNo = Integer.MIN_VALUE;
@@ -927,6 +961,10 @@ public class WrapperUtil {
      * @throws ConvertHeaderParamException
      * @throws ConvertRepresentationException
      * @throws IllegalAnnotationException
+     * @throws InvocationTargetException
+     *                 If the constructor of the entity subclass of
+     *                 {@link Representation} throws an exception.
+     * @throws WebApplicationException
      */
     static Object[] getParameterValues(Class<?>[] paramTypes,
             Type[] paramGenericTypes, Annotation[][] paramAnnotationss,
@@ -937,7 +975,8 @@ public class WrapperUtil {
             ConvertHeaderParamException, ConvertPathParamException,
             ConvertMatrixParamException, ConvertQueryParamException,
             ConvertCookieParamException, ConvertRepresentationException,
-            IllegalAnnotationException {
+            IllegalAnnotationException, InvocationTargetException,
+            WebApplicationException {
         int paramNo = paramTypes.length;
         if (paramNo == 0)
             return new Object[0];

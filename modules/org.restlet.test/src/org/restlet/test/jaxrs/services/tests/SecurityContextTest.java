@@ -224,8 +224,11 @@ public class SecurityContextTest extends JaxRsTestCase {
 
     public void testSecure() throws Exception {
         startServer();
-        Response response = get("secure");
-        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+        Reference reference = createReference(getRootResourceClass(), "secure");
+        Response response = get(reference);
+        assertEquals(Status.REDIRECTION_PERMANENT, response.getStatus());
+        reference.setScheme("https");
+        assertEquals(reference, response.getLocationRef());
     }
 
     public void testUserPrincipalNotAuth() throws Exception {

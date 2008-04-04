@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.WebApplicationException;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -42,6 +43,8 @@ import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 
 /**
  * This class wraps JAX-RS resource methods and sub resource methods.<br>
@@ -159,6 +162,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * @throws ConvertPathParamException
      * @throws ConvertHeaderParamException
      * @throws ConvertRepresentationException
+     * @throws WebApplicationException 
      */
     public Object invoke(ResourceObject resourceObject,
             CallContext callContext, MessageBodyReaderSet mbrs, Logger logger)
@@ -166,7 +170,8 @@ public class ResourceMethod extends AbstractMethodWrapper implements
             MissingAnnotationException, NoMessageBodyReaderException,
             ConvertRepresentationException, ConvertHeaderParamException,
             ConvertPathParamException, ConvertMatrixParamException,
-            ConvertQueryParamException, ConvertCookieParamException {
+            ConvertQueryParamException, ConvertCookieParamException,
+            WebApplicationException {
         try {
             return invoke(resourceObject, true, callContext, mbrs, logger);
         } catch (IllegalArgumentException e) {
