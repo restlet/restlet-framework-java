@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.resource.Representation;
 import org.restlet.resource.WriterRepresentation;
@@ -515,6 +516,7 @@ public final class ByteUtils {
     public static ReadableByteChannel getChannel(
             final Representation representation) throws IOException {
         final Pipe pipe = Pipe.open();
+        final Context context = Context.getCurrent();
 
         // Creates a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
@@ -522,6 +524,7 @@ public final class ByteUtils {
             @Override
             public void run() {
                 try {
+                    Context.setCurrent(context);
                     WritableByteChannel wbc = pipe.sink();
                     representation.write(wbc);
                     wbc.close();
@@ -571,6 +574,7 @@ public final class ByteUtils {
             throws IOException {
         final PipedWriter pipedWriter = new PipedWriter();
         final PipedReader pipedReader = new PipedReader(pipedWriter);
+        final Context context = Context.getCurrent();
 
         // Creates a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
@@ -578,6 +582,7 @@ public final class ByteUtils {
             @Override
             public void run() {
                 try {
+                    Context.setCurrent(context);
                     representation.write(pipedWriter);
                 } catch (IOException ioe) {
                     Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
@@ -637,6 +642,7 @@ public final class ByteUtils {
             throws IOException {
         if (representation != null) {
             final PipeStream pipe = new PipeStream();
+            final Context context = Context.getCurrent();
 
             // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
@@ -644,6 +650,7 @@ public final class ByteUtils {
                 @Override
                 public void run() {
                     try {
+                        Context.setCurrent(context);
                         OutputStream os = pipe.getOutputStream();
                         representation.write(os);
                         os.write(-1);
