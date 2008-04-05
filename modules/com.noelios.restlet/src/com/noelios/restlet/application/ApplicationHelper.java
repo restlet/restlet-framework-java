@@ -100,9 +100,6 @@ public class ApplicationHelper extends ChainHelper<Application> {
         request.getAttributes().put(Application.KEY, getHelped());
         response.getAttributes().put(Application.KEY, getHelped());
 
-        // Associate the context to the current thread
-        Context.setCurrent(getContext());
-
         // Actually handle call
         super.handle(request, response);
     }

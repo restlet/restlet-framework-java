@@ -76,7 +76,7 @@ public class XdbServletWarClient extends Client {
 
     @Override
     public void handle(Request request, Response response) {
-        init(request, response);
+        super.handle(request, response);
         getHelper().handle(request, response);
     }
 

@@ -810,7 +810,8 @@ public class Component extends Restlet {
 
     @Override
     public void handle(Request request, Response response) {
-        init(request, response);
+        super.handle(request, response);
+
         if (getHelper() != null)
             getHelper().handle(request, response);
     }

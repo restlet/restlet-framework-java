@@ -96,7 +96,13 @@ public class Restlet extends Uniform {
     }
 
     /**
-     * Handles a call.
+     * Handles a call. The default behavior is to call the (now deprecated)
+     * {@link #init(Request, Response)} method. In next version,
+     * {@link #init(Request, Response)} will be removed and its logic directly
+     * added to this method instead.
+     * <p>
+     * Subclasses overriding this method should make sure that they call
+     * super.handle(request, response) before adding their own logic.
      * 
      * @param request
      *                The request to handle.
@@ -109,16 +115,25 @@ public class Restlet extends Uniform {
     }
 
     /**
-     * Initialize the Restlet by attempting to start it, unless it was already
-     * started. If an exception is thrown during the start action, then the
-     * response status is set to {@link Status#SERVER_ERROR_INTERNAL}.
+     * Initialize the Restlet by setting the current context using the
+     * {@link Context#setCurrent(Context)} method and by attempting to start it,
+     * unless it was already started. If an exception is thrown during the start
+     * action, then the response status is set to
+     * {@link Status#SERVER_ERROR_INTERNAL}.
      * 
      * @param request
      *                The request to handle.
      * @param response
      *                The response to update.
+     * @deprecated Instead, make sure that you call the
+     *             {@link #handle(Request, Response)} method from your Restlet
+     *             superclass.
      */
+    @Deprecated
     protected synchronized void init(Request request, Response response) {
+        // Associate the context to the current thread
+        Context.setCurrent(getContext());
+
         // Check if the Restlet was started
         if (isStopped()) {
             try {

@@ -167,7 +167,7 @@ public abstract class Filter extends Restlet {
      */
     @Override
     public final void handle(Request request, Response response) {
-        init(request, response);
+        super.handle(request, response);
 
         switch (beforeHandle(request, response)) {
         case CONTINUE:

@@ -312,7 +312,7 @@ public class Server extends Connector {
 
     @Override
     public void handle(Request request, Response response) {
-        init(request, response);
+        super.handle(request, response);
 
         if (getTarget() != null) {
             getTarget().handle(request, response);
