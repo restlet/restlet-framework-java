@@ -33,7 +33,39 @@ import org.restlet.util.Engine;
 import org.restlet.util.Resolver;
 
 /**
- * Filter guarding the access to an attached Restlet.
+ * Filter guarding the access to an attached Restlet. More concretely, it guards
+ * from unauthenticated and unauthorized requests, providing facilities to check
+ * credentials such as passwords. It is also a relatively generic class which
+ * can work with several challenge schemes such as HTTP Basic and HTTP Digest.
+ * <p>
+ * Here are the processing steps of a Guard when a request reaches it:
+ * <ol>
+ * <li>It first attempts to authenticate it, i.e. to make sure that the
+ * challenge scheme used is supported and that the credentials given by the
+ * client (such as a login and password) are valid. The actual implementation of
+ * the authentication is delegated to the matching authentication helper. The
+ * result of this authentication can be:
+ * <ol>
+ * <li>Valid: the authentication credentials are valid, the right scheme was
+ * used and the credentials could be verified by calling back the checkSecret()
+ * method on Guard. Here are the next steps:
+ * <ol>
+ * <li>The authorize() method is called and if authorization is given the
+ * accept() method is invoked, which delegates to the attached Restlet or
+ * Resource by default. Otherwise, the forbid method is called, which sets the
+ * response status to CLIENT_ERROR_FORBIDDEN (403). </li>
+ * </ol>
+ * </li>
+ * <li>Missing: no credentials could be found, the challenge() method is
+ * invoked which delegates to the matching authenticator helper. </li>
+ * <li>Invalid: bad credentials were given such as a wrong password or
+ * unsupported scheme was used. If the "rechallenge" property is true, the
+ * challenge() method is invoked otherwise, the forbid() method is invoked.
+ * </li>
+ * <li>Stale: the credentials expired and must be renew. Therefore, the
+ * challenge() method is invoked. </li>
+ * </ol>
+ * </ol>
  * 
  * @see <a
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial:
