@@ -63,6 +63,7 @@ import org.restlet.util.Series;
 
 import com.noelios.restlet.application.ApplicationHelper;
 import com.noelios.restlet.authentication.AuthenticationHelper;
+import com.noelios.restlet.authentication.AuthenticationUtils;
 import com.noelios.restlet.authentication.HttpAmazonS3Helper;
 import com.noelios.restlet.authentication.HttpBasicHelper;
 import com.noelios.restlet.authentication.HttpDigestHelper;
@@ -78,7 +79,6 @@ import com.noelios.restlet.local.ClapClientHelper;
 import com.noelios.restlet.local.DirectoryResource;
 import com.noelios.restlet.local.FileClientHelper;
 import com.noelios.restlet.local.WarClientHelper;
-import com.noelios.restlet.util.AuthenticationUtils;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.FormUtils;

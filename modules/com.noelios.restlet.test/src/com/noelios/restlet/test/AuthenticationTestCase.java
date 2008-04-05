@@ -23,7 +23,7 @@ import org.restlet.data.ChallengeResponse;
 
 import junit.framework.TestCase;
 
-import com.noelios.restlet.util.AuthenticationUtils;
+import com.noelios.restlet.authentication.AuthenticationUtils;
 
 /**
  * Unit tests for the SecurityData related classes.

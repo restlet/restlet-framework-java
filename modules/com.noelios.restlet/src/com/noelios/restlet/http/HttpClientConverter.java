@@ -40,7 +40,7 @@ import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.Engine;
-import com.noelios.restlet.util.AuthenticationUtils;
+import com.noelios.restlet.authentication.AuthenticationUtils;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.HeaderReader;

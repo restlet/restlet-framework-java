@@ -111,9 +111,8 @@ public class OAuthHelper extends AuthenticationHelper {
 
     @Override
     public void parseResponse(ChallengeResponse cr, Request request,
-            Logger logger, String header) {
-        // TODO Auto-generated method stub
-        super.parseResponse(cr, request, logger, header);
+            Logger logger) {
+        super.parseResponse(cr, request, logger);
     }
 
     @Override

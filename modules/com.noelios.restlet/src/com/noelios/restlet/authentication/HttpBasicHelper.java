@@ -60,7 +60,7 @@ public class HttpBasicHelper extends AuthenticationHelper {
 
     @Override
     public void parseResponse(ChallengeResponse cr, Request request,
-            Logger logger, String header) {
+            Logger logger) {
         try {
             byte[] credentialsEncoded = Base64.decode(cr.getCredentials());
             if (credentialsEncoded == null) {

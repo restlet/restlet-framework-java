@@ -230,11 +230,9 @@ public abstract class AuthenticationHelper {
      *                The request.
      * @param logger
      *                The logger to use.
-     * @param header
-     *                The header value to parse.
      */
     public void parseResponse(ChallengeResponse cr, Request request,
-            Logger logger, String header) {
+            Logger logger) {
     }
 
     /**

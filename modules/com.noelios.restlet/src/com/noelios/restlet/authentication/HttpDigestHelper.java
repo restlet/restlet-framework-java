@@ -33,7 +33,6 @@ import org.restlet.data.Response;
 import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
-import com.noelios.restlet.util.AuthenticationUtils;
 import com.noelios.restlet.util.Base64;
 import com.noelios.restlet.util.SecurityUtils;
 
@@ -236,7 +235,7 @@ public class HttpDigestHelper extends AuthenticationHelper {
 
     @Override
     public void parseResponse(ChallengeResponse cr, Request request,
-            Logger logger, String header) {
+            Logger logger) {
         AuthenticationUtils.parseParameters(cr.getCredentials(), cr
                 .getParameters());
     }

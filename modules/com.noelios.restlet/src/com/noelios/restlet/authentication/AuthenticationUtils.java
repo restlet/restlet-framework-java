@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.util;
+package com.noelios.restlet.authentication;
 
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -32,7 +32,6 @@ import org.restlet.data.Response;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.Engine;
-import com.noelios.restlet.authentication.AuthenticationHelper;
 
 /**
  * Authentication utilities.
@@ -264,7 +263,7 @@ public class AuthenticationUtils {
                         result.getScheme(), true, false);
 
                 if (helper != null) {
-                    helper.parseResponse(result, request, logger, header);
+                    helper.parseResponse(result, request, logger);
                 } else {
                     throw new IllegalArgumentException("Challenge scheme "
                             + result.getScheme()
