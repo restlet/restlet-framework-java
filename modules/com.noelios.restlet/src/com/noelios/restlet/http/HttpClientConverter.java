@@ -417,7 +417,7 @@ public class HttpClientConverter extends HttpConverter {
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_WWW_AUTHENTICATE)) {
                 ChallengeRequest request = AuthenticationUtils
-                        .parseRequest(header.getValue());
+                        .parseAuthenticateHeader(header.getValue());
                 response.setChallengeRequest(request);
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_SERVER)) {

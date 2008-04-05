@@ -238,7 +238,8 @@ public class Form extends Series<Parameter> {
      * for encoding non-ASCII characters.
      * 
      * @return The form as a matrix string.
-     * @see http://www.w3.org/DesignIssues/MatrixURIs.html
+     * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs
+     *      by Tim Berners Lee</a>
      */
     public String getMatrixString() {
         return getMatrixString(CharacterSet.UTF_8);
@@ -250,7 +251,8 @@ public class Form extends Series<Parameter> {
      * @param characterSet
      *                The supported character encoding.
      * @return The form as a matrix string.
-     * @see http://www.w3.org/DesignIssues/MatrixURIs.html
+     * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs
+     *      by Tim Berners Lee</a>
      */
     public String getMatrixString(CharacterSet characterSet) {
         try {

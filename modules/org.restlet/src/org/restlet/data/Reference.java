@@ -1858,10 +1858,17 @@ public class Reference {
      * @see #getExtensions()
      */
     public boolean hasExtensions() {
-        int extensionsIndex = getLastSegment().indexOf('.');
-        int matrixIndex = getLastSegment().indexOf(';');
-        return (extensionsIndex != -1)
-                && ((matrixIndex == -1) || (extensionsIndex < matrixIndex));
+        boolean result = false;
+        String lastSegment = getLastSegment();
+
+        if (lastSegment != null) {
+            int extensionsIndex = lastSegment.indexOf('.');
+            int matrixIndex = lastSegment.indexOf(';');
+            result = (extensionsIndex != -1)
+                    && ((matrixIndex == -1) || (extensionsIndex < matrixIndex));
+        }
+
+        return result;
     }
 
     /**

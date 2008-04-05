@@ -1,4 +1,5 @@
 package org.restlet.example.book.restlet.ch4;
+
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
@@ -12,7 +13,7 @@ public class SimpleHttpServerWithApplicationAndResource {
 
             @Override
             public synchronized Restlet createRoot() {
-                // Tiens le routeur récupère le contexte de l'application
+                // Tiens le routeur recupere le contexte de l'application
                 Router router = new Router(getContext());
                 router.attach("helloWorld", HelloWorldResource.class);
                 return router;

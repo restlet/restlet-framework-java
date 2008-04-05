@@ -40,7 +40,7 @@ import org.restlet.data.Request;
  * <tr>
  * <td>methodParameter</td>
  * <td>method</td>
- * <td>See values in {@link Method}</td>
+ * <td>See values in {@link org.restlet.data.Method}</td>
  * <td>For POST requests, specify the actual method to use (DELETE, PUT, etc.).</td>
  * </tr>
  * <tr>

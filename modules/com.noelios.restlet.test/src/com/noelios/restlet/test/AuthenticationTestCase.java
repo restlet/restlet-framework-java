@@ -46,10 +46,11 @@ public class AuthenticationTestCase extends TestCase {
         String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 
         assertEquals(authorization1, AuthenticationUtils.format(
-                AuthenticationUtils.parseResponse(null, null, authorization1),
-                null, null));
+                AuthenticationUtils.parseAuthorizationHeader(null, null,
+                        authorization1), null, null));
         assertEquals(authenticate1, AuthenticationUtils
-                .format(AuthenticationUtils.parseRequest(authenticate1)));
+                .format(AuthenticationUtils
+                        .parseAuthenticateHeader(authenticate1)));
     }
 
     /**
@@ -59,13 +60,14 @@ public class AuthenticationTestCase extends TestCase {
         String authorization1 = "Digest cnonce=\"MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==\",qop=auth,uri=\"/protected/asdass\",username=\"admin\",nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\",response=\"a891ebedebb2046b83a9b7540f4e9554\",nc=00000001";
         String authenticate1 = "Digest realm=\"realm\", domain=\"/protected/ /alsoProtected/\", qop=\"auth\", algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
 
-        ChallengeResponse cres = AuthenticationUtils.parseResponse(null, null,
-                authorization1);
+        ChallengeResponse cres = AuthenticationUtils.parseAuthorizationHeader(
+                null, null, authorization1);
         cres.setCredentials(null);
         assertEquals(authorization1, AuthenticationUtils.format(cres, null,
                 null));
 
-        ChallengeRequest creq = AuthenticationUtils.parseRequest(authenticate1);
+        ChallengeRequest creq = AuthenticationUtils
+                .parseAuthenticateHeader(authenticate1);
         assertEquals(authenticate1, AuthenticationUtils.format(creq));
     }
 }

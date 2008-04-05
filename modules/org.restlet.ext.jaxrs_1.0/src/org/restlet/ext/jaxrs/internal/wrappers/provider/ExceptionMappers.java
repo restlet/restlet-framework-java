@@ -40,7 +40,7 @@ public class ExceptionMappers {
 
     static class ServerErrorExcMapper implements ExceptionMapper<Throwable> {
 
-        private static final Logger logger = Logger
+        private static final Logger localLogger = Logger
                 .getLogger("DefaultExceptionMapper");
 
         /**
@@ -52,7 +52,7 @@ public class ExceptionMappers {
                 return ((WebApplicationException) exception).getResponse();
             String msg = "A JAX-RS class throws an unhandled "
                     + exception.getClass().getName();
-            logger.log(Level.WARNING, msg, exception);
+            localLogger.log(Level.WARNING, msg, exception);
             return Response.serverError().build();
         }
     }

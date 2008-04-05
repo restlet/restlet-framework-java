@@ -195,31 +195,13 @@ public class AuthenticationUtils {
     }
 
     /**
-     * Parsed the parameters of a credientials string and updates the series of
-     * parameters.
-     * 
-     * @param paramString
-     *                The parameters string to parse.
-     * @param parameters
-     *                The series to update.
-     */
-    public static void parseParameters(String paramString,
-            Series<Parameter> parameters) {
-        Matcher matcher = PATTERN_RFC_2617.matcher(paramString);
-
-        while (matcher.find() && matcher.groupCount() == 2) {
-            parameters.add(matcher.group(1), matcher.group(2));
-        }
-    }
-
-    /**
      * Parses an authenticate header into a challenge request.
      * 
      * @param header
      *                The HTTP header value to parse.
      * @return The parsed challenge request.
      */
-    public static ChallengeRequest parseRequest(String header) {
+    public static ChallengeRequest parseAuthenticateHeader(String header) {
         ChallengeRequest result = null;
 
         if (header != null) {
@@ -263,7 +245,7 @@ public class AuthenticationUtils {
      *                The header value to parse.
      * @return The parsed challenge response.
      */
-    public static ChallengeResponse parseResponse(Request request,
+    public static ChallengeResponse parseAuthorizationHeader(Request request,
             Logger logger, String header) {
         ChallengeResponse result = null;
 
@@ -292,6 +274,24 @@ public class AuthenticationUtils {
         }
 
         return result;
+    }
+
+    /**
+     * Parsed the parameters of a credientials string and updates the series of
+     * parameters.
+     * 
+     * @param paramString
+     *                The parameters string to parse.
+     * @param parameters
+     *                The series to update.
+     */
+    public static void parseParameters(String paramString,
+            Series<Parameter> parameters) {
+        Matcher matcher = PATTERN_RFC_2617.matcher(paramString);
+
+        while (matcher.find() && matcher.groupCount() == 2) {
+            parameters.add(matcher.group(1), matcher.group(2));
+        }
     }
 
 }
