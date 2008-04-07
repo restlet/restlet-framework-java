@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
 
-import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -117,7 +117,7 @@ public class RootResourceClass extends ResourceClass {
     /**
      * Creates an instance of the root resource class.
      * 
-     * @param callContext
+     * @param tlContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet
      *                {@link org.restlet.data.Request} and the Restlet
@@ -142,7 +142,7 @@ public class RootResourceClass extends ResourceClass {
      * @throws ConvertHeaderParamException
      * @throws ConvertRepresentationException
      */
-    public ResourceObject createInstance(CallContext callContext,
+    public ResourceObject createInstance(ThreadLocalContext tlContext,
             Collection<ContextResolver<?>> allResolvers,
             EntityProviders entityProviders, Logger logger)
             throws MissingAnnotationException, InstantiateException,
@@ -153,16 +153,16 @@ public class RootResourceClass extends ResourceClass {
         Constructor<?> constructor = this.constructor;
         Object instance;
         try {
-            instance = WrapperUtil.createInstance(constructor,
-                    false, constructorLeaveEncoded, callContext, entityProviders, logger);
+            instance = WrapperUtil.createInstance(constructor, false,
+                    constructorLeaveEncoded, tlContext, entityProviders, logger);
         } catch (IllegalAnnotationException iae) {
             // should not be possible here
             throw new InstantiateException(iae);
         }
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {
-            this.injectHelper.inject(rootResourceObject, callContext,
-                    allResolvers, entityProviders);
+            this.injectHelper.inject(rootResourceObject, tlContext, allResolvers,
+                    entityProviders);
         } catch (InjectException e) {
             throw new InstantiateException(e);
         }

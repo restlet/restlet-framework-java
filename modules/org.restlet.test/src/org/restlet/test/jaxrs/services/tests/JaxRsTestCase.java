@@ -303,7 +303,7 @@ public abstract class JaxRsTestCase extends TestCase {
      * @param httpMethod
      * @param klasse
      * @param subPath
-     * @param conditions
+     * @param contextResolver
      * @return
      */
     public Response accessServer(Method httpMethod, Class<?> klasse,

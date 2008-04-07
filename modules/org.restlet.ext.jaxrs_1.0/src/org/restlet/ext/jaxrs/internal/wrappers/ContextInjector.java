@@ -37,9 +37,9 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
-import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
@@ -53,7 +53,7 @@ public class ContextInjector {
     protected static final Field[] EMPTY_FIELD_ARRAY = new Field[0];
 
     // TODO bean setter for @Context (look for details)
-    
+
     /**
      * <p>
      * This array contains the fields in this class in which are annotated to
@@ -98,28 +98,6 @@ public class ContextInjector {
     private Field[] injectFieldsCallContext;
 
     /**
-     * <p>
-     * This array contains the fields in this class in which are annotated to
-     * inject an {@link CallContext} .
-     * </p>
-     * <p>
-     * Must bei initiated with the other fields starting with initFields.
-     * </p>
-     */
-    private Field[] injectFieldsClientInfo;
-
-    /**
-     * <p>
-     * This array contains the fields in this class in which are annotated to
-     * inject an {@link CallContext} .
-     * </p>
-     * <p>
-     * Must bei initiated with the other fields starting with initFields.
-     * </p>
-     */
-    private Field[] injectFieldsConditions;
-
-    /**
      * @param jaxRsClass
      * @throws ImplementationException
      */
@@ -162,8 +140,6 @@ public class ContextInjector {
         this.injectFieldsMbWorkers = ifMbWorkers.toArray(EMPTY_FIELD_ARRAY);
         this.injectFieldsContextResolvers = ifContRs.toArray(EMPTY_FIELD_ARRAY);
         this.injectFieldsCallContext = ifContext.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsClientInfo = ifClientInfo.toArray(EMPTY_FIELD_ARRAY);
-        this.injectFieldsConditions = ifConditions.toArray(EMPTY_FIELD_ARRAY);
     }
 
     /**
@@ -171,8 +147,9 @@ public class ContextInjector {
      * of this class.
      * 
      * @param jaxRsResObj
-     * @param callContext
-     *                The CallContext to get the dependencies from.
+     * @param tlContext
+     *                The thread local wrapped CallContext to get the
+     *                dependencies from.
      * @param allResolvers
      *                all available wrapped {@link ContextResolver}s.
      * @param messageBodyWorkers
@@ -184,9 +161,11 @@ public class ContextInjector {
      */
     public void inject(
             Object jaxRsResObj,
-            CallContext callContext,
+            ThreadLocalContext tlContext,
             Collection<org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver<?>> allResolvers,
             MessageBodyWorkers messageBodyWorkers) throws InjectException {
+        if (tlContext == null)
+            throw new IllegalArgumentException("context must not be null");
         for (Field field : this.injectFieldsContextResolvers) {
             ContextResolver<?> contextResolver;
             contextResolver = getContextResolver(field, allResolvers);
@@ -196,24 +175,7 @@ public class ContextInjector {
             Util.inject(jaxRsResObj, mbwField, messageBodyWorkers);
         }
         for (Field contextField : this.injectFieldsCallContext) {
-            if (callContext == null)
-                throw new NotYetImplementedException(
-                        "Sorry, @CallContext on providers is only allowed for ContextResolvers and MessageBodyWorkers");
-            Util.inject(jaxRsResObj, contextField, callContext);
-        }
-        for (Field clientInfoField : this.injectFieldsClientInfo) {
-            if (callContext == null) // TODO ThreadLocal CallContext
-                throw new NotYetImplementedException(
-                        "Sorry, @CallContext on providers is only allowed for ContextResolvers and MessageBodyWorkers");
-            ClientInfo clientInfo = callContext.getRequest().getClientInfo();
-            Util.inject(jaxRsResObj, clientInfoField, clientInfo);
-        }
-        for (Field conditionsField : this.injectFieldsConditions) {
-            if (callContext == null)
-                throw new NotYetImplementedException(
-                        "Sorry, @CallContext on providers is only allowed for ContextResolvers and MessageBodyWorkers");
-            Conditions conditions = callContext.getRequest().getConditions();
-            Util.inject(jaxRsResObj, conditionsField, conditions);
+            Util.inject(jaxRsResObj, contextField, tlContext);
         }
     }
 }

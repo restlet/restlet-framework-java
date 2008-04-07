@@ -22,6 +22,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.MessageBodyWorkers;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
@@ -34,9 +36,9 @@ import org.restlet.test.jaxrs.services.tests.RestletContextsTest;
 @Path("anchestorTest")
 public class RestletContextsTestService {
     
-    @Context ClientInfo clientInfo;
+    @Context MessageBodyWorkers messageBodyWorkers;
     
-    @Context Conditions conditions;
+    @Context ContextResolver<Integer> contextResolver;
     
     @Context UriInfo uriInfo;
 
@@ -45,10 +47,10 @@ public class RestletContextsTestService {
     @Path("fields")
     public String fieldsAvailable() {
         StringBuilder stb = new StringBuilder();
-        if(clientInfo != null)
-            stb.append("clientInfo\n");
-        if(conditions != null)
-            stb.append("conditions\n");
+        if(messageBodyWorkers != null)
+            stb.append("messageBodyWorkers\n");
+        if(contextResolver != null)
+            stb.append("contextResolver\n");
         if(uriInfo != null)
             stb.append("uriInfo\n");
         return stb.toString();
@@ -61,9 +63,9 @@ public class RestletContextsTestService {
             @Context ClientInfo clientInfo, @Context Conditions conditions) {
         StringBuilder stb = new StringBuilder();
         if(clientInfo != null)
-            stb.append("clientInfo\n");
+            stb.append("messageBodyWorkers\n");
         if(conditions != null)
-            stb.append("conditions\n");
+            stb.append("contextResolver\n");
         if(uriInfo != null)
             stb.append("uriInfo\n");
         return stb.toString();

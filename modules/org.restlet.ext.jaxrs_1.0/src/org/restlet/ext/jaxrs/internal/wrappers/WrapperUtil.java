@@ -65,6 +65,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -375,7 +376,7 @@ public class WrapperUtil {
      * Converts the Restlet request {@link Representation} to the type requested
      * by the resource method.
      * 
-     * @param callContext
+     * @param tlContext
      *                the call context, containing the entity.
      * @param paramType
      *                the type to convert to.
@@ -397,12 +398,13 @@ public class WrapperUtil {
      * @throws WebApplicationException
      */
     @SuppressWarnings("unchecked")
-    static Object convertRepresentation(CallContext callContext,
+    static Object convertRepresentation(ThreadLocalContext tlContext,
             Class<?> paramType, Type genericType, Annotation[] annotations,
             MessageBodyReaderSet mbrs, Logger logger)
             throws NoMessageBodyReaderException, WebApplicationException,
             ConvertRepresentationException, InvocationTargetException {
-        Representation entity = callContext.getRequest().getEntity();
+        Request request = tlContext.get().getRequest();
+        Representation entity = request.getEntity();
         if (entity == null)
             return null;
         if (Representation.class.isAssignableFrom(paramType)) {
@@ -417,7 +419,7 @@ public class WrapperUtil {
         if (mbr == null)
             throw new NoMessageBodyReaderException(mediaType, paramType);
         MultivaluedMap<String, String> httpHeaders = Util
-                .getJaxRsHttpHeaders(callContext.getRequest());
+                .getJaxRsHttpHeaders(request);
         try {
             javax.ws.rs.core.MediaType jaxRsMediaType = Converter
                     .toJaxRsMediaType(mediaType, entity.getCharacterSet());
@@ -532,7 +534,7 @@ public class WrapperUtil {
      * @param leaveEncoded
      *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
      *                and {@link PathParam}s encoded.
-     * @param callContext
+     * @param tlContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
@@ -557,7 +559,7 @@ public class WrapperUtil {
      */
     public static Object createInstance(Constructor<?> constructor,
             boolean onlyContextAnnot, boolean leaveEncoded,
-            CallContext callContext, MessageBodyReaderSet mbrs, Logger logger)
+            ThreadLocalContext tlContext, MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException, NoMessageBodyReaderException,
             InstantiateException, InvocationTargetException,
             ConvertRepresentationException, ConvertHeaderParamException,
@@ -571,7 +573,7 @@ public class WrapperUtil {
             args = getParameterValues(constructor.getParameterTypes(),
                     constructor.getGenericParameterTypes(), constructor
                             .getParameterAnnotations(), false,
-                    onlyContextAnnot, leaveEncoded, callContext, mbrs, logger);
+                    onlyContextAnnot, leaveEncoded, tlContext, mbrs, logger);
         }
         try {
             return constructor.newInstance(args);
@@ -942,7 +944,7 @@ public class WrapperUtil {
      * @param leaveEncoded
      *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
      *                and {@link PathParam}s encoded.
-     * @param callContext
+     * @param tlContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
@@ -969,7 +971,7 @@ public class WrapperUtil {
     static Object[] getParameterValues(Class<?>[] paramTypes,
             Type[] paramGenericTypes, Annotation[][] paramAnnotationss,
             boolean allowEntity, boolean onlyContextAnnot,
-            boolean leaveEncoded, CallContext callContext,
+            boolean leaveEncoded, ThreadLocalContext tlContext,
             MessageBodyReaderSet mbrs, Logger logger)
             throws MissingAnnotationException, NoMessageBodyReaderException,
             ConvertHeaderParamException, ConvertPathParamException,
@@ -990,13 +992,13 @@ public class WrapperUtil {
             Annotation[] paramAnnotations = paramAnnotationss[i];
             try {
                 arg = getParameterValue(paramAnnotations, paramType,
-                        paramGenericType, onlyContextAnnot, callContext,
+                        paramGenericType, onlyContextAnnot, tlContext.get(),
                         logger, leaveEncoded, i);
             } catch (MissingAnnotationException ionae) {
                 if (!allowEntity)
                     throw ionae;
                 allowEntity = false;
-                arg = convertRepresentation(callContext, paramType,
+                arg = convertRepresentation(tlContext, paramType,
                         paramGenericType, paramAnnotations, mbrs, logger);
             }
             args[i] = arg;

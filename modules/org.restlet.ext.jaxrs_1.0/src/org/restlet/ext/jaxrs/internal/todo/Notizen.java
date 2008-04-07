@@ -38,8 +38,6 @@ public class Notizen {
 
     // TODO test again Jersey Implementation.
 
-    // TODO @Context have to be ThreadLocal
-
     // TODO propagate RuntimeExcpetions to Restlet.
 
     // LATER warn if primitve on @*Param: perhaps null?

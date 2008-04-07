@@ -37,7 +37,7 @@ public class RestletContextsTest extends JaxRsTestCase {
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
-        assertEquals("clientInfo\nconditions\nuriInfo\n", entity);
+        assertEquals("messageBodyWorkers\ncontextResolver\nuriInfo\n", entity);
     }
 
     public void testParams() throws Exception {
@@ -45,6 +45,6 @@ public class RestletContextsTest extends JaxRsTestCase {
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
-        assertEquals("clientInfo\nconditions\nuriInfo\n", entity);
+        assertEquals("messageBodyWorkers\ncontextResolver\nuriInfo\n", entity);
     }
 }

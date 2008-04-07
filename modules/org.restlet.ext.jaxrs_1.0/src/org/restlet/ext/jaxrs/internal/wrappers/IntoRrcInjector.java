@@ -41,6 +41,7 @@ import javax.ws.rs.ext.MessageBodyWorkers;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -131,8 +132,8 @@ class IntoRrcInjector extends ContextInjector {
      * of this class.
      * 
      * @param resourceObject
-     * @param callContext
-     *                The CallContext to get the dependencies from.
+     * @param tlContext
+     *                The thread local wrapped {@link CallContext}
      * @param allResolv
      *                all available wrapped
      *                {@link javax.ws.rs.ext.ContextResolver}s.
@@ -149,13 +150,15 @@ class IntoRrcInjector extends ContextInjector {
      * @throws ConvertQueryParamException
      */
     protected void inject(ResourceObject resourceObject,
-            CallContext callContext, Collection<ContextResolver<?>> allResolv,
+            ThreadLocalContext tlContext,
+            Collection<ContextResolver<?>> allResolv,
             MessageBodyWorkers messageBodyWorkers) throws InjectException,
             ConvertCookieParamException, ConvertHeaderParamException,
             ConvertMatrixParamException, ConvertPathParamException,
             ConvertQueryParamException {
         Object jaxRsResObj = resourceObject.getJaxRsResourceObject();
-        super.inject(jaxRsResObj, callContext, allResolv, messageBodyWorkers);
+        super.inject(jaxRsResObj, tlContext, allResolv, messageBodyWorkers);
+        CallContext callContext = tlContext.get();
         for (Field cpf : this.injectFieldsCookieParam) {
             CookieParam headerParam = cpf.getAnnotation(CookieParam.class);
             DefaultValue defaultValue = cpf.getAnnotation(DefaultValue.class);

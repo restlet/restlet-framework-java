@@ -29,7 +29,7 @@ import javax.ws.rs.WebApplicationException;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.JaxRsRouter;
-import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -161,7 +161,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @param allowEntity
      *                true, if the entity is allowed for this method, false if
      *                not.
-     * @param callContext
+     * @param tlContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
@@ -184,7 +184,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @throws ConvertRepresentationException
      */
     protected Object invoke(ResourceObject resourceObject, boolean allowEntity,
-            CallContext callContext, MessageBodyReaderSet mbrs, Logger logger)
+            ThreadLocalContext tlContext, MessageBodyReaderSet mbrs, Logger logger)
             throws IllegalArgumentException, IllegalAccessException,
             InvocationTargetException, MissingAnnotationException,
             NoMessageBodyReaderException, ConvertRepresentationException,
@@ -202,7 +202,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             try {
                 args = WrapperUtil.getParameterValues(parameterTypes,
                         genParamTypes, paramAnnos, allowEntity, false,
-                        leaveEncoded, callContext, mbrs, logger);
+                        leaveEncoded, tlContext, mbrs, logger);
             } catch (IllegalAnnotationException e) {
                 // should not be possible here
                 throw new ImplementationException(e);

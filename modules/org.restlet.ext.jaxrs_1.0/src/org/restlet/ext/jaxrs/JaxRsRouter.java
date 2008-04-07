@@ -46,6 +46,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.HttpHeaders;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -156,6 +157,11 @@ public class JaxRsRouter extends Restlet {
     private final ExceptionHandler excHandler;
 
     private final ExceptionMappers excMapper = new ExceptionMappers();
+
+    /**
+     * Contains the thread local {@link CallContext}.
+     */
+    private final ThreadLocalContext tlContext = new ThreadLocalContext();
 
     /**
      * Creates a new JaxRsRouter with the {@link ApplicationConfig}. You can
@@ -402,7 +408,7 @@ public class JaxRsRouter extends Restlet {
         }
         Provider<?> provider;
         try {
-            provider = new Provider<Object>(jaxRsProviderClass);
+            provider = new Provider<Object>(jaxRsProviderClass, tlContext);
         } catch (InstantiateException e) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
                     + "Could not instantiate the Provider, class "
@@ -447,7 +453,8 @@ public class JaxRsRouter extends Restlet {
         this.entityProviders.addAllTo(providers);
         providers.addAll((Collection) this.contextResolvers);
         for (Provider<?> provider : providers)
-            provider.init(this.contextResolvers, this.entityProviders);
+            provider.init(tlContext, this.contextResolvers,
+                    this.entityProviders);
         super.start();
     }
 
@@ -467,12 +474,13 @@ public class JaxRsRouter extends Restlet {
         super.handle(request, response);
         ResourceObject resourceObject = null;
         try {
-            CallContext callContext = new CallContext(request, response,
-                    this.roleChecker);
+            CallContext callContext;
+            callContext = new CallContext(request, response, this.roleChecker);
+            tlContext.set(callContext);
             try {
                 ResObjAndMeth resObjAndMeth;
                 try {
-                    resObjAndMeth = matchingRequestToResourceMethod(callContext);
+                    resObjAndMeth = matchingRequestToResourceMethod();
                 } catch (CouldNotFindMethodException e) {
                     e.errorRestlet.handle(request, response);
                     response.setEntity(new StringRepresentation(e.getMessage(),
@@ -482,12 +490,11 @@ public class JaxRsRouter extends Restlet {
                 callContext.setReadOnly();
                 ResourceMethod resourceMethod = resObjAndMeth.resourceMethod;
                 resourceObject = resObjAndMeth.resourceObject;
-                invokeMethodAndHandleResult(resourceMethod, resourceObject,
-                        callContext);
+                invokeMethodAndHandleResult(resourceMethod, resourceObject);
             } catch (WebApplicationException e) {
                 // the message of the Exception is not used in the
                 // WebApplicationException
-                jaxRsRespToRestletResp(e.getResponse(), callContext, null);
+                jaxRsRespToRestletResp(e.getResponse(), null);
                 // LATER MediaType rausfinden
                 throw new RequestHandledException();
                 // Exception was handled and data were set into the Response.
@@ -501,26 +508,22 @@ public class JaxRsRouter extends Restlet {
      * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
      * 2007-12-07, Section 2.5 Matching Requests to Resource Methods.
      * 
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
      * @return (Sub)Resource Method
      * @throws CouldNotFindMethodException
      * @throws RequestHandledException
      * @throws WebApplicationException
      */
-    private ResObjAndMeth matchingRequestToResourceMethod(
-            CallContext callContext) throws CouldNotFindMethodException,
-            RequestHandledException, WebApplicationException {
+    private ResObjAndMeth matchingRequestToResourceMethod()
+            throws CouldNotFindMethodException, RequestHandledException,
+            WebApplicationException {
+        CallContext callContext = tlContext.get();
         Request restletRequest = callContext.getRequest();
         // Part 1
         RemainingPath u = new RemainingPath(restletRequest.getResourceRef()
                 .getRemainingPart());
-        RrcAndRemPath rcat = identifyRootResourceClass(u, callContext);
+        RrcAndRemPath rcat = identifyRootResourceClass(u);
         // Part 2
-        ResObjAndRemPath resourceObjectAndPath = obtainObjectThatHandleRequest(
-                rcat, callContext);
+        ResObjAndRemPath resourceObjectAndPath = obtainObjectThatHandleRequest(rcat);
         Representation entity = restletRequest.getEntity();
         // Part 3
         MediaType givenMediaType;
@@ -529,7 +532,7 @@ public class JaxRsRouter extends Restlet {
         else
             givenMediaType = null;
         ResObjAndMeth method = identifyMethodThatHandleRequest(
-                resourceObjectAndPath, callContext, givenMediaType);
+                resourceObjectAndPath, givenMediaType);
         return method;
     }
 
@@ -540,14 +543,10 @@ public class JaxRsRouter extends Restlet {
      * @return The identified root resource class, the remaning path after
      *         identifying and the matched template parameters; see
      *         {@link RrcAndRemPath}.
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
      * @throws CouldNotFindMethodException
      */
-    private RrcAndRemPath identifyRootResourceClass(RemainingPath u,
-            CallContext callContext) throws CouldNotFindMethodException {
+    private RrcAndRemPath identifyRootResourceClass(RemainingPath u)
+            throws CouldNotFindMethodException {
         // 1. Identify the root resource class:
         // (a)
         // c: Set<Class>: root resource classes
@@ -578,7 +577,7 @@ public class JaxRsRouter extends Restlet {
         PathRegExp rMatch = tClass.getPathRegExp();
         MatchingResult matchResult = rMatch.match(u);
         u = matchResult.getFinalCapturingGroup();
-        AlgorithmUtil.addPathVarsToMap(matchResult, callContext);
+        AlgorithmUtil.addPathVarsToMap(matchResult, tlContext.get());
         return new RrcAndRemPath(tClass, matchResult.getMatched(), u);
     }
 
@@ -587,24 +586,20 @@ public class JaxRsRouter extends Restlet {
      * 2007-12-07, Section 2.5, Part 2
      * 
      * @param rrcAndRemPath
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
      * @return Resource Object
      * @throws RequestHandledException
      * @throws WebApplicationException
      */
     private ResObjAndRemPath obtainObjectThatHandleRequest(
-            RrcAndRemPath rrcAndRemPath, CallContext callContext)
-            throws CouldNotFindMethodException, RequestHandledException,
-            WebApplicationException {
+            RrcAndRemPath rrcAndRemPath) throws CouldNotFindMethodException,
+            RequestHandledException, WebApplicationException {
         RemainingPath u = rrcAndRemPath.u;
         RootResourceClass rrc = rrcAndRemPath.rrc;
         PathRegExp rMatch = rrc.getPathRegExp();
         ResourceObject o;
+        CallContext callContext = tlContext.get();
         try {
-            o = rrc.createInstance(callContext, contextResolvers,
+            o = rrc.createInstance(tlContext, contextResolvers,
                     this.entityProviders, getLogger());
         } catch (WebApplicationException e) {
             throw e;
@@ -620,7 +615,7 @@ public class JaxRsRouter extends Restlet {
             throw excHandler.instantiateExecption(e, callContext,
                     "Could not create new instance of root resource class");
         } catch (InvocationTargetException e) {
-            throw invocationTargetExecption(e, callContext, null);
+            throw invocationTargetExecption(e, null);
         } catch (ConvertRepresentationException e) {
             throw excHandler.convertRepresentationExc(e);
         } catch (ConvertHeaderParamException e) {
@@ -683,7 +678,7 @@ public class JaxRsRouter extends Restlet {
             u = matchingResult.getFinalCapturingGroup();
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
-                o = subResourceLocator.createSubResource(o, callContext,
+                o = subResourceLocator.createSubResource(o, tlContext,
                         this.entityProviders, wrapperFactory, getLogger());
             } catch (WebApplicationException e) {
                 throw e;
@@ -698,8 +693,7 @@ public class JaxRsRouter extends Restlet {
                 throw excHandler.instantiateExecption(e, callContext,
                         "Could not create new instance of resource class");
             } catch (InvocationTargetException e) {
-                throw invocationTargetExecption(e, callContext,
-                        subResourceLocator);
+                throw invocationTargetExecption(e, subResourceLocator);
             } catch (NoMessageBodyReaderException nmbre) {
                 throw excHandler.noMessageBodyReader(callContext, nmbre);
             } catch (ConvertRepresentationException e) {
@@ -724,11 +718,6 @@ public class JaxRsRouter extends Restlet {
      * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
      * 2007-12-07, Section 2.5 Matching Requests to Resource Methods, Part 3.
      * 
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * 
      * @return Resource Object and Method, that handle the request.
      * @throws RequestHandledException
      *                 for example if the method was OPTIONS, but no special
@@ -736,9 +725,9 @@ public class JaxRsRouter extends Restlet {
      * @throws ResourceMethodNotFoundException
      */
     private ResObjAndMeth identifyMethodThatHandleRequest(
-            ResObjAndRemPath resObjAndRemPath, CallContext callContext,
-            MediaType givenMediaType) throws CouldNotFindMethodException,
-            RequestHandledException {
+            ResObjAndRemPath resObjAndRemPath, MediaType givenMediaType)
+            throws CouldNotFindMethodException, RequestHandledException {
+        CallContext callContext = tlContext.get();
         org.restlet.data.Method httpMethod = callContext.getRequest()
                 .getMethod();
         // 3. Identify the method that will handle the request:
@@ -805,26 +794,23 @@ public class JaxRsRouter extends Restlet {
     /**
      * @param resourceMethod
      * @param resourceObject
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
      * @throws RequestHandledException
      *                 if the request is already handled
      * @throws WebApplicationException
      *                 if a JAX-RS class throws an WebApplicationException
      */
     private void invokeMethodAndHandleResult(ResourceMethod resourceMethod,
-            ResourceObject resourceObject, CallContext callContext)
-            throws RequestHandledException, WebApplicationException {
+            ResourceObject resourceObject) throws RequestHandledException,
+            WebApplicationException {
+        CallContext callContext = tlContext.get();
         Object result;
         try {
-            result = resourceMethod.invoke(resourceObject, callContext,
+            result = resourceMethod.invoke(resourceObject, tlContext,
                     this.entityProviders, getLogger());
         } catch (WebApplicationException e) {
             throw e;
         } catch (InvocationTargetException ite) {
-            throw invocationTargetExecption(ite, callContext, resourceMethod);
+            throw invocationTargetExecption(ite, resourceMethod);
         } catch (RuntimeException e) {
             throw excHandler.runtimeExecption(e, resourceMethod, callContext,
                     "Can not invoke the resource method");
@@ -858,7 +844,7 @@ public class JaxRsRouter extends Restlet {
             restletResponse.setStatus(Status.SUCCESS_OK);
             if (result instanceof javax.ws.rs.core.Response) {
                 jaxRsRespToRestletResp((javax.ws.rs.core.Response) result,
-                        callContext, resourceMethod);
+                        resourceMethod);
                 // } else if(result instanceof URI) { // perhaps 201 or 303
             } else if (result instanceof javax.ws.rs.core.Response.ResponseBuilder) {
                 String warning = "the method "
@@ -867,11 +853,10 @@ public class JaxRsRouter extends Restlet {
                 getLogger().warning(warning);
                 javax.ws.rs.core.Response jaxRsResponse = ((javax.ws.rs.core.Response.ResponseBuilder) result)
                         .build();
-                jaxRsRespToRestletResp(jaxRsResponse, callContext,
-                        resourceMethod);
+                jaxRsRespToRestletResp(jaxRsResponse, resourceMethod);
             } else {
                 Representation entity = convertToRepresentation(result,
-                        resourceMethod, callContext, null, null);
+                        resourceMethod, null, null);
                 restletResponse.setEntity(entity);
                 // throw new NotYetImplementedException();
                 // LATER perhaps another default as option (email 2008-01-29)
@@ -884,18 +869,16 @@ public class JaxRsRouter extends Restlet {
      * {@link Response}.
      * 
      * @param jaxRsResponse
-     * @param callContext
      * @param jaxRsMethod
      *                the method creating the response. May be null.
      * @throws RequestHandledException
      * 
      * @see ExceptionHandler#jaxRsRespToRestletResp(javax.ws.rs.core.Response,
-     *      CallContext, AbstractMethodWrapper)
+     *      AbstractMethodWrapper)
      */
     void jaxRsRespToRestletResp(javax.ws.rs.core.Response jaxRsResponse,
-            CallContext callContext, AbstractMethodWrapper jaxRsMethod)
-            throws RequestHandledException {
-        Response restletResponse = callContext.getResponse();
+            AbstractMethodWrapper jaxRsMethod) throws RequestHandledException {
+        Response restletResponse = tlContext.get().getResponse();
         restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
         Object mediaTypeStr = jaxRsResponse.getMetadata().getFirst(
                 HttpHeaders.CONTENT_TYPE);
@@ -904,7 +887,7 @@ public class JaxRsRouter extends Restlet {
             respMediaType = MediaType.valueOf(mediaTypeStr.toString());
         Object jaxRsEntity = jaxRsResponse.getEntity();
         Representation repr = convertToRepresentation(jaxRsEntity, jaxRsMethod,
-                callContext, respMediaType, jaxRsResponse.getMetadata());
+                respMediaType, jaxRsResponse.getMetadata());
         restletResponse.setEntity(repr);
         Util.copyResponseHeaders(jaxRsResponse.getMetadata(), restletResponse,
                 getLogger());
@@ -915,12 +898,9 @@ public class JaxRsRouter extends Restlet {
      * a creation if a sub resource object.
      * 
      * @param ite
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
      * @param resourceMethod
-     *                TODO
+     *                The (sub) resource method or sub resource locator throwing
+     *                the exception.
      * @param methodName
      * @throws RequestHandledException
      *                 throws this message to exit the method and indicate, that
@@ -928,11 +908,10 @@ public class JaxRsRouter extends Restlet {
      * @throws RequestHandledException
      */
     RequestHandledException invocationTargetExecption(
-            InvocationTargetException ite, CallContext callContext,
-            AbstractMethodWrapper resourceMethod)
+            InvocationTargetException ite, AbstractMethodWrapper resourceMethod)
             throws RequestHandledException {
         javax.ws.rs.core.Response jaxRsResp = excMapper.convert(ite);
-        jaxRsRespToRestletResp(jaxRsResp, callContext, resourceMethod);
+        jaxRsRespToRestletResp(jaxRsResp, resourceMethod);
         throw new RequestHandledException();
     }
 
@@ -946,10 +925,6 @@ public class JaxRsRouter extends Restlet {
      *                The {@link ResourceMethod} created the entity. Could be
      *                null, if an exception is handled, e.g. a
      *                {@link WebApplicationException}.
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
      * @param responseMediaType
      *                The MediaType of the JAX-RS response. May be null.
      * @param jaxRsRespHeaders
@@ -961,10 +936,10 @@ public class JaxRsRouter extends Restlet {
      */
     @SuppressWarnings("unchecked")
     private Representation convertToRepresentation(Object entity,
-            AbstractMethodWrapper resourceMethod, CallContext callContext,
-            MediaType responseMediaType,
+            AbstractMethodWrapper resourceMethod, MediaType responseMediaType,
             MultivaluedMap<String, Object> jaxRsRespHeaders)
             throws RequestHandledException {
+        CallContext callContext = tlContext.get();
         if (entity instanceof Representation)
             return (Representation) entity;
         if (entity == null)
@@ -985,7 +960,7 @@ public class JaxRsRouter extends Restlet {
             respMediaTypes = Collections.singletonList(responseMediaType);
         else if (resourceMethod instanceof ResourceMethod)
             respMediaTypes = determineMediaType16(
-                    (ResourceMethod) resourceMethod, mbws, callContext);
+                    (ResourceMethod) resourceMethod, mbws);
         else
             respMediaTypes = Collections.singletonList(MediaType.TEXT_PLAIN);
         MessageBodyWriter<?> mbw = mbws.getBestWriter(respMediaTypes,
@@ -997,7 +972,7 @@ public class JaxRsRouter extends Restlet {
         if (responseMediaType != null)
             mediaType = responseMediaType;
         else
-            mediaType = determineMediaType79(respMediaTypes, callContext);
+            mediaType = determineMediaType79(respMediaTypes);
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
                 callContext.getResponse(), jaxRsRespHeaders, getLogger());
         return new JaxRsOutputRepresentation(entity, genericReturnType,
@@ -1022,8 +997,9 @@ public class JaxRsRouter extends Restlet {
      * @throws RequestHandledException
      */
     private List<MediaType> determineMediaType16(ResourceMethod resourceMethod,
-            MessageBodyWriterSubSet mbwsForEntityClass, CallContext callContext)
+            MessageBodyWriterSubSet mbwsForEntityClass)
             throws RequestHandledException {
+        CallContext callContext = tlContext.get();
         SortedMetadata<MediaType> accMediaTypes = callContext
                 .getAccMediaTypes();
         // 1. Gather the set of producible media types P:
@@ -1066,8 +1042,8 @@ public class JaxRsRouter extends Restlet {
      * @return the determined {@link MediaType}
      * @throws RequestHandledException
      */
-    private MediaType determineMediaType79(List<MediaType> m,
-            CallContext callContext) throws RequestHandledException {
+    private MediaType determineMediaType79(List<MediaType> m)
+            throws RequestHandledException {
         // 7.
         for (MediaType mediaType : m)
             if (mediaType.isConcrete())
@@ -1076,8 +1052,8 @@ public class JaxRsRouter extends Restlet {
         if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))
             return MediaType.APPLICATION_OCTET_STREAM;
         // 9.
-        throw excHandler.notAcceptableWhileDetermineMediaType(callContext
-                .getRequest(), callContext.getResponse());
+        throw excHandler.notAcceptableWhileDetermineMediaType(tlContext.get()
+                .getRequest(), tlContext.get().getResponse());
     }
 
     /**

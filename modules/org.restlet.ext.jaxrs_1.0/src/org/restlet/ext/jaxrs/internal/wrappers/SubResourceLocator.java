@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.JaxRsRouter;
-import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -71,7 +71,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * 
      * @param resourceObject
      *                the wrapped resource object.
-     * @param callContext
+     * @param tlContext
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
@@ -96,7 +96,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @throws ConvertRepresentationException
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
-            CallContext callContext, MessageBodyReaderSet mbrs,
+            ThreadLocalContext tlContext, MessageBodyReaderSet mbrs,
             WrapperFactory wrapperFactory, Logger logger)
             throws InvocationTargetException, MissingAnnotationException,
             WebApplicationException, NoMessageBodyReaderException,
@@ -106,7 +106,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             ConvertCookieParamException {
         Object subResObj;
         try {
-            subResObj = invoke(resourceObject, false, callContext, mbrs, logger);
+            subResObj = invoke(resourceObject, false, tlContext, mbrs, logger);
         } catch (IllegalArgumentException e) {
             throw new InstantiateException(executeMethod, e);
         } catch (IllegalAccessException e) {

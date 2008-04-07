@@ -38,6 +38,8 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyWorkers;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -92,10 +94,12 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     private javax.ws.rs.ext.MessageBodyWriter<T> writer;
 
     /**
-     * Construct a wrapper for a Provider
+     * Creates a new wrapper for a Provider and initializes the provider.
      * 
      * @param jaxRsProviderClass
      *                the JAX-RS provider class.
+     * @param tlContext
+     *                The tread local wrapped call context
      * @throws IllegalArgumentException
      *                 if the class is not a valid provider, may not be
      *                 instantiated or what ever.
@@ -110,10 +114,12 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @see javax.ws.rs.ext.ContextResolver
      */
     @SuppressWarnings("unchecked")
-    public Provider(Class<?> jaxRsProviderClass)
+    public Provider(Class<?> jaxRsProviderClass, ThreadLocalContext tlContext)
             throws IllegalArgumentException, InvocationTargetException,
             MissingConstructorException, InstantiateException,
             IllegalAnnotationException {
+        // TESTEN provider including other providers at startup, which are not
+        // available on creation time.
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -121,7 +127,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         Constructor<?> providerConstructor = WrapperUtil.findJaxRsConstructor(
                 jaxRsProviderClass, "provider");
         this.jaxRsProvider = createInstance(providerConstructor,
-                jaxRsProviderClass);
+                jaxRsProviderClass, tlContext);
         boolean isProvider = false;
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyWriter) {
             this.writer = (javax.ws.rs.ext.MessageBodyWriter<T>) jaxRsProvider;
@@ -150,6 +156,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                the constructor to use.
      * @param jaxRsProviderClass
      *                class for exception message.
+     * @param tlContext
+     *                The tread local wrapped call context
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      *                 if the constructor throws an Throwable
@@ -158,12 +166,12 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @throws NoMessageBodyReaderException
      */
     private Object createInstance(Constructor<?> providerConstructor,
-            Class<?> jaxRsProviderClass) throws IllegalArgumentException,
-            InvocationTargetException, InstantiateException,
-            IllegalAnnotationException {
+            Class<?> jaxRsProviderClass, ThreadLocalContext tlContext)
+            throws IllegalArgumentException, InvocationTargetException,
+            InstantiateException, IllegalAnnotationException {
         try {
             return WrapperUtil.createInstance(providerConstructor, true, false,
-                    null, null, null);
+                    tlContext, null, null);
         } catch (MissingAnnotationException e) {
             // should be not possible here
             throw new IllegalArgumentException(
@@ -318,37 +326,45 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * Injects the supported dependencies into this provider and calls the
      * method annotated with &#64;{@link PostConstruct}.
      * 
+     * @param tlContext
+     *                The thread local wrapped {@link CallContext}
      * @param allResolvers
      *                all available wrapped {@link ContextResolver}s.
      * @param messageBodyWorkers
      *                The {@link javax.ws.rs.ext.MessageBodyReader}s and
      *                {@link javax.ws.rs.ext.MessageBodyWriter}s.
+     * 
      * @throws InjectException
      */
     @SuppressWarnings("unused")
     public void init(
+            ThreadLocalContext tlContext,
             Collection<org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver<?>> allResolvers,
             MessageBodyWorkers messageBodyWorkers) throws InjectException {
-        injectContext(allResolvers, messageBodyWorkers);
+        injectContext(tlContext, allResolvers, messageBodyWorkers);
     }
 
     /**
      * Inject the values fields for &#64;{@link Context}.
      * 
+     * @param tlContext
+     *                The thread local wrapped {@link CallContext}
      * @param allResolvers
      *                all available wrapped {@link ContextResolver}s.
      * @param messageBodyWorkers
      *                the {@link MessageBodyReader}s and
      *                {@link MessageBodyWriter}s.
+     * 
      * @throws InjectException
      */
     private void injectContext(
+            ThreadLocalContext tlContext,
             Collection<org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver<?>> allResolvers,
             MessageBodyWorkers messageBodyWorkers) throws InjectException {
         Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
         ContextInjector iph = new ContextInjector(providerClass);
-        iph.inject(this.jaxRsProvider, null, allResolvers, messageBodyWorkers);
-        // TODO give ThreadLocal CallContext
+        iph.inject(this.jaxRsProvider, tlContext, allResolvers,
+                messageBodyWorkers);
     }
 
     /**

@@ -46,6 +46,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Conditions;
 import org.restlet.data.Dimension;
 import org.restlet.data.Language;
@@ -502,9 +503,19 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
     }
 
     /**
+     * Get the media type of the request entity
+     * 
+     * @return the media type or null if there is no request entity.
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
      * @see HttpHeaders#getMediaType()
      */
     public MediaType getMediaType() {
+        if (this.mediaType == null) {
+            org.restlet.data.MediaType rmt = request.getEntity().getMediaType();
+            CharacterSet rCharSet = request.getEntity().getCharacterSet();
+            this.mediaType = Converter.toJaxRsMediaType(rmt, rCharSet);
+        }
         return this.mediaType;
     }
 

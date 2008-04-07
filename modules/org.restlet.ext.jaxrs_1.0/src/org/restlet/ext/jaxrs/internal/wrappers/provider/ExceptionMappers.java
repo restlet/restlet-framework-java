@@ -47,9 +47,6 @@ public class ExceptionMappers {
          * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
          */
         public Response toResponse(Throwable exception) {
-            // TODO this is a hack
-            if (exception instanceof WebApplicationException)
-                return ((WebApplicationException) exception).getResponse();
             String msg = "A JAX-RS class throws an unhandled "
                     + exception.getClass().getName();
             localLogger.log(Level.WARNING, msg, exception);
@@ -82,11 +79,13 @@ public class ExceptionMappers {
      * Adds the given {@link ExceptionMapper} to this ExceptionMappers.
      * 
      * @param excMapper
+     * @return true, if the providers was an ExceptionMapper and added,
+     *         otherwise false.
      * @throws NullPointerException
      *                 if null is given
      */
-    public void add(ExceptionMapper<? extends Throwable> excMapper) {
-        // REQUESTED how to get class of ExceptionMapper?
+    public boolean add(ExceptionMapper<? extends Throwable> excMapper) {
+        boolean added = false;
         Type[] gis = excMapper.getClass().getGenericInterfaces();
         for (Type gi : gis) {
             if (gi instanceof ParameterizedType) {
@@ -96,20 +95,26 @@ public class ExceptionMappers {
                     Class<? extends Throwable> excClass = (Class) ifpt
                             .getActualTypeArguments()[0];
                     excMappers.put(excClass, excMapper);
+                    added = true;
                 }
             }
         }
+        return added;
     }
 
     /**
      * Adds the given {@link Provider} to this ExceptionMappers.
      * 
      * @param exceptionMapper
+     * @return true, if the providers was an ExceptionMapper and added,
+     *         otherwise false.
      * @throws NullPointerException
      *                 if <code>null</code> is given
      */
-    public void add(Provider<?> exceptionMapper) {
-        add(exceptionMapper.getExcMapper());
+    public boolean add(Provider<?> exceptionMapper) {
+        if (!exceptionMapper.isExceptionMapper())
+            return false;
+        return add(exceptionMapper.getExcMapper());
     }
 
     /**
@@ -134,8 +139,6 @@ public class ExceptionMappers {
         Response response;
         try {
             response = mapper.toResponse(cause);
-            // REQUESTED add to javadoc ExceptionMapper.toResponse, that this
-            // method should not throw an WebAppExc.
         } catch (RuntimeException e) {
             String message = "The ExceptionMapper throws an Exception";
             logger.log(Level.WARNING, message, e);
@@ -163,6 +166,8 @@ public class ExceptionMappers {
         if (mapper == null) {
             Class superclass = causeClass.getSuperclass();
             mapper = getMapper(superclass);
+            // disabled caching, because adding of new ExceptionMappers could
+            // cause trouble.
             // this.excMappers.put(superclass, mapper);
         }
         return mapper;
@@ -170,6 +175,7 @@ public class ExceptionMappers {
 
     void init() {
         this.add(SERVER_ERROR_EXC_MAPPER);
+        this.add(new WebAppExcMapper());
     }
 
     void reset() {
