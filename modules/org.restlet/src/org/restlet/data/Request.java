@@ -34,6 +34,7 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Request extends Message {
+
     /**
      * Private cookie series.
      * 
@@ -69,6 +70,17 @@ public class Request extends Message {
             else
                 return new CookieSeries();
         }
+    }
+
+    /**
+     * Returns the request associated to the current thread. This is reusing the
+     * {@link Response#getCurrent()} method.
+     * 
+     * @return The thread's request.
+     */
+    public static Request getCurrent() {
+        return (Response.getCurrent() == null) ? null : Response.getCurrent()
+                .getRequest();
     }
 
     /** The authentication response sent by a client to an origin server. */

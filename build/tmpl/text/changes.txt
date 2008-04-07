@@ -21,7 +21,11 @@ Changes log
           "queryTunnel" property for consistency. 
         - Deprecated the Restlet.init() method. In Restlet 1.2, this 
           method will be removed and its logic directly put in the
-          handle(Request, Response) method. 
+          handle(Request, Response) method.
+        - Added static Response.getCurrent()/setCurrent() and Request.
+          getCurrent() methods. Implementation based on thread local
+          variables updated by component and applications when they
+          handle a request/response couple. Suggested by Stephan Koops.  
     - NRE and Extension Enhancements
     - Misc
 

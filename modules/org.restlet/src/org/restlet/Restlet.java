@@ -131,9 +131,6 @@ public class Restlet extends Uniform {
      */
     @Deprecated
     protected synchronized void init(Request request, Response response) {
-        // Associate the context to the current thread
-        Context.setCurrent(getContext());
-
         // Check if the Restlet was started
         if (isStopped()) {
             try {

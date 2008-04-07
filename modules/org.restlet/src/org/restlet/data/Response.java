@@ -35,6 +35,29 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Response extends Message {
+    private static final ThreadLocal<Response> CURRENT = new ThreadLocal<Response>();
+
+    /**
+     * Returns the response associated to the current thread. This variable is
+     * stored internally as a thread local variable and updated when the request
+     * is handled by a Component or an Application.
+     * 
+     * @return The thread's response.
+     */
+    public static Response getCurrent() {
+        return CURRENT.get();
+    }
+
+    /**
+     * Sets the respone associated with the current thread.
+     * 
+     * @param response
+     *                The thread's response.
+     */
+    public static void setCurrent(Response response) {
+        CURRENT.set(response);
+    }
+
     /**
      * Private cookie setting series.
      * 

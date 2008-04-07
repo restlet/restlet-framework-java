@@ -30,10 +30,8 @@ import org.restlet.Route;
 import org.restlet.Server;
 import org.restlet.VirtualHost;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
-import com.noelios.restlet.ChainHelper;
+import com.noelios.restlet.ContextHelper;
 import com.noelios.restlet.StatusFilter;
 
 /**
@@ -41,7 +39,7 @@ import com.noelios.restlet.StatusFilter;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ComponentHelper extends ChainHelper<Component> {
+public class ComponentHelper extends ContextHelper<Component> {
     /** The internal client router. */
     private volatile ClientRouter clientRouter;
 
@@ -174,15 +172,6 @@ public class ComponentHelper extends ChainHelper<Component> {
      */
     public ServerRouter getServerRouter() {
         return this.serverRouter;
-    }
-
-    @Override
-    public void handle(Request request, Response response) {
-        // Associate the context to the current thread
-        Context.setCurrent(getContext());
-
-        // Actually handle call
-        super.handle(request, response);
     }
 
     /**

@@ -26,14 +26,14 @@ import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-import com.noelios.restlet.ChainHelper;
+import com.noelios.restlet.ContextHelper;
 
 /**
  * Application implementation.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ApplicationHelper extends ChainHelper<Application> {
+public class ApplicationHelper extends ContextHelper<Application> {
     /**
      * Constructor.
      * 
