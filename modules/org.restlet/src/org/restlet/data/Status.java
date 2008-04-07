@@ -860,6 +860,9 @@ public final class Status extends Metadata {
         case 1002:
             result = CONNECTOR_ERROR_INTERNAL;
             break;
+
+        default:
+            result = new Status(code);
         }
 
         return result;
