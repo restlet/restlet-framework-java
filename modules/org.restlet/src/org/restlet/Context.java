@@ -46,9 +46,16 @@ public class Context {
     private static final ThreadLocal<Context> CURRENT = new ThreadLocal<Context>();
 
     /**
-     * Returns the context associated to the current thread.
+     * Returns the context associated to the current Restlet. The context can be
+     * the one of a Component, an Application, a Filter or any other Restlet
+     * subclass.
      * 
-     * @return The context associated to the current thread.
+     * This variable is stored internally as a thread local variable and updated
+     * each time a request is handled by a Restlet via the
+     * {@link Restlet#handle(org.restlet.data.Request, org.restlet.data.Response)}
+     * method.
+     * 
+     * @return The current context.
      */
     public static Context getCurrent() {
         return CURRENT.get();
