@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Grizzly NIO Framework
 Bundle-SymbolicName: com.sun.grizzly
-Bundle-Version: 1.7.2
+Bundle-Version: 1.7.3
 Bundle-ClassPath: com.sun.grizzly.jar
 Bundle-Vendor: Sun Microsystems Inc.
 Export-Package: com.sun.grizzly,
@@ -14,4 +14,5 @@ Export-Package: com.sun.grizzly,
  com.sun.grizzly.connectioncache.spi.concurrent,
  com.sun.grizzly.connectioncache.spi.transport,
  com.sun.grizzly.filter,
+ com.sun.grizzly.suspendable,
  com.sun.grizzly.util

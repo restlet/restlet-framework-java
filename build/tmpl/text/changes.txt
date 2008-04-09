@@ -5,6 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+        - Fixed NPE with internal HTTP server when no reason phrase is
+          available for the response status. Reported by Stephan Koops.
     - API Enhancements
         - Matrix parameters are now fully supported by the Reference 
           and the Form classes. Added many new methods, similar to the
@@ -28,6 +30,7 @@ Changes log
           handle a request/response couple. Suggested by Stephan Koops.  
     - NRE and Extension Enhancements
     - Misc
+    	- Updated Grizzly to 1.7.3.
 
  - 1.1 Milestone 3 (2008-04-01)
     - Bugs fixed
