@@ -6,7 +6,8 @@ Changes log
 @version-full@ (@release-date@)
 [Bugs fixed]
  - Status.valueOf() was return null for non standard status codes. Reported by Stephan Koops.
- 
+ - Upgraded version of the freemarker library, renamed the library name according to its 
+   Maven's groupId. Reported by Konstantin Laüfer.
 [Enhancements]
  - Updated Jetty to version 6.1.9
 

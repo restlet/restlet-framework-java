@@ -10,7 +10,7 @@
          <version>@version@</version>
       </dependency>
       <dependency>
-         <groupId>freemarker</groupId>
+         <groupId>org.freemarker</groupId>
          <artifactId>freemarker</artifactId>
          <version>@lib-freemarker-version@</version>
       </dependency>
