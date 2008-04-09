@@ -135,8 +135,9 @@ public class TunnelFilter extends Filter {
         TunnelService tunnelService = getTunnelService();
         boolean extensionsModified = false;
 
-        // Tunnel the client preferences
-        if (tunnelService.isPreferencesTunnel()) {
+        // Tunnel the client preferences only for GET requests
+        Method method = request.getMethod();
+        if (tunnelService.isPreferencesTunnel() && method.equals(Method.GET)) {
             Reference resourceRef = request.getResourceRef();
 
             if (resourceRef.hasExtensions()) {
