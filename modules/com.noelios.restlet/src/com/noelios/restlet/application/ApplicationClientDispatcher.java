@@ -18,8 +18,6 @@
 
 package com.noelios.restlet.application;
 
-import java.util.logging.Logger;
-
 import org.restlet.Application;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
@@ -83,18 +81,14 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
             } else if (cr.getRiapAuthorityType() == LocalReference.RIAP_COMPONENT) {
                 parentHandle(request, response);
             } else {
-                Logger
-                        .getLogger(
-                                ApplicationClientDispatcher.class
-                                        .getCanonicalName())
+                getLogger()
                         .warning(
                                 "Unknown RIAP authority. Only \"component\" and \"application\" are supported.");
             }
         } else {
             if (!getApplicationContext().getApplication().getConnectorService()
                     .getClientProtocols().contains(protocol)) {
-                getApplicationContext()
-                        .getLogger()
+                getLogger()
                         .fine(
                                 "The protocol used by this request is not declared in the application's connector service. "
                                         + "Please update the list of client connectors used by your application and restart it.");
@@ -118,18 +112,12 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
                 getApplicationContext().getParentContext()
                         .getClientDispatcher().handle(request, response);
             } else {
-                Logger
-                        .getLogger(
-                                ApplicationClientDispatcher.class
-                                        .getCanonicalName())
+                getLogger()
                         .warning(
                                 "Your Application doesn't have a parent context available. Ensure that your parent Component has a context available.");
             }
         } else {
-            Logger
-                    .getLogger(
-                            ApplicationClientDispatcher.class
-                                    .getCanonicalName())
+            getLogger()
                     .warning(
                             "Your Application doesn't have a context set. Ensure that you pass the parent Component's context to your Application constructor.");
         }

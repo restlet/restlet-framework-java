@@ -31,6 +31,7 @@ Changes log
     - NRE and Extension Enhancements
     - Misc
     	- Updated Grizzly to 1.7.3.
+    	- Improved logging consistency.
 
  - 1.1 Milestone 3 (2008-04-01)
     - Bugs fixed

@@ -18,8 +18,6 @@
 
 package com.noelios.restlet.component;
 
-import java.util.logging.Logger;
-
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -75,10 +73,7 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
                             .getInternalRouter().handle(request, response);
                 }
             } else {
-                Logger
-                        .getLogger(
-                                ComponentClientDispatcher.class
-                                        .getCanonicalName())
+                getLogger()
                         .warning(
                                 "Unknown RIAP authority. Only \"component\" is supported.");
             }

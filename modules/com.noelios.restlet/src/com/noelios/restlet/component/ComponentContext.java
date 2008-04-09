@@ -20,7 +20,6 @@ package com.noelios.restlet.component;
 
 import java.util.logging.Logger;
 
-import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Uniform;
 
@@ -38,17 +37,6 @@ public class ComponentContext extends Context {
 
     /** The server dispatcher. */
     private volatile Uniform serverDispatcher;
-
-    /**
-     * Constructor.
-     * 
-     * @param componentHelper
-     *                The component helper.
-     */
-    public ComponentContext(ComponentHelper componentHelper) {
-        this(componentHelper, Logger.getLogger(Component.class
-                .getCanonicalName()));
-    }
 
     /**
      * Constructor.

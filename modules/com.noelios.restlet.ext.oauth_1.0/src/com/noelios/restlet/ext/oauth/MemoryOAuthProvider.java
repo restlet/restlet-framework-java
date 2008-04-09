@@ -38,14 +38,65 @@ import org.apache.commons.codec.digest.DigestUtils;
  */
 public class MemoryOAuthProvider implements OAuthProvider {
 
-    private static final Logger logger = Logger
-            .getLogger(MemoryOAuthProvider.class.getName());
-
     // TODO: Mutexes.
     // TODO: LRU collections.
     private final Map<String, OAuthConsumer> consumers = new HashMap<String, OAuthConsumer>();
 
+    private Logger logger;
+
     private final Set<OAuthAccessor> tokens = new HashSet<OAuthAccessor>();
+
+    public MemoryOAuthProvider(Logger logger) {
+        this.logger = logger;
+    }
+
+    public void addConsumer(String key, OAuthConsumer consumer) {
+        logger.fine("Adding consumer " + consumer);
+        consumers.put(key, consumer);
+    }
+
+    public void generateAccessToken(OAuthAccessor accessor) {
+        // generate oauth_token and oauth_secret
+        String consumer_key = (String) accessor.consumer.getProperty("name");
+
+        // generate token and secret based on consumer_key
+        // for now use md5 of name + current time as token
+        String token_data = consumer_key + System.nanoTime();
+        String token = DigestUtils.md5Hex(token_data);
+
+        // first remove the accessor from cache
+        tokens.remove(accessor);
+
+        accessor.requestToken = null;
+        accessor.accessToken = token;
+
+        logger.fine("Adding access token " + accessor);
+
+        // update token in local cache
+        tokens.add(accessor);
+    }
+
+    public void generateRequestToken(OAuthAccessor accessor) {
+        // generate oauth_token and oauth_secret
+        String consumer_key = (String) accessor.consumer.getProperty("name");
+        // generate token and secret based on consumer_key
+
+        // for now use md5 of name + current time as token
+        String token_data = consumer_key + System.nanoTime();
+        String token = DigestUtils.md5Hex(token_data);
+        // for now use md5 of name + current time + token as secret
+        String secret_data = consumer_key + System.nanoTime() + token;
+        String secret = DigestUtils.md5Hex(secret_data);
+
+        accessor.requestToken = token;
+        accessor.tokenSecret = secret;
+        accessor.accessToken = null;
+
+        logger.fine("Adding request token " + accessor);
+
+        // add to the local cache
+        tokens.add(accessor);
+    }
 
     public OAuthAccessor getAccessor(OAuthMessage requestMessage) {
         String consumer_token = null;
@@ -86,54 +137,6 @@ public class MemoryOAuthProvider implements OAuthProvider {
         } catch (IOException e) {
             return null;
         }
-    }
-
-    public void addConsumer(String key, OAuthConsumer consumer) {
-        logger.fine("Adding consumer " + consumer);
-        consumers.put(key, consumer);
-    }
-
-    public void generateRequestToken(OAuthAccessor accessor) {
-        // generate oauth_token and oauth_secret
-        String consumer_key = (String) accessor.consumer.getProperty("name");
-        // generate token and secret based on consumer_key
-
-        // for now use md5 of name + current time as token
-        String token_data = consumer_key + System.nanoTime();
-        String token = DigestUtils.md5Hex(token_data);
-        // for now use md5 of name + current time + token as secret
-        String secret_data = consumer_key + System.nanoTime() + token;
-        String secret = DigestUtils.md5Hex(secret_data);
-
-        accessor.requestToken = token;
-        accessor.tokenSecret = secret;
-        accessor.accessToken = null;
-
-        logger.fine("Adding request token " + accessor);
-
-        // add to the local cache
-        tokens.add(accessor);
-    }
-
-    public void generateAccessToken(OAuthAccessor accessor) {
-        // generate oauth_token and oauth_secret
-        String consumer_key = (String) accessor.consumer.getProperty("name");
-
-        // generate token and secret based on consumer_key
-        // for now use md5 of name + current time as token
-        String token_data = consumer_key + System.nanoTime();
-        String token = DigestUtils.md5Hex(token_data);
-
-        // first remove the accessor from cache
-        tokens.remove(accessor);
-
-        accessor.requestToken = null;
-        accessor.accessToken = token;
-
-        logger.fine("Adding access token " + accessor);
-
-        // update token in local cache
-        tokens.add(accessor);
     }
 
     public void markAsAuthorized(OAuthAccessor accessor, String userId) {

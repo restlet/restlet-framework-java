@@ -18,6 +18,8 @@
 
 package com.noelios.restlet;
 
+import java.util.logging.Logger;
+
 import org.restlet.Context;
 import org.restlet.Uniform;
 import org.restlet.data.Protocol;
@@ -45,12 +47,31 @@ public abstract class TemplateDispatcher extends Uniform {
     }
 
     /**
+     * Actually handles the call after resolving any URI template on the
+     * request's target resource reference.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     */
+    protected abstract void doHandle(Request request, Response response);
+    
+    /**
      * Returns the parent context.
      * 
      * @return The parent context.
      */
     public Context getContext() {
         return this.context;
+    }
+
+    /**
+     * Returns the context's logger.
+     * @return The context's logger.
+     */
+    public Logger getLogger(){
+        return getContext().getLogger();
     }
 
     @Override
@@ -86,15 +107,4 @@ public abstract class TemplateDispatcher extends Uniform {
             }
         }
     }
-
-    /**
-     * Actually handles the call after resolving any URI template on the
-     * request's target resource reference.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     */
-    protected abstract void doHandle(Request request, Response response);
 }

@@ -81,7 +81,8 @@ public class AccessTokenResource extends Resource {
     }
 
     private void handle() {
-        OAuthMessage requestMessage = OAuthHelper.getMessage(getRequest());
+        OAuthMessage requestMessage = OAuthHelper.getMessage(getRequest(),
+                getLogger());
         OAuthAccessor accessor = provider.getAccessor(requestMessage);
         ChallengeRequest challengeRequest = new ChallengeRequest(
                 OAuthGuard.SCHEME, realm);

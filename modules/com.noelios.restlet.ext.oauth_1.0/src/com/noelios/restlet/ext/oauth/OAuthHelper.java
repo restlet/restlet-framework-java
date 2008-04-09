@@ -45,9 +45,6 @@ import com.noelios.restlet.authentication.AuthenticationHelper;
  */
 public class OAuthHelper extends AuthenticationHelper {
 
-    private static final Logger logger = Logger.getLogger(OAuthHelper.class
-            .getName());
-
     /**
      * Constructor.
      */
@@ -63,21 +60,26 @@ public class OAuthHelper extends AuthenticationHelper {
      * request.getParameterMap().
      * 
      * @param request
+     * @param logger
+     *                The context's logger.
      * @return message
      */
-    public static OAuthMessage getMessage(Request request) {
+    public static OAuthMessage getMessage(Request request, Logger logger) {
         String URL = request.getResourceRef().toString();
         return new OAuthMessage(request.getMethod().getName(), URL, OAuthHelper
-                .getParameters(request));
+                .getParameters(request, logger));
     }
 
     /**
      * Translate request parameters into OAuth.Parameter objects.
      * 
      * @param request
+     * @param logger
+     *                The context's logger.
      * @return parameters
      */
-    public static List<OAuth.Parameter> getParameters(Request request) {
+    public static List<OAuth.Parameter> getParameters(Request request,
+            Logger logger) {
         Set<OAuth.Parameter> parameters = new HashSet<OAuth.Parameter>();
 
         // Authorization headers.

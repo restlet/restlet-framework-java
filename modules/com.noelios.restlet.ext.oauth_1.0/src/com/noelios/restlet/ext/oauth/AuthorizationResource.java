@@ -74,7 +74,8 @@ public abstract class AuthorizationResource extends Resource {
 
     @Override
     public void acceptRepresentation(Representation entity) {
-        OAuthMessage requestMessage = OAuthHelper.getMessage(getRequest());
+        OAuthMessage requestMessage = OAuthHelper.getMessage(getRequest(),
+                getLogger());
         OAuthAccessor accessor = provider.getAccessor(requestMessage);
 
         if (accessor == null) {
