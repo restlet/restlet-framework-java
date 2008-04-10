@@ -21,7 +21,6 @@ package org.restlet.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 import org.restlet.util.Engine;
 
@@ -182,27 +181,6 @@ public final class ClientInfo {
             Language defaultLanguage) {
         return Engine.getInstance().getPreferredVariant(this, variants,
                 defaultLanguage);
-    }
-
-    /**
-     * Returns the best variant for a given resource according the the client
-     * preferences.<br>
-     * A default language is provided in case the resource's variants don't
-     * match the client preferences.
-     * 
-     * @param resource
-     *                The resource for which the best representation needs to be
-     *                set.
-     * @param defaultLanguage
-     *                The default language.
-     * @return The best variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     */
-    public Variant getPreferredVariant(Resource resource,
-            Language defaultLanguage) {
-        return getPreferredVariant(resource.getVariants(), defaultLanguage);
     }
 
     /**

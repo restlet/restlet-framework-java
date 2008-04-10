@@ -194,31 +194,9 @@ public class TunnelService {
      * Returns the character set parameter name.
      * 
      * @return The character set parameter name.
-     * @deprecated Use getCharacterSetParameter instead.
-     */
-    @Deprecated
-    public String getCharacterSetAttribute() {
-        return this.characterSetParameter;
-    }
-
-    /**
-     * Returns the character set parameter name.
-     * 
-     * @return The character set parameter name.
      */
     public String getCharacterSetParameter() {
         return this.characterSetParameter;
-    }
-
-    /**
-     * Returns the name of the parameter containing the accepted encoding.
-     * 
-     * @return The name of the parameter containing the accepted encoding.
-     * @deprecated Use getEncodingParameter instead.
-     */
-    @Deprecated
-    public String getEncodingAttribute() {
-        return this.encodingParameter;
     }
 
     /**
@@ -234,31 +212,9 @@ public class TunnelService {
      * Returns the name of the parameter containing the accepted language.
      * 
      * @return The name of the parameter containing the accepted language.
-     * @deprecated Use getLanguageParameter instead.
-     */
-    @Deprecated
-    public String getLanguageAttribute() {
-        return this.languageParameter;
-    }
-
-    /**
-     * Returns the name of the parameter containing the accepted language.
-     * 
-     * @return The name of the parameter containing the accepted language.
      */
     public String getLanguageParameter() {
         return this.languageParameter;
-    }
-
-    /**
-     * Returns the name of the parameter containing the accepted media type.
-     * 
-     * @return The name of the parameter containing the accepted media type.
-     * @deprecated Use getMediaTypeParameter instead.
-     */
-    @Deprecated
-    public String getMediaTypeAttribute() {
-        return this.mediaTypeParameter;
     }
 
     /**
@@ -335,18 +291,6 @@ public class TunnelService {
      * 
      * @param parameterName
      *                The character set parameter name.
-     * @deprecated Use setCharacterSetParameter instead.
-     */
-    @Deprecated
-    public void setCharacterSetAttribute(String parameterName) {
-        this.characterSetParameter = parameterName;
-    }
-
-    /**
-     * Sets the character set parameter name.
-     * 
-     * @param parameterName
-     *                The character set parameter name.
      */
     public void setCharacterSetParameter(String parameterName) {
         this.characterSetParameter = parameterName;
@@ -360,19 +304,6 @@ public class TunnelService {
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    /**
-     * Sets the name of the parameter containing the accepted encoding.
-     * 
-     * @param parameterName
-     *                The name of the parameter containing the accepted
-     *                encoding.
-     * @deprecated Use setEncodingParameter instead.
-     */
-    @Deprecated
-    public void setEncodingAttribute(String parameterName) {
-        this.encodingParameter = parameterName;
     }
 
     /**
@@ -404,35 +335,9 @@ public class TunnelService {
      * @param parameterName
      *                The name of the parameter containing the accepted
      *                language.
-     * @deprecated Use setLanguageParameter instead.
-     */
-    @Deprecated
-    public void setLanguageAttribute(String parameterName) {
-        this.languageParameter = parameterName;
-    }
-
-    /**
-     * Sets the name of the parameter containing the accepted language.
-     * 
-     * @param parameterName
-     *                The name of the parameter containing the accepted
-     *                language.
      */
     public void setLanguageParameter(String parameterName) {
         this.languageParameter = parameterName;
-    }
-
-    /**
-     * Sets the name of the parameter containing the accepted media type.
-     * 
-     * @param parameterName
-     *                The name of the parameter containing the accepted media
-     *                type.
-     * @deprecated Use setMediaTypeParameter instead.
-     */
-    @Deprecated
-    public void setMediaTypeAttribute(String parameterName) {
-        this.mediaTypeParameter = parameterName;
     }
 
     /**

@@ -110,15 +110,6 @@ public class Context {
     }
 
     /**
-     * Returns the parent application if it exists, or null.
-     * 
-     * @return The parent application if it exists, or null.
-     */
-    public Application getApplication() {
-        return (Application) getAttributes().get(Application.KEY);
-    }
-
-    /**
      * Returns a modifiable attributes map that can be used by developers to
      * save information relative to the context. Creates a new instance if no
      * one has been set. This is a convenient mean to provide common objects to
@@ -158,21 +149,6 @@ public class Context {
      */
     public Uniform getClientDispatcher() {
         return null;
-    }
-
-    /**
-     * Returns a request dispatcher to available client connectors. When you ask
-     * the dispatcher to handle a request, it will automatically select the best
-     * client connector for your request, based on the request.protocol property
-     * or on the resource URI's scheme. This call is blocking and will return an
-     * updated response object.
-     * 
-     * @return A request dispatcher to virtual hosts of the local component.
-     * @deprecated Use getClientDispatcher() instead.
-     */
-    @Deprecated
-    public Uniform getDispatcher() {
-        return getClientDispatcher();
     }
 
     /**

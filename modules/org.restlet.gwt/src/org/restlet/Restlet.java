@@ -111,26 +111,6 @@ public class Restlet extends Uniform {
      */
     @Override
     public void handle(Request request, Response response) {
-        init(request, response);
-    }
-
-    /**
-     * Initialize the Restlet by setting the current context using the
-     * {@link Context#setCurrent(Context)} method and by attempting to start it,
-     * unless it was already started. If an exception is thrown during the start
-     * action, then the response status is set to
-     * {@link Status#SERVER_ERROR_INTERNAL}.
-     * 
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to update.
-     * @deprecated Instead, make sure that you call the
-     *             {@link #handle(Request, Response)} method from your Restlet
-     *             superclass.
-     */
-    @Deprecated
-    protected synchronized void init(Request request, Response response) {
         // Check if the Restlet was started
         if (isStopped()) {
             try {

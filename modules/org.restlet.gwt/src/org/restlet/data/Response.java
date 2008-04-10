@@ -196,18 +196,6 @@ public class Response extends Message {
     }
 
     /**
-     * Returns the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @return The redirection reference.
-     * @deprecated Use getLocationRef() instead.
-     */
-    @Deprecated
-    public Reference getRedirectRef() {
-        return getLocationRef();
-    }
-
-    /**
      * Returns the associated request
      * 
      * @return The associated request
@@ -402,32 +390,6 @@ public class Response extends Message {
         }
 
         setLocationRef(new Reference(baseRef, locationUri).getTargetRef());
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param locationRef
-     *                The reference to set.
-     * @deprecated Use the setLocationRef() method instead.
-     */
-    @Deprecated
-    public void setRedirectRef(Reference locationRef) {
-        setLocationRef(locationRef);
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param locationUri
-     *                The URI to set.
-     * @deprecated Use the setLocationRef() method instead.
-     */
-    @Deprecated
-    public void setRedirectRef(String locationUri) {
-        setLocationRef(locationUri);
     }
 
     /**

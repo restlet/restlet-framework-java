@@ -19,8 +19,6 @@
 package org.restlet.service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.Encoding;
@@ -352,26 +350,6 @@ public class MetadataService {
     }
 
     /**
-     * Returns the mappings from extension names to metadata. Creates a new
-     * instance if no one has been set. Note that this map is only a snapshot of
-     * the list of mappings.
-     * 
-     * @return The mappings from extension names to metadata.
-     * @deprecated .
-     */
-    @Deprecated
-    public Map<String, Metadata> getMappings() {
-        Map<String, Metadata> result = new TreeMap<String, Metadata>();
-
-        for (MetadataExtension metadataExtension : mappings) {
-            result.put(metadataExtension.getName(), metadataExtension
-                    .getMetadata());
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the metadata associated to this extension. It returns null if the
      * extension was not declared.
      * 
@@ -422,19 +400,4 @@ public class MetadataService {
         this.defaultMediaType = defaultMediaType;
     }
 
-    /**
-     * Sets the mappings from extension names to metadata.
-     * 
-     * @param mappings
-     *                The mappings from extension names to metadata.
-     * @deprecated
-     */
-    @Deprecated
-    public void setMappings(Map<String, Metadata> mappings) {
-        this.mappings.clear();
-
-        for (String extension : mappings.keySet()) {
-            addExtension(extension, mappings.get(extension), false);
-        }
-    }
 }

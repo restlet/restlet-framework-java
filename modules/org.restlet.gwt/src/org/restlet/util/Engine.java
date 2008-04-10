@@ -27,13 +27,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Application;
 import org.restlet.Client;
-import org.restlet.Component;
-import org.restlet.Context;
-import org.restlet.Directory;
-import org.restlet.Guard;
-import org.restlet.Server;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Cookie;
@@ -43,10 +37,8 @@ import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
-import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
 /**
@@ -244,33 +236,6 @@ public abstract class Engine {
     }
 
     /**
-     * Indicates if the call is properly authenticated. By default, this
-     * delegates credential checking to checkSecret().
-     * 
-     * @param request
-     *                The request to authenticate.
-     * @param guard
-     *                The associated guard to callback.
-     * @return -1 if the given credentials were invalid, 0 if no credentials
-     *         were found and 1 otherwise.
-     * @see Guard#checkSecret(Request, String, char[])
-     */
-    public abstract int authenticate(Request request, Guard guard);
-
-    /**
-     * Challenges the client by adding a challenge request to the response and
-     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
-     * 
-     * @param response
-     *                The response to update.
-     * @param stale
-     *                Indicates if the new challenge is due to a stale response.
-     * @param guard
-     *                The associated guard to callback.
-     */
-    public abstract void challenge(Response response, boolean stale, Guard guard);
-
-    /**
      * Copies the given header parameters into teh given {@link Response}.
      * 
      * @param headers
@@ -302,33 +267,6 @@ public abstract class Engine {
             Series<Parameter> headers, Logger logger);
 
     /**
-     * Creates a directory resource.
-     * 
-     * @param handler
-     *                The parent directory handler.
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to return.
-     * @return A new directory resource.
-     * @throws IOException
-     */
-    public abstract Resource createDirectoryResource(Directory handler,
-            Request request, Response response) throws IOException;
-
-    /**
-     * Creates a new helper for a given component.
-     * 
-     * @param application
-     *                The application to help.
-     * @param parentContext
-     *                The parent context, typically the component's context.
-     * @return The new helper.
-     */
-    public abstract Helper<Application> createHelper(Application application,
-            Context parentContext);
-
-    /**
      * Creates a new helper for a given client connector.
      * 
      * @param client
@@ -338,27 +276,6 @@ public abstract class Engine {
      * @return The new helper.
      */
     public abstract Helper<Client> createHelper(Client client,
-            String helperClass);
-
-    /**
-     * Creates a new helper for a given component.
-     * 
-     * @param component
-     *                The component to help.
-     * @return The new helper.
-     */
-    public abstract Helper<Component> createHelper(Component component);
-
-    /**
-     * Creates a new helper for a given server connector.
-     * 
-     * @param server
-     *                The server to help.
-     * @param helperClass
-     *                Optional helper class name.
-     * @return The new helper.
-     */
-    public abstract Helper<Server> createHelper(Server server,
             String helperClass);
 
     /**

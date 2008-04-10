@@ -421,17 +421,6 @@ public class TransformRepresentation extends OutputRepresentation {
     }
 
     /**
-     * Returns the URI resolver.
-     * 
-     * @return The URI resolver.
-     * @deprecated Use the getUriResolver method instead.
-     */
-    @Deprecated
-    public URIResolver getURIResolver() {
-        return this.uriResolver;
-    }
-
-    /**
      * Returns the SAX XML filter applying the transform sheet to its input.
      * 
      * @return The SAX XML filter.

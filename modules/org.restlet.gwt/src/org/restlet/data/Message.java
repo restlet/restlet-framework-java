@@ -21,7 +21,6 @@ package org.restlet.data;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.Application;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.SaxRepresentation;
@@ -117,30 +116,6 @@ public abstract class Message {
     }
 
     /**
-     * Returns the converter service.
-     * 
-     * @return The converter service.
-     * @deprecated Since 1.1, the ConverterService is deprecated, with no
-     *             replacement as it doesn't fit well with content negotiation.
-     *             Most users prefer to handle those conversion in Resource
-     *             subclasses.
-     */
-    @Deprecated
-    private org.restlet.service.ConverterService getConverterService() {
-        org.restlet.service.ConverterService result = null;
-        Application application = (Application) getAttributes().get(
-                Application.KEY);
-
-        if (application != null) {
-            result = application.getConverterService();
-        } else {
-            result = new org.restlet.service.ConverterService();
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the entity representation.
      * 
      * @return The entity representation.
@@ -181,26 +156,6 @@ public abstract class Message {
         }
 
         return this.form;
-    }
-
-    /**
-     * Returns the entity as a higher-level object. This object is created by
-     * the Application's converter service. In order to use this method to
-     * facilitate the parsing of entities, you need to set an instance of a
-     * subclass of ConverterService onto your Restlet Application, overriding
-     * the toObject(Representation) method. <br>
-     * Note that this triggers the parsing of the entity.
-     * 
-     * @return The entity as a higher-level object.
-     * @see org.restlet.service.ConverterService
-     * @deprecated Since 1.1, the ConverterService is deprecated, with no
-     *             replacement as it doesn't fit well with content negotiation.
-     *             Most users prefer to handle those conversion in Resource
-     *             subclasses.
-     */
-    @Deprecated
-    public Object getEntityAsObject() {
-        return getConverterService().toObject(getEntity());
     }
 
     /**
@@ -252,30 +207,6 @@ public abstract class Message {
      */
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
-    }
-
-    /**
-     * Sets the entity from a higher-level object. This object is converted to a
-     * representation using the Application's converter service. If you want to
-     * use this method to facilitate the setting of entities, you need to
-     * provide a custom implementation of the ConverterService class, overriding
-     * the toRepresentation(Object) method.
-     * 
-     * @param object
-     *                The higher-level object.
-     * @see org.restlet.service.ConverterService
-     * @deprecated Since 1.1, the ConverterService is deprecated, with no
-     *             replacement as it doesn't fit well with content negotiation.
-     *             Most users prefer to handle those conversion in Resource
-     *             subclasses.
-     */
-    @Deprecated
-    public void setEntity(Object object) {
-        if (object instanceof Representation) {
-            setEntity((Representation) object);
-        } else {
-            setEntity(getConverterService().toRepresentation(object));
-        }
     }
 
     /**

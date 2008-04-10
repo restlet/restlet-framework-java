@@ -41,13 +41,6 @@ import org.restlet.util.WrapperList;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Variant {
-    /**
-     * Indicates that the size of the representation can't be known in advance.
-     * 
-     * @deprecated Use the {@link Representation#UNKNOWN_SIZE} constant instead.
-     */
-    @Deprecated
-    public static final long UNKNOWN_SIZE = -1L;
 
     /** The character set or null if not applicable. */
     private volatile CharacterSet characterSet;
@@ -99,7 +92,7 @@ public class Variant {
     public Variant(MediaType mediaType) {
         this.characterSet = null;
         this.encodings = null;
-        this.size = UNKNOWN_SIZE;
+        this.size = Representation.UNKNOWN_SIZE;
         this.expirationDate = null;
         this.languages = null;
         this.mediaType = mediaType;
@@ -194,11 +187,8 @@ public class Variant {
      * information is not known, returns null.
      * 
      * @return The expiration date.
-     * @deprecated Use the {@link Representation#getExpirationDate()} method
-     *             instead.
      */
-    @Deprecated
-    public Date getExpirationDate() {
+    protected Date getExpirationDate() {
         return this.expirationDate;
     }
 
@@ -297,11 +287,8 @@ public class Variant {
      * information is not known, returns null.
      * 
      * @return The modification date.
-     * @deprecated Use the {@link Representation#getModificationDate()} method
-     *             instead.
      */
-    @Deprecated
-    public Date getModificationDate() {
+    protected Date getModificationDate() {
         return this.modificationDate;
     }
 
@@ -309,10 +296,8 @@ public class Variant {
      * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      * 
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-     * @deprecated Use the {@link Representation#getSize()} method instead.
      */
-    @Deprecated
-    public long getSize() {
+    protected long getSize() {
         return this.size;
     }
 
@@ -320,10 +305,8 @@ public class Variant {
      * Returns the tag.
      * 
      * @return The tag.
-     * @deprecated Use the {@link Representation#getTag()} method instead.
      */
-    @Deprecated
-    public Tag getTag() {
+    protected Tag getTag() {
         return this.tag;
     }
 
@@ -353,11 +336,8 @@ public class Variant {
      * 
      * @param expirationDate
      *                The expiration date.
-     * @deprecated Use the {@link Representation#setExpirationDate(Date)} method
-     *             instead.
      */
-    @Deprecated
-    public void setExpirationDate(Date expirationDate) {
+    protected void setExpirationDate(Date expirationDate) {
         this.expirationDate = DateUtils.unmodifiable(expirationDate);
     }
 
@@ -409,11 +389,8 @@ public class Variant {
      * 
      * @param modificationDate
      *                The modification date.
-     * @deprecated Use the {@link Representation#setModificationDate(Date)}
-     *             method instead.
      */
-    @Deprecated
-    public void setModificationDate(Date modificationDate) {
+    protected void setModificationDate(Date modificationDate) {
         this.modificationDate = DateUtils.unmodifiable(modificationDate);
     }
 
@@ -422,10 +399,8 @@ public class Variant {
      * 
      * @param expectedSize
      *                The expected size in bytes if known, -1 otherwise.
-     * @deprecated Use the {@link Representation#setSize(long)} method instead.
      */
-    @Deprecated
-    public void setSize(long expectedSize) {
+    protected void setSize(long expectedSize) {
         this.size = expectedSize;
     }
 
@@ -434,10 +409,8 @@ public class Variant {
      * 
      * @param tag
      *                The tag.
-     * @deprecated Use the {@link Representation#setTag(Tag)} method instead.
      */
-    @Deprecated
-    public void setTag(Tag tag) {
+    protected void setTag(Tag tag) {
         this.tag = tag;
     }
 

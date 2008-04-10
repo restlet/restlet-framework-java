@@ -163,28 +163,6 @@ public class WrapperRequest extends Request {
     }
 
     /**
-     * Returns the entity as a higher-level object. This object is created by
-     * the Application's converter service. If you want to use this method to
-     * facilitate the processing of request entities, you need to provide a
-     * custom implementation of the ConverterService class, overriding the
-     * toObject(Representation) method. <br>
-     * Note that this triggers the parsing of the entity.<br>
-     * This method and the related getEntity*() methods can only be invoked
-     * once.
-     * 
-     * @return The entity as a higher-level object.
-     * @deprecated Since 1.1, the ConverterService is deprecated, with no
-     *             replacement as it doesn't fit well with content negotiation.
-     *             Most users prefer to handle those conversion in Resource
-     *             subclasses.
-     */
-    @Override
-    @Deprecated
-    public Object getEntityAsObject() {
-        return getWrappedRequest().getEntityAsObject();
-    }
-
-    /**
      * Returns the entity as a SAX representation.<br>
      * Note that this kind of representation can only be parsed once. If you
      * evaluate an XPath expression, it can also only be done once. If you need
@@ -316,26 +294,6 @@ public class WrapperRequest extends Request {
     @Override
     public void setConfidential(boolean confidential) {
         getWrappedRequest().setConfidential(confidential);
-    }
-
-    /**
-     * Sets the entity from a higher-level object. This object is converted to a
-     * representation using the Application's converter service. If you want to
-     * use this method to facilitate the setting of entities, you need to
-     * provide a custom implementation of the ConverterService class, overriding
-     * the toRepresentation(Object) method.
-     * 
-     * @param object
-     *                The higher-level object.
-     * @deprecated Since 1.1, the ConverterService is deprecated, with no
-     *             replacement as it doesn't fit well with content negotiation.
-     *             Most users prefer to handle those conversion in Resource
-     *             subclasses.
-     */
-    @Override
-    @Deprecated
-    public void setEntity(Object object) {
-        getWrappedRequest().setEntity(object);
     }
 
     /**
