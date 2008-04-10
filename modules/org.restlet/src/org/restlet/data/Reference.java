@@ -1859,13 +1859,18 @@ public class Reference {
      */
     public boolean hasExtensions() {
         boolean result = false;
-        String lastSegment = getLastSegment();
 
-        if (lastSegment != null) {
-            int extensionsIndex = lastSegment.indexOf('.');
-            int matrixIndex = lastSegment.indexOf(';');
-            result = (extensionsIndex != -1)
-                    && ((matrixIndex == -1) || (extensionsIndex < matrixIndex));
+        // If these reference ends with a "/", it cannot be a file.
+        String path = getPath();
+        if (!(path != null && path.endsWith("/"))) {
+            String lastSegment = getLastSegment();
+
+            if (lastSegment != null) {
+                int extensionsIndex = lastSegment.indexOf('.');
+                int matrixIndex = lastSegment.indexOf(';');
+                result = (extensionsIndex != -1)
+                        && ((matrixIndex == -1) || (extensionsIndex < matrixIndex));
+            }
         }
 
         return result;
