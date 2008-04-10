@@ -347,6 +347,8 @@ public class ServerServlet extends HttpServlet {
             }
         } else {
             component = new Component();
+            // The status service is disabled by default.
+            component.getStatusService().setEnabled(false);
         }
 
         return component;
