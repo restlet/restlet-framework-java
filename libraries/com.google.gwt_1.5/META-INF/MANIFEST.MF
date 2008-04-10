@@ -3,6 +3,28 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Google Web Toolkit
 Bundle-SymbolicName: com.google.gwt
 Bundle-Version: 1.5
-Bundle-ClassPath: com.google.gwt.jar
+Bundle-ClassPath: gwt-servlet.jar
 Bundle-Vendor: Google Inc.
-Export-Package: com.google.gwt
+Export-Package: com.google.gwt.benchmarks,
+ com.google.gwt.benchmarks.client,
+ com.google.gwt.benchmarks.client.impl,
+ com.google.gwt.core.client,
+ com.google.gwt.http.client,
+ com.google.gwt.i18n.client,
+ com.google.gwt.i18n.client.cldr,
+ com.google.gwt.i18n.client.constants,
+ com.google.gwt.i18n.client.impl,
+ com.google.gwt.junit.client,
+ com.google.gwt.junit.client.impl,
+ com.google.gwt.user.client,
+ com.google.gwt.user.client.impl,
+ com.google.gwt.user.client.rpc,
+ com.google.gwt.user.client.rpc.core.java.lang,
+ com.google.gwt.user.client.rpc.core.java.util,
+ com.google.gwt.user.client.rpc.impl,
+ com.google.gwt.user.client.ui,
+ com.google.gwt.user.client.ui.impl,
+ com.google.gwt.user.server.rpc,
+ com.google.gwt.user.server.rpc.impl,
+ com.google.gwt.xml.client,
+ com.google.gwt.xml.client.impl
