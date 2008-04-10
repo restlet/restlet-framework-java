@@ -10,6 +10,8 @@ Changes log
    Maven's groupId. Reported by Konstantin Laüfer.
 [Enhancements]
  - Updated Jetty to version 6.1.9
+ - Disabled the status service of the inner component created by the Servlet 
+   extension. Reported by Jeffrey D. Brekke.
 
 [Other changes] 
  - 
