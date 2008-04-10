@@ -355,23 +355,24 @@ public class DirectoryResource extends Resource {
         if (directoryRedirection && !targetIndex) {
             getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
             getResponse().setRedirectRef(this.targetUri);
-        }
-
-        // We allow the transfer of the PUT calls only if the readOnly flag is
-        // not set
-        if (!getDirectory().isModifiable()) {
-            status = new Status(Status.CLIENT_ERROR_FORBIDDEN,
-                    "No modification allowed.");
         } else {
-            Request contextRequest = new Request(Method.PUT, this.targetUri);
-            contextRequest.setEntity(variant);
-            Response contextResponse = new Response(contextRequest);
-            contextRequest.setResourceRef(this.targetUri);
-            getDispatcher().handle(contextRequest, contextResponse);
-            status = contextResponse.getStatus();
+            // We allow the transfer of the PUT calls only if the readOnly flag is
+            // not set
+            if (!getDirectory().isModifiable()) {
+                status = new Status(Status.CLIENT_ERROR_FORBIDDEN,
+                        "No modification allowed.");
+            } else {
+                Request contextRequest = new Request(Method.PUT, this.targetUri);
+                contextRequest.setEntity(variant);
+                Response contextResponse = new Response(contextRequest);
+                contextRequest.setResourceRef(this.targetUri);
+                getDispatcher().handle(contextRequest, contextResponse);
+                status = contextResponse.getStatus();
+            }
+
+            getResponse().setStatus(status);
         }
 
-        getResponse().setStatus(status);
     }
 
     /**
