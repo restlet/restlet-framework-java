@@ -21,6 +21,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
@@ -44,10 +45,21 @@ public class InjectionTestService {
     
     @Context private Request request;
     
-    @Context private HttpHeaders httpHeaders;
+    private HttpHeaders httpHeaders;
+    
+    @Context void setHeaders(HttpHeaders httpHeaders) {
+        this.httpHeaders = httpHeaders;
+    }
     
     @HeaderParam("host") private String host;
     
+    private String qp1;
+
+    @QueryParam("qp1")
+    void setQp1(String qp1) {
+        this.qp1 = qp1;
+    }
+
     @GET
     @ProduceMime("text/plain")
     public Response get() {
@@ -62,6 +74,8 @@ public class InjectionTestService {
             msg += "\n* httpHeaders";
         if(host == null)
             msg += "\n* host";
+        if (qp1 == null)
+            msg += "\n* qp1";
         if(msg.length() > 0)
             return Response.serverError().entity("missing:"+msg).build();
         return Response.ok("ok").build();

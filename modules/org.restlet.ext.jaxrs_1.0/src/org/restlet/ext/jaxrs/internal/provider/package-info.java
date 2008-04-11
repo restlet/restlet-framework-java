@@ -35,4 +35,4 @@ package org.restlet.ext.jaxrs.internal.provider;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.MessageBodyReader;
 
-// LATER JSON Provider for JAXB and all providers supporting XML.
+// NICE JSON Provider for JAXB and all providers supporting XML.

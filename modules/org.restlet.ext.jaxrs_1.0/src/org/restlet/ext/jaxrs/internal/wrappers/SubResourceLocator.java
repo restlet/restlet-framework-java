@@ -19,15 +19,17 @@ package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.JaxRsRouter;
-import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -38,8 +40,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
 
 /**
  * A method of a resource class that is used to locate sub-resources of the
@@ -75,11 +76,13 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
-     * @param mbrs
-     *                The Set of all available {@link MessageBodyReader}s in
-     *                the {@link JaxRsRouter}.
+     * @param entityProvs
+     *                all available entity providers in the the
+     *                {@link JaxRsRouter}.
      * @param wrapperFactory
      *                factory to create wrappers.
+     * @param allResolvers
+     *                all available {@link ContextResolver}s.
      * @param logger
      *                The logger to use
      * @return Returns the wrapped sub resource object.
@@ -96,8 +99,9 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @throws ConvertRepresentationException
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
-            ThreadLocalContext tlContext, MessageBodyReaderSet mbrs,
-            WrapperFactory wrapperFactory, Logger logger)
+            ThreadLocalizedContext tlContext, EntityProviders entityProvs,
+            WrapperFactory wrapperFactory,
+            Collection<ContextResolver<?>> allResolvers, Logger logger)
             throws InvocationTargetException, MissingAnnotationException,
             WebApplicationException, NoMessageBodyReaderException,
             InstantiateException, ConvertRepresentationException,
@@ -106,7 +110,8 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             ConvertCookieParamException {
         Object subResObj;
         try {
-            subResObj = invoke(resourceObject, false, tlContext, mbrs, logger);
+            subResObj = invoke(resourceObject, false, tlContext, entityProvs,
+                    allResolvers, logger);
         } catch (IllegalArgumentException e) {
             throw new InstantiateException(executeMethod, e);
         } catch (IllegalAccessException e) {

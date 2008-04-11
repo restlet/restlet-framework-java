@@ -20,33 +20,33 @@ package org.restlet.test.jaxrs.services.tests;
 import java.util.Set;
 
 import org.restlet.data.Response;
-import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.test.jaxrs.services.providers.EntityConstructorProvider;
-import org.restlet.test.jaxrs.services.providers.ParamConstructorProvider;
-import org.restlet.test.jaxrs.services.resources.IllegalConstructorResource;
+import org.restlet.resource.StringRepresentation;
+import org.restlet.test.jaxrs.services.providers.ThrowWebAppExcProvider;
+import org.restlet.test.jaxrs.services.resources.SimpleResource;
+import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
- * Checks, if illegal things are forbidden.
- * 
  * @author Stephan Koops
- * @see IllegalConstructorResource
+ * @see ThrowWebAppExcProvider
+ * @see SimpleResource
  */
-public class IllegalConstructorTest extends JaxRsTestCase {
+public class ThrowWebAppExcProviderTest extends JaxRsTestCase {
 
     @Override
     protected Class<?> getRootResourceClass() {
-        return IllegalConstructorResource.class;
+        return SimpleResource.class;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected Set<Class<?>> getProvClasses() {
-        return Util.createSet(ParamConstructorProvider.class,
-                EntityConstructorProvider.class);
+        return (Set) TestUtils.createSet(ThrowWebAppExcProvider.class);
     }
 
-    public void testNullSubResource() throws Exception {
-        Response response = get();
-        assertTrue(response.getStatus().isError());
+    public void testPost() {
+        Response response = post(new StringRepresentation("jgjhsdhbf"));
+        sysOutEntityIfError(response);
+        int statusCode = response.getStatus().getCode();
+        assertEquals(ThrowWebAppExcProvider.STATUS_READ, statusCode);
     }
 }

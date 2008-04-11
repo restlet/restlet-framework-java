@@ -42,6 +42,9 @@ public class HeadOptionsTest extends JaxRsTestCase {
         return HeadOptionsTestService.class;
     }
 
+    // NICE test if it works fine, for @GET first and for @HEAD first,
+    // if the GET-Method is not prefered to the HEAD method.
+    
     public void testHead1() throws Exception {
         Response responseGett = get("headTest1", MediaType.TEXT_HTML);
         Response responseHead = head("headTest1", MediaType.TEXT_HTML);

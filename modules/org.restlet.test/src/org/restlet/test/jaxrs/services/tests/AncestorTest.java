@@ -37,7 +37,6 @@ public class AncestorTest extends JaxRsTestCase {
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("0\n0", response.getEntity().getText());
-        System.out.println();
     }
     
     public void testUri() throws Exception {
@@ -45,7 +44,6 @@ public class AncestorTest extends JaxRsTestCase {
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1\n/ancestorTest", response.getEntity().getText());
-        System.out.println();
     }
     
     public void testResourceClassNames() throws Exception {
@@ -53,7 +51,6 @@ public class AncestorTest extends JaxRsTestCase {
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1\norg.restlet.test.jaxrs.services.resources.AncestorTestService", response.getEntity().getText());
-        System.out.println();
     }
     
     public void testGetSub() throws Exception {
@@ -61,7 +58,6 @@ public class AncestorTest extends JaxRsTestCase {
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1\n1", response.getEntity().getText());
-        System.out.println();
     }
 
     public void testGetSubSub() throws Exception {
@@ -69,7 +65,6 @@ public class AncestorTest extends JaxRsTestCase {
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("2\n2", response.getEntity().getText());
-        System.out.println();
     }
 
     public void testGetSubSameSub() throws Exception {
@@ -77,7 +72,6 @@ public class AncestorTest extends JaxRsTestCase {
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("2\n2", response.getEntity().getText());
-        System.out.println();
     }
 
     public void testSameSubSubUri() throws Exception {
@@ -85,6 +79,5 @@ public class AncestorTest extends JaxRsTestCase {
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("3\n/ancestorTest/sameSub/sub\n/ancestorTest/sameSub\n/ancestorTest", response.getEntity().getText());
-        System.out.println();
     }
 }

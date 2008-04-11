@@ -195,6 +195,13 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     public static ServerWrapperFactory getServerWrapperFactory() {
+        if(serverWrapperFactory == null)
+        {
+            if (USE_TCP)
+                serverWrapperFactory = new RestletServerWrapperFactory();
+            else
+                serverWrapperFactory = new DirectServerWrapperFactory();
+        }
         return serverWrapperFactory;
     }
 
@@ -371,7 +378,8 @@ public abstract class JaxRsTestCase extends TestCase {
      *                check for HEAD is automaticly done. But it is no problem
      *                to add the HEAD method.
      */
-    public void assertAllowedMethod(Response optionsResponse, Method... methods) {
+    public static void assertAllowedMethod(Response optionsResponse,
+            Method... methods) {
         if (optionsResponse.getStatus().isError())
             assertEquals(Status.SUCCESS_OK, optionsResponse.getStatus());
         Set<Method> expectedMethods = new HashSet<Method>(Arrays
@@ -386,6 +394,15 @@ public abstract class JaxRsTestCase extends TestCase {
         }
         assertEquals("allowedMethods.size invalid", expectedMethods.size(),
                 allowedMethods.size());
+    }
+
+    /**
+     * @param response
+     * @throws IOException
+     */
+    public static void assertEmptyEntity(Response response) throws IOException {
+        if (response.getEntity() != null)
+            assertEquals(null, response.getEntity().getText());
     }
 
     public Reference createBaseRef() {
@@ -604,8 +621,9 @@ public abstract class JaxRsTestCase extends TestCase {
         return post(null, entity, null, null);
     }
 
-    public Response post(String subPath, Representation entity) {
-        return post(subPath, entity, null, null);
+    public Response post(String subPath, MediaType mediaType) {
+        return accessServer(Method.POST, getRootResourceClass(), subPath,
+                mediaType);
     }
 
     public Response post(String subPath, Representation entity,
@@ -613,6 +631,10 @@ public abstract class JaxRsTestCase extends TestCase {
         return accessServer(Method.POST, createReference(
                 getRootResourceClass(), subPath), null, entity, cr, null, null,
                 null);
+    }
+
+    public Response post(String subPath, Representation entity) {
+        return post(subPath, entity, null);
     }
 
     @SuppressWarnings("unchecked")

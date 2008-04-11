@@ -89,7 +89,6 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
         response = put("integerReturnInteger", null);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
-        if (response.getEntity() != null)
-            assertEquals(null, response.getEntity());
+        assertEmptyEntity(response);
     }
 }

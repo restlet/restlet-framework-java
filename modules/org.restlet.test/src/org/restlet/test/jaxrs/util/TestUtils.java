@@ -86,4 +86,15 @@ public class TestUtils {
     public static <A> A getLastElement(List<A> list) {
         return Util.getLastElement(list);
     }
+
+    /**
+     * @throws InterruptedException
+     */
+    public static void sleep() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // shit happens
+        }
+    }
 }

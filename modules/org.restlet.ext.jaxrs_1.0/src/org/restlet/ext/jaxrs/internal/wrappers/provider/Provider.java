@@ -39,7 +39,7 @@ import javax.ws.rs.ext.MessageBodyWorkers;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
-import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -65,7 +65,6 @@ import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
  * @see javax.ws.rs.ext.Provider
  */
 public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
-        org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver<T>,
         ExceptionMapper<T> {
 
     /**
@@ -94,12 +93,18 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     private javax.ws.rs.ext.MessageBodyWriter<T> writer;
 
     /**
-     * Creates a new wrapper for a Provider and initializes the provider.
+     * Creates a new wrapper for a Provider and initializes the provider. If the
+     * given class is not a provider, an {@link IllegalArgumentException} is
+     * thrown.
      * 
      * @param jaxRsProviderClass
      *                the JAX-RS provider class.
      * @param tlContext
      *                The tread local wrapped call context
+     * @param mbWorkers
+     *                all entity providers.
+     * @param allResolvers
+     *                all available {@link ContextResolver}s.
      * @throws IllegalArgumentException
      *                 if the class is not a valid provider, may not be
      *                 instantiated or what ever.
@@ -114,12 +119,12 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @see javax.ws.rs.ext.ContextResolver
      */
     @SuppressWarnings("unchecked")
-    public Provider(Class<?> jaxRsProviderClass, ThreadLocalContext tlContext)
+    public Provider(Class<?> jaxRsProviderClass,
+            ThreadLocalizedContext tlContext, EntityProviders mbWorkers,
+            Collection<ContextResolver<?>> allResolvers)
             throws IllegalArgumentException, InvocationTargetException,
             MissingConstructorException, InstantiateException,
             IllegalAnnotationException {
-        // TESTEN provider including other providers at startup, which are not
-        // available on creation time.
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -127,7 +132,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         Constructor<?> providerConstructor = WrapperUtil.findJaxRsConstructor(
                 jaxRsProviderClass, "provider");
         this.jaxRsProvider = createInstance(providerConstructor,
-                jaxRsProviderClass, tlContext);
+                jaxRsProviderClass, tlContext, mbWorkers, allResolvers);
         boolean isProvider = false;
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyWriter) {
             this.writer = (javax.ws.rs.ext.MessageBodyWriter<T>) jaxRsProvider;
@@ -158,6 +163,10 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                class for exception message.
      * @param tlContext
      *                The tread local wrapped call context
+     * @param mbWorkers
+     *                all entity providers.
+     * @param allResolvers
+     *                all available {@link ContextResolver}s.
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      *                 if the constructor throws an Throwable
@@ -166,12 +175,14 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @throws NoMessageBodyReaderException
      */
     private Object createInstance(Constructor<?> providerConstructor,
-            Class<?> jaxRsProviderClass, ThreadLocalContext tlContext)
+            Class<?> jaxRsProviderClass, ThreadLocalizedContext tlContext,
+            EntityProviders mbWorkers,
+            Collection<ContextResolver<?>> allResolvers)
             throws IllegalArgumentException, InvocationTargetException,
             InstantiateException, IllegalAnnotationException {
         try {
             return WrapperUtil.createInstance(providerConstructor, true, false,
-                    tlContext, null, null);
+                    tlContext, mbWorkers, allResolvers, null);
         } catch (MissingAnnotationException e) {
             // should be not possible here
             throw new IllegalArgumentException(
@@ -243,8 +254,11 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         return consumedMimes;
     }
 
-    public T getContext(Class<?> type) {
-        return contextResolver.getContext(type);
+    /**
+     * @return the contextResolver
+     */
+    public javax.ws.rs.ext.ContextResolver<T> getContextResolver() {
+        return this.contextResolver;
     }
 
     /**
@@ -257,17 +271,6 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     @SuppressWarnings("unchecked")
     public ExceptionMapper<? extends Throwable> getExcMapper() {
         return (ExceptionMapper) excMapper;
-    }
-
-    /**
-     * Returns the JAX-RS provider as {@link ContextResolver}, if the provider
-     * is a ContextResolver, otherwise null.
-     * 
-     * @return
-     * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver#getJaxRsContextResolver()
-     */
-    public javax.ws.rs.ext.ContextResolver<?> getJaxRsContextResolver() {
-        return this.contextResolver;
     }
 
     /**
@@ -328,20 +331,19 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * 
      * @param tlContext
      *                The thread local wrapped {@link CallContext}
+     * @param mbWorkers
+     *                all entity providers.
      * @param allResolvers
-     *                all available wrapped {@link ContextResolver}s.
-     * @param messageBodyWorkers
-     *                The {@link javax.ws.rs.ext.MessageBodyReader}s and
-     *                {@link javax.ws.rs.ext.MessageBodyWriter}s.
-     * 
+     *                all available {@link ContextResolver}s.
      * @throws InjectException
+     * @throws InvocationTargetException
+     *                 if a bean setter throws an exception
      */
-    @SuppressWarnings("unused")
-    public void init(
-            ThreadLocalContext tlContext,
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver<?>> allResolvers,
-            MessageBodyWorkers messageBodyWorkers) throws InjectException {
-        injectContext(tlContext, allResolvers, messageBodyWorkers);
+    public void init(ThreadLocalizedContext tlContext,
+            MessageBodyWorkers mbWorkers,
+            Collection<ContextResolver<?>> allResolvers)
+            throws InjectException, InvocationTargetException {
+        injectContexts(tlContext, mbWorkers, allResolvers);
     }
 
     /**
@@ -349,22 +351,22 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * 
      * @param tlContext
      *                The thread local wrapped {@link CallContext}
+     * @param mbWorkers
+     *                all entity providers.
      * @param allResolvers
-     *                all available wrapped {@link ContextResolver}s.
-     * @param messageBodyWorkers
-     *                the {@link MessageBodyReader}s and
-     *                {@link MessageBodyWriter}s.
-     * 
+     *                all available {@link ContextResolver}s.
      * @throws InjectException
+     * @throws InvocationTargetException
+     *                 if a bean setter throws an exception
      */
-    private void injectContext(
-            ThreadLocalContext tlContext,
-            Collection<org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver<?>> allResolvers,
-            MessageBodyWorkers messageBodyWorkers) throws InjectException {
+    private void injectContexts(ThreadLocalizedContext tlContext,
+            MessageBodyWorkers mbWorkers,
+            Collection<ContextResolver<?>> allResolvers)
+            throws InjectException, InvocationTargetException {
         Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
-        ContextInjector iph = new ContextInjector(providerClass);
-        iph.inject(this.jaxRsProvider, tlContext, allResolvers,
-                messageBodyWorkers);
+        ContextInjector iph = new ContextInjector(providerClass, mbWorkers,
+                allResolvers);
+        iph.inject(this.jaxRsProvider, tlContext);
     }
 
     /**
@@ -474,9 +476,10 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      */
     public boolean supportAtLeastOne(Iterable<MediaType> mediaTypes) {
         for (MediaType produced : getProducedMimes()) {
-            for (MediaType requested : mediaTypes)
+            for (MediaType requested : mediaTypes) {
                 if (requested.isCompatible(produced))
                     return true;
+            }
         }
         return false;
     }

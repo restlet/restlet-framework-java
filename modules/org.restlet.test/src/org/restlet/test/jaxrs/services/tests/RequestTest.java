@@ -256,9 +256,6 @@ public class RequestTest extends JaxRsTestCase {
                 response.getEntity().getModificationDate());
         assertEquals(getDatastoreETag(), response.getEntity().getTag());
         assertEquals(0, response.getEntity().getSize());
-
-        // LATER test, what happens, because of Range-Header
-        // see RFC2616, top of page 131
     }
 
     public void testGetUnmodifiedSince() throws Exception {
@@ -279,7 +276,7 @@ public class RequestTest extends JaxRsTestCase {
         assertTrue("Entity must contain \"was modified\"", response.getEntity()
                 .getText().contains("The entity was modified since"));
 
-        // LATER testen, was bei ungultigem Datum passiert:
+        // NICE testen, was bei ungultigem Datum passiert:
         // If-Unmodified-Since-Header ignorieren.
     }
 

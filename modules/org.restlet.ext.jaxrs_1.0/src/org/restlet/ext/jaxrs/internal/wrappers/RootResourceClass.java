@@ -24,8 +24,10 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.MessageBodyWorkers;
 
-import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -41,9 +43,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
 
 /**
  * Instances represents a root resource class, see chapter 3 of JAX-RS
@@ -75,21 +75,25 @@ public class RootResourceClass extends ResourceClass {
         }
     }
 
-    private Constructor<?> constructor;
+    private final Constructor<?> constructor;
 
     /**
      * is true, if the constructor (or the root resource class) is annotated
      * with &#64;Path. Is available after constructor was running.
      */
-    private boolean constructorLeaveEncoded;
+    private final boolean constructorLeaveEncoded;
 
-    private IntoRrcInjector injectHelper;
+    private final IntoRrcInjector injectHelper;
 
     /**
      * Creates a wrapper for the given JAX-RS root resource class.
      * 
      * @param jaxRsClass
      *                the root resource class to wrap
+     * @param mbWorkers
+     *                all entity providers.
+     * @param allResolvers
+     *                all available {@link ContextResolver}s.
      * @param logger
      *                the logger to use.
      * @see WrapperFactory#getRootResourceClass(Class)
@@ -101,13 +105,15 @@ public class RootResourceClass extends ResourceClass {
      * @throws MissingConstructorException
      *                 if no valid constructor could be found
      */
-    RootResourceClass(Class<?> jaxRsClass, Logger logger)
+    RootResourceClass(Class<?> jaxRsClass, MessageBodyWorkers mbWorkers,
+            Collection<ContextResolver<?>> allResolvers, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException,
             IllegalPathOnClassException, MissingConstructorException {
         super(jaxRsClass, logger, logger);
         Util.checkClassConcrete(getJaxRsClass(), "root resource class");
         checkClassForPathAnnot(jaxRsClass, "root resource class");
-        this.injectHelper = new IntoRrcInjector(jaxRsClass, isLeaveEncoded());
+        this.injectHelper = new IntoRrcInjector(jaxRsClass, isLeaveEncoded(),
+                mbWorkers, allResolvers);
         this.constructor = WrapperUtil.findJaxRsConstructor(getJaxRsClass(),
                 "root resource class");
         this.constructorLeaveEncoded = this.isLeaveEncoded()
@@ -122,12 +128,11 @@ public class RootResourceClass extends ResourceClass {
      *                from the called URI, the Restlet
      *                {@link org.restlet.data.Request} and the Restlet
      *                {@link org.restlet.data.Response}.
-     * @param allResolvers
-     *                all available wrapped
-     *                {@link javax.ws.rs.ext.ContextResolver}s.
      * @param entityProviders
-     *                The available {@link MessageBodyReader}s in the
+     *                The available entity providers in the
      *                {@link org.restlet.ext.jaxrs.JaxRsRouter}.
+     * @param allResolvers
+     *                all available {@link ContextResolver}s.
      * @param logger
      *                The logger to use
      * @return
@@ -142,9 +147,9 @@ public class RootResourceClass extends ResourceClass {
      * @throws ConvertHeaderParamException
      * @throws ConvertRepresentationException
      */
-    public ResourceObject createInstance(ThreadLocalContext tlContext,
-            Collection<ContextResolver<?>> allResolvers,
-            EntityProviders entityProviders, Logger logger)
+    public ResourceObject createInstance(ThreadLocalizedContext tlContext,
+            EntityProviders entityProviders,
+            Collection<ContextResolver<?>> allResolvers, Logger logger)
             throws MissingAnnotationException, InstantiateException,
             NoMessageBodyReaderException, InvocationTargetException,
             ConvertRepresentationException, ConvertHeaderParamException,
@@ -154,15 +159,15 @@ public class RootResourceClass extends ResourceClass {
         Object instance;
         try {
             instance = WrapperUtil.createInstance(constructor, false,
-                    constructorLeaveEncoded, tlContext, entityProviders, logger);
+                    constructorLeaveEncoded, tlContext, entityProviders,
+                    allResolvers, logger);
         } catch (IllegalAnnotationException iae) {
             // should not be possible here
             throw new InstantiateException(iae);
         }
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {
-            this.injectHelper.inject(rootResourceObject, tlContext, allResolvers,
-                    entityProviders);
+            this.injectHelper.inject(rootResourceObject, tlContext);
         } catch (InjectException e) {
             throw new InstantiateException(e);
         }

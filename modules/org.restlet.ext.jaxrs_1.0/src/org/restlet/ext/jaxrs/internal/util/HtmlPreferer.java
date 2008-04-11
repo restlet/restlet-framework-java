@@ -59,7 +59,7 @@ import org.restlet.data.Response;
  */
 public class HtmlPreferer extends Filter {
     
-    // LATER move HtmlPreferer to the TunnelFilter
+    // NICE move HtmlPreferer to the TunnelFilter
     // see http://restlet.tigris.org/issues/show_bug.cgi?id=455
 
     private static final int MT_PREF_APP_XHTML = 1;

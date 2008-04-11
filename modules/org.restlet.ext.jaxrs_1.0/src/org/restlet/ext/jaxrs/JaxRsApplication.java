@@ -37,6 +37,7 @@ import org.restlet.data.Language;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.HtmlPreferer;
+import org.restlet.ext.jaxrs.internal.util.TunnelFilter;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
 
@@ -88,12 +89,14 @@ public class JaxRsApplication extends Application {
      */
     public JaxRsApplication(Context parentContext) {
         super(parentContext);
+        this.getTunnelService().setExtensionsTunnel(false);
         this.jaxRsRouter = new JaxRsRouter(parentContext);
     }
 
     /**
-     * Adds the extension mappings for mediat types and languages, given by the
-     * {@link ApplicationConfig} to the {@link TunnelService}.
+     * Adds the extension mappings for media types and languages, given by the
+     * {@link ApplicationConfig} to the {@link MetadataService} of this
+     * {@link Application}.
      * 
      * @param appConfig
      *                the ApplicationConfig to read the mappings from.
@@ -188,6 +191,10 @@ public class JaxRsApplication extends Application {
             this.guard.setNext(restlet);
             restlet = this.guard;
         }
+        
+        TunnelFilter tunnelFilter = new TunnelFilter(this);
+        tunnelFilter.setNext(restlet);
+        restlet = tunnelFilter;
 
         // some browser request XML with higher quality than HTML.
         // If you want to change the quality, use this HtmlPreferer
@@ -332,8 +339,12 @@ public class JaxRsApplication extends Application {
      * the Restlets for some exception handling.
      * 
      * @return the exception handler for this JaxRsApplication.
+     * @deprecated Perhaps this method is only default visible and will be
+     *             removed perhaps later, because the access to the
+     *             {@link ExceptionHandler} will perhaps get removed.
      */
-    public ExceptionHandler getExcHandler() {
+    @Deprecated
+    ExceptionHandler getExcHandler() {
         return this.jaxRsRouter.getExcHandler();
     }
 }

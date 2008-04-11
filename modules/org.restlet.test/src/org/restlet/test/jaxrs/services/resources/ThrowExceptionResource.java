@@ -39,7 +39,7 @@ public class ThrowExceptionResource {
     @GET
     @Path("IOException")
     public String getIoe() throws IOException {
-        throw new IOException();
+        throw new IOException("This exception is planned for testing !");
     }
 
     @GET

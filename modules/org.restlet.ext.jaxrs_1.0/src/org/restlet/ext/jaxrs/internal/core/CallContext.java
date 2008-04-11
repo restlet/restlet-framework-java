@@ -31,13 +31,13 @@ import java.util.Set;
 
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
@@ -53,6 +53,7 @@ import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
+import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.RoleChecker;
@@ -64,15 +65,14 @@ import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 
 /**
+ * Contains all request specific data of the interfaces injectable for &#64;{@link Context}.
  * Implemetation of the JAX-RS interfaces {@link HttpHeaders}, {@link UriInfo},
- * {@link Request} and {@link SecurityContext}.
+ * {@link javax.ws.rs.core.Request} and {@link SecurityContext}.
  * 
  * @author Stephan Koops
  */
-public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
-        HttpHeaders, SecurityContext {
-
-    // TODO throw IllegalStateExc if called outside the scope of a request.
+public class CallContext extends JaxRsUriInfo implements UriInfo,
+        javax.ws.rs.core.Request, HttpHeaders, SecurityContext {
 
     /**
      * Iterator to return the values for a matrix parameter.
@@ -146,8 +146,6 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
 
     private List<MediaType> acceptedMediaTypes;
 
-    private RoleChecker roleChecker;
-
     private SortedMetadata<org.restlet.data.MediaType> accMediaTypes;
 
     private Map<String, Cookie> cookies;
@@ -156,13 +154,15 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
 
     private MediaType mediaType;
 
-    private org.restlet.data.Request request;
+    private Request request;
+
+    // HttpHeaders methods
 
     private UnmodifiableMultivaluedMap<String, String> requestHeaders;
 
     private org.restlet.data.Response response;
 
-    // HttpHeaders methods
+    private RoleChecker roleChecker;
 
     /**
      * 
@@ -180,10 +180,10 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      *                the HTTP client will get an Internal Server Error as
      *                response.
      */
-    public CallContext(org.restlet.data.Request request,
-            org.restlet.data.Response response, RoleChecker roleChecker) {
-        super((request == null) ? null : request.getResourceRef(), false);
-
+    public CallContext(Request request, org.restlet.data.Response response,
+            RoleChecker roleChecker) {
+        super(Util.getReferenceOriginal(request), Util.getReferenceCut(request),
+                Util.getCutExtensions(request), false);
         if (response == null)
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
@@ -524,7 +524,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * 
      * @return the Restlet {@link org.restlet.data.Request}
      */
-    public org.restlet.data.Request getRequest() {
+    public Request getRequest() {
         return request;
     }
 
@@ -659,7 +659,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo, Request,
      * @see Variant.VariantListBuilder
      * @throws IllegalArgumentException
      *                 if variants is null or empty.
-     * @see Request#selectVariant(List)
+     * @see javax.ws.rs.core.Request#selectVariant(List)
      */
     public Variant selectVariant(List<Variant> variants)
             throws IllegalArgumentException {

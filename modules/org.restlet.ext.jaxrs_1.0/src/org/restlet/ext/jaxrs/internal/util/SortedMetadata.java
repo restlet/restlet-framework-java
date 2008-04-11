@@ -65,7 +65,8 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
             }
             metadatas.add(preference.getMetadata());
         }
-        this.metadatas = new ArrayList<Collection<T>>(map.values());
+        Collection<Collection<T>> values = map.values();
+        this.metadatas = Collections.unmodifiableList(new ArrayList(values));
     }
 
     /**
@@ -181,5 +182,14 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
     @Override
     public String toString() {
         return this.metadatas.toString();
+    }
+
+    /**
+     * @param respMediaType
+     * @return
+     */
+    public static SortedMetadata<MediaType> get(MediaType respMediaType) {
+        return new SortedMetadata<MediaType>(Collections
+                .singleton(new Preference<MediaType>(respMediaType)));
     }
 }

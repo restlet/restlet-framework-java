@@ -72,9 +72,14 @@ public class WrappedRequestForHttpHeaders implements
     }
 
     public void add(String headerName, Object headerValue) {
+        unsupported();
+    }
+
+    private UnsupportedOperationException unsupported()
+            throws UnsupportedOperationException {
+        // LATER messagebodywriter http header write and WebAppExc not supported
         throw new UnsupportedOperationException(
-                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
-        // LATER in die Masterarbeit aufnehmen
+                "The changing of the http headers is not supported by this runtime environment.");
     }
 
     /**
@@ -103,8 +108,7 @@ public class WrappedRequestForHttpHeaders implements
     }
 
     public void clear() {
-        throw new UnsupportedOperationException(
-                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
+        unsupported();
     }
 
     public boolean containsKey(Object headerName) {
@@ -151,7 +155,7 @@ public class WrappedRequestForHttpHeaders implements
         Series<Parameter> headers = getHeaders();
         if (headers != null) {
             Parameter first = headers.getFirst(headerName);
-            if(first == null)
+            if (first == null)
                 return null;
             return first.getValue();
         }
@@ -193,23 +197,19 @@ public class WrappedRequestForHttpHeaders implements
     }
 
     public List<Object> put(String headerName, List<Object> headerValues) {
-        throw new UnsupportedOperationException(
-                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
+        throw unsupported();
     }
 
     public void putAll(Map<? extends String, ? extends List<Object>> t) {
-        throw new UnsupportedOperationException(
-                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
+        unsupported();
     }
 
     public void putSingle(String headerName, Object headerValue) {
-        throw new UnsupportedOperationException(
-                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
+        unsupported();
     }
 
     public List<Object> remove(Object headerName) {
-        throw new UnsupportedOperationException(
-                "The changing of the http headers is not supported by this runtime environment, because it is not a good design");
+        throw unsupported();
     }
 
     public int size() {

@@ -19,17 +19,17 @@ package org.restlet.test.jaxrs.services.tests;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.RestletContextsTestService;
+import org.restlet.test.jaxrs.services.resources.ContextsTestService;
 
 /**
  * @author Stephan Koops
- * @see RestletContextsTestService
+ * @see ContextsTestService
  */
-public class RestletContextsTest extends JaxRsTestCase {
+public class ContextsTest extends JaxRsTestCase {
 
     @Override
     protected Class<?> getRootResourceClass() {
-        return RestletContextsTestService.class;
+        return ContextsTestService.class;
     }
 
     public void testFields() throws Exception {

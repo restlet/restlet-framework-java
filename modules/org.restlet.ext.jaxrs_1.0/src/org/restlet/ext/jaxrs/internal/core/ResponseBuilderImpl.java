@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
@@ -400,7 +401,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder variants(List<Variant> variants) {
-        // LATER add entity header with further information
+        // NICE add entity header with further information
         // give links, use extension mapping. Was macht Restlet da schon?
         Set<String> encodings = new HashSet<String>();
         Set<String> languages = new HashSet<String>();

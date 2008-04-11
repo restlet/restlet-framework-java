@@ -36,20 +36,26 @@ import org.restlet.test.jaxrs.services.tests.InjectionTest;
  * @see InjectionTest
  * @see Context
  */
-@Path("/InjectionTestService/two/{id}")
+@Path("/InjectionTestService/two/{idf}")
 public class InjectionTestService2 {
 
-    @Context private SecurityContext securityContext;
-    
-    @Context private UriInfo uriInfo;
-    
-    @Context private Request request;
-    
-    @Context private HttpHeaders httpHeaders;
-    
-    @PathParam("id") private Integer id;
+    @Context
+    private SecurityContext securityContext;
 
-    @HeaderParam("host") private String host;
+    @Context
+    private UriInfo uriInfo;
+
+    @Context
+    private Request request;
+
+    @Context
+    private HttpHeaders httpHeaders;
+
+    @PathParam("idf")
+    private Integer idf;
+
+    @HeaderParam("host")
+    private String hostHost;
 
     @GET
     @ProduceMime("text/plain")
@@ -63,12 +69,12 @@ public class InjectionTestService2 {
             msg += "\n* request";
         if (httpHeaders == null)
             msg += "\n* httpHeaders";
-        if(id == null)
+        if (idf == null)
             msg += "\n* id";
-        if(host == null)
+        if (hostHost == null)
             msg += "\n* host";
         if (msg.length() > 0)
             return Response.serverError().entity("missing:" + msg).build();
-        return Response.ok(String.valueOf("ok")).build();
+        return Response.ok(String.valueOf(idf)).build();
     }
 }

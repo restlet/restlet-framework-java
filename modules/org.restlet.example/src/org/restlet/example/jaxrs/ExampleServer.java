@@ -46,7 +46,7 @@ public class ExampleServer {
 
         // create JAX-RS runtime environment
         JaxRsApplication application = new JaxRsApplication(comp.getContext());
-
+        
         // attach ApplicationConfig
         application.attach(new ExampleAppConfig());
 

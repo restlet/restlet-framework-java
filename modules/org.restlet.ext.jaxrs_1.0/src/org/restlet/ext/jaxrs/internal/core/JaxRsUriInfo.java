@@ -42,16 +42,15 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
  * Implementation of the JAX-RS interface {@link UriInfo}.<br>
- * LATER This class may be refactored to a parent class which can be used
+ * <!--NICE--> This class may be refactored to a parent class which can be used
  * without the JAX-RS context.
  * 
  * @author Stephan Koops
  */
 public class JaxRsUriInfo implements UriInfo {
 
-    // TODO throw IllegalStateExc if called outside the scope of a request.
-
-    private static Logger logger = Logger.getLogger("JaxRsUriInfo.unexpected");
+    private static Logger unexpectedLogger = Logger
+            .getLogger("JaxRsUriInfo.unexpected");
 
     private LinkedList<Object> ancestorResources = new LinkedList<Object>();
 
@@ -84,7 +83,11 @@ public class JaxRsUriInfo implements UriInfo {
 
     private boolean readOnly = false;
 
-    protected Reference reference;
+    private Reference referenceOriginal;
+
+    private Reference referenceCut;
+
+    private String cutExtensions;
 
     /**
      * Creates a new UriInfo. When using this constructor, the
@@ -98,28 +101,40 @@ public class JaxRsUriInfo implements UriInfo {
      * @see #JaxRsUriInfo(Reference, MultivaluedMap)
      */
     public JaxRsUriInfo(Reference reference) {
-        this(reference, true);
+        this(reference, reference, null, true);
     }
 
     /**
      * Creates a new UriInfo. When using this constructor, the
      * templateParameters are not available.
      * 
-     * @param reference
-     *                The Restlet reference that will be wrapped. Must not be
-     *                null and must have a base reference, see
+     * @param referenceOriginal
+     *                The original Restlet reference that will be wrapped. Must
+     *                not be null and must have a base reference, see
      *                {@link Reference#getBaseRef()}.
+     * @param referenceCut
+     *                The Restlet reference with the cut extensions.
+     * @param cutExtensions
+     *                the cut extensions, or null if non.
      * @param readOnly
      * 
      * @see #JaxRsUriInfo(Reference, MultivaluedMap)
      */
-    protected JaxRsUriInfo(Reference reference, boolean readOnly) {
-        if (reference == null)
+    protected JaxRsUriInfo(Reference referenceOriginal, Reference referenceCut,
+            String cutExtensions, boolean readOnly) {
+        if (referenceCut == null)
             throw new IllegalArgumentException("The reference must not be null");
-        if (reference.getBaseRef() == null)
+        if (referenceCut.getBaseRef() == null)
             throw new IllegalArgumentException(
                     "The reference must contains a baseRef");
-        this.reference = reference;
+        this.referenceCut = referenceCut;
+        this.referenceOriginal = referenceOriginal;
+        if (cutExtensions == null)
+            this.cutExtensions = null;
+        else if (cutExtensions.charAt(0) == '.')
+            this.cutExtensions = cutExtensions.substring(1);
+        else
+            this.cutExtensions = cutExtensions;
         this.readOnly = readOnly;
     }
 
@@ -172,7 +187,8 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     private List<PathSegment> createPathSegments(boolean decode) {
-        List<String> segments = this.reference.getRelativeRef().getSegments();
+        List<String> segments = this.getReferenceOriginal().getRelativeRef()
+                .getSegments();
         int l = segments.size();
         List<PathSegment> pathSegments = new ArrayList<PathSegment>(l);
         for (int i = 0; i < l; i++)
@@ -208,9 +224,9 @@ public class JaxRsUriInfo implements UriInfo {
      */
     public URI getAbsolutePath() {
         try {
-            return new URI(reference.toString(false, false));
+            return new URI(getReferenceOriginal().toString(false, false));
         } catch (URISyntaxException e) {
-            throw wrapUriSyntaxExc(e, logger, "Could not create URI");
+            throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
         }
     }
 
@@ -223,16 +239,25 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getAbsolutePathBuilder()
      */
     public UriBuilder getAbsolutePathBuilder() {
-        // LATER what happens, if the Reference is invalid for the UriBuilder?
+        return createUriBuilder(getReferenceOriginal());
+    }
+
+    /**
+     * @param ref
+     * @return
+     * @throws IllegalArgumentException
+     */
+    private UriBuilder createUriBuilder(Reference ref) {
+        // NICE what happens, if the Reference is invalid for the UriBuilder?
         UriBuilder b = new JaxRsUriBuilder();
         b.encode(false);
-        b.scheme(reference.getScheme(false));
-        b.userInfo(reference.getUserInfo(false));
-        b.host(reference.getHostDomain(false));
-        b.port(reference.getHostPort());
-        b.path(reference.getPath(false));
-        b.replaceQueryParams(reference.getQuery(false));
-        b.fragment(reference.getFragment(false));
+        b.scheme(ref.getScheme(false));
+        b.userInfo(ref.getUserInfo(false));
+        b.host(ref.getHostDomain(false));
+        b.port(ref.getHostPort());
+        b.path(ref.getPath(false));
+        b.replaceQueryParams(ref.getQuery(false));
+        b.fragment(ref.getFragment(false));
         b.encode(true);
         return b;
     }
@@ -275,6 +300,10 @@ public class JaxRsUriInfo implements UriInfo {
      * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs()
      */
     public List<String> getAncestorResourceURIs() {
+        Logger
+                .getAnonymousLogger()
+                .config(
+                        "UriInfo.getAncestorResourceURIs() is not checked for coded or encoded.");
         return ancestorResourceURIsUnomd;
     }
 
@@ -314,7 +343,11 @@ public class JaxRsUriInfo implements UriInfo {
      * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs(boolean)
      */
     public List<String> getAncestorResourceURIs(boolean decode) {
-        // TODO JaxRsUriBuilder.getAncestorResourceURIs(boolean decode).
+        Logger
+                .getAnonymousLogger()
+                .config(
+                        "UriInfo.getAncestorResourceURIs() is not checked for coded or encoded.");
+        // LATER JaxRsUriBuilder.getAncestorResourceURIs(boolean decode).
         if (decode && !decode)
             decode = false;
         return ancestorResourceURIsUnomd;
@@ -331,7 +364,7 @@ public class JaxRsUriInfo implements UriInfo {
         try {
             return new URI(getBaseUriStr());
         } catch (URISyntaxException e) {
-            throw wrapUriSyntaxExc(e, logger, "Could not create URI");
+            throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
         }
     }
 
@@ -350,7 +383,7 @@ public class JaxRsUriInfo implements UriInfo {
 
     private String getBaseUriStr() {
         if (this.baseUri == null) {
-            Reference baseRef = reference.getBaseRef();
+            Reference baseRef = getReferenceCut().getBaseRef();
             if (baseRef != null)
                 this.baseUri = baseRef.toString(false, false);
         }
@@ -379,7 +412,8 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getPath(boolean)
      */
     public String getPath(boolean decode) {
-        String path = this.reference.getRelativeRef().toString(true, true);
+        String path = this.getReferenceOriginal().getRelativeRef().toString(
+                true, true);
         if (!decode)
             return path;
         return Reference.decode(path);
@@ -402,8 +436,7 @@ public class JaxRsUriInfo implements UriInfo {
      * @see javax.ws.rs.core.UriInfo#getPathExtension()
      */
     public String getPathExtension() {
-        // TODO JaxRsUriBuilder.getPathExtension().
-        return null;
+        return getCutExtensions();
     }
 
     /**
@@ -528,8 +561,7 @@ public class JaxRsUriInfo implements UriInfo {
      * @see javax.ws.rs.core.UriInfo#getPlatonicRequestUriBuilder()
      */
     public UriBuilder getPlatonicRequestUriBuilder() {
-        // TODO JaxRsUriBuilder.getPlatonicRequestUriBuilder().
-        return null;
+        return createUriBuilder(getReferenceCut());
     }
 
     /**
@@ -545,7 +577,7 @@ public class JaxRsUriInfo implements UriInfo {
     public MultivaluedMap<String, String> getQueryParameters() {
         if (queryParametersDecoded == null)
             queryParametersDecoded = UnmodifiableMultivaluedMap.getFromForm(
-                    reference.getQueryAsForm(), false);
+                    getReferenceOriginal().getQueryAsForm(), false);
         return queryParametersDecoded;
     }
 
@@ -559,8 +591,8 @@ public class JaxRsUriInfo implements UriInfo {
         if (decode)
             return getQueryParameters();
         if (queryParametersEncoded == null) {
-            Form queryForm = Converter.toFormEncoded(reference.getQuery(),
-                    logger);
+            Form queryForm = Converter.toFormEncoded(getReferenceOriginal()
+                    .getQuery(), unexpectedLogger);
             queryParametersEncoded = UnmodifiableMultivaluedMap.getFromForm(
                     queryForm, false);
         }
@@ -572,9 +604,9 @@ public class JaxRsUriInfo implements UriInfo {
      */
     public URI getRequestUri() {
         try {
-            return new URI(reference.toString(true, true));
+            return new URI(getReferenceOriginal().toString(true, true));
         } catch (URISyntaxException e) {
-            throw wrapUriSyntaxExc(e, logger, "Could not create URI");
+            throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
         }
     }
 
@@ -663,7 +695,7 @@ public class JaxRsUriInfo implements UriInfo {
 
     @Override
     public String toString() {
-        return this.reference.toString(true, false);
+        return this.getReferenceOriginal().toString(true, false);
     }
 
     /**
@@ -672,8 +704,8 @@ public class JaxRsUriInfo implements UriInfo {
      * 
      * @param exc
      *                the catched URISyntaxException
-     * @param logger
-     *                the logger to log the messade
+     * @param unexpectedLogger
+     *                the unexpectedLogger to log the messade
      * @param logMessage
      *                the message to log.
      * @return Will never return anything, because the generated
@@ -688,5 +720,26 @@ public class JaxRsUriInfo implements UriInfo {
         logger.log(Level.WARNING, logMessage, exc);
         exc.printStackTrace();
         throw new WebApplicationException(exc, Status.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * @return the referenceOriginal
+     */
+    protected Reference getReferenceOriginal() {
+        return referenceOriginal;
+    }
+
+    /**
+     * @return the referenceCut
+     */
+    private Reference getReferenceCut() {
+        return this.referenceCut;
+    }
+
+    /**
+     * @return the cutExtensions
+     */
+    private String getCutExtensions() {
+        return this.cutExtensions;
     }
 }

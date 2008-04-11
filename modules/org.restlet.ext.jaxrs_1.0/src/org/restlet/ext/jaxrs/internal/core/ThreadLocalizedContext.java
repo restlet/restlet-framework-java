@@ -35,359 +35,386 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.MessageBodyWorkers;
 
 /**
- * This class is used for thread local injection in providers and resources.
+ * This class is used for thread local injection into providers and resources.
  * 
  * @author Stephan Koops
  * @see UriInfo
  * @see Request
  * @see HttpHeaders
  * @see SecurityContext
+ * @see MessageBodyWorkers
+ * @see ContextResolver
  * @see CallContext
  */
-public class ThreadLocalContext implements UriInfo, Request, HttpHeaders,
+public class ThreadLocalizedContext implements UriInfo, Request, HttpHeaders,
         SecurityContext {
-    
-    private ThreadLocal<CallContext> callContexts = new ThreadLocal<CallContext>();
-    // XXX immer über Context.getInstance()
+
+    /**
+     * The key of the {@link CallContext} in the
+     * {@link org.restlet.data.Request} attributes.
+     */
+    private static final String CALLCONTEXT_KEY = "org.restlet.ext.jaxrs.CallContext";
 
     /**
      * @param lastModified
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#evaluatePreconditions(java.util.Date)
+     * @see CallContext#evaluatePreconditions(java.util.Date)
      * @see Request#evaluatePreconditions(Date)
      */
     public ResponseBuilder evaluatePreconditions(Date lastModified) {
-        return this.callContexts.get().evaluatePreconditions(lastModified);
+        return get().evaluatePreconditions(lastModified);
     }
 
     /**
      * @param lastModified
      * @param entityTag
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#evaluatePreconditions(java.util.Date,
+     * @see CallContext#evaluatePreconditions(java.util.Date,
      *      javax.ws.rs.core.EntityTag)
      * @see Request#evaluatePreconditions(Date, EntityTag)
      */
     public ResponseBuilder evaluatePreconditions(Date lastModified,
             EntityTag entityTag) {
-        return this.callContexts.get().evaluatePreconditions(lastModified,
-                entityTag);
+        return get().evaluatePreconditions(lastModified, entityTag);
     }
 
     /**
      * @param entityTag
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#evaluatePreconditions(javax.ws.rs.core.EntityTag)
+     * @see CallContext#evaluatePreconditions(javax.ws.rs.core.EntityTag)
      * @see Request#evaluatePreconditions(EntityTag)
      */
     public ResponseBuilder evaluatePreconditions(EntityTag entityTag) {
-        return this.callContexts.get().evaluatePreconditions(entityTag);
+        return get().evaluatePreconditions(entityTag);
     }
 
     /**
      * Returns the wrapped CallContext for the current Thread.
      * 
-     * @return the wrapped CallContext for the current Thread.
+     * @return the wrapped CallContext for the current Thread. Never returns
+     *         null.
+     * @throws IllegalStateException
+     *                 if no {@link CallContext} was given for the current
+     *                 thread. If this occurs, their is a bug in this JAX-RS
+     *                 implementation.
+     * @see #set(CallContext)
      */
-    public CallContext get() {
-        // XXX use org.restlet.Context.getContext();
-        return callContexts.get();
-    }
-    
-    /**
-     * Sets the CallContext for the current thread
-     * @param callContext
-     */
-    public void set(CallContext callContext) {
-        // XXX use org.restlet.Context.getContext();
-        callContexts.set(callContext);
+    public CallContext get() throws IllegalStateException {
+        Object callContext = getRequestAttributes().get(CALLCONTEXT_KEY);
+        if (callContext == null)
+            throw new IllegalStateException("No CallContext given until now");
+        return (CallContext) callContext;
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getAbsolutePath()
+     * @see JaxRsUriInfo#getAbsolutePath()
      * @see UriInfo#getAbsolutePath()
      */
     public URI getAbsolutePath() {
-        return this.callContexts.get().getAbsolutePath();
+        return get().getAbsolutePath();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getAbsolutePathBuilder()
+     * @see JaxRsUriInfo#getAbsolutePathBuilder()
      * @see UriInfo#getAbsolutePathBuilder()
      */
     public UriBuilder getAbsolutePathBuilder() {
-        return this.callContexts.get().getAbsolutePathBuilder();
+        return get().getAbsolutePathBuilder();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#getAcceptableMediaTypes()
+     * @see CallContext#getAcceptableMediaTypes()
      * @see HttpHeaders#getAcceptableMediaTypes()
      */
     @SuppressWarnings("deprecation")
     public List<MediaType> getAcceptableMediaTypes() {
-        return this.callContexts.get().getAcceptableMediaTypes();
+        return get().getAcceptableMediaTypes();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getAncestorResources()
+     * @see JaxRsUriInfo#getAncestorResources()
      * @see UriInfo#getAncestorResources()
      */
     public List<Object> getAncestorResources() {
-        return this.callContexts.get().getAncestorResources();
+        return get().getAncestorResources();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getAncestorResourceURIs()
+     * @see JaxRsUriInfo#getAncestorResourceURIs()
      * @see UriInfo#getAncestorResourceURIs()
      */
     public List<String> getAncestorResourceURIs() {
-        return this.callContexts.get().getAncestorResourceURIs();
+        return get().getAncestorResourceURIs();
     }
 
     /**
      * @param decode
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getAncestorResourceURIs(boolean)
+     * @see JaxRsUriInfo#getAncestorResourceURIs(boolean)
      * @see UriInfo#getAncestorResourceURIs(boolean)
      */
     public List<String> getAncestorResourceURIs(boolean decode) {
-        return this.callContexts.get().getAncestorResourceURIs(decode);
+        return get().getAncestorResourceURIs(decode);
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#getAuthenticationScheme()
+     * @see CallContext#getAuthenticationScheme()
      * @see SecurityContext#getAuthenticationScheme()
      */
     public String getAuthenticationScheme() {
-        return this.callContexts.get().getAuthenticationScheme();
+        return get().getAuthenticationScheme();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getBaseUri()
+     * @see JaxRsUriInfo#getBaseUri()
      * @see UriInfo#getBaseUri()
      */
     public URI getBaseUri() {
-        return this.callContexts.get().getBaseUri();
+        return get().getBaseUri();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getBaseUriBuilder()
+     * @see JaxRsUriInfo#getBaseUriBuilder()
      * @see UriInfo#getBaseUriBuilder()
      */
     public UriBuilder getBaseUriBuilder() {
-        return this.callContexts.get().getBaseUriBuilder();
+        return get().getBaseUriBuilder();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#getCookies()
+     * @see CallContext#getCookies()
      * @see HttpHeaders#getCookies()
      */
     public Map<String, Cookie> getCookies() {
-        return this.callContexts.get().getCookies();
+        return get().getCookies();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#getLanguage()
+     * @see CallContext#getLanguage()
      * @see HttpHeaders#getLanguage()
      */
     public String getLanguage() {
-        return this.callContexts.get().getLanguage();
+        return get().getLanguage();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#getMediaType()
+     * @see CallContext#getMediaType()
      * @see HttpHeaders#getMediaType()
      */
     public MediaType getMediaType() {
-        return this.callContexts.get().getMediaType();
+        return get().getMediaType();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPath()
+     * @see JaxRsUriInfo#getPath()
      * @see UriInfo#getPath()
      */
     public String getPath() {
-        return this.callContexts.get().getPath();
+        return get().getPath();
     }
 
     /**
      * @param decode
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPath(boolean)
+     * @see JaxRsUriInfo#getPath(boolean)
      * @see UriInfo#getPath(boolean)
      */
     public String getPath(boolean decode) {
-        return this.callContexts.get().getPath(decode);
+        return get().getPath(decode);
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPathExtension()
+     * @see JaxRsUriInfo#getPathExtension()
      * @see UriInfo#getPathExtension()
      */
     public String getPathExtension() {
-        return this.callContexts.get().getPathExtension();
+        return get().getPathExtension();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPathParameters()
+     * @see JaxRsUriInfo#getPathParameters()
      * @see UriInfo#getPathParameters()
      */
     public MultivaluedMap<String, String> getPathParameters() {
-        return this.callContexts.get().getPathParameters();
+        return get().getPathParameters();
     }
 
     /**
      * @param decode
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPathParameters(boolean)
+     * @see JaxRsUriInfo#getPathParameters(boolean)
      * @see UriInfo#getPathParameters(boolean)
      */
     public MultivaluedMap<String, String> getPathParameters(boolean decode) {
-        return this.callContexts.get().getPathParameters(decode);
+        return get().getPathParameters(decode);
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPathSegments()
+     * @see JaxRsUriInfo#getPathSegments()
      * @see UriInfo#getPathSegments()
      */
     public List<PathSegment> getPathSegments() {
-        return this.callContexts.get().getPathSegments();
+        return get().getPathSegments();
     }
 
     /**
      * @param decode
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPathSegments(boolean)
+     * @see JaxRsUriInfo#getPathSegments(boolean)
      * @see UriInfo#getPathSegments(boolean)
      */
     public List<PathSegment> getPathSegments(boolean decode) {
-        return this.callContexts.get().getPathSegments(decode);
+        return get().getPathSegments(decode);
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getPlatonicRequestUriBuilder()
+     * @see JaxRsUriInfo#getPlatonicRequestUriBuilder()
      * @see UriInfo#getPlatonicRequestUriBuilder()
      */
     public UriBuilder getPlatonicRequestUriBuilder() {
-        return this.callContexts.get().getPlatonicRequestUriBuilder();
+        return get().getPlatonicRequestUriBuilder();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getQueryParameters()
+     * @see JaxRsUriInfo#getQueryParameters()
      * @see UriInfo#getQueryParameters()
      */
     public MultivaluedMap<String, String> getQueryParameters() {
-        return this.callContexts.get().getQueryParameters();
+        return get().getQueryParameters();
     }
 
     /**
      * @param decode
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getQueryParameters(boolean)
+     * @see JaxRsUriInfo#getQueryParameters(boolean)
      * @see UriInfo#getQueryParameters(boolean)
      */
     public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
-        return this.callContexts.get().getQueryParameters(decode);
+        return get().getQueryParameters(decode);
+    }
+
+    /**
+     * Returns the attributes of the current Restlet
+     * {@link org.restlet.data.Request}.
+     * 
+     * @return the attributes of the current Restlet Request, but never null
+     */
+    private Map<String, Object> getRequestAttributes() {
+        return org.restlet.data.Request.getCurrent().getAttributes();
     }
 
     /**
      * @param name
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#getRequestHeader(java.lang.String)
+     * @see CallContext#getRequestHeader(java.lang.String)
      * @see HttpHeaders#getRequestHeader(String)
      */
     public List<String> getRequestHeader(String name) {
-        return this.callContexts.get().getRequestHeader(name);
+        return get().getRequestHeader(name);
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#getRequestHeaders()
+     * @see CallContext#getRequestHeaders()
      * @see HttpHeaders#getRequestHeaders()
      */
     public MultivaluedMap<String, String> getRequestHeaders() {
-        return this.callContexts.get().getRequestHeaders();
+        return get().getRequestHeaders();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getRequestUri()
+     * @see JaxRsUriInfo#getRequestUri()
      * @see UriInfo#getRequestUri()
      */
     public URI getRequestUri() {
-        return this.callContexts.get().getRequestUri();
+        return get().getRequestUri();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.JaxRsUriInfo#getRequestUriBuilder()
+     * @see JaxRsUriInfo#getRequestUriBuilder()
      * @see UriInfo#getRequestUriBuilder()
      */
     public UriBuilder getRequestUriBuilder() {
-        return this.callContexts.get().getRequestUriBuilder();
+        return get().getRequestUriBuilder();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#getUserPrincipal()
+     * @see CallContext#getUserPrincipal()
      * @see SecurityContext#getUserPrincipal()
      */
     public Principal getUserPrincipal() {
-        return this.callContexts.get().getUserPrincipal();
+        return get().getUserPrincipal();
     }
 
     /**
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#isSecure()
+     * @see CallContext#isSecure()
      * @see SecurityContext#isSecure()
      */
     public boolean isSecure() {
-        return this.callContexts.get().isSecure();
+        return get().isSecure();
     }
 
     /**
      * @param role
      * @return
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#isUserInRole(java.lang.String)
+     * @see CallContext#isUserInRole(java.lang.String)
      * @see SecurityContext#isUserInRole(String)
      */
     public boolean isUserInRole(String role) {
-        return this.callContexts.get().isUserInRole(role);
+        return get().isUserInRole(role);
     }
 
     /**
      * @param variants
      * @return
      * @throws IllegalArgumentException
-     * @see org.restlet.ext.jaxrs.internal.core.CallContext#selectVariant(java.util.List)
+     * @see CallContext#selectVariant(java.util.List)
      * @see Request#selectVariant(List)
      */
     public Variant selectVariant(List<Variant> variants)
             throws IllegalArgumentException {
-        return this.callContexts.get().selectVariant(variants);
+        return get().selectVariant(variants);
     }
 
-    @Override
-    public String toString() {
-        return "ThreadLocal: " + this.callContexts.get().toString();
+    /**
+     * Sets the CallContext for the current thread. You MUST set a CallContext
+     * here before you can get it by {@link #get()}.
+     * 
+     * @param callContext
+     *                The CallContext for the current request. must not be null.
+     * @see #get()
+     * @throws IllegalArgumentException
+     *                 if null was given.
+     */
+    public void set(CallContext callContext) throws IllegalArgumentException {
+        if (callContext == null)
+            throw new IllegalArgumentException(
+                    "You must give a CallContext here. null is not allowed");
+        getRequestAttributes().put(CALLCONTEXT_KEY, callContext);
     }
 }

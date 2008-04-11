@@ -39,7 +39,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 @SuppressWarnings("all")
 public class WrapperClassesTests extends TestCase {
 
-    private static final WrapperFactory wrapperFactory = new WrapperFactory(
+    private static final WrapperFactory wrapperFactory = new WrapperFactory(null, null,
             Logger.getAnonymousLogger());
 
     /**

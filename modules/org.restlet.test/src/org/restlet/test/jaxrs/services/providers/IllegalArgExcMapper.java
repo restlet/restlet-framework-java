@@ -17,20 +17,35 @@
  */
 package org.restlet.test.jaxrs.services.providers;
 
+import java.util.List;
+
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.test.jaxrs.ExceptionMappersTest;
+import org.restlet.test.jaxrs.services.resources.ExcMapperTestResource;
+import org.restlet.test.jaxrs.services.tests.ExcMapperTest;
+
 /**
  * @author Stephan Koops
+ * @see ExcMapperTestResource
+ * @see ExcMapperTest
+ * @see ExceptionMappersTest
  */
 @Provider
 public class IllegalArgExcMapper implements
         ExceptionMapper<IllegalArgumentException> {
 
     public static final int STATUS = 6887987;
-    
-    // TESTEN with injected HttpHeaders for accepted media types.
+
+    /** public for direct set from test class */
+    @Context
+    public HttpHeaders httpHeaders;
 
     /**
      * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
@@ -38,6 +53,15 @@ public class IllegalArgExcMapper implements
     public Response toResponse(IllegalArgumentException exception) {
         String entity = "Could not convert:\n" + exception.getClass().getName()
                 + ": " + exception.getMessage();
-        return Response.status(STATUS).entity(entity).build();
+        ResponseBuilder rb = Response.status(STATUS);
+        List<MediaType> accMediaTypes = httpHeaders.getAcceptableMediaTypes();
+        if (accMediaTypes.contains(MediaType.TEXT_HTML_TYPE)) {
+            rb.type(MediaType.TEXT_HTML_TYPE);
+            entity = "<html><head><title>invalid argument</title></head>"
+                    + "<boy><h1>Sorry</h1><p>" + entity + "</p></body></html>";
+        } else {
+            rb.type(MediaType.TEXT_PLAIN_TYPE);
+        }
+        return rb.entity(entity).build();
     }
 }

@@ -343,11 +343,16 @@ class AlgorithmUtil {
     }
 
     /**
-     * Removes the ResourceMethods doesn't support the given method
+     * Removes the ResourceMethods doesn't support the given method.
      * 
      * @param resourceMethods
+     *                the collection of {@link ResourceMethod}s.
      * @param httpMethod
+     *                the HTTP {@link Method}
      * @param alsoGet
+     *                if true, also methods suporting GET are included, also if
+     *                another HTTP method is required. It is intended to be used
+     *                for HEAD requests.
      */
     static void removeNotSupportedHttpMethod(
             Collection<ResourceMethod> resourceMethods,
@@ -359,5 +364,4 @@ class AlgorithmUtil {
                 methodIter.remove();
         }
     }
-
 }

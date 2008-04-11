@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
@@ -64,7 +65,8 @@ public class ExceptionMappers {
         }
     }
 
-    private static final Logger logger = Logger.getLogger("ExceptionsMapper");
+    private static final Logger localLogger = Logger
+            .getLogger("ExceptionsMapper");
 
     private final Map<Class<? extends Throwable>, ExceptionMapper<? extends Throwable>> excMappers = new HashMap<Class<? extends Throwable>, ExceptionMapper<? extends Throwable>>();
 
@@ -122,31 +124,32 @@ public class ExceptionMappers {
      * {@link Response}, if an {@link ExceptionMapper} could be found.<br>
      * Otherwise this method returns an Response with an internal server error.
      * 
-     * @param ite
-     *                the {@link InvocationTargetException} wrapping the thrown
-     *                exception
+     * @param cause
+     *                the thrown exception (was wrapped by an
+     *                {@link InvocationTargetException})
      * @return the created Response
      * @throws NullPointerException
      *                 if <code>null</code> is given
      */
-    public Response convert(InvocationTargetException ite) {
-        Throwable cause = ite.getCause();
+    public Response convert(Throwable cause) {
         ExceptionMapper<Throwable> mapper = getMapper(cause.getClass());
         if (mapper == null) {
             String entity = "No ExceptionMapper was found, but must be found";
-            return Response.serverError().entity(entity).build();
+            return Response.serverError().entity(entity).type(
+                    MediaType.TEXT_PLAIN_TYPE).build();
         }
         Response response;
         try {
             response = mapper.toResponse(cause);
         } catch (RuntimeException e) {
             String message = "The ExceptionMapper throws an Exception";
-            logger.log(Level.WARNING, message, e);
+            localLogger.log(Level.WARNING, message, e);
             return Response.serverError().entity(message).build();
         }
         if (response == null) {
-            String entity = "The ExceptionMapper returned null";
-            return Response.serverError().entity(entity).build();
+            String message = "The ExceptionMapper returned null";
+            localLogger.log(Level.WARNING, message);
+            return Response.serverError().entity(message).build();
         }
         return response;
     }

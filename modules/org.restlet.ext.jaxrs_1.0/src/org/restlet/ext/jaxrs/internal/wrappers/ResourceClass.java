@@ -159,9 +159,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     }
 
     /**
-     * Returns the allowed methods on the remainingPart. Is used for a OPTIONS
-     * request, if no special java method in the root resource class was found
-     * for the given remainingPart.
+     * Returns the allowed methods on the remainingPart. This method is used for
+     * a OPTIONS request, if no special java method in the root resource class
+     * was found for the given remainingPart.
      * 
      * @param remainingPath
      * @return an unmodifiable {@link Set} of the allowed methods.
@@ -261,7 +261,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     public Collection<ResourceMethod> getMethodsForPath(
             RemainingPath remainingPath) {
-        // LATER results may be chached, if any method is returned.
+        // NICE results may be chached, if any method is returned.
         // The 404 case will be called rarely and produce a lot of cached data.
         List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
         Iterable<ResourceMethod> subResourceMethods = this

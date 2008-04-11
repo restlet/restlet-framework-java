@@ -17,16 +17,15 @@
  */
 package org.restlet.test.jaxrs.services.providers;
 
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.ext.Provider;
 
 /**
  * @author Stephan Koops
  */
 @Provider
-public class ParamConstructorProvider {
+public class EntityConstructorProvider {
 
-    public ParamConstructorProvider(@HeaderParam("host") String host) {
-        System.out.println("host=" + host);
+    public EntityConstructorProvider(String entity) {
+        System.out.println("entity=" + entity);
     }
 }

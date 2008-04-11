@@ -51,14 +51,20 @@ import org.restlet.ext.jaxrs.internal.wrappers.ResourceObject;
 import org.restlet.resource.StringRepresentation;
 
 /**
+ * <p>
  * This class contains the methods to handle exceptions occuring in the
  * {@link JaxRsRouter}, e.g. while identifying the method that should handle
  * the request.<br>
  * Therefor it contains some Restlets that handles this exceptions.
+ * </p>
+ * <p>
+ * Perhaps this class gets again public. Perhaps the special Restlets for
+ * handling will be removed, or stay only for 404.
+ * </p>
  * 
  * @author Stephan Koops
  */
-public class ExceptionHandler {
+class ExceptionHandler {
 
     /**
      * Instances of this class have a given status they return, when
@@ -164,7 +170,7 @@ public class ExceptionHandler {
      */
     RequestHandledException convertCookieParamExc(
             ConvertCookieParamException cpe) throws WebApplicationException {
-        // LATER use Restlet to handle
+        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response
                 .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
         StringWriter stw = new StringWriter();
@@ -179,7 +185,7 @@ public class ExceptionHandler {
      */
     RequestHandledException convertHeaderParamExc(
             ConvertHeaderParamException cpe) throws WebApplicationException {
-        // LATER use Restlet to handle
+        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response
                 .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
         StringWriter stw = new StringWriter();
@@ -194,7 +200,7 @@ public class ExceptionHandler {
      */
     RequestHandledException convertMatrixParamExc(
             ConvertMatrixParamException cpe) throws WebApplicationException {
-        // LATER use Restlet to handle
+        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
         StringWriter stw = new StringWriter();
         cpe.printStackTrace(new PrintWriter(stw));
@@ -208,7 +214,7 @@ public class ExceptionHandler {
      */
     RequestHandledException convertPathParamExc(ConvertPathParamException cpe)
             throws WebApplicationException {
-        // LATER use Restlet to handle
+        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
         StringWriter stw = new StringWriter();
         cpe.printStackTrace(new PrintWriter(stw));
@@ -222,7 +228,7 @@ public class ExceptionHandler {
      */
     RequestHandledException convertQueryParamExc(ConvertQueryParamException cpe)
             throws WebApplicationException {
-        // LATER use Restlet to handle
+        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response
                 .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
         StringWriter stw = new StringWriter();
@@ -237,7 +243,7 @@ public class ExceptionHandler {
      */
     RequestHandledException convertRepresentationExc(
             ConvertRepresentationException cre) throws WebApplicationException {
-        // LATER use Restlet to handle
+        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response
                 .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
         StringWriter stw = new StringWriter();
@@ -356,12 +362,12 @@ public class ExceptionHandler {
      * @param httpMethod
      * @param resourceClass
      * @param u
-     * @throws CouldNotFindMethodException
+     * @throws CouldNotFindResMethodException
      */
     void methodNotAllowed(org.restlet.data.Method httpMethod,
             ResourceClass resourceClass, RemainingPath u)
-            throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(errorRestletMethodNotAllowed,
+            throws CouldNotFindResMethodException {
+        throw new CouldNotFindResMethodException(errorRestletMethodNotAllowed,
                 "there is no method supporting the http method " + httpMethod
                         + " on class " + resourceClass.getName()
                         + " and remaining path " + u);
@@ -402,7 +408,7 @@ public class ExceptionHandler {
      */
     RequestHandledException noMessageBodyReader(CallContext callContext,
             NoMessageBodyReaderException nmbre) throws RequestHandledException {
-        // LATER Restlet fuer throw
+        // NICE Restlet fuer throw
         Response response = callContext.getResponse();
         MediaType mediaType = nmbre.getMediaType();
         Class<?> paramType = nmbre.getParamType();
@@ -416,7 +422,7 @@ public class ExceptionHandler {
     RequestHandledException noMessageBodyWriter(Response response,
             SortedMetadata<MediaType> accMediaTypes, Class<?> paramType)
             throws RequestHandledException {
-        // LATER Restlet fuer throw
+        // NICE Restlet fuer throw
         response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
         response.setEntity(new StringRepresentation(
                 "No MessageBodyWriter found to convert from java type "
@@ -429,13 +435,13 @@ public class ExceptionHandler {
      * @param httpMethod
      * @param resourceClass
      * @param u
-     * @throws CouldNotFindMethodException
+     * @throws CouldNotFindResMethodException
      */
     void noResourceMethodForAccMediaTypes(org.restlet.data.Method httpMethod,
             ResourceClass resourceClass, RemainingPath u)
-            throws CouldNotFindMethodException {
-        // LATER return MediaTypes are supported.
-        throw new CouldNotFindMethodException(
+            throws CouldNotFindResMethodException {
+        // NICE return supported MediaTypes as entity
+        throw new CouldNotFindResMethodException(
                 errorRestletNoResourceMethodForAcceptedMediaType,
                 "there is no java method on class " + resourceClass.getName()
                         + " supporting the http method " + httpMethod
@@ -456,11 +462,11 @@ public class ExceptionHandler {
     /**
      * @param resourceClass
      * @param u
-     * @throws CouldNotFindMethodException
+     * @throws CouldNotFindResMethodException
      */
     void resourceMethodNotFound(ResourceClass resourceClass, RemainingPath u)
-            throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(
+            throws CouldNotFindResMethodException {
+        throw new CouldNotFindResMethodException(
                 errorRestletResourceMethodNotFound,
                 "there is no method on class " + resourceClass.getName()
                         + " for remaining path " + u);
@@ -469,11 +475,11 @@ public class ExceptionHandler {
     /**
      * @param o
      * @param u
-     * @throws CouldNotFindMethodException
+     * @throws CouldNotFindResMethodException
      */
     void resourceNotFound(ResourceObject o, RemainingPath u)
-            throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(
+            throws CouldNotFindResMethodException {
+        throw new CouldNotFindResMethodException(
                 errorRestletResourceNotFound,
                 "The resource class "
                         + o.getResourceClass().getName()
@@ -483,11 +489,11 @@ public class ExceptionHandler {
 
     /**
      * @param u
-     * @throws CouldNotFindMethodException
+     * @throws CouldNotFindResMethodException
      */
     void rootResourceNotFound(RemainingPath u)
-            throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(errorRestletRootResourceNotFound,
+            throws CouldNotFindResMethodException {
+        throw new CouldNotFindResMethodException(errorRestletRootResourceNotFound,
                 "No root resource class found for realtiv path " + u);
     }
 
@@ -656,12 +662,12 @@ public class ExceptionHandler {
      * @param resourceClass
      * @param u
      * @param givenMediaType
-     * @throws CouldNotFindMethodException
+     * @throws CouldNotFindResMethodException
      */
     void unsupportedMediaType(org.restlet.data.Method httpMethod,
             ResourceClass resourceClass, RemainingPath u,
-            MediaType givenMediaType) throws CouldNotFindMethodException {
-        throw new CouldNotFindMethodException(errorRestletUnsupportedMediaType,
+            MediaType givenMediaType) throws CouldNotFindResMethodException {
+        throw new CouldNotFindResMethodException(errorRestletUnsupportedMediaType,
                 "there is no java method on class "
                         + resourceClass.getName()
                         + " supporting the http method "
@@ -670,5 +676,31 @@ public class ExceptionHandler {
                         + (u.isEmptyOrSlash() ? "empty remaining path"
                                 : (" remaining path " + u))
                         + " and the given media type " + givenMediaType);
+    }
+}
+
+/**
+ * This exception is thrown, when the algorithm "Matching Requests to Resource
+ * Methods" in Section 3.7.2 of JSR-311-Spec could not find the (sub) resource
+ * method.
+ * 
+ * @author Stephan Koops
+ */
+class CouldNotFindResMethodException extends Exception {
+
+    private static final long serialVersionUID = -8436314060905405146L;
+
+    private Restlet errorRestlet;
+
+    CouldNotFindResMethodException(Restlet errorRestlet, String message) {
+        super(message);
+        this.errorRestlet = errorRestlet;
+    }
+
+    /**
+     * @return the errorRestlet
+     */
+    Restlet getErrorRestlet() {
+        return this.errorRestlet;
     }
 }

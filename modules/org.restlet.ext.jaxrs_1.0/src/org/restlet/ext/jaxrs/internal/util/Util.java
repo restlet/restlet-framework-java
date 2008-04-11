@@ -49,6 +49,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.restlet.data.Form;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
@@ -60,6 +61,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.JaxRsRuntimeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.resource.Representation;
+import org.restlet.service.TunnelService;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Engine;
 import org.restlet.util.Series;
@@ -89,7 +91,7 @@ public class Util {
             int rt = specNess1 - specNess2;
             if (rt != 0)
                 return rt;
-            // LATER optimizing possible here: do not use toString()
+            // NICE optimizing possible here: do not use toString()
             return mediaType1.toString().compareToIgnoreCase(
                     mediaType2.toString());
         }
@@ -202,7 +204,7 @@ public class Util {
                     hValue = null;
                 else if (headerValue instanceof Date)
                     hValue = formatDate((Date) headerValue, false);
-                // TODO temporarily constant not as cookie.
+                // LATER temporarily constant not as cookie.
                 else
                     hValue = headerValue.toString();
                 headers.add(new Parameter(headerName, hValue));
@@ -910,22 +912,50 @@ public class Util {
     }
 
     /**
+     * Injects the given toInject in the resource with the given bean setter.
+     * 
+     * @param resource
+     * @param beanSetter
+     * @param toInject
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
+     * @throws InjectException
+     */
+    public static void inject(Object resource, Method beanSetter,
+            Object toInject) throws InvocationTargetException,
+            IllegalArgumentException, InjectException {
+        try {
+            invokeMethod(resource, beanSetter, toInject);
+        } catch (MethodInvokeException mie) {
+            throw new InjectException(mie);
+        }
+    }
+
+    /**
      * Invokes the given method without parameters. This constraint is not
      * checked; but the method could also be called, if access is normally not
      * allowed.<br>
      * If no javaMethod is given, nothing happens.
      * 
      * @param object
+     *                the object to call the method on.
      * @param javaMethod
+     *                the method to call
+     * @param args
+     *                the arguments of the method
      * @throws MethodInvokeException
      * @throws InvocationTargetException
+     * @throws IllegalArgumentException
+     *                 if at least one argument does not match the required
+     *                 method parameters.
      * @see #inject(Object, Field, Object)
      * @see #findPostConstructMethod(Class)
      * @see #findPreDestroyMethod(Class)
      */
-    public static void invokeNoneArgMethod(final Object object,
-            final Method javaMethod) throws MethodInvokeException,
-            InvocationTargetException {
+    public static void invokeMethod(final Object object,
+            final Method javaMethod, final Object... args)
+            throws MethodInvokeException, InvocationTargetException,
+            IllegalArgumentException {
         if (javaMethod == null)
             return;
         javaMethod.setAccessible(true);
@@ -933,7 +963,7 @@ public class Util {
             AccessController
                     .doPrivileged(new PrivilegedExceptionAction<Object>() {
                         public Object run() throws Exception {
-                            javaMethod.invoke(object);
+                            javaMethod.invoke(object, args);
                             return null;
                         }
                     });
@@ -1066,5 +1096,42 @@ public class Util {
         int collSize = coll.size();
         Object[] array = (Object[]) Array.newInstance(arrayType, collSize);
         return coll.toArray(array);
+    }
+
+    /**
+     * Returns the cut extensions of the Reference, cut by the TunnelFilter
+     * 
+     * @param request
+     * @return
+     */
+    public static String getCutExtensions(Request request) {
+        return (String) request.getAttributes().get(
+                TunnelFilter.ATTRIBUTE_CUT_EXTENSIONS);
+    }
+
+    /**
+     * Returns the reference of the request, without the cut extensions of the
+     * Reference, cut by the TunnelFilter
+     * 
+     * @param request
+     * @return
+     */
+    public static Reference getReferenceCut(Request request) {
+        return request.getResourceRef();
+    }
+
+    /**
+     * Returns the original Reference of this request
+     * 
+     * @param request
+     * @return
+     */
+    public static Reference getReferenceOriginal(Request request) {
+        Reference reference = (Reference) request.getAttributes().get(
+                TunnelService.ATTRIBUTE_ORIGINAL_REF);
+        if (reference == null)
+            return getReferenceCut(request);
+        reference.setBaseRef(getReferenceCut(request).getBaseRef());
+        return reference;
     }
 }

@@ -25,16 +25,14 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWorkers;
 
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Conditions;
-import org.restlet.test.jaxrs.services.tests.RestletContextsTest;
+import org.restlet.test.jaxrs.services.tests.ContextsTest;
 
 /**
  * @author Stephan Koops
- * @see RestletContextsTest
+ * @see ContextsTest
  */
 @Path("anchestorTest")
-public class RestletContextsTestService {
+public class ContextsTestService {
     
     @Context MessageBodyWorkers messageBodyWorkers;
     
@@ -60,11 +58,11 @@ public class RestletContextsTestService {
     @ProduceMime("text/plain")
     @Path("params")
     public String getResources(@Context UriInfo uriInfo,
-            @Context ClientInfo clientInfo, @Context Conditions conditions) {
+            @Context MessageBodyWorkers messageBodyWorkers, @Context ContextResolver<Integer> contextResolver) {
         StringBuilder stb = new StringBuilder();
-        if(clientInfo != null)
+        if(messageBodyWorkers != null)
             stb.append("messageBodyWorkers\n");
-        if(conditions != null)
+        if(contextResolver != null)
             stb.append("contextResolver\n");
         if(uriInfo != null)
             stb.append("uriInfo\n");

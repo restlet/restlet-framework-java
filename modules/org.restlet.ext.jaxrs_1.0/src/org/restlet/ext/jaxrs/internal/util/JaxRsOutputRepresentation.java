@@ -21,7 +21,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
@@ -37,6 +40,9 @@ import org.restlet.resource.OutputRepresentation;
  *                type of the object to serialize.
  */
 public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
+
+    private static final Logger LOGGER = Logger
+            .getLogger("JaxRsOutputRepresentation");
 
     private MessageBodyWriter<T> mbw;
 
@@ -84,9 +90,26 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        javax.ws.rs.core.MediaType jaxRsMediaType;
-        jaxRsMediaType = Converter.toJaxRsMediaType(getMediaType(), null);
-        this.mbw.writeTo(object, object.getClass(), genericType, annotations,
-                jaxRsMediaType, httpHeaders, outputStream);
+        try {
+            javax.ws.rs.core.MediaType jaxRsMediaType;
+            jaxRsMediaType = Converter.toJaxRsMediaType(getMediaType(), null);
+            this.mbw.writeTo(object, object.getClass(), genericType,
+                    annotations, jaxRsMediaType, httpHeaders, outputStream);
+        } catch (WebApplicationException e) {
+            String msg = "The Restlet extension for JAX-RS do not support the throwing of WebApplicationException in a MessageBodyWriter.";
+            LOGGER.config(msg);
+            outputStream.close();
+            throw e;
+        } catch (UnsupportedOperationException e) {
+            LOGGER.log(Level.CONFIG, "operation not supported", e);
+            outputStream.close();
+            throw e;
+        } catch (RuntimeException e) {
+            String msg = e.getClass().getName()
+                    + " while running MessageOutputWriter:";
+            LOGGER.log(Level.CONFIG, msg, e);
+            outputStream.close();
+            throw e;
+        }
     }
 }

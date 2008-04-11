@@ -19,6 +19,7 @@ package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -26,12 +27,13 @@ import java.util.logging.Logger;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.JaxRsRouter;
-import org.restlet.ext.jaxrs.internal.core.ThreadLocalContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -43,8 +45,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
 
 /**
  * This class wraps JAX-RS resource methods and sub resource methods.<br>
@@ -147,9 +148,10 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      *                Contains the encoded template Parameters, that are read
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
-     * @param mbrs
-     *                The Set of all available {@link MessageBodyReader}s in
-     *                the {@link JaxRsRouter}.
+     * @param entityProvs
+     *                all entity providers.
+     * @param allResolvers
+     *                all available {@link ContextResolver}s.
      * @param logger
      * @return the unwrapped returned object by the wrapped method.
      * @throws MethodInvokeException
@@ -162,18 +164,21 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * @throws ConvertPathParamException
      * @throws ConvertHeaderParamException
      * @throws ConvertRepresentationException
-     * @throws WebApplicationException 
+     * @throws WebApplicationException
      */
     public Object invoke(ResourceObject resourceObject,
-            ThreadLocalContext tlContext, MessageBodyReaderSet mbrs, Logger logger)
+            ThreadLocalizedContext tlContext, EntityProviders entityProvs,
+            Collection<ContextResolver<?>> allResolvers, Logger logger)
             throws MethodInvokeException, InvocationTargetException,
             MissingAnnotationException, NoMessageBodyReaderException,
             ConvertRepresentationException, ConvertHeaderParamException,
             ConvertPathParamException, ConvertMatrixParamException,
             ConvertQueryParamException, ConvertCookieParamException,
             WebApplicationException {
+        // LATER cache access to the arguments of a resource method
         try {
-            return invoke(resourceObject, true, tlContext, mbrs, logger);
+            return invoke(resourceObject, true, tlContext, entityProvs,
+                    allResolvers, logger);
         } catch (IllegalArgumentException e) {
             throw new MethodInvokeException(
                     "Could not invoke " + executeMethod, e);

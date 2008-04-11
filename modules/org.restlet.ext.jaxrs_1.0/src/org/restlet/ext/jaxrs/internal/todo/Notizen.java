@@ -24,40 +24,37 @@ package org.restlet.ext.jaxrs.internal.todo;
  */
 public class Notizen {
 
-    // TODO Provider for File-Upload by a browser (multipart/form-data)
+    // REQUESTED HttpHeaders.getAcceptedLanguages():List, as getAccMediaTypes()
+    // and getLanguage() and the extension mapping (devATjsr311:1245,
+    // accepted: devATjsr311:1247)
 
     // TESTEN what happens, if ".." or "." in @Path?
-    
-    // TESTEN what happens, if WebAppExc or header change in MessageBodyWriter?
 
     // REQUESTED rename @DefaultValue to @Default? it's shorter
 
     // REQUESTED @Context on type PathSegment ?
 
-    // TODO read javadoc of PathSegment again.
-
     // TODO test again Jersey Implementation.
 
-    // TODO propagate RuntimeExcpetions to Restlet.
+    // REQUEST 5.2.2 "Headers", last line: "using the Response CLASS"
+    
+    // NICE Provider for File-Upload by a browser (multipart/form-data)
 
-    // LATER warn if primitve on @*Param: perhaps null?
-
-    // LATER An implementation MUST allow other runtime exceptions to propagate
-    // to the underlying container. This allows existing container facilities
-    // (e.g. a Servlet filter) to be used to handle the error if desired.
+    // NICE warn if primitve on @*Param: perhaps null?
 
     // LATER alle LATERs in Masterarbeit uebernehmen
 
-    // LATER look for warnings in tests and put them away.
+    // NICE look for warnings in tests and put them away.
 
-    // LATER When writing responses, implementations SHOULD respect
+    // NICE When writing responses, implementations SHOULD respect
     // application-supplied character set metadata and SHOULD use UTF-8 if a
     // character set is not specified by the application or if the application
     // specifies a character set that is unsupported.
 
-    // LATER JaxRsComponent
+    // NICE JaxRsComponent
     // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc17
     // http://restlet.tigris.org/issues/show_bug.cgi?id=464#desc19
 
-    // LATER Entity-Provider for org.restlet.data.Representation
+    // NICE Entity-Provider for org.restlet.data.Representation
+    // NICE ResourceException-ExceptionMapper as WebAppExcMapper ?
 }

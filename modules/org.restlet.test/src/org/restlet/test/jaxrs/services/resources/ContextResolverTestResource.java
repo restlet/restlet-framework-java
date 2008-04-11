@@ -22,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
 import org.restlet.test.jaxrs.services.others.Person;
+import org.restlet.test.jaxrs.services.tests.ContextResolverTest;
 
 /**
  * <b>this test is not used yet !!</b>
@@ -32,6 +33,7 @@ import org.restlet.test.jaxrs.services.others.Person;
 @Path("workers")
 public class ContextResolverTestResource {
 
+    /** @see ContextResolverTest#test1() */
     @GET
     @ProduceMime("text/html")
     public Person getHomeUri() {

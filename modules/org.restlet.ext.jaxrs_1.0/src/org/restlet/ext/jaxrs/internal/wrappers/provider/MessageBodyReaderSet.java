@@ -31,16 +31,16 @@ public interface MessageBodyReaderSet {
 
     /**
      * Returns the best {@link MessageBodyReader} in this Set.
-     * 
-     * @param mediaType
-     *                The {@link MediaType}, that should be supported.
      * @param paramType
      * @param genericType
      * @param annotations
+     * @param mediaType
+     *                The {@link MediaType}, that should be supported.
      * 
-     * @return The first {@link MessageBodyReader} of this Set. Returns null, if
-     *         this Set is empty.
+     * @return the {@link MessageBodyReader}, that best matches the given
+     *         criteria, or null if no matching MessageBodyReader could be
+     *         found.
      */
-    public MessageBodyReader<?> getBestReader(MediaType mediaType,
-            Class<?> paramType, Type genericType, Annotation[] annotations);
+    public MessageBodyReader<?> getBestReader(Class<?> paramType,
+            Type genericType, Annotation[] annotations, MediaType mediaType);
 }

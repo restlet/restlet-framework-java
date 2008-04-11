@@ -57,6 +57,7 @@ public class MessageBodyWriterSubSet {
      *                The {@link MediaType}s of the response, declared by the
      *                resource methods.
      * @param accMediaTypes
+     *                the accepted media types.
      * @return A {@link MessageBodyWriter} that best matches the given accepted.
      *         Returns null, if no adequate {@link MessageBodyWriter} could be
      *         found in this set.
@@ -64,6 +65,8 @@ public class MessageBodyWriterSubSet {
     public MessageBodyWriter<?> getBestWriter(
             Collection<MediaType> responseMediaTypes,
             SortedMetadata<MediaType> accMediaTypes) {
+        if(accMediaTypes == null)
+            throw new Error();
         List<MessageBodyWriter<?>> mbws = new ArrayList<MessageBodyWriter<?>>();
         for (MessageBodyWriter<?> mbw : this.mbws) {
             if (mbw.supportAtLeastOne(responseMediaTypes))

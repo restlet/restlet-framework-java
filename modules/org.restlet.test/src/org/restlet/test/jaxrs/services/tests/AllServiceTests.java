@@ -33,8 +33,10 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(AncestorTest.class);
         mySuite.addTestSuite(CarTest.class);
         mySuite.addTestSuite(ContextResolverTest.class);
+        mySuite.addTestSuite(ContextsTest.class);
         mySuite.addTestSuite(CookieParamTest.class);
         mySuite.addTestSuite(DeterminingMediaTypeTest.class);
+        mySuite.addTestSuite(ExcMapperTest.class);
         mySuite.addTestSuite(HeadOptionsTest.class);
         mySuite.addTestSuite(HttpHeaderTest.class);
         mySuite.addTestSuite(IllegalConstructorTest.class);
@@ -58,10 +60,13 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(RepresentationTest.class);
         mySuite.addTestSuite(RequestTest.class);
         mySuite.addTestSuite(ResponseBuilderTest.class);
-        mySuite.addTestSuite(RestletContextsTest.class);
         mySuite.addTestSuite(SecurityContextTest.class);
         mySuite.addTestSuite(SimpleHouseTest.class);
         mySuite.addTestSuite(SimpleTrainTest.class);
+        mySuite.addTestSuite(ThreadLocalContextTest.class);
+        mySuite.addTestSuite(ThrowExceptionTest.class);
+        mySuite.addTestSuite(ThrowWebAppExcProviderTest.class);
+        mySuite.addTestSuite(UriBuilderByServiceTest.class);
 
         // at the end because it uses multiple of the previous classes
         mySuite.addTestSuite(MultipleResourcesTest.class);

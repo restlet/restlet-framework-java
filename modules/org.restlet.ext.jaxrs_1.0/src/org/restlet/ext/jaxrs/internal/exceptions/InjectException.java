@@ -29,6 +29,14 @@ public class InjectException extends JaxRsException {
     private static final long serialVersionUID = 6796414811480666857L;
 
     /**
+     * @param mie
+     */
+    public InjectException(MethodInvokeException mie) {
+        super(mie.getMessage(), mie.getCause());
+        this.setStackTrace(mie.getStackTrace());
+    }
+
+    /**
      * @param message
      * @param cause
      */

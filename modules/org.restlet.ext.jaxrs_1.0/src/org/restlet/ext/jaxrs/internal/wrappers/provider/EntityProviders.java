@@ -23,11 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.util.Converter;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
 
 /**
  * Contains the entity providers and has some methods to pick the wished out.
@@ -37,11 +35,81 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
 public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
         MessageBodyReaderSet {
 
-    private volatile List<MessageBodyReader<?>> messageBodyReaders = new ArrayList<MessageBodyReader<?>>();
+    /**
+     * Checks, if the given {@link javax.ws.rs.ext.MessageBodyReader} is
+     * writeable for the given class, genericType and annotations. If one of the
+     * arguments is null, and the MessageBodyWriter throws a
+     * {@link NullPointerException} or an {@link IllegalArgumentException}, it
+     * is interpreted as false.
+     * 
+     * @param mbr
+     * @param paramType
+     * @param genericType
+     * @param annotations
+     * @return
+     * @see #isWriteable(MessageBodyWriter, Class, Type, Annotation[])
+     */
+    @SuppressWarnings("unchecked")
+    private static boolean isReadable(MessageBodyReader mbr, Class<?> paramType,
+            Type genericType, Annotation[] annotations) {
+        try {
+            return mbr.isReadable(paramType, genericType, annotations);
+        } catch (NullPointerException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not readable for the given combination
+                return false;
+            }
+            throw e;
+        } catch (IllegalArgumentException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not readable for the given combination
+                return false;
+            }
+            throw e;
+        }
+    }
+
     // LATER allow concurent access.
 
-    private volatile List<MessageBodyWriter<?>> messageBodyWriters = new ArrayList<MessageBodyWriter<?>>();
-    // LATER allow concurent access.
+    /**
+     * Checks, if the given {@link javax.ws.rs.ext.MessageBodyWriter} is
+     * writeable for the given class, genericType and annotations. If one of the
+     * arguments is null, and the MessageBodyWriter throws a
+     * {@link NullPointerException} or an {@link IllegalArgumentException}, it
+     * is interpreted as false.
+     * 
+     * @param mbw
+     * @param entityClass
+     * @param genericType
+     * @param annotations
+     * @throws NullPointerException
+     * @throws IllegalArgumentException
+     * @see #isReadable(MessageBodyReader, Class, Type, Annotation[])
+     */
+    @SuppressWarnings("unchecked")
+    private static boolean isWriteable(MessageBodyWriter mbw, Class<?> entityClass,
+            Type genericType, Annotation[] annotations)
+            throws NullPointerException, IllegalArgumentException {
+        try {
+            return mbw.isWriteable(entityClass, genericType, annotations);
+        } catch (NullPointerException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not writable for the given combination
+                return false;
+            }
+            throw e;
+        } catch (IllegalArgumentException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not writable for the given combination
+                return false;
+            }
+            throw e;
+        }
+    }
+
+    private final List<MessageBodyReader<?>> messageBodyReaders = new ArrayList<MessageBodyReader<?>>();
+
+    private final List<MessageBodyWriter<?>> messageBodyWriters = new ArrayList<MessageBodyWriter<?>>();
 
     /**
      * Adds the given provider to this EntityProviders. If the Provider is not
@@ -51,6 +119,7 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
      * @param defaultProvider
      */
     public void add(Provider<?> provider, boolean defaultProvider) {
+        // LATER allow concurrent access, also while adding
         if (provider.isWriter()) {
             if (defaultProvider)
                 this.messageBodyWriters.add(provider);
@@ -66,62 +135,61 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWorkers#getMessageBodyReaders(javax.ws.rs.core.MediaType,
-     *      Class, Type, Annotation[])
+     * Returns the {@link MessageBodyReader}, that best matches the given
+     * criteria.
+     * 
+     * @param paramType
+     * @param genericType
+     * @param annotations
+     * @param mediaType
+     *                The {@link MediaType}, that should be supported.
+     * @return the {@link MessageBodyReader}, that best matches the given
+     *         criteria, or null if no matching MessageBodyReader could be
+     *         found.
+     * @see MessageBodyReaderSet#getBestReader(Class, Type, Annotation[],
+     *      MediaType)
      */
     @SuppressWarnings("unchecked")
-    public <T> javax.ws.rs.ext.MessageBodyReader<T> getMessageBodyReader(
-            Class<T> type, Type genericType,
-            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType) {
-        MediaType restletMediaType = Converter.toRestletMediaType(mediaType);
-        MessageBodyReader<?> mbr;
-        mbr = getBestReader(restletMediaType, type, genericType, annotations);
-        return (javax.ws.rs.ext.MessageBodyReader) mbr.getJaxRsReader();
-    }
-
-    /**
-     * @see javax.ws.rs.ext.MessageBodyWorkers#getMessageBodyWriters(javax.ws.rs.core.MediaType,
-     *      Class, Type, Annotation[])
-     */
-    @SuppressWarnings("unchecked")
-    public <T> javax.ws.rs.ext.MessageBodyWriter<T> getMessageBodyWriter(
-            Class<T> type, Type genericType,
-            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType) {
-        Collection<MediaType> restletMediaTypes = Collections
-                .singleton(Converter.toRestletMediaType(mediaType));
-        List<MessageBodyWriter> mbws = (List) this.messageBodyWriters;
-        for (MessageBodyWriter<T> mbw : mbws) {
-            if (mbw.supportAtLeastOne(restletMediaTypes))
-                if (mbw.isWriteable(type, genericType, annotations))
-                    return mbw.getJaxRsWriter();
+    public MessageBodyReader<?> getBestReader(Class<?> paramType,
+            Type genericType, Annotation[] annotations, MediaType mediaType) {
+        // NICE optimization: may be cached for speed.
+        for (MessageBodyReader mbr : this.messageBodyReaders) {
+            if (mbr.supports(mediaType))
+                if (isReadable(mbr, paramType, genericType, annotations))
+                    return mbr;
         }
         return null;
     }
 
     /**
-     * Returns the {@link MessageBodyReader}, that best matches the given
-     * criteria.
-     * 
-     * @param mediaType
-     *                The {@link MediaType}, that should be supported.
-     * @param paramType
-     * @param genericType
-     * @param annotations
-     * 
-     * @return the {@link MessageBodyReader}, that best matches the given
-     *         criteria, or null if no matching MessageBodyReader could be
-     *         found.
-     * @see MessageBodyReaderSet#getBestReader(MediaType, Class, Type,
-     *      Annotation[])
+     * @see javax.ws.rs.ext.MessageBodyWorkers#getMessageBodyReader(Class, Type,
+     *      Annotation[], javax.ws.rs.core.MediaType)
      */
     @SuppressWarnings("unchecked")
-    public MessageBodyReader<?> getBestReader(MediaType mediaType,
-            Class<?> paramType, Type genericType, Annotation[] annotations) {
-        // LATER optimization: may be cached for speed.
-        for (MessageBodyReader mbr : this.messageBodyReaders) {
-            if (mbr.supports(mediaType))
-                if (mbr.isReadable(paramType, genericType, annotations))
-                    return mbr;
+    public <T> javax.ws.rs.ext.MessageBodyReader<T> getMessageBodyReader(
+            Class<T> type, Type genericType, Annotation[] annotations,
+            javax.ws.rs.core.MediaType mediaType) {
+        MediaType restletMediaType = Converter.toRestletMediaType(mediaType);
+        MessageBodyReader<?> mbr;
+        mbr = getBestReader(type, genericType, annotations, restletMediaType);
+        return (javax.ws.rs.ext.MessageBodyReader) mbr.getJaxRsReader();
+    }
+
+    /**
+     * @see javax.ws.rs.ext.MessageBodyWorkers#getMessageBodyWriter(Class, Type,
+     *      Annotation[], javax.ws.rs.core.MediaType)
+     */
+    @SuppressWarnings("unchecked")
+    public <T> javax.ws.rs.ext.MessageBodyWriter<T> getMessageBodyWriter(
+            Class<T> type, Type genericType, Annotation[] annotations,
+            javax.ws.rs.core.MediaType mediaType) {
+        Collection<MediaType> restletMediaTypes = Collections
+                .singleton(Converter.toRestletMediaType(mediaType));
+        List<MessageBodyWriter> mbws = (List) this.messageBodyWriters;
+        for (MessageBodyWriter<T> mbw : mbws) {
+            if (mbw.supportAtLeastOne(restletMediaTypes))
+                if (isWriteable(mbw, type, genericType, annotations))
+                    return mbw.getJaxRsWriter();
         }
         return null;
     }
@@ -132,7 +200,7 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
      * 
      * @param entityClass
      * @param genericType
-     *                may be nullW
+     *                may be null
      * @param annotations
      *                may be null
      * @return
@@ -142,35 +210,12 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
     @SuppressWarnings("unchecked")
     public MessageBodyWriterSubSet writerSubSet(Class<?> entityClass,
             Type genericType, Annotation[] annotations) {
-        // LATER optimization: may be cached for speed.
+        // NICE optimization: may be cached for speed.
         List<MessageBodyWriter<?>> mbws = new ArrayList<MessageBodyWriter<?>>();
         for (MessageBodyWriter mbw : this.messageBodyWriters) {
-            try {
-                if (mbw.isWriteable(entityClass, genericType, annotations))
-                    mbws.add(mbw);
-            } catch (NullPointerException e) {
-                if (genericType != null && annotations != null)
-                    throw e;
-                // otherwise it's interpreted as not writable
-            } catch (IllegalArgumentException e) {
-                if (genericType != null && annotations != null)
-                    throw e;
-                // otherwise it's interpreted as not writable
-            }
+            if (isWriteable(mbw, entityClass, genericType, annotations))
+                mbws.add(mbw);
         }
         return new MessageBodyWriterSubSet(mbws);
-    }
-
-    /**
-     * Adds all contained message body readers and writers to the given provider
-     * Set.
-     * 
-     * @param providers
-     *                the set to add the providers.
-     */
-    @SuppressWarnings("unchecked")
-    public void addAllTo(Set<Provider<?>> providers) {
-        providers.addAll((Collection) this.messageBodyReaders);
-        providers.addAll((Collection) this.messageBodyWriters);
     }
 }

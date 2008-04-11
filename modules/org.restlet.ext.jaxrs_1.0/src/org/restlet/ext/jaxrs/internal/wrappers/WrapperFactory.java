@@ -17,9 +17,13 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.MessageBodyWorkers;
 
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -34,15 +38,24 @@ public class WrapperFactory {
 
     private final Logger logger;
 
+    private final MessageBodyWorkers mbWorkers;
+
+    private final Collection<ContextResolver<?>> allResolvers;
+
     private final Map<Class<?>, ResourceClass> resourceClasses = new HashMap<Class<?>, ResourceClass>();
 
     // LATER allow concurent access.
 
     /**
+     * @param mbWorkers 
+     * @param allResolvers 
      * @param logger
      *                the to log warnings and so on
      */
-    public WrapperFactory(Logger logger) {
+    public WrapperFactory(MessageBodyWorkers mbWorkers,
+            Collection<ContextResolver<?>> allResolvers, Logger logger) {
+        this.mbWorkers = mbWorkers;
+        this.allResolvers = allResolvers;
         this.logger = logger;
     }
 
@@ -78,6 +91,7 @@ public class WrapperFactory {
             Class<?> jaxRsRootResourceClass) throws IllegalArgumentException,
             MissingAnnotationException, IllegalPathOnClassException,
             MissingConstructorException {
-        return new RootResourceClass(jaxRsRootResourceClass, logger);
+        return new RootResourceClass(jaxRsRootResourceClass, mbWorkers,
+                allResolvers, logger);
     }
 }
