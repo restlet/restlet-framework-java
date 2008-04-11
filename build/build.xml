@@ -79,7 +79,7 @@
    <condition property="do-backport">
       <istrue value="${backport}" />
    </condition>
-	
+   
    <condition property="custombootclasspath" value="${backportbootclasspath}" else="${defaultbootclasspath}">
       <istrue value="${backport}" />
    </condition>
@@ -279,9 +279,9 @@
       <path refid="mod-jaxrs-path" />
       <path refid="mod-freemarker-path" />
       <path refid="mod-velocity-path" />
-   	  <path refid="mod-jaxb-path" />
+      <path refid="mod-jaxb-path" />
       <path refid="mod-jibx-path" />
-   	  <pathelement path="${mod}/${mod-jaxrs-id}/src" />
+      <pathelement path="${mod}/${mod-jaxrs-id}/src" />
       <pathelement path="${classes}/${mod-jaxrs-id}" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <pathelement path="${classes}/${mod-json-id}" />
@@ -321,6 +321,7 @@
       <path refid="mod-servlet-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <pathelement path="${classes}/${mod-servlet-id}" />
+      <fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
    </path>
 
    <path id="mod-httpclient-path">
@@ -397,12 +398,12 @@
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
    </path>
-	
+   
    <path id="mod-oauth-path">
-	  <path refid="mod-ri-path" />
-	  <pathelement path="${classes}/${mod-ri-id}" />
+      <path refid="mod-ri-path" />
+      <pathelement path="${classes}/${mod-ri-id}" />
       <fileset dir="${lib}/${lib-oauth-id}" includes="*.jar" />
-   	  <fileset dir="${lib}/${lib-codec-id}" includes="*.jar" />
+      <fileset dir="${lib}/${lib-codec-id}" includes="*.jar" />
    </path>
    
    <path id="mod-servlet-path">
@@ -945,6 +946,7 @@
       <compileModule name="fileupload" />
       <compileModule name="freemarker" />
       <compileModule name="grizzly" />
+      <compileModule name="gwt" />
       <compileModule name="httpclient" />
       <compileModule name="javamail" />
       <compileModule name="jaxb" />
@@ -1158,9 +1160,9 @@
              filtertrace="true"
              showoutput="${verbose}">
          <jvmarg value="-Djavax.net.ssl.keyStore=${server.testkeystore.location}" />
-      	 <jvmarg value="-Djavax.net.ssl.trustStore=${server.testkeystore.location}" />
-      	 <jvmarg value="-Djavax.net.ssl.trustStorePassword=${server.testkeystore.password}" />
-      	 <jvmarg value="-Djavax.net.ssl.keyStorePassword=${server.testkeystore.password}" />
+         <jvmarg value="-Djavax.net.ssl.trustStore=${server.testkeystore.location}" />
+         <jvmarg value="-Djavax.net.ssl.trustStorePassword=${server.testkeystore.password}" />
+         <jvmarg value="-Djavax.net.ssl.keyStorePassword=${server.testkeystore.password}" />
          <classpath>
             <path refid="mod-api-test-path" />
          </classpath>
@@ -1291,6 +1293,7 @@
       <stageLibrary name="fileupload" />
       <stageLibrary name="freemarker" />
       <stageLibrary name="grizzly" />
+      <stageLibrary name="gwt" />
       <stageLibrary name="httpclient" />
       <stageLibrary name="io" />
       <stageLibrary name="javamail" />
