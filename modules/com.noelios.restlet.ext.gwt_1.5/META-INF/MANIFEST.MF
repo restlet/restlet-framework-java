@@ -31,4 +31,5 @@ Import-Package: com.google.gwt.benchmarks,
  com.noelios.restlet.ext.servlet,
  javax.servlet,
  javax.servlet.http
-Require-Bundle: org.restlet.gwt
+Require-Bundle: org.restlet.gwt,
+ com.google.gwt
