@@ -4,8 +4,8 @@ Bundle-Name: Restlet API
 Bundle-SymbolicName: org.restlet.gwt
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Export-Package: org.restlet,
- org.restlet.data,
- org.restlet.resource,
- org.restlet.service,
- org.restlet.util
+Export-Package: org.restlet.gwt,
+ org.restlet.gwt.data,
+ org.restlet.gwt.resource,
+ org.restlet.gwt.service,
+ org.restlet.gwt.util
