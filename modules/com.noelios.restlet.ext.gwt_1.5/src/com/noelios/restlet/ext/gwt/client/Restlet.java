@@ -20,9 +20,9 @@ package com.noelios.restlet.ext.gwt.client;
 
 import java.io.IOException;
 
-import org.restlet.Client;
-import org.restlet.data.Protocol;
-import org.restlet.data.Response;
+import org.restlet.gwt.Client;
+import org.restlet.gwt.data.Protocol;
+import org.restlet.gwt.data.Response;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
