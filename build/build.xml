@@ -412,8 +412,10 @@
    <path id="mod-gwt-ri-path">
       <path refid="mod-ri-path" />
       <path refid="mod-api-path" />
+      <path refid="mod-gwt-api-path" />
       <path refid="mod-servlet-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
+      <pathelement path="${classes}/${mod-gwt-api-id}" />
       <pathelement path="${classes}/${mod-servlet-id}" />
       <fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
    </path>
@@ -1101,7 +1103,7 @@
             <pathelement path="${mod}/${mod-grizzly-id}/src/" />
             <pathelement path="${mod}/${mod-gwt-api-id}/src/" />
             <pathelement path="${mod}/${mod-gwt-ri-id}/src/" />
-         	<pathelement path="${mod}/${mod-httpclient-id}/src/" />
+            <pathelement path="${mod}/${mod-httpclient-id}/src/" />
             <pathelement path="${mod}/${mod-javamail-id}/src/" />
             <pathelement path="${mod}/${mod-jaxb-id}/src/" />
             <pathelement path="${mod}/${mod-jaxrs-id}/src/" />
