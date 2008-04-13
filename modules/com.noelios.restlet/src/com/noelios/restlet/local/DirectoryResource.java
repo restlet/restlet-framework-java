@@ -77,6 +77,9 @@ public class DirectoryResource extends Resource {
     /** The context's directory URI (file, clap URI). */
     private String directoryUri;
 
+    /** The original target URI, in cas of extensions tunneling. */
+    private Reference originalRef;
+
     /**
      * The local base name of the resource. For example, "foo.en" and
      * "foo.en-GB.html" return "foo".
@@ -102,7 +105,25 @@ public class DirectoryResource extends Resource {
     private boolean directoryRedirection;
 
     /**
-     * Constructor.
+     * This constructor aims at answering the following questions:<br>
+     * <ul>
+     * <li>does this request target a directory?</li>
+     * <li>does this request target a directory, with an index file?</li>
+     * <li>should this request be redirected (target is a directory with no
+     * trailing "/")?</li>
+     * <li>does this request target a file?</li>
+     * </ul>
+     * <br>
+     * The following constraints must be taken into account:<br>
+     * <ul>
+     * <li>the underlying helper may not support content negotiation and be
+     * able to return the list of possible variants of the target file (e.g. the
+     * CLAP helper).</li>
+     * <li>the underlying helper may not support directory listing</li>
+     * <li>the extensions tunneling cannot apply on a directory</li>
+     * <li>underlying helpers that do not support content negotiation cannot
+     * support extensions tunneling</li>
+     * </ul>
      * 
      * @param directory
      *                The parent directory handler.
@@ -117,12 +138,12 @@ public class DirectoryResource extends Resource {
         // Update the member variables
         this.directory = directory;
         this.relativePart = request.getResourceRef().getRemainingPart();
+        setModifiable(this.directory.isModifiable());
 
-        // Restore the cut extensions in case the call has been tunnelled.
-        // Should be better to take benefit from this operation.
+        // Restore the original URI in case the call has been tunnelled.
         if (getApplication() != null
                 && getApplication().getTunnelService().isExtensionsTunnel()) {
-            Reference originalRef = (Reference) request.getAttributes().get(
+            originalRef = (Reference) request.getAttributes().get(
                     TunnelService.ATTRIBUTE_ORIGINAL_REF);
 
             if (originalRef != null) {
@@ -130,8 +151,6 @@ public class DirectoryResource extends Resource {
                 this.relativePart = originalRef.getRemainingPart();
             }
         }
-
-        setModifiable(getDirectory().isModifiable());
 
         if (this.relativePart.startsWith("/")) {
             // We enforce the leading slash on the root URI
@@ -181,6 +200,8 @@ public class DirectoryResource extends Resource {
                     this.baseName = null;
                 }
             } else {
+                // Allows underlying helpers that do not support "content
+                // negotiation" to return the targetted file.
                 this.targetDirectory = false;
                 this.targetFile = true;
                 this.fileContent = contextResponse.getEntity();
@@ -193,7 +214,7 @@ public class DirectoryResource extends Resource {
             // client connector does not handle directory listing.
             if (this.targetUri.endsWith("/")) {
                 // In this case, the trailing "/" shows that the URIs must
-                // points to a directory
+                // point to a directory
                 if (getDirectory().getIndexName() != null
                         && getDirectory().getIndexName().length() > 0) {
                     this.directoryUri = this.targetUri;
@@ -232,6 +253,24 @@ public class DirectoryResource extends Resource {
             }
         }
 
+        // In case the request does not target a directory and the file has not
+        // been found, try with the tunnelled URI
+        if (!targetDirectory && !targetFile && originalRef != null) {
+            this.relativePart = request.getResourceRef().getRemainingPart();
+
+            // The target uri does not take into account the query and fragment
+            // parts of the resource.
+            this.targetUri = new Reference(directory.getRootRef().toString()
+                    + this.relativePart).normalize().toString(false, false);
+            if (!this.targetUri.startsWith(directory.getRootRef().toString())) {
+                // Prevent the client from accessing resources in upper
+                // directories
+                this.targetUri = directory.getRootRef().toString();
+            }
+        }
+
+        // Try to get the directory content, in case the request does not target
+        // a directory
         if (!this.targetDirectory) {
             int lastSlashIndex = targetUri.lastIndexOf('/');
             if (lastSlashIndex == -1) {
@@ -277,12 +316,19 @@ public class DirectoryResource extends Resource {
 
     @Override
     public void handleGet() {
-        if (directoryRedirection) {
+        if (directoryRedirection && !targetIndex) {
             // If this request targets a directory and if the target URI does
-            // not end with a tailing "/", the client is told to redirect to a
+            // not end with a trailing "/", the client is told to redirect to a
             // correct URI.
-            getResponse().redirectPermanent(
-                    getRequest().getResourceRef().getIdentifier() + "/");
+
+            // Restore the cut extensions in case the call has been tunnelled.
+            if (originalRef != null) {
+                getResponse().redirectPermanent(
+                        originalRef.getIdentifier() + "/");
+            } else {
+                getResponse().redirectPermanent(
+                        getRequest().getResourceRef().getIdentifier() + "/");
+            }
         } else {
             super.handleGet();
         }
@@ -291,8 +337,13 @@ public class DirectoryResource extends Resource {
     @Override
     public void removeRepresentations() throws ResourceException {
         if (directoryRedirection && !targetIndex) {
-            getResponse().redirectSeeOther(
-                    getRequest().getResourceRef().getIdentifier() + "/");
+            if (originalRef != null) {
+                getResponse().redirectSeeOther(
+                        originalRef.getIdentifier() + "/");
+            } else {
+                getResponse().redirectSeeOther(
+                        getRequest().getResourceRef().getIdentifier() + "/");
+            }
         } else {
             Request contextRequest = new Request(Method.DELETE, this.targetUri);
             Response contextResponse = new Response(contextRequest);
@@ -330,18 +381,23 @@ public class DirectoryResource extends Resource {
     public void storeRepresentation(Representation entity)
             throws ResourceException {
         if (directoryRedirection && !targetIndex) {
-            getResponse().redirectSeeOther(
-                    getRequest().getResourceRef().getIdentifier() + "/");
+            if (originalRef != null) {
+                getResponse().redirectSeeOther(
+                        originalRef.getIdentifier() + "/");
+            } else {
+                getResponse().redirectSeeOther(
+                        getRequest().getResourceRef().getIdentifier() + "/");
+            }
+        } else {
+            // We allow the transfer of the PUT calls only if the readOnly flag
+            // is not set
+            Request contextRequest = new Request(Method.PUT, this.targetUri);
+            contextRequest.setEntity(entity);
+            Response contextResponse = new Response(contextRequest);
+            contextRequest.setResourceRef(this.targetUri);
+            getClientDispatcher().handle(contextRequest, contextResponse);
+            getResponse().setStatus(contextResponse.getStatus());
         }
-
-        // We allow the transfer of the PUT calls only if the readOnly flag is
-        // not set
-        Request contextRequest = new Request(Method.PUT, this.targetUri);
-        contextRequest.setEntity(entity);
-        Response contextResponse = new Response(contextRequest);
-        contextRequest.setResourceRef(this.targetUri);
-        getClientDispatcher().handle(contextRequest, contextResponse);
-        getResponse().setStatus(contextResponse.getStatus());
     }
 
     /**
