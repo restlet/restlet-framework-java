@@ -4,6 +4,12 @@ Bundle-Name: Restlet Extension - Velocity
 Bundle-SymbolicName: org.restlet.ext.velocity
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Require-Bundle: org.apache.velocity;visibility:=reexport,
- org.restlet;visibility:=reexport
 Export-Package: org.restlet.ext.velocity
+Import-Package: org.apache.velocity,
+ org.apache.velocity.app,
+ org.apache.velocity.runtime.resource,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util

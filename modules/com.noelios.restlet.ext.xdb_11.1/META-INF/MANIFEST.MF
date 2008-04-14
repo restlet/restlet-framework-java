@@ -4,6 +4,22 @@ Bundle-Name: Noelios Restlet Engine - Extension - Oracle XML DB
 Bundle-SymbolicName: com.noelios.restlet.ext.xdb
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Require-Bundle: com.noelios.restlet.ext.servlet
 Export-Package: com.noelios.restlet.ext.xdb
-
+Import-Package: com.noelios.restlet,
+ com.noelios.restlet.application,
+ com.noelios.restlet.authentication,
+ com.noelios.restlet.component,
+ com.noelios.restlet.ext.servlet,
+ com.noelios.restlet.http,
+ com.noelios.restlet.local,
+ com.noelios.restlet.util,
+ javax.servlet,
+ javax.servlet.http,
+ org.apache.commons.dbcp,
+ org.apache.commons.pool,
+ org.apache.commons.pool.impl,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util

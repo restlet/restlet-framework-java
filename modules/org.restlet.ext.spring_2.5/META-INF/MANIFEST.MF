@@ -4,6 +4,17 @@ Bundle-Name: Restlet Extension - Spring Framework
 Bundle-SymbolicName: org.restlet.ext.spring
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Require-Bundle: org.restlet;visibility:=reexport,
- org.springframework;visibility:=reexport
 Export-Package: org.restlet.ext.spring
+Import-Package: org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util,
+ org.springframework.beans,
+ org.springframework.beans.factory,
+ org.springframework.beans.factory.config,
+ org.springframework.beans.factory.support,
+ org.springframework.beans.factory.xml,
+ org.springframework.context.support,
+ org.springframework.core.io,
+ org.springframework.web.servlet.handler

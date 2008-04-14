@@ -4,13 +4,33 @@ Bundle-Name: Restlet Examples
 Bundle-SymbolicName: org.restlet.example
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Export-Package: org.restlet.example
-Require-Bundle: com.noelios.restlet,
- org.restlet.ext.json;visibility:=reexport,
- org.restlet.ext.jaxrs;visibility:=reexport,
- org.junit4,
- com.db4o,
+Export-Package: org.restlet.example,
+ org.restlet.example.tutorial
+Import-Package: com.db4o,
+ com.db4o.config,
+ com.db4o.query,
+ com.db4o.ta,
+ com.noelios.restlet,
+ freemarker.template,
+ javax.ws.rs,
+ javax.ws.rs.core,
+ javax.ws.rs.ext,
+ javax.xml,
+ javax.xml.bind,
+ javax.xml.bind.util,
+ junit.framework;version="3.8.2",
+ org.apache.velocity.app,
+ org.jibx.runtime,
+ org.json,
+ org.restlet,
+ org.restlet.data,
  org.restlet.ext.freemarker,
- org.restlet.ext.velocity,
  org.restlet.ext.jaxb,
- org.restlet.ext.jibx
+ org.restlet.ext.jaxrs,
+ org.restlet.ext.jibx,
+ org.restlet.ext.json,
+ org.restlet.ext.velocity,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Require-Bundle: javax.xml.bind

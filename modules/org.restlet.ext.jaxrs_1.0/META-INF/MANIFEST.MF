@@ -4,13 +4,6 @@ Bundle-Name: Restlet Extension - JAX-RS
 Bundle-SymbolicName: org.restlet.ext.jaxrs
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Require-Bundle: javax.ws.rs;visibility:=reexport,
- javax.activation;visibility:=reexport,
- javax.mail;visibility:=reexport,
- javax.xml.bind;visibility:=reexport,
- javax.xml.stream;visibility:=reexport,
- org.json;visibility:=reexport,
- org.restlet;visibility:=reexport
 Export-Package: org.restlet.ext.jaxrs;
   uses:="org.restlet.ext.jaxrs.internal.util,
    javax.ws.rs,
@@ -28,3 +21,15 @@ Export-Package: org.restlet.ext.jaxrs;
  org.restlet.ext.jaxrs.internal.util,
  org.restlet.ext.jaxrs.internal.wrappers,
  org.restlet.ext.jaxrs.internal.wrappers.provider
+Import-Package: javax.mail.util,
+ javax.ws.rs,
+ javax.ws.rs.core,
+ javax.ws.rs.ext,
+ org.json,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Require-Bundle: javax.xml.bind,
+ javax.activation

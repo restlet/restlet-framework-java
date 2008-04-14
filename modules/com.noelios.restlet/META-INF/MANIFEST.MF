@@ -4,7 +4,6 @@ Bundle-Name: Noelios Restlet Engine
 Bundle-SymbolicName: com.noelios.restlet
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Require-Bundle: org.restlet;visibility:=reexport
 Export-Package: com.noelios.restlet,
  com.noelios.restlet.application,
  com.noelios.restlet.authentication,
@@ -12,3 +11,8 @@ Export-Package: com.noelios.restlet,
  com.noelios.restlet.http,
  com.noelios.restlet.local,
  com.noelios.restlet.util
+Import-Package: org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util

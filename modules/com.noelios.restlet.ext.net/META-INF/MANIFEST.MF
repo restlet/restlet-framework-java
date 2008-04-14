@@ -4,5 +4,16 @@ Bundle-Name: Noelios Restlet Engine - Extension - Net
 Bundle-SymbolicName: com.noelios.restlet.ext.net
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Require-Bundle: com.noelios.restlet;visibility:=reexport
 Export-Package: com.noelios.restlet.ext.net
+Import-Package: com.noelios.restlet,
+ com.noelios.restlet.application,
+ com.noelios.restlet.authentication,
+ com.noelios.restlet.component,
+ com.noelios.restlet.http,
+ com.noelios.restlet.local,
+ com.noelios.restlet.util,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util

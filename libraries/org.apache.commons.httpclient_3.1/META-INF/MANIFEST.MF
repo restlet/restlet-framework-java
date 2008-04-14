@@ -13,5 +13,3 @@ Export-Package: org.apache.commons.httpclient,
  org.apache.commons.httpclient.params,
  org.apache.commons.httpclient.protocol,
  org.apache.commons.httpclient.util
-Require-Bundle: org.apache.commons.codec,
- org.apache.commons.logging

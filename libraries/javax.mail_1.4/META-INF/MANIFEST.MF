@@ -10,4 +10,3 @@ Export-Package: javax.mail,
  javax.mail.internet,
  javax.mail.search,
  javax.mail.util
-Require-Bundle: javax.activation

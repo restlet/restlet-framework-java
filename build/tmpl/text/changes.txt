@@ -36,6 +36,9 @@ Changes log
     - Misc
     	- Updated Grizzly to 1.7.3.
     	- Improved logging consistency.
+    	- Expressed the Eclipse plugin dependencies using the
+    	  "Import-Package" instructions instead of "Required-Bundle".
+    	  Suggested by Hendy Irawan.
 
  - 1.1 Milestone 3 (2008-04-01)
     - Bugs fixed

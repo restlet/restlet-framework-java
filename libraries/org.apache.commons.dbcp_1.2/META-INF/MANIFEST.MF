@@ -10,5 +10,3 @@ Export-Package: .,
  org.apache.commons.dbcp.cpdsadapter,
  org.apache.commons.dbcp.datasources,
  org.apache.commons.jocl
-Require-Bundle: org.apache.commons.pool,
- org.apache.commons.logging

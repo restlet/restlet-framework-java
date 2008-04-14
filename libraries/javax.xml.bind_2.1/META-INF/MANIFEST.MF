@@ -6,8 +6,6 @@ Bundle-Version: 2.1
 Bundle-ClassPath: javax.xml.bind.jar,
  com.sun.jaxb.jar
 Bundle-Vendor: Sun Microsystems Inc.
-Require-Bundle: javax.activation,
- javax.xml.stream
 Export-Package: javax.xml.bind,
  javax.xml.bind.annotation,
  javax.xml.bind.annotation.adapters,

@@ -9,7 +9,6 @@ Bundle-ClassPath: com.db4o.jar,
  com.db4o.ta.jar,
  com.db4o.tools.jar
 Bundle-Vendor: db4objects Inc.
-Require-Bundle: edu.purdue.cs.bloat;visibility:=reexport
 Export-Package: com.db4o,
  com.db4o.activation,
  com.db4o.bench,

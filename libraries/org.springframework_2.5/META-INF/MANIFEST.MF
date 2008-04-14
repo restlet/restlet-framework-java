@@ -131,4 +131,3 @@ Export-Package:
  org.springframework.web.servlet.view.velocity,
  org.springframework.web.servlet.view.xslt,
  org.springframework.web.util
-Require-Bundle: org.apache.commons.logging

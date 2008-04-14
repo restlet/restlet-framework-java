@@ -4,6 +4,10 @@ Bundle-Name: Restlet Extension - JiBX
 Bundle-SymbolicName: org.restlet.ext.jibx
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Require-Bundle: org.jibx;visibility:=reexport,
- org.restlet;visibility:=reexport
 Export-Package: org.restlet.ext.jibx
+Import-Package: org.jibx.runtime,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
