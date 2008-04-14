@@ -97,7 +97,7 @@ public class SecurityUtils {
 
     /**
      * Returns the MD5 digest of the target string. Target is decoded to bytes
-     * using the US-ASCII charset. The returned hexidecimal String always
+     * using the US-ASCII charset. The returned hexadecimal String always
      * contains 32 lowercase alphanumeric characters. For example, if target is
      * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
      * 
@@ -117,7 +117,7 @@ public class SecurityUtils {
 
     /**
      * Returns the MD5 digest of target string. Target is decoded to bytes using
-     * the named charset. The returned hexidecimal String always contains 32
+     * the named charset. The returned hexadecimal String always contains 32
      * lowercase alphanumeric characters. For example, if target is
      * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
      * 
@@ -147,4 +147,44 @@ public class SecurityUtils {
         }
     }
 
+    /**
+     * Returns the SHA1 digest of the target string. Target is decoded to bytes
+     * using the US-ASCII charset.
+     * 
+     * @param target
+     *                The string to encode.
+     * @return The MD5 digest of the target string.
+     */
+    public static String toSha1(String target) {
+        try {
+            return toSha1(target, "US-ASCII");
+        } catch (UnsupportedEncodingException uee) {
+            // Unlikely, US-ASCII comes with every JVM
+            throw new RuntimeException(
+                    "US-ASCII is an unsupported encoding, unable to compute SHA1");
+        }
+    }
+
+    /**
+     * Returns the SHA1 digest of target string. Target is decoded to bytes
+     * using the named charset.
+     * 
+     * @param target
+     *                The string to encode.
+     * @param charsetName
+     *                The character set.
+     * @return The SHA1 digest of the target string.
+     * 
+     * @throws UnsupportedEncodingException
+     */
+    public static String toSha1(String target, String charsetName)
+            throws UnsupportedEncodingException {
+        try {
+            return Base64.encode(MessageDigest.getInstance("SHA1").digest(
+                    target.getBytes(charsetName)), false);
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new RuntimeException(
+                    "No SHA1 algorithm, unable to compute SHA1");
+        }
+    }
 }
