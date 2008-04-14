@@ -472,11 +472,13 @@ public final class ByteUtils {
      * @throws IOException
      */
     public static void exhaust(InputStream input) throws IOException {
-        byte[] buf = new byte[2048];
-        int read = input.read(buf);
+        if (input != null) {
+            byte[] buf = new byte[2048];
+            int read = input.read(buf);
 
-        while (read != -1) {
-            read = input.read(buf);
+            while (read != -1) {
+                read = input.read(buf);
+            }
         }
     }
 

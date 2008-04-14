@@ -46,7 +46,7 @@ import com.noelios.restlet.http.HttpServerCall;
  */
 public class JettyCall extends HttpServerCall {
     /** The wrapped Jetty HTTP connection. */
-    private volatile HttpConnection connection;
+    private final HttpConnection connection;
 
     /** Indicates if the request headers were parsed and added. */
     private volatile boolean requestHeadersAdded;
@@ -104,6 +104,8 @@ public class JettyCall extends HttpServerCall {
         try {
             return getConnection().getRequest().getInputStream();
         } catch (IOException e) {
+            getLogger().log(Level.WARNING,
+                    "Unable to get request entity stream", e);
             return null;
         }
     }
@@ -182,6 +184,8 @@ public class JettyCall extends HttpServerCall {
         try {
             return getConnection().getResponse().getOutputStream();
         } catch (IOException e) {
+            getLogger().log(Level.WARNING,
+                    "Unable to get response entity stream", e);
             return null;
         }
     }
@@ -269,8 +273,8 @@ public class JettyCall extends HttpServerCall {
     public void complete() {
         try {
             // Fully complete and commit the response
+            this.connection.flushResponse();
             this.connection.completeResponse();
-            this.connection.commitResponse(true);
         } catch (IOException ex) {
             getLogger().log(Level.WARNING,
                     "Unable to complete or commit the response", ex);

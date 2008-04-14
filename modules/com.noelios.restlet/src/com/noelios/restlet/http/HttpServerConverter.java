@@ -318,7 +318,8 @@ public class HttpServerConverter extends HttpConverter {
      */
     public void commit(HttpResponse response) {
         try {
-            if (response.getRequest().getMethod().equals(Method.HEAD)) {
+            if ((response.getRequest().getMethod() != null)
+                    && response.getRequest().getMethod().equals(Method.HEAD)) {
                 addEntityHeaders(response);
                 response.setEntity(null);
             } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {

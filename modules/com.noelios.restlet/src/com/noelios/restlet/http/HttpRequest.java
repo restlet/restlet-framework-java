@@ -112,18 +112,20 @@ public class HttpRequest extends Request {
         }
         setHostRef(sb.toString());
 
-        // Set the resource reference
-        setResourceRef(new Reference(getHostRef(), httpCall.getRequestUri()));
-        if (getResourceRef().isRelative()) {
-            // Take care of the "/" between the host part and the segments.
-            if (!httpCall.getRequestUri().startsWith("/")) {
-                setResourceRef(new Reference(getHostRef(), getHostRef()
-                        .toString()
-                        + "/" + httpCall.getRequestUri()));
-            } else {
-                setResourceRef(new Reference(getHostRef(), getHostRef()
-                        .toString()
-                        + httpCall.getRequestUri()));
+        if (httpCall.getRequestUri() != null) {
+            // Set the resource reference
+            setResourceRef(new Reference(getHostRef(), httpCall.getRequestUri()));
+            if (getResourceRef().isRelative()) {
+                // Take care of the "/" between the host part and the segments.
+                if (!httpCall.getRequestUri().startsWith("/")) {
+                    setResourceRef(new Reference(getHostRef(), getHostRef()
+                            .toString()
+                            + "/" + httpCall.getRequestUri()));
+                } else {
+                    setResourceRef(new Reference(getHostRef(), getHostRef()
+                            .toString()
+                            + httpCall.getRequestUri()));
+                }
             }
         }
     }
@@ -138,8 +140,8 @@ public class HttpRequest extends Request {
                     HttpConstants.HEADER_AUTHORIZATION);
 
             // Set the challenge response
-            result = AuthenticationUtils.parseAuthorizationHeader(this, this.context
-                    .getLogger(), authorization);
+            result = AuthenticationUtils.parseAuthorizationHeader(this,
+                    this.context.getLogger(), authorization);
             setChallengeResponse(result);
             this.securityAdded = true;
         }

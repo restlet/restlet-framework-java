@@ -51,18 +51,19 @@ import com.noelios.restlet.util.KeepAliveInputStream;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SimpleCall extends HttpServerCall {
+
     /**
      * Simple Request.
      */
-    private volatile Request request;
-
-    /** Indicates if the request headers were parsed and added. */
-    private volatile boolean requestHeadersAdded;
+    private final Request request;
 
     /**
      * Simple Response.
      */
-    private volatile Response response;
+    private final Response response;
+
+    /** Indicates if the request headers were parsed and added. */
+    private volatile boolean requestHeadersAdded;
 
     /**
      * Constructs this class with the specified {@link simple.http.Request} and

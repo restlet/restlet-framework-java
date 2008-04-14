@@ -100,12 +100,12 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public String getClientAddress() {
-        return socketChannel.socket().getInetAddress().getHostAddress();
+        return getSocket().getInetAddress().getHostAddress();
     }
 
     @Override
     public int getClientPort() {
-        return socketChannel.socket().getPort();
+        return getSocket().getPort();
     }
 
     @Override
@@ -161,6 +161,15 @@ public class GrizzlyServerCall extends HttpServerCall {
     }
 
     /**
+     * Returns the socket associated to the socket channel.
+     * 
+     * @return The socket.
+     */
+    private Socket getSocket() {
+        return getSocketChannel().socket();
+    }
+
+    /**
      * Returns the readable socket channel.
      * 
      * @return The readable socket channel.
@@ -171,7 +180,7 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public String getSslCipherSuite() {
-        Socket socket = this.socketChannel.socket();
+        Socket socket = getSocket();
         if (socket instanceof SSLSocket) {
             SSLSocket sslSocket = (SSLSocket) socket;
             SSLSession sslSession = sslSocket.getSession();
@@ -184,7 +193,7 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public List<Certificate> getSslClientCertificates() {
-        Socket socket = this.socketChannel.socket();
+        Socket socket = getSocket();
         if (socket instanceof SSLSocket) {
             SSLSocket sslSocket = (SSLSocket) socket;
             SSLSession sslSession = sslSocket.getSession();
@@ -212,7 +221,7 @@ public class GrizzlyServerCall extends HttpServerCall {
         if (isConfidential()) {
             return new WritableByteChannel() {
                 public void close() throws IOException {
-                    getSocketChannel().close();
+
                 }
 
                 public boolean isOpen() {
@@ -221,12 +230,12 @@ public class GrizzlyServerCall extends HttpServerCall {
 
                 public int write(ByteBuffer src) throws IOException {
                     int nWrite = src.limit();
-                    SSLOutputWriter.flushChannel(socketChannel, src);
+                    SSLOutputWriter.flushChannel(getSocketChannel(), src);
                     return nWrite;
                 }
             };
         } else {
-            return this.socketChannel;
+            return getSocketChannel();
         }
     }
 
@@ -237,9 +246,9 @@ public class GrizzlyServerCall extends HttpServerCall {
         ByteBuffer buffer = ByteBuffer.wrap(headStream.toByteArray());
 
         if (isConfidential()) {
-            SSLOutputWriter.flushChannel(socketChannel, buffer);
+            SSLOutputWriter.flushChannel(getSocketChannel(), buffer);
         } else {
-            OutputWriter.flushChannel(socketChannel, buffer);
+            OutputWriter.flushChannel(getSocketChannel(), buffer);
         }
 
         buffer.clear();

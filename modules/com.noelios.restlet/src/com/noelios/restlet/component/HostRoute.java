@@ -126,38 +126,44 @@ public class HostRoute extends Route {
                 hostScheme = "";
         }
 
-        String resourceDomain = request.getResourceRef().getHostDomain();
-        if (resourceDomain == null)
-            resourceDomain = "";
+        if (request.getResourceRef() != null) {
+            String resourceDomain = request.getResourceRef().getHostDomain();
+            if (resourceDomain == null)
+                resourceDomain = "";
 
-        int resourcePortValue = request.getResourceRef().getHostPort();
-        if (resourcePortValue == -1)
-            resourcePortValue = request.getResourceRef().getSchemeProtocol()
-                    .getDefaultPort();
-        String resourcePort = Integer.toString(resourcePortValue);
+            int resourcePortValue = request.getResourceRef().getHostPort();
+            if (resourcePortValue == -1)
+                resourcePortValue = request.getResourceRef()
+                        .getSchemeProtocol().getDefaultPort();
+            String resourcePort = Integer.toString(resourcePortValue);
 
-        String resourceScheme = request.getResourceRef().getScheme();
-        if (resourceScheme == null)
-            resourceScheme = "";
+            String resourceScheme = request.getResourceRef().getScheme();
+            if (resourceScheme == null)
+                resourceScheme = "";
 
-        String serverAddress = response.getServerInfo().getAddress();
-        if (serverAddress == null)
-            serverAddress = "";
+            String serverAddress = response.getServerInfo().getAddress();
+            if (serverAddress == null)
+                serverAddress = "";
 
-        String serverPort = "";
-        if (response.getServerInfo().getPort() != -1)
-            serverPort = Integer.toString(response.getServerInfo().getPort());
+            String serverPort = "";
+            if (response.getServerInfo().getPort() != -1)
+                serverPort = Integer.toString(response.getServerInfo()
+                        .getPort());
 
-        // Check if all the criterias match
-        if (matches(getVirtualHost().getHostDomain(), hostDomain)
-                && matches(getVirtualHost().getHostPort(), hostPort)
-                && matches(getVirtualHost().getHostScheme(), hostScheme)
-                && matches(getVirtualHost().getResourceDomain(), resourceDomain)
-                && matches(getVirtualHost().getResourcePort(), resourcePort)
-                && matches(getVirtualHost().getResourceScheme(), resourceScheme)
-                && matches(getVirtualHost().getServerAddress(), serverAddress)
-                && matches(getVirtualHost().getServerPort(), serverPort)) {
-            result = 1F;
+            // Check if all the criterias match
+            if (matches(getVirtualHost().getHostDomain(), hostDomain)
+                    && matches(getVirtualHost().getHostPort(), hostPort)
+                    && matches(getVirtualHost().getHostScheme(), hostScheme)
+                    && matches(getVirtualHost().getResourceDomain(),
+                            resourceDomain)
+                    && matches(getVirtualHost().getResourcePort(), resourcePort)
+                    && matches(getVirtualHost().getResourceScheme(),
+                            resourceScheme)
+                    && matches(getVirtualHost().getServerAddress(),
+                            serverAddress)
+                    && matches(getVirtualHost().getServerPort(), serverPort)) {
+                result = 1F;
+            }
         }
 
         // Log the result of the matching

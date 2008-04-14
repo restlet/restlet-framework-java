@@ -35,8 +35,9 @@ import com.noelios.restlet.util.IdentClient;
  * current format is similar to IIS 6 logs. The logging is based on the
  * java.util.logging package.
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial: Filters and
- *      call logging</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial:
+ *      Filters and call logging</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class LogFilter extends Filter {
@@ -174,17 +175,20 @@ public class LogFilter extends Filter {
         sb.append('\t');
 
         // Append the method name
-        String methodName = request.getMethod().getName();
+        String methodName = (request.getMethod() == null) ? "-" : request
+                .getMethod().getName();
         sb.append((methodName == null) ? "-" : methodName);
 
         // Append the resource path
         sb.append('\t');
-        String resourcePath = request.getResourceRef().getPath();
+        String resourcePath = (request.getResourceRef() == null) ? "-"
+                : request.getResourceRef().getPath();
         sb.append((resourcePath == null) ? "-" : resourcePath);
 
         // Append the resource query
         sb.append('\t');
-        String resourceQuery = request.getResourceRef().getQuery();
+        String resourceQuery = (request.getResourceRef() == null) ? "-"
+                : request.getResourceRef().getQuery();
         sb.append((resourceQuery == null) ? "-" : resourceQuery);
 
         // Append the status code

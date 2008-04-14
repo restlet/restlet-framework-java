@@ -88,7 +88,6 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             } catch (IOException ex) {
                 ex.printStackTrace();
                 fail(ex.getMessage());
-
             }
         }
     }
@@ -110,6 +109,8 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
         } catch (IOException ex) {
             fail(ex.getMessage());
+        } finally {
+            entity.release();
         }
     }
 
@@ -150,8 +151,10 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected void call(String uri) throws Exception {
-        sendPut(uri);
-        sendGet(uri);
+        for (int i = 0; i < 50; i++) {
+            sendPut(uri);
+            sendGet(uri);
+        }
     }
 
     @Override
@@ -170,23 +173,31 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     private void sendGet(String uri) throws Exception {
         Request request = new Request(Method.GET, uri);
         Response r = new Client(Protocol.HTTP).handle(request);
-        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-                .getStatus());
-        assertXML(r.getEntityAsDom());
+        try {
+            assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
+                    .getStatus());
+            assertXML(r.getEntityAsDom());
+        } finally {
+            r.release();
+        }
+
     }
 
-    @SuppressWarnings("unchecked")
     private void sendPut(String uri) throws Exception {
         Request request = new Request(Method.PUT, uri, createTestXml());
         Response r = new Client(Protocol.HTTP).handle(request);
 
-        if (checkedForChunkedResponse) {
-            checkForChunkedHeader(r);
+        try {
+            if (checkedForChunkedResponse) {
+                checkForChunkedHeader(r);
+            }
+            assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
+                    .getStatus());
+            assertXML(r.getEntityAsDom());
+        } finally {
+            r.release();
         }
 
-        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-                .getStatus());
-        assertXML(r.getEntityAsDom());
     }
 
     @Override
@@ -196,56 +207,11 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
-    public void testGrizzlyAndApache() throws Exception {
-        super.testGrizzlyAndApache();
-    }
-
-    @Override
-    public void testGrizzlyAndInternal() throws Exception {
-        // super.testGrizzlyAndInternal();
-    }
-
-    @Override
-    public void testGrizzlyAndJdkNet() throws Exception {
-        // super.testGrizzlyAndJdkNet();
-    }
-
-    @Override
-    public void testInternalAndApache() throws Exception {
-        super.testInternalAndApache();
-    }
-
-    @Override
-    public void testInternalAndInternal() throws Exception {
-        // super.testInternalAndInternal();
-    }
-
-    @Override
-    public void testInternalAndJdkNet() throws Exception {
-        // super.testInternalAndJdkNet();
-    }
-
-    @Override
-    public void testJettyAndApache() throws Exception {
-        super.testJettyAndApache();
-    }
-
-    @Override
     public void testJettyAndInternal() throws Exception {
         // Jetty will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
         checkedForChunkedResponse = false;
         super.testJettyAndInternal();
-    }
-
-    @Override
-    public void testJettyAndJdkNet() throws Exception {
-        super.testJettyAndJdkNet();
-    }
-
-    @Override
-    public void testSimpleAndApache() throws Exception {
-        super.testSimpleAndApache();
     }
 
     @Override
@@ -258,6 +224,6 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     @Override
     public void testSimpleAndJdkNet() throws Exception {
-        super.testSimpleAndJdkNet();
+        // super.testSimpleAndJdkNet();
     }
 }

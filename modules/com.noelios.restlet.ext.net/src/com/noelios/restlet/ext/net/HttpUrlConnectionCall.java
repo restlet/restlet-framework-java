@@ -30,14 +30,15 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.util.Series;
+import org.restlet.util.WrapperRepresentation;
 
 import com.noelios.restlet.Engine;
 import com.noelios.restlet.http.HttpClientCall;
@@ -49,8 +50,43 @@ import com.noelios.restlet.http.HttpClientCall;
  */
 public class HttpUrlConnectionCall extends HttpClientCall {
 
+    /**
+     * Representation that wraps another representation and closes the parent
+     * HttpURLConnection when the representation is released.
+     * 
+     * @author Kevin Conaway
+     */
+    private static class ConnectionClosingRepresentation extends
+            WrapperRepresentation {
+
+        /** The parent connection. */
+        private final HttpURLConnection connection;
+
+        /**
+         * Default constructor.
+         * 
+         * @param wrappedRepresentation
+         *                The wrapped representation.
+         * @param connection
+         *                The parent connection.
+         */
+        public ConnectionClosingRepresentation(
+                Representation wrappedRepresentation,
+                HttpURLConnection connection) {
+            super(wrappedRepresentation);
+            this.connection = connection;
+        }
+
+        @Override
+        public void release() {
+            connection.disconnect();
+            super.release();
+        }
+
+    }
+
     /** The wrapped HTTP URL connection. */
-    private volatile HttpURLConnection connection;
+    private final HttpURLConnection connection;
 
     /** Indicates if the response headers were added. */
     private volatile boolean responseHeadersAdded;
@@ -142,6 +178,12 @@ public class HttpUrlConnectionCall extends HttpClientCall {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    @Override
+    protected Representation getRepresentation(InputStream stream) {
+        Representation r = super.getRepresentation(stream);
+        return new ConnectionClosingRepresentation(r, getConnection());
     }
 
     @Override

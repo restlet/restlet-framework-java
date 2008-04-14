@@ -74,8 +74,11 @@ public class HttpParserFilter implements ProtocolFilter {
             context
                     .setKeyRegistrationState(Context.KeyRegistrationState.REGISTER);
         } else {
-            context
-                    .setKeyRegistrationState(Context.KeyRegistrationState.CANCEL);
+            // This seems to close the connection too soon and the client
+            // ends up with Connection reset errors or other connection
+            // related side effects:
+            //
+            // context.setKeyRegistrationState(Context.KeyRegistrationState.CANCEL);
         }
 
         // Clean up

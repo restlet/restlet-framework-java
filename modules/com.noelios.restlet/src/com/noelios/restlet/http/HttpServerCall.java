@@ -572,7 +572,8 @@ public abstract class HttpServerCall extends HttpCall {
     protected void writeResponseHead(Response response, OutputStream headStream)
             throws IOException {
         // Write the status line
-        headStream.write(getVersion().getBytes());
+        String version = (getVersion() == null) ? "1.1" : getVersion();
+        headStream.write(version.getBytes());
         headStream.write(' ');
         headStream.write(Integer.toString(getStatusCode()).getBytes());
         headStream.write(' ');

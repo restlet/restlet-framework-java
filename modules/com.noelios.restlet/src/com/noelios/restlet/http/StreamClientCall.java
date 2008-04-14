@@ -66,8 +66,10 @@ public class StreamClientCall extends HttpClientCall {
         @Override
         public void release() {
             try {
-                socket.shutdownOutput();
-                socket.close();
+                if (!socket.isClosed()) {
+                    socket.shutdownOutput();
+                    socket.close();
+                }
             } catch (IOException ex) {
                 log.log(Level.WARNING,
                         "An error occured closing the client socket", ex);

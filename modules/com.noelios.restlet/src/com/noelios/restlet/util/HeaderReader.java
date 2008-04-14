@@ -29,10 +29,10 @@ import com.noelios.restlet.http.HttpUtils;
  */
 public class HeaderReader {
     /** The header to read. */
-    private volatile String header;
+    private final String header;
 
     /** The current read index (or -1 if not reading anymore). */
-    private volatile int index;
+    private int index;
 
     /**
      * Constructor.
