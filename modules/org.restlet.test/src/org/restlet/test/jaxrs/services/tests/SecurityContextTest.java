@@ -30,7 +30,6 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.resource.Representation;
-import org.restlet.test.jaxrs.server.ServerWrapper;
 import org.restlet.test.jaxrs.services.resources.SecurityContextService;
 
 /**
@@ -48,15 +47,6 @@ public class SecurityContextTest extends JaxRsTestCase {
         return SEC_CONT_SERV;
     }
 
-    /**
-     * @param roleChecker
-     * @return true, if it could be set, or false if not.
-     */
-    private boolean setRoleChecker(RoleChecker roleChecker) {
-        ServerWrapper serverWrapper = getServerWrapper();
-        return serverWrapper.setRoleChecker(roleChecker);
-    }
-
     @Override
     protected boolean shouldStartServerInSetUp() {
         return false;
@@ -67,9 +57,7 @@ public class SecurityContextTest extends JaxRsTestCase {
      * @throws Exception
      */
     private boolean startServer(RoleChecker roleChecker) throws Exception {
-        if (!setRoleChecker(roleChecker))
-            return false;
-        startServer();
+        startServer(ChallengeScheme.HTTP_BASIC, roleChecker);
         return true;
     }
 
@@ -153,9 +141,7 @@ public class SecurityContextTest extends JaxRsTestCase {
 
     // TESTEN create extra TestCase: DigestAuth does not work.
     public void _testAuthenticationSchemeDigest() throws Exception {
-        if (!setRoleChecker(RoleChecker.ALLOW_ALL))
-            return;
-        startServer(ChallengeScheme.HTTP_DIGEST);
+        startServer(ChallengeScheme.HTTP_DIGEST, RoleChecker.ALLOW_ALL);
         ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_DIGEST, "alice", "alicesSecret");
         Response response = get("authenticationScheme", cr);

@@ -17,14 +17,11 @@
  */
 package org.restlet.test.jaxrs.server;
 
-import javax.ws.rs.core.ApplicationConfig;
-
+import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.RoleChecker;
-import org.restlet.test.jaxrs.services.tests.JaxRsTestCase;
 
 /**
  * This interface wraps a server for the tests. The default implementation is
@@ -42,20 +39,19 @@ public interface ServerWrapper {
      * given Collection of root resource classes. The method {@link #setUp()}
      * will do this on every test start up.
      * 
-     * @param appConfig
-     * @param protocol
-     *                the protocol to use
      * @param challengeScheme
      *                The challenge scheme for authentification
-     * @param contextParameter
-     *                A parameter to add to the context. may be null
+     * @param protocol
+     *                the protocol to use
+     * @param appConfig
+     * 
      * @return Returns the started component. Should be stopped with
      *         {@link #stopServer(Component)}
      * @throws Exception
      */
-    public void startServer(final ApplicationConfig appConfig,
-            Protocol protocol, ChallengeScheme challengeScheme,
-            Parameter contextParameter) throws Exception;
+    public void startServer(final Application application,
+            ChallengeScheme challengeScheme, Protocol protocol)
+            throws Exception;
 
     /**
      * Stops the component. The method {@link #tearDown()} do this after every
@@ -69,13 +65,12 @@ public interface ServerWrapper {
     /**
      * Returns the port the server is running on.
      */
-    public int getPort();
+    public int getServerPort();
 
     /**
-     * Sets the {@link RoleChecker} to use.
+     * Returns the connector to access the application.
      * 
-     * @param roleChecker
-     * @return true if the {@link RoleChecker} could be set, otherwise false.
+     * @return the connector to access the application.
      */
-    public boolean setRoleChecker(RoleChecker roleChecker);
+    public Restlet getClientConnector();
 }

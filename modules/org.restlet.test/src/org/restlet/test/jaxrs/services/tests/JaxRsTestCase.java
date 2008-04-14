@@ -33,7 +33,10 @@ import javax.ws.rs.core.ApplicationConfig;
 
 import junit.framework.TestCase;
 
+import org.restlet.Application;
 import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -51,6 +54,8 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.JaxRsApplication;
+import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
@@ -195,8 +200,7 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     public static ServerWrapperFactory getServerWrapperFactory() {
-        if(serverWrapperFactory == null)
-        {
+        if (serverWrapperFactory == null) {
             if (USE_TCP)
                 serverWrapperFactory = new RestletServerWrapperFactory();
             else
@@ -361,7 +365,7 @@ public abstract class JaxRsTestCase extends TestCase {
      * @return
      */
     protected Response accessServer(Request request) {
-        Restlet connector = getConnector();
+        Restlet connector = getClientConnector();
         if (shouldAccessWithoutTcp()) {
             String hostDomain = request.getResourceRef().getHostDomain();
             Util.getHttpHeaders(request).add("host", hostDomain);
@@ -410,7 +414,7 @@ public abstract class JaxRsTestCase extends TestCase {
         reference.setProtocol(Protocol.HTTP);
         reference.setAuthority("localhost");
         if (!shouldAccessWithoutTcp())
-            reference.setHostPort(serverWrapper.getPort());
+            reference.setHostPort(serverWrapper.getServerPort());
         return reference;
     }
 
@@ -577,18 +581,12 @@ public abstract class JaxRsTestCase extends TestCase {
     /**
      * @return
      */
-    protected Restlet getConnector() {
-        Restlet connector;
-        if (shouldAccessWithoutTcp()) {
-            connector = ((DirectServerWrapper) serverWrapper).getConnector();
-        } else {
-            connector = new Client(Protocol.HTTP);
-        }
-        return connector;
+    protected Restlet getClientConnector() {
+        return serverWrapper.getClientConnector();
     }
 
     public int getPort() {
-        return serverWrapper.getPort();
+        return serverWrapper.getServerPort();
     }
 
     protected Class<?> getRootResourceClass() {
@@ -686,22 +684,25 @@ public abstract class JaxRsTestCase extends TestCase {
      * @throws Exception
      */
     protected void startServer() throws Exception {
-        startServer(ChallengeScheme.HTTP_BASIC);
+        startServer(ChallengeScheme.HTTP_BASIC, null);
     }
 
     /**
-     * @param rootResourceClasses
      * @param protocol
      * @param challengeScheme
-     * @param contextParameter
+     * @param roleChecker
+     *                TODO
+     * @param rootResourceClasses
      * @throws Exception
      */
     private void startServer(ApplicationConfig appConfig, Protocol protocol,
-            final ChallengeScheme challengeScheme, Parameter contextParameter)
+            final ChallengeScheme challengeScheme, RoleChecker roleChecker)
             throws Exception {
         try {
-            serverWrapper.startServer(appConfig, protocol, challengeScheme,
-                    contextParameter);
+            this.jaxRsApplication = createApplication(appConfig,
+                    challengeScheme, roleChecker);
+            serverWrapper.startServer(jaxRsApplication, challengeScheme,
+                    protocol);
         } catch (Exception e) {
             try {
                 stopServer();
@@ -712,13 +713,17 @@ public abstract class JaxRsTestCase extends TestCase {
         }
     }
 
+    private JaxRsApplication jaxRsApplication;
+
     /**
+     * @param roleChecker
+     *                TODO
      * @throws Exception
      */
-    protected void startServer(ChallengeScheme challengeScheme)
-            throws Exception {
+    protected void startServer(ChallengeScheme challengeScheme,
+            RoleChecker roleChecker) throws Exception {
         ApplicationConfig appConfig = getAppConfig();
-        startServer(appConfig, Protocol.HTTP, challengeScheme, null);
+        startServer(appConfig, Protocol.HTTP, challengeScheme, roleChecker);
     }
 
     /**
@@ -732,5 +737,38 @@ public abstract class JaxRsTestCase extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         stopServer();
+    }
+
+    /**
+     * @param appConfig
+     * @param challengeScheme
+     * @param roleChecker
+     * @return
+     */
+    public static JaxRsApplication createApplication(
+            final ApplicationConfig appConfig,
+            final ChallengeScheme challengeScheme, final RoleChecker roleChecker) {
+        JaxRsApplication application = new JaxRsApplication();
+        if (roleChecker != null) {
+            application.setRoleChecker(roleChecker);
+            Guard guard = createGuard(application.getContext(), challengeScheme);
+            application.setGuard(guard);
+        }
+        application.attach(appConfig);
+        return application;
+    }
+
+    /**
+     * @param context
+     * @param challengeScheme
+     * @return
+     */
+    public static Guard createGuard(final Context context,
+            final ChallengeScheme challengeScheme) {
+        Guard guard = new Guard(context, challengeScheme, "");
+        guard.getSecrets().put("admin", "adminPW".toCharArray());
+        guard.getSecrets().put("alice", "alicesSecret".toCharArray());
+        guard.getSecrets().put("bob", "bobsSecret".toCharArray());
+        return guard;
     }
 }

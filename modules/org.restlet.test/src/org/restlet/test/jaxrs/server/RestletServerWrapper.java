@@ -17,18 +17,13 @@
  */
 package org.restlet.test.jaxrs.server;
 
-import javax.ws.rs.core.ApplicationConfig;
-
 import org.restlet.Application;
+import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
-import org.restlet.Guard;
+import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.RoleChecker;
-import org.restlet.ext.jaxrs.JaxRsApplication;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
@@ -39,23 +34,9 @@ import org.restlet.ext.jaxrs.JaxRsApplication;
  */
 public class RestletServerWrapper implements ServerWrapper {
 
-    private RoleChecker roleChecker;
-
     private Component component;
 
     public RestletServerWrapper() {
-    }
-
-    /**
-     * @param roleChecker
-     *                the roleChecker to set. May be null to not require
-     *                authentication.
-     * @throws IllegalArgumentException
-     */
-    public boolean setRoleChecker(RoleChecker roleChecker)
-            throws IllegalArgumentException {
-        this.roleChecker = roleChecker;
-        return true;
     }
 
     /**
@@ -68,47 +49,18 @@ public class RestletServerWrapper implements ServerWrapper {
      *         {@link #stopServer(Component)}
      * @throws Exception
      */
-    public void startServer(final ApplicationConfig appConfig,
-            Protocol protocol, final ChallengeScheme challengeScheme,
-            Parameter contextParameter) throws Exception {
-        Component comp = new Component();
-        if (contextParameter != null)
-            comp.getContext().getParameters().add(contextParameter);
-        comp.getServers().add(protocol, 0);
-        final RoleChecker roleChecker = this.roleChecker;
-        final Context context = comp.getContext();
-        Application application1 = createApplication(context, appConfig,
-                challengeScheme, roleChecker);
+    public void startServer(final Application application,
+            final ChallengeScheme challengeScheme, Protocol protocol)
+            throws Exception {
 
-        // Create an application
-        Application application = application1;
+        Component comp = new Component();
+        comp.getServers().add(protocol, 0);
 
         // Attach the application to the component and start it
         comp.getDefaultHost().attach(application);
         comp.start();
         this.component = comp;
-        System.out.println("listening on port " + getPort());
-    }
-
-    /**
-     * @param context
-     * @param appConfig
-     * @param challengeScheme
-     * @param roleChecker
-     * @return
-     */
-    public static Application createApplication(Context context,
-            final ApplicationConfig appConfig,
-            final ChallengeScheme challengeScheme,
-            final RoleChecker roleChecker) {
-        JaxRsApplication application = new JaxRsApplication(context);
-        if (roleChecker != null) {
-            application.setRoleChecker(roleChecker);
-            Guard guard = createGuard(context, challengeScheme);
-            application.setGuard(guard);
-        }
-        application.attach(appConfig);
-        return application;
+        System.out.println("listening on port " + getServerPort());
     }
 
     /**
@@ -123,7 +75,7 @@ public class RestletServerWrapper implements ServerWrapper {
             this.component.stop();
     }
 
-    public int getPort() {
+    public int getServerPort() {
         if (this.component == null)
             throw new IllegalStateException("the server is not started yet.");
         Server server = this.component.getServers().get(0);
@@ -147,16 +99,9 @@ public class RestletServerWrapper implements ServerWrapper {
     }
 
     /**
-     * @param context
-     * @param challengeScheme
-     * @return
+     * @see org.restlet.test.jaxrs.server.ServerWrapper#getClientConnector()
      */
-    public static Guard createGuard(final Context context,
-            final ChallengeScheme challengeScheme) {
-        Guard guard = new Guard(context, challengeScheme, "");
-        guard.getSecrets().put("admin", "adminPW".toCharArray());
-        guard.getSecrets().put("alice", "alicesSecret".toCharArray());
-        guard.getSecrets().put("bob", "bobsSecret".toCharArray());
-        return guard;
+    public Restlet getClientConnector() {
+        return new Client(Protocol.HTTP);
     }
 }

@@ -82,15 +82,21 @@ public class JaxRsApplication extends Application {
     private volatile boolean preferHtml = true;
 
     /**
-     * Default constructor.
-     * 
+     * @param parentContext
+     *                The parent component context.
+     */
+    public JaxRsApplication() {
+        this(null);
+    }
+
+    /**
      * @param parentContext
      *                The parent component context.
      */
     public JaxRsApplication(Context parentContext) {
         super(parentContext);
         this.getTunnelService().setExtensionsTunnel(false);
-        this.jaxRsRouter = new JaxRsRouter(parentContext);
+        this.jaxRsRouter = new JaxRsRouter(getContext());
     }
 
     /**
@@ -191,7 +197,7 @@ public class JaxRsApplication extends Application {
             this.guard.setNext(restlet);
             restlet = this.guard;
         }
-        
+
         TunnelFilter tunnelFilter = new TunnelFilter(this);
         tunnelFilter.setNext(restlet);
         restlet = tunnelFilter;

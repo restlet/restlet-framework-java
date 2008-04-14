@@ -17,13 +17,10 @@
  */
 package org.restlet.test.jaxrs.server;
 
-import javax.ws.rs.core.ApplicationConfig;
-
+import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.RoleChecker;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
@@ -35,41 +32,26 @@ import org.restlet.ext.jaxrs.RoleChecker;
  */
 public class DirectServerWrapper implements ServerWrapper {
 
-    private RoleChecker roleChecker;
-
     private Restlet connector;
 
     public DirectServerWrapper() {
     }
 
-    /**
-     * @param roleChecker
-     *                the roleChecker to set. May be null to not require
-     *                authentication.
-     * @throws IllegalArgumentException
-     */
-    public boolean setRoleChecker(RoleChecker roleChecker)
-            throws IllegalArgumentException {
-        this.roleChecker = roleChecker;
-        return true;
-    }
-
-    public int getPort() {
+    public int getServerPort() {
         return -1;
     }
 
-    public void startServer(ApplicationConfig appConfig, Protocol protocol,
-            ChallengeScheme challengeScheme, Parameter contextParameter)
+    public void startServer(Application application,
+            ChallengeScheme challengeScheme, Protocol protocol)
             throws Exception {
-        connector = RestletServerWrapper.createApplication(null, appConfig,
-                challengeScheme, roleChecker);
+        connector = application;
     }
 
     public void stopServer() throws Exception {
         this.connector = null;
     }
 
-    public Restlet getConnector() {
+    public Restlet getClientConnector() {
         if(connector == null)
             throw new IllegalStateException("The Server is not yet started");
         return connector;

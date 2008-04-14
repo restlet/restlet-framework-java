@@ -51,7 +51,7 @@ public class HttpHeaderTest extends JaxRsTestCase {
         Request request = createGetRequest("HeaderParam");
         Util.getHttpHeaders(request).add(
                 HttpHeaderTestService.TEST_HEADER_NAME, "abc");
-        Restlet client = getConnector();
+        Restlet client = getClientConnector();
         Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc", response.getEntity().getText());
@@ -82,7 +82,7 @@ public class HttpHeaderTest extends JaxRsTestCase {
     public void testCookies() throws IOException {
         Request request = createGetRequest("cookies/cookieName");
         request.getCookies().add(new Cookie("cookieName", "cookie-value"));
-        Restlet client = getConnector();
+        Restlet client = getClientConnector();
         Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("cookieName=cookie-value", response.getEntity().getText());
@@ -98,7 +98,7 @@ public class HttpHeaderTest extends JaxRsTestCase {
                 HttpHeaderTestService.class, "language"));
         request.setClientInfo(clientInfo);
         request.setEntity(new StringRepresentation("entity", Language.ENGLISH));
-        Restlet client = getConnector();
+        Restlet client = getClientConnector();
         Response response = client.handle(request);
 
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -110,7 +110,7 @@ public class HttpHeaderTest extends JaxRsTestCase {
                 + HttpHeaderTestService.TEST_HEADER_NAME);
         Util.getHttpHeaders(request).add(
                 HttpHeaderTestService.TEST_HEADER_NAME, "abc");
-        Restlet client = getConnector();
+        Restlet client = getClientConnector();
         Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc", response.getEntity().getText());
@@ -142,7 +142,7 @@ public class HttpHeaderTest extends JaxRsTestCase {
         Request request = createGetRequest("headerWithDefault");
         Util.getHttpHeaders(request).add(
                 HttpHeaderTestService.TEST_HEADER_NAME, "abc");
-        Restlet client = getConnector();
+        Restlet client = getClientConnector();
         Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc", response.getEntity().getText());
