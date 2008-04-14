@@ -41,7 +41,7 @@ public class OwnProviderTest extends JaxRsTestCase {
     @Override
     @SuppressWarnings("all")
     public Set<Class<?>> getProvClasses() {
-        return (Set)TestUtils.createSet(CrazyTypeProvider.class);
+        return (Set) TestUtils.createSet(CrazyTypeProvider.class);
     }
 
     /**
@@ -49,7 +49,7 @@ public class OwnProviderTest extends JaxRsTestCase {
      */
     public void test1() throws Exception {
         Response response = get();
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         MediaType respMediaType = response.getEntity().getMediaType();
         assertEquals(new MediaType("application/crazyType"), respMediaType);

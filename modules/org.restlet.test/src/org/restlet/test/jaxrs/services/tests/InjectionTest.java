@@ -60,19 +60,19 @@ public class InjectionTest extends JaxRsTestCase {
 
     public void testGet() {
         Response response = get("?qp1=56");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 
     /** @see InjectionTestService2#get() */
     public void testGetWithIndex() throws IOException {
         Response response = get("two/56");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("56", response.getEntity().getText());
 
         response = get("two/97");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("97", response.getEntity().getText());
 }

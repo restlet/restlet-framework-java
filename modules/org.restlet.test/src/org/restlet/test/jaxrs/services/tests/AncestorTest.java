@@ -34,50 +34,54 @@ public class AncestorTest extends JaxRsTestCase {
 
     public void testGet() throws Exception {
         Response response = get();
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("0\n0", response.getEntity().getText());
     }
-    
+
     public void testUri() throws Exception {
         Response response = get("uris");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1\n/ancestorTest", response.getEntity().getText());
     }
-    
+
     public void testResourceClassNames() throws Exception {
         Response response = get("resourceClassNames");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("1\norg.restlet.test.jaxrs.services.resources.AncestorTestService", response.getEntity().getText());
+        assertEquals(
+                "1\norg.restlet.test.jaxrs.services.resources.AncestorTestService",
+                response.getEntity().getText());
     }
-    
+
     public void testGetSub() throws Exception {
         Response response = get("sub");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1\n1", response.getEntity().getText());
     }
 
     public void testGetSubSub() throws Exception {
         Response response = get("sub/sub");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("2\n2", response.getEntity().getText());
     }
 
     public void testGetSubSameSub() throws Exception {
         Response response = get("sub/sameSub");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("2\n2", response.getEntity().getText());
     }
 
     public void testSameSubSubUri() throws Exception {
         Response response = get("sameSub/sub/uris");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("3\n/ancestorTest/sameSub/sub\n/ancestorTest/sameSub\n/ancestorTest", response.getEntity().getText());
+        assertEquals(
+                "3\n/ancestorTest/sameSub/sub\n/ancestorTest/sameSub\n/ancestorTest",
+                response.getEntity().getText());
     }
 }

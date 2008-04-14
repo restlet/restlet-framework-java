@@ -50,7 +50,7 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
     private void assertUriAndMediaType(String expectedSubPath,
             MediaType expectedMT, Response response, boolean checkEntityText)
             throws IOException {
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation entity = response.getEntity();
         assertEquals(expectedMT, entity.getMediaType());
@@ -63,7 +63,7 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
 
     private void assertBaseUriAndMediaType(MediaType expectedMT,
             Response response, boolean checkEntityText) throws IOException {
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation entity = response.getEntity();
         assertEquals(expectedMT, entity.getMediaType());

@@ -66,7 +66,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
     public void test1() throws Exception {
         Reference reference = createReference(SERVICE_1, "getText");
         Response response = accessServer(Method.GET, reference);
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         String entityText = response.getEntity().getText();
@@ -76,7 +76,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
     public void test2a() throws Exception {
         Reference reference = createReference(SERVICE_2, "getText");
         Response response = accessServer(Method.GET, reference);
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         String entityText = response.getEntity().getText();
@@ -86,7 +86,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
     public void test2b() throws Exception {
         Reference reference = createReference(SERVICE_2, "getSubClassText");
         Response response = accessServer(Method.GET, reference);
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         String entityText = response.getEntity().getText();
@@ -97,7 +97,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
     public void x_test2c() throws Exception {
         Reference reference = createReference(SERVICE_2, "getSubClassText/sub");
         Response response = accessServer(Method.GET, reference);
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         String entityText = response.getEntity().getText();

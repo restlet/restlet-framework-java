@@ -34,7 +34,7 @@ public class ContextsTest extends JaxRsTestCase {
 
     public void testFields() throws Exception {
         Response response = get("fields");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
         assertEquals("messageBodyWorkers\ncontextResolver\nuriInfo\n", entity);
@@ -42,7 +42,7 @@ public class ContextsTest extends JaxRsTestCase {
 
     public void testParams() throws Exception {
         Response response = get("params");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
         assertEquals("messageBodyWorkers\ncontextResolver\nuriInfo\n", entity);

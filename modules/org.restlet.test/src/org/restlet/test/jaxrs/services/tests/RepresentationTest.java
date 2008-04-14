@@ -39,27 +39,27 @@ public class RepresentationTest extends JaxRsTestCase {
     public void testDecodePost() throws Exception {
         Representation repr = new StringRepresentation("abcde");
         Response response = post("reprDecode", repr);
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abcde", response.getEntity().getText());
     }
 
     public void testReprGet() {
         Response response = get("repr");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 
     public void testReprPost() throws IOException {
         Response response = post("repr", new StringRepresentation("abcde"));
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abcde", response.getEntity().getText());
     }
 
     public void testStringGet() {
         Response response = get("reprString");
-        super.sysOutEntityIfError(response);
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 }
