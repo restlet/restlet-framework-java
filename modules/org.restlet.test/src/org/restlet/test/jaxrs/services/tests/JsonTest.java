@@ -17,6 +17,9 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
-import static javax.ws.rs.core.MediaType.*;
 
 import junit.framework.AssertionFailedError;
 
@@ -37,7 +39,6 @@ import org.restlet.ext.jaxb.JaxbRepresentation;
 import org.restlet.ext.jaxrs.internal.provider.JsonProvider;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.test.jaxrs.server.RestletServerWrapperFactory;
 import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.resources.JsonTestService;
 
@@ -56,9 +57,7 @@ public class JsonTest extends JaxRsTestCase {
     }
 
     public static void main(String[] args) throws Exception {
-        if (USE_TCP == false)
-            setServerWrapperFactory(new RestletServerWrapperFactory());
-        runServerUntilKeyPressed(new JsonTest());
+        new JsonTest().runServerUntilKeyPressed();
     }
 
     @Override

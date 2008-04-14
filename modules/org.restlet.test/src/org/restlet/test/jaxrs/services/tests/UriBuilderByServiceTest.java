@@ -25,6 +25,8 @@ import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
 
+import static org.restlet.data.MediaType.*;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
@@ -38,23 +40,35 @@ import org.restlet.test.jaxrs.services.resources.UriBuilderTestResource;
  */
 public class UriBuilderByServiceTest extends JaxRsTestCase {
 
+    /**
+     * 
+     * @param expectedSubPath
+     * @param expectedMT
+     * @param response
+     * @throws IOException
+     */
     private void assertUriAndMediaType(String expectedSubPath,
-            MediaType expectedMT, Response response) throws IOException {
+            MediaType expectedMT, Response response, boolean checkEntityText)
+            throws IOException {
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation entity = response.getEntity();
         assertEquals(expectedMT, entity.getMediaType());
-        Reference r = createReference(getRootResourceClass(), expectedSubPath);
-        assertEquals(r.toString(), entity.getText());
+        if (checkEntityText) {
+            Reference r = createReference(getRootResourceClass(),
+                    expectedSubPath);
+            assertEquals(r.toString(), entity.getText());
+        }
     }
 
     private void assertBaseUriAndMediaType(MediaType expectedMT,
-            Response response) throws IOException {
+            Response response, boolean checkEntityText) throws IOException {
         super.sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation entity = response.getEntity();
         assertEquals(expectedMT, entity.getMediaType());
-        assertEquals(createBaseRef().toString(), entity.getText());
+        if (checkEntityText)
+            assertEquals(createBaseRef().toString(), entity.getText());
     }
 
     /**
@@ -87,128 +101,128 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
     }
 
     public void testAbsoluteGet() throws Exception {
-        Response response = get("absolute", MediaType.TEXT_HTML);
-        assertUriAndMediaType("absolute", MediaType.TEXT_HTML, response);
+        Response response = get("absolute", TEXT_HTML);
+        assertUriAndMediaType("absolute", TEXT_HTML, response, true);
 
-        response = get("absolute.txt", MediaType.TEXT_HTML);
-        assertUriAndMediaType("absolute.txt", MediaType.TEXT_PLAIN, response);
+        response = get("absolute.txt", TEXT_HTML);
+        assertUriAndMediaType("absolute.txt", TEXT_PLAIN, response, true);
 
-        response = get("absolute.html", MediaType.IMAGE_GIF);
-        assertUriAndMediaType("absolute.html", MediaType.TEXT_HTML, response);
+        response = get("absolute.html", IMAGE_GIF);
+        assertUriAndMediaType("absolute.html", TEXT_HTML, response, true);
 
-        response = get("absolute.xml", MediaType.TEXT_HTML);
+        response = get("absolute.xml", TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     public void testAbsoluteHead() throws Exception {
-        Response response = head("absolute", MediaType.TEXT_HTML);
-        assertUriAndMediaType("absolute", MediaType.TEXT_HTML, response);
+        Response response = head("absolute", TEXT_HTML);
+        assertUriAndMediaType("absolute", TEXT_HTML, response, false);
 
-        response = head("absolute.txt", MediaType.TEXT_HTML);
-        assertUriAndMediaType("absolute.txt", MediaType.TEXT_PLAIN, response);
+        response = head("absolute.txt", TEXT_HTML);
+        assertUriAndMediaType("absolute.txt", TEXT_PLAIN, response, false);
 
-        response = head("absolute.html", MediaType.IMAGE_GIF);
-        assertUriAndMediaType("absolute.html", MediaType.TEXT_HTML, response);
+        response = head("absolute.html", IMAGE_GIF);
+        assertUriAndMediaType("absolute.html", TEXT_HTML, response, false);
 
-        response = head("absolute.xml", MediaType.TEXT_HTML);
+        response = head("absolute.xml", TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     public void testAbsolutePost() throws Exception {
-        Response response = post("absolute", MediaType.TEXT_HTML);
-        assertUriAndMediaType("absolute", MediaType.TEXT_HTML, response);
+        Response response = post("absolute", TEXT_HTML);
+        assertUriAndMediaType("absolute", TEXT_HTML, response, true);
 
-        response = post("absolute.txt", MediaType.TEXT_HTML);
-        assertUriAndMediaType("absolute.txt", MediaType.TEXT_PLAIN, response);
+        response = post("absolute.txt", TEXT_HTML);
+        assertUriAndMediaType("absolute.txt", TEXT_PLAIN, response, true);
 
-        response = post("absolute.html", MediaType.IMAGE_GIF);
-        assertUriAndMediaType("absolute.html", MediaType.TEXT_HTML, response);
+        response = post("absolute.html", IMAGE_GIF);
+        assertUriAndMediaType("absolute.html", TEXT_HTML, response, true);
 
-        response = post("absolute.xml", MediaType.TEXT_HTML);
+        response = post("absolute.xml", TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     public void testBaseGet() throws Exception {
-        Response response = get("base", MediaType.TEXT_HTML);
-        assertBaseUriAndMediaType(MediaType.TEXT_HTML, response);
+        Response response = get("base", TEXT_HTML);
+        assertBaseUriAndMediaType(TEXT_HTML, response, true);
 
-        response = get("base.txt", MediaType.TEXT_HTML);
-        assertBaseUriAndMediaType(MediaType.TEXT_PLAIN, response);
+        response = get("base.txt", TEXT_HTML);
+        assertBaseUriAndMediaType(TEXT_PLAIN, response, true);
 
-        response = get("base.html", MediaType.IMAGE_GIF);
-        assertBaseUriAndMediaType(MediaType.TEXT_HTML, response);
+        response = get("base.html", IMAGE_GIF);
+        assertBaseUriAndMediaType(TEXT_HTML, response, true);
 
-        response = get("base.xml", MediaType.TEXT_HTML);
+        response = get("base.xml", TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     public void testBaseHead() throws Exception {
-        Response response = head("base", MediaType.TEXT_HTML);
-        assertBaseUriAndMediaType(MediaType.TEXT_HTML, response);
+        Response response = head("base", TEXT_HTML);
+        assertBaseUriAndMediaType(TEXT_HTML, response, false);
 
-        response = head("base.txt", MediaType.TEXT_HTML);
-        assertBaseUriAndMediaType(MediaType.TEXT_PLAIN, response);
+        response = head("base.txt", TEXT_HTML);
+        assertBaseUriAndMediaType(TEXT_PLAIN, response, false);
 
-        response = head("base.html", MediaType.IMAGE_GIF);
-        assertBaseUriAndMediaType(MediaType.TEXT_HTML, response);
+        response = head("base.html", IMAGE_GIF);
+        assertBaseUriAndMediaType(TEXT_HTML, response, false);
 
-        response = head("base.xml", MediaType.TEXT_HTML);
+        response = head("base.xml", TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     public void testBasePost() throws Exception {
-        Response response = post("base", MediaType.TEXT_HTML);
-        assertBaseUriAndMediaType(MediaType.TEXT_HTML, response);
+        Response response = post("base", TEXT_HTML);
+        assertBaseUriAndMediaType(TEXT_HTML, response, true);
 
-        response = post("base.txt", MediaType.TEXT_HTML);
-        assertBaseUriAndMediaType(MediaType.TEXT_PLAIN, response);
+        response = post("base.txt", TEXT_HTML);
+        assertBaseUriAndMediaType(TEXT_PLAIN, response, true);
 
-        response = post("base.html", MediaType.IMAGE_GIF);
-        assertBaseUriAndMediaType(MediaType.TEXT_HTML, response);
+        response = post("base.html", IMAGE_GIF);
+        assertBaseUriAndMediaType(TEXT_HTML, response, true);
 
-        response = post("base.xml", MediaType.TEXT_HTML);
+        response = post("base.xml", TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     public void testPlatonicGet() throws Exception {
-        Response response = get("platonic", MediaType.TEXT_HTML);
-        assertUriAndMediaType("platonic", MediaType.TEXT_HTML, response);
+        Response response = get("platonic", TEXT_HTML);
+        assertUriAndMediaType("platonic", TEXT_HTML, response, true);
 
-        response = get("platonic.txt", MediaType.TEXT_HTML);
-        assertUriAndMediaType("platonic", MediaType.TEXT_PLAIN, response);
+        response = get("platonic.txt", TEXT_HTML);
+        assertUriAndMediaType("platonic", TEXT_PLAIN, response, true);
 
-        response = get("platonic.html", MediaType.IMAGE_GIF);
-        assertUriAndMediaType("platonic", MediaType.TEXT_HTML, response);
+        response = get("platonic.html", IMAGE_GIF);
+        assertUriAndMediaType("platonic", TEXT_HTML, response, true);
 
-        response = get("platonic.xml", MediaType.TEXT_HTML);
+        response = get("platonic.xml", TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     public void testPlatonicHead() throws Exception {
-        Response response = head("platonic", MediaType.TEXT_HTML);
-        assertUriAndMediaType("platonic", MediaType.TEXT_HTML, response);
+        Response response = head("platonic", TEXT_HTML);
+        assertUriAndMediaType("platonic", TEXT_HTML, response, false);
 
-        response = head("platonic.txt", MediaType.TEXT_HTML);
-        assertUriAndMediaType("platonic", MediaType.TEXT_PLAIN, response);
+        response = head("platonic.txt", TEXT_HTML);
+        assertUriAndMediaType("platonic", TEXT_PLAIN, response, false);
 
-        response = head("platonic.html", MediaType.IMAGE_GIF);
-        assertUriAndMediaType("platonic", MediaType.TEXT_HTML, response);
+        response = head("platonic.html", IMAGE_GIF);
+        assertUriAndMediaType("platonic", TEXT_HTML, response, false);
 
-        response = head("platonic.xml", MediaType.TEXT_HTML);
+        response = head("platonic.xml", TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     public void testPlatonicPost() throws Exception {
-        Response response = post("platonic", MediaType.TEXT_HTML);
-        assertUriAndMediaType("platonic", MediaType.TEXT_HTML, response);
+        Response response = post("platonic", TEXT_HTML);
+        assertUriAndMediaType("platonic", TEXT_HTML, response, true);
 
-        response = post("platonic.txt", MediaType.TEXT_HTML);
-        assertUriAndMediaType("platonic", MediaType.TEXT_PLAIN, response);
+        response = post("platonic.txt", TEXT_HTML);
+        assertUriAndMediaType("platonic", TEXT_PLAIN, response, true);
 
-        response = post("platonic.html", MediaType.IMAGE_GIF);
-        assertUriAndMediaType("platonic", MediaType.TEXT_HTML, response);
+        response = post("platonic.html", IMAGE_GIF);
+        assertUriAndMediaType("platonic", TEXT_HTML, response, true);
 
-        response = post("platonic.xml", MediaType.TEXT_HTML);
+        response = post("platonic.xml", TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 }

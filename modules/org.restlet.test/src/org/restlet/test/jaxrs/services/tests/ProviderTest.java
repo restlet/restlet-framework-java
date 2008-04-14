@@ -219,7 +219,7 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testJaxbPost() throws Exception {
-        if(USE_TCP)
+        if(usesTcp())
             return;
         postAndCheckXml("jaxb");
     }

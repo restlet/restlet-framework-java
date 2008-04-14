@@ -20,7 +20,6 @@ package org.restlet.test.jaxrs.server;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 
 /**
@@ -35,12 +34,23 @@ import org.restlet.data.Protocol;
  */
 public interface ServerWrapper {
     /**
+     * Returns the connector to access the application.
+     * 
+     * @return the connector to access the application.
+     */
+    public Restlet getClientConnector();
+
+    /**
+     * Returns the port the server is running on. throws an
+     * {@link IllegalStateException}, if direct access is used.
+     */
+    public int getServerPort();
+
+    /**
      * Starts the server with the given protocol on the given port with the
      * given Collection of root resource classes. The method {@link #setUp()}
      * will do this on every test start up.
      * 
-     * @param challengeScheme
-     *                The challenge scheme for authentification
      * @param protocol
      *                the protocol to use
      * @param appConfig
@@ -49,8 +59,7 @@ public interface ServerWrapper {
      *         {@link #stopServer(Component)}
      * @throws Exception
      */
-    public void startServer(final Application application,
-            ChallengeScheme challengeScheme, Protocol protocol)
+    public void startServer(Application application, Protocol protocol)
             throws Exception;
 
     /**
@@ -61,16 +70,4 @@ public interface ServerWrapper {
      * @throws Exception
      */
     public void stopServer() throws Exception;
-
-    /**
-     * Returns the port the server is running on.
-     */
-    public int getServerPort();
-
-    /**
-     * Returns the connector to access the application.
-     * 
-     * @return the connector to access the application.
-     */
-    public Restlet getClientConnector();
 }

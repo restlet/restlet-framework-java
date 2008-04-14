@@ -78,7 +78,7 @@ public class RequestTest extends JaxRsTestCase {
     }
 
     public static void main(String[] args) throws Exception {
-        runServerUntilKeyPressed(new RequestTest());
+        new RequestTest().runServerUntilKeyPressed();
     }
 
     /**

@@ -44,7 +44,7 @@ public class HeadOptionsTest extends JaxRsTestCase {
 
     // NICE test if it works fine, for @GET first and for @HEAD first,
     // if the GET-Method is not prefered to the HEAD method.
-    
+
     public void testHead1() throws Exception {
         Response responseGett = get("headTest1", MediaType.TEXT_HTML);
         Response responseHead = head("headTest1", MediaType.TEXT_HTML);
@@ -61,9 +61,8 @@ public class HeadOptionsTest extends JaxRsTestCase {
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_HTML, entityHead.getMediaType());
         assertEquals("4711", entityGett.getText());
-        if (!shouldAccessWithoutTcp())
-            assertEquals("The entity text of the head request must be null",
-                    null, entityHead.getText());
+        assertEquals("The entity text of the head request must be null", null,
+                entityHead.getText());
     }
 
     public void testHead2() throws Exception {
@@ -82,9 +81,8 @@ public class HeadOptionsTest extends JaxRsTestCase {
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_HTML, entityHead.getMediaType());
         assertEquals("4711", entityGett.getText());
-        if (!shouldAccessWithoutTcp())
-            assertEquals("The entity text of the head request must be null",
-                    null, entityHead.getText());
+        assertEquals("The entity text of the head request must be null", null,
+                entityHead.getText());
     }
 
     public void testHead2plain() throws Exception {
@@ -103,9 +101,8 @@ public class HeadOptionsTest extends JaxRsTestCase {
         assertEqualMediaType(MediaType.TEXT_PLAIN, entityGett.getMediaType());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entityHead.getMediaType());
         assertEquals("4711", entityGett.getText());
-        if (!shouldAccessWithoutTcp())
-            assertEquals("The entity text of the head request must be null",
-                    null, entityHead.getText());
+        assertEquals("The entity text of the head request must be null", null,
+                entityHead.getText());
     }
 
     public void testOptions() throws Exception {

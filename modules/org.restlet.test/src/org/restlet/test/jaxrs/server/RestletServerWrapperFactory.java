@@ -27,4 +27,11 @@ public class RestletServerWrapperFactory implements ServerWrapperFactory {
     public ServerWrapper createServerWrapper() {
         return new RestletServerWrapper();
     }
+
+    /**
+     * @see org.restlet.test.jaxrs.server.ServerWrapperFactory#usesTcp()
+     */
+    public boolean usesTcp() {
+        return true;
+    }
 }

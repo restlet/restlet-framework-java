@@ -31,13 +31,9 @@ import java.util.Set;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.ApplicationConfig;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Client;
-import org.restlet.Context;
 import org.restlet.Guard;
-import org.restlet.Restlet;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
@@ -59,11 +55,7 @@ import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
-import org.restlet.test.jaxrs.server.DirectServerWrapper;
-import org.restlet.test.jaxrs.server.DirectServerWrapperFactory;
-import org.restlet.test.jaxrs.server.RestletServerWrapperFactory;
-import org.restlet.test.jaxrs.server.ServerWrapper;
-import org.restlet.test.jaxrs.server.ServerWrapperFactory;
+import org.restlet.test.jaxrs.server.RestletServerTestCase;
 import org.restlet.test.jaxrs.services.providers.CrazyTypeProvider;
 import org.restlet.test.jaxrs.util.TestUtils;
 
@@ -75,54 +67,42 @@ import org.restlet.test.jaxrs.util.TestUtils;
  * @author Stephan Koops
  */
 @SuppressWarnings("all")
-public abstract class JaxRsTestCase extends TestCase {
+public abstract class JaxRsTestCase extends RestletServerTestCase {
 
     /**
-     * ServerWrapperFactory to use. Default: {@link RestletServerWrapperFactory}
-     */
-    private static ServerWrapperFactory serverWrapperFactory;
-
-    /**
-     * if true, a real server is started and all communication uses real TCP,
-     * real Restlet request and response serialization. If false, the
-     * application is called without serialization.<br>
-     * The first is more real, the last is very fast.
+     * Checks, if the allowed methods of an OPTIONS request are the given one.
      * 
-     * @see #setServerWrapperFactory(ServerWrapperFactory)
+     * @param optionsResponse
+     * @param methods
+     *                The methods that must be allowed. If GET is included, a
+     *                check for HEAD is automaticly done. But it is no problem
+     *                to add the HEAD method.
      */
-    public static final boolean USE_TCP = false;
-    static {
-        if (USE_TCP)
-            serverWrapperFactory = new RestletServerWrapperFactory();
-        else
-            serverWrapperFactory = new DirectServerWrapperFactory();
+    public static void assertAllowedMethod(Response optionsResponse,
+            Method... methods) {
+        if (optionsResponse.getStatus().isError())
+            assertEquals(Status.SUCCESS_OK, optionsResponse.getStatus());
+        Set<Method> expectedMethods = new HashSet<Method>(Arrays
+                .asList(methods));
+        if (expectedMethods.contains(Method.GET))
+            expectedMethods.add(Method.HEAD);
+        List<Method> allowedMethods = new ArrayList<Method>(optionsResponse
+                .getAllowedMethods());
+        for (Method method : methods) {
+            assertTrue("allowedMethod must contain " + method, allowedMethods
+                    .contains(method));
+        }
+        assertEquals("allowedMethods.size invalid", expectedMethods.size(),
+                allowedMethods.size());
     }
 
     /**
-     * @param request
-     * @param mediaTypes
+     * @param response
+     * @throws IOException
      */
-    @SuppressWarnings("unchecked")
-    private static void addAcceptedMediaTypes(Request request,
-            Collection mediaTypes) {
-        if (mediaTypes == null || mediaTypes.isEmpty())
-            return;
-        Collection<Preference<MediaType>> mediaTypePrefs = new ArrayList<Preference<MediaType>>(
-                mediaTypes.size());
-        for (Object mediaType : mediaTypes) {
-            if (mediaType instanceof MediaType) {
-                mediaTypePrefs.add(new Preference<MediaType>(
-                        (MediaType) mediaType));
-            } else if (mediaType instanceof Preference) {
-                Preference<Metadata> preference = (Preference) mediaType;
-                if (preference.getMetadata() instanceof MediaType)
-                    mediaTypePrefs.add((Preference) preference);
-            } else {
-                throw new IllegalArgumentException(
-                        "Valid mediaTypes are only Preference<MediaType> or MediaType");
-            }
-        }
-        request.getClientInfo().getAcceptedMediaTypes().addAll(mediaTypePrefs);
+    public static void assertEmptyEntity(Response response) throws IOException {
+        if (response.getEntity() != null)
+            assertEquals(null, response.getEntity().getText());
     }
 
     /**
@@ -136,6 +116,20 @@ public abstract class JaxRsTestCase extends TestCase {
         expected = Converter.getMediaTypeWithoutParams(expected);
         actual = Converter.getMediaTypeWithoutParams(actual);
         assertEquals(expected, actual);
+    }
+
+    /**
+     * @param accMediaType
+     * @param mediaTypeQuality
+     *                default is 1.
+     * @return
+     */
+    public static Collection<Preference<MediaType>> createPrefColl(
+            MediaType accMediaType, float mediaTypeQuality) {
+        if (accMediaType == null)
+            return Collections.emptyList();
+        return Collections.singleton(new Preference<MediaType>(accMediaType,
+                mediaTypeQuality));
     }
 
     /**
@@ -186,95 +180,43 @@ public abstract class JaxRsTestCase extends TestCase {
     }
 
     /**
-     * @param accMediaType
-     * @param mediaTypeQuality
-     *                default is 1.
-     * @return
-     */
-    public static Collection<Preference<MediaType>> createPrefColl(
-            MediaType accMediaType, float mediaTypeQuality) {
-        if (accMediaType == null)
-            return Collections.emptyList();
-        return Collections.singleton(new Preference<MediaType>(accMediaType,
-                mediaTypeQuality));
-    }
-
-    public static ServerWrapperFactory getServerWrapperFactory() {
-        if (serverWrapperFactory == null) {
-            if (USE_TCP)
-                serverWrapperFactory = new RestletServerWrapperFactory();
-            else
-                serverWrapperFactory = new DirectServerWrapperFactory();
-        }
-        return serverWrapperFactory;
-    }
-
-    /**
      * starts the Server for the given JaxRsTestCase, waits for an input from
      * {@link System#in} and then stops the server.
      * 
      * @param jaxRsTestCase
      * @throws Exception
      */
-    public static void runServerUntilKeyPressed(JaxRsTestCase jaxRsTestCase)
+    public void runServerUntilKeyPressed()
             throws Exception {
-        jaxRsTestCase.startServer();
-        ApplicationConfig appConfig = jaxRsTestCase.getAppConfig();
+        setUseTcp(true);
+        startServer(this.createApplication());
+        runServerAfterStart();
+        System.out.println("press key to stop . . .");
+        System.in.read();
+        this.stopServer();
+        System.out.println("server stopped");
+    }
+
+    /**
+     * 
+     */
+    protected void runServerAfterStart() {
+        ApplicationConfig appConfig = this.getAppConfig();
         Collection<Class<?>> rrcs = appConfig.getResourceClasses();
         System.out
                 .println("the root resource classes are available under the following pathes:");
         for (Class<?> rrc : rrcs) {
             try {
-                System.out.print("http://localhost:" + jaxRsTestCase.getPort());
-                System.out.println(rrc.getAnnotation(Path.class).value());
+                System.out.print("http://localhost:" + this.getServerPort());
+                String path = rrc.getAnnotation(Path.class).value();
+                if (!path.startsWith("/"))
+                    System.out.print("/");
+                System.out.println(path);
             } catch (RuntimeException e) {
                 e.printStackTrace(System.out);
             }
         }
-        System.out.println("press key to stop . . .");
-        System.in.read();
-        jaxRsTestCase.stopServer();
-        System.out.println("server stopped");
     }
-
-    /**
-     * Sets the default ServerWrapper. Should be called before setUp.
-     * 
-     * @param newServerWrapper
-     */
-    public static void setServerWrapperFactory(ServerWrapperFactory swf) {
-        if (swf == null)
-            throw new IllegalArgumentException(
-                    "null is an illegal ServerWrapperFactory");
-        serverWrapperFactory = swf;
-    }
-
-    /**
-     * prints the entity to System.out, if the status indicates an error.
-     * 
-     * @param response
-     * @throws IOException
-     */
-    public static void sysOutEntityIfError(Response response) {
-        if (response.getStatus().isError()) {
-            Representation entity = response.getEntity();
-            try {
-                if (entity != null)
-                    System.out.println(entity.getText());
-                else
-                    System.out.println("no Entity available");
-            } catch (IOException e) {
-                System.out.println("Entity not readable: ");
-                e.printStackTrace(System.out);
-            }
-        }
-    }
-
-    /**
-     * ServerWrapper to use.
-     */
-    private ServerWrapper serverWrapper = serverWrapperFactory
-            .createServerWrapper();
 
     /**
      * @param httpMethod
@@ -337,85 +279,32 @@ public abstract class JaxRsTestCase extends TestCase {
         return accessServer(httpMethod, klasse, subPath, mediaTypes, null);
     }
 
-    protected Response accessServer(Method httpMethod, Reference reference) {
-        return accessServer(httpMethod, reference, null, null, null, null,
-                null, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Response accessServer(Method httpMethod, Reference reference,
-            Collection accMediaTypes, Representation entity,
-            ChallengeResponse challengeResponse, Conditions conditions,
-            Collection<Cookie> addCookies, Collection<Parameter> addHeaders) {
-        Request request = new Request(httpMethod, reference);
-        addAcceptedMediaTypes(request, accMediaTypes);
-        request.setChallengeResponse(challengeResponse);
-        request.setEntity(entity);
-        request.setConditions(conditions);
-        if (addCookies != null)
-            request.getCookies().addAll(addCookies);
-        if (addHeaders != null) {
-            Util.getHttpHeaders(request).addAll(addHeaders);
-        }
-        return accessServer(request);
+    protected Application createApplication() {
+        return createApplication(getAppConfig(), ChallengeScheme.HTTP_BASIC,
+                null);
     }
 
     /**
-     * @param request
+     * Creates a {@link JaxRsApplication}
+     * 
+     * @param appConfig
+     *                the applicationConfi to use
+     * @param challengeScheme
+     *                the challengeScheme to use, if a RoleChecker is given.
+     * @param roleChecker
+     *                the RoleChecer to use.
      * @return
      */
-    protected Response accessServer(Request request) {
-        Restlet connector = getClientConnector();
-        if (shouldAccessWithoutTcp()) {
-            String hostDomain = request.getResourceRef().getHostDomain();
-            Util.getHttpHeaders(request).add("host", hostDomain);
+    public JaxRsApplication createApplication(ApplicationConfig appConfig,
+            ChallengeScheme challengeScheme, RoleChecker roleChecker) {
+        JaxRsApplication application = new JaxRsApplication();
+        if (roleChecker != null) {
+            application.setRoleChecker(roleChecker);
+            Guard guard = createGuard(application.getContext(), challengeScheme);
+            application.setGuard(guard);
         }
-        return connector.handle(request);
-    }
-
-    /**
-     * Checks, if the allowed methods of an OPTIONS request are the given one.
-     * 
-     * @param optionsResponse
-     * @param methods
-     *                The methods that must be allowed. If GET is included, a
-     *                check for HEAD is automaticly done. But it is no problem
-     *                to add the HEAD method.
-     */
-    public static void assertAllowedMethod(Response optionsResponse,
-            Method... methods) {
-        if (optionsResponse.getStatus().isError())
-            assertEquals(Status.SUCCESS_OK, optionsResponse.getStatus());
-        Set<Method> expectedMethods = new HashSet<Method>(Arrays
-                .asList(methods));
-        if (expectedMethods.contains(Method.GET))
-            expectedMethods.add(Method.HEAD);
-        List<Method> allowedMethods = new ArrayList<Method>(optionsResponse
-                .getAllowedMethods());
-        for (Method method : methods) {
-            assertTrue("allowedMethod must contain " + method, allowedMethods
-                    .contains(method));
-        }
-        assertEquals("allowedMethods.size invalid", expectedMethods.size(),
-                allowedMethods.size());
-    }
-
-    /**
-     * @param response
-     * @throws IOException
-     */
-    public static void assertEmptyEntity(Response response) throws IOException {
-        if (response.getEntity() != null)
-            assertEquals(null, response.getEntity().getText());
-    }
-
-    public Reference createBaseRef() {
-        Reference reference = new Reference();
-        reference.setProtocol(Protocol.HTTP);
-        reference.setAuthority("localhost");
-        if (!shouldAccessWithoutTcp())
-            reference.setHostPort(serverWrapper.getServerPort());
-        return reference;
+        application.attach(appConfig);
+        return application;
     }
 
     /**
@@ -483,15 +372,16 @@ public abstract class JaxRsTestCase extends TestCase {
         return get(null, cookie);
     }
 
+    public Response get(MediaType accMediaType) {
+        return accessServer(Method.GET, getRootResourceClass(), null,
+                accMediaType);
+    }
+
     public Response get(Reference reference) {
-        if (reference.getBaseRef() == null)
-            reference.setBaseRef(reference.getHostIdentifier());
         return accessServer(Method.GET, reference);
     }
 
     public Response get(Reference reference, MediaType mediaType) {
-        if (reference.getBaseRef() == null)
-            reference.setBaseRef(reference.getHostIdentifier());
         Collection<MediaType> mediaTypes = null;
         if (mediaType != null) {
             mediaTypes = new ArrayList<MediaType>();
@@ -499,11 +389,6 @@ public abstract class JaxRsTestCase extends TestCase {
         }
         return accessServer(Method.GET, reference, mediaTypes, null, null,
                 null, null, null);
-    }
-
-    public Response get(MediaType accMediaType) {
-        return accessServer(Method.GET, getRootResourceClass(), null,
-                accMediaType);
     }
 
     public Response get(String subPath) {
@@ -531,16 +416,6 @@ public abstract class JaxRsTestCase extends TestCase {
                 null);
     }
 
-    public Response getWithCookies(String subPath, Collection<Cookie> cookies) {
-        return accessServer(Method.GET, createReference(getRootResourceClass(),
-                subPath), null, null, null, null, cookies, null);
-    }
-
-    public Response getWithHeaders(String subPath, Collection<Parameter> headers) {
-        return accessServer(Method.GET, createReference(getRootResourceClass(),
-                subPath), null, null, null, null, null, headers);
-    }
-
     public Response get(String subPath, MediaType accMediaType) {
         return accessServer(Method.GET, getRootResourceClass(), subPath,
                 accMediaType);
@@ -552,17 +427,22 @@ public abstract class JaxRsTestCase extends TestCase {
     protected ApplicationConfig getAppConfig() {
         ApplicationConfig appConfig = new ApplicationConfig() {
             @Override
+            public Set<Class<?>> getProviderClasses() {
+                return (Set) getProvClasses();
+            }
+
+            @Override
             @SuppressWarnings("unchecked")
             public Set<Class<?>> getResourceClasses() {
                 return (Set) Collections.singleton(getRootResourceClass());
             }
-
-            @Override
-            public Set<Class<?>> getProviderClasses() {
-                return (Set) getProvClasses();
-            }
         };
         return appConfig;
+    }
+
+    public Response getAuth(String subPath, String username, String pw) {
+        return get(subPath, new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
+                username, pw));
     }
 
     /**
@@ -573,29 +453,19 @@ public abstract class JaxRsTestCase extends TestCase {
         return Collections.emptySet();
     }
 
-    public Response getAuth(String subPath, String username, String pw) {
-        return get(subPath, new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
-                username, pw));
-    }
-
-    /**
-     * @return
-     */
-    protected Restlet getClientConnector() {
-        return serverWrapper.getClientConnector();
-    }
-
-    public int getPort() {
-        return serverWrapper.getServerPort();
-    }
-
     protected Class<?> getRootResourceClass() {
         throw new UnsupportedOperationException(
                 "You must implement the methods getRootResourceClass() or getAppConfig(). If you only implemented getAppConfig(), you can't use this method");
     }
 
-    public ServerWrapper getServerWrapper() {
-        return serverWrapper;
+    public Response getWithCookies(String subPath, Collection<Cookie> cookies) {
+        return accessServer(Method.GET, createReference(getRootResourceClass(),
+                subPath), null, null, null, null, cookies, null);
+    }
+
+    public Response getWithHeaders(String subPath, Collection<Parameter> headers) {
+        return accessServer(Method.GET, createReference(getRootResourceClass(),
+                subPath), null, null, null, null, null, headers);
     }
 
     public Response head(String subPath, MediaType accMediaType) {
@@ -624,15 +494,15 @@ public abstract class JaxRsTestCase extends TestCase {
                 mediaType);
     }
 
+    public Response post(String subPath, Representation entity) {
+        return post(subPath, entity, null);
+    }
+
     public Response post(String subPath, Representation entity,
             ChallengeResponse cr) {
         return accessServer(Method.POST, createReference(
                 getRootResourceClass(), subPath), null, entity, cr, null, null,
                 null);
-    }
-
-    public Response post(String subPath, Representation entity) {
-        return post(subPath, entity, null);
     }
 
     @SuppressWarnings("unchecked")
@@ -653,122 +523,30 @@ public abstract class JaxRsTestCase extends TestCase {
                 subPath), null, entity, null, conditions, null, null);
     }
 
-    public void setServerWrapper(ServerWrapper serverWrapper) {
-        this.serverWrapper = serverWrapper;
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        if (shouldStartServerInSetUp()) {
-            startServer();
-        }
-    }
-
-    /**
-     * @return
-     */
-    protected boolean shouldAccessWithoutTcp() {
-        return serverWrapper instanceof DirectServerWrapper;
-    }
-
-    protected boolean shouldStartServerInSetUp() {
-        return true;
-    }
-
-    /**
-     * Starts the server with the given protocol on the given port with the
-     * given Collection of root resource classes. The method {@link #setUp()}
-     * will do this on every test start up.
-     * 
-     * @throws Exception
-     */
-    protected void startServer() throws Exception {
-        startServer(ChallengeScheme.HTTP_BASIC, null);
-    }
-
     /**
      * @param protocol
      * @param challengeScheme
      * @param roleChecker
-     *                TODO
+     *                the {@link RoleChecker} to use.
      * @param rootResourceClasses
      * @throws Exception
      */
     private void startServer(ApplicationConfig appConfig, Protocol protocol,
             final ChallengeScheme challengeScheme, RoleChecker roleChecker)
             throws Exception {
-        try {
-            this.jaxRsApplication = createApplication(appConfig,
-                    challengeScheme, roleChecker);
-            serverWrapper.startServer(jaxRsApplication, challengeScheme,
-                    protocol);
-        } catch (Exception e) {
-            try {
-                stopServer();
-            } catch (Exception e1) {
-                // ignore exception, throw before catched Exception later
-            }
-            throw e;
-        }
+        Application jaxRsApplication = createApplication(appConfig,
+                challengeScheme, roleChecker);
+        startServer(jaxRsApplication, protocol);
     }
-
-    private JaxRsApplication jaxRsApplication;
 
     /**
      * @param roleChecker
-     *                TODO
+     *                the {@link RoleChecker} to use.
      * @throws Exception
      */
     protected void startServer(ChallengeScheme challengeScheme,
             RoleChecker roleChecker) throws Exception {
         ApplicationConfig appConfig = getAppConfig();
         startServer(appConfig, Protocol.HTTP, challengeScheme, roleChecker);
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected void stopServer() throws Exception {
-        serverWrapper.stopServer();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        stopServer();
-    }
-
-    /**
-     * @param appConfig
-     * @param challengeScheme
-     * @param roleChecker
-     * @return
-     */
-    public static JaxRsApplication createApplication(
-            final ApplicationConfig appConfig,
-            final ChallengeScheme challengeScheme, final RoleChecker roleChecker) {
-        JaxRsApplication application = new JaxRsApplication();
-        if (roleChecker != null) {
-            application.setRoleChecker(roleChecker);
-            Guard guard = createGuard(application.getContext(), challengeScheme);
-            application.setGuard(guard);
-        }
-        application.attach(appConfig);
-        return application;
-    }
-
-    /**
-     * @param context
-     * @param challengeScheme
-     * @return
-     */
-    public static Guard createGuard(final Context context,
-            final ChallengeScheme challengeScheme) {
-        Guard guard = new Guard(context, challengeScheme, "");
-        guard.getSecrets().put("admin", "adminPW".toCharArray());
-        guard.getSecrets().put("alice", "alicesSecret".toCharArray());
-        guard.getSecrets().put("bob", "bobsSecret".toCharArray());
-        return guard;
     }
 }

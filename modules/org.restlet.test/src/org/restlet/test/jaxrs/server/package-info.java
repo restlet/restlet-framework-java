@@ -17,18 +17,10 @@
  */
 
 /**
- * <p>
- * Wraps different servers for testing
- * </p>
- * <p>
- * This extension as well as the JAX-RS specification are currently under
- * development. You should only use this extension for experimental purpose.
- * </p>
+ * The {@link RestletServerTestCase} helps to check an application on a server.
+ * Subclass the RestletServerTestCase and have easy unit testing.
  * 
  * @author Stephan Koops
- * @see ServerWrapper
- * @see ServerWrapperFactory
- * @see DirectServerWrapper
- * @see RestletServerWrapper
+ * @see RestletServerTestCase
  */
 package org.restlet.test.jaxrs.server;

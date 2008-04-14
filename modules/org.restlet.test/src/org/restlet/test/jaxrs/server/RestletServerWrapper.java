@@ -22,7 +22,6 @@ import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.Server;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 
 /**
@@ -40,39 +39,10 @@ public class RestletServerWrapper implements ServerWrapper {
     }
 
     /**
-     * Starts the server with the given protocol on the given port with the
-     * given Collection of root resource classes. The method {@link #setUp()}
-     * will do this on every test start up.
-     * 
-     * @param appConfig
-     * @return Returns the started component. Should be stopped with
-     *         {@link #stopServer(Component)}
-     * @throws Exception
+     * @see org.restlet.test.jaxrs.server.ServerWrapper#getClientConnector()
      */
-    public void startServer(final Application application,
-            final ChallengeScheme challengeScheme, Protocol protocol)
-            throws Exception {
-
-        Component comp = new Component();
-        comp.getServers().add(protocol, 0);
-
-        // Attach the application to the component and start it
-        comp.getDefaultHost().attach(application);
-        comp.start();
-        this.component = comp;
-        System.out.println("listening on port " + getServerPort());
-    }
-
-    /**
-     * Stops the component. The method {@link #tearDown()} do this after every
-     * test.
-     * 
-     * @param component
-     * @throws Exception
-     */
-    public void stopServer() throws Exception {
-        if (this.component != null)
-            this.component.stop();
+    public Restlet getClientConnector() {
+        return new Client(Protocol.HTTP);
     }
 
     public int getServerPort() {
@@ -99,9 +69,38 @@ public class RestletServerWrapper implements ServerWrapper {
     }
 
     /**
-     * @see org.restlet.test.jaxrs.server.ServerWrapper#getClientConnector()
+     * Starts the server with the given protocol on the given port with the
+     * given Collection of root resource classes. The method {@link #setUp()}
+     * will do this on every test start up.
+     * 
+     * @param appConfig
+     * 
+     * @return Returns the started component. Should be stopped with
+     *         {@link #stopServer(Component)}
+     * @throws Exception
      */
-    public Restlet getClientConnector() {
-        return new Client(Protocol.HTTP);
+    public void startServer(Application application, Protocol protocol)
+            throws Exception {
+
+        Component comp = new Component();
+        comp.getServers().add(protocol, 0);
+
+        // Attach the application to the component and start it
+        comp.getDefaultHost().attach(application);
+        comp.start();
+        this.component = comp;
+        System.out.println("listening on port " + getServerPort());
+    }
+
+    /**
+     * Stops the component. The method {@link #tearDown()} do this after every
+     * test.
+     * 
+     * @param component
+     * @throws Exception
+     */
+    public void stopServer() throws Exception {
+        if (this.component != null)
+            this.component.stop();
     }
 }

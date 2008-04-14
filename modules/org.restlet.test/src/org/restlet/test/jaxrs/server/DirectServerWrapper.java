@@ -19,7 +19,6 @@ package org.restlet.test.jaxrs.server;
 
 import org.restlet.Application;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 
 /**
@@ -37,23 +36,23 @@ public class DirectServerWrapper implements ServerWrapper {
     public DirectServerWrapper() {
     }
 
-    public int getServerPort() {
-        return -1;
+    public Restlet getClientConnector() {
+        if (connector == null)
+            throw new IllegalStateException("The Server is not yet started");
+        return connector;
     }
 
-    public void startServer(Application application,
-            ChallengeScheme challengeScheme, Protocol protocol)
+    public int getServerPort() {
+        throw new IllegalStateException(
+                "Uses direct access, so you can access the port");
+    }
+
+    public void startServer(Application application, Protocol protocol)
             throws Exception {
         connector = application;
     }
 
     public void stopServer() throws Exception {
         this.connector = null;
-    }
-
-    public Restlet getClientConnector() {
-        if(connector == null)
-            throw new IllegalStateException("The Server is not yet started");
-        return connector;
     }
 }

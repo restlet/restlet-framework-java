@@ -48,7 +48,7 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     @Override
-    protected boolean shouldStartServerInSetUp() {
+    public boolean shouldStartServerInSetUp() {
         return false;
     }
 

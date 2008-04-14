@@ -27,4 +27,11 @@ public class DirectServerWrapperFactory implements ServerWrapperFactory {
     public ServerWrapper createServerWrapper() {
         return new DirectServerWrapper();
     }
+
+    /**
+     * @see org.restlet.test.jaxrs.server.ServerWrapperFactory#usesTcp()
+     */
+    public boolean usesTcp() {
+        return false;
+    }
 }
