@@ -39,6 +39,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
@@ -48,9 +49,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
-import org.restlet.test.jaxrs.services.tests.CarTest;
 import org.restlet.util.ByteUtils;
 import org.restlet.util.WrapperRepresentation;
 
@@ -79,6 +78,13 @@ import org.restlet.util.WrapperRepresentation;
  * @author Stephan Koops
  */
 public abstract class RestletServerTestCase extends TestCase {
+
+    /**
+     * The name of the header {@link Form} in the attribute map.
+     * 
+     * @see #getHttpHeaders(Request)
+     */
+    public static final String ORG_RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
 
     /**
      * ServerWrapperFactory to use. Default: {@link RestletServerWrapperFactory}
@@ -145,6 +151,22 @@ public abstract class RestletServerTestCase extends TestCase {
         return guard;
     }
 
+    /**
+     * Returns the HTTP headers of the Restlet {@link Request} as {@link Form}.
+     * 
+     * @param request
+     * @return Returns the HTTP headers of the Request.
+     */
+    public static Form getHttpHeaders(Request request) {
+        Form headers = (Form) request.getAttributes().get(
+                ORG_RESTLET_HTTP_HEADERS);
+        if (headers == null) {
+            headers = new Form();
+            request.getAttributes().put(ORG_RESTLET_HTTP_HEADERS, headers);
+        }
+        return headers;
+    }
+
     public static ServerWrapperFactory getServerWrapperFactory() {
         if (serverWrapperFactory == null) {
             if (useTcp)
@@ -168,6 +190,21 @@ public abstract class RestletServerTestCase extends TestCase {
     }
 
     /**
+     * @param useTcp
+     *                the useTcp to set
+     */
+    public static void setUseTcp(boolean useTcp) {
+        if (useTcp) {
+            if (serverWrapperFactory != null && !serverWrapperFactory.usesTcp())
+                serverWrapperFactory = null;
+        } else {
+            if (serverWrapperFactory != null && serverWrapperFactory.usesTcp())
+                serverWrapperFactory = null;
+        }
+        RestletServerTestCase.useTcp = useTcp;
+    }
+
+    /**
      * Utility method: Prints the entity to System.out, if the status indicates
      * an error.
      * 
@@ -187,6 +224,13 @@ public abstract class RestletServerTestCase extends TestCase {
                 e.printStackTrace(System.out);
             }
         }
+    }
+
+    /**
+     * @return the useTcp
+     */
+    public static boolean usesTcp() {
+        return useTcp;
     }
 
     /**
@@ -250,7 +294,7 @@ public abstract class RestletServerTestCase extends TestCase {
         if (addCookies != null)
             request.getCookies().addAll(addCookies);
         if (addHeaders != null) {
-            Util.getHttpHeaders(request).addAll(addHeaders);
+            getHttpHeaders(request).addAll(addHeaders);
         }
         return accessServer(request);
     }
@@ -269,7 +313,7 @@ public abstract class RestletServerTestCase extends TestCase {
         Restlet connector = getClientConnector();
         if (shouldAccessWithoutTcp()) {
             String hostDomain = request.getResourceRef().getHostDomain();
-            Util.getHttpHeaders(request).add("host", hostDomain);
+            getHttpHeaders(request).add("host", hostDomain);
         }
         Response response = connector.handle(request);
         if (!useTcp && request.getMethod().equals(Method.HEAD)) {
@@ -291,6 +335,16 @@ public abstract class RestletServerTestCase extends TestCase {
                 }
 
                 @Override
+                public String getText() {
+                    return null;
+                }
+
+                @Override
+                public boolean isAvailable() {
+                    return false;
+                }
+
+                @Override
                 public void write(OutputStream outputStream) throws IOException {
                 }
 
@@ -301,16 +355,6 @@ public abstract class RestletServerTestCase extends TestCase {
 
                 @Override
                 public void write(Writer writer) throws IOException {
-                }
-
-                @Override
-                public boolean isAvailable() {
-                    return false;
-                }
-
-                @Override
-                public String getText() {
-                    return null;
                 }
             });
         }
@@ -350,6 +394,16 @@ public abstract class RestletServerTestCase extends TestCase {
     }
 
     /**
+     * This methods shows information about the started server after starting
+     * it.<br>
+     * You may override this method to do what ever you want
+     */
+    protected void runServerAfterStart() {
+        System.out.print("server is accessable via http://localhost:");
+        System.out.println(this.getServerPort());
+    }
+
+    /**
      * <p>
      * Starts the current test case as a normal HTTP server (sets
      * {@link #useTcp} to true), waits for an input from {@link System#in} and
@@ -370,16 +424,6 @@ public abstract class RestletServerTestCase extends TestCase {
         System.in.read();
         this.stopServer();
         System.out.println("server stopped");
-    }
-
-    /**
-     * This methods shows information about the started server after starting
-     * it.<br>
-     * You may override this method to do what ever you want
-     */
-    protected void runServerAfterStart() {
-        System.out.print("server is accessable via http://localhost:");
-        System.out.println(this.getServerPort());
     }
 
     public void setServerWrapper(ServerWrapper serverWrapper) {
@@ -455,25 +499,4 @@ public abstract class RestletServerTestCase extends TestCase {
         stopServer();
     }
 
-    /**
-     * @return the useTcp
-     */
-    public static boolean usesTcp() {
-        return useTcp;
-    }
-
-    /**
-     * @param useTcp
-     *                the useTcp to set
-     */
-    public static void setUseTcp(boolean useTcp) {
-        if (useTcp) {
-            if (serverWrapperFactory != null && !serverWrapperFactory.usesTcp())
-                serverWrapperFactory = null;
-        } else {
-            if (serverWrapperFactory != null && serverWrapperFactory.usesTcp())
-                serverWrapperFactory = null;
-        }
-        RestletServerTestCase.useTcp = useTcp;
-    }
 }
