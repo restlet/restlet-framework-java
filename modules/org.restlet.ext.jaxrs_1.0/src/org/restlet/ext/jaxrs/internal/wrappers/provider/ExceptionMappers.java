@@ -41,9 +41,6 @@ public class ExceptionMappers {
 
     static class ServerErrorExcMapper implements ExceptionMapper<Throwable> {
 
-        private static final Logger localLogger = Logger
-                .getLogger("DefaultExceptionMapper");
-
         /**
          * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
          */

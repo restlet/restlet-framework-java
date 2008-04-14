@@ -7,6 +7,10 @@ Changes log
     - Bugs fixed
         - Fixed NPE with internal HTTP server when no reason phrase is
           available for the response status. Reported by Stephan Koops.
+        - Fixed potential NPE in request processing code when a request
+          was not fully set (missing properties like the method).
+        - Fixed issues with chunked encoding and socket closing. 
+          Contributed by Kevin Conaway.
     - API Enhancements
         - Matrix parameters are now fully supported by the Reference 
           and the Form classes. Added many new methods, similar to the
