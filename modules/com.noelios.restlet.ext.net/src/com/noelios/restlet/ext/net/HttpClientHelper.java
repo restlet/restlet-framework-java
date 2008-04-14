@@ -39,21 +39,6 @@ import com.noelios.restlet.http.HttpClientCall;
  * <th>Description</th>
  * </tr>
  * <tr>
- * <td>chunkLength</td>
- * <td>int</td>
- * <td>0 (uses HttpURLConnection's default)</td>
- * <td>The chunk-length when using chunked encoding streaming mode for response
- * entities. A value of -1 means chunked encoding is disabled for response
- * entities.</td>
- * </tr>
- * <tr>
- * <td>followRedirects</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>If true, the protocol will automatically follow redirects. If false, the
- * protocol will not automatically follow redirects.</td>
- * </tr>
- * <tr>
  * <td>allowUserInteraction</td>
  * <td>boolean</td>
  * <td>false</td>
@@ -61,10 +46,12 @@ import com.noelios.restlet.http.HttpClientCall;
  * to allow user interactions such as popping up an authentication dialog.</td>
  * </tr>
  * <tr>
- * <td>useCaches</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>If true, the protocol is allowed to use caching whenever it can.</td>
+ * <td>chunkLength</td>
+ * <td>int</td>
+ * <td>0 (uses HttpURLConnection's default)</td>
+ * <td>The chunk-length when using chunked encoding streaming mode for response
+ * entities. A value of -1 means chunked encoding is disabled for response
+ * entities.</td>
  * </tr>
  * <tr>
  * <td>connectTimeout</td>
@@ -74,11 +61,24 @@ import com.noelios.restlet.http.HttpClientCall;
  * a communications link to the resource referenced. 0 means infinite timeout.</td>
  * </tr>
  * <tr>
+ * <td>followRedirects</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>If true, the protocol will automatically follow redirects. If false, the
+ * protocol will not automatically follow redirects.</td>
+ * </tr>
+ * <tr>
  * <td>readTimeout</td>
  * <td>int</td>
  * <td>0</td>
  * <td>Sets the read timeout to a specified timeout, in milliseconds. A timeout
  * of zero is interpreted as an infinite timeout.</td>
+ * </tr>
+ * <tr>
+ * <td>useCaches</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>If true, the protocol is allowed to use caching whenever it can.</td>
  * </tr>
  * </table>
  * 
