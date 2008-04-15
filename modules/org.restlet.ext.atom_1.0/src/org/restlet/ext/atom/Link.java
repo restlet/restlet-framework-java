@@ -18,6 +18,8 @@
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -182,16 +184,13 @@ public class Link {
      * 
      * @param writer
      *                The SAX writer.
-     * @param namespace
-     *                The element namespace URI.
      * @throws SAXException
      */
-    public void writeElement(XmlWriter writer, String namespace)
-            throws SAXException {
+    public void writeElement(XmlWriter writer) throws SAXException {
         AttributesImpl attributes = new AttributesImpl();
 
         if (getHref() != null && getHref().toString() != null) {
-            attributes.addAttribute("", "href", null, "atomUri", getHref()
+            attributes.addAttribute("", "href", null, "atomURI", getHref()
                     .toString());
         }
 
@@ -205,17 +204,19 @@ public class Link {
                     .toString(getLength()));
         }
 
-        attributes.addAttribute("", "rel", null, "text", Relation.toString(getRel()));
+        attributes.addAttribute("", "rel", null, "text", Relation
+                .toString(getRel()));
 
         if (getTitle() != null) {
             attributes.addAttribute("", "title", null, "text", getTitle());
         }
 
         if (getType() != null) {
-            attributes.addAttribute("", "type", null, "atomMediaType", getType().toString());
+            attributes.addAttribute("", "type", null, "atomMediaType",
+                    getType().toString());
         }
 
-        writer.emptyElement(namespace, "link", null, attributes);
+        writer.emptyElement(ATOM_NAMESPACE, "link", null, attributes);
     }
 
 }

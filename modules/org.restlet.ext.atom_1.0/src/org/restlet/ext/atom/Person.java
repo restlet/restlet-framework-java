@@ -18,6 +18,8 @@
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+
 import org.restlet.data.Reference;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
@@ -130,27 +132,25 @@ public class Person {
      * 
      * @param writer
      *                The SAX writer.
-     * @param namespace
-     *                The element namespace URI.
      * @param localName
      *                The local name of the element.
      * @throws SAXException
      */
-    public void writeElement(XmlWriter writer, String namespace,
-            String localName) throws SAXException {
-        writer.startElement(namespace, localName);
-        
+    public void writeElement(XmlWriter writer, String localName)
+            throws SAXException {
+        writer.startElement(ATOM_NAMESPACE, localName);
+
         if (getEmail() != null) {
-            writer.dataElement(namespace, "email", getEmail());
+            writer.dataElement(ATOM_NAMESPACE, "email", getEmail());
         }
         if (getName() != null) {
-            writer.dataElement(namespace, "name", getName());
+            writer.dataElement(ATOM_NAMESPACE, "name", getName());
         }
         if (getUri() != null && getUri().toString() != null) {
-            writer.dataElement(namespace, "uri", getUri().toString());
+            writer.dataElement(ATOM_NAMESPACE, "uri", getUri().toString());
         }
 
-        writer.endElement(namespace, localName);
+        writer.endElement(ATOM_NAMESPACE, localName);
     }
 
 }

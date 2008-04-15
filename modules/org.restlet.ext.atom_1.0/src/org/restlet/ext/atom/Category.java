@@ -18,9 +18,12 @@
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+
 import org.restlet.data.Reference;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Conveys information about a category associated with an entry or feed.
@@ -123,27 +126,24 @@ public class Category {
      * 
      * @param writer
      *                The SAX writer.
-     * @param namespace
-     *                The element namespace URI.
      * @throws SAXException
      */
-    public void writeElement(XmlWriter writer, String namespace)
-            throws SAXException {
-        writer.startElement(namespace, "category");
-
+    public void writeElement(XmlWriter writer) throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
         if (getLabel() != null) {
-            writer.dataElement(namespace, "label", getLabel());
+            attributes.addAttribute("", "label", null, "text", getLabel());
         }
 
         if (getScheme() != null && getScheme().toString() != null) {
-            writer.dataElement(namespace, "scheme", getScheme().toString());
+            attributes.addAttribute("", "scheme", null, "atomURI", getScheme()
+                    .toString());
         }
 
         if (getTerm() != null) {
-            writer.dataElement(namespace, "term", getTerm());
+            attributes.addAttribute("", "term", null, "text", getTerm());
         }
 
-        writer.endElement(namespace, "category");
+        writer.emptyElement(ATOM_NAMESPACE, "category", null, attributes);
     }
 
 }

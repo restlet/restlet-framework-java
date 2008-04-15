@@ -18,6 +18,8 @@
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -56,44 +58,6 @@ public class Text {
         }
 
         writer.endElement(namespace, localName);
-    }
-
-    /**
-     * Writes the current object as an XML element using the given SAX writer.
-     * 
-     * @param writer
-     *                The SAX writer.
-     * @param namespace
-     *                The element namespace URI.
-     * @param localName
-     *                The local name of the element.
-     * @throws SAXException
-     */
-    public void writeElement(XmlWriter writer, String namespace,
-            String localName) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
-        String type = null;
-
-        if (getType() != null && getType().getSubType() != null) {
-            if (getType().getSubType().contains("xhtml")) {
-                type = "xhtml";
-            } else if (getType().getSubType().contains("html")) {
-                type = "html";
-            }
-        }
-
-        if (type == null) {
-            type = "text";
-        }
-
-        attributes.addAttribute("", "type", null, "text", type);
-
-        if (getContent() != null) {
-            writer.dataElement(namespace, localName, null, attributes,
-                    getContent());
-        } else {
-            writer.emptyElement(namespace, localName, null, attributes);
-        }
     }
 
     /**
@@ -165,6 +129,42 @@ public class Text {
      */
     public void setType(MediaType type) {
         this.type = type;
+    }
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @param localName
+     *                The local name of the element.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer, String localName)
+            throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
+        String type = null;
+
+        if (getType() != null && getType().getSubType() != null) {
+            if (getType().getSubType().contains("xhtml")) {
+                type = "xhtml";
+            } else if (getType().getSubType().contains("html")) {
+                type = "html";
+            }
+        }
+
+        if (type == null) {
+            type = "text";
+        }
+
+        attributes.addAttribute("", "type", null, "text", type);
+
+        if (getContent() != null) {
+            writer.dataElement(ATOM_NAMESPACE, localName, null, attributes,
+                    getContent());
+        } else {
+            writer.emptyElement(ATOM_NAMESPACE, localName, null, attributes);
+        }
     }
 
 }

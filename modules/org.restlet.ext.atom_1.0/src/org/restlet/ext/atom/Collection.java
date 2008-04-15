@@ -18,6 +18,9 @@
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+import static org.restlet.ext.atom.Service.APP_NAMESPACE;
+
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -26,6 +29,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Atom Protocol collection, part of a workspace.
@@ -201,36 +205,36 @@ public class Collection {
      * 
      * @param writer
      *                The SAX writer.
-     * @param namespace
-     *                The element namespace URI.
      * @throws SAXException
      */
-    public void writeElement(XmlWriter writer, String namespace)
-            throws SAXException {
-        writer.startElement(namespace, "collection");
+    public void writeElement(XmlWriter writer) throws SAXException {
 
+        AttributesImpl attributes = new AttributesImpl();
         if (getHref() != null && getHref().toString() != null) {
-            writer.dataElement(namespace, "href", getHref().toString());
+            attributes.addAttribute("", "href", null, "atomURI",
+                    getHref().toString());
         }
 
+        writer.startElement(APP_NAMESPACE, "collection", null, attributes);
+
         if (getTitle() != null) {
-            writer.dataElement(namespace, "title", getTitle());
+            writer.dataElement(ATOM_NAMESPACE, "title", getTitle());
         }
 
         if (getMemberType() != null) {
             // TODO ??
-            getMemberType().writeElement(writer, namespace);
+            getMemberType().writeElement(writer, APP_NAMESPACE);
         }
 
         try {
             if (getFeed() != null) {
-                getFeed().writeElement(writer, namespace);
+                getFeed().writeElement(writer);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        writer.endElement(namespace, "collection");
+        writer.endElement(APP_NAMESPACE, "collection");
     }
 
 }

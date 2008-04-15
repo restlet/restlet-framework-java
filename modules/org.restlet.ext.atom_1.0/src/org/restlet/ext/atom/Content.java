@@ -18,6 +18,8 @@
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+
 import java.io.IOException;
 
 import org.restlet.data.MediaType;
@@ -132,12 +134,9 @@ public class Content {
      * 
      * @param writer
      *                The SAX writer.
-     * @param namespace
-     *                The element namespace URI.
      * @throws SAXException
      */
-    public void writeElement(XmlWriter writer, String namespace)
-            throws SAXException {
+    public void writeElement(XmlWriter writer) throws SAXException {
         AttributesImpl attributes = new AttributesImpl();
         String strContent = null;
 
@@ -172,15 +171,15 @@ public class Content {
             }
 
             if (getExternalRef() != null && getExternalRef().toString() != null) {
-                attributes.addAttribute("", "src", null, "atomUri",
+                attributes.addAttribute("", "src", null, "atomURI",
                         getExternalRef().toString());
             }
         }
 
         if (strContent == null) {
-            writer.emptyElement(namespace, "content", null, attributes);
+            writer.emptyElement(ATOM_NAMESPACE, "content", null, attributes);
         } else {
-            writer.dataElement(namespace, "content", null, attributes,
+            writer.dataElement(ATOM_NAMESPACE, "content", null, attributes,
                     strContent);
         }
     }

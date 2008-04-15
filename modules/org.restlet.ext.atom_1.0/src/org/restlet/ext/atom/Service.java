@@ -18,6 +18,8 @@
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -402,13 +404,15 @@ public class Service extends SaxRepresentation {
     @Override
     public void write(XmlWriter writer) throws IOException {
         try {
+            writer.setPrefix(APP_NAMESPACE, "");
+            writer.setPrefix(ATOM_NAMESPACE, "atom");
             writer.setDataFormat(true);
             writer.setIndentStep(3);
             writer.startDocument();
             writer.startElement(APP_NAMESPACE, "service");
 
             for (Workspace workspace : getWorkspaces()) {
-                workspace.writeElement(writer, APP_NAMESPACE);
+                workspace.writeElement(writer);
             }
 
             writer.endElement(APP_NAMESPACE, "service");

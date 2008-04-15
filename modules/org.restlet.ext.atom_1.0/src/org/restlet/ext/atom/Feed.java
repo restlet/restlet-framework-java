@@ -737,7 +737,7 @@ public class Feed extends SaxRepresentation {
             writer.setDataFormat(true);
             writer.setIndentStep(3);
             writer.startDocument();
-            writeElement(writer, ATOM_NAMESPACE);
+            writeElement(writer);
             writer.endDocument();
         } catch (SAXException e) {
             e.printStackTrace();
@@ -749,77 +749,74 @@ public class Feed extends SaxRepresentation {
      * 
      * @param writer
      *                The SAX writer.
-     * @param namespace
-     *                The element namespace URI.
      * @throws SAXException
      */
-    public void writeElement(XmlWriter writer, String namespace)
-            throws SAXException {
-        writer.startElement(namespace, "feed");
+    public void writeElement(XmlWriter writer) throws SAXException {
+        writer.startElement(ATOM_NAMESPACE, "feed");
 
         if (getAuthors() != null) {
             for (Person person : getAuthors()) {
-                person.writeElement(writer, namespace, "author");
+                person.writeElement(writer, "author");
             }
         }
 
         if (getCategories() != null) {
             for (Category category : getCategories()) {
-                category.writeElement(writer, namespace);
+                category.writeElement(writer);
             }
         }
         if (getContributors() != null) {
             for (Person person : getContributors()) {
-                person.writeElement(writer, namespace, "contributor");
+                person.writeElement(writer, "contributor");
             }
         }
 
         if (getEntries() != null) {
             for (Entry entry : getEntries()) {
-                entry.writeElement(writer, namespace);
+                entry.writeElement(writer);
             }
         }
 
         if (getGenerator() != null) {
-            getGenerator().writeElement(writer, namespace);
+            getGenerator().writeElement(writer);
         }
 
         if (getIcon() != null) {
-            writer.dataElement(namespace, "icon", getIcon().toString());
+            writer.dataElement(ATOM_NAMESPACE, "icon", getIcon().toString());
         }
 
         if (getId() != null) {
-            writer.dataElement(namespace, "id", null, new AttributesImpl(),
-                    getId());
+            writer.dataElement(ATOM_NAMESPACE, "id", null,
+                    new AttributesImpl(), getId());
         }
 
         if (getLinks() != null) {
             for (Link link : getLinks()) {
-                link.writeElement(writer, namespace);
+                link.writeElement(writer);
             }
         }
 
         if (getLogo() != null && getLogo().toString() != null) {
-            writer.dataElement(namespace, "logo", getLogo().toString());
+            writer.dataElement(ATOM_NAMESPACE, "logo", getLogo().toString());
         }
 
         if (getRights() != null) {
-            getRights().writeElement(writer, namespace, "rights");
+            getRights().writeElement(writer, "rights");
         }
 
         if (getSubtitle() != null) {
-            getSubtitle().writeElement(writer, namespace, "subtitle");
+            getSubtitle().writeElement(writer, "subtitle");
         }
 
         if (getTitle() != null) {
-            getTitle().writeElement(writer, namespace, "title");
+            getTitle().writeElement(writer, "title");
         }
 
         if (getUpdated() != null) {
-            Text.writeElement(writer, getUpdated(), namespace, "updated");
+            Text.writeElement(writer, getUpdated(), ATOM_NAMESPACE, "updated");
         }
 
-        writer.endElement(namespace, "feed");
+        writer.endElement(ATOM_NAMESPACE, "feed");
     }
 
 }

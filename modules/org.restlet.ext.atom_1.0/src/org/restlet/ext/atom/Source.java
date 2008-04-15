@@ -18,6 +18,8 @@
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -295,67 +297,64 @@ public class Source {
      * 
      * @param writer
      *                The SAX writer.
-     * @param namespace
-     *                The element namespace URI.
      * @throws SAXException
      */
-    public void writeElement(XmlWriter writer, String namespace)
-            throws SAXException {
-        writer.startElement(namespace, "source");
+    public void writeElement(XmlWriter writer) throws SAXException {
+        writer.startElement(ATOM_NAMESPACE, "source");
         if (getAuthors() != null) {
             for (Person person : getAuthors()) {
-                person.writeElement(writer, namespace, "author");
+                person.writeElement(writer, "author");
             }
         }
 
         if (getCategories() != null) {
             for (Category category : getCategories()) {
-                category.writeElement(writer, namespace);
+                category.writeElement(writer);
             }
         }
         if (getContributors() != null) {
             for (Person person : getContributors()) {
-                person.writeElement(writer, namespace, "contributor");
+                person.writeElement(writer, "contributor");
             }
         }
 
         if (getGenerator() != null) {
-            getGenerator().writeElement(writer, namespace);
+            getGenerator().writeElement(writer);
         }
 
         if (getIcon() != null && getIcon().toString() != null) {
-            writer.dataElement(namespace, "icon", getIcon().toString());
+            writer.dataElement(ATOM_NAMESPACE, "icon", getIcon().toString());
         }
         if (getId() != null) {
-            writer.dataElement(namespace, "id", getId());
+            writer.dataElement(ATOM_NAMESPACE, "id", getId());
         }
 
         if (getLinks() != null) {
             for (Link link : getLinks()) {
-                link.writeElement(writer, namespace);
+                link.writeElement(writer);
             }
         }
         if (getLogo() != null && getLogo().toString() != null) {
-            writer.dataElement(namespace, "logo", getLogo().toString());
+            writer.dataElement(ATOM_NAMESPACE, "logo", getLogo().toString());
         }
 
         if (getRights() != null) {
-            getRights().writeElement(writer, namespace, "rights");
+            getRights().writeElement(writer, "rights");
         }
 
         if (getSubtitle() != null) {
-            getSubtitle().writeElement(writer, namespace, "subtitle");
+            getSubtitle().writeElement(writer, "subtitle");
         }
 
         if (getTitle() != null) {
-            getTitle().writeElement(writer, namespace, "title");
+            getTitle().writeElement(writer, "title");
         }
 
         if (getUpdated() != null) {
-            Text.writeElement(writer, getUpdated(), namespace, "updated");
+            Text.writeElement(writer, getUpdated(), ATOM_NAMESPACE, "updated");
         }
 
-        writer.endElement(namespace, "source");
+        writer.endElement(ATOM_NAMESPACE, "source");
     }
 
 }

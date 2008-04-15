@@ -18,6 +18,9 @@
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+import static org.restlet.ext.atom.Service.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,23 +128,20 @@ public class Workspace {
      * 
      * @param writer
      *                The SAX writer.
-     * @param namespace
-     *                The element namespace URI.
      * @throws SAXException
      */
-    public void writeElement(XmlWriter writer, String namespace)
-            throws SAXException {
-        writer.startElement(namespace, "workspace");
+    public void writeElement(XmlWriter writer) throws SAXException {
+        writer.startElement(APP_NAMESPACE, "workspace");
 
         if (getTitle() != null) {
-            writer.dataElement(namespace, "title", getTitle());
+            writer.dataElement(ATOM_NAMESPACE, "title", getTitle());
         }
 
         for (Collection collection : getCollections()) {
-            collection.writeElement(writer, namespace);
+            collection.writeElement(writer);
         }
 
-        writer.endElement(namespace, "workspace");
+        writer.endElement(APP_NAMESPACE, "workspace");
     }
 
 }

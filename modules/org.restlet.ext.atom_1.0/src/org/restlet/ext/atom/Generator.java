@@ -18,6 +18,8 @@
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+
 import org.restlet.data.Reference;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
@@ -111,16 +113,13 @@ public class Generator {
      * 
      * @param writer
      *                The SAX writer.
-     * @param namespace
-     *                The element namespace URI.
      * @throws SAXException
      */
-    public void writeElement(XmlWriter writer, String namespace)
-            throws SAXException {
+    public void writeElement(XmlWriter writer) throws SAXException {
         AttributesImpl attributes = new AttributesImpl();
 
         if (getUri() != null && getUri().toString() != null) {
-            attributes.addAttribute("", "uri", null, "atomUri", getUri()
+            attributes.addAttribute("", "uri", null, "atomURI", getUri()
                     .toString());
         }
 
@@ -129,10 +128,10 @@ public class Generator {
         }
 
         if (getName() != null) {
-            writer.dataElement(namespace, "generator", null, attributes,
+            writer.dataElement(ATOM_NAMESPACE, "generator", null, attributes,
                     getName());
         } else {
-            writer.emptyElement(namespace, "generator", null, attributes);
+            writer.emptyElement(ATOM_NAMESPACE, "generator", null, attributes);
         }
     }
 
