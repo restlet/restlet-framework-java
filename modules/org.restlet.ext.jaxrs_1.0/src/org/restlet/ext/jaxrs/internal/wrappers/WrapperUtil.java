@@ -276,7 +276,6 @@ public class WrapperUtil {
             Throwable cause = ite.getCause();
             if (cause instanceof WebApplicationException)
                 throw (WebApplicationException) cause;
-            // REQUESTED ExceptionMapper also for Exc while @*Param conversion?
             if ((paramValue == null || paramValue.length() <= 0)
                     && (ite.getCause() instanceof IllegalArgumentException)) {
                 if (defaultValue == null)

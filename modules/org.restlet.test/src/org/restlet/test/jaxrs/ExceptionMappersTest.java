@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +37,7 @@ import javax.ws.rs.core.Response.Status;
 import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExceptionMappers;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
@@ -79,7 +81,14 @@ public class ExceptionMappersTest extends TestCase {
         }
 
         public MultivaluedMap<String, String> getRequestHeaders() {
-            return null;
+            return new MultivaluedMapImpl<String, String>();
+        }
+
+        /**
+         * @see javax.ws.rs.core.HttpHeaders#getAcceptableLanguages()
+         */
+        public List<String> getAcceptableLanguages() {
+            return new ArrayList<String>();
         }
     }
 

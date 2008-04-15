@@ -42,17 +42,6 @@ import org.restlet.service.TunnelService;
  */
 public class TunnelFilter extends Filter {
 
-    /**
-     * Attribute name used to store the cut file extensions in case of
-     * modification by the tunnel service.
-     * <p>
-     * In case of modification (only), the ({@link Request#getAttributes()})
-     * contains the attribute name as a key and the cut extensions as String,
-     * with a point as first sign, so you can directly append it, if you want to
-     * build new references.
-     */
-    public static final String ATTRIBUTE_CUT_EXTENSIONS = "org.restlet.TunnelService.cutExtensions";
-
     /** The application. */
     private volatile Application application;
 
@@ -143,7 +132,6 @@ public class TunnelFilter extends Filter {
             // responses to other methods.
             Reference resourceRef = request.getResourceRef();
             if (resourceRef.hasExtensions()) {
-                StringBuilder cutExts = new StringBuilder();
                 ClientInfo clientInfo = request.getClientInfo();
                 boolean encodingFound = false;
                 boolean characterSetFound = false;
@@ -163,20 +151,16 @@ public class TunnelFilter extends Filter {
                             && (metadata instanceof CharacterSet)) {
                         updateMetadata(clientInfo, metadata);
                         characterSetFound = true;
-                        cutExts.append('.').append(extensions[i]);
                     } else if (!encodingFound && (metadata instanceof Encoding)) {
                         updateMetadata(clientInfo, metadata);
                         encodingFound = true;
-                        cutExts.append('.').append(extensions[i]);
                     } else if (!languageFound && (metadata instanceof Language)) {
                         updateMetadata(clientInfo, metadata);
                         languageFound = true;
-                        cutExts.append('.').append(extensions[i]);
                     } else if (!mediaTypeFound
                             && (metadata instanceof MediaType)) {
                         updateMetadata(clientInfo, metadata);
                         mediaTypeFound = true;
-                        cutExts.append('.').append(extensions[i]);
                     } else {
                         // The extension didn't match any metadata or
                         // matched a metadata which was already updated
@@ -195,8 +179,6 @@ public class TunnelFilter extends Filter {
                         || mediaTypeFound) {
                     resourceRef.setExtensions(sb.toString());
                     extensionsModified = true;
-                    request.getAttributes().put(ATTRIBUTE_CUT_EXTENSIONS,
-                            cutExts.toString());
                 }
             }
         }

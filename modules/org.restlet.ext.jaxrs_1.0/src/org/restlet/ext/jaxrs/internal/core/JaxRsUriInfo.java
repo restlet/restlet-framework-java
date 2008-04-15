@@ -87,8 +87,6 @@ public class JaxRsUriInfo implements UriInfo {
 
     private Reference referenceCut;
 
-    private String cutExtensions;
-
     /**
      * Creates a new UriInfo. When using this constructor, the
      * templateParameters are not available.
@@ -101,7 +99,7 @@ public class JaxRsUriInfo implements UriInfo {
      * @see #JaxRsUriInfo(Reference, MultivaluedMap)
      */
     public JaxRsUriInfo(Reference reference) {
-        this(reference, reference, null, true);
+        this(reference, reference, true);
     }
 
     /**
@@ -114,14 +112,11 @@ public class JaxRsUriInfo implements UriInfo {
      *                {@link Reference#getBaseRef()}.
      * @param referenceCut
      *                The Restlet reference with the cut extensions.
-     * @param cutExtensions
-     *                the cut extensions, or null if non.
      * @param readOnly
-     * 
      * @see #JaxRsUriInfo(Reference, MultivaluedMap)
      */
     protected JaxRsUriInfo(Reference referenceOriginal, Reference referenceCut,
-            String cutExtensions, boolean readOnly) {
+            boolean readOnly) {
         if (referenceCut == null)
             throw new IllegalArgumentException("The reference must not be null");
         if (referenceCut.getBaseRef() == null)
@@ -129,12 +124,6 @@ public class JaxRsUriInfo implements UriInfo {
                     "The reference must contains a baseRef");
         this.referenceCut = referenceCut;
         this.referenceOriginal = referenceOriginal;
-        if (cutExtensions == null)
-            this.cutExtensions = null;
-        else if (cutExtensions.charAt(0) == '.')
-            this.cutExtensions = cutExtensions.substring(1);
-        else
-            this.cutExtensions = cutExtensions;
         this.readOnly = readOnly;
     }
 
@@ -436,7 +425,7 @@ public class JaxRsUriInfo implements UriInfo {
      * @see javax.ws.rs.core.UriInfo#getPathExtension()
      */
     public String getPathExtension() {
-        return getCutExtensions();
+        return referenceOriginal.getExtensions();
     }
 
     /**
@@ -734,12 +723,5 @@ public class JaxRsUriInfo implements UriInfo {
      */
     private Reference getReferenceCut() {
         return this.referenceCut;
-    }
-
-    /**
-     * @return the cutExtensions
-     */
-    private String getCutExtensions() {
-        return this.cutExtensions;
     }
 }

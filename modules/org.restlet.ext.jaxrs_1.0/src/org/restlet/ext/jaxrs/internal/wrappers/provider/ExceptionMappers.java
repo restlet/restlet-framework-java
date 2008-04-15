@@ -58,6 +58,8 @@ public class ExceptionMappers {
          * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
          */
         public Response toResponse(WebApplicationException wae) {
+            // NICE if 405 (unsupported MediaType) check for WebAppExc
+            // proprietary subclass and request the Variants
             return wae.getResponse();
         }
     }

@@ -26,11 +26,14 @@ import java.util.Set;
 import javax.ws.rs.core.ApplicationConfig;
 
 import static org.restlet.data.MediaType.*;
+import static org.restlet.data.Language.*;
 
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.resources.UriBuilderTestResource;
 
@@ -39,6 +42,37 @@ import org.restlet.test.jaxrs.services.resources.UriBuilderTestResource;
  * @see UriBuilderTestResource
  */
 public class UriBuilderByServiceTest extends JaxRsTestCase {
+
+    private void assertBaseUriAndMediaType(MediaType expectedMT,
+            Response response, boolean checkEntityText) throws IOException {
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation entity = response.getEntity();
+        assertEquals(expectedMT, entity.getMediaType());
+        if (checkEntityText)
+            assertEquals(createBaseRef().toString(), entity.getText());
+    }
+
+    /**
+     * @param expSubPath
+     * @param allExpExts
+     * @param expMediaType
+     * @param expLanguage
+     * @param response
+     * @throws IOException
+     */
+    private void assertPlatonic(String expSubPath, String allExpExts,
+            MediaType expMediaType, Language expLanguage, Response response)
+            throws IOException {
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        Representation entity = response.getEntity();
+        assertEquals(expMediaType, entity.getMediaType());
+        assertEquals(expLanguage, Util.getFirstElementOrNull(entity
+                .getLanguages()));
+        Reference r = createReference(getRootResourceClass(), expSubPath);
+        assertEquals(r.toString() + "\n" + allExpExts, entity.getText());
+    }
 
     /**
      * 
@@ -61,16 +95,6 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
         }
     }
 
-    private void assertBaseUriAndMediaType(MediaType expectedMT,
-            Response response, boolean checkEntityText) throws IOException {
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
-        assertEquals(expectedMT, entity.getMediaType());
-        if (checkEntityText)
-            assertEquals(createBaseRef().toString(), entity.getText());
-    }
-
     /**
      * @return
      */
@@ -78,11 +102,20 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
     protected ApplicationConfig getAppConfig() {
         ApplicationConfig appConfig = new ApplicationConfig() {
             @Override
+            public Map<String, String> getLanguageMappings() {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("en", "en");
+                map.put("de", "de");
+                return map;
+            }
+
+            @Override
             public Map<String, javax.ws.rs.core.MediaType> getMediaTypeMappings() {
                 Map<String, javax.ws.rs.core.MediaType> map = new HashMap<String, javax.ws.rs.core.MediaType>();
                 map.put("txt", javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE);
                 map.put("html", javax.ws.rs.core.MediaType.TEXT_HTML_TYPE);
                 map.put("htm", javax.ws.rs.core.MediaType.TEXT_HTML_TYPE);
+                map.put("jpx", new javax.ws.rs.core.MediaType("image", "jpx"));
                 return map;
             }
 
@@ -181,6 +214,37 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
         assertBaseUriAndMediaType(TEXT_HTML, response, true);
 
         response = post("base.xml", TEXT_HTML);
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+    }
+
+    public void testPlatonicAndExts() throws Exception {
+        Response response = get("platonicAndExts.txt", TEXT_HTML);
+        assertPlatonic("platonicAndExts", "txt", TEXT_PLAIN, null, response);
+
+        response = get("platonicAndExts.abc.html.txt", TEXT_HTML);
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+
+        response = get("platonicAndExts.abc.html.en.txt", TEXT_HTML);
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+
+        response = get("platonicAndExts.en.txt", TEXT_HTML);
+        assertPlatonic("platonicAndExts", "en.txt", TEXT_PLAIN, ENGLISH,
+                response);
+    }
+
+    public void testPlatonicAndExtsAndExt() throws Exception {
+        Response response = get("platonicAndExts.abc.txt", TEXT_HTML);
+        assertPlatonic("platonicAndExts.abc", "abc.txt", TEXT_PLAIN, null,
+                response);
+
+        response = get("platonicAndExts.abc.html.txt", TEXT_HTML);
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+
+        response = get("platonicAndExts.abc.en.txt", TEXT_HTML);
+        assertPlatonic("platonicAndExts.abc", "abc.en.txt", TEXT_PLAIN,
+                ENGLISH, response);
+
+        response = get("platonicAndExts.def.en.txt", TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 

@@ -51,8 +51,6 @@ import org.restlet.data.Conditions;
 import org.restlet.data.Dimension;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
@@ -62,7 +60,6 @@ import org.restlet.ext.jaxrs.internal.util.EmptyIterator;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
-import org.restlet.util.Series;
 
 /**
  * Contains all request specific data of the interfaces injectable for &#64;{@link Context}.
@@ -144,7 +141,21 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     private static final int STATUS_PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED
             .getCode();
 
+    /**
+     * the unmodifiable List of accepted {@link MediaType}s. Lazy
+     * initialization by getter.
+     * 
+     * @see #getAcceptableMediaTypes()
+     */
     private List<MediaType> acceptedMediaTypes;
+
+    /**
+     * the unmodifiable List of accepted labuages. Lazy initialization by
+     * getter.
+     * 
+     * @see #getAcceptableLanguages()
+     */
+    private List<String> acceptedLanguages;
 
     private SortedMetadata<org.restlet.data.MediaType> accMediaTypes;
 
@@ -182,8 +193,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
      */
     public CallContext(Request request, org.restlet.data.Response response,
             RoleChecker roleChecker) {
-        super(Util.getReferenceOriginal(request), Util.getReferenceCut(request),
-                Util.getCutExtensions(request), false);
+        super(Util.getReferenceOriginal(request),
+                Util.getReferenceCut(request), false);
         if (response == null)
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
@@ -196,8 +207,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
         this.request = request;
         this.response = response;
         this.roleChecker = roleChecker;
-        this.accMediaTypes = new SortedMetadata<org.restlet.data.MediaType>(
-                request.getClientInfo().getAcceptedMediaTypes());
+        this.accMediaTypes = SortedMetadata.getForMediaTypes(request
+                .getClientInfo().getAcceptedMediaTypes());
     }
 
     /**
@@ -217,21 +228,6 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
                 return true;
         }
         return false;
-    }
-
-    private MediaType createJaxRsMediaType(
-            Preference<org.restlet.data.MediaType> mediaTypePref) {
-        org.restlet.data.MediaType restletMediaType = mediaTypePref
-                .getMetadata();
-        Series<Parameter> rlMediaTypeParams = restletMediaType.getParameters();
-        Map<String, String> parameters = null;
-        if (!rlMediaTypeParams.isEmpty()) {
-            parameters = new HashMap<String, String>();
-            for (Parameter p : rlMediaTypeParams)
-                parameters.put(p.getName(), p.getValue());
-        }
-        return new MediaType(restletMediaType.getMainType(), restletMediaType
-                .getSubType());
     }
 
     /**
@@ -373,6 +369,22 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     }
 
     /**
+     * @see javax.ws.rs.core.HttpHeaders#getAcceptableLanguages()
+     */
+    public List<String> getAcceptableLanguages() {
+        if (this.acceptedLanguages == null) {
+            SortedMetadata<Language> accLangages = SortedMetadata
+                    .getForLanguages(request.getClientInfo()
+                            .getAcceptedLanguages());
+            List<String> accLangs = new ArrayList<String>();
+            for (Language language : accLangages)
+                accLangs.add(language.getName());
+            this.acceptedLanguages = Collections.unmodifiableList(accLangs);
+        }
+        return this.acceptedLanguages;
+    }
+
+    /**
      * For use from JAX-RS interface.
      * 
      * @see HttpHeaders#getAcceptableMediaTypes()
@@ -381,12 +393,9 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     @Deprecated
     public List<MediaType> getAcceptableMediaTypes() {
         if (this.acceptedMediaTypes == null) {
-            List<Preference<org.restlet.data.MediaType>> restletAccMediaTypes = request
-                    .getClientInfo().getAcceptedMediaTypes();
-            List<MediaType> accMediaTypes = new ArrayList<MediaType>(
-                    restletAccMediaTypes.size());
-            for (Preference<org.restlet.data.MediaType> mediaTypePref : restletAccMediaTypes)
-                accMediaTypes.add(createJaxRsMediaType(mediaTypePref));
+            List<MediaType> accMediaTypes = new ArrayList<MediaType>();
+            for(org.restlet.data.MediaType mediaType : this.accMediaTypes)
+                accMediaTypes.add(Converter.toJaxRsMediaType(mediaType));
             this.acceptedMediaTypes = Collections
                     .unmodifiableList(accMediaTypes);
         }
@@ -430,7 +439,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
             return SecurityContext.DIGEST_AUTH;
         return authScheme.getName();
         // LATER is SecurityContext.CLIENT_CERT_AUTH supported?
-        // LATER FORM_AUTH wird wohl auch nicht unterstutzt.
+        // LATER FORM_AUTH wird wohl auch nicht unterstuetzt.
     }
 
     /**

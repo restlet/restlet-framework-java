@@ -24,10 +24,6 @@ package org.restlet.ext.jaxrs.internal.todo;
  */
 public class Notizen {
 
-    // REQUESTED HttpHeaders.getAcceptedLanguages():List, as getAccMediaTypes()
-    // and getLanguage() and the extension mapping (devATjsr311:1245,
-    // accepted: devATjsr311:1247)
-
     // TESTEN what happens, if ".." or "." in @Path?
 
     // REQUESTED rename @DefaultValue to @Default? it's shorter
@@ -36,8 +32,7 @@ public class Notizen {
 
     // TODO test again Jersey Implementation.
 
-    // REQUEST 5.2.2 "Headers", last line: "using the Response CLASS"
-    
+    // TODO MA: Provider for File-Upload by a browser (multipart/form-data)
     // NICE Provider for File-Upload by a browser (multipart/form-data)
 
     // NICE warn if primitve on @*Param: perhaps null?

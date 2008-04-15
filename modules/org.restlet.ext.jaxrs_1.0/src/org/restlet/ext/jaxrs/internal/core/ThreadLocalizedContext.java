@@ -129,6 +129,13 @@ public class ThreadLocalizedContext implements UriInfo, Request, HttpHeaders,
     }
 
     /**
+     * @see HttpHeaders#getAcceptableLanguages()
+     */
+    public List<String> getAcceptableLanguages() {
+        return get().getAcceptableLanguages();
+    }
+
+    /**
      * @return
      * @see CallContext#getAcceptableMediaTypes()
      * @see HttpHeaders#getAcceptableMediaTypes()

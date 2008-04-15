@@ -154,6 +154,20 @@ public class Converter {
      * @return the converted MediaType
      */
     public static MediaType toJaxRsMediaType(
+            org.restlet.data.MediaType restletMediaType) {
+        return toJaxRsMediaType(restletMediaType, null);
+    }
+
+    /**
+     * Convert a Restlet MediaType to a JAX-RS MediaType.
+     * 
+     * @param restletMediaType
+     *                the MediaType to convert.
+     * @param restletCharacterSet
+     *                the CharacterSet for the MediaType; may be null.
+     * @return the converted MediaType
+     */
+    public static MediaType toJaxRsMediaType(
             org.restlet.data.MediaType restletMediaType,
             org.restlet.data.CharacterSet restletCharacterSet) {
         if (restletMediaType == null)

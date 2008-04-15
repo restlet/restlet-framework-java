@@ -872,6 +872,32 @@ public class Util {
     }
 
     /**
+     * Returns the reference of the request, without the cut extensions of the
+     * Reference, cut by the TunnelFilter
+     * 
+     * @param request
+     * @return
+     */
+    public static Reference getReferenceCut(Request request) {
+        return request.getResourceRef();
+    }
+
+    /**
+     * Returns the original Reference of this request
+     * 
+     * @param request
+     * @return
+     */
+    public static Reference getReferenceOriginal(Request request) {
+        Reference reference = (Reference) request.getAttributes().get(
+                TunnelService.ATTRIBUTE_ORIGINAL_REF);
+        if (reference == null)
+            return getReferenceCut(request);
+        reference.setBaseRef(getReferenceCut(request).getBaseRef());
+        return reference;
+    }
+
+    /**
      * Inject the given toInject into the given field in the given resource (or
      * whatever)
      * 
@@ -1099,39 +1125,27 @@ public class Util {
     }
 
     /**
-     * Returns the cut extensions of the Reference, cut by the TunnelFilter
+     * Concatenate the members of the Set to a String, separated with the given
+     * delimiter.
      * 
-     * @param request
-     * @return
+     * @param collection
+     * @param delimiter
+     * @return the concatenated 
      */
-    public static String getCutExtensions(Request request) {
-        return (String) request.getAttributes().get(
-                TunnelFilter.ATTRIBUTE_CUT_EXTENSIONS);
-    }
-
-    /**
-     * Returns the reference of the request, without the cut extensions of the
-     * Reference, cut by the TunnelFilter
-     * 
-     * @param request
-     * @return
-     */
-    public static Reference getReferenceCut(Request request) {
-        return request.getResourceRef();
-    }
-
-    /**
-     * Returns the original Reference of this request
-     * 
-     * @param request
-     * @return
-     */
-    public static Reference getReferenceOriginal(Request request) {
-        Reference reference = (Reference) request.getAttributes().get(
-                TunnelService.ATTRIBUTE_ORIGINAL_REF);
-        if (reference == null)
-            return getReferenceCut(request);
-        reference.setBaseRef(getReferenceCut(request).getBaseRef());
-        return reference;
+    public static Object toString(Collection<?> collection,
+            String delimiter) {
+        if(collection == null || collection.isEmpty())
+            return "";
+        Iterator<?> iterator = collection.iterator();
+        if(collection.size() == 1)
+            return String.valueOf(iterator.next());
+        StringBuilder stb = new StringBuilder();
+        stb.append(iterator.next());
+        while (iterator.hasNext()) {
+            Object object = iterator.next();
+            stb.append(delimiter);
+            stb.append(object);
+        }
+        return stb.toString();
     }
 }

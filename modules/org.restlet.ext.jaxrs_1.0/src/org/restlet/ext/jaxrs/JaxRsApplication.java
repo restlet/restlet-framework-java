@@ -339,18 +339,4 @@ public class JaxRsApplication extends Application {
     public void setRoleChecker(RoleChecker roleChecker) {
         this.jaxRsRouter.setRoleChecker(roleChecker);
     }
-
-    /**
-     * Returns the exception handler for this JaxRsApplication. You may change
-     * the Restlets for some exception handling.
-     * 
-     * @return the exception handler for this JaxRsApplication.
-     * @deprecated Perhaps this method is only default visible and will be
-     *             removed perhaps later, because the access to the
-     *             {@link ExceptionHandler} will perhaps get removed.
-     */
-    @Deprecated
-    ExceptionHandler getExcHandler() {
-        return this.jaxRsRouter.getExcHandler();
-    }
 }

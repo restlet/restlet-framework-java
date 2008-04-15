@@ -19,15 +19,15 @@ package org.restlet.ext.jaxrs;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.restlet.Restlet;
-import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -43,11 +43,9 @@ import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
-import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
+import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
-import org.restlet.ext.jaxrs.internal.wrappers.ResourceClass;
-import org.restlet.ext.jaxrs.internal.wrappers.ResourceObject;
 import org.restlet.resource.StringRepresentation;
 
 /**
@@ -67,96 +65,9 @@ import org.restlet.resource.StringRepresentation;
 class ExceptionHandler {
 
     /**
-     * Instances of this class have a given status they return, when
-     * {@link Restlet#handle(Request, Response)} is called.
      * 
-     * @author Stephan Koops
      */
-    private static class ReturnStatusRestlet extends Restlet {
-        private Status status;
-
-        ReturnStatusRestlet(Status status) {
-            this.status = status;
-        }
-
-        @Override
-        public void handle(Request request, Response response) {
-            super.handle(request, response);
-            response.setStatus(status);
-        }
-    }
-
-    /**
-     * The default Restlet used when the method is not allwed on the resource.
-     * 
-     * @see #errorRestletMethodNotAllowed
-     */
-    private static final ReturnStatusRestlet DEFAULT_METHOD_NOT_ALLOWED_RESTLET = new ReturnStatusRestlet(
-            Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-
-    /**
-     * The default Restlet used when the request is not acceptable.
-     * 
-     * @see #errorRestletRootResourceNotFound
-     */
-    private static final ReturnStatusRestlet DEFAULT_NOT_ACCEPTABLE_RESTLET = new ReturnStatusRestlet(
-            Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-
-    /**
-     * The default Restlet used when a (sub) resource method can not be found.
-     * 
-     * @see #errorRestletResourceMethodNotFound
-     */
-    private static final ReturnStatusRestlet DEFAULT_RESOURCE_METHOD_NOT_FOUND_RESTLET = new ReturnStatusRestlet(
-            new Status(Status.CLIENT_ERROR_NOT_FOUND,
-                    "Resource method not found or it is not public"));
-
-    /**
-     * The default Restlet used when a (sub) resource can not be found.
-     * 
-     * @see #errorRestletResourceNotFound
-     */
-    private static final ReturnStatusRestlet DEFAULT_RESOURCE_NOT_FOUND_RESTLET = new ReturnStatusRestlet(
-            new Status(Status.CLIENT_ERROR_NOT_FOUND,
-                    "Resource class not found"));
-
-    /**
-     * The default Restlet used when a root resource can not be found.
-     * 
-     * @see #errorRestletRootResourceNotFound
-     */
-    private static final ReturnStatusRestlet DEFAULT_ROOT_RESOURCE_NOT_FOUND_RESTLET = new ReturnStatusRestlet(
-            new Status(Status.CLIENT_ERROR_NOT_FOUND,
-                    "Root resource class not found"));
-
-    /**
-     * The default Restlet used when the media type is not supported
-     * 
-     * @see #errorRestletUnsupportedMediaType
-     */
-    private static final ReturnStatusRestlet DEFAULT_UNSUPPORTED_MEDIA_TYPE_RESTLET = new ReturnStatusRestlet(
-            Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
-
-    private volatile Restlet errorRestletMethodNotAllowed = DEFAULT_METHOD_NOT_ALLOWED_RESTLET;
-
-    private volatile Restlet errorRestletNoResourceMethodForAcceptedMediaType = DEFAULT_NOT_ACCEPTABLE_RESTLET;
-
-    private volatile Restlet errorRestletNotAcceptableWhileDetermineMediaType = DEFAULT_NOT_ACCEPTABLE_RESTLET;
-
-    /**
-     * When no Method for the give path is found
-     */
-    private volatile Restlet errorRestletResourceMethodNotFound = DEFAULT_RESOURCE_METHOD_NOT_FOUND_RESTLET;
-
-    private volatile Restlet errorRestletResourceNotFound = DEFAULT_RESOURCE_NOT_FOUND_RESTLET;
-
-    /**
-     * This Restlet will be used to handle the request if no root resource class
-     * can be found.
-     */
-    private volatile Restlet errorRestletRootResourceNotFound = DEFAULT_ROOT_RESOURCE_NOT_FOUND_RESTLET;
-
-    private volatile Restlet errorRestletUnsupportedMediaType = DEFAULT_UNSUPPORTED_MEDIA_TYPE_RESTLET;
+    private static final String HEADER_ALLOW = "Allow";
 
     private final Logger logger;
 
@@ -170,7 +81,6 @@ class ExceptionHandler {
      */
     RequestHandledException convertCookieParamExc(
             ConvertCookieParamException cpe) throws WebApplicationException {
-        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response
                 .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
         StringWriter stw = new StringWriter();
@@ -185,7 +95,6 @@ class ExceptionHandler {
      */
     RequestHandledException convertHeaderParamExc(
             ConvertHeaderParamException cpe) throws WebApplicationException {
-        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response
                 .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
         StringWriter stw = new StringWriter();
@@ -200,7 +109,6 @@ class ExceptionHandler {
      */
     RequestHandledException convertMatrixParamExc(
             ConvertMatrixParamException cpe) throws WebApplicationException {
-        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
         StringWriter stw = new StringWriter();
         cpe.printStackTrace(new PrintWriter(stw));
@@ -214,7 +122,6 @@ class ExceptionHandler {
      */
     RequestHandledException convertPathParamExc(ConvertPathParamException cpe)
             throws WebApplicationException {
-        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
         StringWriter stw = new StringWriter();
         cpe.printStackTrace(new PrintWriter(stw));
@@ -228,7 +135,6 @@ class ExceptionHandler {
      */
     RequestHandledException convertQueryParamExc(ConvertQueryParamException cpe)
             throws WebApplicationException {
-        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response
                 .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
         StringWriter stw = new StringWriter();
@@ -243,69 +149,12 @@ class ExceptionHandler {
      */
     RequestHandledException convertRepresentationExc(
             ConvertRepresentationException cre) throws WebApplicationException {
-        // NICE use Restlet to handle
         ResponseBuilder rb = javax.ws.rs.core.Response
                 .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
         StringWriter stw = new StringWriter();
         cre.printStackTrace(new PrintWriter(stw));
         rb.entity(stw.toString());
         throw new WebApplicationException(cre, rb.build());
-    }
-
-    /**
-     * @return Returns the Restlet, that is actually if no resource method could
-     *         be found.
-     */
-    public Restlet getErrorRestletMethodNotAllowed() {
-        return errorRestletMethodNotAllowed;
-    }
-
-    /**
-     * @return Returns the Restlet that hanndles the request if the accepted
-     *         media type is not supported.
-     */
-    public Restlet getErrorRestletNoResourceMethodForAcceptedMediaType() {
-        return errorRestletNoResourceMethodForAcceptedMediaType;
-    }
-
-    /**
-     * @return Returns the Restlet that hanndles the request if the media type
-     *         of a method result could not be determined.
-     */
-    public Restlet getErrorRestletNotAcceptableWhileDetermineMediaType() {
-        return errorRestletNotAcceptableWhileDetermineMediaType;
-    }
-
-    /**
-     * @return Returns the Restlet, is used on HTTP-Error 404, when no Resource
-     *         class could be found.
-     */
-    public Restlet getErrorRestletResourceMethodNotFound() {
-        return this.errorRestletResourceMethodNotFound;
-    }
-
-    /**
-     * @return Returns the Restlet, that is actually if no resource class could
-     *         be found.
-     */
-    public Restlet getErrorRestletResourceNotFound() {
-        return this.errorRestletResourceNotFound;
-    }
-
-    /**
-     * @return Returns the Restlet, that is actually if no Root Resource class
-     *         could be found.
-     */
-    public Restlet getErrorRestletRootResourceNotFound() {
-        return this.errorRestletRootResourceNotFound;
-    }
-
-    /**
-     * @return Returns the Restlet that handles the request, if the method is
-     *         not allowed on the resource.
-     */
-    public Restlet getErrorRestletUnsupportedMediaType() {
-        return errorRestletUnsupportedMediaType;
     }
 
     /**
@@ -362,15 +211,13 @@ class ExceptionHandler {
      * @param httpMethod
      * @param resourceClass
      * @param u
-     * @throws CouldNotFindResMethodException
      */
-    void methodNotAllowed(org.restlet.data.Method httpMethod,
-            ResourceClass resourceClass, RemainingPath u)
-            throws CouldNotFindResMethodException {
-        throw new CouldNotFindResMethodException(errorRestletMethodNotAllowed,
-                "there is no method supporting the http method " + httpMethod
-                        + " on class " + resourceClass.getName()
-                        + " and remaining path " + u);
+    void methodNotAllowed(Set<Method> allowedMethods)
+            throws WebApplicationException {
+        ResponseBuilder rb = javax.ws.rs.core.Response
+                .status(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.getCode());
+        rb.header(HEADER_ALLOW, Util.toString(allowedMethods, ", "));
+        throw new WebApplicationException(rb.build());
     }
 
     /**
@@ -408,7 +255,6 @@ class ExceptionHandler {
      */
     RequestHandledException noMessageBodyReader(CallContext callContext,
             NoMessageBodyReaderException nmbre) throws RequestHandledException {
-        // NICE Restlet fuer throw
         Response response = callContext.getResponse();
         MediaType mediaType = nmbre.getMediaType();
         Class<?> paramType = nmbre.getParamType();
@@ -422,7 +268,6 @@ class ExceptionHandler {
     RequestHandledException noMessageBodyWriter(Response response,
             SortedMetadata<MediaType> accMediaTypes, Class<?> paramType)
             throws RequestHandledException {
-        // NICE Restlet fuer throw
         response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
         response.setEntity(new StringRepresentation(
                 "No MessageBodyWriter found to convert from java type "
@@ -432,69 +277,44 @@ class ExceptionHandler {
     }
 
     /**
-     * @param httpMethod
-     * @param resourceClass
-     * @param u
-     * @throws CouldNotFindResMethodException
+     * see spec, section 3.7.2, item 3(a).4
      */
-    void noResourceMethodForAccMediaTypes(org.restlet.data.Method httpMethod,
-            ResourceClass resourceClass, RemainingPath u)
-            throws CouldNotFindResMethodException {
-        // NICE return supported MediaTypes as entity
-        throw new CouldNotFindResMethodException(
-                errorRestletNoResourceMethodForAcceptedMediaType,
-                "there is no java method on class " + resourceClass.getName()
-                        + " supporting the http method " + httpMethod
-                        + " and remaining path " + u
-                        + " and the given and accepted media types");
-    }
-
-    RequestHandledException notAcceptableWhileDetermineMediaType(
-            Request request, Response response) throws RequestHandledException {
-        errorRestletNoResourceMethodForAcceptedMediaType.handle(request,
-                response);
-        response.setEntity(new StringRepresentation(
-                "Could not determinde the media type of the created response",
-                MediaType.TEXT_PLAIN, Language.ENGLISH));
-        throw new RequestHandledException();
+    void noResourceMethodForAccMediaTypes() throws WebApplicationException {
+        // REQUESTED return supported MediaTypes as entity
+        throw new WebApplicationException(Status.CLIENT_ERROR_NOT_ACCEPTABLE
+                .getCode());
     }
 
     /**
-     * @param resourceClass
-     * @param u
-     * @throws CouldNotFindResMethodException
+     * see spec, section 3.8, item 6
      */
-    void resourceMethodNotFound(ResourceClass resourceClass, RemainingPath u)
-            throws CouldNotFindResMethodException {
-        throw new CouldNotFindResMethodException(
-                errorRestletResourceMethodNotFound,
-                "there is no method on class " + resourceClass.getName()
-                        + " for remaining path " + u);
+    WebApplicationException notAcceptableWhileDetermineMediaType()
+            throws WebApplicationException {
+        throw new WebApplicationException(Status.CLIENT_ERROR_NOT_ACCEPTABLE
+                .getCode());
     }
 
     /**
-     * @param o
-     * @param u
-     * @throws CouldNotFindResMethodException
      */
-    void resourceNotFound(ResourceObject o, RemainingPath u)
-            throws CouldNotFindResMethodException {
-        throw new CouldNotFindResMethodException(
-                errorRestletResourceNotFound,
-                "The resource class "
-                        + o.getResourceClass().getName()
-                        + " could not find a resource object to handle the request for remaining path "
-                        + u);
+    void resourceMethodNotFound() throws WebApplicationException {
+        throw new WebApplicationException(Status.CLIENT_ERROR_NOT_FOUND
+                .getCode());
     }
 
     /**
-     * @param u
-     * @throws CouldNotFindResMethodException
+     * see spec, section 3.7.2, item 2 (e)
      */
-    void rootResourceNotFound(RemainingPath u)
-            throws CouldNotFindResMethodException {
-        throw new CouldNotFindResMethodException(errorRestletRootResourceNotFound,
-                "No root resource class found for realtiv path " + u);
+    void resourceNotFound() throws WebApplicationException {
+        throw new WebApplicationException(
+                javax.ws.rs.core.Response.Status.NOT_FOUND);
+    }
+
+    /**
+     * see spec, section 3.7.2, item 1 (d)
+     */
+    void rootResourceNotFound() throws WebApplicationException {
+        throw new WebApplicationException(Status.CLIENT_ERROR_NOT_FOUND
+                .getCode());
     }
 
     /**
@@ -528,179 +348,11 @@ class ExceptionHandler {
     }
 
     /**
-     * Set the Restlet to handle the request if the method is not allowed for
-     * the resource. It must return status 405. Set it to null to use default.
-     * 
-     * @param errorRestletMethodNotAllowed
-     *                The Restlet to use. Set to null to use default.
+     * see spec, section 3.7.2, item 3 (a) .3
      */
-    public void setErrorRestletMethodNotAllowed(
-            Restlet errorRestletMethodNotAllowed) {
-        if (errorRestletMethodNotAllowed == null)
-            this.errorRestletMethodNotAllowed = DEFAULT_METHOD_NOT_ALLOWED_RESTLET;
-        else
-            this.errorRestletMethodNotAllowed = errorRestletMethodNotAllowed;
-    }
-
-    /**
-     * Sets the Restlet that should handle the request, if the accpeted media
-     * type is not supported. Must return status 406. Set to null to use
-     * default.
-     * 
-     * @param errorRestletNoResourceMethodForAcceptedMediaType
-     *                The Restlet to use. Set to null to use default.
-     */
-    public void setErrorRestletNoResourceMethodForAcceptedMediaType(
-            Restlet errorRestletNoResourceMethodForAcceptedMediaType) {
-        if (errorRestletNoResourceMethodForAcceptedMediaType == null)
-            this.errorRestletNoResourceMethodForAcceptedMediaType = DEFAULT_NOT_ACCEPTABLE_RESTLET;
-        else
-            this.errorRestletNoResourceMethodForAcceptedMediaType = errorRestletNoResourceMethodForAcceptedMediaType;
-    }
-
-    /**
-     * Sets the Restlet that handles the request if the media type of the
-     * generated response could not be determined. Set to null to use default.
-     * 
-     * @param errorRestletNotAcceptableWhileDetermineMediaType
-     *                The Restlet to use. Set to null to use default.
-     */
-    public void setErrorRestletNotAcceptableWhileDetermineMediaType(
-            Restlet errorRestletNotAcceptableWhileDetermineMediaType) {
-        if (errorRestletNotAcceptableWhileDetermineMediaType == null)
-            this.errorRestletNotAcceptableWhileDetermineMediaType = DEFAULT_UNSUPPORTED_MEDIA_TYPE_RESTLET;
-        else
-            this.errorRestletNotAcceptableWhileDetermineMediaType = errorRestletNotAcceptableWhileDetermineMediaType;
-    }
-
-    /**
-     * Sets the Restlet that handles request, when no Resource class could be
-     * found. It must return status 404, if it can not otherwise handle the
-     * request. Set to null to use default.
-     * 
-     * @param notFoundRestlet
-     *                The Restlet to use when the resource was not found on the
-     *                server. This Restlet must return status 404. Set to null
-     *                to use default.
-     */
-    public void setErrorRestletNotFound(Restlet notFoundRestlet) {
-        this.setErrorRestletResourceMethodNotFound(notFoundRestlet);
-        this.setErrorRestletResourceNotFound(notFoundRestlet);
-        this.setErrorRestletRootResourceNotFound(notFoundRestlet);
-    }
-
-    /**
-     * Sets the Restlet that handles the request if no Resource class could be
-     * found. Set to null to use default.
-     * 
-     * @param resourceMethodNotFoundRestlet
-     *                The Restlet to use when no resource class could be found.
-     *                This Restlet must return status 404. Set to null to use
-     *                default.
-     * @see #setErrorRestletNotFound(Restlet)
-     */
-    public void setErrorRestletResourceMethodNotFound(
-            Restlet resourceMethodNotFoundRestlet) {
-        if (resourceMethodNotFoundRestlet == null)
-            this.errorRestletResourceMethodNotFound = DEFAULT_RESOURCE_METHOD_NOT_FOUND_RESTLET;
-        else
-            this.errorRestletResourceMethodNotFound = resourceMethodNotFoundRestlet;
-    }
-
-    /**
-     * Sets the Restlet that handles request, when no Resource class could be
-     * found. It must return status 404, if it can not otherwise handle the
-     * request. Set to null to use default.
-     * 
-     * @param resourceNotFoundRestlet
-     *                The Restlet to use when no resource class could be found.
-     *                This Restlet must return status 404. Set to null to use
-     *                default.
-     * @see #setErrorRestletNotFound(Restlet)
-     */
-    public void setErrorRestletResourceNotFound(Restlet resourceNotFoundRestlet) {
-        if (resourceNotFoundRestlet == null)
-            this.errorRestletResourceNotFound = DEFAULT_RESOURCE_NOT_FOUND_RESTLET;
-        else
-            this.errorRestletResourceNotFound = resourceNotFoundRestlet;
-    }
-
-    /**
-     * Restlet, is used on HTTP-Error 404, when no Root Resource class could be
-     * found. Set to null to use default.
-     * 
-     * @param rootResourceNotFoundRestlet
-     *                The Restlet to use when no root resource class could be
-     *                found. This Restlet must return status 404.
-     * @see #setErrorRestletNotFound(Restlet)
-     */
-    public void setErrorRestletRootResourceNotFound(
-            Restlet rootResourceNotFoundRestlet) {
-        if (rootResourceNotFoundRestlet == null)
-            this.errorRestletRootResourceNotFound = DEFAULT_ROOT_RESOURCE_NOT_FOUND_RESTLET;
-        else
-            this.errorRestletRootResourceNotFound = rootResourceNotFoundRestlet;
-    }
-
-    /**
-     * Sets the Restlet that handles the request if the given media type is not
-     * supported. Set to null to use default.
-     * 
-     * @param errorRestletUnsupportedMediaType
-     *                The Restlet to use. Set to null to use default.
-     */
-    public void setErrorRestletUnsupportedMediaType(
-            Restlet errorRestletUnsupportedMediaType) {
-        if (errorRestletUnsupportedMediaType == null)
-            this.errorRestletUnsupportedMediaType = DEFAULT_UNSUPPORTED_MEDIA_TYPE_RESTLET;
-        else
-            this.errorRestletUnsupportedMediaType = errorRestletUnsupportedMediaType;
-    }
-
-    /**
-     * @param httpMethod
-     * @param resourceClass
-     * @param u
-     * @param givenMediaType
-     * @throws CouldNotFindResMethodException
-     */
-    void unsupportedMediaType(org.restlet.data.Method httpMethod,
-            ResourceClass resourceClass, RemainingPath u,
-            MediaType givenMediaType) throws CouldNotFindResMethodException {
-        throw new CouldNotFindResMethodException(errorRestletUnsupportedMediaType,
-                "there is no java method on class "
-                        + resourceClass.getName()
-                        + " supporting the http method "
-                        + httpMethod
-                        + " on an "
-                        + (u.isEmptyOrSlash() ? "empty remaining path"
-                                : (" remaining path " + u))
-                        + " and the given media type " + givenMediaType);
-    }
-}
-
-/**
- * This exception is thrown, when the algorithm "Matching Requests to Resource
- * Methods" in Section 3.7.2 of JSR-311-Spec could not find the (sub) resource
- * method.
- * 
- * @author Stephan Koops
- */
-class CouldNotFindResMethodException extends Exception {
-
-    private static final long serialVersionUID = -8436314060905405146L;
-
-    private Restlet errorRestlet;
-
-    CouldNotFindResMethodException(Restlet errorRestlet, String message) {
-        super(message);
-        this.errorRestlet = errorRestlet;
-    }
-
-    /**
-     * @return the errorRestlet
-     */
-    Restlet getErrorRestlet() {
-        return this.errorRestlet;
+    void unsupportedMediaType() throws WebApplicationException {
+        // REQUESTED return allowed Media types
+        throw new WebApplicationException(
+                Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE.getCode());
     }
 }

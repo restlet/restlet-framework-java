@@ -26,6 +26,7 @@ import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Preference;
@@ -35,7 +36,8 @@ import org.restlet.data.Preference;
  * the highest quality first.
  * 
  * @author Stephan Koops
- * @param <T> the Metadata type the instance contains.
+ * @param <T>
+ *                the Metadata type the instance contains.
  */
 public class SortedMetadata<T extends Metadata> implements Iterable<T> {
 
@@ -47,13 +49,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
      * @param preferences
      */
     @SuppressWarnings("unchecked")
-    public SortedMetadata(Collection<Preference<T>> preferences) {
-        if (preferences.isEmpty()) {
-            this.metadatas = Collections
-                    .singletonList((Collection<T>) Collections
-                            .singletonList(MediaType.ALL));
-            return;
-        }
+    private SortedMetadata(Collection<Preference<T>> preferences) {
         SortedMap<Float, Collection<T>> map = new TreeMap<Float, Collection<T>>(
                 Collections.reverseOrder());
         for (Preference<T> preference : preferences) {
@@ -70,6 +66,34 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
     }
 
     /**
+     * Creates a new {@link SortedMetadata} for {@link MediaType}s. If the
+     * given Collection is empty, {@link MediaType#ALL} is returned.
+     * 
+     * @param preferences
+     * @return
+     */
+    public static SortedMetadata<MediaType> getForMediaTypes(
+            Collection<Preference<MediaType>> preferences) {
+        if (preferences.isEmpty())
+            return new SortedMetadata<MediaType>(Collections
+                    .singletonList((Collection<MediaType>) Collections
+                            .singletonList(MediaType.ALL)));
+        else
+            return new SortedMetadata<MediaType>(preferences);
+    }
+
+    /**
+     * Creates a new {@link SortedMetadata} for {@link MediaType}s.
+     * 
+     * @param preferences
+     * @return
+     */
+    public static SortedMetadata<Language> getForLanguages(
+            Collection<Preference<Language>> preferences) {
+        return new SortedMetadata<Language>(preferences);
+    }
+
+    /**
      * Creates a new SortedMetadata from the sorted Metadata.
      * 
      * @param metadatas
@@ -79,7 +103,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
     }
 
     /**
-     * Iterates over all given Metadata.
+     * Iterates over all the sorted Metadata.
      * 
      * @see java.lang.Iterable#iterator()
      */
