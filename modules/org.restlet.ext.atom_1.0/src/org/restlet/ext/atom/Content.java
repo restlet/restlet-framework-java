@@ -18,9 +18,14 @@
 
 package org.restlet.ext.atom;
 
+import java.io.IOException;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.resource.Representation;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Either contains or links to the content of the entry.
@@ -28,14 +33,15 @@ import org.restlet.resource.Representation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Content {
-    /** Representation for inline content. */
-    private volatile Representation inlineContent;
 
     /** Reference to the external representation. */
     private volatile Reference externalRef;
 
     /** Expected media type of the external content. */
     private volatile MediaType externalType;
+
+    /** Representation for inline content. */
+    private volatile Representation inlineContent;
 
     /**
      * Constructor.
@@ -47,21 +53,21 @@ public class Content {
     }
 
     /**
-     * Indicates if the content is available inline.
+     * Returns the reference to the external representation.
      * 
-     * @return True if the content is available inline.
+     * @return The reference to the external representation.
      */
-    public boolean isInline() {
-        return (this.inlineContent != null);
+    public Reference getExternalRef() {
+        return this.externalRef;
     }
 
     /**
-     * Indicates if the content is available externally.
+     * Returns the expected media type of the external content.
      * 
-     * @return True if the content is available externally.
+     * @return The expected media type of the external content.
      */
-    public boolean isExternal() {
-        return (this.externalRef != null);
+    public MediaType getExternalType() {
+        return this.externalType;
     }
 
     /**
@@ -74,22 +80,21 @@ public class Content {
     }
 
     /**
-     * Sets the representation for inline content.
+     * Indicates if the content is available externally.
      * 
-     * @param inlineContent
-     *                The representation for inline content.
+     * @return True if the content is available externally.
      */
-    public void setInlineContent(Representation inlineContent) {
-        this.inlineContent = inlineContent;
+    public boolean isExternal() {
+        return (this.externalRef != null);
     }
 
     /**
-     * Returns the reference to the external representation.
+     * Indicates if the content is available inline.
      * 
-     * @return The reference to the external representation.
+     * @return True if the content is available inline.
      */
-    public Reference getExternalRef() {
-        return this.externalRef;
+    public boolean isInline() {
+        return (this.inlineContent != null);
     }
 
     /**
@@ -103,15 +108,6 @@ public class Content {
     }
 
     /**
-     * Returns the expected media type of the external content.
-     * 
-     * @return The expected media type of the external content.
-     */
-    public MediaType getExternalType() {
-        return this.externalType;
-    }
-
-    /**
      * Sets the expected media type of the external content.
      * 
      * @param externalType
@@ -119,6 +115,74 @@ public class Content {
      */
     public void setExternalType(MediaType externalType) {
         this.externalType = externalType;
+    }
+
+    /**
+     * Sets the representation for inline content.
+     * 
+     * @param inlineContent
+     *                The representation for inline content.
+     */
+    public void setInlineContent(Representation inlineContent) {
+        this.inlineContent = inlineContent;
+    }
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer, String namespace)
+            throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
+        String strContent = null;
+
+        if (getInlineContent() != null) {
+            MediaType mediaType = getInlineContent().getMediaType();
+            String type = null;
+
+            if (mediaType != null && mediaType.getSubType() != null) {
+                if (mediaType.getSubType().contains("xhtml")) {
+                    type = "xhtml";
+                } else if (mediaType.getSubType().contains("html")) {
+                    type = "html";
+                }
+            }
+
+            if (type == null) {
+                type = "text";
+            }
+
+            attributes.addAttribute("", "type", null, "text", type);
+
+            try {
+                strContent = getInlineContent().getText();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            if (getExternalType() != null
+                    && getExternalType().toString() != null) {
+                attributes.addAttribute("", "type", null, "atomMediaType",
+                        getExternalType().toString());
+            }
+
+            if (getExternalRef() != null && getExternalRef().toString() != null) {
+                attributes.addAttribute("", "src", null, "atomUri",
+                        getExternalRef().toString());
+            }
+        }
+
+        if (strContent == null) {
+            writer.emptyElement(namespace, "content", null, attributes);
+        } else {
+            writer.dataElement(namespace, "content", null, attributes,
+                    strContent);
+        }
     }
 
 }

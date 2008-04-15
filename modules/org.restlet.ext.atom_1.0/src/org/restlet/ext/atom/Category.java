@@ -19,6 +19,8 @@
 package org.restlet.ext.atom;
 
 import org.restlet.data.Reference;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
 
 /**
  * Conveys information about a category associated with an entry or feed.
@@ -26,14 +28,14 @@ import org.restlet.data.Reference;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Category {
-    /** The identifier term. */
-    private volatile String term;
+    /** The human-readable label for display in end-user applications. */
+    private volatile String label;
 
     /** The IRI that identifies a categorization scheme. */
     private volatile Reference scheme;
 
-    /** The human-readable label for display in end-user applications. */
-    private volatile String label;
+    /** The identifier term. */
+    private volatile String term;
 
     /**
      * Constructor.
@@ -114,6 +116,34 @@ public class Category {
      */
     public void setTerm(String term) {
         this.term = term;
+    }
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer, String namespace)
+            throws SAXException {
+        writer.startElement(namespace, "category");
+
+        if (getLabel() != null) {
+            writer.dataElement(namespace, "label", getLabel());
+        }
+
+        if (getScheme() != null && getScheme().toString() != null) {
+            writer.dataElement(namespace, "scheme", getScheme().toString());
+        }
+
+        if (getTerm() != null) {
+            writer.dataElement(namespace, "term", getTerm());
+        }
+
+        writer.endElement(namespace, "category");
     }
 
 }

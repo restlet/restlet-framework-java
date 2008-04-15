@@ -19,6 +19,9 @@
 package org.restlet.ext.atom;
 
 import org.restlet.data.Reference;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Identifies the agent used to generate a feed, for debugging and other
@@ -27,14 +30,15 @@ import org.restlet.data.Reference;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Generator {
-    /** Reference of the generating agent. */
-    private volatile Reference uri;
-
-    /** Version of the generationg agent. */
-    private volatile String version;
 
     /** Human-readable name for the generating agent. */
     private volatile String name;
+
+    /** Reference of the generating agent. */
+    private volatile Reference uri;
+
+    /** Version of the generating agent. */
+    private volatile String version;
 
     /**
      * Constructor.
@@ -46,12 +50,40 @@ public class Generator {
     }
 
     /**
+     * Returns the human-readable name for the generating agent.
+     * 
+     * @return The human-readable name for the generating agent.
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
      * Returns the reference of the generating agent.
      * 
      * @return The reference of the generating agent.
      */
     public Reference getUri() {
         return this.uri;
+    }
+
+    /**
+     * Returns the version of the generating agent.
+     * 
+     * @return The version of the generating agent.
+     */
+    public String getVersion() {
+        return this.version;
+    }
+
+    /**
+     * Sets the human-readable name for the generating agent.
+     * 
+     * @param name
+     *                The human-readable name for the generating agent.
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -65,15 +97,6 @@ public class Generator {
     }
 
     /**
-     * Returns the version of the generating agent.
-     * 
-     * @return The version of the generating agent.
-     */
-    public String getVersion() {
-        return this.version;
-    }
-
-    /**
      * Sets the version of the generating agent.
      * 
      * @param version
@@ -84,22 +107,33 @@ public class Generator {
     }
 
     /**
-     * Returns the human-readable name for the generating agent.
+     * Writes the current object as an XML element using the given SAX writer.
      * 
-     * @return The human-readable name for the generating agent.
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @throws SAXException
      */
-    public String getName() {
-        return this.name;
-    }
+    public void writeElement(XmlWriter writer, String namespace)
+            throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
 
-    /**
-     * Sets the human-readable name for the generating agent.
-     * 
-     * @param name
-     *                The human-readable name for the generating agent.
-     */
-    public void setName(String name) {
-        this.name = name;
+        if (getUri() != null && getUri().toString() != null) {
+            attributes.addAttribute("", "uri", null, "atomUri", getUri()
+                    .toString());
+        }
+
+        if (getVersion() != null) {
+            attributes.addAttribute("", "version", null, "text", getVersion());
+        }
+
+        if (getName() != null) {
+            writer.dataElement(namespace, "generator", null, attributes,
+                    getName());
+        } else {
+            writer.emptyElement(namespace, "generator", null, attributes);
+        }
     }
 
 }

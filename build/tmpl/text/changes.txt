@@ -33,6 +33,9 @@ Changes log
           variables updated by component and applications when they
           handle a request/response couple. Suggested by Stephan Koops.  
     - NRE and Extension Enhancements
+        - Atom extension is now able to write Feed and Service XML
+          documents and not just reading/parsing them. This can be used
+          to return Atom feeds as representations.
     - Misc
     	- Updated Grizzly to 1.7.3.
     	- Improved logging consistency.

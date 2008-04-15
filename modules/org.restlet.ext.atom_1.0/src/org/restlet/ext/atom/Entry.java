@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.restlet.util.DateUtils;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
 
 /**
  * Represents an individual entry, acting as a component for metadata and data
@@ -32,6 +34,7 @@ import org.restlet.util.DateUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Entry {
+
     /** The authors of the entry. */
     private volatile List<Person> authors;
 
@@ -118,16 +121,6 @@ public class Entry {
     }
 
     /**
-     * Sets the content of the entry or links to it.
-     * 
-     * @param content
-     *                The content of the entry or links to it.
-     */
-    public void setContent(Content content) {
-        this.content = content;
-    }
-
-    /**
      * Returns the contributors to the entry.
      * 
      * @return The contributors to the entry.
@@ -145,28 +138,6 @@ public class Entry {
      */
     public String getId() {
         return this.id;
-    }
-
-    /**
-     * Sets the permanent, universally unique identifier for the entry.
-     * 
-     * @param id
-     *                The permanent, universally unique identifier for the
-     *                entry.
-     */
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    /**
-     * Returns the references from the entry to Web resources.
-     * 
-     * @return The references from the entry to Web resources.
-     */
-    public List<Link> getLinks() {
-        if (this.links == null)
-            this.links = new ArrayList<Link>();
-        return this.links;
     }
 
     /**
@@ -193,6 +164,17 @@ public class Entry {
     }
 
     /**
+     * Returns the references from the entry to Web resources.
+     * 
+     * @return The references from the entry to Web resources.
+     */
+    public List<Link> getLinks() {
+        if (this.links == null)
+            this.links = new ArrayList<Link>();
+        return this.links;
+    }
+
+    /**
      * Returns the moment associated with an event early in the life cycle of
      * the entry.
      * 
@@ -201,6 +183,76 @@ public class Entry {
      */
     public Date getPublished() {
         return this.published;
+    }
+
+    /**
+     * Returns the information about rights held in and over an entry.
+     * 
+     * @return The information about rights held in and over an entry.
+     */
+    public Text getRights() {
+        return this.rights;
+    }
+
+    /**
+     * Returns the source feed's metadata if the entry was copied from another
+     * feed.
+     * 
+     * @return The source feed's metadata if the entry was copied from another
+     *         feed.
+     */
+    public Source getSource() {
+        return this.source;
+    }
+
+    /**
+     * Returns the short summary, abstract, or excerpt of the entry.
+     * 
+     * @return The short summary, abstract, or excerpt of the entry.
+     */
+    public String getSummary() {
+        return this.summary;
+    }
+
+    /**
+     * Returns the human-readable title for the entry.
+     * 
+     * @return The human-readable title for the entry.
+     */
+    public Text getTitle() {
+        return this.title;
+    }
+
+    /**
+     * Returns the most recent moment when the entry was modified in a
+     * significant way.
+     * 
+     * @return The most recent moment when the entry was modified in a
+     *         significant way.
+     */
+    public Date getUpdated() {
+        return this.updated;
+    }
+
+    /**
+     * Sets the content of the entry or links to it.
+     * 
+     * @param content
+     *                The content of the entry or links to it.
+     */
+    public void setContent(Content content) {
+        this.content = content;
+    }
+
+    /**
+     * Sets the permanent, universally unique identifier for the entry.
+     * 
+     * @param id
+     *                The permanent, universally unique identifier for the
+     *                entry.
+     */
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
@@ -216,15 +268,6 @@ public class Entry {
     }
 
     /**
-     * Returns the information about rights held in and over an entry.
-     * 
-     * @return The information about rights held in and over an entry.
-     */
-    public Text getRights() {
-        return this.rights;
-    }
-
-    /**
      * Sets the information about rights held in and over an entry.
      * 
      * @param rights
@@ -232,17 +275,6 @@ public class Entry {
      */
     public void setRights(Text rights) {
         this.rights = rights;
-    }
-
-    /**
-     * Returns the source feed's metadata if the entry was copied from another
-     * feed.
-     * 
-     * @return The source feed's metadata if the entry was copied from another
-     *         feed.
-     */
-    public Source getSource() {
-        return this.source;
     }
 
     /**
@@ -258,15 +290,6 @@ public class Entry {
     }
 
     /**
-     * Returns the short summary, abstract, or excerpt of the entry.
-     * 
-     * @return The short summary, abstract, or excerpt of the entry.
-     */
-    public String getSummary() {
-        return this.summary;
-    }
-
-    /**
      * Sets the short summary, abstract, or excerpt of the entry.
      * 
      * @param summary
@@ -274,15 +297,6 @@ public class Entry {
      */
     public void setSummary(String summary) {
         this.summary = summary;
-    }
-
-    /**
-     * Returns the human-readable title for the entry.
-     * 
-     * @return The human-readable title for the entry.
-     */
-    public Text getTitle() {
-        return this.title;
     }
 
     /**
@@ -296,17 +310,6 @@ public class Entry {
     }
 
     /**
-     * Returns the most recent moment when the entry was modified in a
-     * significant way.
-     * 
-     * @return The most recent moment when the entry was modified in a
-     *         significant way.
-     */
-    public Date getUpdated() {
-        return this.updated;
-    }
-
-    /**
      * Sets the most recent moment when the entry was modified in a significant
      * way.
      * 
@@ -316,6 +319,78 @@ public class Entry {
      */
     public void setUpdated(Date updated) {
         this.updated = DateUtils.unmodifiable(updated);
+    }
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer, String namespace)
+            throws SAXException {
+        writer.startElement(namespace, "entry");
+
+        if (getAuthors() != null) {
+            for (Person person : getAuthors()) {
+                person.writeElement(writer, "author", namespace);
+            }
+        }
+
+        if (getCategories() != null) {
+            for (Category category : getCategories()) {
+                category.writeElement(writer, namespace);
+            }
+        }
+
+        if (getContent() != null) {
+            getContent().writeElement(writer, namespace);
+        }
+
+        if (getContributors() != null) {
+            for (Person person : getContributors()) {
+                person.writeElement(writer, "contributor", namespace);
+            }
+        }
+
+        if (getId() != null) {
+            writer.dataElement(namespace, "id", getId());
+        }
+
+        if (getLinks() != null) {
+            for (Link link : getLinks()) {
+                link.writeElement(writer, namespace);
+            }
+        }
+        if (getPublished() != null) {
+            Text.writeElement(writer, getPublished(), namespace, "published");
+        }
+
+        if (getRights() != null) {
+            getRights().writeElement(writer, namespace, "rights");
+        }
+
+        if (getSource() != null) {
+            getSource().writeElement(writer, namespace);
+        }
+
+        if (getSummary() != null) {
+            writer.dataElement(namespace, "summary", getSummary());
+        }
+
+        if (getTitle() != null) {
+            getTitle().writeElement(writer, namespace, "title");
+        }
+
+        if (getUpdated() != null) {
+            Text.writeElement(writer, getUpdated(), namespace, "updated");
+        }
+
+        writer.endElement(namespace, "entry");
+
     }
 
 }

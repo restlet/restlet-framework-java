@@ -24,6 +24,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
 
 /**
  * Atom Protocol collection, part of a workspace.
@@ -31,15 +33,6 @@ import org.restlet.resource.Representation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Collection {
-    /**
-     * The parent workspace.
-     */
-    private volatile Workspace workspace;
-
-    /**
-     * The title.
-     */
-    private volatile String title;
 
     /**
      * The hypertext reference.
@@ -50,6 +43,16 @@ public class Collection {
      * The type of members.
      */
     private volatile MemberType memberType;
+
+    /**
+     * The title.
+     */
+    private volatile String title;
+
+    /**
+     * The parent workspace.
+     */
+    private volatile Workspace workspace;
 
     /**
      * Constructor.
@@ -66,105 +69,6 @@ public class Collection {
         this.title = title;
         this.href = new Reference(href);
         this.memberType = null;
-    }
-
-    /**
-     * Returns the parent workspace.
-     * 
-     * @return The parent workspace.
-     */
-    public Workspace getWorkspace() {
-        return this.workspace;
-    }
-
-    /**
-     * Sets the parent workspace.
-     * 
-     * @param workspace
-     *                The parent workspace.
-     */
-    public void setWorkspace(Workspace workspace) {
-        this.workspace = workspace;
-    }
-
-    /**
-     * Returns the title.
-     * 
-     * @return The title.
-     */
-    public String getTitle() {
-        return this.title;
-    }
-
-    /**
-     * Sets the title.
-     * 
-     * @param title
-     *                The title.
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
-     * Returns the hypertext reference.
-     * 
-     * @return The hypertext reference.
-     */
-    public Reference getHref() {
-        return this.href;
-    }
-
-    /**
-     * Sets the hypertext reference.
-     * 
-     * @param href
-     *                The hypertext reference.
-     */
-    public void setHref(Reference href) {
-        this.href = href;
-    }
-
-    /**
-     * Returns the type of members.
-     * 
-     * @return The type of members.
-     */
-    public MemberType getMemberType() {
-        return this.memberType;
-    }
-
-    /**
-     * Sets the type of members.
-     * 
-     * @param memberType
-     *                The type of members.
-     */
-    public void setMemberType(MemberType memberType) {
-        this.memberType = memberType;
-    }
-
-    /**
-     * Posts a member to the collection resulting in the creation of a new
-     * resource.
-     * 
-     * @param member
-     *                The member representation to post.
-     * @return The reference of the new resource.
-     * @throws Exception
-     */
-    public Reference postMember(Representation member) throws Exception {
-        Request request = new Request(Method.POST, getHref(), member);
-        Response response = getWorkspace().getService().getClientDispatcher()
-                .handle(request);
-
-        if (response.getStatus().equals(Status.SUCCESS_CREATED)) {
-            return response.getLocationRef();
-        } else {
-            throw new Exception(
-                    "Couldn't post the member representation. Status returned: "
-                            + response.getStatus().getDescription());
-        }
     }
 
     /**
@@ -191,6 +95,142 @@ public class Collection {
                     "Couldn't get the feed representation. Status returned: "
                             + response.getStatus().getDescription());
         }
+    }
+
+    /**
+     * Returns the hypertext reference.
+     * 
+     * @return The hypertext reference.
+     */
+    public Reference getHref() {
+        return this.href;
+    }
+
+    /**
+     * Returns the type of members.
+     * 
+     * @return The type of members.
+     */
+    public MemberType getMemberType() {
+        return this.memberType;
+    }
+
+    /**
+     * Returns the title.
+     * 
+     * @return The title.
+     */
+    public String getTitle() {
+        return this.title;
+    }
+
+    /**
+     * Returns the parent workspace.
+     * 
+     * @return The parent workspace.
+     */
+    public Workspace getWorkspace() {
+        return this.workspace;
+    }
+
+    /**
+     * Posts a member to the collection resulting in the creation of a new
+     * resource.
+     * 
+     * @param member
+     *                The member representation to post.
+     * @return The reference of the new resource.
+     * @throws Exception
+     */
+    public Reference postMember(Representation member) throws Exception {
+        Request request = new Request(Method.POST, getHref(), member);
+        Response response = getWorkspace().getService().getClientDispatcher()
+                .handle(request);
+
+        if (response.getStatus().equals(Status.SUCCESS_CREATED)) {
+            return response.getLocationRef();
+        } else {
+            throw new Exception(
+                    "Couldn't post the member representation. Status returned: "
+                            + response.getStatus().getDescription());
+        }
+    }
+
+    /**
+     * Sets the hypertext reference.
+     * 
+     * @param href
+     *                The hypertext reference.
+     */
+    public void setHref(Reference href) {
+        this.href = href;
+    }
+
+    /**
+     * Sets the type of members.
+     * 
+     * @param memberType
+     *                The type of members.
+     */
+    public void setMemberType(MemberType memberType) {
+        this.memberType = memberType;
+    }
+
+    /**
+     * Sets the title.
+     * 
+     * @param title
+     *                The title.
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * Sets the parent workspace.
+     * 
+     * @param workspace
+     *                The parent workspace.
+     */
+    public void setWorkspace(Workspace workspace) {
+        this.workspace = workspace;
+    }
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer, String namespace)
+            throws SAXException {
+        writer.startElement(namespace, "collection");
+
+        if (getHref() != null && getHref().toString() != null) {
+            writer.dataElement(namespace, "href", getHref().toString());
+        }
+
+        if (getTitle() != null) {
+            writer.dataElement(namespace, "title", getTitle());
+        }
+
+        if (getMemberType() != null) {
+            // TODO ??
+            getMemberType().writeElement(writer, namespace);
+        }
+
+        try {
+            if (getFeed() != null) {
+                getFeed().writeElement(writer, namespace);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        writer.endElement(namespace, "collection");
     }
 
 }

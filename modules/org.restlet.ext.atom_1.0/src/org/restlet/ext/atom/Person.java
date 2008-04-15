@@ -19,6 +19,8 @@
 package org.restlet.ext.atom;
 
 import org.restlet.data.Reference;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
 
 /**
  * Element that describes a person, corporation, or similar entity (hereafter,
@@ -27,6 +29,12 @@ import org.restlet.data.Reference;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Person {
+
+    /**
+     * Email address associated with the person.
+     */
+    private volatile String email;
+
     /**
      * Human-readable name.
      */
@@ -38,9 +46,11 @@ public class Person {
     private volatile Reference uri;
 
     /**
-     * Email address associated with the person.
+     * Constructor.
      */
-    private volatile String email;
+    public Person() {
+        this(null, null, null);
+    }
 
     /**
      * Constructor.
@@ -59,10 +69,12 @@ public class Person {
     }
 
     /**
-     * Constructor.
+     * Returns the email address associated with the person.
+     * 
+     * @return The email address associated with the person.
      */
-    public Person() {
-        this(null, null, null);
+    public String getEmail() {
+        return this.email;
     }
 
     /**
@@ -84,12 +96,13 @@ public class Person {
     }
 
     /**
-     * Returns the email address associated with the person.
+     * Sets the email address.
      * 
-     * @return The email address associated with the person.
+     * @param email
+     *                The email address.
      */
-    public String getEmail() {
-        return this.email;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**
@@ -113,13 +126,31 @@ public class Person {
     }
 
     /**
-     * Sets the email address.
+     * Writes the current object as an XML element using the given SAX writer.
      * 
-     * @param email
-     *                The email address.
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @param localName
+     *                The local name of the element.
+     * @throws SAXException
      */
-    public void setEmail(String email) {
-        this.email = email;
+    public void writeElement(XmlWriter writer, String namespace,
+            String localName) throws SAXException {
+        writer.startElement(namespace, localName);
+        
+        if (getEmail() != null) {
+            writer.dataElement(namespace, "email", getEmail());
+        }
+        if (getName() != null) {
+            writer.dataElement(namespace, "name", getName());
+        }
+        if (getUri() != null && getUri().toString() != null) {
+            writer.dataElement(namespace, "uri", getUri().toString());
+        }
+
+        writer.endElement(namespace, localName);
     }
 
 }

@@ -178,7 +178,7 @@ public class Service extends SaxRepresentation {
         @Override
         public void startElement(String uri, String localName, String qName,
                 Attributes attrs) throws SAXException {
-            if (uri.equalsIgnoreCase(NAMESPACE)) {
+            if (uri.equalsIgnoreCase(APP_NAMESPACE)) {
                 if (localName.equalsIgnoreCase("service")) {
                     state = IN_SERVICE;
                 } else if (localName.equalsIgnoreCase("workspace")) {
@@ -204,7 +204,7 @@ public class Service extends SaxRepresentation {
     }
 
     /** Atom Publishing Protocol namespace. */
-    public static final String NAMESPACE = "http://www.w3.org/2007/app";
+    public static final String APP_NAMESPACE = "http://www.w3.org/2007/app";
 
     /**
      * The client HTTP dispatcher.
@@ -224,17 +224,6 @@ public class Service extends SaxRepresentation {
     /**
      * Constructor.
      * 
-     * @param clientDispatcher
-     *                The client HTTP dispatcher.
-     */
-    public Service(Uniform clientDispatcher) {
-        super(new MediaType("***"));
-        this.clientDispatcher = clientDispatcher;
-    }
-
-    /**
-     * Constructor.
-     * 
      * @param context
      *                The context from which the client dispatcher will be
      *                retrieved.
@@ -245,6 +234,42 @@ public class Service extends SaxRepresentation {
     public Service(Context context, String serviceUri) throws IOException {
         this(context.getClientDispatcher(), serviceUri, context
                 .getClientDispatcher().get(serviceUri).getEntity());
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param serviceUri
+     *                The service URI.
+     * @throws IOException
+     */
+    public Service(String serviceUri) throws IOException {
+        this(new Client(Protocol.HTTP), serviceUri);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param serviceUri
+     *                The service URI.
+     * @param xmlService
+     *                The XML introspection document.
+     * @throws IOException
+     */
+    public Service(String serviceUri, Representation xmlService)
+            throws IOException {
+        this(new Client(Protocol.HTTP), serviceUri, xmlService);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param clientDispatcher
+     *                The client HTTP dispatcher.
+     */
+    public Service(Uniform clientDispatcher) {
+        super(new MediaType("***"));
+        this.clientDispatcher = clientDispatcher;
     }
 
     /**
@@ -279,31 +304,6 @@ public class Service extends SaxRepresentation {
         this.clientDispatcher = clientDispatcher;
         this.reference = new Reference(serviceUri);
         parse(new ContentReader(this));
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param serviceUri
-     *                The service URI.
-     * @throws IOException
-     */
-    public Service(String serviceUri) throws IOException {
-        this(new Client(Protocol.HTTP), serviceUri);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param serviceUri
-     *                The service URI.
-     * @param xmlService
-     *                The XML introspection document.
-     * @throws IOException
-     */
-    public Service(String serviceUri, Representation xmlService)
-            throws IOException {
-        this(new Client(Protocol.HTTP), serviceUri, xmlService);
     }
 
     /**
@@ -405,16 +405,13 @@ public class Service extends SaxRepresentation {
             writer.setDataFormat(true);
             writer.setIndentStep(3);
             writer.startDocument();
-            writer.startElement(NAMESPACE, "service");
+            writer.startElement(APP_NAMESPACE, "service");
 
-            // for(Workspace ws : getWorkspaces())
-            // {
-            // writer.startElement(NAMESPACE, "workspace");
-            // // ...
-            // writer.endElement(NAMESPACE, "workspace");
-            // }
+            for (Workspace workspace : getWorkspaces()) {
+                workspace.writeElement(writer, APP_NAMESPACE);
+            }
 
-            writer.endElement(NAMESPACE, "service");
+            writer.endElement(APP_NAMESPACE, "service");
             writer.endDocument();
         } catch (SAXException se) {
             throw new IOException("Couldn't write the service representation: "

@@ -21,12 +21,21 @@ package org.restlet.ext.atom;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+
 /**
  * Workspace containing collections of members entries.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Workspace {
+
+    /**
+     * The list of collections.
+     */
+    private volatile List<Collection> collections;
+
     /**
      * The parent service.
      */
@@ -36,11 +45,6 @@ public class Workspace {
      * The title.
      */
     private volatile String title;
-
-    /**
-     * The list of collections.
-     */
-    private volatile List<Collection> collections;
 
     /**
      * Constructor.
@@ -66,12 +70,34 @@ public class Workspace {
     }
 
     /**
+     * Returns the list of collections.
+     * 
+     * @return The list of collections.
+     */
+    public List<Collection> getCollections() {
+        if (this.collections == null) {
+            this.collections = new ArrayList<Collection>();
+        }
+
+        return this.collections;
+    }
+
+    /**
      * Returns the parent service.
      * 
      * @return The parent service.
      */
     public Service getService() {
         return this.service;
+    }
+
+    /**
+     * Returns the title.
+     * 
+     * @return The title.
+     */
+    public String getTitle() {
+        return this.title;
     }
 
     /**
@@ -85,15 +111,6 @@ public class Workspace {
     }
 
     /**
-     * Returns the title.
-     * 
-     * @return The title.
-     */
-    public String getTitle() {
-        return this.title;
-    }
-
-    /**
      * Sets the title.
      * 
      * @param title
@@ -104,16 +121,27 @@ public class Workspace {
     }
 
     /**
-     * Returns the list of collections.
+     * Writes the current object as an XML element using the given SAX writer.
      * 
-     * @return The list of collections.
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @throws SAXException
      */
-    public List<Collection> getCollections() {
-        if (this.collections == null) {
-            this.collections = new ArrayList<Collection>();
+    public void writeElement(XmlWriter writer, String namespace)
+            throws SAXException {
+        writer.startElement(namespace, "workspace");
+
+        if (getTitle() != null) {
+            writer.dataElement(namespace, "title", getTitle());
         }
 
-        return this.collections;
+        for (Collection collection : getCollections()) {
+            collection.writeElement(writer, namespace);
+        }
+
+        writer.endElement(namespace, "workspace");
     }
 
 }

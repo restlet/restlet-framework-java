@@ -91,7 +91,7 @@ public enum Relation {
      * Parses a relation name into the equivalent enumeration item.
      * 
      * @param rel
-     *            The relation name to parse.
+     *                The relation name to parse.
      * @return The equivalent enumeration item.
      */
     public static Relation parse(String rel) {
@@ -124,4 +124,40 @@ public enum Relation {
         return result;
     }
 
+    /**
+     * Return a String object representing the specified Relation.
+     * 
+     * @param rel
+     *                The relation to be converted.
+     * @return The String representation of the argument.
+     */
+    public static String toString(Relation rel) {
+        String result = "alternate";
+
+        if (rel != null) {
+            if (rel.equals(ALTERNATE)) {
+                result = "alternate";
+            } else if (rel.equals(EDIT)) {
+                result = "edit";
+            } else if (rel.equals(ENCLOSURE)) {
+                result = "enclosure";
+            } else if (rel.equals(FIRST)) {
+                result = "first";
+            } else if (rel.equals(LAST)) {
+                result = "last";
+            } else if (rel.equals(NEXT)) {
+                result = "next";
+            } else if (rel.equals(PREVIOUS)) {
+                result = "previous";
+            } else if (rel.equals(RELATED)) {
+                result = "related";
+            } else if (rel.equals(SELF)) {
+                result = "self";
+            } else if (rel.equals(VIA)) {
+                result = "via";
+            }
+        }
+
+        return result;
+    }
 }

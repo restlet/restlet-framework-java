@@ -33,6 +33,7 @@ import org.restlet.util.DateUtils;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -42,338 +43,31 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Feed extends SaxRepresentation {
-    /** Atom Syndication Format namespace. */
-    public final static String ATOM_NAMESPACE = "http://www.w3.org/2005/Atom";
-
-    /** XHTML namespace. */
-    public final static String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
-
-    /** The authors of the feed. */
-    private volatile List<Person> authors;
-
-    /** The categories associated with the feed. */
-    private volatile List<Category> categories;
-
-    /** The contributors to the feed. */
-    private volatile List<Person> contributors;
-
-    /** The agent used to generate a feed. */
-    private volatile Generator generator;
-
-    /** Image that provides iconic visual identification for a feed. */
-    private volatile Reference icon;
-
-    /** Permanent, universally unique identifier for the feed. */
-    private volatile String id;
-
-    /** The references from the entry to Web resources. */
-    private volatile List<Link> links;
-
-    /** Image that provides visual identification for a feed. */
-    private volatile Reference logo;
-
-    /** Information about rights held in and over an entry. */
-    private volatile Text rights;
-
-    /** Short summary, abstract, or excerpt of an entry. */
-    private volatile Text subtitle;
-
-    /** The human-readable title for the entry. */
-    private volatile Text title;
-
-    /** Most recent moment when the entry was modified in a significant way. */
-    private volatile Date updated;
-
-    /**
-     * Individual entries, acting as a components for associated metadata and
-     * data.
-     */
-    private List<Entry> entries;
-
-    /**
-     * Constructor.
-     */
-    public Feed() {
-        super(MediaType.APPLICATION_ATOM_XML);
-        this.authors = null;
-        this.categories = null;
-        this.contributors = null;
-        this.generator = null;
-        this.icon = null;
-        this.id = null;
-        this.links = null;
-        this.logo = null;
-        this.rights = null;
-        this.subtitle = null;
-        this.title = null;
-        this.updated = null;
-        this.entries = null;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param xmlFeed
-     *                The XML feed document.
-     * @throws IOException
-     */
-    public Feed(Representation xmlFeed) throws IOException {
-        super(xmlFeed);
-        parse(new ContentReader(this));
-    }
-
-    /**
-     * Writes the representation to a XML writer.
-     * 
-     * @param writer
-     *                The XML writer to write to.
-     * @throws IOException
-     */
-    @Override
-    public void write(XmlWriter writer) throws IOException {
-        // TODO
-    }
-
-    /**
-     * Returns the authors of the entry.
-     * 
-     * @return The authors of the entry.
-     */
-    public List<Person> getAuthors() {
-        if (this.authors == null)
-            this.authors = new ArrayList<Person>();
-        return this.authors;
-    }
-
-    /**
-     * Returns the categories associated with the entry.
-     * 
-     * @return The categories associated with the entry.
-     */
-    public List<Category> getCategories() {
-        if (this.categories == null)
-            this.categories = new ArrayList<Category>();
-        return this.categories;
-    }
-
-    /**
-     * Returns the contributors to the entry.
-     * 
-     * @return The contributors to the entry.
-     */
-    public List<Person> getContributors() {
-        if (this.contributors == null)
-            this.contributors = new ArrayList<Person>();
-        return this.contributors;
-    }
-
-    /**
-     * Returns the agent used to generate a feed.
-     * 
-     * @return The agent used to generate a feed.
-     */
-    public Generator getGenerator() {
-        return this.generator;
-    }
-
-    /**
-     * Sets the agent used to generate a feed.
-     * 
-     * @param generator
-     *                The agent used to generate a feed.
-     */
-    public void setGenerator(Generator generator) {
-        this.generator = generator;
-    }
-
-    /**
-     * Returns the image that provides iconic visual identification for a feed.
-     * 
-     * @return The image that provides iconic visual identification for a feed.
-     */
-    public Reference getIcon() {
-        return this.icon;
-    }
-
-    /**
-     * Sets the image that provides iconic visual identification for a feed.
-     * 
-     * @param icon
-     *                The image that provides iconic visual identification for a
-     *                feed.
-     */
-    public void setIcon(Reference icon) {
-        this.icon = icon;
-    }
-
-    /**
-     * Returns the permanent, universally unique identifier for the entry.
-     * 
-     * @return The permanent, universally unique identifier for the entry.
-     */
-    public String getId() {
-        return this.id;
-    }
-
-    /**
-     * Sets the permanent, universally unique identifier for the entry.
-     * 
-     * @param id
-     *                The permanent, universally unique identifier for the
-     *                entry.
-     */
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    /**
-     * Returns the references from the entry to Web resources.
-     * 
-     * @return The references from the entry to Web resources.
-     */
-    public List<Link> getLinks() {
-        if (this.links == null)
-            this.links = new ArrayList<Link>();
-        return this.links;
-    }
-
-    /**
-     * Returns the image that provides visual identification for a feed.
-     * 
-     * @return The image that provides visual identification for a feed.
-     */
-    public Reference getLogo() {
-        return this.logo;
-    }
-
-    /**
-     * Sets the image that provides visual identification for a feed.
-     * 
-     * @param logo
-     *                The image that provides visual identification for a feed.
-     */
-    public void setLogo(Reference logo) {
-        this.logo = logo;
-    }
-
-    /**
-     * Returns the information about rights held in and over an entry.
-     * 
-     * @return The information about rights held in and over an entry.
-     */
-    public Text getRights() {
-        return this.rights;
-    }
-
-    /**
-     * Sets the information about rights held in and over an entry.
-     * 
-     * @param rights
-     *                The information about rights held in and over an entry.
-     */
-    public void setRights(Text rights) {
-        this.rights = rights;
-    }
-
-    /**
-     * Returns the short summary, abstract, or excerpt of an entry.
-     * 
-     * @return The short summary, abstract, or excerpt of an entry.
-     */
-    public Text getSubtitle() {
-        return this.subtitle;
-    }
-
-    /**
-     * Sets the short summary, abstract, or excerpt of an entry.
-     * 
-     * @param subtitle
-     *                The short summary, abstract, or excerpt of an entry.
-     */
-    public void setSubtitle(Text subtitle) {
-        this.subtitle = subtitle;
-    }
-
-    /**
-     * Returns the human-readable title for the entry.
-     * 
-     * @return The human-readable title for the entry.
-     */
-    public Text getTitle() {
-        return this.title;
-    }
-
-    /**
-     * Sets the human-readable title for the entry.
-     * 
-     * @param title
-     *                The human-readable title for the entry.
-     */
-    public void setTitle(Text title) {
-        this.title = title;
-    }
-
-    /**
-     * Returns the most recent moment when the entry was modified in a
-     * significant way.
-     * 
-     * @return The most recent moment when the entry was modified in a
-     *         significant way.
-     */
-    public Date getUpdated() {
-        return this.updated;
-    }
-
-    /**
-     * Sets the most recent moment when the entry was modified in a significant
-     * way.
-     * 
-     * @param updated
-     *                The most recent moment when the entry was modified in a
-     *                significant way.
-     */
-    public void setUpdated(Date updated) {
-        this.updated = DateUtils.unmodifiable(updated);
-    }
-
-    /**
-     * Returns the individual entries, acting as a components for associated
-     * metadata and data.
-     * 
-     * @return The individual entries, acting as a components for associated
-     *         metadata and data.
-     */
-    public List<Entry> getEntries() {
-        if (this.entries == null)
-            this.entries = new ArrayList<Entry>();
-        return this.entries;
-    }
-
     // -------------------
     // Content reader part
     // -------------------
     private static class ContentReader extends DefaultHandler {
         public enum State {
-            NONE, FEED, FEED_AUTHOR, FEED_AUTHOR_NAME, FEED_AUTHOR_URI, FEED_AUTHOR_EMAIL, FEED_CATEGORY, FEED_CONTRIBUTOR, FEED_CONTRIBUTOR_NAME, FEED_CONTRIBUTOR_URI, FEED_CONTRIBUTOR_EMAIL, FEED_GENERATOR, FEED_ICON, FEED_ID, FEED_LINK, FEED_LOGO, FEED_RIGHTS, FEED_SUBTITLE, FEED_TITLE, FEED_UPDATED, FEED_ENTRY, FEED_ENTRY_AUTHOR, FEED_ENTRY_AUTHOR_NAME, FEED_ENTRY_AUTHOR_URI, FEED_ENTRY_AUTHOR_EMAIL, FEED_ENTRY_CATEGORY, FEED_ENTRY_CONTENT, FEED_ENTRY_CONTRIBUTOR, FEED_ENTRY_ID, FEED_ENTRY_LINK, FEED_ENTRY_PUBLISHED, FEED_ENTRY_RIGHTS, FEED_ENTRY_SOURCE, FEED_ENTRY_SOURCE_AUTHOR, FEED_ENTRY_SOURCE_AUTHOR_NAME, FEED_ENTRY_SOURCE_AUTHOR_URI, FEED_ENTRY_SOURCE_AUTHOR_EMAIL, FEED_ENTRY_SOURCE_CATEGORY, FEED_ENTRY_SOURCE_CONTRIBUTOR, FEED_ENTRY_SOURCE_GENERATOR, FEED_ENTRY_SOURCE_ICON, FEED_ENTRY_SOURCE_ID, FEED_ENTRY_SOURCE_LINK, FEED_ENTRY_SOURCE_LOGO, FEED_ENTRY_SOURCE_RIGHTS, FEED_ENTRY_SOURCE_SUBTITLE, FEED_ENTRY_SOURCE_TITLE, FEED_ENTRY_SOURCE_UPDATED, FEED_ENTRY_SUMMARY, FEED_ENTRY_TITLE, FEED_ENTRY_UPDATED
+            FEED, FEED_AUTHOR, FEED_AUTHOR_EMAIL, FEED_AUTHOR_NAME, FEED_AUTHOR_URI, FEED_CATEGORY, FEED_CONTRIBUTOR, FEED_CONTRIBUTOR_EMAIL, FEED_CONTRIBUTOR_NAME, FEED_CONTRIBUTOR_URI, FEED_ENTRY, FEED_ENTRY_AUTHOR, FEED_ENTRY_AUTHOR_EMAIL, FEED_ENTRY_AUTHOR_NAME, FEED_ENTRY_AUTHOR_URI, FEED_ENTRY_CATEGORY, FEED_ENTRY_CONTENT, FEED_ENTRY_CONTRIBUTOR, FEED_ENTRY_ID, FEED_ENTRY_LINK, FEED_ENTRY_PUBLISHED, FEED_ENTRY_RIGHTS, FEED_ENTRY_SOURCE, FEED_ENTRY_SOURCE_AUTHOR, FEED_ENTRY_SOURCE_AUTHOR_EMAIL, FEED_ENTRY_SOURCE_AUTHOR_NAME, FEED_ENTRY_SOURCE_AUTHOR_URI, FEED_ENTRY_SOURCE_CATEGORY, FEED_ENTRY_SOURCE_CONTRIBUTOR, FEED_ENTRY_SOURCE_GENERATOR, FEED_ENTRY_SOURCE_ICON, FEED_ENTRY_SOURCE_ID, FEED_ENTRY_SOURCE_LINK, FEED_ENTRY_SOURCE_LOGO, FEED_ENTRY_SOURCE_RIGHTS, FEED_ENTRY_SOURCE_SUBTITLE, FEED_ENTRY_SOURCE_TITLE, FEED_ENTRY_SOURCE_UPDATED, FEED_ENTRY_SUMMARY, FEED_ENTRY_TITLE, FEED_ENTRY_UPDATED, FEED_GENERATOR, FEED_ICON, FEED_ID, FEED_LINK, FEED_LOGO, FEED_RIGHTS, FEED_SUBTITLE, FEED_TITLE, FEED_UPDATED, NONE
         }
 
-        private State state;
+        private StringBuilder contentBuffer;
 
-        private Feed currentFeed;
+        private Category currentCategory;
+
+        private Date currentDate;
 
         private Entry currentEntry;
 
-        private Text currentText;
-
-        private Date currentDate;
+        private Feed currentFeed;
 
         private Link currentLink;
 
         private Person currentPerson;
 
-        private Category currentCategory;
+        private Text currentText;
 
-        private StringBuilder contentBuffer;
+        private State state;
 
         public ContentReader(Feed feed) {
             this.state = State.NONE;
@@ -385,6 +79,194 @@ public class Feed extends SaxRepresentation {
             this.currentPerson = null;
             this.contentBuffer = null;
             this.currentCategory = null;
+        }
+
+        /**
+         * Receive notification of character data.
+         * 
+         * @param ch
+         *                The characters from the XML document.
+         * @param start
+         *                The start position in the array.
+         * @param length
+         *                The number of characters to read from the array.
+         */
+        @Override
+        public void characters(char[] ch, int start, int length)
+                throws SAXException {
+            contentBuffer.append(ch, start, length);
+        }
+
+        /**
+         * Receive notification of the end of a document.
+         */
+        @Override
+        public void endDocument() throws SAXException {
+            this.state = State.NONE;
+            this.currentEntry = null;
+            this.contentBuffer = null;
+        }
+
+        /**
+         * Receive notification of the end of an element.
+         * 
+         * @param uri
+         *                The Namespace URI, or the empty string if the element
+         *                has no Namespace URI or if Namespace processing is not
+         *                being performed.
+         * @param localName
+         *                The local name (without prefix), or the empty string
+         *                if Namespace processing is not being performed.
+         * @param qName
+         *                The qualified XML name (with prefix), or the empty
+         *                string if qualified names are not available.
+         */
+        @Override
+        public void endElement(String uri, String localName, String qName)
+                throws SAXException {
+            if (currentText != null) {
+                currentText.setContent(contentBuffer.toString());
+            }
+
+            if (currentDate != null) {
+                String formattedDate = contentBuffer.toString();
+                Date parsedDate = DateUtils.parse(formattedDate,
+                        DateUtils.FORMAT_RFC_3339);
+
+                if (parsedDate != null) {
+                    currentDate.setTime(parsedDate.getTime());
+                } else {
+                    currentDate = null;
+                }
+            }
+
+            if (uri.equalsIgnoreCase(ATOM_NAMESPACE)) {
+                if (localName.equals("feed")) {
+                    state = State.NONE;
+                } else if (localName.equals("title")) {
+                    if (state == State.FEED_TITLE) {
+                        currentFeed.setTitle(currentText);
+                        state = State.FEED;
+                    } else if (state == State.FEED_ENTRY_TITLE) {
+                        currentEntry.setTitle(currentText);
+                        state = State.FEED_ENTRY;
+                    } else if (state == State.FEED_ENTRY_SOURCE_TITLE) {
+                        currentEntry.getSource().setTitle(currentText);
+                        state = State.FEED_ENTRY_SOURCE;
+                    }
+                } else if (localName.equals("updated")) {
+                    if (state == State.FEED_UPDATED) {
+                        currentFeed.setUpdated(currentDate);
+                        state = State.FEED;
+                    } else if (state == State.FEED_ENTRY_UPDATED) {
+                        currentEntry.setUpdated(currentDate);
+                        state = State.FEED_ENTRY;
+                    } else if (state == State.FEED_ENTRY_SOURCE_UPDATED) {
+                        currentEntry.getSource().setUpdated(currentDate);
+                        state = State.FEED_ENTRY_SOURCE;
+                    }
+                } else if (localName.equals("author")) {
+                    if (state == State.FEED_AUTHOR) {
+                        currentFeed.getAuthors().add(currentPerson);
+                        state = State.FEED;
+                    } else if (state == State.FEED_ENTRY_AUTHOR) {
+                        currentEntry.getAuthors().add(currentPerson);
+                        state = State.FEED_ENTRY;
+                    } else if (state == State.FEED_ENTRY_SOURCE_AUTHOR) {
+                        currentEntry.getSource().getAuthors()
+                                .add(currentPerson);
+                        state = State.FEED_ENTRY_SOURCE;
+                    }
+                } else if (localName.equals("name")) {
+                    currentPerson.setName(contentBuffer.toString());
+
+                    if (state == State.FEED_AUTHOR_NAME) {
+                        state = State.FEED_AUTHOR;
+                    } else if (state == State.FEED_ENTRY_AUTHOR_NAME) {
+                        state = State.FEED_ENTRY_AUTHOR;
+                    } else if (state == State.FEED_ENTRY_SOURCE_AUTHOR_NAME) {
+                        state = State.FEED_ENTRY_SOURCE_AUTHOR;
+                    }
+                } else if (localName.equals("id")) {
+                    if (state == State.FEED_ID) {
+                        currentFeed.setId(contentBuffer.toString());
+                        state = State.FEED;
+                    } else if (state == State.FEED_ENTRY_ID) {
+                        currentEntry.setId(contentBuffer.toString());
+                        state = State.FEED_ENTRY;
+                    } else if (state == State.FEED_ENTRY_SOURCE_ID) {
+                        currentEntry.getSource()
+                                .setId(contentBuffer.toString());
+                        state = State.FEED_ENTRY_SOURCE;
+                    }
+                } else if (localName.equals("link")) {
+                    if (state == State.FEED_LINK) {
+                        currentFeed.getLinks().add(currentLink);
+                        state = State.FEED;
+                    } else if (state == State.FEED_ENTRY_LINK) {
+                        currentEntry.getLinks().add(currentLink);
+                        state = State.FEED_ENTRY;
+                    } else if (state == State.FEED_ENTRY_SOURCE_LINK) {
+                        currentEntry.getSource().getLinks().add(currentLink);
+                        state = State.FEED_ENTRY_SOURCE;
+                    }
+                } else if (localName.equalsIgnoreCase("entry")) {
+                    if (state == State.FEED_ENTRY) {
+                        currentFeed.getEntries().add(currentEntry);
+                        state = State.FEED;
+                    }
+                } else if (localName.equals("category")) {
+                    if (state == State.FEED_CATEGORY) {
+                        currentFeed.getCategories().add(currentCategory);
+                        state = State.FEED;
+                    } else if (state == State.FEED_ENTRY_CATEGORY) {
+                        currentEntry.getCategories().add(currentCategory);
+                        state = State.FEED_ENTRY;
+                    } else if (state == State.FEED_ENTRY_SOURCE_CATEGORY) {
+                        currentEntry.getSource().getCategories().add(
+                                currentCategory);
+                        state = State.FEED_ENTRY_SOURCE;
+                    }
+                } else if (localName.equalsIgnoreCase("content")) {
+                    if (state == State.FEED_ENTRY_CONTENT) {
+                        if (currentEntry.getContent().isInline()) {
+                            StringRepresentation sr = (StringRepresentation) currentEntry
+                                    .getContent().getInlineContent();
+                            sr.setText(contentBuffer.toString());
+                        }
+
+                        state = State.FEED_ENTRY;
+                    }
+                }
+            }
+
+            currentText = null;
+            currentDate = null;
+        }
+
+        /**
+         * Returns a media type from an Atom type attribute.
+         * 
+         * @param type
+         *                The Atom type attribute.
+         * @return The media type.
+         */
+        private MediaType getMediaType(String type) {
+            MediaType result = null;
+
+            if (type == null) {
+                // No type defined
+            } else if (type.equals("text")) {
+                result = MediaType.TEXT_PLAIN;
+            } else if (type.equals("html")) {
+                result = MediaType.TEXT_HTML;
+            } else if (type.equals("xhtml")) {
+                result = MediaType.APPLICATION_XHTML_XML;
+            } else {
+                result = new MediaType(type);
+            }
+
+            return result;
         }
 
         /**
@@ -544,194 +426,400 @@ public class Feed extends SaxRepresentation {
         public void startTextElement(Attributes attrs) {
             currentText = new Text(getMediaType(attrs.getValue("", "type")));
         }
+    }
 
-        /**
-         * Returns a media type from an Atom type attribute.
-         * 
-         * @param type
-         *                The Atom type attribute.
-         * @return The media type.
-         */
-        private MediaType getMediaType(String type) {
-            MediaType result = null;
+    /** Atom Syndication Format namespace. */
+    public final static String ATOM_NAMESPACE = "http://www.w3.org/2005/Atom";
 
-            if (type == null) {
-                // No type defined
-            } else if (type.equals("text")) {
-                result = MediaType.TEXT_PLAIN;
-            } else if (type.equals("html")) {
-                result = MediaType.TEXT_HTML;
-            } else if (type.equals("xhtml")) {
-                result = MediaType.APPLICATION_XHTML_XML;
-            } else {
-                result = new MediaType(type);
+    /** XHTML namespace. */
+    public final static String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
+
+    /** The authors of the feed. */
+    private volatile List<Person> authors;
+
+    /** The categories associated with the feed. */
+    private volatile List<Category> categories;
+
+    /** The contributors to the feed. */
+    private volatile List<Person> contributors;
+
+    /**
+     * Individual entries, acting as a components for associated metadata and
+     * data.
+     */
+    private List<Entry> entries;
+
+    /** The agent used to generate a feed. */
+    private volatile Generator generator;
+
+    /** Image that provides iconic visual identification for a feed. */
+    private volatile Reference icon;
+
+    /** Permanent, universally unique identifier for the feed. */
+    private volatile String id;
+
+    /** The references from the entry to Web resources. */
+    private volatile List<Link> links;
+
+    /** Image that provides visual identification for a feed. */
+    private volatile Reference logo;
+
+    /** Information about rights held in and over an entry. */
+    private volatile Text rights;
+
+    /** Short summary, abstract, or excerpt of an entry. */
+    private volatile Text subtitle;
+
+    /** The human-readable title for the entry. */
+    private volatile Text title;
+
+    /** Most recent moment when the entry was modified in a significant way. */
+    private volatile Date updated;
+
+    /**
+     * Constructor.
+     */
+    public Feed() {
+        super(MediaType.APPLICATION_ATOM_XML);
+        this.authors = null;
+        this.categories = null;
+        this.contributors = null;
+        this.generator = null;
+        this.icon = null;
+        this.id = null;
+        this.links = null;
+        this.logo = null;
+        this.rights = null;
+        this.subtitle = null;
+        this.title = null;
+        this.updated = null;
+        this.entries = null;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param xmlFeed
+     *                The XML feed document.
+     * @throws IOException
+     */
+    public Feed(Representation xmlFeed) throws IOException {
+        super(xmlFeed);
+        parse(new ContentReader(this));
+    }
+
+    /**
+     * Returns the authors of the entry.
+     * 
+     * @return The authors of the entry.
+     */
+    public List<Person> getAuthors() {
+        if (this.authors == null)
+            this.authors = new ArrayList<Person>();
+        return this.authors;
+    }
+
+    /**
+     * Returns the categories associated with the entry.
+     * 
+     * @return The categories associated with the entry.
+     */
+    public List<Category> getCategories() {
+        if (this.categories == null)
+            this.categories = new ArrayList<Category>();
+        return this.categories;
+    }
+
+    /**
+     * Returns the contributors to the entry.
+     * 
+     * @return The contributors to the entry.
+     */
+    public List<Person> getContributors() {
+        if (this.contributors == null)
+            this.contributors = new ArrayList<Person>();
+        return this.contributors;
+    }
+
+    /**
+     * Returns the individual entries, acting as a components for associated
+     * metadata and data.
+     * 
+     * @return The individual entries, acting as a components for associated
+     *         metadata and data.
+     */
+    public List<Entry> getEntries() {
+        if (this.entries == null)
+            this.entries = new ArrayList<Entry>();
+        return this.entries;
+    }
+
+    /**
+     * Returns the agent used to generate a feed.
+     * 
+     * @return The agent used to generate a feed.
+     */
+    public Generator getGenerator() {
+        return this.generator;
+    }
+
+    /**
+     * Returns the image that provides iconic visual identification for a feed.
+     * 
+     * @return The image that provides iconic visual identification for a feed.
+     */
+    public Reference getIcon() {
+        return this.icon;
+    }
+
+    /**
+     * Returns the permanent, universally unique identifier for the entry.
+     * 
+     * @return The permanent, universally unique identifier for the entry.
+     */
+    public String getId() {
+        return this.id;
+    }
+
+    /**
+     * Returns the references from the entry to Web resources.
+     * 
+     * @return The references from the entry to Web resources.
+     */
+    public List<Link> getLinks() {
+        if (this.links == null)
+            this.links = new ArrayList<Link>();
+        return this.links;
+    }
+
+    /**
+     * Returns the image that provides visual identification for a feed.
+     * 
+     * @return The image that provides visual identification for a feed.
+     */
+    public Reference getLogo() {
+        return this.logo;
+    }
+
+    /**
+     * Returns the information about rights held in and over an entry.
+     * 
+     * @return The information about rights held in and over an entry.
+     */
+    public Text getRights() {
+        return this.rights;
+    }
+
+    /**
+     * Returns the short summary, abstract, or excerpt of an entry.
+     * 
+     * @return The short summary, abstract, or excerpt of an entry.
+     */
+    public Text getSubtitle() {
+        return this.subtitle;
+    }
+
+    /**
+     * Returns the human-readable title for the entry.
+     * 
+     * @return The human-readable title for the entry.
+     */
+    public Text getTitle() {
+        return this.title;
+    }
+
+    /**
+     * Returns the most recent moment when the entry was modified in a
+     * significant way.
+     * 
+     * @return The most recent moment when the entry was modified in a
+     *         significant way.
+     */
+    public Date getUpdated() {
+        return this.updated;
+    }
+
+    /**
+     * Sets the agent used to generate a feed.
+     * 
+     * @param generator
+     *                The agent used to generate a feed.
+     */
+    public void setGenerator(Generator generator) {
+        this.generator = generator;
+    }
+
+    /**
+     * Sets the image that provides iconic visual identification for a feed.
+     * 
+     * @param icon
+     *                The image that provides iconic visual identification for a
+     *                feed.
+     */
+    public void setIcon(Reference icon) {
+        this.icon = icon;
+    }
+
+    /**
+     * Sets the permanent, universally unique identifier for the entry.
+     * 
+     * @param id
+     *                The permanent, universally unique identifier for the
+     *                entry.
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * Sets the image that provides visual identification for a feed.
+     * 
+     * @param logo
+     *                The image that provides visual identification for a feed.
+     */
+    public void setLogo(Reference logo) {
+        this.logo = logo;
+    }
+
+    /**
+     * Sets the information about rights held in and over an entry.
+     * 
+     * @param rights
+     *                The information about rights held in and over an entry.
+     */
+    public void setRights(Text rights) {
+        this.rights = rights;
+    }
+
+    /**
+     * Sets the short summary, abstract, or excerpt of an entry.
+     * 
+     * @param subtitle
+     *                The short summary, abstract, or excerpt of an entry.
+     */
+    public void setSubtitle(Text subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    /**
+     * Sets the human-readable title for the entry.
+     * 
+     * @param title
+     *                The human-readable title for the entry.
+     */
+    public void setTitle(Text title) {
+        this.title = title;
+    }
+
+    /**
+     * Sets the most recent moment when the entry was modified in a significant
+     * way.
+     * 
+     * @param updated
+     *                The most recent moment when the entry was modified in a
+     *                significant way.
+     */
+    public void setUpdated(Date updated) {
+        this.updated = DateUtils.unmodifiable(updated);
+    }
+
+    /**
+     * Writes the representation to a XML writer.
+     * 
+     * @param writer
+     *                The XML writer to write to.
+     * @throws IOException
+     */
+    @Override
+    public void write(XmlWriter writer) throws IOException {
+        try {
+            writer.setPrefix(ATOM_NAMESPACE, "atom");
+            writer.setDataFormat(true);
+            writer.setIndentStep(3);
+            writer.startDocument();
+            writeElement(writer, ATOM_NAMESPACE);
+            writer.endDocument();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer, String namespace)
+            throws SAXException {
+        writer.startElement(namespace, "feed");
+
+        if (getAuthors() != null) {
+            for (Person person : getAuthors()) {
+                person.writeElement(writer, "author", namespace);
             }
-
-            return result;
         }
 
-        /**
-         * Receive notification of character data.
-         * 
-         * @param ch
-         *                The characters from the XML document.
-         * @param start
-         *                The start position in the array.
-         * @param length
-         *                The number of characters to read from the array.
-         */
-        @Override
-        public void characters(char[] ch, int start, int length)
-                throws SAXException {
-            contentBuffer.append(ch, start, length);
+        if (getCategories() != null) {
+            for (Category category : getCategories()) {
+                category.writeElement(writer, namespace);
+            }
+        }
+        if (getContributors() != null) {
+            for (Person person : getContributors()) {
+                person.writeElement(writer, "contributor", namespace);
+            }
         }
 
-        /**
-         * Receive notification of the end of an element.
-         * 
-         * @param uri
-         *                The Namespace URI, or the empty string if the element
-         *                has no Namespace URI or if Namespace processing is not
-         *                being performed.
-         * @param localName
-         *                The local name (without prefix), or the empty string
-         *                if Namespace processing is not being performed.
-         * @param qName
-         *                The qualified XML name (with prefix), or the empty
-         *                string if qualified names are not available.
-         */
-        @Override
-        public void endElement(String uri, String localName, String qName)
-                throws SAXException {
-            if (currentText != null) {
-                currentText.setContent(contentBuffer.toString());
+        if (getEntries() != null) {
+            for (Entry entry : getEntries()) {
+                entry.writeElement(writer, namespace);
             }
-
-            if (currentDate != null) {
-                String formattedDate = contentBuffer.toString();
-                Date parsedDate = DateUtils.parse(formattedDate,
-                        DateUtils.FORMAT_RFC_3339);
-
-                if (parsedDate != null) {
-                    currentDate.setTime(parsedDate.getTime());
-                } else {
-                    currentDate = null;
-                }
-            }
-
-            if (uri.equalsIgnoreCase(ATOM_NAMESPACE)) {
-                if (localName.equals("feed")) {
-                    state = State.NONE;
-                } else if (localName.equals("title")) {
-                    if (state == State.FEED_TITLE) {
-                        currentFeed.setTitle(currentText);
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_TITLE) {
-                        currentEntry.setTitle(currentText);
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_TITLE) {
-                        currentEntry.getSource().setTitle(currentText);
-                        state = State.FEED_ENTRY_SOURCE;
-                    }
-                } else if (localName.equals("updated")) {
-                    if (state == State.FEED_UPDATED) {
-                        currentFeed.setUpdated(currentDate);
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_UPDATED) {
-                        currentEntry.setUpdated(currentDate);
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_UPDATED) {
-                        currentEntry.getSource().setUpdated(currentDate);
-                        state = State.FEED_ENTRY_SOURCE;
-                    }
-                } else if (localName.equals("author")) {
-                    if (state == State.FEED_AUTHOR) {
-                        currentFeed.getAuthors().add(currentPerson);
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_AUTHOR) {
-                        currentEntry.getAuthors().add(currentPerson);
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_AUTHOR) {
-                        currentEntry.getSource().getAuthors()
-                                .add(currentPerson);
-                        state = State.FEED_ENTRY_SOURCE;
-                    }
-                } else if (localName.equals("name")) {
-                    currentPerson.setName(contentBuffer.toString());
-
-                    if (state == State.FEED_AUTHOR_NAME) {
-                        state = State.FEED_AUTHOR;
-                    } else if (state == State.FEED_ENTRY_AUTHOR_NAME) {
-                        state = State.FEED_ENTRY_AUTHOR;
-                    } else if (state == State.FEED_ENTRY_SOURCE_AUTHOR_NAME) {
-                        state = State.FEED_ENTRY_SOURCE_AUTHOR;
-                    }
-                } else if (localName.equals("id")) {
-                    if (state == State.FEED_ID) {
-                        currentFeed.setId(contentBuffer.toString());
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_ID) {
-                        currentEntry.setId(contentBuffer.toString());
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_ID) {
-                        currentEntry.getSource()
-                                .setId(contentBuffer.toString());
-                        state = State.FEED_ENTRY_SOURCE;
-                    }
-                } else if (localName.equals("link")) {
-                    if (state == State.FEED_LINK) {
-                        currentFeed.getLinks().add(currentLink);
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_LINK) {
-                        currentEntry.getLinks().add(currentLink);
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_LINK) {
-                        currentEntry.getSource().getLinks().add(currentLink);
-                        state = State.FEED_ENTRY_SOURCE;
-                    }
-                } else if (localName.equalsIgnoreCase("entry")) {
-                    if (state == State.FEED_ENTRY) {
-                        currentFeed.getEntries().add(currentEntry);
-                        state = State.FEED;
-                    }
-                } else if (localName.equals("category")) {
-                    if (state == State.FEED_CATEGORY) {
-                        currentFeed.getCategories().add(currentCategory);
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_CATEGORY) {
-                        currentEntry.getCategories().add(currentCategory);
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_CATEGORY) {
-                        currentEntry.getSource().getCategories().add(
-                                currentCategory);
-                        state = State.FEED_ENTRY_SOURCE;
-                    }
-                } else if (localName.equalsIgnoreCase("content")) {
-                    if (state == State.FEED_ENTRY_CONTENT) {
-                        if (currentEntry.getContent().isInline()) {
-                            StringRepresentation sr = (StringRepresentation) currentEntry
-                                    .getContent().getInlineContent();
-                            sr.setText(contentBuffer.toString());
-                        }
-
-                        state = State.FEED_ENTRY;
-                    }
-                }
-            }
-
-            currentText = null;
-            currentDate = null;
         }
 
-        /**
-         * Receive notification of the end of a document.
-         */
-        @Override
-        public void endDocument() throws SAXException {
-            this.state = State.NONE;
-            this.currentEntry = null;
-            this.contentBuffer = null;
+        if (getGenerator() != null) {
+            getGenerator().writeElement(writer, namespace);
         }
+
+        if (getIcon() != null) {
+            writer.dataElement(namespace, "icon", getIcon().toString());
+        }
+
+        if (getId() != null) {
+            writer.dataElement(namespace, "id", null, new AttributesImpl(),
+                    getId());
+        }
+
+        if (getLinks() != null) {
+            for (Link link : getLinks()) {
+                link.writeElement(writer, namespace);
+            }
+        }
+
+        if (getLogo() != null && getLogo().toString() != null) {
+            writer.dataElement(namespace, "logo", getLogo().toString());
+        }
+
+        if (getRights() != null) {
+            getRights().writeElement(writer, namespace, "rights");
+        }
+
+        if (getSubtitle() != null) {
+            getSubtitle().writeElement(writer, namespace, "subtitle");
+        }
+
+        if (getTitle() != null) {
+            getTitle().writeElement(writer, namespace, "title");
+        }
+
+        if (getUpdated() != null) {
+            Text.writeElement(writer, getUpdated(), namespace, "updated");
+        }
+
+        writer.endElement(namespace, "feed");
     }
 
 }

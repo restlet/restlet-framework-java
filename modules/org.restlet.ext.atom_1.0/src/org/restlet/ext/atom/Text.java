@@ -18,7 +18,13 @@
 
 package org.restlet.ext.atom;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.restlet.data.MediaType;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * A Text construct contains human-readable text, usually in small quantities.
@@ -27,15 +33,88 @@ import org.restlet.data.MediaType;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Text {
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @param localName
+     *                The local name of the element.
+     * @throws SAXException
+     */
+    public static void writeElement(XmlWriter writer, Date date,
+            String namespace, String localName) throws SAXException {
+        writer.startElement(namespace, localName);
+
+        if (date != null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(
+                    "yyyy-MM-dd'T'hh:mm:ssZ");
+            writer.characters(dateFormat.format(date));
+        }
+
+        writer.endElement(namespace, localName);
+    }
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @param localName
+     *                The local name of the element.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer, String namespace,
+            String localName) throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
+        String type = null;
+
+        if (getType() != null && getType().getSubType() != null) {
+            if (getType().getSubType().contains("xhtml")) {
+                type = "xhtml";
+            } else if (getType().getSubType().contains("html")) {
+                type = "html";
+            }
+        }
+
+        if (type == null) {
+            type = "text";
+        }
+
+        attributes.addAttribute("", "type", null, "text", type);
+
+        if (getContent() != null) {
+            writer.dataElement(namespace, localName, null, attributes,
+                    getContent());
+        } else {
+            writer.emptyElement(namespace, localName, null, attributes);
+        }
+    }
+
+    /**
+     * The content.
+     */
+    private volatile String content;
+
     /**
      * The content type.
      */
     private volatile MediaType type;
 
     /**
-     * The content.
+     * Constructor.
+     * 
+     * @param type
+     *                The content type.
      */
-    private volatile String content;
+    public Text(MediaType type) {
+        this(type, null);
+    }
 
     /**
      * Constructor.
@@ -51,13 +130,12 @@ public class Text {
     }
 
     /**
-     * Constructor.
+     * Returns the content.
      * 
-     * @param type
-     *                The content type.
+     * @return The content.
      */
-    public Text(MediaType type) {
-        this(type, null);
+    public String getContent() {
+        return this.content;
     }
 
     /**
@@ -70,25 +148,6 @@ public class Text {
     }
 
     /**
-     * Sets the content type.
-     * 
-     * @param type
-     *                The content type.
-     */
-    public void setType(MediaType type) {
-        this.type = type;
-    }
-
-    /**
-     * Returns the content.
-     * 
-     * @return The content.
-     */
-    public String getContent() {
-        return this.content;
-    }
-
-    /**
      * Sets the content.
      * 
      * @param content
@@ -96,6 +155,16 @@ public class Text {
      */
     public void setContent(String content) {
         this.content = content;
+    }
+
+    /**
+     * Sets the content type.
+     * 
+     * @param type
+     *                The content type.
+     */
+    public void setType(MediaType type) {
+        this.type = type;
     }
 
 }

@@ -21,6 +21,9 @@ package org.restlet.ext.atom;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Defines a reference from an entry or feed to a Web resource.
@@ -28,23 +31,24 @@ import org.restlet.data.Reference;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Link {
+
     /** Contains the link's IRI. */
     private volatile Reference href;
-
-    /** Indicates the link's relation type */
-    private volatile Relation rel;
-
-    /** Advisory media type. */
-    private volatile MediaType type;
 
     /** Language of the resource pointed to by the href attribute. */
     private volatile Language hrefLang;
 
+    /** Advisory length of the linked content in octets. */
+    private volatile long length;
+
+    /** Indicates the link's relation type */
+    private volatile Relation rel;
+
     /** Human-readable information about the link. */
     private volatile String title;
 
-    /** Advisory length of the linked content in octets. */
-    private volatile long length;
+    /** Advisory media type. */
+    private volatile MediaType type;
 
     /**
      * Constructor.
@@ -68,13 +72,21 @@ public class Link {
     }
 
     /**
-     * Sets the link's IRI.
+     * Returns the language of the resource pointed to by the href attribute.
      * 
-     * @param href
-     *                The link's IRI.
+     * @return The language of the resource pointed to by the href attribute.
      */
-    public void setHref(Reference href) {
-        this.href = href;
+    public Language getHrefLang() {
+        return this.hrefLang;
+    }
+
+    /**
+     * Returns the advisory length of the linked content in octets.
+     * 
+     * @return The advisory length of the linked content in octets.
+     */
+    public long getLength() {
+        return this.length;
     }
 
     /**
@@ -87,13 +99,12 @@ public class Link {
     }
 
     /**
-     * Sets the link's relation type.
+     * Returns the human-readable information about the link.
      * 
-     * @param rel
-     *                The link's relation type.
+     * @return The human-readable information about the link.
      */
-    public void setRel(Relation rel) {
-        this.rel = rel;
+    public String getTitle() {
+        return this.title;
     }
 
     /**
@@ -106,22 +117,13 @@ public class Link {
     }
 
     /**
-     * Sets the advisoty media type.
+     * Sets the link's IRI.
      * 
-     * @param type
-     *                The advisoty media type.
+     * @param href
+     *                The link's IRI.
      */
-    public void setType(MediaType type) {
-        this.type = type;
-    }
-
-    /**
-     * Returns the language of the resource pointed to by the href attribute.
-     * 
-     * @return The language of the resource pointed to by the href attribute.
-     */
-    public Language getHrefLang() {
-        return this.hrefLang;
+    public void setHref(Reference href) {
+        this.href = href;
     }
 
     /**
@@ -136,12 +138,23 @@ public class Link {
     }
 
     /**
-     * Returns the human-readable information about the link.
+     * Sets the advisory length of the linked content in octets.
      * 
-     * @return The human-readable information about the link.
+     * @param length
+     *                The advisory length of the linked content in octets.
      */
-    public String getTitle() {
-        return this.title;
+    public void setLength(long length) {
+        this.length = length;
+    }
+
+    /**
+     * Sets the link's relation type.
+     * 
+     * @param rel
+     *                The link's relation type.
+     */
+    public void setRel(Relation rel) {
+        this.rel = rel;
     }
 
     /**
@@ -155,22 +168,54 @@ public class Link {
     }
 
     /**
-     * Returns the advisory length of the linked content in octets.
+     * Sets the advisoty media type.
      * 
-     * @return The advisory length of the linked content in octets.
+     * @param type
+     *                The advisoty media type.
      */
-    public long getLength() {
-        return this.length;
+    public void setType(MediaType type) {
+        this.type = type;
     }
 
     /**
-     * Sets the advisory length of the linked content in octets.
+     * Writes the current object as an XML element using the given SAX writer.
      * 
-     * @param length
-     *                The advisory length of the linked content in octets.
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @throws SAXException
      */
-    public void setLength(long length) {
-        this.length = length;
+    public void writeElement(XmlWriter writer, String namespace)
+            throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
+
+        if (getHref() != null && getHref().toString() != null) {
+            attributes.addAttribute("", "href", null, "atomUri", getHref()
+                    .toString());
+        }
+
+        if (getHrefLang() != null && getHrefLang().toString() != null) {
+            attributes.addAttribute("", "hreflang", null, "atomLanguageTag",
+                    getHrefLang().toString());
+        }
+
+        if (getLength() > 0) {
+            attributes.addAttribute("", "length", null, "text", Long
+                    .toString(getLength()));
+        }
+
+        attributes.addAttribute("", "rel", null, "text", Relation.toString(getRel()));
+
+        if (getTitle() != null) {
+            attributes.addAttribute("", "title", null, "text", getTitle());
+        }
+
+        if (getType() != null) {
+            attributes.addAttribute("", "type", null, "atomMediaType", getType().toString());
+        }
+
+        writer.emptyElement(namespace, "link", null, attributes);
     }
 
 }

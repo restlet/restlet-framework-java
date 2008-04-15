@@ -18,6 +18,9 @@
 
 package org.restlet.ext.atom;
 
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+
 /**
  * Collection member types.
  * 
@@ -25,4 +28,20 @@ package org.restlet.ext.atom;
  */
 public enum MemberType {
     ENTRY, MEDIA;
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer, String namespace)
+            throws SAXException {
+        writer.startElement(namespace, "memberType");
+        writer.endElement(namespace, "memberType");
+    }
+
 }

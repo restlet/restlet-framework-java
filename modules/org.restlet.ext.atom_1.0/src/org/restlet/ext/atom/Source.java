@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.restlet.data.Reference;
 import org.restlet.util.DateUtils;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
 
 /**
  * Source feed's metadata for entries copied from another feed.
@@ -31,6 +33,7 @@ import org.restlet.util.DateUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Source {
+
     /** The authors of the entry. */
     private volatile List<Person> authors;
 
@@ -128,16 +131,6 @@ public class Source {
     }
 
     /**
-     * Sets the agent used to generate a feed.
-     * 
-     * @param generator
-     *                The agent used to generate a feed.
-     */
-    public void setGenerator(Generator generator) {
-        this.generator = generator;
-    }
-
-    /**
      * Returns the image that provides iconic visual identification for a feed.
      * 
      * @return The image that provides iconic visual identification for a feed.
@@ -147,34 +140,12 @@ public class Source {
     }
 
     /**
-     * Sets the image that provides iconic visual identification for a feed.
-     * 
-     * @param icon
-     *                The image that provides iconic visual identification for a
-     *                feed.
-     */
-    public void setIcon(Reference icon) {
-        this.icon = icon;
-    }
-
-    /**
      * Returns the permanent, universally unique identifier for the entry.
      * 
      * @return The permanent, universally unique identifier for the entry.
      */
     public String getId() {
         return this.id;
-    }
-
-    /**
-     * Sets the permanent, universally unique identifier for the entry.
-     * 
-     * @param id
-     *                The permanent, universally unique identifier for the
-     *                entry.
-     */
-    public void setId(String id) {
-        this.id = id;
     }
 
     /**
@@ -198,32 +169,12 @@ public class Source {
     }
 
     /**
-     * Sets the image that provides visual identification for a feed.
-     * 
-     * @param logo
-     *                The image that provides visual identification for a feed.
-     */
-    public void setLogo(Reference logo) {
-        this.logo = logo;
-    }
-
-    /**
      * Returns the information about rights held in and over an entry.
      * 
      * @return The information about rights held in and over an entry.
      */
     public Text getRights() {
         return this.rights;
-    }
-
-    /**
-     * Sets the information about rights held in and over an entry.
-     * 
-     * @param rights
-     *                The information about rights held in and over an entry.
-     */
-    public void setRights(Text rights) {
-        this.rights = rights;
     }
 
     /**
@@ -236,32 +187,12 @@ public class Source {
     }
 
     /**
-     * Sets the short summary, abstract, or excerpt of an entry.
-     * 
-     * @param subtitle
-     *                The short summary, abstract, or excerpt of an entry.
-     */
-    public void setSubtitle(Text subtitle) {
-        this.subtitle = subtitle;
-    }
-
-    /**
      * Returns the human-readable title for the entry.
      * 
      * @return The human-readable title for the entry.
      */
     public Text getTitle() {
         return this.title;
-    }
-
-    /**
-     * Sets the human-readable title for the entry.
-     * 
-     * @param title
-     *                The human-readable title for the entry.
-     */
-    public void setTitle(Text title) {
-        this.title = title;
     }
 
     /**
@@ -276,6 +207,78 @@ public class Source {
     }
 
     /**
+     * Sets the agent used to generate a feed.
+     * 
+     * @param generator
+     *                The agent used to generate a feed.
+     */
+    public void setGenerator(Generator generator) {
+        this.generator = generator;
+    }
+
+    /**
+     * Sets the image that provides iconic visual identification for a feed.
+     * 
+     * @param icon
+     *                The image that provides iconic visual identification for a
+     *                feed.
+     */
+    public void setIcon(Reference icon) {
+        this.icon = icon;
+    }
+
+    /**
+     * Sets the permanent, universally unique identifier for the entry.
+     * 
+     * @param id
+     *                The permanent, universally unique identifier for the
+     *                entry.
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * Sets the image that provides visual identification for a feed.
+     * 
+     * @param logo
+     *                The image that provides visual identification for a feed.
+     */
+    public void setLogo(Reference logo) {
+        this.logo = logo;
+    }
+
+    /**
+     * Sets the information about rights held in and over an entry.
+     * 
+     * @param rights
+     *                The information about rights held in and over an entry.
+     */
+    public void setRights(Text rights) {
+        this.rights = rights;
+    }
+
+    /**
+     * Sets the short summary, abstract, or excerpt of an entry.
+     * 
+     * @param subtitle
+     *                The short summary, abstract, or excerpt of an entry.
+     */
+    public void setSubtitle(Text subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    /**
+     * Sets the human-readable title for the entry.
+     * 
+     * @param title
+     *                The human-readable title for the entry.
+     */
+    public void setTitle(Text title) {
+        this.title = title;
+    }
+
+    /**
      * Sets the most recent moment when the entry was modified in a significant
      * way.
      * 
@@ -285,6 +288,74 @@ public class Source {
      */
     public void setUpdated(Date updated) {
         this.updated = DateUtils.unmodifiable(updated);
+    }
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @param namespace
+     *                The element namespace URI.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer, String namespace)
+            throws SAXException {
+        writer.startElement(namespace, "source");
+        if (getAuthors() != null) {
+            for (Person person : getAuthors()) {
+                person.writeElement(writer, namespace, "author");
+            }
+        }
+
+        if (getCategories() != null) {
+            for (Category category : getCategories()) {
+                category.writeElement(writer, namespace);
+            }
+        }
+        if (getContributors() != null) {
+            for (Person person : getContributors()) {
+                person.writeElement(writer, namespace, "contributor");
+            }
+        }
+
+        if (getGenerator() != null) {
+            getGenerator().writeElement(writer, namespace);
+        }
+
+        if (getIcon() != null && getIcon().toString() != null) {
+            writer.dataElement(namespace, "icon", getIcon().toString());
+        }
+        if (getId() != null) {
+            writer.dataElement(namespace, "id", getId());
+        }
+
+        if (getLinks() != null) {
+            for (Link link : getLinks()) {
+                link.writeElement(writer, namespace);
+            }
+        }
+        if (getLogo() != null && getLogo().toString() != null) {
+            writer.dataElement(namespace, "logo", getLogo().toString());
+        }
+
+        if (getRights() != null) {
+            getRights().writeElement(writer, namespace, "rights");
+        }
+
+        if (getSubtitle() != null) {
+            getSubtitle().writeElement(writer, namespace, "subtitle");
+        }
+
+        if (getTitle() != null) {
+            getTitle().writeElement(writer, namespace, "title");
+        }
+
+        if (getUpdated() != null) {
+            Text.writeElement(writer, getUpdated(), namespace, "updated");
+        }
+
+        writer.endElement(namespace, "source");
     }
 
 }
