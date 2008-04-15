@@ -268,6 +268,7 @@ public class Db4oFacade extends DataFacade {
         ObjectSet<User> result = objectContainer.queryByExample(prototype);
 
         if (result.isEmpty()) {
+            prototype.setId("admin");
             prototype.setFirstName("admin");
             prototype.setLastName("admin");
             prototype.setLogin("admin");

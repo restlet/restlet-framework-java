@@ -20,6 +20,7 @@ package org.restlet.test;
 
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Service;
+import org.restlet.util.XmlWriter;
 
 /**
  * Unit test case for the Atom extension.
@@ -34,6 +35,8 @@ public class AtomTest {
             Feed atomFeed = atomService.getWorkspaces().get(0).getCollections()
                     .get(0).getFeed();
             atomFeed.write(System.out);
+            atomService.write(new XmlWriter(System.out));
+
         } catch (Exception e) {
             e.printStackTrace();
         }

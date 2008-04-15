@@ -27,6 +27,7 @@ import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.LocalReference;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.example.book.restlet.ch8.data.db4o.Db4oFacade;
 import org.restlet.example.book.restlet.ch8.objects.ObjectsFacade;
@@ -87,6 +88,9 @@ public class Application extends org.restlet.Application {
             getLogger().severe("Erreur config FreeMarker");
             e.printStackTrace();
         }
+
+        getMetadataService().addExtension("xml",
+                MediaType.APPLICATION_ATOM_XML, true);
     }
 
     @Override

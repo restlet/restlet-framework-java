@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
@@ -74,6 +75,7 @@ public class MailboxesResource extends BaseResource {
         Form form = new Form(entity);
 
         Mailbox mailbox = new Mailbox();
+        System.out.println(Reference.decode(form.getFirstValue("nickname")));
         mailbox.setNickname(form.getFirstValue("nickname"));
         User owner = getObjectsFacade().getUserById(
                 form.getFirstValue("ownerId"));

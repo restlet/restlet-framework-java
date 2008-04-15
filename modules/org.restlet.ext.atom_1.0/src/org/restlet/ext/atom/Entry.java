@@ -336,7 +336,7 @@ public class Entry {
 
         if (getAuthors() != null) {
             for (Person person : getAuthors()) {
-                person.writeElement(writer, "author", namespace);
+                person.writeElement(writer, namespace, "author");
             }
         }
 
@@ -352,7 +352,7 @@ public class Entry {
 
         if (getContributors() != null) {
             for (Person person : getContributors()) {
-                person.writeElement(writer, "contributor", namespace);
+                person.writeElement(writer, namespace, "contributor");
             }
         }
 

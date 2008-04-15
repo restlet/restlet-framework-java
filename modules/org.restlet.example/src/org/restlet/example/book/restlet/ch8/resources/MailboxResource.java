@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.restlet.Context;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
@@ -49,8 +50,9 @@ public class MailboxResource extends BaseResource {
         super(context, request, response);
 
         String mailboxId = Reference.decode((String) request.getAttributes()
-                .get("mailboxId"));
+                .get("mailboxId"), CharacterSet.ISO_8859_1);
         mailbox = getObjectsFacade().getMailboxById(mailboxId);
+        System.out.println(Reference.encode(mailboxId));
 
         if (mailbox != null) {
             getVariants().add(new Variant(MediaType.TEXT_HTML));
