@@ -132,53 +132,50 @@ public class TunnelFilter extends Filter {
             // in JAX-RS this is not only for GET; it is also useful for
             // responses to other methods.
             Reference resourceRef = request.getResourceRef();
+
             if (resourceRef.hasExtensions()) {
                 ClientInfo clientInfo = request.getClientInfo();
                 boolean encodingFound = false;
                 boolean characterSetFound = false;
                 boolean mediaTypeFound = false;
                 boolean languageFound = false;
-                String[] extensions = resourceRef.getExtensionsAsArray();
-                StringBuilder sb = new StringBuilder();
-                boolean extensionAdded = false;
-                Metadata metadata = null;
+                String extensions = resourceRef.getExtensions();
 
-                // We look at the extensions starting from the latest one
-                // because they have a higher priority.
-                for (int i = extensions.length - 1; i >= 0; i--) {
-                    metadata = getMetadata(extensions[i]);
+                for (;;) {
+                    int lastIndexOfPoint = extensions.lastIndexOf('.');
+                    String extension = extensions
+                            .substring(lastIndexOfPoint + 1);
+                    Metadata metadata = getMetadata(extension);
 
-                    if (!characterSetFound
+                    if (!mediaTypeFound && (metadata instanceof MediaType)) {
+                        updateMetadata(clientInfo, metadata);
+                        mediaTypeFound = true;
+                    } else if (!languageFound && (metadata instanceof Language)) {
+                        updateMetadata(clientInfo, metadata);
+                        languageFound = true;
+                    } else if (!characterSetFound
                             && (metadata instanceof CharacterSet)) {
                         updateMetadata(clientInfo, metadata);
                         characterSetFound = true;
                     } else if (!encodingFound && (metadata instanceof Encoding)) {
                         updateMetadata(clientInfo, metadata);
                         encodingFound = true;
-                    } else if (!languageFound && (metadata instanceof Language)) {
-                        updateMetadata(clientInfo, metadata);
-                        languageFound = true;
-                    } else if (!mediaTypeFound
-                            && (metadata instanceof MediaType)) {
-                        updateMetadata(clientInfo, metadata);
-                        mediaTypeFound = true;
                     } else {
-                        // The extension didn't match any metadata or
-                        // matched a metadata which was already updated
-                        // by another extension with a higher priority
-                        if (extensionAdded) {
-                            sb.insert(0, '.');
-                        }
-
-                        sb.insert(0, extensions[i]);
-                        extensionAdded = true;
+                        // extension do not match -> break loop
+                        break;
+                    }
+                    if (lastIndexOfPoint > 0) {
+                        extensions = extensions.substring(0, lastIndexOfPoint);
+                    } else {
+                        extensions = "";
+                        break;
                     }
                 }
 
                 // Update the extensions if necessary
-                if (characterSetFound || encodingFound || languageFound
-                        || mediaTypeFound) {
-                    resourceRef.setExtensions(sb.toString());
+                if (mediaTypeFound || languageFound || encodingFound
+                        || characterSetFound) {
+                    resourceRef.setExtensions(extensions);
                     extensionsModified = true;
                 }
             }
