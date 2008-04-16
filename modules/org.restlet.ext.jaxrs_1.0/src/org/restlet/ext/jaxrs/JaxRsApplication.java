@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -81,15 +82,27 @@ public class JaxRsApplication extends Application {
     /** Indicates, if an {@link HtmlPreferer} should be used or not. */
     private volatile boolean preferHtml = true;
 
+    /** indicates if any {@link ApplicationConfig} is attached yet */
+    private volatile boolean appConfigAttached = false;
+
     /**
-     * @param parentContext
-     *                The parent component context.
+     * Creates an new JaxRsApplication. You should typically use one of the
+     * other constructors, see {@link Restlet#Restlet()}.
+     * 
+     * @see #JaxRsApplication(Context)
      */
     public JaxRsApplication() {
         this(null);
     }
 
     /**
+     * Creates an new JaxRsApplication, without any access control. Attach
+     * {@link ApplicationConfig}s by using {@link #attach(ApplicationConfig)}.<br>
+     * If a method calls {@link SecurityContext#isUserInRole(String)}, status
+     * 500 is returned to the client, see {@link RoleChecker#REJECT_WITH_ERROR}.
+     * Use {@link #setGuard(Guard)} and {@link #setRoleChecker(RoleChecker)} or
+     * {@link #setAuthentication(Guard, RoleChecker)}, to set access control.<br>
+     * 
      * @param parentContext
      *                The parent component context.
      */
@@ -131,61 +144,61 @@ public class JaxRsApplication extends Application {
      * <p>
      * Attaches an {@link ApplicationConfig} to this Application.<br>
      * The providers are available for all root resource classes provided to
-     * this JaxRsRouter. If you won't mix them, instantiate another JaxRsRouter.
+     * this JaxRsRouter. If you won't mix them, instantiate another
+     * JaxRsApplication.
      * </p>
      * <p>
-     * If the given ApplicationConfig is the first attached ApplicationConfig
-     * (more exactly: if no root resource classes are available), the default
-     * extension mappings are remove an replaced by the given, see
+     * If the given ApplicationConfig is the first attached ApplicationConfig,
+     * the default extension mappings are remove and replaced by the given, see
      * {@link TunnelService}.
      * </p>
      * 
      * @param appConfig
      *                Contains the classes to load as root resource classes and
      *                as providers.
+     * @return true, if all resource classes and providers could be added, or
+     *         false if not.
      * @throws IllegalArgumentException
-     *                 if {@link ApplicationConfig} contains non-valid resource
-     *                 classes or non-valid providers, or one of their
-     *                 constructors throws an exception.
-     * @throws NullPointerException
      *                 if the appConfig is null.
-     * 
      * @see #attach(ApplicationConfig, boolean)
      */
-    public void attach(ApplicationConfig appConfig)
-            throws IllegalArgumentException {
-        attach(appConfig, true);
+    public boolean attach(ApplicationConfig appConfig) {
+        return attach(appConfig, true);
     }
 
     /**
      * Attaches an {@link ApplicationConfig} to this Application.<br>
      * The providers are available for all root resource classes provided to
-     * this JaxRsRouter. If you won't mix them, instantiate another JaxRsRouter.
+     * this JaxRsRouter. If you won't mix them, instantiate another
+     * JaxRsApplication.
      * 
      * @param appConfig
      *                Contains the classes to load as root resource classes and
      *                as providers.
      * @param clearMetadataIfFirst
      *                If this flag is true and the given ApplicationConfig is
-     *                the first attached ApplicationConfig (more exactly: if no
-     *                root resource classes are available), the default
-     *                extension mappings are remove an replaced by the new, see
-     *                {@link TunnelService}
+     *                the first attached ApplicationConfig, the default
+     *                extension mappings are remove an replaced by the given,
+     *                see {@link TunnelService}
+     * @return true, if all resource classes and providers could be added, or
+     *         false if not.
      * @throws IllegalArgumentException
-     *                 if {@link ApplicationConfig} contains non-valid resource
-     *                 classes or non-valid providers, or one of their
-     *                 constructors throws an exception.
-     * @throws NullPointerException
      *                 if the appConfig is null.
      * @see #attach(ApplicationConfig)
+     * @see JaxRsRouter#attach(ApplicationConfig)
      */
-    public void attach(ApplicationConfig appConfig, boolean clearMetadataIfFirst)
-            throws IllegalArgumentException {
-        if (clearMetadataIfFirst && this.jaxRsRouter.isEmpty()) {
+    public boolean attach(ApplicationConfig appConfig,
+            boolean clearMetadataIfFirst) throws IllegalArgumentException {
+        if (appConfig == null)
+            throw new IllegalArgumentException(
+                    "The ApplicationConfig must not be null");
+        if (clearMetadataIfFirst && !appConfigAttached) {
             this.getMetadataService().clearExtensions();
         }
         this.addExtensionMappings(appConfig);
-        this.jaxRsRouter.attach(appConfig);
+        boolean everythingFine = this.jaxRsRouter.attach(appConfig);
+        this.appConfigAttached = true;
+        return everythingFine;
     }
 
     @Override
@@ -296,7 +309,8 @@ public class JaxRsApplication extends Application {
     }
 
     /**
-     * Sets the {@link Guard} to use.<br>
+     * Sets the {@link Guard} to use. It should typically use the
+     * {@link Context} of this application.<br>
      * The new one is ignored, after the root Restlet is created (see
      * {@link #createRoot()}.
      * 

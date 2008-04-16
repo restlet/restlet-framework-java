@@ -24,12 +24,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 
 import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
@@ -60,9 +59,6 @@ import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
  */
 class ExceptionHandler {
 
-    /**
-     * 
-     */
     private static final String HEADER_ALLOW = "Allow";
 
     private final Logger logger;
@@ -77,8 +73,9 @@ class ExceptionHandler {
      */
     RequestHandledException convertCookieParamExc(
             ConvertCookieParamException cpe) throws WebApplicationException {
-        ResponseBuilder rb = javax.ws.rs.core.Response
-                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        ResponseBuilder rb = Response
+                .status(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST
+                        .getCode());
         StringWriter stw = new StringWriter();
         cpe.printStackTrace(new PrintWriter(stw));
         rb.entity(stw.toString());
@@ -91,8 +88,7 @@ class ExceptionHandler {
      */
     RequestHandledException convertHeaderParamExc(
             ConvertHeaderParamException cpe) throws WebApplicationException {
-        ResponseBuilder rb = javax.ws.rs.core.Response
-                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        ResponseBuilder rb = Response.status(Status.BAD_REQUEST);
         StringWriter stw = new StringWriter();
         cpe.printStackTrace(new PrintWriter(stw));
         rb.entity(stw.toString());
@@ -105,7 +101,7 @@ class ExceptionHandler {
      */
     RequestHandledException convertMatrixParamExc(
             ConvertMatrixParamException cpe) throws WebApplicationException {
-        ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
+        ResponseBuilder rb = Response.status(Status.NOT_FOUND);
         StringWriter stw = new StringWriter();
         cpe.printStackTrace(new PrintWriter(stw));
         rb.entity(stw.toString());
@@ -118,7 +114,7 @@ class ExceptionHandler {
      */
     RequestHandledException convertPathParamExc(ConvertPathParamException cpe)
             throws WebApplicationException {
-        ResponseBuilder rb = javax.ws.rs.core.Response.status(404);
+        ResponseBuilder rb = Response.status(Status.NOT_FOUND);
         StringWriter stw = new StringWriter();
         cpe.printStackTrace(new PrintWriter(stw));
         rb.entity(stw.toString());
@@ -131,8 +127,7 @@ class ExceptionHandler {
      */
     RequestHandledException convertQueryParamExc(ConvertQueryParamException cpe)
             throws WebApplicationException {
-        ResponseBuilder rb = javax.ws.rs.core.Response
-                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        ResponseBuilder rb = Response.status(Status.BAD_REQUEST);
         StringWriter stw = new StringWriter();
         cpe.printStackTrace(new PrintWriter(stw));
         rb.entity(stw.toString());
@@ -145,8 +140,7 @@ class ExceptionHandler {
      */
     RequestHandledException convertRepresentationExc(
             ConvertRepresentationException cre) throws WebApplicationException {
-        ResponseBuilder rb = javax.ws.rs.core.Response
-                .status(Status.CLIENT_ERROR_BAD_REQUEST.getCode());
+        ResponseBuilder rb = Response.status(Status.BAD_REQUEST);
         StringWriter stw = new StringWriter();
         cre.printStackTrace(new PrintWriter(stw));
         rb.entity(stw.toString());
@@ -160,8 +154,9 @@ class ExceptionHandler {
      * @param exception
      * @param callContext
      *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
+     *                from the called URI, the Restlet
+     *                {@link org.restlet.data.Request} and the Restlet
+     *                {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
      * @throws RequestHandledException
@@ -172,7 +167,8 @@ class ExceptionHandler {
     RequestHandledException instantiateExecption(
             InstantiateException exception, CallContext callContext,
             String logMessage) throws RequestHandledException {
-        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+        callContext.getResponse().setStatus(
+                org.restlet.data.Status.SERVER_ERROR_INTERNAL);
         logger.log(Level.WARNING, logMessage, exception.getCause());
         exception.printStackTrace();
         throw new RequestHandledException();
@@ -185,8 +181,9 @@ class ExceptionHandler {
      * @param exception
      * @param callContext
      *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
+     *                from the called URI, the Restlet
+     *                {@link org.restlet.data.Request} and the Restlet
+     *                {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
      * @throws RequestHandledException
@@ -197,7 +194,8 @@ class ExceptionHandler {
     RequestHandledException methodInvokeException(
             MethodInvokeException exception, CallContext callContext,
             String logMessage) throws RequestHandledException {
-        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+        callContext.getResponse().setStatus(
+                org.restlet.data.Status.SERVER_ERROR_INTERNAL);
         logger.log(Level.WARNING, logMessage, exception.getCause());
         exception.printStackTrace();
         throw new RequestHandledException();
@@ -210,8 +208,9 @@ class ExceptionHandler {
      */
     void methodNotAllowed(Set<Method> allowedMethods)
             throws WebApplicationException {
-        ResponseBuilder rb = javax.ws.rs.core.Response
-                .status(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.getCode());
+        ResponseBuilder rb = Response
+                .status(org.restlet.data.Status.CLIENT_ERROR_METHOD_NOT_ALLOWED
+                        .getCode());
         rb.header(HEADER_ALLOW, Util.toString(allowedMethods, ", "));
         throw new WebApplicationException(rb.build());
     }
@@ -223,8 +222,9 @@ class ExceptionHandler {
      * @param exception
      * @param callContext
      *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
+     *                from the called URI, the Restlet
+     *                {@link org.restlet.data.Request} and the Restlet
+     *                {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
      * @throws RequestHandledException
@@ -235,7 +235,8 @@ class ExceptionHandler {
     RequestHandledException missingAnnotation(
             MissingAnnotationException exception, CallContext callContext,
             String logMessage) throws RequestHandledException {
-        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+        callContext.getResponse().setStatus(
+                org.restlet.data.Status.SERVER_ERROR_INTERNAL);
         if (exception != null)
             logMessage += ": " + exception.getMessage();
         logger.log(Level.WARNING, logMessage);
@@ -246,8 +247,7 @@ class ExceptionHandler {
      * see spec, section 4.3.1, item 5O
      */
     WebApplicationException noMessageBodyReader() {
-        throw new WebApplicationException(
-                Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE.getCode());
+        throw new WebApplicationException(Status.UNSUPPORTED_MEDIA_TYPE);
     }
 
     /**
@@ -255,8 +255,7 @@ class ExceptionHandler {
      */
     RequestHandledException noMessageBodyWriter() {
         // REQUESTED return supported MediaTypes as entity
-        throw new WebApplicationException(Status.CLIENT_ERROR_NOT_ACCEPTABLE
-                .getCode());
+        throw new WebApplicationException(Status.NOT_ACCEPTABLE);
     }
 
     /**
@@ -264,8 +263,7 @@ class ExceptionHandler {
      */
     void noResourceMethodForAccMediaTypes() throws WebApplicationException {
         // REQUESTED return supported MediaTypes as entity
-        throw new WebApplicationException(Status.CLIENT_ERROR_NOT_ACCEPTABLE
-                .getCode());
+        throw new WebApplicationException(Status.NOT_ACCEPTABLE);
     }
 
     /**
@@ -274,31 +272,27 @@ class ExceptionHandler {
     WebApplicationException notAcceptableWhileDetermineMediaType()
             throws WebApplicationException {
         // REQUESTED return supported MediaTypes as entity
-        throw new WebApplicationException(Status.CLIENT_ERROR_NOT_ACCEPTABLE
-                .getCode());
+        throw new WebApplicationException(Status.NOT_ACCEPTABLE);
     }
 
     /**
      */
     void resourceMethodNotFound() throws WebApplicationException {
-        throw new WebApplicationException(Status.CLIENT_ERROR_NOT_FOUND
-                .getCode());
+        throw new WebApplicationException(Status.NOT_FOUND);
     }
 
     /**
      * see spec, section 3.7.2, item 2 (e)
      */
     void resourceNotFound() throws WebApplicationException {
-        throw new WebApplicationException(
-                javax.ws.rs.core.Response.Status.NOT_FOUND);
+        throw new WebApplicationException(Status.NOT_FOUND);
     }
 
     /**
      * see spec, section 3.7.2, item 1 (d)
      */
     void rootResourceNotFound() throws WebApplicationException {
-        throw new WebApplicationException(Status.CLIENT_ERROR_NOT_FOUND
-                .getCode());
+        throw new WebApplicationException(Status.NOT_FOUND);
     }
 
     /**
@@ -311,8 +305,9 @@ class ExceptionHandler {
      *                the called method when the exception occurs. May be null.
      * @param callContext
      *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
+     *                from the called URI, the Restlet
+     *                {@link org.restlet.data.Request} and the Restlet
+     *                {@link org.restlet.data.Response}.
      * @param logMessage
      * @param methodName
      * @throws RequestHandledException
@@ -323,7 +318,8 @@ class ExceptionHandler {
     RequestHandledException runtimeExecption(RuntimeException exception,
             AbstractMethodWrapper jaxRsMethod, CallContext callContext,
             String logMessage) throws RequestHandledException {
-        callContext.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+        callContext.getResponse().setStatus(
+                org.restlet.data.Status.SERVER_ERROR_INTERNAL);
         if (jaxRsMethod != null)
             logMessage = jaxRsMethod + ": " + logMessage;
         logger.log(Level.WARNING, jaxRsMethod + ": " + logMessage, exception);
@@ -336,7 +332,6 @@ class ExceptionHandler {
      */
     void unsupportedMediaType() throws WebApplicationException {
         // REQUESTED return allowed Media types
-        throw new WebApplicationException(
-                Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE.getCode());
+        throw new WebApplicationException(Status.UNSUPPORTED_MEDIA_TYPE);
     }
 }

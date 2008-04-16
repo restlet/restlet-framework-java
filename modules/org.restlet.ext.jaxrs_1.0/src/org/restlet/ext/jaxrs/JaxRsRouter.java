@@ -126,7 +126,7 @@ import org.restlet.resource.ResourceException;
  * only the real logic code and is more well arranged. </li>
  * </ul>
  * <p>
- * <!--LATER The class JaxRsRouter is not thread save while attach or detach
+ * <!--NICE The class JaxRsRouter is not thread save while attach or detach
  * classes.-->
  * </p>
  * <p>
@@ -165,7 +165,7 @@ public class JaxRsRouter extends Restlet {
 
     private final ExceptionHandler excHandler;
 
-    private final ExceptionMappers excMapper = new ExceptionMappers();
+    private final ExceptionMappers excMappers = new ExceptionMappers();
 
     private final Collection<Provider<?>> allProviders = new ArrayList<Provider<?>>();
 
@@ -176,30 +176,47 @@ public class JaxRsRouter extends Restlet {
     private final ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
 
     /**
-     * Creates a new JaxRsRouter with the {@link ApplicationConfig}. You can
+     * Creates a new JaxRsRouter with the given Context. Only the default
+     * providers are loaded. No {@link ApplicationConfig} is loaded, use
+     * {@link #attach(ApplicationConfig)} to attach some. You can also use the
+     * constructor {@link #JaxRsRouter(Context, RoleChecker, ApplicationConfig)}.
+     * 
+     * @param context
+     *                the context from the parent, see
+     *                {@link Restlet#Restlet(Context)}.
+     * @param roleChecker
+     *                The RoleChecker to use. If you don't need the access
+     *                control, you can use the {@link RoleChecker#FORBID_ALL},
+     *                the {@link RoleChecker#ALLOW_ALL} or the
+     *                {@link RoleChecker#REJECT_WITH_ERROR}.
+     * @see #JaxRsRouter(Context, RoleChecker, ApplicationConfig)
+     */
+    public JaxRsRouter(Context context, RoleChecker roleChecker) {
+        this(context, roleChecker, null);
+    }
+
+    /**
+     * Creates a new JaxRsRouter with the {@link ApplicationConfig}. You may
      * add more {@link ApplicationConfig}s; use method
      * {@link #attach(ApplicationConfig)}.
      * 
      * @param context
      *                the context from the parent, see
      *                {@link Restlet#Restlet(Context)}.
-     * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers. You could add more {@link ApplicationConfig}s;
-     *                use method {@link #attach(ApplicationConfig)}.
      * @param roleChecker
      *                The RoleChecker to use. If you don't need the access
      *                control, you can use the {@link RoleChecker#FORBID_ALL},
      *                the {@link RoleChecker#ALLOW_ALL} or the
      *                {@link RoleChecker#REJECT_WITH_ERROR}. See also
      *                {@link #JaxRsRouter(Context, ApplicationConfig)}.
-     * @throws IllegalArgumentException
-     *                 if the {@link ApplicationConfig} contains invalid data;
-     *                 see {@link #attach(ApplicationConfig)} for detailed
-     *                 information.
+     * @param appConfig
+     *                Contains the classes to load as root resource classes and
+     *                as providers. See {@link #attach(ApplicationConfig)} for
+     *                details. You may also add more {@link ApplicationConfig}s;
+     *                with that method.
      */
-    public JaxRsRouter(Context context, ApplicationConfig appConfig,
-            RoleChecker roleChecker) throws IllegalArgumentException {
+    public JaxRsRouter(Context context, RoleChecker roleChecker,
+            ApplicationConfig appConfig) {
         super(context);
         this.excHandler = new ExceptionHandler(getLogger());
         this.wrapperFactory = new WrapperFactory(this.entityProviders,
@@ -224,7 +241,8 @@ public class JaxRsRouter extends Restlet {
      * returned with HTTP status 500 (Internal Server Error), see
      * {@link SecurityContext#isUserInRole(String)}. If you want to use the
      * access control, use constructor
-     * {@link #JaxRsRouter(Context, ApplicationConfig, RoleChecker)}.
+     * {@link #JaxRsRouter(Context, RoleChecker, ApplicationConfig)} or method
+     * {@link #setRoleChecker(RoleChecker)}.
      * </p>
      * 
      * @param context
@@ -232,17 +250,13 @@ public class JaxRsRouter extends Restlet {
      *                {@link Restlet#Restlet(Context)}.
      * @param appConfig
      *                Contains the classes to load as root resource classes and
-     *                as providers. You could add more {@link ApplicationConfig}s;
-     *                use method {@link #attach(ApplicationConfig)}.
-     * @throws IllegalArgumentException
-     *                 if the {@link ApplicationConfig} contains invalid data;
-     *                 see {@link #attach(ApplicationConfig)} for detailed
-     *                 information.
-     * @see #JaxRsRouter(Context, ApplicationConfig, RoleChecker)
+     *                as providers. See {@link #attach(ApplicationConfig)} for
+     *                details. You may also add more {@link ApplicationConfig}s;
+     *                with that method.
+     * @see #JaxRsRouter(Context, RoleChecker, ApplicationConfig)
      */
-    public JaxRsRouter(Context context, ApplicationConfig appConfig)
-            throws IllegalArgumentException {
-        this(context, appConfig, null);
+    public JaxRsRouter(Context context, ApplicationConfig appConfig) {
+        this(context, null, appConfig);
     }
 
     /**
@@ -251,70 +265,64 @@ public class JaxRsRouter extends Restlet {
      * {@link #attach(ApplicationConfig)} to attach some. If a resource class
      * later wants to check if a user has a role, the request is returned with
      * HTTP status 500 (Internal Server Error), see
-     * {@link SecurityContext#isUserInRole(String)}.
+     * {@link SecurityContext#isUserInRole(String)}. You may set a
+     * {@link RoleChecker} by using the constructor
+     * {@link JaxRsRouter#JaxRsRouter(Context, RoleChecker)} or method
+     * {@link #setRoleChecker(RoleChecker)}.
      * 
      * @param context
      *                the context from the parent, see
      *                {@link Restlet#Restlet(Context)}.
      * @see #JaxRsRouter(Context, ApplicationConfig)
-     * @see #JaxRsRouter(Context, ApplicationConfig, RoleChecker)
+     * @see #JaxRsRouter(Context, RoleChecker, ApplicationConfig)
      */
     public JaxRsRouter(Context context) {
         this(context, null, null);
     }
 
     /**
-     * Creates a new JaxRsRouter with the given Context. Only the default
-     * providers are loaded. No {@link ApplicationConfig} is loaded, use
-     * {@link #attach(ApplicationConfig)} to attach some, or use constructor
-     * {@link #JaxRsRouter(Context, ApplicationConfig, RoleChecker)}.
-     * 
-     * @param context
-     *                the context from the parent, see
-     *                {@link Restlet#Restlet(Context)}.
-     * @param roleChecker
-     *                The RoleChecker to use. If you don't need the access
-     *                control, you can use the {@link RoleChecker#FORBID_ALL},
-     *                the {@link RoleChecker#ALLOW_ALL} or the
-     *                {@link RoleChecker#REJECT_WITH_ERROR}.
-     * @see #JaxRsRouter(Context, ApplicationConfig, RoleChecker)
-     */
-    public JaxRsRouter(Context context, RoleChecker roleChecker) {
-        this(context, null, roleChecker);
-    }
-
-    /**
-     * attaches the classes and providers to this JaxRsRouter. The providers are
+     * <p>
+     * Attaches the classes and providers to this JaxRsRouter. The providers are
      * available for all root resource classes provided to this JaxRsRouter. If
-     * you won't mix them, instantiate another JaxRsRouter.
+     * you won't mix them, instantiate another JaxRsRouter.<br>
+     * If an root resource class or a provider could not be added, a message is
+     * logged.
+     * </p>
+     * <p>
+     * The extension mapping is the responsibility of the
+     * {@link JaxRsApplication}, see
+     * {@link JaxRsApplication#attach(ApplicationConfig)}.
+     * </p>
      * 
      * @param appConfig
      *                Contains the classes to load as root resource classes and
      *                as providers.
-     * @throws IllegalArgumentException
-     *                 if {@link ApplicationConfig} contains non-valid resource
-     *                 classes or non-valid providers, or one of their
-     *                 constructors throws an exception.
+     * @return true, if all resource classes and providers could be added, or
+     *         false if not.
      * @throws NullPointerException
      *                 if the appConfig is null.
      */
-    public void attach(ApplicationConfig appConfig)
-            throws IllegalArgumentException {
+    public boolean attach(ApplicationConfig appConfig) {
         // LATER Interface comparable to other Restlet classes.
         Collection<Class<?>> rrcs = appConfig.getResourceClasses();
         Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
-        if (rrcs == null || rrcs.isEmpty())
-            throw new IllegalArgumentException(
-                    "The ApplicationConfig must return root resource classes");
         boolean everythingFine = true;
-        for (Class<?> rrc : rrcs) {
-            everythingFine &= this.addRootResourceClass(rrc);
+        if (rrcs == null || rrcs.isEmpty()) {
+            getLogger().warning(
+                    "The ApplicationConfig " + appConfig.getClass().getName()
+                            + " contains no root resource classes.");
+            everythingFine = false;
+        } else {
+            for (Class<?> rrc : rrcs) {
+                everythingFine &= this.addRootResourceClass(rrc);
+            }
         }
         if (providerClasses != null) {
             for (Class<?> providerClass : providerClasses) {
                 everythingFine &= this.addProvider(providerClass, false);
             }
         }
+        return everythingFine;
     }
 
     /**
@@ -456,7 +464,7 @@ public class JaxRsRouter extends Restlet {
         if (provider.isContextResolver())
             this.allResolvers.add(provider.getContextResolver());
         if (provider.isExceptionMapper())
-            this.excMapper.add(provider);
+            this.excMappers.add(provider);
         this.allProviders.add(provider);
         return true;
     }
@@ -490,11 +498,12 @@ public class JaxRsRouter extends Restlet {
             tlContext.set(callContext);
             try {
                 ResObjAndMeth resObjAndMeth;
-                resObjAndMeth = matchingRequestToResourceMethod();
+                resObjAndMeth = requestMatching();
                 callContext.setReadOnly();
                 ResourceMethod resourceMethod = resObjAndMeth.resourceMethod;
                 resourceObject = resObjAndMeth.resourceObject;
-                invokeMethodAndHandleResult(resourceMethod, resourceObject);
+                Object result = invokeMethod(resourceMethod, resourceObject);
+                handleResult(result, resourceMethod);
             } catch (WebApplicationException e) {
                 // the message of the Exception is not used in the
                 // WebApplicationException
@@ -507,15 +516,14 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
-     * 2007-12-07, Section 2.5 Matching Requests to Resource Methods.
+     * Implementation of algorithm in JAX-RS-Spec (2008-04-16), Section 3.7.2
+     * "Request Matching"
      * 
      * @return (Sub)Resource Method
      * @throws RequestHandledException
      * @throws WebApplicationException
      */
-    private ResObjAndMeth matchingRequestToResourceMethod()
-            throws RequestHandledException,
+    private ResObjAndMeth requestMatching() throws RequestHandledException,
             WebApplicationException {
         CallContext callContext = tlContext.get();
         Request restletRequest = callContext.getRequest();
@@ -524,7 +532,7 @@ public class JaxRsRouter extends Restlet {
                 .getRemainingPart());
         RrcAndRemPath rcat = identifyRootResourceClass(u);
         // Part 2
-        ResObjAndRemPath resourceObjectAndPath = obtainObjectThatHandleRequest(rcat);
+        ResObjAndRemPath resourceObjectAndPath = obtainObject(rcat);
         Representation entity = restletRequest.getEntity();
         // Part 3
         MediaType givenMediaType;
@@ -532,16 +540,16 @@ public class JaxRsRouter extends Restlet {
             givenMediaType = entity.getMediaType();
         else
             givenMediaType = null;
-        ResObjAndMeth method = identifyMethodThatHandleRequest(
-                resourceObjectAndPath, givenMediaType);
+        ResObjAndMeth method = identifyMethod(resourceObjectAndPath,
+                givenMediaType);
         return method;
     }
 
     /**
-     * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
-     * 2007-12-07, Section 2.5 Matching Requests to Resource Methods, Part 1.
+     * Identifies the root resource class, see JAX-RS-Spec (2008-04-16), section
+     * 3.7.2 "Request Matching", Part 1: "Identify the root resource class"
      * 
-     * @return The identified root resource class, the remaning path after
+     * @return The identified root resource class, the remaining path after
      *         identifying and the matched template parameters; see
      *         {@link RrcAndRemPath}.
      */
@@ -580,17 +588,17 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
-     * 2007-12-07, Section 2.5, Part 2
+     * Obtains the object that will handle the request, see JAX-RS-Spec
+     * (2008-04-16), section 3.7.2 "Request Matching", Part 2: "Obtain the
+     * object that will handle the request"
      * 
      * @param rrcAndRemPath
      * @return Resource Object
      * @throws RequestHandledException
      * @throws WebApplicationException
      */
-    private ResObjAndRemPath obtainObjectThatHandleRequest(
-            RrcAndRemPath rrcAndRemPath) throws RequestHandledException,
-            WebApplicationException {
+    private ResObjAndRemPath obtainObject(RrcAndRemPath rrcAndRemPath)
+            throws RequestHandledException, WebApplicationException {
         RemainingPath u = rrcAndRemPath.u;
         RootResourceClass rrc = rrcAndRemPath.rrc;
         PathRegExp rMatch = rrc.getPathRegExp();
@@ -713,8 +721,9 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
-     * 2007-12-07, Section 3.7.1 Matching Requests to Resource Methods, Part 3.
+     * Identifies the method that will handle the request, see JAX-RS-Spec
+     * (2008-04-16), section 3.7.2 "Request Matching", Part 3: Identify the
+     * method that will handle the request:"
      * 
      * @return Resource Object and Method, that handle the request.
      * @throws RequestHandledException
@@ -722,9 +731,8 @@ public class JaxRsRouter extends Restlet {
      *                 Resource Method for OPTIONS is available.
      * @throws ResourceMethodNotFoundException
      */
-    private ResObjAndMeth identifyMethodThatHandleRequest(
-            ResObjAndRemPath resObjAndRemPath, MediaType givenMediaType)
-            throws RequestHandledException {
+    private ResObjAndMeth identifyMethod(ResObjAndRemPath resObjAndRemPath,
+            MediaType givenMediaType) throws RequestHandledException {
         CallContext callContext = tlContext.get();
         org.restlet.data.Method httpMethod = callContext.getRequest()
                 .getMethod();
@@ -787,17 +795,22 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
+     * Invokes the (sub) resource method. Handles / converts also occuring
+     * exceptions.
+     * 
      * @param resourceMethod
+     *                the (sub) resource method to invoke
      * @param resourceObject
+     *                the resource object to invoke the method on.
+     * @return the object returned by the (sub) resource method.
      * @throws RequestHandledException
      *                 if the request is already handled
      * @throws WebApplicationException
      *                 if a JAX-RS class throws an WebApplicationException
      */
-    private void invokeMethodAndHandleResult(ResourceMethod resourceMethod,
-            ResourceObject resourceObject) throws RequestHandledException,
-            WebApplicationException {
-        CallContext callContext = tlContext.get();
+    private Object invokeMethod(ResourceMethod resourceMethod,
+            ResourceObject resourceObject) throws WebApplicationException,
+            RequestHandledException {
         Object result;
         try {
             result = resourceMethod.invoke(resourceObject, tlContext,
@@ -807,13 +820,13 @@ public class JaxRsRouter extends Restlet {
         } catch (InvocationTargetException ite) {
             throw handleInvocationTargetExc(ite);
         } catch (RuntimeException e) {
-            throw excHandler.runtimeExecption(e, resourceMethod, callContext,
-                    "Can not invoke the resource method");
+            throw excHandler.runtimeExecption(e, resourceMethod, tlContext
+                    .get(), "Can not invoke the resource method");
         } catch (MethodInvokeException e) {
-            throw excHandler.methodInvokeException(e, callContext,
+            throw excHandler.methodInvokeException(e, tlContext.get(),
                     "Can not invoke the resource method");
         } catch (MissingAnnotationException e) {
-            throw excHandler.missingAnnotation(e, callContext,
+            throw excHandler.missingAnnotation(e, tlContext.get(),
                     "Can not invoke the " + resourceMethod);
         } catch (NoMessageBodyReaderException nmbre) {
             throw excHandler.noMessageBodyReader();
@@ -830,7 +843,20 @@ public class JaxRsRouter extends Restlet {
         } catch (ConvertCookieParamException e) {
             throw excHandler.convertCookieParamExc(e);
         }
-        Response restletResponse = callContext.getResponse();
+        return result;
+    }
+
+    /**
+     * Sets the result of the resource method invocation into the response. Do
+     * necessary converting.
+     * 
+     * @param result
+     *                the result of the resource method
+     * @param resourceMethod
+     *                the resource method, needed for the conversion.
+     */
+    private void handleResult(Object result, ResourceMethod resourceMethod) {
+        Response restletResponse = tlContext.get().getResponse();
         if (result == null) { // no representation
             restletResponse.setStatus(Status.SUCCESS_NO_CONTENT);
             restletResponse.setEntity(null);
@@ -840,7 +866,6 @@ public class JaxRsRouter extends Restlet {
             if (result instanceof javax.ws.rs.core.Response) {
                 jaxRsRespToRestletResp((javax.ws.rs.core.Response) result,
                         resourceMethod);
-                // } else if(result instanceof URI) { // perhaps 201 or 303
             } else if (result instanceof javax.ws.rs.core.Response.ResponseBuilder) {
                 String warning = "the method "
                         + resourceMethod
@@ -911,7 +936,7 @@ public class JaxRsRouter extends Restlet {
             Response restletResponse = tlContext.get().getResponse();
             restletResponse.setStatus(status);
         } else {
-            javax.ws.rs.core.Response jaxRsResp = excMapper.convert(cause);
+            javax.ws.rs.core.Response jaxRsResp = excMappers.convert(cause);
             jaxRsRespToRestletResp(jaxRsResp, null);
         }
         throw new RequestHandledException();
@@ -973,8 +998,7 @@ public class JaxRsRouter extends Restlet {
                 accMediaTypes);
         Response response = tlContext.get().getResponse();
         if (mbw == null)
-            excHandler
-                    .noMessageBodyWriter();
+            excHandler.noMessageBodyWriter();
         MediaType mediaType;
         if (responseMediaType != null)
             mediaType = responseMediaType;
@@ -987,8 +1011,8 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Determines the MediaType for a response. See JAX-RS-Spec, Section 2.6
-     * "Determining the MediaType of Responses", Parts 1-6
+     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
+     * section 3.8 "Determining the MediaType of Responses", Parts 1-6
      * 
      * @param resourceMethod
      *                The ResourceMethod that created the entity.
@@ -1037,8 +1061,8 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Determines the MediaType for a response. See JAX-RS-Spec, Section 2.6
-     * "Determining the MediaType of Responses", Part 7-9
+     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
+     * section 3.8 "Determining the MediaType of Responses", Part 7-9
      * 
      * @param m
      *                the possible {@link MediaType}s.
@@ -1062,8 +1086,9 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Structure to return the identiied {@link RootResourceClass}, the
-     * remaining path after identifying and the matched template parameters.
+     * Structure to return the identified {@link RootResourceClass}, the
+     * matched URI path and the remaining path after identifying the root
+     * resource class.
      * 
      * @author Stephan Koops
      */
@@ -1083,8 +1108,8 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Structure to return the obtained {@link ResourceObject}, the remaining
-     * path after identifying the object and all matched template parameters.
+     * Structure to return the obtained {@link ResourceObject} and the remaining
+     * path after identifying the object.
      * 
      * @author Stephan Koops
      */
@@ -1101,9 +1126,8 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Structure to return the obtained {@link ResourceObject}, the
-     * {@link ResourceMethod} identifying it and all matched template
-     * parameters.
+     * Structure to return the obtained {@link ResourceObject} and the
+     * identified {@link ResourceMethod}.
      * 
      * @author Stephan Koops
      */
@@ -1134,10 +1158,12 @@ public class JaxRsRouter extends Restlet {
      * Sets the {@link RoleChecker} to use.
      * 
      * @param roleChecker
-     *                the roleChecker to set.
+     *                the roleChecker to set. Must not be null. Take a look at
+     *                {@link RoleChecker#ALLOW_ALL},
+     *                {@link RoleChecker#FORBID_ALL} and
+     *                {@link RoleChecker#REJECT_WITH_ERROR}.
      * @throws IllegalArgumentException
-     *                 If the given roleChecker is null, an
-     *                 {@link IllegalArgumentException} is thrown.
+     *                 If the given roleChecker is null.
      * @see RoleChecker
      * @see #getRoleChecker()
      */
@@ -1146,7 +1172,7 @@ public class JaxRsRouter extends Restlet {
         if (roleChecker == null)
             throw new IllegalArgumentException(
                     "The roleChecker must not be null. You can use the "
-                            + "RoleChecker.FORBID_ALL constant, the "
+                            + "RoleChecker.ALLOW_ALL constant, the "
                             + "RoleChecker.FORBID_ALL constant or the "
                             + "RoleChecker.REJECT_WITH_ERROR constant");
         this.roleChecker = roleChecker;
@@ -1175,14 +1201,5 @@ public class JaxRsRouter extends Restlet {
         for (RootResourceClass rrc : this.rootResourceClasses)
             uris.add(rrc.getPathRegExp().getPathPattern());
         return Collections.unmodifiableCollection(uris);
-    }
-
-    /**
-     * Checks, if any root resource class was added or not.
-     * 
-     * @return true, if
-     */
-    public boolean isEmpty() {
-        return this.rootResourceClasses.isEmpty();
     }
 }
