@@ -31,7 +31,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 /**
- * The ExceptionMappers handles the exceptions thrown by JAX-RS classes.
+ * The ExceptionMappers handles the exceptions thrown by JAX-RS classes ((Sub)
+ * Resource Methods, Sub Resource Locators, Providers).
  * 
  * @author Stephan Koops
  */

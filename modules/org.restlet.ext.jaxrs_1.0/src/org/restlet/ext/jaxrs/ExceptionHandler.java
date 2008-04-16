@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -41,12 +40,9 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
-import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
-import org.restlet.resource.StringRepresentation;
 
 /**
  * <p>
@@ -247,33 +243,20 @@ class ExceptionHandler {
     }
 
     /**
-     * @param response
-     * @param mediaType
-     * @param paramType
-     * @return formally the type of thrown Exception
-     * @throws RequestHandledException
+     * see spec, section 4.3.1, item 5O
      */
-    RequestHandledException noMessageBodyReader(CallContext callContext,
-            NoMessageBodyReaderException nmbre) throws RequestHandledException {
-        Response response = callContext.getResponse();
-        MediaType mediaType = nmbre.getMediaType();
-        Class<?> paramType = nmbre.getParamType();
-        response.setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
-        response.setEntity(new StringRepresentation(
-                "No MessageBodyReader found to convert from media type "
-                        + mediaType + " to " + paramType));
-        throw new RequestHandledException();
+    WebApplicationException noMessageBodyReader() {
+        throw new WebApplicationException(
+                Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE.getCode());
     }
 
-    RequestHandledException noMessageBodyWriter(Response response,
-            SortedMetadata<MediaType> accMediaTypes, Class<?> paramType)
-            throws RequestHandledException {
-        response.setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-        response.setEntity(new StringRepresentation(
-                "No MessageBodyWriter found to convert from java type "
-                        + paramType + " to one of the media types "
-                        + accMediaTypes));
-        throw new RequestHandledException();
+    /**
+     * see spec, section 4.3.2, item 7
+     */
+    RequestHandledException noMessageBodyWriter() {
+        // REQUESTED return supported MediaTypes as entity
+        throw new WebApplicationException(Status.CLIENT_ERROR_NOT_ACCEPTABLE
+                .getCode());
     }
 
     /**
@@ -290,6 +273,7 @@ class ExceptionHandler {
      */
     WebApplicationException notAcceptableWhileDetermineMediaType()
             throws WebApplicationException {
+        // REQUESTED return supported MediaTypes as entity
         throw new WebApplicationException(Status.CLIENT_ERROR_NOT_ACCEPTABLE
                 .getCode());
     }

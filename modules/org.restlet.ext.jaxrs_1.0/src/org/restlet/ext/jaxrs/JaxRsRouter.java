@@ -602,7 +602,7 @@ public class JaxRsRouter extends Restlet {
         } catch (WebApplicationException e) {
             throw e;
         } catch (NoMessageBodyReaderException e) {
-            throw excHandler.noMessageBodyReader(callContext, e);
+            throw excHandler.noMessageBodyReader();
         } catch (RuntimeException e) {
             throw excHandler.runtimeExecption(e, null, callContext,
                     "Could not create new instance of root resource class");
@@ -693,7 +693,7 @@ public class JaxRsRouter extends Restlet {
             } catch (InvocationTargetException e) {
                 throw handleInvocationTargetExc(e);
             } catch (NoMessageBodyReaderException nmbre) {
-                throw excHandler.noMessageBodyReader(callContext, nmbre);
+                throw excHandler.noMessageBodyReader();
             } catch (ConvertRepresentationException e) {
                 throw excHandler.convertRepresentationExc(e);
             } catch (ConvertHeaderParamException e) {
@@ -816,7 +816,7 @@ public class JaxRsRouter extends Restlet {
             throw excHandler.missingAnnotation(e, callContext,
                     "Can not invoke the " + resourceMethod);
         } catch (NoMessageBodyReaderException nmbre) {
-            throw excHandler.noMessageBodyReader(callContext, nmbre);
+            throw excHandler.noMessageBodyReader();
         } catch (ConvertRepresentationException e) {
             throw excHandler.convertRepresentationExc(e);
         } catch (ConvertHeaderParamException e) {
@@ -866,13 +866,11 @@ public class JaxRsRouter extends Restlet {
      * @param jaxRsResponse
      * @param jaxRsMethod
      *                the method creating the response. May be null.
-     * @throws RequestHandledException
-     * 
      * @see ExceptionHandler#jaxRsRespToRestletResp(javax.ws.rs.core.Response,
      *      AbstractMethodWrapper)
      */
     void jaxRsRespToRestletResp(javax.ws.rs.core.Response jaxRsResponse,
-            AbstractMethodWrapper jaxRsMethod) throws RequestHandledException {
+            AbstractMethodWrapper jaxRsMethod) {
         Response restletResponse = tlContext.get().getResponse();
         restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
         Object mediaTypeStr = jaxRsResponse.getMetadata().getFirst(
@@ -940,7 +938,7 @@ public class JaxRsRouter extends Restlet {
      *                {@link javax.ws.rs.core.Response}.
      * @return the corresponding Restlet Representation. Returns
      *         <code>null</code> only if null was given.
-     * @throws RequestHandledException
+     * @throws WebApplicationException
      * @see WrapperUtil#convertRepresentation(ThreadLocalizedContext, Class,
      *      Type , Annotation[], MessageBodyReaderSet, Logger)
      */
@@ -949,7 +947,7 @@ public class JaxRsRouter extends Restlet {
             AbstractMethodWrapper resourceMethod, MediaType responseMediaType,
             MultivaluedMap<String, Object> jaxRsRespHeaders,
             SortedMetadata<MediaType> accMediaTypes)
-            throws RequestHandledException, ImplementationException {
+            throws ImplementationException {
         if (entity instanceof Representation)
             return (Representation) entity;
         if (entity == null)
@@ -976,7 +974,7 @@ public class JaxRsRouter extends Restlet {
         Response response = tlContext.get().getResponse();
         if (mbw == null)
             excHandler
-                    .noMessageBodyWriter(response, accMediaTypes, entityClass);
+                    .noMessageBodyWriter();
         MediaType mediaType;
         if (responseMediaType != null)
             mediaType = responseMediaType;
