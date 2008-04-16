@@ -206,20 +206,18 @@ public class JaxRsApplication extends Application {
 
         Restlet restlet = jaxRsRouter;
 
+        TunnelFilter tunnelFilter = new TunnelFilter(this);
+        tunnelFilter.setNext(restlet);
+        restlet = tunnelFilter;
+
         if (this.guard != null) {
             this.guard.setNext(restlet);
             restlet = this.guard;
         }
 
-        TunnelFilter tunnelFilter = new TunnelFilter(this);
-        tunnelFilter.setNext(restlet);
-        restlet = tunnelFilter;
-
-        // some browser request XML with higher quality than HTML.
-        // If you want to change the quality, use this HtmlPreferer
-        // filter. If you do not need it, you can directly return the
-        // router.
-        restlet = new HtmlPreferer(getContext(), restlet);
+        if (preferHtml) {
+            restlet = new HtmlPreferer(getContext(), restlet);
+        }
 
         return restlet;
     }
