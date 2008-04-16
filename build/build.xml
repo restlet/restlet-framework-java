@@ -281,6 +281,7 @@
       <path refid="mod-velocity-path" />
       <path refid="mod-jaxb-path" />
       <path refid="mod-jibx-path" />
+      <path refid="mod-atom-path" />
       <pathelement path="${mod}/${mod-jaxrs-id}/src" />
       <pathelement path="${classes}/${mod-jaxrs-id}" />
       <pathelement path="${classes}/${mod-ri-id}" />
@@ -289,6 +290,7 @@
       <pathelement path="${classes}/${mod-velocity-id}" />
       <pathelement path="${classes}/${mod-jaxb-id}" />
       <pathelement path="${classes}/${mod-jibx-id}" />
+      <pathelement path="${classes}/${mod-atom-id}" />
       <fileset dir="${lib}/${lib-db4o-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-bloat-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
