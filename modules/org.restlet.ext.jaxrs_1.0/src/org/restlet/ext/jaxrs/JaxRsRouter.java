@@ -154,19 +154,31 @@ public class JaxRsRouter extends Restlet {
     private final EntityProviders entityProviders = new EntityProviders();
 
     /**
-     * This {@link Set} contains the available
-     * {@link javax.ws.rs.ext.ContextResolver}s, each wrapped with an
-     * {@link org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver}.<br>
+     * This {@link Set} contains all available
+     * {@link javax.ws.rs.ext.ContextResolver}s.<br>
      * This field is final, because it is shared with other objects.
      */
-    private final Collection<ContextResolver<?>> allResolvers = new HashSet<ContextResolver<?>>();
+    private final Collection<ContextResolver<?>> contextResolvers = new HashSet<ContextResolver<?>>();
 
     private final WrapperFactory wrapperFactory;
 
+    /**
+     * Contains and handles the exceptions occuring while in resource objects
+     * and providers, and also for the other cases where the runtime environment
+     * should throw {@link WebApplicationException}.
+     */
     private final ExceptionHandler excHandler;
 
+    /**
+     * Handles the exceptions. Perhaps this class be removed, because the
+     * handling is typically throwing an {@link WebApplicationException} with a
+     * defined status.
+     */
     private final ExceptionMappers excMappers = new ExceptionMappers();
 
+    /**
+     * Contains all providers.
+     */
     private final Collection<Provider<?>> allProviders = new ArrayList<Provider<?>>();
 
     /**
@@ -220,7 +232,7 @@ public class JaxRsRouter extends Restlet {
         super(context);
         this.excHandler = new ExceptionHandler(getLogger());
         this.wrapperFactory = new WrapperFactory(this.entityProviders,
-                this.allResolvers, getLogger());
+                this.contextResolvers, getLogger());
         this.loadDefaultProviders();
         if (appConfig != null)
             this.attach(appConfig);
@@ -430,7 +442,7 @@ public class JaxRsRouter extends Restlet {
         Provider<?> provider;
         try {
             provider = new Provider<Object>(jaxRsProviderClass, tlContext,
-                    this.entityProviders, allResolvers);
+                    this.entityProviders, contextResolvers);
         } catch (InstantiateException e) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
                     + "Could not instantiate the Provider, class "
@@ -462,7 +474,7 @@ public class JaxRsRouter extends Restlet {
         }
         this.entityProviders.add(provider, defaultProvider);
         if (provider.isContextResolver())
-            this.allResolvers.add(provider.getContextResolver());
+            this.contextResolvers.add(provider.getContextResolver());
         if (provider.isExceptionMapper())
             this.excMappers.add(provider);
         this.allProviders.add(provider);
@@ -473,7 +485,7 @@ public class JaxRsRouter extends Restlet {
     @SuppressWarnings("unchecked")
     public void start() throws Exception {
         for (Provider<?> provider : allProviders)
-            provider.init(tlContext, this.entityProviders, this.allResolvers);
+            provider.init(tlContext, entityProviders, contextResolvers);
         super.start();
     }
 
@@ -606,8 +618,8 @@ public class JaxRsRouter extends Restlet {
             throws WebApplicationException, RequestHandledException {
         ResourceObject o;
         try {
-            o = rrc.createInstance(tlContext, entityProviders, allResolvers,
-                    getLogger());
+            o = rrc.createInstance(tlContext, entityProviders,
+                    contextResolvers, getLogger());
         } catch (WebApplicationException e) {
             throw e;
         } catch (NoMessageBodyReaderException e) {
@@ -706,7 +718,7 @@ public class JaxRsRouter extends Restlet {
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
                 o = subResourceLocator.createSubResource(o, tlContext,
-                        this.entityProviders, wrapperFactory, allResolvers,
+                        this.entityProviders, wrapperFactory, contextResolvers,
                         getLogger());
             } catch (WebApplicationException e) {
                 throw e;
@@ -836,7 +848,7 @@ public class JaxRsRouter extends Restlet {
         Object result;
         try {
             result = resourceMethod.invoke(resourceObject, tlContext,
-                    this.entityProviders, allResolvers, getLogger());
+                    this.entityProviders, contextResolvers, getLogger());
         } catch (WebApplicationException e) {
             throw e;
         } catch (InvocationTargetException ite) {

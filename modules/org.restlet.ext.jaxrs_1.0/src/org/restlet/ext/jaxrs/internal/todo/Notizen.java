@@ -26,6 +26,8 @@ public class Notizen {
 
     // TESTEN what happens, if ".." or "." in @Path?
 
+    // REQUESTED If a system property with the name javax.xml.ws.spi.Provider is defined
+
     // REQUESTED rename @DefaultValue to @Default? it's shorter
 
     // REQUESTED @Context on type PathSegment ?
