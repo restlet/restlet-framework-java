@@ -404,8 +404,8 @@ public class Service extends SaxRepresentation {
     @Override
     public void write(XmlWriter writer) throws IOException {
         try {
-            writer.setPrefix(APP_NAMESPACE, "");
-            writer.setPrefix(ATOM_NAMESPACE, "atom");
+            writer.forceNSDecl(APP_NAMESPACE, "");
+            writer.forceNSDecl(ATOM_NAMESPACE, "atom");
             writer.setDataFormat(true);
             writer.setIndentStep(3);
             writer.startDocument();
