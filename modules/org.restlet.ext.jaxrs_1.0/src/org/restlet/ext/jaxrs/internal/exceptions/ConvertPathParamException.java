@@ -29,6 +29,8 @@ public class ConvertPathParamException extends JaxRsException {
 
     private static final long serialVersionUID = 7259271064216490329L;
 
+    // LATER WebAppExc(404) instead of ConvertPathParamException.
+
     /**
      * @param cpe
      */

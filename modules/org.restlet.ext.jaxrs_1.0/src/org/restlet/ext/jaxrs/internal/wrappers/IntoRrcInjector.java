@@ -56,6 +56,9 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  */
 class IntoRrcInjector extends ContextInjector {
 
+    // LATER refactor and use InjectionAim, 
+    // take a look at sect 3.2 "Fields and Bean Properties" for Except handling
+    
     private static final Logger localLogger = Logger.getAnonymousLogger();
 
     private static final Field[] EMPTY_FIELD_ARRAY = new Field[0];

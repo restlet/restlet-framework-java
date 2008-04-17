@@ -30,6 +30,8 @@ public class ConvertCookieParamException extends JaxRsException {
 
     private static final long serialVersionUID = 9098614715395362234L;
 
+    // LATER WebAppExc(400) instead of ConvertCookieParamException.
+
     /**
      * @param cpe
      */

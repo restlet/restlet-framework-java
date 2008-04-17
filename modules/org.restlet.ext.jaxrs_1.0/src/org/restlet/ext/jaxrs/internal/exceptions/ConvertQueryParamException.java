@@ -30,6 +30,8 @@ public class ConvertQueryParamException extends JaxRsException {
 
     private static final long serialVersionUID = 131640120766355816L;
 
+    // LATER WebAppExc(404) instead of ConvertQueryParamException.
+
     /**
      * @param cpe
      */

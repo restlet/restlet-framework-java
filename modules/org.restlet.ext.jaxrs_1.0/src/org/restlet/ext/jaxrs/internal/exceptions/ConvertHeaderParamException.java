@@ -30,6 +30,8 @@ public class ConvertHeaderParamException extends JaxRsException {
 
     private static final long serialVersionUID = -2880948194279374251L;
 
+    // LATER WebAppExc(400) instead of ConvertHeaderParamException.
+
     /**
      * @param cpe
      */

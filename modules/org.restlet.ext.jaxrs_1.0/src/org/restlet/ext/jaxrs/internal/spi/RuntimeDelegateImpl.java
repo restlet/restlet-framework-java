@@ -61,7 +61,7 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
         if (type.equals(MediaType.class))
             return new MediaTypeHeaderDelegate();
         throw new IllegalArgumentException(
-                "This method support only the Types Cookie, CacheControl, EntityTag, NewCookie and MediaType");
+                "This method supports only the Types Cookie, CacheControl, EntityTag, NewCookie and MediaType");
     }
 
     /**
@@ -95,6 +95,7 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
      *                 ever.
      */
     @Override
+    @Deprecated
     public <T> T createEndpoint(ApplicationConfig applicationConfig,
             Class<T> endpointType) throws UnsupportedOperationException {
         throw new UnsupportedOperationException(

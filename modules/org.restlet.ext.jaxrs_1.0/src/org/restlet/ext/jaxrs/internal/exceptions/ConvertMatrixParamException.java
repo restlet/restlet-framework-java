@@ -30,6 +30,8 @@ public class ConvertMatrixParamException extends JaxRsException {
 
     private static final long serialVersionUID = 6704339151884788476L;
 
+    // LATER WebAppExc(404) instead of ConvertMatrixParamException.
+
     /**
      * @param cpe
      */
