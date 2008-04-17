@@ -200,7 +200,7 @@ public class HttpServerConverter extends HttpConverter {
      * 
      * @param dimensions
      *                The dimensions to copy to the response.
-     * @return Returns a vary header.
+     * @return Returns the Vary header or null, if dimensions is null or empty.
      */
     public static String createVaryHeader(Collection<Dimension> dimensions) {
         String vary = null;

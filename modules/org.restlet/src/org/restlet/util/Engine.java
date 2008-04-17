@@ -271,7 +271,7 @@ public abstract class Engine {
     public abstract void challenge(Response response, boolean stale, Guard guard);
 
     /**
-     * Copies the given header parameters into teh given {@link Response}.
+     * Copies the given header parameters into the given {@link Response}.
      * 
      * @param headers
      *                The headers to copy.
