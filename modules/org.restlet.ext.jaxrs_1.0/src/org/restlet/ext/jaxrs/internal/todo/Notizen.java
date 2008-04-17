@@ -25,8 +25,9 @@ package org.restlet.ext.jaxrs.internal.todo;
 public class Notizen {
 
     // TESTEN what happens, if ".." or "." in @Path?
-
-    // REQUESTED If a system property with the name javax.xml.ws.spi.Provider is defined
+    
+    // TESTEN what happens, if e.g. a JaX-RS MediaType is given to the headers
+    // in a JAX-RS Response?
 
     // REQUESTED rename @DefaultValue to @Default? it's shorter
 

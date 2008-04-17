@@ -38,7 +38,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.data.Dimension;
 import org.restlet.ext.jaxrs.internal.util.Converter;
-import org.restlet.util.Engine;
+import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
  * Implementation of the {@link ResponseBuilder}.
@@ -338,7 +338,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     @Override
     public ResponseBuilder tag(String tag) {
         if (tag == null)
-            tag((EntityTag)null);
+            tag((EntityTag) null);
         else
             tag(new EntityTag(tag, false));
         return this;
@@ -430,7 +430,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
             dimensions.add(Dimension.MEDIA_TYPE);
         if (charsets.size() > 1)
             dimensions.add(Dimension.CHARACTER_SET);
-        String vary = Engine.getInstance().formatDimensions(dimensions);
+        String vary = Util.formatDimensions(dimensions);
         if (vary != null)
             this.getMetadata().putSingle(HttpHeaders.VARY, vary);
         return this;

@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.restlet.data.Dimension;
 import org.restlet.data.Form;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
@@ -365,6 +366,18 @@ public class Util {
         } else {
             return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
         }
+    }
+
+    /**
+     * Formats the given {@link Set} of {@link Dimension}s to a String for the
+     * HTTP Vary header.
+     * 
+     * @param dimensions
+     *                the dimensions to format.
+     * @return the Vary header or null, if dimensions is null or empty.
+     */
+    public static String formatDimensions(Set<Dimension> dimensions) {
+        return Engine.getInstance().formatDimensions(dimensions);
     }
 
     /**
@@ -1130,14 +1143,13 @@ public class Util {
      * 
      * @param collection
      * @param delimiter
-     * @return the concatenated 
+     * @return the concatenated
      */
-    public static Object toString(Collection<?> collection,
-            String delimiter) {
-        if(collection == null || collection.isEmpty())
+    public static Object toString(Collection<?> collection, String delimiter) {
+        if (collection == null || collection.isEmpty())
             return "";
         Iterator<?> iterator = collection.iterator();
-        if(collection.size() == 1)
+        if (collection.size() == 1)
             return String.valueOf(iterator.next());
         StringBuilder stb = new StringBuilder();
         stb.append(iterator.next());
