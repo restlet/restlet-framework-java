@@ -530,9 +530,9 @@ public class JaxRsRouter extends Restlet {
         // Part 1
         RemainingPath u = new RemainingPath(restletRequest.getResourceRef()
                 .getRemainingPart());
-        RrcAndRemPath rcat = identifyRootResourceClass(u);
+        RroRemPathAndMatchedPath rrm = identifyRootResource(u);
         // Part 2
-        ResObjAndRemPath resourceObjectAndPath = obtainObject(rcat);
+        ResObjAndRemPath resourceObjectAndPath = obtainObject(rrm);
         Representation entity = restletRequest.getEntity();
         // Part 3
         MediaType givenMediaType;
@@ -549,11 +549,16 @@ public class JaxRsRouter extends Restlet {
      * Identifies the root resource class, see JAX-RS-Spec (2008-04-16), section
      * 3.7.2 "Request Matching", Part 1: "Identify the root resource class"
      * 
-     * @return The identified root resource class, the remaining path after
+     * @param u
+     *                the remaining path after the base ref
+     * @return The identified root resource object, the remaining path after
      *         identifying and the matched template parameters; see
-     *         {@link RrcAndRemPath}.
+     *         {@link RroRemPathAndMatchedPath}.
+     * @throws WebApplicationException
+     * @throws RequestHandledException
      */
-    private RrcAndRemPath identifyRootResourceClass(RemainingPath u) {
+    private RroRemPathAndMatchedPath identifyRootResource(RemainingPath u)
+            throws WebApplicationException, RequestHandledException {
         // 1. Identify the root resource class:
         // (a)
         // c: Set<Class>: root resource classes
@@ -584,26 +589,22 @@ public class JaxRsRouter extends Restlet {
         MatchingResult matchResult = rMatch.match(u);
         u = matchResult.getFinalCapturingGroup();
         addPathVarsToMap(matchResult, tlContext.get());
-        return new RrcAndRemPath(tClass, matchResult.getMatched(), u);
+        ResourceObject o = instantiateRrc(tClass);
+        return new RroRemPathAndMatchedPath(o, u, matchResult.getMatched());
     }
 
     /**
-     * Obtains the object that will handle the request, see JAX-RS-Spec
-     * (2008-04-16), section 3.7.2 "Request Matching", Part 2: "Obtain the
-     * object that will handle the request"
+     * Instantiates the root resource class and handle occuring exceptions.
      * 
-     * @param rrcAndRemPath
-     * @return Resource Object
-     * @throws RequestHandledException
+     * @param rrc
+     *                the root resource class to instantiate
+     * @return the instance of the root resource
      * @throws WebApplicationException
+     * @throws RequestHandledException
      */
-    private ResObjAndRemPath obtainObject(RrcAndRemPath rrcAndRemPath)
-            throws RequestHandledException, WebApplicationException {
-        RemainingPath u = rrcAndRemPath.u;
-        RootResourceClass rrc = rrcAndRemPath.rrc;
-        PathRegExp rMatch = rrc.getPathRegExp();
+    private ResourceObject instantiateRrc(RootResourceClass rrc)
+            throws WebApplicationException, RequestHandledException {
         ResourceObject o;
-        CallContext callContext = tlContext.get();
         try {
             o = rrc.createInstance(tlContext, entityProviders, allResolvers,
                     getLogger());
@@ -612,13 +613,13 @@ public class JaxRsRouter extends Restlet {
         } catch (NoMessageBodyReaderException e) {
             throw excHandler.noMessageBodyReader();
         } catch (RuntimeException e) {
-            throw excHandler.runtimeExecption(e, null, callContext,
+            throw excHandler.runtimeExecption(e, null, tlContext.get(),
                     "Could not create new instance of root resource class");
         } catch (MissingAnnotationException e) {
-            throw excHandler.missingAnnotation(e, callContext,
+            throw excHandler.missingAnnotation(e, tlContext.get(),
                     "Could not create new instance of " + rrc);
         } catch (InstantiateException e) {
-            throw excHandler.instantiateExecption(e, callContext,
+            throw excHandler.instantiateExecption(e, tlContext.get(),
                     "Could not create new instance of root resource class");
         } catch (InvocationTargetException e) {
             throw handleInvocationTargetExc(e);
@@ -635,9 +636,30 @@ public class JaxRsRouter extends Restlet {
         } catch (ConvertCookieParamException e) {
             throw excHandler.convertCookieParamExc(e);
         }
+        return o;
+    }
+
+    /**
+     * Obtains the object that will handle the request, see JAX-RS-Spec
+     * (2008-04-16), section 3.7.2 "Request Matching", Part 2: "Obtain the
+     * object that will handle the request"
+     * 
+     * @param rroRemPathAndMatchedPath
+     * @throws WebApplicationException
+     * @throws RequestHandledException
+     * @throws RuntimeException
+     */
+    private ResObjAndRemPath obtainObject(
+            RroRemPathAndMatchedPath rroRemPathAndMatchedPath)
+            throws WebApplicationException, RequestHandledException,
+            RuntimeException {
+        ResourceObject o = rroRemPathAndMatchedPath.rootResObj;
+        RemainingPath u = rroRemPathAndMatchedPath.u;
+        ResourceClass resClass = o.getResourceClass();
         Object jaxRsResObj1 = o.getJaxRsResourceObject();
-        callContext.addForAncestor(jaxRsResObj1, rrcAndRemPath.matchedUriPath);
-        ResourceClass resClass = rrc;
+        CallContext callContext = tlContext.get();
+        callContext.addForAncestor(jaxRsResObj1,
+                rroRemPathAndMatchedPath.matchedUriPath);
         // Part 2
         for (;;) // (j)
         {
@@ -667,7 +689,7 @@ public class JaxRsRouter extends Restlet {
             // (f) and (g) sort E, use first member of E
             ResourceMethodOrLocator firstMeth = getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eWithMethod);
 
-            rMatch = firstMeth.getPathRegExp();
+            PathRegExp rMatch = firstMeth.getPathRegExp();
             MatchingResult matchingResult = rMatch.match(u);
 
             addPathVarsToMap(matchingResult, callContext);
@@ -1086,24 +1108,25 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Structure to return the identified {@link RootResourceClass}, the
-     * matched URI path and the remaining path after identifying the root
-     * resource class.
+     * Structure to return an instance of the identified
+     * {@link RootResourceClass}, the matched URI path and the remaining path
+     * after identifying the root resource class.
      * 
      * @author Stephan Koops
      */
-    class RrcAndRemPath {
-        private RootResourceClass rrc;
+    class RroRemPathAndMatchedPath {
 
-        private String matchedUriPath;
+        private ResourceObject rootResObj;
 
         private RemainingPath u;
 
-        RrcAndRemPath(RootResourceClass rrc, String matchedUriPath,
-                RemainingPath u) {
-            this.rrc = rrc;
-            this.matchedUriPath = matchedUriPath;
+        private String matchedUriPath;
+
+        RroRemPathAndMatchedPath(ResourceObject rootResObj, RemainingPath u,
+                String matchedUriPath) {
+            this.rootResObj = rootResObj;
             this.u = u;
+            this.matchedUriPath = matchedUriPath;
         }
     }
 
