@@ -14,6 +14,26 @@
          <artifactId>jaxrs-api</artifactId>
          <version>@lib-jaxrs-version@</version>
       </dependency>
+      <dependency>
+         <groupId>javax.activation</groupId>
+         <artifactId>activation</artifactId>
+         <version>@lib-activation-version@</version>
+      </dependency>
+      <dependency>
+         <groupId>javax.xml.bind</groupId>
+         <artifactId>jaxb-api</artifactId>
+         <version>@lib-jaxb-version@</version>
+      </dependency>
+      <dependency>
+         <groupId>org.json</groupId>
+         <artifactId>json</artifactId>
+         <version>@lib-json-version@</version>
+      </dependency>
+      <dependency>
+         <groupId>javax.mail</groupId>
+         <artifactId>mail</artifactId>
+         <version>@lib-javamail-version@</version>
+      </dependency>
    </dependencies>
 
    <name>JAX-RS implementation</name>
