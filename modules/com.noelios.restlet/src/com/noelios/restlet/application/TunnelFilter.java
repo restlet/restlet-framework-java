@@ -150,7 +150,9 @@ public class TunnelFilter extends Filter {
                 String extensions = resourceRef.getExtensions();
 
                 // Discover extensions from right to left and stop at the first
-                // unknown extension.
+                // unknown extension. Only one extension per type of metadata is
+                // also allowed: i.e. one language, one mediatype, one encoding,
+                // one character set.
                 while (true) {
                     int lastIndexOfPoint = extensions.lastIndexOf('.');
                     String extension = extensions

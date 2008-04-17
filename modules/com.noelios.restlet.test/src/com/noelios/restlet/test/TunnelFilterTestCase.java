@@ -299,9 +299,20 @@ public class TunnelFilterTestCase extends TestCase {
 
         createGetFromPath("hksf.html.afsdf.txt.en.fr");
         filter();
-        checkFromPath("hksf.html.afsdf.en", "html.afsdf.en");
-        assertMediaTypes(MediaType.TEXT_PLAIN);
+        checkFromPath("hksf.html.afsdf.txt.en", "html.afsdf.txt.en");
+        // Take care about the fact that only one extension per metadata "type"
+        // is allowed: ie only one Language, one encoding, one media type, etc.
+        // assertMediaTypes(MediaType.TEXT_PLAIN);
+        assertMediaTypes();
         assertLanguages(Language.FRENCH);
+        assertEncodings();
+        assertCharSets();
+
+        createGetFromPath("hksf.html.afsdf.txt.en");
+        filter();
+        checkFromPath("hksf.html.afsdf", "html.afsdf");
+        assertMediaTypes(MediaType.TEXT_PLAIN);
+        assertLanguages(Language.ENGLISH);
         assertEncodings();
         assertCharSets();
 
