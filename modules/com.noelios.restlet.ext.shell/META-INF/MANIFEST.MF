@@ -6,5 +6,6 @@ Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
 Require-Bundle: com.noelios.restlet;visibility:=reexport,
  jline,
- org.antlr
+ org.antlr,
+ org.restlet
 Export-Package: com.noelios.restlet.ext.shell

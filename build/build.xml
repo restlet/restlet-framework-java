@@ -422,6 +422,13 @@
       <fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
    </path>
 
+   <path id="mod-shell-path">
+      <path refid="mod-ri-path" />
+      <pathelement path="${classes}/${mod-ri-id}" />
+      <fileset dir="${lib}/${lib-antlr-id}" includes="*.jar" />
+      <fileset dir="${lib}/${lib-jline-id}" includes="*.jar" />
+   </path>
+
    <path id="mod-simple-path">
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
@@ -516,7 +523,11 @@
    <path id="ant-contrib.path">
       <fileset dir="tools/ant-contrib" includes="**/*.jar" />
    </path>
-   
+
+   <path id="antlr.path">
+      <fileset dir="tools/antlr" includes="**/*.jar" />
+   </path>
+
    <!-- =================== -->
    <!-- ===  Ant Tasks  === -->
    <!-- =================== -->
@@ -524,8 +535,7 @@
    <!-- ANTLR 3.0 -->
    <taskdef name="antlr3" classname="org.apache.tools.ant.antlr.ANTLR3">
       <classpath>
-         <pathelement location="tools/antlr/org.apache.tools.antlr.jar" />
-         <pathelement location="tools/antlr/org.antlr.jar" />
+         <fileset dir="tools/antlr" includes="**/*.jar" />
       </classpath>
    </taskdef>
 
@@ -555,7 +565,7 @@
    <taskdef name="nsis" classname="net.sf.nsisant.Task">
       <classpath>
          <pathelement location="tools/nsis/nsisant-1.3.custom.jar" />
-       </classpath>
+      </classpath>
    </taskdef>
    
    <!-- Ant Contrib -->
@@ -565,6 +575,22 @@
    <!-- ===  Ant Macros  === -->
    <!-- ==================== -->
 
+   <!-- run antlr on grammar -->
+   <macrodef name="antlrBuild">
+      <attribute name="grammar"/>
+      <attribute name="outputDirectory"/>
+      <attribute name="libDirectory"/>
+      <sequential>
+         <antlr3 target="@{grammar}" 
+                 outputdirectory="@{outputDirectory}"
+                 libdirectory="@{libDirectory}">
+            <classpath>
+               <path refid="antlr.path" />
+            </classpath>
+         </antlr3>
+      </sequential>
+   </macrodef>
+   
    <!-- Compile using preferences -->
    <macrodef name="compile">
       <attribute name="compiler" default="javac1.5" />
@@ -953,6 +979,12 @@
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@minor-number@" value="${minor-number}" />
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@release-type@" value="${release-type}" />
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@release-number@" value="${release-number}" />
+      
+      <!-- Invokes the ANTLR3 Translator generator on the grammar file provided for the "shell" extension. -->
+      <antlrBuild grammar="${mod}/${mod-shell-id}/src/main/antlr/com/noelios/restlet/ext/controller/commands/usage/Usage.g"
+                  outputDirectory="${mod}/${mod-shell-id}/src/com/noelios/restlet/ext/shell/controller/commands/usage/"
+                  libDirectory="${lib}"/>
+      
       <compileModule name="api" />
       <compileModule name="ri" />
       <compileModule name="atom" />
@@ -974,6 +1006,7 @@
       <compileModule name="oauth" />
       <compileModule name="servlet" />
       <compileModule name="gwt-ri" /><!-- depends on servlet -->
+      <compileModule name="shell" />
       <compileModule name="simple" />
       <compileModule name="spring-api" />
       <compileModule name="spring-nre" />
@@ -1008,6 +1041,7 @@
       <backportModule name="net" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="oauth" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="servlet" failonwarning="@{backport-failonwarning}"/>
+      <backportModule name="shell" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="simple" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="spring-api" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="spring-nre" failonwarning="@{backport-failonwarning}"/>
@@ -1211,6 +1245,7 @@
       <findbugsModule name="net" />
       <findbugsModule name="oauth" />
       <findbugsModule name="servlet" />
+      <findbugsModule name="shell" />
       <findbugsModule name="simple" />
       <findbugsModule name="spring-api" />
       <findbugsModule name="spring-nre" />
@@ -1243,6 +1278,7 @@
       <checkstyleModule name="net" />
       <checkstyleModule name="oauth" />
       <checkstyleModule name="servlet" />
+      <checkstyleModule name="shell" />
       <checkstyleModule name="simple" />
       <checkstyleModule name="spring-api" />
       <checkstyleModule name="spring-nre" />
@@ -1303,6 +1339,7 @@
 
       <!-- Packages libraries -->
 <!-- disabled for now  <stageLibrary name="bouncycastle" /> -->
+      <stageLibrary name="antlr" />
       <stageLibrary name="codec" />
       <stageLibrary name="collections" />
       <stageLibrary name="db4o" />
@@ -1319,6 +1356,7 @@
       <stageLibrary name="activation" />
       <stageLibrary name="jetty" />
       <stageLibrary name="jibx" />
+      <stageLibrary name="jline" />
       <stageLibrary name="json" />
 <!-- disabled for now  <stageLibrary name="jxta" /> -->
       <stageLibrary name="lang" />
@@ -1357,6 +1395,7 @@
       <stageModule name="net" />
       <stageModule name="oauth" />
       <stageModule name="servlet" />
+      <stageModule name="shell" />
       <stageModule name="simple" />
       <stageModule name="spring-api" />
       <stageModule name="spring-nre" />
@@ -1425,5 +1464,4 @@
          <fileset dir="${dist-classic}" includes="**/*" />
       </nsis>
    </target>
-
 </project>
