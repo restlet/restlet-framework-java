@@ -5,9 +5,12 @@ Bundle-SymbolicName: org.restlet.ext.velocity
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
 Export-Package: org.restlet.ext.velocity
-Import-Package: org.apache.velocity,
+Import-Package: org.apache.commons.collections,
+ org.apache.velocity,
  org.apache.velocity.app,
+ org.apache.velocity.exception,
  org.apache.velocity.runtime.resource,
+ org.apache.velocity.runtime.resource.loader,
  org.restlet,
  org.restlet.data,
  org.restlet.resource,

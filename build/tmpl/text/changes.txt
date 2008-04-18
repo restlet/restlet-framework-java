@@ -42,6 +42,7 @@ Changes log
         - Atom extension is now able to write Feed and Service XML
           documents and not just reading/parsing them. This can be used
           to return Atom feeds as representations.
+        - Added Velocity's RepresentationTemplateLoader class.
     - Misc
     	- Updated Grizzly to 1.7.3.
     	- Improved logging consistency.
