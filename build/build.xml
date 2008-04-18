@@ -931,6 +931,7 @@
       <pomModule name="net" />
       <pomModule name="oauth" />
       <pomModule name="servlet" />
+      <pomModule name="shell" />
       <pomModule name="simple" />
       <pomModule name="spring-api" ext="spring" />
       <pomModule name="spring-nre" ext="spring" />
@@ -1152,6 +1153,7 @@
             <pathelement path="${mod}/${mod-net-id}/src/" />
             <pathelement path="${mod}/${mod-oauth-id}/src/" />
             <pathelement path="${mod}/${mod-servlet-id}/src/" />
+            <pathelement path="${mod}/${mod-shell-id}/src/" />
             <pathelement path="${mod}/${mod-simple-id}/src/" />
             <pathelement path="${mod}/${mod-spring-api-id}/src/" />
             <pathelement path="${mod}/${mod-spring-nre-id}/src/" />
@@ -1435,6 +1437,7 @@
       <maven2Module name="net" />
       <maven2Module name="oauth" />
       <maven2Module name="servlet" />
+      <maven2Module name="shell" />
       <maven2Module name="simple" />
       <maven2Module name="spring-api" />
       <maven2Module name="spring-nre" />
