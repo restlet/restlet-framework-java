@@ -39,7 +39,7 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
 /**
- * Unit tests for the DirectoryHandler class.
+ * Unit tests for the Directory class.
  * 
  * @author Thierry Boileau
  */
@@ -89,7 +89,7 @@ public class DirectoryTestCase extends TestCase {
             // Test the directory Restlet with no index name
             testDirectory(application, application.getDirectory(), "");
 
-            // Allow extensions tunneling
+            // Avoid extensions tunneling
             application.getTunnelService().setExtensionsTunnel(false);
             // Test the directory Restlet with an index name
             testDirectory(application, application.getDirectory(), "index");
