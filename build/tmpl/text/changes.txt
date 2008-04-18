@@ -31,7 +31,13 @@ Changes log
         - Added static Response.getCurrent()/setCurrent() and Request.
           getCurrent() methods. Implementation based on thread local
           variables updated by component and applications when they
-          handle a request/response couple. Suggested by Stephan Koops.  
+          handle a request/response couple. Suggested by Stephan Koops.
+        - Added new Response.setStatus() methods and new Status 
+          constructors for more flexibility in setting status with 
+          associated exceptions.
+        - Ensured the all NRE core and extensions classes properly pass
+          the throwable/exceptions to the error statuses so they can be
+          later retrieved or printed. Suggested by Steve Loughran.  
     - NRE and Extension Enhancements
         - Atom extension is now able to write Feed and Service XML
           documents and not just reading/parsing them. This can be used

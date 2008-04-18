@@ -50,8 +50,7 @@ public class FreemarkerResource extends Resource {
                     application.getFmc(), map, MediaType.TEXT_PLAIN);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            getResponse()
-                    .setStatus(new Status(Status.SERVER_ERROR_INTERNAL, e));
+            getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
         }
 
         return representation;

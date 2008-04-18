@@ -582,9 +582,8 @@ public class Resource extends Handler {
                 // the list of allowed methods
                 updateAllowedMethods();
             } else {
-                getResponse().setStatus(
-                        new Status(Status.CLIENT_ERROR_BAD_REQUEST,
-                                "Missing request entity"));
+                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+                        "Missing request entity");
             }
         }
     }

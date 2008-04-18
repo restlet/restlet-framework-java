@@ -72,6 +72,7 @@ public class ServerRouter extends Router {
                         "No virtual host could handle the request");
             }
         };
+
         setDefaultRoute(new Route(this, "", noHostMatched));
 
         // Start the router

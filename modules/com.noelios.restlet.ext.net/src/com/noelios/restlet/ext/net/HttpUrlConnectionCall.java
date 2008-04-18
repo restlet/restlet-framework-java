@@ -349,9 +349,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             Level.FINE,
                             "An error occurred during the connection to the remote HTTP server.",
                             ce);
-            result = new Status(Status.CONNECTOR_ERROR_CONNECTION,
-                    "Unable to connect to the remote server. "
-                            + ce.getMessage());
+            result = new Status(Status.CONNECTOR_ERROR_CONNECTION, ce);
         } catch (SocketTimeoutException ste) {
             getHelper()
                     .getLogger()
@@ -359,9 +357,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             Level.FINE,
                             "An timeout error occurred during the communication with the remote HTTP server.",
                             ste);
-            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION,
-                    "Unable to complete the HTTP call due to a communication timeout error. "
-                            + ste.getMessage());
+            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ste);
         } catch (FileNotFoundException fnfe) {
             getHelper()
                     .getLogger()
@@ -369,9 +365,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             Level.FINE,
                             "An unexpected error occurred during the sending of the HTTP request.",
                             fnfe);
-            result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
-                    "Unable to find a local file for sending. "
-                            + fnfe.getMessage());
+            result = new Status(Status.CONNECTOR_ERROR_INTERNAL, fnfe);
         } catch (IOException ioe) {
             getHelper()
                     .getLogger()
@@ -379,10 +373,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             Level.FINE,
                             "An error occurred during the communication with the remote HTTP server.",
                             ioe);
-            result = new Status(
-                    Status.CONNECTOR_ERROR_COMMUNICATION,
-                    "Unable to complete the HTTP call due to a communication error with the remote server. "
-                            + ioe.getMessage());
+            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
         } catch (Exception e) {
             getHelper()
                     .getLogger()
@@ -390,8 +381,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             Level.FINE,
                             "An unexpected error occurred during the sending of the HTTP request.",
                             e);
-            result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
-                    "Unable to send the HTTP request. " + e.getMessage());
+            result = new Status(Status.CONNECTOR_ERROR_INTERNAL, e);
         }
 
         return result;

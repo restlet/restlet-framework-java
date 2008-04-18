@@ -376,8 +376,7 @@ public class HttpClientConverter extends HttpConverter {
                             Level.FINE,
                             "An error occured during the processing of the HTTP response.",
                             e);
-            response.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL,
-                    "Unable to process the response. " + e.getMessage()));
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
         }
     }
 

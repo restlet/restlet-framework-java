@@ -80,7 +80,7 @@ public abstract class HttpClientHelper extends ClientHelper {
         } catch (Exception e) {
             getLogger().log(Level.INFO,
                     "Error while handling an HTTP client call", e);
-            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e.getMessage());
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
         }
     }
 

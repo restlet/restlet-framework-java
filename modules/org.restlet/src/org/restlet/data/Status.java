@@ -843,18 +843,6 @@ public final class Status extends Metadata {
      * 
      * @param code
      *                The specification code.
-     * @param throwable
-     *                The related error or exception.
-     */
-    public Status(int code, Throwable throwable) {
-        this(code, throwable, null, null, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param code
-     *                The specification code.
      * @param name
      *                The name.
      * @param description
@@ -865,6 +853,18 @@ public final class Status extends Metadata {
     public Status(int code, final String name, final String description,
             final String uri) {
         this(code, null, name, description, uri);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param code
+     *                The specification code.
+     * @param throwable
+     *                The related error or exception.
+     */
+    public Status(int code, Throwable throwable) {
+        this(code, throwable, null, null, null);
     }
 
     /**
@@ -912,6 +912,22 @@ public final class Status extends Metadata {
     public Status(final Status status, final Throwable throwable) {
         this(status.getCode(), status.getName(), (throwable == null) ? null
                 : throwable.getMessage(), status.getUri());
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param status
+     *                The status to copy.
+     * @param throwable
+     *                The related error or exception.
+     * @param description
+     *                The description to associate.
+     */
+    public Status(final Status status, final Throwable throwable,
+            final String description) {
+        this(status.getCode(), throwable, status.getName(), description, status
+                .getUri());
     }
 
     /**

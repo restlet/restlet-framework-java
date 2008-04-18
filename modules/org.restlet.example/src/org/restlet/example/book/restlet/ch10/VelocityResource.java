@@ -50,8 +50,7 @@ public class VelocityResource extends Resource {
                             "file.resource.loader.path",
                             "D:\\alaska\\forge\\build\\swc\\nre\\trunk\\books\\apress\\manuscript\\sample\\");
         } catch (Exception e) {
-            getResponse()
-                    .setStatus(new Status(Status.SERVER_ERROR_INTERNAL, e));
+            getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
         }
 
         return representation;

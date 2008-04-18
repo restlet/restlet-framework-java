@@ -35,29 +35,6 @@ import org.restlet.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Response extends Message {
-    private static final ThreadLocal<Response> CURRENT = new ThreadLocal<Response>();
-
-    /**
-     * Returns the response associated to the current thread. This variable is
-     * stored internally as a thread local variable and updated when the request
-     * is handled by a Component or an Application.
-     * 
-     * @return The thread's response.
-     */
-    public static Response getCurrent() {
-        return CURRENT.get();
-    }
-
-    /**
-     * Sets the respone associated with the current thread.
-     * 
-     * @param response
-     *                The thread's response.
-     */
-    public static void setCurrent(Response response) {
-        CURRENT.set(response);
-    }
-
     /**
      * Private cookie setting series.
      * 
@@ -93,6 +70,29 @@ public class Response extends Message {
             else
                 return new CookieSettingSeries();
         }
+    }
+
+    private static final ThreadLocal<Response> CURRENT = new ThreadLocal<Response>();
+
+    /**
+     * Returns the response associated to the current thread. This variable is
+     * stored internally as a thread local variable and updated when the request
+     * is handled by a Component or an Application.
+     * 
+     * @return The thread's response.
+     */
+    public static Response getCurrent() {
+        return CURRENT.get();
+    }
+
+    /**
+     * Sets the respone associated with the current thread.
+     * 
+     * @param response
+     *                The thread's response.
+     */
+    public static void setCurrent(Response response) {
+        CURRENT.set(response);
     }
 
     /** The set of methods allowed on the requested resource. */
@@ -470,6 +470,32 @@ public class Response extends Message {
      */
     public void setStatus(Status status, String message) {
         setStatus(new Status(status, message));
+    }
+
+    /**
+     * Sets the status.
+     * 
+     * @param status
+     *                The status to set.
+     * @param throwable
+     *                The related error or exception.
+     */
+    public void setStatus(Status status, Throwable throwable) {
+        setStatus(new Status(status, throwable));
+    }
+
+    /**
+     * Sets the status.
+     * 
+     * @param status
+     *                The status to set.
+     * @param throwable
+     *                The related error or exception.
+     * @param message
+     *                The status message.
+     */
+    public void setStatus(Status status, Throwable throwable, String message) {
+        setStatus(new Status(status, throwable, message));
     }
 
 }

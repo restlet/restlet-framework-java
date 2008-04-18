@@ -364,22 +364,18 @@ public class JdbcClientHelper extends ClientHelper {
             } catch (SQLException se) {
                 getLogger().log(Level.WARNING,
                         "Error while processing the SQL request", se);
-                response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
-                        "Error while processing the SQL request"));
+                response.setStatus(Status.SERVER_ERROR_INTERNAL, se);
             } catch (ParserConfigurationException pce) {
                 getLogger().log(Level.WARNING,
                         "Error with XML parser configuration", pce);
-                response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
-                        "Error with XML parser configuration"));
+                response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, pce);
             } catch (SAXException se) {
                 getLogger().log(Level.WARNING,
                         "Error while parsing the XML document", se);
-                response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
-                        "Error while parsing the XML document"));
+                response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, se);
             } catch (IOException ioe) {
                 getLogger().log(Level.WARNING, "Input/Output exception", ioe);
-                response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
-                        "Input/Output exception"));
+                response.setStatus(Status.SERVER_ERROR_INTERNAL, ioe);
             }
         } else {
             throw new IllegalArgumentException(

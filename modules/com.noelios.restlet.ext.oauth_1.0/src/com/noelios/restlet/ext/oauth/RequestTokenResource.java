@@ -107,11 +107,10 @@ public class RequestTokenResource extends Resource {
         // verify the signature
         try {
             requestMessage.validateSignature(accessor);
-        } catch (OAuthProblemException e) {
+        } catch (OAuthProblemException oape) {
             getResponse().setChallengeRequest(challengeRequest);
             // TODO: Use OAuthServlet mapping from problem to status.
-            getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED,
-                    "Invalid signature");
+            getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, oape);
             challengeRequest.getParameters().add("oauth_problem",
                     "signature_invalid");
             return;

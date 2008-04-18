@@ -101,8 +101,7 @@ public class AccessTokenResource extends Resource {
             requestMessage.validateSignature(accessor);
         } catch (Exception e1) {
             getResponse().setChallengeRequest(challengeRequest);
-            getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED,
-                    "Invalid signature");
+            getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, e1);
             challengeRequest.getParameters().add("oauth_problem",
                     "signature_invalid");
             return;

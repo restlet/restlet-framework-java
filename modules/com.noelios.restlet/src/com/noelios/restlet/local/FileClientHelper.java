@@ -363,10 +363,8 @@ public class FileClientHelper extends LocalClientHelper {
                                                     Level.WARNING,
                                                     "Unable to close the temporary file",
                                                     ioe);
-                                    response
-                                            .setStatus(new Status(
-                                                    Status.SERVER_ERROR_INTERNAL,
-                                                    "Unable to close a temporary file"));
+                                    response.setStatus(
+                                            Status.SERVER_ERROR_INTERNAL, ioe);
                                 }
                             }
 
@@ -464,15 +462,13 @@ public class FileClientHelper extends LocalClientHelper {
                             } catch (FileNotFoundException fnfe) {
                                 getLogger().log(Level.WARNING,
                                         "Unable to create the new file", fnfe);
-                                response.setStatus(new Status(
-                                        Status.SERVER_ERROR_INTERNAL,
-                                        "Unable to create the new file"));
+                                response.setStatus(
+                                        Status.SERVER_ERROR_INTERNAL, fnfe);
                             } catch (IOException ioe) {
                                 getLogger().log(Level.WARNING,
                                         "Unable to create the new file", ioe);
-                                response.setStatus(new Status(
-                                        Status.SERVER_ERROR_INTERNAL,
-                                        "Unable to create the new file"));
+                                response.setStatus(
+                                        Status.SERVER_ERROR_INTERNAL, ioe);
                             } finally {
                                 try {
                                     if (fos != null)
@@ -483,10 +479,8 @@ public class FileClientHelper extends LocalClientHelper {
                                                     Level.WARNING,
                                                     "Unable to close the temporary file",
                                                     ioe);
-                                    response
-                                            .setStatus(new Status(
-                                                    Status.SERVER_ERROR_INTERNAL,
-                                                    "Unable to close a temporary file"));
+                                    response.setStatus(
+                                            Status.SERVER_ERROR_INTERNAL, ioe);
                                 }
                             }
                         }
@@ -499,21 +493,19 @@ public class FileClientHelper extends LocalClientHelper {
                     if (file.delete()) {
                         response.setStatus(Status.SUCCESS_NO_CONTENT);
                     } else {
-                        response.setStatus(new Status(
-                                Status.SERVER_ERROR_INTERNAL,
-                                "Couldn't delete the directory"));
+                        response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                                "Couldn't delete the directory");
                     }
                 } else {
-                    response.setStatus(new Status(
-                            Status.CLIENT_ERROR_FORBIDDEN,
-                            "Couldn't delete the non-empty directory"));
+                    response.setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+                            "Couldn't delete the non-empty directory");
                 }
             } else {
                 if (file.delete()) {
                     response.setStatus(Status.SUCCESS_NO_CONTENT);
                 } else {
-                    response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
-                            "Couldn't delete the file"));
+                    response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                            "Couldn't delete the file");
                 }
             }
         } else {

@@ -299,10 +299,7 @@ public class HttpMethodCall extends HttpClientCall {
                             Level.WARNING,
                             "An error occurred during the communication with the remote HTTP server.",
                             ioe);
-            result = new Status(
-                    Status.CONNECTOR_ERROR_COMMUNICATION,
-                    "Unable to complete the HTTP call due to a communication error with the remote server. "
-                            + ioe.getMessage());
+            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
 
             // Release the connection
             getHttpMethod().releaseConnection();
