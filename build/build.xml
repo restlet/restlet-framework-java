@@ -933,8 +933,8 @@
       <pomModule name="net" />
       <pomModule name="oauth" />
       <pomModule name="servlet" />
-      <pomModule name="shell" />
-      <pomModule name="simple" ext1="antlr" ext2="jline"/>
+      <pomModule name="shell" ext1="antlr" ext2="jline" />
+      <pomModule name="simple" />
       <pomModule name="spring-api" ext1="spring" />
       <pomModule name="spring-nre" ext1="spring" />
       <pomModule name="velocity" />
