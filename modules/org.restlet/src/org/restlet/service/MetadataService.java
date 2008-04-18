@@ -126,6 +126,7 @@ public class MetadataService {
      * <li>dtd: XML Document Type Definition</li>
      * <li>eps: Encapsulated PostScript</li>
      * <li>exe: Executable File (Microsoft Corporation)</li>
+     * <li>fmt: FreeMarker encoding</li>
      * <li>gif: GIF image</li>
      * <li>hqx: BinHex 4 Compressed Archive (Macintosh)</li>
      * <li>htm, html: HTML document</li>
@@ -164,6 +165,7 @@ public class MetadataService {
      * <li>tex: Tex file</li>
      * <li>tif, tiff: Tagged Image Format File</li>
      * <li>txt: Plain text</li>
+     * <li>vm: Velocity encoding</li>
      * <li>swf: Shockwave Flash object</li>
      * <li>ulw: MU-LAW (US telephony format)</li>
      * <li>vrml: Virtual Reality Modeling Language file</li>
@@ -197,6 +199,7 @@ public class MetadataService {
         addExtension("dtd", MediaType.APPLICATION_XML_DTD);
         addExtension("eps", MediaType.APPLICATION_POSTSCRIPT);
         addExtension("exe", MediaType.APPLICATION_OCTET_STREAM);
+        addExtension("fmt", Encoding.FREEMARKER);
         addExtension("gif", MediaType.IMAGE_GIF);
         addExtension("hqx", MediaType.APPLICATION_MAC_BINHEX40);
         addExtension("htm", MediaType.TEXT_HTML);
@@ -246,6 +249,7 @@ public class MetadataService {
         addExtension("tiff", MediaType.IMAGE_TIFF);
         addExtension("txt", MediaType.TEXT_PLAIN, true);
         addExtension("ulw", MediaType.AUDIO_BASIC);
+        addExtension("vm", Encoding.VELOCITY);
         addExtension("vrml", MediaType.MODEL_VRML);
         addExtension("vxml", MediaType.APPLICATION_VOICEXML);
         addExtension("wav", MediaType.AUDIO_WAV);

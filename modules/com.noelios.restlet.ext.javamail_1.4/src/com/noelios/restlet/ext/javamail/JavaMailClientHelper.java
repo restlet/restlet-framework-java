@@ -215,7 +215,7 @@ public class JavaMailClientHelper extends ClientHelper {
                             getHelped().getProtocols().get(0).equals(
                                     Protocol.SMTP_STARTTLS)).toLowerCase());
                     session = Session.getDefaultInstance(props);
-                    // session.setDebug(true);
+                    session.setDebug(true);
                     transport = session.getTransport("smtp");
                 } else if (defaultProtocol.equals(Protocol.SMTPS)) {
                     props.put("mail.smtps.host", smtpHost);

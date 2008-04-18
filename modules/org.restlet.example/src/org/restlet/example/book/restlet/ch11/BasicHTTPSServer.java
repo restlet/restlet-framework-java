@@ -11,7 +11,7 @@ import org.restlet.data.Response;
 
 public class BasicHTTPSServer {
     public static void main(String[] args) {
-        // Creates a Restlet whose response to each request is "Hello, world".
+        // Creates a Restlet whose response to each request is "hello, world".
         Restlet restlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
