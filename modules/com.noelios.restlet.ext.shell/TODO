@@ -1,10 +1,6 @@
 Integration 
 ===========
 
-- use ant as primary build tool (actually I'm using maven2)
-    pom.xml -> project description for maven
-    exe.xml -> custom assembly used to create an executable jar
-    src/main/antlr/com/.../Usage.g -> antlr parser
 - license in source files
 
 
@@ -21,7 +17,7 @@ Davide's ideas
 - generalize representations 
 - i18n
 - refactor antlr facade 
-- command line switchdiees (via commons-cli)
+- command line switchs (via commons-cli)
 
 
 Jerome's ideas
