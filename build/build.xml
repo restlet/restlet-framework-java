@@ -679,7 +679,8 @@
    <!-- Generate the module POM file -->
    <macrodef name="pomModule">
       <attribute name="name" />
-      <attribute name="ext" default="" />
+      <attribute name="ext1" default="" />
+      <attribute name="ext2" default="" />
       <sequential>
          <!-- sets the final pom version -->
          <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}-${lib-@{name}-suffix-maven}">
@@ -700,7 +701,8 @@
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${mod-pom-@{name}-version}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@group-id@" value="${mod-@{name}-maven-groupId}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-@{name}-package}" />
-         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext}-version@" value="${lib-@{ext}-version}" />
+         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext1}-version@" value="${lib-@{ext1}-version}" />
+         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext2}-version@" value="${lib-@{ext2}-version}" />
       </sequential>
    </macrodef>
 
@@ -916,13 +918,13 @@
       <pomModule name="fileupload" />
       <pomModule name="freemarker" />
       <pomModule name="grizzly" />
-      <pomModule name="gwt-api" ext="gwt"/>
-      <pomModule name="gwt-ri" ext="gwt"/>
+      <pomModule name="gwt-api" ext1="gwt"/>
+      <pomModule name="gwt-ri" ext1="gwt"/>
       <pomModule name="httpclient" />
       <pomModule name="javamail" />
       <pomModule name="jaxb" />
       <pomModule name="jaxrs" />
-      <pomModule name="jdbc" ext="dbcp" />
+      <pomModule name="jdbc" ext1="dbcp" />
       <pomModule name="jetty" />
       <pomModule name="jibx" />
 <!-- disabled for now  <pomModule name="jmx" /> -->
@@ -932,9 +934,9 @@
       <pomModule name="oauth" />
       <pomModule name="servlet" />
       <pomModule name="shell" />
-      <pomModule name="simple" />
-      <pomModule name="spring-api" ext="spring" />
-      <pomModule name="spring-nre" ext="spring" />
+      <pomModule name="simple" ext1="antlr" ext2="jline"/>
+      <pomModule name="spring-api" ext1="spring" />
+      <pomModule name="spring-nre" ext1="spring" />
       <pomModule name="velocity" />
       <pomModule name="wadl" />
       <pomModule name="xdb" />
