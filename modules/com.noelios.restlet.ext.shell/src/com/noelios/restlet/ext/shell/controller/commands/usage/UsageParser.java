@@ -43,7 +43,7 @@ public class UsageParser extends Parser {
     public static class usage_return extends ParserRuleReturnScope {
         Object tree;
         public Object getTree() { return tree; }
-    };
+    }
 
     // $ANTLR start usage
     // D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\build\\temp\\modules\\com.noelios.restlet.ext.shell\\src\\main\\antlr\\com\\noelios\\restlet\\ext\\controller\\commands\\usage\\Usage.g:21:1: usage : ( | command | command ( requiredParameter )+ | command ( optionalParameter )+ | command ( requiredParameter )+ ( optionalParameter )+ );
@@ -292,7 +292,7 @@ public class UsageParser extends Parser {
     public static class command_return extends ParserRuleReturnScope {
         Object tree;
         public Object getTree() { return tree; }
-    };
+    }
 
     // $ANTLR start command
     // D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\build\\temp\\modules\\com.noelios.restlet.ext.shell\\src\\main\\antlr\\com\\noelios\\restlet\\ext\\controller\\commands\\usage\\Usage.g:30:1: command : ID ;
@@ -339,7 +339,7 @@ public class UsageParser extends Parser {
     public static class requiredParameter_return extends ParserRuleReturnScope {
         Object tree;
         public Object getTree() { return tree; }
-    };
+    }
 
     // $ANTLR start requiredParameter
     // D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\build\\temp\\modules\\com.noelios.restlet.ext.shell\\src\\main\\antlr\\com\\noelios\\restlet\\ext\\controller\\commands\\usage\\Usage.g:34:1: requiredParameter : parameter -> ^( REQ parameter ) ;
@@ -410,7 +410,7 @@ public class UsageParser extends Parser {
     public static class optionalParameter_return extends ParserRuleReturnScope {
         Object tree;
         public Object getTree() { return tree; }
-    };
+    }
 
     // $ANTLR start optionalParameter
     // D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\build\\temp\\modules\\com.noelios.restlet.ext.shell\\src\\main\\antlr\\com\\noelios\\restlet\\ext\\controller\\commands\\usage\\Usage.g:38:1: optionalParameter : '[' parameter ']' -> ^( OPT parameter ) ;
@@ -495,7 +495,7 @@ public class UsageParser extends Parser {
     public static class parameter_return extends ParserRuleReturnScope {
         Object tree;
         public Object getTree() { return tree; }
-    };
+    }
 
     // $ANTLR start parameter
     // D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\build\\temp\\modules\\com.noelios.restlet.ext.shell\\src\\main\\antlr\\com\\noelios\\restlet\\ext\\controller\\commands\\usage\\Usage.g:42:1: parameter : ( simpleParameter | multiParameter );
@@ -586,7 +586,7 @@ public class UsageParser extends Parser {
     public static class simpleParameter_return extends ParserRuleReturnScope {
         Object tree;
         public Object getTree() { return tree; }
-    };
+    }
 
     // $ANTLR start simpleParameter
     // D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\build\\temp\\modules\\com.noelios.restlet.ext.shell\\src\\main\\antlr\\com\\noelios\\restlet\\ext\\controller\\commands\\usage\\Usage.g:47:1: simpleParameter : ID ;
@@ -633,7 +633,7 @@ public class UsageParser extends Parser {
     public static class multiParameter_return extends ParserRuleReturnScope {
         Object tree;
         public Object getTree() { return tree; }
-    };
+    }
 
     // $ANTLR start multiParameter
     // D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\build\\temp\\modules\\com.noelios.restlet.ext.shell\\src\\main\\antlr\\com\\noelios\\restlet\\ext\\controller\\commands\\usage\\Usage.g:51:1: multiParameter : ID ( '|' ID )+ -> ^( MULTI ( ID )+ ) ;

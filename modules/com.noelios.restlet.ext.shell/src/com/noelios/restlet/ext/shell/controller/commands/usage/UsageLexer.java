@@ -20,7 +20,7 @@ public class UsageLexer extends Lexer {
     public static final int OPT=4;
     public static final int MULTI=6;
     public static final int ID=7;
-    public UsageLexer() {;} 
+    public UsageLexer() {} 
     public UsageLexer(CharStream input) {
         super(input);
     }
