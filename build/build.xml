@@ -984,7 +984,7 @@
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@release-number@" value="${release-number}" />
       
       <!-- Invokes the ANTLR3 Translator generator on the grammar file provided for the "shell" extension. -->
-      <antlrBuild grammar="${mod}/${mod-shell-id}/src/main/antlr/com/noelios/restlet/ext/controller/commands/usage/Usage.g"
+      <antlrBuild grammar="${mod}/${mod-shell-id}/src/com/noelios/restlet/ext/shell/controller/commands/usage/Usage.g"
                   outputDirectory="${mod}/${mod-shell-id}/src/com/noelios/restlet/ext/shell/controller/commands/usage/"
                   libDirectory="${lib}"/>
       
