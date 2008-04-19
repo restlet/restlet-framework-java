@@ -5,4 +5,4 @@ Bundle-SymbolicName: javax.activation
 Bundle-Version: 1.1.1
 Bundle-ClassPath: javax.activation.jar
 Bundle-Vendor: Sun Microsystems Inc.
-Export-Package: javax.activation
+Export-Package: javax.activation;version="1.1.1"
