@@ -25,8 +25,13 @@ import java.util.TreeMap;
 
 import junit.framework.TestCase;
 
+import org.restlet.Client;
+import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
+import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.ext.velocity.TemplateRepresentation;
+import org.restlet.resource.Representation;
 
 /**
  * Test case for the Velocity extension.
@@ -34,15 +39,8 @@ import org.restlet.ext.velocity.TemplateRepresentation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class VelocityTestCase extends TestCase {
-    public static void main(String[] args) {
-        try {
-            new VelocityTestCase().testTemplate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    public void testTemplate() throws Exception {
+    public void testStandardTemplate() throws Exception {
         // Create a temporary directory for the tests
         File testDir = new File(System.getProperty("java.io.tmpdir"),
                 "VelocityTestCase");
@@ -57,11 +55,11 @@ public class VelocityTestCase extends TestCase {
         Map<String, Object> map = new TreeMap<String, Object>();
         map.put("value", "myValue");
 
+        // Standard approach
         TemplateRepresentation tr = new TemplateRepresentation(testFile
                 .getName(), map, MediaType.TEXT_PLAIN);
         tr.getEngine().setProperty("file.resource.loader.path",
                 testDir.getAbsolutePath());
-
         String result = tr.getText();
         assertEquals("Value=myValue", result);
 
@@ -70,4 +68,32 @@ public class VelocityTestCase extends TestCase {
         testDir.delete();
     }
 
+    public void testRepresentationTemplate() throws Exception {
+        // Create a temporary directory for the tests
+        File testDir = new File(System.getProperty("java.io.tmpdir"),
+                "VelocityTestCase");
+        testDir.mkdir();
+
+        // Create a temporary template file
+        File testFile = File.createTempFile("test", ".vm", testDir);
+        FileWriter fw = new FileWriter(testFile);
+        fw.write("Value=$value");
+        fw.close();
+
+        Map<String, Object> map = new TreeMap<String, Object>();
+        map.put("value", "myValue");
+
+        // Representation approach
+        Client client = new Client(Protocol.FILE);
+        Reference ref = LocalReference.createFileReference(testFile);
+        Representation templateFile = client.get(ref).getEntity();
+        TemplateRepresentation tr = new TemplateRepresentation(templateFile,
+                map);
+        String result = tr.getText();
+        assertEquals("Value=myValue", result);
+
+        // Clean-up
+        testFile.delete();
+        testDir.delete();
+    }
 }

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -30,6 +31,9 @@ import java.util.logging.Level;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.ParseErrorException;
+import org.apache.velocity.exception.ResourceNotFoundException;
+import org.apache.velocity.runtime.RuntimeSingleton;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
@@ -62,21 +66,28 @@ public class TemplateRepresentation extends OutputRepresentation {
      *                The representation to 'decode'.
      * @param dataModel
      *                The Velocity template's data model.
+     * @throws IOException
+     * @throws ParseErrorException
+     * @throws ResourceNotFoundException
      */
     public TemplateRepresentation(Representation templateRepresentation,
-            Map<String, Object> dataModel) {
+            Map<String, Object> dataModel) throws ResourceNotFoundException,
+            ParseErrorException, IOException {
         super(templateRepresentation.getMediaType());
         this.dataModel = dataModel;
         this.engine = null;
         this.template = new Template();
         this.template
-                .setEncoding((templateRepresentation.getCharacterSet() == null) ? null
+                .setEncoding((templateRepresentation.getCharacterSet() == null) ? Charset
+                        .defaultCharset().name()
                         : templateRepresentation.getCharacterSet().getName());
         this.template.setLastModified(templateRepresentation
                 .getModificationDate().getTime());
         this.template.setName("org.restlet.resource.representation");
+        this.template.setRuntimeServices(RuntimeSingleton.getRuntimeServices());
         this.template.setResourceLoader(new RepresentationResourceLoader(
                 templateRepresentation));
+        this.template.process();
         this.templateName = null;
     }
 

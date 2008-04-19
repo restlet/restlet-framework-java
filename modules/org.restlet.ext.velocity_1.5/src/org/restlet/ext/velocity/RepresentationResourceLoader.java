@@ -77,6 +77,8 @@ public class RepresentationResourceLoader extends ResourceLoader {
                 if (resultRepresentation == null) {
                     throw new ResourceNotFoundException(
                             "Could not locate resource '" + name + "'");
+                } else {
+                    result = resultRepresentation.getStream();
                 }
             } else {
                 result = resultRepresentation.getStream();
@@ -90,6 +92,7 @@ public class RepresentationResourceLoader extends ResourceLoader {
 
     @Override
     public void init(ExtendedProperties configuration) {
+
     }
 
     @Override
