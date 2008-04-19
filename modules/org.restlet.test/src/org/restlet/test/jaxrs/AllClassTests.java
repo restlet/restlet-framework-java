@@ -44,7 +44,7 @@ public class AllClassTests extends TestCase {
         // package .
         mySuite.addTestSuite(HtmlPrefererTest.class);
         mySuite.addTestSuite(ExceptionMappersTest.class);
-        // logs only: mySuite.addTestSuite(JaxRsRouterTest.class);
+        // logs only: mySuite.addTestSuite(JaxRsApplicationTest.class);
         // package .core.
         mySuite.addTestSuite(JaxRsPathSegmentTest.class);
         mySuite.addTestSuite(JaxRsUriBuilderTest.class);

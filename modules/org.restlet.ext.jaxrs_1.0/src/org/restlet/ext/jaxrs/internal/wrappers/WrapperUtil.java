@@ -1134,7 +1134,7 @@ public class WrapperUtil {
             PathParam pathParam, boolean leaveEncoded,
             DefaultValue defaultValue, CallContext callContext)
             throws ConvertPathParamException {
-        // LATER testen Path-Param: List<String> (see PathParamTest.testGet3())
+        // TESTEN Path-Param: List<String> (see PathParamTest.testGet3())
         if (paramClass.equals(PathSegment.class)) {
             throw new NotYetImplementedException(
                     "Sorry, @PathParam(..) PathSegment is not yet supported");

@@ -185,7 +185,6 @@ public class JaxRsApplication extends Application {
      * @throws IllegalArgumentException
      *                 if the appConfig is null.
      * @see #attach(ApplicationConfig)
-     * @see JaxRsRouter#attach(ApplicationConfig)
      */
     public boolean attach(ApplicationConfig appConfig,
             boolean clearMetadataIfFirst) throws IllegalArgumentException {
@@ -196,7 +195,25 @@ public class JaxRsApplication extends Application {
             this.getMetadataService().clearExtensions();
         }
         this.addExtensionMappings(appConfig);
-        boolean everythingFine = this.jaxRsRouter.attach(appConfig);
+        JaxRsRouter r = this.jaxRsRouter;
+        Collection<Class<?>> rrcs = appConfig.getResourceClasses();
+        Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
+        boolean everythingFine = true;
+        if (rrcs == null || rrcs.isEmpty()) {
+            r.getLogger().warning(
+                    "The ApplicationConfig " + appConfig.getClass().getName()
+                            + " contains no root resource classes.");
+            everythingFine = false;
+        } else {
+            for (Class<?> rrc : rrcs) {
+                everythingFine &= r.addRootResourceClass(rrc);
+            }
+        }
+        if (providerClasses != null) {
+            for (Class<?> providerClass : providerClasses) {
+                everythingFine &= r.addProvider(providerClass);
+            }
+        }
         this.appConfigAttached = true;
         return everythingFine;
     }

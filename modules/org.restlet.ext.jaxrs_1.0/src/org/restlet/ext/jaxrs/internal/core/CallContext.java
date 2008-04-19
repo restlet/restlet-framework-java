@@ -540,8 +540,6 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     /**
      * @see javax.ws.rs.core.HttpHeaders#getRequestHeader(java.lang.String)
      */
-    @SuppressWarnings("all")
-    // LATER remove if updated to 0.8
     public List<String> getRequestHeader(String name) {
         String[] values = Util.getHttpHeaders(request).getValuesArray(name);
         return Collections.unmodifiableList(Arrays.asList(values));

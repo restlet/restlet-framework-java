@@ -21,14 +21,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
-import org.restlet.test.jaxrs.JaxRsRouterTest;
-
 /**
  * This class contains only an invalid path, so the Runtime must have a problem
  * to use it.
  * 
  * @author Stephan Koops
- * @see JaxRsRouterTest
  */
 @Path(value = "afsdf:use", encode = true)
 public class IllegalPathService2 {

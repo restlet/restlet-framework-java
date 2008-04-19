@@ -37,7 +37,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
@@ -46,7 +45,6 @@ import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -111,24 +109,11 @@ import org.restlet.resource.ResourceException;
 /**
  * <p>
  * The router choose the JAX-RS resource class and method to use for a request.
- * This class has methods {@link #attach(ApplicationConfig)} like the Restlet
- * {@link Router}. Typcally you should instantiate a {@link JaxRsApplication}
- * to run JAX-RS resource classes.
+ * Typcally you should instantiate a {@link JaxRsApplication} to run JAX-RS
+ * resource classes.
  * </p>
- * <p>
- * Now some internal informations are following:
- * <ul>
- * <li>The variable names in this class are often the same as in the
- * JAX-RS-Definition.</li>
- * <li>This class is a subclass of {@link ExceptionHandler}. The methods to
- * handle exceptions while identifying the method that should handle the request
- * and in other situations are moved to that super class. So this class contains
- * only the real logic code and is more well arranged. </li>
- * </ul>
- * <p>
- * <!--NICE The class JaxRsRouter is not thread save while attach or detach
- * classes.-->
- * </p>
+ * <!--p> NICE The class JaxRsRouter is not thread save while attach or detach
+ * classes. </p-->
  * <p>
  * <i>The JAX-RS extension as well as the JAX-RS specification are currently
  * under development. You should use this extension only for experimental
@@ -189,9 +174,25 @@ public class JaxRsRouter extends Restlet {
 
     /**
      * Creates a new JaxRsRouter with the given Context. Only the default
-     * providers are loaded. No {@link ApplicationConfig} is loaded, use
-     * {@link #attach(ApplicationConfig)} to attach some. You can also use the
-     * constructor {@link #JaxRsRouter(Context, RoleChecker, ApplicationConfig)}.
+     * providers are loaded. If a resource class later wants to check if a user
+     * has a role, the request is returned with HTTP status 500 (Internal Server
+     * Error), see {@link SecurityContext#isUserInRole(String)}. You may set a
+     * {@link RoleChecker} by using the constructor
+     * {@link JaxRsRouter#JaxRsRouter(Context, RoleChecker)} or method
+     * {@link #setRoleChecker(RoleChecker)}.
+     * 
+     * @param context
+     *                the context from the parent, see
+     *                {@link Restlet#Restlet(Context)}.
+     * @see #JaxRsRouter(Context, RoleChecker)
+     */
+    public JaxRsRouter(Context context) {
+        this(context, null);
+    }
+
+    /**
+     * Creates a new JaxRsRouter with the given Context. Only the default
+     * providers are loaded.
      * 
      * @param context
      *                the context from the parent, see
@@ -201,145 +202,39 @@ public class JaxRsRouter extends Restlet {
      *                control, you can use the {@link RoleChecker#FORBID_ALL},
      *                the {@link RoleChecker#ALLOW_ALL} or the
      *                {@link RoleChecker#REJECT_WITH_ERROR}.
-     * @see #JaxRsRouter(Context, RoleChecker, ApplicationConfig)
+     * @see #JaxRsRouter(Context)
      */
     public JaxRsRouter(Context context, RoleChecker roleChecker) {
-        this(context, roleChecker, null);
-    }
-
-    /**
-     * Creates a new JaxRsRouter with the {@link ApplicationConfig}. You may
-     * add more {@link ApplicationConfig}s; use method
-     * {@link #attach(ApplicationConfig)}.
-     * 
-     * @param context
-     *                the context from the parent, see
-     *                {@link Restlet#Restlet(Context)}.
-     * @param roleChecker
-     *                The RoleChecker to use. If you don't need the access
-     *                control, you can use the {@link RoleChecker#FORBID_ALL},
-     *                the {@link RoleChecker#ALLOW_ALL} or the
-     *                {@link RoleChecker#REJECT_WITH_ERROR}. See also
-     *                {@link #JaxRsRouter(Context, ApplicationConfig)}.
-     * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers. See {@link #attach(ApplicationConfig)} for
-     *                details. You may also add more {@link ApplicationConfig}s;
-     *                with that method.
-     */
-    public JaxRsRouter(Context context, RoleChecker roleChecker,
-            ApplicationConfig appConfig) {
         super(context);
         this.excHandler = new ExceptionHandler(getLogger());
         this.wrapperFactory = new WrapperFactory(this.entityProviders,
                 this.contextResolvers, getLogger());
         this.loadDefaultProviders();
-        if (appConfig != null)
-            this.attach(appConfig);
         if (roleChecker != null)
             this.setRoleChecker(roleChecker);
         else
             this.setRoleChecker(RoleChecker.REJECT_WITH_ERROR);
     }
 
-    /**
-     * <p>
-     * Creates a new JaxRsRouter with the {@link ApplicationConfig}. You can
-     * add more {@link ApplicationConfig}s; use method
-     * {@link #attach(ApplicationConfig)}.
-     * </p>
-     * <p>
-     * If a resource class wants to check if a user has a role, the request is
-     * returned with HTTP status 500 (Internal Server Error), see
-     * {@link SecurityContext#isUserInRole(String)}. If you want to use the
-     * access control, use constructor
-     * {@link #JaxRsRouter(Context, RoleChecker, ApplicationConfig)} or method
-     * {@link #setRoleChecker(RoleChecker)}.
-     * </p>
-     * 
-     * @param context
-     *                the context from the parent, see
-     *                {@link Restlet#Restlet(Context)}.
-     * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers. See {@link #attach(ApplicationConfig)} for
-     *                details. You may also add more {@link ApplicationConfig}s;
-     *                with that method.
-     * @see #JaxRsRouter(Context, RoleChecker, ApplicationConfig)
-     */
-    public JaxRsRouter(Context context, ApplicationConfig appConfig) {
-        this(context, null, appConfig);
+    private void loadDefaultProviders() {
+        this.addProvider(BufferedReaderProvider.class, true);
+        this.addProvider(ByteArrayProvider.class, true);
+        this.addProvider(DataSourceProvider.class, true);
+        this.addProvider(FileProvider.class, true);
+        this.addProvider(InputStreamProvider.class, true);
+        this.addProvider(JaxbElementProvider.class, true);
+        this.addProvider(JaxbProvider.class, true);
+        this.addProvider(JsonProvider.class, true);
+        this.addProvider(ReaderProvider.class, true);
+        this.addProvider(StreamingOutputProvider.class, true);
+        this.addProvider(StringProvider.class, true);
+        this.addProvider(WwwFormFormProvider.class, true);
+        this.addProvider(WwwFormMmapProvider.class, true);
+        this.addProvider(SourceProvider.class, true);
     }
 
     /**
-     * Creates a new JaxRsRouter with the given Context. Only the default
-     * providers are loaded. No {@link ApplicationConfig} is loaded, use
-     * {@link #attach(ApplicationConfig)} to attach some. If a resource class
-     * later wants to check if a user has a role, the request is returned with
-     * HTTP status 500 (Internal Server Error), see
-     * {@link SecurityContext#isUserInRole(String)}. You may set a
-     * {@link RoleChecker} by using the constructor
-     * {@link JaxRsRouter#JaxRsRouter(Context, RoleChecker)} or method
-     * {@link #setRoleChecker(RoleChecker)}.
-     * 
-     * @param context
-     *                the context from the parent, see
-     *                {@link Restlet#Restlet(Context)}.
-     * @see #JaxRsRouter(Context, ApplicationConfig)
-     * @see #JaxRsRouter(Context, RoleChecker, ApplicationConfig)
-     */
-    public JaxRsRouter(Context context) {
-        this(context, null, null);
-    }
-
-    /**
-     * <p>
-     * Attaches the classes and providers to this JaxRsRouter. The providers are
-     * available for all root resource classes provided to this JaxRsRouter. If
-     * you won't mix them, instantiate another JaxRsRouter.<br>
-     * If an root resource class or a provider could not be added, a message is
-     * logged.
-     * </p>
-     * <p>
-     * The extension mapping is the responsibility of the
-     * {@link JaxRsApplication}, see
-     * {@link JaxRsApplication#attach(ApplicationConfig)}.
-     * </p>
-     * 
-     * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers.
-     * @return true, if all resource classes and providers could be added, or
-     *         false if not.
-     * @throws NullPointerException
-     *                 if the appConfig is null.
-     */
-    public boolean attach(ApplicationConfig appConfig) {
-        // LATER Interface comparable to other Restlet classes.
-        Collection<Class<?>> rrcs = appConfig.getResourceClasses();
-        Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
-        boolean everythingFine = true;
-        if (rrcs == null || rrcs.isEmpty()) {
-            getLogger().warning(
-                    "The ApplicationConfig " + appConfig.getClass().getName()
-                            + " contains no root resource classes.");
-            everythingFine = false;
-        } else {
-            for (Class<?> rrc : rrcs) {
-                everythingFine &= this.addRootResourceClass(rrc);
-            }
-        }
-        if (providerClasses != null) {
-            for (Class<?> providerClass : providerClasses) {
-                everythingFine &= this.addProvider(providerClass, false);
-            }
-        }
-        return everythingFine;
-    }
-
-    /**
-     * Will use the given JAX-RS root resource class. Intended for internal use
-     * only. Use the method {@link #attach(ApplicationConfig)}.<br>
+     * Will use the given JAX-RS root resource class.<br>
      * If the given class is not a valid root resource class, a warning is
      * logged and false is returned.
      * 
@@ -350,9 +245,14 @@ public class JaxRsRouter extends Restlet {
      * @return true if the class is added or was already included, or false if
      *         the given class is not a valid root resource class (a warning was
      *         logged).
-     * @see {@link #attach(ApplicationConfig)}
+     * @throws IllegalArgumentException
+     *                 if the root resource class is null.
      */
-    private boolean addRootResourceClass(Class<?> rootResourceClass) {
+    public boolean addRootResourceClass(Class<?> rootResourceClass)
+            throws IllegalArgumentException {
+        if (rootResourceClass == null)
+            throw new IllegalArgumentException(
+                    "The root resource class must not be null");
         RootResourceClass newRrc;
         try {
             newRrc = wrapperFactory.getRootResourceClass(rootResourceClass);
@@ -399,38 +299,33 @@ public class JaxRsRouter extends Restlet {
         return true;
     }
 
-    private void loadDefaultProviders() {
-        this.addProvider(BufferedReaderProvider.class, true);
-        this.addProvider(ByteArrayProvider.class, true);
-        this.addProvider(DataSourceProvider.class, true);
-        this.addProvider(FileProvider.class, true);
-        this.addProvider(InputStreamProvider.class, true);
-        this.addProvider(JaxbElementProvider.class, true);
-        this.addProvider(JaxbProvider.class, true);
-        this.addProvider(JsonProvider.class, true);
-        this.addProvider(ReaderProvider.class, true);
-        this.addProvider(StreamingOutputProvider.class, true);
-        this.addProvider(StringProvider.class, true);
-        this.addProvider(WwwFormFormProvider.class, true);
-        this.addProvider(WwwFormMmapProvider.class, true);
-        this.addProvider(SourceProvider.class, true);
+    /**
+     * Adds the provider object to this JaxRsRouter.
+     * 
+     * @param jaxRsProviderClass
+     *                the JAX-RS provider class.
+     * @return true, if the provider is ok and added, otherwise false.
+     * @throws IllegalArgumentException
+     *                 if null was given
+     * @see {@link javax.ws.rs.ext.Provider}
+     */
+    public boolean addProvider(Class<?> jaxRsProviderClass)
+            throws IllegalArgumentException {
+        return addProvider(jaxRsProviderClass, false);
     }
 
     /**
      * Adds the provider object to this JaxRsRouter.
      * 
      * @param jaxRsProviderClass
-     *                the JAX-RS provider class. The class must implement at
-     *                least one of the interfaces
-     *                {@link javax.ws.rs.ext.MessageBodyWriter},
-     *                {@link javax.ws.rs.ext.MessageBodyReader} or
-     *                {@link javax.ws.rs.ext.ContextResolver}.
+     *                the JAX-RS provider class.
+     * @return true, if the provider is ok and added, otherwise false.
      * @throws IllegalArgumentException
      *                 if null was given
      * @see {@link javax.ws.rs.ext.Provider}
      */
     private boolean addProvider(Class<?> jaxRsProviderClass,
-            boolean defaultProvider) {
+            boolean defaultProvider) throws IllegalArgumentException {
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -913,7 +808,7 @@ public class JaxRsRouter extends Restlet {
                         .getAccMediaTypes();
                 restletResponse.setEntity(convertToRepresentation(result,
                         resourceMethod, null, null, accMediaTypes));
-                // LATER perhaps another default as option (email 2008-01-29)
+                // NICE perhaps another default as option (email 2008-01-29)
             }
         }
     }
@@ -1217,7 +1112,7 @@ public class JaxRsRouter extends Restlet {
      * Returns an unmodifiable set with the attached root resource classes.
      * 
      * @return an unmodifiable set with the attached root resource classes.
-     * @see #attach(ApplicationConfig)
+     * @see #addRootResourceClass(Class)
      */
     public Set<Class<?>> getRootResourceClasses() {
         Set<Class<?>> rrcs = new HashSet<Class<?>>();

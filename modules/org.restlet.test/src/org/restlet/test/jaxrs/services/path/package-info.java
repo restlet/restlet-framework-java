@@ -25,11 +25,5 @@
  * This extension as well as the JAX-RS specification are currently under
  * development. You should only use this extension for experimental purpose.
  * </p>
- * 
- * @see JaxRsRouterTest#testEncodePath()
  */
 package org.restlet.test.jaxrs.services.path;
-
-import javax.ws.rs.Path;
-import org.restlet.test.jaxrs.JaxRsRouterTest;
-

@@ -77,7 +77,6 @@ public class WrappedRequestForHttpHeaders implements
 
     private UnsupportedOperationException unsupported()
             throws UnsupportedOperationException {
-        // LATER messagebodywriter http header write and WebAppExc not supported
         throw new UnsupportedOperationException(
                 "The changing of the http headers is not supported by this runtime environment.");
     }

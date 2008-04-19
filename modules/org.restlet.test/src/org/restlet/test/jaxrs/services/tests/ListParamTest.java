@@ -72,6 +72,7 @@ public class ListParamTest extends JaxRsTestCase {
         }
     }
 
+    /** @see ListParamService#getMatrix(String, java.util.Collection) */
     public void testMatrixParams() throws IOException {
         Response response = get("matrix;m=m1;m=m2;mm=mm1;mm=mm2");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -103,7 +104,6 @@ public class ListParamTest extends JaxRsTestCase {
         response = get("path/p1/p2/pp2/pp1");
         checkPathParam(response);
     }
-
 
     /**
      * @param response

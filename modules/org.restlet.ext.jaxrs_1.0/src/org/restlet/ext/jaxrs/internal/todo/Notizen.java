@@ -35,7 +35,6 @@ public class Notizen {
 
     // TODO test again Jersey Implementation.
 
-    // TODO MA: Provider for File-Upload by a browser (multipart/form-data)
     // NICE Provider for File-Upload by a browser (multipart/form-data)
 
     // NICE warn if primitve on @*Param: perhaps null?

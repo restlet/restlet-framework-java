@@ -69,8 +69,6 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
         }
     }
 
-    // LATER allow concurent access.
-
     /**
      * Checks, if the given {@link javax.ws.rs.ext.MessageBodyWriter} is
      * writeable for the given class, genericType and annotations. If one of the

@@ -18,15 +18,11 @@
 package org.restlet.test.jaxrs;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -36,17 +32,9 @@ import javax.ws.rs.core.Response.Status;
 
 import junit.framework.TestCase;
 
-import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExceptionMappers;
-import org.restlet.test.jaxrs.services.path.IllegalPathService1;
-import org.restlet.test.jaxrs.services.path.IllegalPathService2;
-import org.restlet.test.jaxrs.services.path.IllegalPathService3;
 import org.restlet.test.jaxrs.services.providers.IllegalArgExcMapper;
-import org.restlet.test.jaxrs.services.resources.DoublePath1;
-import org.restlet.test.jaxrs.services.resources.DoublePath2;
-import org.restlet.test.jaxrs.services.resources.SimpleTrain;
 
 /**
  * @author Stephan Koops
