@@ -944,6 +944,7 @@
       <pomModule name="example" />
 
       <pomLibrary name="simple"/>
+      <pomLibrary name="jaxrs"/>
       <pomLibrary name="json"/>
       <pomLibrary name="db4o" depend1="example" type1="mod" />
       <pomLibrary name="db4o-nativequery"/>

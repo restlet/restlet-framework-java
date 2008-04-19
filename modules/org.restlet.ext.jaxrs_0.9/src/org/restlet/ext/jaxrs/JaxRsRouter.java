@@ -307,7 +307,7 @@ public class JaxRsRouter extends Restlet {
      * @return true, if the provider is ok and added, otherwise false.
      * @throws IllegalArgumentException
      *                 if null was given
-     * @see {@link javax.ws.rs.ext.Provider}
+     * @see javax.ws.rs.ext.Provider
      */
     public boolean addProvider(Class<?> jaxRsProviderClass)
             throws IllegalArgumentException {
