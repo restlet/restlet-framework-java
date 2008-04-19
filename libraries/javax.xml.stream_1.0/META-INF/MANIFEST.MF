@@ -5,6 +5,10 @@ Bundle-SymbolicName: javax.xml.stream
 Bundle-Version: 1.0
 Bundle-ClassPath: stax-api.jar
 Bundle-Vendor: Sun Microsystems Inc.
-Export-Package: javax.xml.stream,
- javax.xml.stream.events,
- javax.xml.stream.util
+Export-Package: javax.xml.stream;
+  uses:="javax.xml.stream.events,
+   javax.xml.namespace,
+   javax.xml.transform,
+   javax.xml.stream.util",
+ javax.xml.stream.events;uses:="javax.xml.namespace,javax.xml.stream",
+ javax.xml.stream.util;uses:="javax.xml.stream.events,javax.xml.namespace,javax.xml.stream"

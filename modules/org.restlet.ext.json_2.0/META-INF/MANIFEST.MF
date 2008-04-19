@@ -4,7 +4,7 @@ Bundle-Name: Restlet Extension - JSON
 Bundle-SymbolicName: org.restlet.ext.json
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Export-Package: org.restlet.ext.json
+Export-Package: org.restlet.ext.json;uses:="org.restlet.resource,org.json"
 Import-Package: org.json,
  org.restlet,
  org.restlet.data,

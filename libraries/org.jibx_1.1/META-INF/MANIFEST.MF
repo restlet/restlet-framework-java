@@ -6,4 +6,4 @@ Bundle-Version: 1.1
 Bundle-ClassPath: org.jibx.runtime.jar
 Bundle-Vendor: Dennis M. Sosnoski
 Export-Package: org.jibx.runtime,
- org.jibx.runtime.impl
+ org.jibx.runtime.impl;uses:="org.jibx.runtime,javax.xml.stream"

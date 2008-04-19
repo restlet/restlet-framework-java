@@ -5,5 +5,5 @@ Bundle-SymbolicName: javax.servlet
 Bundle-Version: 2.5
 Bundle-ClassPath: javax.servlet.jar
 Export-Package: javax.servlet,
- javax.servlet.http,
+ javax.servlet.http;uses:="javax.servlet",
  javax.servlet.resources

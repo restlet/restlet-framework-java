@@ -4,7 +4,11 @@ Bundle-Name: Noelios Restlet Engine - Tests
 Bundle-SymbolicName: com.noelios.restlet.test
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Export-Package: com.noelios.restlet.test
+Export-Package: com.noelios.restlet.test;
+  uses:="org.restlet.resource,
+   org.restlet,
+   junit.framework,
+   org.restlet.data"
 Import-Package: com.noelios.restlet,
  com.noelios.restlet.application,
  com.noelios.restlet.authentication,

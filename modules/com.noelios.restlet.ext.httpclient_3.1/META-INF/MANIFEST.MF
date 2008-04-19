@@ -4,7 +4,12 @@ Bundle-Name: Noelios Restlet Engine - Extension - Apache HTTP Client
 Bundle-SymbolicName: com.noelios.restlet.ext.httpclient
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Export-Package: com.noelios.restlet.ext.httpclient
+Export-Package: com.noelios.restlet.ext.httpclient;
+  uses:="org.apache.commons.httpclient,
+   com.noelios.restlet.http,
+   org.restlet,
+   org.restlet.util,
+   org.restlet.data"
 Import-Package: com.noelios.restlet,
  com.noelios.restlet.application,
  com.noelios.restlet.authentication,

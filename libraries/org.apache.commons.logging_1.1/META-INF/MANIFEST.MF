@@ -6,4 +6,4 @@ Bundle-Version: 1.1
 Bundle-ClassPath: org.apache.commons.logging.jar
 Bundle-Vendor: Apache Software Foundation
 Export-Package: org.apache.commons.logging,
- org.apache.commons.logging.impl
+ org.apache.commons.logging.impl;uses:="org.apache.commons.logging"

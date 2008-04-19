@@ -4,7 +4,12 @@ Bundle-Name: Restlet Extension - JAXB
 Bundle-SymbolicName: org.restlet.ext.jaxb
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Export-Package: org.restlet.ext.jaxb
+Export-Package: org.restlet.ext.jaxb;
+  uses:="javax.xml.transform.sax,
+   org.restlet.resource,
+   javax.xml.namespace,
+   org.restlet.data,
+   javax.xml.bind"
 Import-Package: javax.xml.stream,
  javax.xml.stream.events,
  javax.xml.stream.util,

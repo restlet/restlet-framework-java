@@ -5,6 +5,6 @@ Bundle-SymbolicName: javax.ws.rs
 Bundle-Version: 1.0
 Bundle-ClassPath: javax.ws.rs.jar
 Bundle-Vendor: Sun Microsystems Inc.
-Export-Package: javax.ws.rs,
+Export-Package: javax.ws.rs;uses:="javax.ws.rs.core",
  javax.ws.rs.core,
- javax.ws.rs.ext
+ javax.ws.rs.ext;uses:="javax.ws.rs.core"

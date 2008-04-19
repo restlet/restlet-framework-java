@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.tanukisoftware.wrapper
 Bundle-Version: 3.2.3
 Bundle-ClassPath: wrapper.jar
 Bundle-Vendor: Tanuki Software
-Export-Package: org.tanukisoftware.wrapper,
+Export-Package: org.tanukisoftware.wrapper;uses:="new org.tanukisoftware.wrapper,org.tanukisoftware.wrapper.event",
  org.tanukisoftware.wrapper.event,
  org.tanukisoftware.wrapper.jmx,
  org.tanukisoftware.wrapper.resources,

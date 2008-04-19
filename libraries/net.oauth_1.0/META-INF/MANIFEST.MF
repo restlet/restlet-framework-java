@@ -6,6 +6,6 @@ Bundle-Version: 1.0
 Bundle-ClassPath: net.oauth.jar
 Bundle-Vendor: 
 Export-Package: net.oauth,
- net.oauth.client,
- net.oauth.server,
- net.oauth.signature
+ net.oauth.client;uses:="org.apache.commons.httpclient,net.oauth",
+ net.oauth.server;uses:="javax.servlet.http,net.oauth",
+ net.oauth.signature;uses:="net.oauth"

@@ -31,3 +31,11 @@ Import-Package: com.noelios.restlet,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util
+Export-Package: com.noelios.restlet.ext.jxta;
+  uses:="net.jxta.peergroup,
+   com.noelios.restlet.http,
+   org.restlet,
+   net.jxta.pipe,
+   net.jxta.ext.network,
+   net.jxta.protocol,
+   org.restlet.data"

@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.antlr
 Bundle-Version: 3.0
 Bundle-ClassPath: org.antlr.runtime.jar
 Bundle-Vendor: Terence Parr
-Export-Package: org.antlr.runtime,
- org.antlr.runtime.debug,
+Export-Package: org.antlr.runtime;uses:="org.antlr.runtime.tree",
+ org.antlr.runtime.debug;uses:="org.antlr.runtime.tree,org.antlr.runtime",
  org.antlr.runtime.misc,
- org.antlr.runtime.tree
+ org.antlr.runtime.tree;uses:="org.antlr.stringtemplate,org.antlr.runtime"

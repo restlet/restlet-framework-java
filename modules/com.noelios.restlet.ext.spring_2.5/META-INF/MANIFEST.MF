@@ -4,7 +4,12 @@ Bundle-Name: Noelios Restlet Engine - Extension - Spring
 Bundle-SymbolicName: com.noelios.restlet.ext.spring
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Export-Package: com.noelios.restlet.ext.spring
+Export-Package: com.noelios.restlet.ext.spring;
+  uses:="javax.servlet.http,
+   org.restlet,
+   org.springframework.web.context,
+   com.noelios.restlet.ext.servlet,
+   org.springframework.web.servlet"
 Import-Package: com.noelios.restlet,
  com.noelios.restlet.application,
  com.noelios.restlet.authentication,

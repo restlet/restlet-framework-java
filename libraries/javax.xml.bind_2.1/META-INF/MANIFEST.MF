@@ -6,9 +6,30 @@ Bundle-Version: 2.1
 Bundle-ClassPath: javax.xml.bind.jar,
  com.sun.jaxb.jar
 Bundle-Vendor: Sun Microsystems Inc.
-Export-Package: javax.xml.bind,
- javax.xml.bind.annotation,
+Export-Package: javax.xml.bind;
+  uses:="javax.xml.bind.attachment,
+   org.xml.sax,
+   javax.xml.namespace,
+   javax.xml.bind.annotation.adapters,
+   org.w3c.dom,
+   javax.xml.transform,
+   javax.xml.validation,
+   javax.xml.stream",
+ javax.xml.bind.annotation;
+  uses:="javax.xml.transform.dom,
+   javax.xml.parsers,
+   org.w3c.dom,
+   javax.xml.bind,
+   javax.xml.transform",
  javax.xml.bind.annotation.adapters,
- javax.xml.bind.attachment,
- javax.xml.bind.helpers,
- javax.xml.bind.util
+ javax.xml.bind.attachment;uses:="javax.activation",
+ javax.xml.bind.helpers;
+  uses:="javax.xml.bind.attachment,
+   org.xml.sax,
+   javax.xml.validation,
+   javax.xml.bind.annotation.adapters,
+   org.w3c.dom,
+   javax.xml.bind,
+   javax.xml.transform,
+   javax.xml.stream",
+ javax.xml.bind.util;uses:="javax.xml.transform.sax,org.xml.sax,javax.xml.bind"

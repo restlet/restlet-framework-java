@@ -5,17 +5,17 @@ Bundle-SymbolicName: org.junit4
 Bundle-Version: 4.4
 Bundle-ClassPath: org.junit.jar
 Bundle-Vendor: Object Mentor Inc.
-Export-Package: junit.extensions,
- junit.framework,
- junit.runner,
- junit.textui,
- org.junit,
- org.junit.experimental.results,
- org.junit.experimental.theories,
- org.junit.experimental.theories.internal,
- org.junit.experimental.theories.suppliers,
- org.junit.matchers,
- org.junit.runner,
- org.junit.runner.manipulation,
- org.junit.runner.notification,
- org.junit.runners
+Export-Package: junit.extensions;uses:="junit.framework",
+ junit.framework;uses:="org.junit.runner.manipulation,org.junit.runner.notification,org.junit.runner",
+ junit.runner;uses:="junit.framework",
+ junit.textui;uses:="junit.runner,junit.framework",
+ org.junit;uses:="org.hamcrest",
+ org.junit.experimental.results;uses:="org.hamcrest,org.junit.runner",
+ org.junit.experimental.theories;uses:="org.junit.internal.runners,new org.junit.experimental.theories",
+ org.junit.experimental.theories.internal;uses:="org.junit.internal.runners,org.junit.experimental.theories",
+ org.junit.experimental.theories.suppliers;uses:="org.junit.experimental.theories",
+ org.junit.matchers;uses:="org.hamcrest",
+ org.junit.runner;uses:="junit.framework,org.junit.runner.manipulation,org.junit.runner.notification",
+ org.junit.runner.manipulation;uses:="org.junit.runner",
+ org.junit.runner.notification;uses:="org.junit.runner",
+ org.junit.runners;uses:="org.junit.internal.runners,junit.framework,org.junit.runner.notification"

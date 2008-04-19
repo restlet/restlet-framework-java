@@ -4,7 +4,13 @@ Bundle-Name: Noelios Restlet Engine - Extension - JDBC
 Bundle-SymbolicName: com.noelios.restlet.ext.jdbc
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Export-Package: com.noelios.restlet.ext.jdbc
+Export-Package: com.noelios.restlet.ext.jdbc;
+  uses:="javax.sql.rowset,
+   org.restlet,
+   org.restlet.resource,
+   org.apache.commons.pool,
+   org.restlet.data,
+   com.noelios.restlet"
 Import-Package: com.noelios.restlet,
  com.noelios.restlet.application,
  com.noelios.restlet.authentication,
