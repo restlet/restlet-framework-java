@@ -25,10 +25,12 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
@@ -50,19 +52,32 @@ public class TemplateRepresentation extends OutputRepresentation {
     /** The template. */
     private volatile Template template;
 
+    /** The template name. */
+    private volatile String templateName;
+
+    /**
+     * Constructor based on a Velocity 'encoded' representation.
+     * 
+     * @param templateRepresentation
+     *                The representation to 'decode'.
+     * @param dataModel
+     *                The Velocity template's data model.
+     */
     public TemplateRepresentation(Representation templateRepresentation,
-            Map<String, Object> dataModel, MediaType mediaType) {
-        super(mediaType);
+            Map<String, Object> dataModel) {
+        super(templateRepresentation.getMediaType());
         this.dataModel = dataModel;
         this.engine = null;
         this.template = new Template();
-        this.template.setEncoding(templateRepresentation.getEncodings().get(0)
-                .getName());
+        this.template
+                .setEncoding((templateRepresentation.getCharacterSet() == null) ? null
+                        : templateRepresentation.getCharacterSet().getName());
         this.template.setLastModified(templateRepresentation
                 .getModificationDate().getTime());
         this.template.setName("org.restlet.resource.representation");
         this.template.setResourceLoader(new RepresentationResourceLoader(
                 templateRepresentation));
+        this.templateName = null;
     }
 
     /**
@@ -83,8 +98,8 @@ public class TemplateRepresentation extends OutputRepresentation {
         try {
             this.dataModel = dataModel;
             this.engine = new VelocityEngine();
-            getEngine().init();
-            this.template = getEngine().getTemplate(templateName);
+            this.template = null;
+            this.templateName = templateName;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -117,7 +132,9 @@ public class TemplateRepresentation extends OutputRepresentation {
             Map<String, Object> dataModel, MediaType mediaType) {
         super(mediaType);
         this.dataModel = dataModel;
+        this.engine = null;
         this.template = template;
+        this.templateName = null;
     }
 
     /**
@@ -144,6 +161,22 @@ public class TemplateRepresentation extends OutputRepresentation {
      * @return The Velocity template.
      */
     public Template getTemplate() {
+        if (this.template == null) {
+            if (this.templateName != null) {
+                try {
+                    getEngine().init();
+                    this.template = getEngine().getTemplate(templateName);
+                } catch (Exception e) {
+                    Context context = Context.getCurrent();
+
+                    if (context != null) {
+                        context.getLogger().log(Level.WARNING,
+                                "Unable to get template", e);
+                    }
+                }
+            }
+        }
+
         return this.template;
     }
 
@@ -178,14 +211,28 @@ public class TemplateRepresentation extends OutputRepresentation {
                 tmplWriter = new BufferedWriter(new OutputStreamWriter(
                         outputStream, getCharacterSet().getName()));
             } else {
-                tmplWriter = new BufferedWriter(new OutputStreamWriter(
-                        outputStream, getTemplate().getEncoding()));
+                if (getTemplate().getEncoding() == null) {
+                    tmplWriter = new BufferedWriter(new OutputStreamWriter(
+                            outputStream));
+                } else {
+                    tmplWriter = new BufferedWriter(new OutputStreamWriter(
+                            outputStream, getTemplate().getEncoding()));
+                }
             }
 
             // Process the template
             getTemplate().merge(context, tmplWriter);
             tmplWriter.flush();
         } catch (Exception e) {
+            Context context = Context.getCurrent();
+
+            if (context != null) {
+                context.getLogger().log(Level.WARNING,
+                        "Unable to process the template", e);
+            }
+
+            e.printStackTrace();
+
             throw new IOException("Template processing error. "
                     + e.getMessage());
         }
