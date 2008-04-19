@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Java API for RESTful Web Services
 Bundle-SymbolicName: javax.ws.rs
-Bundle-Version: 1.0
+Bundle-Version: 0.9
 Bundle-ClassPath: javax.ws.rs.jar
 Bundle-Vendor: Sun Microsystems Inc.
 Export-Package: javax.ws.rs;uses:="javax.ws.rs.core",

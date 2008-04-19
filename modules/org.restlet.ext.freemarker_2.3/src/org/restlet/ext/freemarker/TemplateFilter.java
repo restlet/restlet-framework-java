@@ -36,7 +36,7 @@ import freemarker.template.Configuration;
 public class TemplateFilter extends Filter {
 
     /** The FreeMarker configuration. */
-    private volatile Configuration config;
+    private volatile Configuration configuration;
 
     /** The template's data model. */
     private volatile Object dataModel;
@@ -51,7 +51,7 @@ public class TemplateFilter extends Filter {
      */
     public TemplateFilter(Configuration config, Object dataModel) {
         super();
-        this.config = config;
+        this.configuration = config;
         this.dataModel = dataModel;
     }
 
@@ -68,7 +68,7 @@ public class TemplateFilter extends Filter {
     public TemplateFilter(Context context, Configuration config,
             Object dataModel) {
         super(context);
-        this.config = config;
+        this.configuration = config;
         this.dataModel = dataModel;
     }
 
@@ -87,7 +87,7 @@ public class TemplateFilter extends Filter {
     public TemplateFilter(Context context, Restlet next, Configuration config,
             Object dataModel) {
         super(context, next);
-        this.config = config;
+        this.configuration = config;
         this.dataModel = dataModel;
     }
 
@@ -97,7 +97,8 @@ public class TemplateFilter extends Filter {
                 && response.getEntity().getEncodings().contains(
                         Encoding.FREEMARKER)) {
             response.setEntity(new TemplateRepresentation(response.getEntity(),
-                    config, dataModel, response.getEntity().getMediaType()));
+                    configuration, dataModel, response.getEntity()
+                            .getMediaType()));
         }
     }
 
@@ -106,8 +107,8 @@ public class TemplateFilter extends Filter {
      * 
      * @return The FreeMarker configuration.
      */
-    public Configuration getConfig() {
-        return config;
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     /**
@@ -124,10 +125,9 @@ public class TemplateFilter extends Filter {
      * 
      * @param config
      *                FreeMarker configuration.
-     * @return The FreeMarker configuration.
      */
-    public void setConfig(Configuration config) {
-        this.config = config;
+    public void setConfiguration(Configuration config) {
+        this.configuration = config;
     }
 
     /**
@@ -135,7 +135,6 @@ public class TemplateFilter extends Filter {
      * 
      * @param dataModel
      *                The template's data model.
-     * @return The template's data model.
      */
     public void setDataModel(Object dataModel) {
         this.dataModel = dataModel;

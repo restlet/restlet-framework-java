@@ -451,6 +451,7 @@
    <path id="mod-velocity-path">
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
+      <fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-velocity-id}" includes="*.jar" />
    </path>
 
@@ -933,7 +934,7 @@
       <pomModule name="net" />
       <pomModule name="oauth" />
       <pomModule name="servlet" />
-      <pomModule name="shell" ext1="antlr" ext2="jline" />
+<!-- disabled for now  <pomModule name="shell" ext1="antlr" ext2="jline" /> -->
       <pomModule name="simple" />
       <pomModule name="spring-api" ext1="spring" />
       <pomModule name="spring-nre" ext1="spring" />
@@ -1155,7 +1156,7 @@
             <pathelement path="${mod}/${mod-net-id}/src/" />
             <pathelement path="${mod}/${mod-oauth-id}/src/" />
             <pathelement path="${mod}/${mod-servlet-id}/src/" />
-            <pathelement path="${mod}/${mod-shell-id}/src/" />
+<!-- disabled for now <pathelement path="${mod}/${mod-shell-id}/src/" /> -->
             <pathelement path="${mod}/${mod-simple-id}/src/" />
             <pathelement path="${mod}/${mod-spring-api-id}/src/" />
             <pathelement path="${mod}/${mod-spring-nre-id}/src/" />
@@ -1399,7 +1400,7 @@
       <stageModule name="net" />
       <stageModule name="oauth" />
       <stageModule name="servlet" />
-      <stageModule name="shell" />
+<!-- disabled for now <stageModule name="shell" /> -->
       <stageModule name="simple" />
       <stageModule name="spring-api" />
       <stageModule name="spring-nre" />
@@ -1439,7 +1440,7 @@
       <maven2Module name="net" />
       <maven2Module name="oauth" />
       <maven2Module name="servlet" />
-      <maven2Module name="shell" />
+<!-- disabled for now <maven2Module name="shell" /> -->
       <maven2Module name="simple" />
       <maven2Module name="spring-api" />
       <maven2Module name="spring-nre" />
@@ -1447,6 +1448,7 @@
       <maven2Module name="xdb" />
       <maven2Module name="wadl" />
       <maven2Library name="simple" />
+      <maven2Library name="jaxrs" />
       <maven2Library name="json" />
       <maven2Library name="db4o" />
       <maven2Library name="db4o-nativequery" />

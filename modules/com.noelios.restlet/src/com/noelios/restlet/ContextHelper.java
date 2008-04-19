@@ -39,20 +39,20 @@ public abstract class ContextHelper<T extends Restlet> extends ChainHelper<T> {
      * @param helped
      *                The helped Restlet.
      */
-    public ContextHelper(T helpedRestlet) {
-        super(helpedRestlet);
+    public ContextHelper(T helped) {
+        super(helped);
     }
 
     /**
      * Constructor.
      * 
-     * @param helpedRestlet
+     * @param helped
      *                The helped Restlet.
      * @param parentContext
      *                The parent context, typically the component's context.
      */
-    public ContextHelper(T helpedRestlet, Context parentContext) {
-        super(helpedRestlet, parentContext);
+    public ContextHelper(T helped, Context parentContext) {
+        super(helped, parentContext);
     }
 
     /**
