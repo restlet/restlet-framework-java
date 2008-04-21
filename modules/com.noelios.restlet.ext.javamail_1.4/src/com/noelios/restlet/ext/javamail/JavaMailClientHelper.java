@@ -58,25 +58,58 @@ import com.noelios.restlet.ClientHelper;
 import com.sun.mail.pop3.POP3Folder;
 
 /**
- * Client connector to a mail server. Currently only the SMTP protocol is
- * supported. To send an email, specify a SMTP URI as the ressource reference of
- * the call and use an XML email as the content of the call. An SMTP URI has the
- * following syntax: smtp://host[:port]<br>
+ * Client connector to a mail server. This connector supports the SMTP, SMTP
+ * with STARTTLS and SMTPS protocols to send emails, POP v3 and POPS v3 to
+ * retrieved emails from a mail box.<br>
  * <br>
- * The default port used is 25 for SMTP and 465 for SMTPS. Use the
- * Call.getSecurity().setLogin() and setPassword() methods for authentication.<br>
+ * To send an email, send a POST request with a resource reference on a SMTP or
+ * SMTPS URI and use an XML email as the entity. A SMTP URI has the following
+ * syntax: smtp://host[:port]<br>
+ * <br>
+ * Use the
+ * {@link Request#setChallengeResponse(org.restlet.data.ChallengeResponse)}
+ * method to set the identified/login and secret/password. You will also need to
+ * specify the {@link ChallengeScheme#SMTP_PLAIN} challenge scheme.<br>
  * <br>
  * Sample XML email:<br>
- * {@code <?xml version="1.0" encoding="ISO-8859-1" ?>}<br>
- * {@code <email>}<br>
- * &nbsp;&nbsp;{@code   <head>}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <subject>Account activation</subject>}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <from>sender@company.com</from>}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <to>user@domain.com</to>}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code      <cc>log@restlet.org</cc>}<br>
- * &nbsp;&nbsp;{@code   </head>}<br>
- * &nbsp;&nbsp;{@code   <body><![CDATA[Your account was sucessfully created!]]></body>}<br>
- * {@code </email>}
+ * 
+ * <pre>
+ * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot; ?&gt;
+ *  &lt;email&gt;
+ *  &lt;head&gt;
+ *  &lt;subject&gt;Account activation&lt;/subject&gt;
+ *  &lt;from&gt;support@restlet.org&lt;/from&gt;
+ *  &lt;to&gt;user@domain.com&lt;/to&gt;
+ *  &lt;cc&gt;log@restlet.org&lt;/cc&gt;
+ *  &lt;/head&gt;
+ *  &lt;body&gt;&lt;![CDATA[Your account was sucessfully created!]]&gt;&lt;/body&gt;
+ *  &lt;/email&gt;
+ * </pre>
+ * 
+ * To receive the list of emails, send a GET request to a resource reference on
+ * a POP or POPS URI, leaving the reference path empty. A POP URI has the
+ * following syntax: pop://host[:port]<br>
+ * <br>
+ * Use the
+ * {@link Request#setChallengeResponse(org.restlet.data.ChallengeResponse)}
+ * method to set the identified/login and secret/password. You will also need to
+ * specify the {@link ChallengeScheme#POP_BASIC} or the
+ * {@link ChallengeScheme#POP_DIGEST} challenge scheme.<br>
+ * <br>
+ * Sample XML list of emails:<br>
+ * 
+ * <pre>
+ * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot; ?&gt;
+ * &lt;emails&gt; 
+ *    &lt;email href=’/1234’/&gt;
+ *    &lt;email href=’/5678’/&gt;
+ *    &lt;email href=’/9012’/&gt;
+ *    &lt;email href=’/3456’/&gt;
+ * &lt;/emails&gt;
+ * </pre>
+ * 
+ * To retrieve an individual email, just add the href attribute at the end of
+ * the POP URI, such as: pop://host/1234<br>
  * 
  * Here is the list of parameters that are supported: <table>
  * <tr>
