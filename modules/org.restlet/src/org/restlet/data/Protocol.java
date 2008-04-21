@@ -95,6 +95,10 @@ public final class Protocol extends Metadata {
     public static final Protocol POP = new Protocol("pop", "POP",
             "Post Office Protocol", 110);
 
+    /** POPS protocol (via SSL/TLS socket).. */
+    public static final Protocol POPS = new Protocol("pops", "POPS",
+            "Post Office Protocol (Secure)", 995);
+
     /**
      * RIAP (Restlet Internal Access Protocol) is a custom scheme to access
      * representations via internal calls to virtual hosts/components. Example
@@ -160,6 +164,10 @@ public final class Protocol extends Metadata {
                 result = JAR;
             else if (schemeName.equalsIgnoreCase(JDBC.getSchemeName()))
                 result = JDBC;
+            else if (schemeName.equalsIgnoreCase(POP.getSchemeName()))
+                result = POP;
+            else if (schemeName.equalsIgnoreCase(POPS.getSchemeName()))
+                result = POPS;
             else if (schemeName.equalsIgnoreCase(RIAP.getSchemeName()))
                 result = RIAP;
             else if (schemeName.equalsIgnoreCase(SMTP.getSchemeName()))

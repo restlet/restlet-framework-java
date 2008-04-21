@@ -53,6 +53,15 @@ public final class ChallengeScheme extends Metadata {
     public static final ChallengeScheme HTTP_NTLM = new ChallengeScheme(
             "HTTP_NTLM", "NTLM", "Microsoft NTLM HTTP authentication");
 
+    /** Basic POP scheme. Based on the USER/PASS commands. */
+    public static final ChallengeScheme POP_BASIC = new ChallengeScheme(
+            "POP_BASIC", "Basic",
+            "Basic POP authentication (USER/PASS commands)");
+
+    /** Digest POP scheme. Based on the APOP command. */
+    public static final ChallengeScheme POP_DIGEST = new ChallengeScheme(
+            "POP_DIGEST", "Digest", "Digest POP authentication (APOP command)");
+
     /** Plain SMTP scheme. */
     public static final ChallengeScheme SMTP_PLAIN = new ChallengeScheme(
             "SMTP_PLAIN", "PLAIN", "Plain SMTP authentication");

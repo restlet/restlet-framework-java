@@ -23,30 +23,33 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import javax.mail.FetchProfile;
+import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
+import javax.mail.Store;
 import javax.mail.Transport;
+import javax.mail.UIDFolder;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.restlet.Client;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.noelios.restlet.ClientHelper;
+import com.sun.mail.pop3.POP3Folder;
 
 /**
  * Client connector to a mail server. Currently only the SMTP protocol is
@@ -148,6 +151,7 @@ public class JavaMailClientHelper extends ClientHelper {
         getProtocols().add(Protocol.SMTP);
         getProtocols().add(Protocol.SMTPS);
         getProtocols().add(Protocol.POP);
+        getProtocols().add(Protocol.POPS);
     }
 
     /**
@@ -180,36 +184,79 @@ public class JavaMailClientHelper extends ClientHelper {
             if (Protocol.SMTP.equals(protocol)
                     || Protocol.SMTPS.equals(protocol)) {
                 handleSmtp(request, response);
-            } else if (Protocol.POP.equals(protocol)) {
+            } else if (Protocol.POP.equals(protocol)
+                    || Protocol.POPS.equals(protocol)) {
                 handlePop(request, response);
             }
         } catch (IOException e) {
+            e.printStackTrace();
             getLogger().log(Level.WARNING, "JavaMail client error", e);
         } catch (NoSuchProviderException e) {
+            e.printStackTrace();
             getLogger().log(Level.WARNING, "JavaMail client error", e);
         } catch (AddressException e) {
+            e.printStackTrace();
             getLogger().log(Level.WARNING, "JavaMail client error", e);
         } catch (MessagingException e) {
-            getLogger().log(Level.WARNING, "JavaMail client error", e);
-        } catch (SAXException e) {
-            getLogger().log(Level.WARNING, "JavaMail client error", e);
-        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
             getLogger().log(Level.WARNING, "JavaMail client error", e);
         }
     }
 
     private void handlePop(Request request, Response response)
-            throws ParserConfigurationException, SAXException, IOException,
-            MessagingException {
+            throws MessagingException {
         // Parse the POP URI
         String popHost = request.getResourceRef().getHostDomain();
         int popPort = request.getResourceRef().getHostPort();
 
+        if (popPort == -1) {
+            // No port specified, the default one should be used
+            popPort = request.getProtocol().getDefaultPort();
+        }
+
+        if ((popHost == null) || (popHost.equals(""))) {
+            throw new IllegalArgumentException("Invalid POP host specified");
+        }
+
+        // Check if authentication required
+        boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
+        boolean apop = authenticate
+                && (ChallengeScheme.POP_DIGEST.equals(request
+                        .getChallengeResponse().getScheme()));
+
+        String transport = null;
+
+        if (Protocol.POP.equals(request.getProtocol())) {
+            transport = "pop3";
+        } else if (Protocol.POPS.equals(request.getProtocol())) {
+            transport = "pop3s";
+        }
+
+        Properties props = System.getProperties();
+        props.put("mail." + transport + ".host", popHost);
+        props.put("mail." + transport + ".port", Integer.toString(popPort));
+        props.put("mail." + transport + ".apop.enable", Boolean.toString(apop));
+        props.put("mail." + transport + ".user", getLogin(request));
+
+        Session session = Session.getDefaultInstance(props);
+        session.setDebug(isDebug());
+        Store store = session.getStore(transport);
+        store.connect(getLogin(request), getPassword(request));
+        POP3Folder inbox = (POP3Folder) store.getFolder("INBOX");
+        inbox.open(Folder.READ_WRITE);
+        FetchProfile profile = new FetchProfile();
+        profile.add(UIDFolder.FetchProfileItem.UID);
+        Message[] messages = inbox.getMessages();
+        inbox.fetch(messages, profile);
+
+        for (int i = 0; i < messages.length; i++) {
+            String uid = inbox.getUID(messages[i]);
+            System.out.println("UID: " + uid);
+        }
     }
 
     private void handleSmtp(Request request, Response response)
-            throws ParserConfigurationException, SAXException, IOException,
-            MessagingException {
+            throws IOException, MessagingException {
         // Parse the SMTP URI
         String smtpHost = request.getResourceRef().getHostDomain();
         int smtpPort = request.getResourceRef().getHostPort();
@@ -224,10 +271,8 @@ public class JavaMailClientHelper extends ClientHelper {
         }
 
         // Parse the email to extract necessary info
-        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance()
-                .newDocumentBuilder();
-        Document email = docBuilder.parse(request.getEntity().getStream());
-
+        DomRepresentation dom = new DomRepresentation(request.getEntity());
+        Document email = dom.getDocument();
         Element root = (Element) email.getElementsByTagName("email").item(0);
         Element header = (Element) root.getElementsByTagName("head").item(0);
         String subject = header.getElementsByTagName("subject").item(0)

@@ -38,6 +38,9 @@ Changes log
         - Ensured the all NRE core and extensions classes properly pass
           the throwable/exceptions to the error statuses so they can be
           later retrieved or printed. Suggested by Steve Loughran.  
+        - Added support for new RIAP authority: HOST to issue requests 
+          relative to the current virtual host. 
+          Suggested by Rob Heittman.
     - NRE and Extension Enhancements
         - Atom extension is now able to write Feed and Service XML
           documents and not just reading/parsing them. This can be used
@@ -46,7 +49,14 @@ Changes log
           constructor to TemplateRepresentation which allows the 
           processing of a Velocity template provided as a Restlet
           Representation.
-        - 
+        - Deprecated Protocol.SMTP_STARTTLS, replaced by a "startTls" 
+          parameter on JavaMail connector.
+        - Added Protocol.POP and POPS constants.
+        - Added ChallengeScheme.POP_BASIC (USER+PASS) and POP_DIGEST 
+          (APOP) constants.
+        - Added support for POP v3 and POP/SSL v3 to the JavaMail 
+          connector and refactored existing code. 
+          Sponsored by RunMyProcess (http://www.runmyprocess.com).
     - Misc
     	- Updated Grizzly to 1.7.3.
     	- Improved logging consistency.
