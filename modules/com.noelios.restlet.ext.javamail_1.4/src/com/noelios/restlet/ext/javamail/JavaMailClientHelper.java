@@ -42,6 +42,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.w3c.dom.Document;
@@ -189,20 +190,30 @@ public class JavaMailClientHelper extends ClientHelper {
                 handlePop(request, response);
             }
         } catch (IOException e) {
-            e.printStackTrace();
             getLogger().log(Level.WARNING, "JavaMail client error", e);
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
         } catch (NoSuchProviderException e) {
-            e.printStackTrace();
             getLogger().log(Level.WARNING, "JavaMail client error", e);
+            response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
         } catch (AddressException e) {
-            e.printStackTrace();
             getLogger().log(Level.WARNING, "JavaMail client error", e);
+            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e);
         } catch (MessagingException e) {
-            e.printStackTrace();
             getLogger().log(Level.WARNING, "JavaMail client error", e);
+            response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
         }
     }
 
+    /**
+     * Handles a POP or POPS request.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     * @throws IOException
+     * @throws MessagingException
+     */
     private void handlePop(Request request, Response response)
             throws MessagingException {
         // Parse the POP URI
@@ -236,7 +247,6 @@ public class JavaMailClientHelper extends ClientHelper {
         props.put("mail." + transport + ".host", popHost);
         props.put("mail." + transport + ".port", Integer.toString(popPort));
         props.put("mail." + transport + ".apop.enable", Boolean.toString(apop));
-        props.put("mail." + transport + ".user", getLogin(request));
 
         Session session = Session.getDefaultInstance(props);
         session.setDebug(isDebug());
@@ -255,6 +265,16 @@ public class JavaMailClientHelper extends ClientHelper {
         }
     }
 
+    /**
+     * Handles a SMTP or SMTPS request.
+     * 
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to update.
+     * @throws IOException
+     * @throws MessagingException
+     */
     private void handleSmtp(Request request, Response response)
             throws IOException, MessagingException {
         // Parse the SMTP URI
@@ -304,37 +324,37 @@ public class JavaMailClientHelper extends ClientHelper {
         // Check if authentication required
         boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
 
-        // Prepare the connection to the SMTP server
+        String transport = null;
+
+        if (Protocol.SMTP.equals(request.getProtocol())) {
+            transport = "smtp";
+        } else if (Protocol.SMTPS.equals(request.getProtocol())) {
+            transport = "smtps";
+        }
+
         Properties props = System.getProperties();
-        props.put("mail.smtp.host", smtpHost);
-        props.put("mail.smtp.port", Integer.toString(smtpPort));
-        props.put("mail.smtp.auth", Boolean.toString(authenticate)
+        props.put("mail." + transport + ".host", smtpHost);
+        props.put("mail." + transport + ".port", Integer.toString(smtpPort));
+        props.put("mail." + transport + ".auth", Boolean.toString(authenticate)
                 .toLowerCase());
-        props.put("mail.smtp.starttls.enable", Boolean.toString(isStartTls()));
+        props.put("mail." + transport + ".starttls.enable", Boolean
+                .toString(isStartTls()));
 
         // Open the JavaMail session
         Session session = Session.getDefaultInstance(props);
         session.setDebug(isDebug());
-        Transport transport = null;
+        Transport tr = session.getTransport(transport);
 
-        // Connect to the SMTP server
-        if (request.getProtocol().equals(Protocol.SMTP)) {
-            transport = session.getTransport("smtp");
-        } else if (request.getProtocol().equals(Protocol.SMTPS)) {
-            transport = session.getTransport("smtps");
-        }
-
-        if (transport != null) {
+        if (tr != null) {
             // Check if authentication is needed
             if (authenticate) {
-                transport.connect(smtpHost, getLogin(request),
-                        getPassword(request));
+                tr.connect(smtpHost, getLogin(request), getPassword(request));
             } else {
-                transport.connect();
+                tr.connect();
             }
 
             // Actually send the message
-            if (transport.isConnected()) {
+            if (tr.isConnected()) {
                 getLogger()
                         .info(
                                 "JavaMail client connection successfully established. Attempting to send the message");
@@ -367,8 +387,8 @@ public class JavaMailClientHelper extends ClientHelper {
                 msg.saveChanges();
 
                 // Send the message
-                transport.sendMessage(msg, msg.getAllRecipients());
-                transport.close();
+                tr.sendMessage(msg, msg.getAllRecipients());
+                tr.close();
 
                 getLogger().info(
                         "JavaMail client successfully sent the message.");

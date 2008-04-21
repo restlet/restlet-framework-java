@@ -57,6 +57,8 @@ Changes log
         - Added support for POP v3 and POP/SSL v3 to the JavaMail 
           connector and refactored existing code. 
           Sponsored by RunMyProcess (http://www.runmyprocess.com).
+        - The debugging mode of the JavaMail connector is now optional
+          and can be changed with a connector parameter "debug".
     - Misc
     	- Updated Grizzly to 1.7.3.
     	- Improved logging consistency.
