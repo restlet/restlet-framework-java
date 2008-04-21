@@ -682,6 +682,8 @@
       <attribute name="name" />
       <attribute name="ext1" default="" />
       <attribute name="ext2" default="" />
+      <attribute name="ext3" default="" />
+      <attribute name="ext4" default="" />
       <sequential>
          <!-- sets the final pom version -->
          <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}-${lib-@{name}-suffix-maven}">
@@ -704,6 +706,8 @@
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-@{name}-package}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext1}-version@" value="${lib-@{ext1}-version}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext2}-version@" value="${lib-@{ext2}-version}" />
+         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext3}-version@" value="${lib-@{ext3}-version}" />
+         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext4}-version@" value="${lib-@{ext4}-version}" />
       </sequential>
    </macrodef>
 
@@ -924,7 +928,7 @@
       <pomModule name="httpclient" />
       <pomModule name="javamail" />
       <pomModule name="jaxb" />
-      <pomModule name="jaxrs" />
+      <pomModule name="jaxrs" ext1="activation" ext2="jaxb" ext3="json" ext4="javamail"/>
       <pomModule name="jdbc" ext1="dbcp" />
       <pomModule name="jetty" />
       <pomModule name="jibx" />

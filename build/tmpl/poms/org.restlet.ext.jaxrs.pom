@@ -26,7 +26,7 @@
       </dependency>
       <dependency>
          <groupId>org.json</groupId>
-         <artifactId>json</artifactId>
+         <artifactId>org.json</artifactId>
          <version>@lib-json-version@</version>
       </dependency>
       <dependency>
