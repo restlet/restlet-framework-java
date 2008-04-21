@@ -8,7 +8,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-public class BasicHttpsClient {
+public class BasicSmtpsClient {
     public static void main(String[] args) {
         // Instantiates a client according to a protocol
         Client client = new Client(Protocol.HTTPS);

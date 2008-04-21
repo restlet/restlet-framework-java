@@ -9,7 +9,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-public class BasicHTTPSServer {
+public class BasicHttpsServer {
     public static void main(String[] args) {
         // Creates a Restlet whose response to each request is "hello, world".
         Restlet restlet = new Restlet() {
@@ -20,7 +20,6 @@ public class BasicHTTPSServer {
         };
 
         File keystoreFile = new File("d:\\temp\\certificats", "myKeystore");
-
         // Component declaring only one HTTPS server connector.
         Component component = new Component();
         component.getServers().add(Protocol.HTTPS, 8182);
@@ -28,7 +27,7 @@ public class BasicHTTPSServer {
 
         // Update component's context with keystore parameters.
         component.getContext().getParameters().add("keystorePath",
-                keystoreFile.toURI().toASCIIString());
+                keystoreFile.getAbsolutePath());
         component.getContext().getParameters().add("keystorePassword",
                 "storepass");
         component.getContext().getParameters().add("keyPassword", "keypass");
