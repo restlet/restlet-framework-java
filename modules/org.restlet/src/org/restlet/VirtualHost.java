@@ -199,6 +199,10 @@ public class VirtualHost extends Router {
                 // Set the request's root reference
                 request.setRootRef(request.getResourceRef().getBaseRef());
 
+                // Save the current virtual host in the request attributes
+                request.getAttributes().put("org.restlet.virtualHost.hashCode",
+                        this.hashCode());
+
                 return result;
             }
         };

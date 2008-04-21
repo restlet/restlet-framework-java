@@ -21,7 +21,6 @@ package com.noelios.restlet.component;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
-import org.restlet.Uniform;
 
 /**
  * Context allowing access to the component's connectors.
@@ -29,14 +28,14 @@ import org.restlet.Uniform;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ComponentContext extends Context {
+    /** The client dispatcher. */
+    private volatile ComponentClientDispatcher clientDispatcher;
+
     /** The component helper. */
     private volatile ComponentHelper componentHelper;
 
-    /** The client dispatcher. */
-    private volatile Uniform clientDispatcher;
-
     /** The server dispatcher. */
-    private volatile Uniform serverDispatcher;
+    private volatile ComponentServerDispatcher serverDispatcher;
 
     /**
      * Constructor.
@@ -54,13 +53,8 @@ public class ComponentContext extends Context {
     }
 
     @Override
-    public Uniform getClientDispatcher() {
+    public ComponentClientDispatcher getClientDispatcher() {
         return this.clientDispatcher;
-    }
-
-    @Override
-    public Uniform getServerDispatcher() {
-        return this.serverDispatcher;
     }
 
     /**
@@ -70,6 +64,11 @@ public class ComponentContext extends Context {
      */
     protected ComponentHelper getComponentHelper() {
         return this.componentHelper;
+    }
+
+    @Override
+    public ComponentServerDispatcher getServerDispatcher() {
+        return this.serverDispatcher;
     }
 
     /**

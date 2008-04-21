@@ -26,25 +26,8 @@ package org.restlet.data;
  */
 public final class Protocol extends Metadata {
 
-    /** SMTP protocol. */
-    public static final Protocol SMTP = new Protocol("smtp", "SMTP",
-            "Simple Mail Transfer Protocol", 25);
-
-    /** SMTP with STARTTLS protocol (started with a plain socket). */
-    public static final Protocol SMTP_STARTTLS = new Protocol("smtp",
-            "SMTP_STARTTLS",
-            "Simple Mail Transfer Protocol (starting a TLS encryption)", 25);
-
-    /** SMTPS protocol (via SSL/TLS socket). */
-    public static final Protocol SMTPS = new Protocol("smtps", "SMTPS",
-            "Simple Mail Transfer Protocol (Secure)", 465);
-
     /** Indicates that the port number is undefined. */
     public static final int UNKNOWN_PORT = -1;
-
-    /** Local Web Archive access protocol. */
-    public static final Protocol WAR = new Protocol("war", "WAR",
-            "Web Archive Access Protocol", UNKNOWN_PORT);
 
     /**
      * AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS.
@@ -108,6 +91,10 @@ public final class Protocol extends Metadata {
     public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
             "Java DataBase Connectivity", UNKNOWN_PORT);
 
+    /** POP protocol. */
+    public static final Protocol POP = new Protocol("pop", "POP",
+            "Post Office Protocol", 110);
+
     /**
      * RIAP (Restlet Internal Access Protocol) is a custom scheme to access
      * representations via internal calls to virtual hosts/components. Example
@@ -121,6 +108,29 @@ public final class Protocol extends Metadata {
      */
     public static final Protocol RIAP = new Protocol("riap", "RIAP",
             "Restlet Internal Access Protocol", UNKNOWN_PORT);
+
+    /** SMTP protocol. */
+    public static final Protocol SMTP = new Protocol("smtp", "SMTP",
+            "Simple Mail Transfer Protocol", 25);
+
+    /**
+     * SMTP with STARTTLS protocol (started with a plain socket).
+     * 
+     * @deprecated Use the "startTls" parameter on the JavaMail connector
+     *             instead.
+     */
+    @Deprecated
+    public static final Protocol SMTP_STARTTLS = new Protocol("smtp",
+            "SMTP_STARTTLS",
+            "Simple Mail Transfer Protocol (starting a TLS encryption)", 25);
+
+    /** SMTPS protocol (via SSL/TLS socket). */
+    public static final Protocol SMTPS = new Protocol("smtps", "SMTPS",
+            "Simple Mail Transfer Protocol (Secure)", 465);
+
+    /** Local Web Archive access protocol. */
+    public static final Protocol WAR = new Protocol("war", "WAR",
+            "Web Archive Access Protocol", UNKNOWN_PORT);
 
     /**
      * Creates the protocol associated to a URI scheme name. If an existing

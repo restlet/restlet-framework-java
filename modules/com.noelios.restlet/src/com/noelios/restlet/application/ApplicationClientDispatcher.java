@@ -80,10 +80,12 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
                 }
             } else if (cr.getRiapAuthorityType() == LocalReference.RIAP_COMPONENT) {
                 parentHandle(request, response);
+            } else if (cr.getRiapAuthorityType() == LocalReference.RIAP_HOST) {
+                parentHandle(request, response);
             } else {
                 getLogger()
                         .warning(
-                                "Unknown RIAP authority. Only \"component\" and \"application\" are supported.");
+                                "Unknown RIAP authority. Only \"component\", \"host\" and \"application\" are supported.");
             }
         } else {
             if (!getApplicationContext().getApplication().getConnectorService()

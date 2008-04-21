@@ -46,6 +46,7 @@ Changes log
           constructor to TemplateRepresentation which allows the 
           processing of a Velocity template provided as a Restlet
           Representation.
+        - 
     - Misc
     	- Updated Grizzly to 1.7.3.
     	- Improved logging consistency.

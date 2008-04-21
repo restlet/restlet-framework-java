@@ -56,16 +56,22 @@ public final class LocalReference extends Reference {
     public static final int CLAP_THREAD = 3;
 
     /**
-     * The resources will be resolved from the current component's internal
-     * router. Example riap://component/myAppPath/myResource
-     */
-    public static final int RIAP_COMPONENT = 4;
-
-    /**
      * The resources will be resolved from the current application's root
      * Restlet. Example riap://application/myPath/myResource
      */
-    public static final int RIAP_APPLICATION = 5;
+    public static final int RIAP_APPLICATION = 4;
+
+    /**
+     * The resources will be resolved from the current component's internal
+     * (private) router. Example riap://component/myAppPath/myResource
+     */
+    public static final int RIAP_COMPONENT = 5;
+
+    /**
+     * The resources will be resolved from the current component's virtual host.
+     * Example riap://host/myAppPath/myResource
+     */
+    public static final int RIAP_HOST = 6;
 
     /**
      * Constructor.
@@ -170,6 +176,9 @@ public final class LocalReference extends Reference {
             break;
         case RIAP_COMPONENT:
             result = "component";
+            break;
+        case RIAP_HOST:
+            result = "host";
             break;
         }
 
@@ -276,31 +285,6 @@ public final class LocalReference extends Reference {
     }
 
     /**
-     * Returns the type of authority.
-     * 
-     * @return The type of authority.
-     */
-    public int getRiapAuthorityType() {
-        int result = 0;
-
-        if (getSchemeProtocol().equals(Protocol.RIAP)) {
-            String authority = getAuthority();
-
-            if (authority != null) {
-                if (authority
-                        .equalsIgnoreCase(getAuthorityName(RIAP_APPLICATION))) {
-                    result = RIAP_APPLICATION;
-                } else if (authority
-                        .equalsIgnoreCase(getAuthorityName(RIAP_COMPONENT))) {
-                    result = RIAP_COMPONENT;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Gets the local file corresponding to the reference. Only URIs referring
      * to the "localhost" or to an empty authority are supported.
      * 
@@ -364,6 +348,34 @@ public final class LocalReference extends Reference {
 
                 if (separatorIndex != -1) {
                     result = new Reference(ssp.substring(0, separatorIndex));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the type of authority.
+     * 
+     * @return The type of authority.
+     */
+    public int getRiapAuthorityType() {
+        int result = 0;
+
+        if (getSchemeProtocol().equals(Protocol.RIAP)) {
+            String authority = getAuthority();
+
+            if (authority != null) {
+                if (authority
+                        .equalsIgnoreCase(getAuthorityName(RIAP_APPLICATION))) {
+                    result = RIAP_APPLICATION;
+                } else if (authority
+                        .equalsIgnoreCase(getAuthorityName(RIAP_COMPONENT))) {
+                    result = RIAP_COMPONENT;
+                } else if (authority
+                        .equalsIgnoreCase(getAuthorityName(RIAP_HOST))) {
+                    result = RIAP_HOST;
                 }
             }
         }

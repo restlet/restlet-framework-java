@@ -43,7 +43,7 @@ public class ApplicationContext extends Context {
     private volatile Context parentContext;
 
     /** The client dispatcher. */
-    private volatile Uniform clientDispatcher;
+    private volatile ApplicationClientDispatcher clientDispatcher;
 
     /** The server dispatcher. */
     private volatile Uniform serverDispatcher;
@@ -90,7 +90,7 @@ public class ApplicationContext extends Context {
     }
 
     @Override
-    public Uniform getClientDispatcher() {
+    public ApplicationClientDispatcher getClientDispatcher() {
         return this.clientDispatcher;
     }
 
