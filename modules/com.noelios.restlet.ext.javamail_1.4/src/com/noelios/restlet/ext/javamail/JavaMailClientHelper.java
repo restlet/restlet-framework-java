@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 
+import javax.mail.Address;
 import javax.mail.FetchProfile;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -38,13 +39,17 @@ import javax.mail.internet.MimeMessage;
 
 import org.restlet.Client;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.DomRepresentation;
+import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.util.DateUtils;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -213,12 +218,14 @@ public class JavaMailClientHelper extends ClientHelper {
      *                The response to update.
      * @throws IOException
      * @throws MessagingException
+     * @throws IOException
      */
     private void handlePop(Request request, Response response)
-            throws MessagingException {
+            throws MessagingException, IOException {
         // Parse the POP URI
         String popHost = request.getResourceRef().getHostDomain();
         int popPort = request.getResourceRef().getHostPort();
+        String path = request.getResourceRef().getPath();
 
         if (popPort == -1) {
             // No port specified, the default one should be used
@@ -259,10 +266,135 @@ public class JavaMailClientHelper extends ClientHelper {
         Message[] messages = inbox.getMessages();
         inbox.fetch(messages, profile);
 
-        for (int i = 0; i < messages.length; i++) {
-            String uid = inbox.getUID(messages[i]);
-            System.out.println("UID: " + uid);
+        if ((path == null) || path.equals("") || path.equals("/")) {
+            DomRepresentation result = new DomRepresentation(
+                    MediaType.APPLICATION_XML);
+            Document dom = result.getDocument();
+            Element emails = dom.createElement("emails");
+            dom.appendChild(emails);
+
+            // Retrieve the list of messages
+            Element email;
+            for (int i = 0; i < messages.length; i++) {
+                String uid = inbox.getUID(messages[i]);
+
+                email = dom.createElement("email");
+                email.setAttribute("href", "/" + uid);
+                emails.appendChild(email);
+            }
+
+            // Set the result document
+            response.setEntity(result);
+        } else if (path.startsWith("/")) {
+            // Retrieve the specified message
+            String mailUid = path.substring(1);
+            Message message = null;
+
+            for (int i = 0; (message == null) && (i < messages.length); i++) {
+                String uid = inbox.getUID(messages[i]);
+
+                if (mailUid.equals(uid)) {
+                    message = messages[i];
+                }
+            }
+
+            if (message == null) {
+                // Message not found
+                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
+                        "No message matches the given UID: " + mailUid);
+            } else {
+                // Message found
+                DomRepresentation result = new DomRepresentation(
+                        MediaType.APPLICATION_XML);
+                Document dom = result.getDocument();
+                Element email = dom.createElement("email");
+                dom.appendChild(email);
+
+                // Add the email header
+                Element head = dom.createElement("head");
+                email.appendChild(head);
+
+                if (message.getSubject() != null) {
+                    Element subject = dom.createElement("subject");
+                    subject.setTextContent(message.getSubject());
+                    head.appendChild(subject);
+                }
+
+                Address[] froms = message.getFrom();
+                if (froms != null) {
+                    for (Address fromAddress : froms) {
+                        Element from = dom.createElement("from");
+                        from.setTextContent(fromAddress.toString());
+                        head.appendChild(from);
+                    }
+                }
+
+                Address[] tos = message.getRecipients(Message.RecipientType.TO);
+                if (tos != null) {
+                    for (Address toAddress : tos) {
+                        Element to = dom.createElement("to");
+                        to.setTextContent(toAddress.toString());
+                        head.appendChild(to);
+                    }
+                }
+
+                Address[] ccs = message.getRecipients(Message.RecipientType.CC);
+                if (ccs != null) {
+                    for (Address ccAddress : ccs) {
+                        Element cc = dom.createElement("cc");
+                        cc.setTextContent(ccAddress.toString());
+                        head.appendChild(cc);
+                    }
+                }
+
+                Address[] bccs = message
+                        .getRecipients(Message.RecipientType.BCC);
+                if (bccs != null) {
+                    for (Address bccAddress : bccs) {
+                        Element bcc = dom.createElement("bcc");
+                        bcc.setTextContent(bccAddress.toString());
+                        head.appendChild(bcc);
+                    }
+                }
+
+                if (message.getReceivedDate() != null) {
+                    Element received = dom.createElement("received");
+                    received.setTextContent(DateUtils.format(message
+                            .getReceivedDate(), DateUtils.FORMAT_RFC_1123
+                            .get(0)));
+                    head.appendChild(received);
+                }
+
+                if (message.getSentDate() != null) {
+                    Element sent = dom.createElement("sent");
+                    sent.setTextContent(DateUtils.format(message.getSentDate(),
+                            DateUtils.FORMAT_RFC_1123.get(0)));
+                    head.appendChild(sent);
+                }
+
+                // Add the email body
+                if (message.getContentType() != null) {
+                    MediaType contentType = MediaType.valueOf(message
+                            .getContentType());
+
+                    if (MediaType.TEXT_PLAIN.equals(contentType)) {
+                        Representation content = new InputRepresentation(
+                                message.getInputStream(), contentType);
+
+                        Element body = dom.createElement("body");
+                        email.appendChild(head);
+
+                        CDATASection bodyContent = dom
+                                .createCDATASection(content.getText());
+                        body.appendChild(bodyContent);
+                    }
+                }
+
+                // Set the result document
+                response.setEntity(result);
+            }
         }
+
     }
 
     /**

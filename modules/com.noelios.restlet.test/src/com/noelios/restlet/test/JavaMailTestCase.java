@@ -18,6 +18,9 @@
 
 package com.noelios.restlet.test;
 
+import java.io.File;
+import java.io.IOException;
+
 import junit.framework.TestCase;
 
 import org.restlet.Client;
@@ -29,6 +32,9 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.DomRepresentation;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  * Unit test for the JavaMail connector.
@@ -43,15 +49,7 @@ public class JavaMailTestCase extends TestCase {
 
     private static final String GMAIL_PASSWORD = "XXX";
 
-    private static final String NOELIOS_LOGIN = "XXX";
-
-    private static final String NOELIOS_PASSWORD = "XXX";
-
-    private static final String YAHOO_ID = "XXX";
-
-    private static final String YAHOO_PASSWORD = "XXX";
-
-    private static final String mail = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>"
+    private static final String MAIL = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>"
             + "<email>"
             + "<head>"
             + "<subject>Account activation</subject>"
@@ -62,25 +60,24 @@ public class JavaMailTestCase extends TestCase {
             + "<body><![CDATA[Your account was sucessfully created!]]></body>"
             + "</email>";
 
-    public void testSmtp() {
-        Request request = new Request(Method.POST, "smtp://smtp.mail.yahoo.fr");
-        request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.SMTP_PLAIN, YAHOO_ID, YAHOO_PASSWORD));
-        sendMail(Protocol.SMTP, request, false);
-    }
+    private static final String NOELIOS_LOGIN = "XXX";
 
-    public void testSmtpStartTls() {
-        Request request = new Request(Method.POST, "smtp://alaska.noelios.com");
-        request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.SMTP_PLAIN, NOELIOS_LOGIN, NOELIOS_PASSWORD));
-        sendMail(Protocol.SMTP, request, true);
-    }
+    private static final String NOELIOS_PASSWORD = "XXX";
 
-    public void testSmtps() {
-        Request request = new Request(Method.POST, "smtps://smtp.gmail.com");
+    private static final String YAHOO_ID = "XXX";
+
+    private static final String YAHOO_PASSWORD = "XXX";
+
+    private void printMail(Client client, String baseUri, String href)
+            throws IOException {
+        Request request = new Request(Method.GET, baseUri + href);
         request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.SMTP_PLAIN, GMAIL_LOGIN, GMAIL_PASSWORD));
-        sendMail(Protocol.SMTPS, request, false);
+                ChallengeScheme.POP_BASIC, NOELIOS_LOGIN, NOELIOS_PASSWORD));
+
+        Response response = client.handle(request);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        response.getEntity().write(System.out);
+        System.out.println();
     }
 
     private void sendMail(Protocol protocol, Request request, boolean startTls) {
@@ -89,9 +86,19 @@ public class JavaMailTestCase extends TestCase {
         client.getContext().getParameters().add("startTls",
                 Boolean.toString(startTls).toLowerCase());
 
-        request.setEntity(mail, MediaType.APPLICATION_XML);
+        request.setEntity(MAIL, MediaType.APPLICATION_XML);
         Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        File keyStoreFile = new File("d:/keystore");
+
+        if (keyStoreFile.exists()) {
+            System.setProperty("javax.net.ssl.trustStore", keyStoreFile
+                    .getCanonicalPath());
+        }
     }
 
     public void testPop() {
@@ -106,16 +113,47 @@ public class JavaMailTestCase extends TestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 
-    public void testPops() {
+    public void testPops() throws IOException {
         Client client = new Client(Protocol.POPS);
-        client.getContext().getParameters().add("debug", "true");
+        // client.getContext().getParameters().add("debug", "true");
 
-        Request request = new Request(Method.GET, "pops://pop.gmail.com");
+        String baseUri = "pops://alaska.noelios.com";
+        Request request = new Request(Method.GET, baseUri);
         request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.POP_BASIC, GMAIL_LOGIN, GMAIL_PASSWORD));
+                ChallengeScheme.POP_BASIC, NOELIOS_LOGIN, NOELIOS_PASSWORD));
 
         Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
+        response.getEntity().write(System.out);
+        System.out.println();
+
+        DomRepresentation dom = response.getEntityAsDom();
+        for (Node node : dom.getNodes("/emails/email")) {
+            NamedNodeMap attrs = node.getAttributes();
+            String href = attrs.getNamedItem("href").getNodeValue();
+            printMail(client, baseUri, href);
+        }
+    }
+
+    public void testSmtp() {
+        Request request = new Request(Method.POST, "smtp://smtp.mail.yahoo.fr");
+        request.setChallengeResponse(new ChallengeResponse(
+                ChallengeScheme.SMTP_PLAIN, YAHOO_ID, YAHOO_PASSWORD));
+        sendMail(Protocol.SMTP, request, false);
+    }
+
+    public void testSmtps() {
+        Request request = new Request(Method.POST, "smtps://smtp.gmail.com");
+        request.setChallengeResponse(new ChallengeResponse(
+                ChallengeScheme.SMTP_PLAIN, GMAIL_LOGIN, GMAIL_PASSWORD));
+        sendMail(Protocol.SMTPS, request, false);
+    }
+
+    public void testSmtpStartTls() {
+        Request request = new Request(Method.POST, "smtp://alaska.noelios.com");
+        request.setChallengeResponse(new ChallengeResponse(
+                ChallengeScheme.SMTP_PLAIN, NOELIOS_LOGIN, NOELIOS_PASSWORD));
+        sendMail(Protocol.SMTP, request, true);
     }
 
 }
