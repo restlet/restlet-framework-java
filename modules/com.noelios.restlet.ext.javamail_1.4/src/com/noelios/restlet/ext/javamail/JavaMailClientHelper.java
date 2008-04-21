@@ -442,121 +442,132 @@ public class JavaMailClientHelper extends ClientHelper {
      */
     private void handleSmtp(Request request, Response response)
             throws IOException, MessagingException {
-        // Parse the SMTP URI
-        String smtpHost = request.getResourceRef().getHostDomain();
-        int smtpPort = request.getResourceRef().getHostPort();
+        if (!Method.POST.equals(request.getMethod())) {
+            response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            response.getAllowedMethods().add(Method.POST);
+        } else {
+            // Parse the SMTP URI
+            String smtpHost = request.getResourceRef().getHostDomain();
+            int smtpPort = request.getResourceRef().getHostPort();
 
-        if (smtpPort == -1) {
-            // No port specified, the default one should be used
-            smtpPort = request.getProtocol().getDefaultPort();
-        }
-
-        if ((smtpHost == null) || (smtpHost.equals(""))) {
-            throw new IllegalArgumentException("Invalid SMTP host specified");
-        }
-
-        // Parse the email to extract necessary info
-        DomRepresentation dom = new DomRepresentation(request.getEntity());
-        Document email = dom.getDocument();
-        Element root = (Element) email.getElementsByTagName("email").item(0);
-        Element header = (Element) root.getElementsByTagName("head").item(0);
-        String subject = header.getElementsByTagName("subject").item(0)
-                .getTextContent();
-        String from = header.getElementsByTagName("from").item(0)
-                .getTextContent();
-
-        NodeList toList = header.getElementsByTagName("to");
-        String[] to = new String[toList.getLength()];
-        for (int i = 0; i < toList.getLength(); i++) {
-            to[i] = toList.item(i).getTextContent();
-        }
-
-        NodeList ccList = header.getElementsByTagName("cc");
-        String[] cc = new String[ccList.getLength()];
-        for (int i = 0; i < ccList.getLength(); i++) {
-            cc[i] = ccList.item(i).getTextContent();
-        }
-
-        NodeList bccList = header.getElementsByTagName("bcc");
-        String[] bcc = new String[bccList.getLength()];
-        for (int i = 0; i < bccList.getLength(); i++) {
-            bcc[i] = bccList.item(i).getTextContent();
-        }
-
-        String text = root.getElementsByTagName("body").item(0)
-                .getTextContent();
-
-        // Check if authentication required
-        boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
-
-        String transport = null;
-
-        if (Protocol.SMTP.equals(request.getProtocol())) {
-            transport = "smtp";
-        } else if (Protocol.SMTPS.equals(request.getProtocol())) {
-            transport = "smtps";
-        }
-
-        Properties props = System.getProperties();
-        props.put("mail." + transport + ".host", smtpHost);
-        props.put("mail." + transport + ".port", Integer.toString(smtpPort));
-        props.put("mail." + transport + ".auth", Boolean.toString(authenticate)
-                .toLowerCase());
-        props.put("mail." + transport + ".starttls.enable", Boolean
-                .toString(isStartTls()));
-
-        // Open the JavaMail session
-        Session session = Session.getDefaultInstance(props);
-        session.setDebug(isDebug());
-        Transport tr = session.getTransport(transport);
-
-        if (tr != null) {
-            // Check if authentication is needed
-            if (authenticate) {
-                tr.connect(smtpHost, getLogin(request), getPassword(request));
-            } else {
-                tr.connect();
+            if (smtpPort == -1) {
+                // No port specified, the default one should be used
+                smtpPort = request.getProtocol().getDefaultPort();
             }
 
-            // Actually send the message
-            if (tr.isConnected()) {
-                getLogger()
-                        .info(
-                                "JavaMail client connection successfully established. Attempting to send the message");
+            if ((smtpHost == null) || (smtpHost.equals(""))) {
+                throw new IllegalArgumentException(
+                        "Invalid SMTP host specified");
+            }
 
-                // Create a new message
-                Message msg = new MimeMessage(session);
+            // Parse the email to extract necessary info
+            DomRepresentation dom = new DomRepresentation(request.getEntity());
+            Document email = dom.getDocument();
+            Element root = (Element) email.getElementsByTagName("email")
+                    .item(0);
+            Element header = (Element) root.getElementsByTagName("head")
+                    .item(0);
+            String subject = header.getElementsByTagName("subject").item(0)
+                    .getTextContent();
+            String from = header.getElementsByTagName("from").item(0)
+                    .getTextContent();
 
-                // Set the FROM and TO fields
-                msg.setFrom(new InternetAddress(from));
+            NodeList toList = header.getElementsByTagName("to");
+            String[] to = new String[toList.getLength()];
+            for (int i = 0; i < toList.getLength(); i++) {
+                to[i] = toList.item(i).getTextContent();
+            }
 
-                for (String element : to) {
-                    msg.addRecipient(Message.RecipientType.TO,
-                            new InternetAddress(element));
+            NodeList ccList = header.getElementsByTagName("cc");
+            String[] cc = new String[ccList.getLength()];
+            for (int i = 0; i < ccList.getLength(); i++) {
+                cc[i] = ccList.item(i).getTextContent();
+            }
+
+            NodeList bccList = header.getElementsByTagName("bcc");
+            String[] bcc = new String[bccList.getLength()];
+            for (int i = 0; i < bccList.getLength(); i++) {
+                bcc[i] = bccList.item(i).getTextContent();
+            }
+
+            String text = root.getElementsByTagName("body").item(0)
+                    .getTextContent();
+
+            // Check if authentication required
+            boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
+
+            String transport = null;
+
+            if (Protocol.SMTP.equals(request.getProtocol())) {
+                transport = "smtp";
+            } else if (Protocol.SMTPS.equals(request.getProtocol())) {
+                transport = "smtps";
+            }
+
+            Properties props = System.getProperties();
+            props.put("mail." + transport + ".host", smtpHost);
+            props
+                    .put("mail." + transport + ".port", Integer
+                            .toString(smtpPort));
+            props.put("mail." + transport + ".auth", Boolean.toString(
+                    authenticate).toLowerCase());
+            props.put("mail." + transport + ".starttls.enable", Boolean
+                    .toString(isStartTls()));
+
+            // Open the JavaMail session
+            Session session = Session.getDefaultInstance(props);
+            session.setDebug(isDebug());
+            Transport tr = session.getTransport(transport);
+
+            if (tr != null) {
+                // Check if authentication is needed
+                if (authenticate) {
+                    tr.connect(smtpHost, getLogin(request),
+                            getPassword(request));
+                } else {
+                    tr.connect();
                 }
 
-                for (String element : cc) {
-                    msg.addRecipient(Message.RecipientType.CC,
-                            new InternetAddress(element));
+                // Actually send the message
+                if (tr.isConnected()) {
+                    getLogger()
+                            .info(
+                                    "JavaMail client connection successfully established. Attempting to send the message");
+
+                    // Create a new message
+                    Message msg = new MimeMessage(session);
+
+                    // Set the FROM and TO fields
+                    msg.setFrom(new InternetAddress(from));
+
+                    for (String element : to) {
+                        msg.addRecipient(Message.RecipientType.TO,
+                                new InternetAddress(element));
+                    }
+
+                    for (String element : cc) {
+                        msg.addRecipient(Message.RecipientType.CC,
+                                new InternetAddress(element));
+                    }
+
+                    for (String element : bcc) {
+                        msg.addRecipient(Message.RecipientType.BCC,
+                                new InternetAddress(element));
+                    }
+
+                    // Set the subject and content text
+                    msg.setSubject(subject);
+                    msg.setText(text);
+                    msg.setSentDate(new Date());
+                    msg.saveChanges();
+
+                    // Send the message
+                    tr.sendMessage(msg, msg.getAllRecipients());
+                    tr.close();
+
+                    getLogger().info(
+                            "JavaMail client successfully sent the message.");
                 }
-
-                for (String element : bcc) {
-                    msg.addRecipient(Message.RecipientType.BCC,
-                            new InternetAddress(element));
-                }
-
-                // Set the subject and content text
-                msg.setSubject(subject);
-                msg.setText(text);
-                msg.setSentDate(new Date());
-                msg.saveChanges();
-
-                // Send the message
-                tr.sendMessage(msg, msg.getAllRecipients());
-                tr.close();
-
-                getLogger().info(
-                        "JavaMail client successfully sent the message.");
             }
         }
     }
