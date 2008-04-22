@@ -59,7 +59,7 @@ public class JavaMailTestCase extends TestCase {
             + "<to>contact@restlet.org</to>"
             + "<cc>log@restlet.org</cc>"
             + "</head>"
-            + "<body><![CDATA[Your account was sucessfully created!]]></body>"
+            + "<body><![CDATA[Your account was successfully created!]]></body>"
             + "</email>";
 
     private static final String NOELIOS_LOGIN = "XXX";
