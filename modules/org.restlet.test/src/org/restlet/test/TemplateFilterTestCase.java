@@ -32,7 +32,6 @@ import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
-import org.restlet.ext.freemarker.TemplateFilter;
 
 /**
  * Test case for template filters.
@@ -55,13 +54,25 @@ public class TemplateFilterTestCase extends TestCase {
             // Will be templated
             File testFileFm1 = new File(testDir, "testFm1.txt.fmt");
             FileWriter fw = new FileWriter(testFileFm1);
-            fw.write("Method=${m}/Path=${ra}");
+            fw.write("Method=${m}/Authority=${ra}");
             fw.close();
 
             // Will not be templated
             File testFileFm2 = new File(testDir, "testFm2.txt");
             fw = new FileWriter(testFileFm2);
-            fw.write("Method=${m}/Path=${ra}");
+            fw.write("Method=${m}/Authority=${ra}");
+            fw.close();
+
+            // Will be templated
+            File testFileVl1 = new File(testDir, "testVl1.txt.vm");
+            fw = new FileWriter(testFileVl1);
+            fw.write("Method=${m}/Path=${rp}");
+            fw.close();
+
+            // Will not be templated
+            File testFileVl2 = new File(testDir, "testVl2.txt");
+            fw = new FileWriter(testFileVl2);
+            fw.write("Method=${m}/Path=${rp}");
             fw.close();
 
             // Create a new component
@@ -69,32 +80,52 @@ public class TemplateFilterTestCase extends TestCase {
             component.getServers().add(Protocol.HTTP, 8182);
             component.getClients().add(Protocol.FILE);
 
-            // Create an application
-            MyApplication application = new MyApplication(component
-                    .getContext(), testDir);
-            // Attach the application to the component and start it
-            component.getDefaultHost().attachDefault(application);
+            // Create an application filtered with Freemarker
+            MyFreemakerApplication freemarkerApplication = new MyFreemakerApplication(
+                    component.getContext(), testDir);
+            // Create an application filtered with Velocity
+            MyVelocityApplication velocityApplication = new MyVelocityApplication(
+                    component.getContext(), testDir);
+
+            // Attach the applications to the component and start it
+            component.getDefaultHost().attach("/freemarker",
+                    freemarkerApplication);
+            component.getDefaultHost().attach("/velocity", velocityApplication);
 
             // Now, let's start the component!
             component.start();
 
             // Allow extensions tunneling
-            application.getTunnelService().setExtensionsTunnel(true);
+            freemarkerApplication.getTunnelService().setExtensionsTunnel(true);
+            velocityApplication.getTunnelService().setExtensionsTunnel(true);
             Client client = new Client(Protocol.HTTP);
-            Response response = client.get("http://localhost:8182/"
+            Response response = client.get("http://localhost:8182/freemarker/"
                     + testFileFm1.getName());
             if (response.isEntityAvailable()) {
                 assertEquals(response.getEntity().getText(),
-                        "Method=GET/Path=localhost:8182");
+                        "Method=GET/Authority=localhost:8182");
             }
-            response = client.get("http://localhost:8182/"
+            response = client.get("http://localhost:8182/freemarker/"
                     + testFileFm2.getName());
             assertTrue(response.getStatus().isSuccess());
             if (response.isEntityAvailable()) {
                 assertEquals(response.getEntity().getText(),
-                        "Method=${m}/Path=${ra}");
+                        "Method=${m}/Authority=${ra}");
             }
 
+            response = client.get("http://localhost:8182/velocity/"
+                    + testFileVl1.getName());
+            if (response.isEntityAvailable()) {
+                assertEquals(response.getEntity().getText(),
+                        "Method=GET/Path=/velocity/testVl1");
+            }
+            response = client.get("http://localhost:8182/velocity/"
+                    + testFileVl2.getName());
+            assertTrue(response.getStatus().isSuccess());
+            if (response.isEntityAvailable()) {
+                assertEquals(response.getEntity().getText(),
+                        "Method=${m}/Path=${rp}");
+            }
             // Now, let's stop the component!
             component.stop();
         } catch (Exception e) {
@@ -107,7 +138,7 @@ public class TemplateFilterTestCase extends TestCase {
      * 
      * @author Thierry Boileau
      */
-    private static class MyApplication extends Application {
+    private static class MyFreemakerApplication extends Application {
         File testDirectory;
 
         Directory directory;
@@ -122,18 +153,11 @@ public class TemplateFilterTestCase extends TestCase {
 
         /**
          * Constructor.
-         */
-        public MyApplication() {
-            super();
-        }
-
-        /**
-         * Constructor.
          * 
          * @param context
          *                The parent context.
          */
-        public MyApplication(Context context, File testDirectory) {
+        public MyFreemakerApplication(Context context, File testDirectory) {
             super(context);
 
             this.setTestDirectory(testDirectory);
@@ -145,7 +169,57 @@ public class TemplateFilterTestCase extends TestCase {
 
         @Override
         public Restlet createRoot() {
-            return new TemplateFilter(getContext(), directory);
+            return new org.restlet.ext.freemarker.TemplateFilter(getContext(),
+                    directory);
+        }
+
+        public Directory getDirectory() {
+            return directory;
+        }
+
+        public void setDirectory(Directory directory) {
+            this.directory = directory;
+        }
+    }
+
+    /**
+     * Internal class used for test purpose
+     * 
+     * @author Thierry Boileau
+     */
+    private static class MyVelocityApplication extends Application {
+        File testDirectory;
+
+        Directory directory;
+
+        public File getTestDirectory() {
+            return testDirectory;
+        }
+
+        public void setTestDirectory(File testDirectory) {
+            this.testDirectory = testDirectory;
+        }
+
+        /**
+         * Constructor.
+         * 
+         * @param context
+         *                The parent context.
+         */
+        public MyVelocityApplication(Context context, File testDirectory) {
+            super(context);
+
+            this.setTestDirectory(testDirectory);
+            // Create a Directory that manages a local directory
+            this.directory = new Directory(getContext(), LocalReference
+                    .createFileReference(getTestDirectory()));
+            this.directory.setNegotiateContent(true);
+        }
+
+        @Override
+        public Restlet createRoot() {
+            return new org.restlet.ext.velocity.TemplateFilter(getContext(),
+                    directory);
         }
 
         public Directory getDirectory() {
