@@ -27,12 +27,19 @@ import java.util.logging.Logger;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.util.Resolver;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateHashModel;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
+import freemarker.template.TemplateScalarModel;
 
 /**
  * FreeMarker template representation. Useful for dynamic string-based
@@ -42,6 +49,66 @@ import freemarker.template.TemplateException;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TemplateRepresentation extends OutputRepresentation {
+
+    /**
+     * Template Hash Model based on a Resolver instance.
+     */
+    private class ResolverHashModel implements TemplateHashModel {
+        /** The inner resolver instance. */
+        private Resolver<? extends Object> resolver;
+
+        /**
+         * Constructor.
+         * 
+         * @param resolver
+         *                The inner resolver.
+         */
+        public ResolverHashModel(Resolver<? extends Object> resolver) {
+            super();
+            this.resolver = resolver;
+        }
+
+        /**
+         * Returns a scalar model based on the value returned by the resolver
+         * according to the key.
+         */
+        public TemplateModel get(String key) throws TemplateModelException {
+            return new ScalarModel(resolver.resolve(key));
+        }
+
+        /**
+         * Returns false.
+         * 
+         * @Return False.
+         */
+        public boolean isEmpty() throws TemplateModelException {
+            return false;
+        }
+    }
+
+    /**
+     * Data model that gives access to a Object value.
+     * 
+     */
+    private class ScalarModel implements TemplateScalarModel {
+        /** The inner value. */
+        private Object value;
+
+        /**
+         * Constructor.
+         * 
+         * @param value
+         *                the provided value of this scalar model.
+         */
+        public ScalarModel(Object value) {
+            super();
+            this.value = value;
+        }
+
+        public String getAsString() throws TemplateModelException {
+            return value.toString();
+        }
+    }
 
     /** The logger instance to use. */
     private static final Logger logger = Logger
@@ -124,6 +191,21 @@ public class TemplateRepresentation extends OutputRepresentation {
     /**
      * Constructor.
      * 
+     * @param templateRepresentation
+     *                The FreeMarker template provided via a representation.
+     * @param config
+     *                The FreeMarker configuration.
+     * @param mediaType
+     *                The representation's media type.
+     */
+    public TemplateRepresentation(Representation templateRepresentation,
+            Configuration config, MediaType mediaType) {
+        this(getTemplate(templateRepresentation, config), mediaType);
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param templateName
      *                The FreeMarker template's name. The full path is resolved
      *                by the configuration.
@@ -137,6 +219,22 @@ public class TemplateRepresentation extends OutputRepresentation {
     public TemplateRepresentation(String templateName, Configuration config,
             Object dataModel, MediaType mediaType) {
         this(getTemplate(templateName, config), dataModel, mediaType);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param templateName
+     *                The FreeMarker template's name. The full path is resolved
+     *                by the configuration.
+     * @param config
+     *                The FreeMarker configuration.
+     * @param mediaType
+     *                The representation's media type.
+     */
+    public TemplateRepresentation(String templateName, Configuration config,
+            MediaType mediaType) {
+        this(getTemplate(templateName, config), mediaType);
     }
 
     /**
@@ -157,6 +255,19 @@ public class TemplateRepresentation extends OutputRepresentation {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param template
+     *                The FreeMarker template.
+     * @param mediaType
+     *                The representation's media type.
+     */
+    public TemplateRepresentation(Template template, MediaType mediaType) {
+        super(mediaType);
+        this.template = template;
+    }
+
+    /**
      * Returns the template's data model.
      * 
      * @return The template's data model.
@@ -174,6 +285,37 @@ public class TemplateRepresentation extends OutputRepresentation {
      */
     public Object setDataModel(Object dataModel) {
         this.dataModel = dataModel;
+        return dataModel;
+    }
+
+    /**
+     * Sets the template's data model from a request/response pair. This default
+     * implementation uses a Resolver.
+     * 
+     * @see Resolver
+     * @see Resolver#createResolver(Request, Response)
+     * 
+     * @param request
+     *                The request where data are located.
+     * @param response
+     *                The response where data are located.
+     * @return The template's data model.
+     */
+    public Object setDataModel(Request request, Response response) {
+        this.dataModel = new ResolverHashModel(Resolver.createResolver(request,
+                response));
+        return dataModel;
+    }
+
+    /**
+     * Sets the template's data model from a resolver.
+     * 
+     * @param resolver
+     *                The resolver.
+     * @return The template's data model.
+     */
+    public Object setDataModel(Resolver<Object> resolver) {
+        this.dataModel = new ResolverHashModel(resolver);
         return dataModel;
     }
 

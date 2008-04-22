@@ -88,7 +88,7 @@ public class VelocityTestCase extends TestCase {
         Reference ref = LocalReference.createFileReference(testFile);
         Representation templateFile = client.get(ref).getEntity();
         TemplateRepresentation tr = new TemplateRepresentation(templateFile,
-                map);
+                map, MediaType.TEXT_PLAIN);
         String result = tr.getText();
         assertEquals("Value=myValue", result);
 

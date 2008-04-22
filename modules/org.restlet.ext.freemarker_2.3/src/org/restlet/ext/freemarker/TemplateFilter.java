@@ -24,13 +24,8 @@ import org.restlet.Restlet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.util.Resolver;
 
 import freemarker.template.Configuration;
-import freemarker.template.TemplateHashModel;
-import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
-import freemarker.template.TemplateScalarModel;
 
 /**
  * Filter response's entity and wrap it with a FreeMarker's template
@@ -42,47 +37,6 @@ import freemarker.template.TemplateScalarModel;
  * @author Thierry Boileau (contact@noelios.com)
  */
 public class TemplateFilter extends Filter {
-
-    /**
-     * Hash Model based on a Resolver instance.
-     */
-    private class ResolverHashModel implements TemplateHashModel {
-        private Resolver<String> resolver;
-
-        public ResolverHashModel(Resolver<String> resolver) {
-            super();
-            this.resolver = resolver;
-        }
-
-        /**
-         * Return a scalar model based on the value returned by the resolver
-         * according to the key.
-         */
-        public TemplateModel get(String key) throws TemplateModelException {
-            return new ScalarModel(resolver.resolve(key));
-        }
-
-        public boolean isEmpty() throws TemplateModelException {
-            return false;
-        }
-    }
-
-    /**
-     * Data model that gives access to a String value.
-     * 
-     */
-    private class ScalarModel implements TemplateScalarModel {
-        private String value;
-
-        public ScalarModel(String value) {
-            super();
-            this.value = value;
-        }
-
-        public String getAsString() throws TemplateModelException {
-            return value;
-        }
-    }
 
     /** The FreeMarker configuration. */
     private volatile Configuration configuration;
@@ -124,10 +78,12 @@ public class TemplateFilter extends Filter {
         if (response.isEntityAvailable()
                 && response.getEntity().getEncodings().contains(
                         Encoding.FREEMARKER)) {
-            response.setEntity(new TemplateRepresentation(response.getEntity(),
-                    configuration, new ResolverHashModel(Resolver
-                            .createResolver(request, response)), response
-                            .getEntity().getMediaType()));
+            TemplateRepresentation representation = new TemplateRepresentation(
+                    response.getEntity(), configuration, response.getEntity()
+                            .getMediaType());
+            representation.setDataModel(request, response);
+
+            response.setEntity(representation);
         }
     }
 

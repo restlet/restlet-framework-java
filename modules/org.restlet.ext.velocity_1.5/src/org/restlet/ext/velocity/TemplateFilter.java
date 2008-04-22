@@ -74,7 +74,8 @@ public class TemplateFilter extends Filter {
                         Encoding.VELOCITY)) {
             try {
                 TemplateRepresentation representation = new TemplateRepresentation(
-                        response.getEntity());
+                        response.getEntity(), response.getEntity()
+                                .getMediaType());
                 representation.setDataModel(request, response);
                 response.setEntity(representation);
             } catch (ResourceNotFoundException e) {

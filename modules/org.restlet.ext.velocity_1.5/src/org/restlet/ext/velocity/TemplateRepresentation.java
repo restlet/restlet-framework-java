@@ -146,13 +146,16 @@ public class TemplateRepresentation extends OutputRepresentation {
      * 
      * @param templateRepresentation
      *                The representation to 'decode'.
+     * @param mediaType
+     *                The representation's media type.
      * @throws IOException
      * @throws ParseErrorException
      * @throws ResourceNotFoundException
      */
-    public TemplateRepresentation(Representation templateRepresentation)
-            throws ResourceNotFoundException, ParseErrorException, IOException {
-        super(templateRepresentation.getMediaType());
+    public TemplateRepresentation(Representation templateRepresentation,
+            MediaType mediaType) throws ResourceNotFoundException,
+            ParseErrorException, IOException {
+        super(mediaType);
         this.engine = null;
         this.template = new Template();
         this.template
@@ -176,14 +179,16 @@ public class TemplateRepresentation extends OutputRepresentation {
      *                The representation to 'decode'.
      * @param dataModel
      *                The Velocity template's data model.
+     * @param mediaType
+     *                The representation's media type.
      * @throws IOException
      * @throws ParseErrorException
      * @throws ResourceNotFoundException
      */
     public TemplateRepresentation(Representation templateRepresentation,
-            Map<String, Object> dataModel) throws ResourceNotFoundException,
-            ParseErrorException, IOException {
-        super(templateRepresentation.getMediaType());
+            Map<String, Object> dataModel, MediaType mediaType)
+            throws ResourceNotFoundException, ParseErrorException, IOException {
+        super(mediaType);
         setDataModel(dataModel);
         this.engine = null;
         this.template = new Template();
@@ -357,7 +362,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Sets the template's data model from a resolver.
      * 
      * @param resolver
-     *                The template's data model.
+     *                The resolver.
      */
     public void setDataModel(Resolver<Object> resolver) {
         setContext(new ResolverContext(resolver));
