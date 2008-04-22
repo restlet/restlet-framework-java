@@ -19,9 +19,6 @@
 package org.restlet.ext.velocity;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
@@ -31,7 +28,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.util.Resolver;
+import org.restlet.data.Status;
 
 /**
  * Filter response's entity and wrap it with a FreeMarker's template
@@ -40,61 +37,6 @@ import org.restlet.util.Resolver;
  * @author Thierry Boileau (contact@noelios.com)
  */
 public class TemplateFilter extends Filter {
-    private class ResolverMap implements Map<String, Object> {
-        private Resolver<String> resolver;
-
-        public ResolverMap(Resolver<String> resolver) {
-            super();
-            this.resolver = resolver;
-        }
-
-        public void clear() {
-        }
-
-        public boolean containsKey(Object key) {
-            return resolver.resolve((String) key) != null;
-        }
-
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        public Set<Entry<String, Object>> entrySet() {
-            return null;
-        }
-
-        public String get(Object key) {
-            return resolver.resolve((String) key);
-        }
-
-        public boolean isEmpty() {
-            return false;
-        }
-
-        public Set<String> keySet() {
-            return null;
-        }
-
-        public String put(String key, Object value) {
-            return null;
-        }
-
-        public void putAll(Map<? extends String, ? extends Object> t) {
-        }
-
-        public String remove(Object key) {
-            return null;
-        }
-
-        public int size() {
-            return 0;
-        }
-
-        public Collection<Object> values() {
-            return null;
-        }
-
-    }
 
     /**
      * Constructor.
@@ -131,18 +73,16 @@ public class TemplateFilter extends Filter {
                 && response.getEntity().getEncodings().contains(
                         Encoding.VELOCITY)) {
             try {
-                response.setEntity(new TemplateRepresentation(response
-                        .getEntity(), new ResolverMap(Resolver.createResolver(
-                        request, response))));
+                TemplateRepresentation representation = new TemplateRepresentation(
+                        response.getEntity());
+                representation.setDataModel(request, response);
+                response.setEntity(representation);
             } catch (ResourceNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, e);
             } catch (ParseErrorException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
             }
         }
     }

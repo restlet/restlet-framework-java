@@ -36,8 +36,11 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.RuntimeSingleton;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.util.Resolver;
 
 /**
  * Velocity template representation. Useful for dynamic string-based
@@ -47,6 +50,85 @@ import org.restlet.resource.Representation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TemplateRepresentation extends OutputRepresentation {
+    /**
+     * Velocity context based on a Resolver.
+     * 
+     * @see Resolver
+     */
+    private class ResolverContext implements
+            org.apache.velocity.context.Context {
+        /** The inner resolver instance. */
+        private final Resolver<? extends Object> resolver;
+
+        /**
+         * Constructor.
+         * 
+         * @param resolver
+         *                The resolver.
+         */
+        public ResolverContext(Resolver<? extends Object> resolver) {
+            super();
+            this.resolver = resolver;
+        }
+
+        /**
+         * Indicates whether the specified key is in the context.
+         * 
+         * @param key
+         *                The key to look for.
+         * @Return True if the key is in the context, false otherwise.
+         */
+        public boolean containsKey(Object key) {
+            return resolver.resolve((String) key) != null;
+        }
+
+        /**
+         * Gets the value corresponding to the provided key from the context.
+         * 
+         * @Param key
+         *                The name of the desired value.
+         * @Return The value corresponding to the provided key.
+         */
+        public Object get(String key) {
+            return resolver.resolve(key);
+        }
+
+        /**
+         * Returns null since a resolver does not know by advance the whole
+         * values.
+         * 
+         * @Return null.
+         */
+        public Object[] getKeys() {
+            return null;
+        }
+
+        /**
+         * Returns null since a resolver as a data model cannot be updated.
+         * 
+         * @param key
+         *                The name to key the provided value with.
+         * @param value
+         *                The corresponding value.
+         * @return null.
+         */
+        public Object put(String key, Object value) {
+            return null;
+        }
+
+        /**
+         * Does nothing since resolver as a data model cannot be updated.
+         * 
+         * @param value
+         *                The name of the value to remove.
+         * @return null.
+         */
+        public Object remove(Object value) {
+            return null;
+        }
+
+    }
+
     /** The template's data model. */
     private volatile org.apache.velocity.context.Context context;
 
@@ -58,6 +140,34 @@ public class TemplateRepresentation extends OutputRepresentation {
 
     /** The template name. */
     private volatile String templateName;
+
+    /**
+     * Constructor based on a Velocity 'encoded' representation.
+     * 
+     * @param templateRepresentation
+     *                The representation to 'decode'.
+     * @throws IOException
+     * @throws ParseErrorException
+     * @throws ResourceNotFoundException
+     */
+    public TemplateRepresentation(Representation templateRepresentation)
+            throws ResourceNotFoundException, ParseErrorException, IOException {
+        super(templateRepresentation.getMediaType());
+        this.engine = null;
+        this.template = new Template();
+        this.template
+                .setEncoding((templateRepresentation.getCharacterSet() == null) ? Charset
+                        .defaultCharset().name()
+                        : templateRepresentation.getCharacterSet().getName());
+        this.template.setLastModified(templateRepresentation
+                .getModificationDate().getTime());
+        this.template.setName("org.restlet.resource.representation");
+        this.template.setRuntimeServices(RuntimeSingleton.getRuntimeServices());
+        this.template.setResourceLoader(new RepresentationResourceLoader(
+                templateRepresentation));
+        this.template.process();
+        this.templateName = null;
+    }
 
     /**
      * Constructor based on a Velocity 'encoded' representation.
@@ -149,6 +259,21 @@ public class TemplateRepresentation extends OutputRepresentation {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param template
+     *                The Velocity template.
+     * @param mediaType
+     *                The representation's media type.
+     */
+    public TemplateRepresentation(Template template, MediaType mediaType) {
+        super(mediaType);
+        this.engine = null;
+        this.template = template;
+        this.templateName = null;
+    }
+
+    /**
      * Returns the Velocity context.
      * 
      * @return The Velocity context.
@@ -209,6 +334,33 @@ public class TemplateRepresentation extends OutputRepresentation {
      */
     public void setDataModel(Map<String, Object> dataModel) {
         setContext(new VelocityContext(dataModel));
+    }
+
+    /**
+     * Sets the template's data model from a request/response pair. This default
+     * implementation uses a Resolver.
+     * 
+     * @see Resolver
+     * @see Resolver#createResolver(Request, Response)
+     * 
+     * @param request
+     *                The request where data are located.
+     * @param response
+     *                The response where data are located.
+     */
+    public void setDataModel(Request request, Response response) {
+        setContext(new ResolverContext(Resolver.createResolver(request,
+                response)));
+    }
+
+    /**
+     * Sets the template's data model from a resolver.
+     * 
+     * @param resolver
+     *                The template's data model.
+     */
+    public void setDataModel(Resolver<Object> resolver) {
+        setContext(new ResolverContext(resolver));
     }
 
     /**
