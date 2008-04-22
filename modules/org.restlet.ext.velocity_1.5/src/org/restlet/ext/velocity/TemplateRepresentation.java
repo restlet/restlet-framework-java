@@ -48,7 +48,7 @@ import org.restlet.resource.Representation;
  */
 public class TemplateRepresentation extends OutputRepresentation {
     /** The template's data model. */
-    private volatile Map<String, Object> dataModel;
+    private volatile org.apache.velocity.context.Context context;
 
     /** The Velocity engine. */
     private volatile VelocityEngine engine;
@@ -74,7 +74,7 @@ public class TemplateRepresentation extends OutputRepresentation {
             Map<String, Object> dataModel) throws ResourceNotFoundException,
             ParseErrorException, IOException {
         super(templateRepresentation.getMediaType());
-        this.dataModel = dataModel;
+        setDataModel(dataModel);
         this.engine = null;
         this.template = new Template();
         this.template
@@ -107,7 +107,7 @@ public class TemplateRepresentation extends OutputRepresentation {
         super(mediaType);
 
         try {
-            this.dataModel = dataModel;
+            setDataModel(dataModel);
             this.engine = new VelocityEngine();
             this.template = null;
             this.templateName = templateName;
@@ -142,19 +142,19 @@ public class TemplateRepresentation extends OutputRepresentation {
     public TemplateRepresentation(Template template,
             Map<String, Object> dataModel, MediaType mediaType) {
         super(mediaType);
-        this.dataModel = dataModel;
+        setDataModel(dataModel);
         this.engine = null;
         this.template = template;
         this.templateName = null;
     }
 
     /**
-     * Returns the template's data model.
+     * Returns the Velocity context.
      * 
-     * @return The template's data model.
+     * @return The Velocity context.
      */
-    public Map<String, Object> getDataModel() {
-        return this.dataModel;
+    private org.apache.velocity.context.Context getContext() {
+        return this.context;
     }
 
     /**
@@ -192,15 +192,23 @@ public class TemplateRepresentation extends OutputRepresentation {
     }
 
     /**
+     * Sets the Velocity context.
+     * 
+     * @param context
+     *                The Velocity context
+     */
+    private void setContext(org.apache.velocity.context.Context context) {
+        this.context = context;
+    }
+
+    /**
      * Sets the template's data model.
      * 
      * @param dataModel
      *                The template's data model.
-     * @return The template's data model.
      */
-    public Map<String, Object> setDataModel(Map<String, Object> dataModel) {
-        this.dataModel = dataModel;
-        return dataModel;
+    public void setDataModel(Map<String, Object> dataModel) {
+        setContext(new VelocityContext(dataModel));
     }
 
     /**
@@ -214,9 +222,6 @@ public class TemplateRepresentation extends OutputRepresentation {
         Writer tmplWriter = null;
 
         try {
-            // Create the context
-            VelocityContext context = new VelocityContext(getDataModel());
-
             // Load the template
             if (getCharacterSet() != null) {
                 tmplWriter = new BufferedWriter(new OutputStreamWriter(
@@ -232,7 +237,7 @@ public class TemplateRepresentation extends OutputRepresentation {
             }
 
             // Process the template
-            getTemplate().merge(context, tmplWriter);
+            getTemplate().merge(getContext(), tmplWriter);
             tmplWriter.flush();
         } catch (Exception e) {
             Context context = Context.getCurrent();

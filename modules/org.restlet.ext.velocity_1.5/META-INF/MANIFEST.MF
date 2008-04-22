@@ -15,6 +15,7 @@ Export-Package: org.restlet.ext.velocity;
 Import-Package: org.apache.commons.collections,
  org.apache.velocity,
  org.apache.velocity.app,
+ org.apache.velocity.context,
  org.apache.velocity.exception,
  org.apache.velocity.runtime,
  org.apache.velocity.runtime.resource,

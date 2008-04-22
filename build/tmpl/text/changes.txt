@@ -41,6 +41,9 @@ Changes log
         - Added support for new RIAP authority: HOST to issue requests 
           relative to the current virtual host. 
           Suggested by Rob Heittman.
+        - Added APPLICATION_ALL_XML constant and proper changes to the
+          MediaType.includes() to recognize those patterns. Contributed
+          by Stephan Koops.
     - NRE and Extension Enhancements
         - Atom extension is now able to write Feed and Service XML
           documents and not just reading/parsing them. This can be used
