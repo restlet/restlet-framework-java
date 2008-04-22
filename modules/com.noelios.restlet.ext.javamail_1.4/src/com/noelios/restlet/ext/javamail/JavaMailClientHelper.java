@@ -19,11 +19,9 @@
 package com.noelios.restlet.ext.javamail;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import javax.mail.Address;
 import javax.mail.FetchProfile;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -34,25 +32,16 @@ import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.UIDFolder;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import org.restlet.Client;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.DomRepresentation;
-import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
-import org.restlet.util.DateUtils;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.DOMException;
 
 import com.noelios.restlet.ClientHelper;
 import com.sun.mail.pop3.POP3Folder;
@@ -194,6 +183,52 @@ public class JavaMailClientHelper extends ClientHelper {
     }
 
     /**
+     * Creates a JavaMail message by parsing an XML representation.
+     * 
+     * @param xmlMessage
+     *                The XML message to parse.
+     * @param session
+     *                The current JavaMail session.
+     * @return The created JavaMail message.
+     * @throws IOException
+     * @throws AddressException
+     * @throws MessagingException
+     */
+    protected Message createMessage(Representation xmlMessage, Session session)
+            throws IOException, AddressException, MessagingException {
+        return new RepresentationMessage(xmlMessage, session);
+    }
+
+    /**
+     * Creates an XML representation based on a JavaMail message.
+     * 
+     * @param message
+     *                The JavaMail message to format.
+     * @return The XML representation.
+     * @throws DOMException
+     * @throws IOException
+     * @throws MessagingException
+     */
+    protected Representation createRepresentation(Message message)
+            throws DOMException, IOException, MessagingException {
+        return new MessageRepresentation(message);
+    }
+
+    /**
+     * Creates an XML representation based on a list of JavaMail messages.
+     * 
+     * @param messages
+     *                The list of JavaMail messages to format.
+     * @return The XML representation.
+     * @throws IOException
+     * @throws MessagingException
+     */
+    protected Representation createRepresentation(Message[] messages,
+            POP3Folder inbox) throws IOException, MessagingException {
+        return new MessagesRepresentation(messages, inbox);
+    }
+
+    /**
      * Returns the request login.
      * 
      * @param request
@@ -300,24 +335,8 @@ public class JavaMailClientHelper extends ClientHelper {
         inbox.fetch(messages, profile);
 
         if ((path == null) || path.equals("") || path.equals("/")) {
-            DomRepresentation result = new DomRepresentation(
-                    MediaType.APPLICATION_XML);
-            Document dom = result.getDocument();
-            Element emails = dom.createElement("emails");
-            dom.appendChild(emails);
-
-            // Retrieve the list of messages
-            Element email;
-            for (int i = 0; i < messages.length; i++) {
-                String uid = inbox.getUID(messages[i]);
-
-                email = dom.createElement("email");
-                email.setAttribute("href", "/" + uid);
-                emails.appendChild(email);
-            }
-
             // Set the result document
-            response.setEntity(result);
+            response.setEntity(createRepresentation(messages, inbox));
         } else if (path.startsWith("/")) {
             // Retrieve the specified message
             String mailUid = path.substring(1);
@@ -336,95 +355,8 @@ public class JavaMailClientHelper extends ClientHelper {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
                         "No message matches the given UID: " + mailUid);
             } else {
-                // Message found
-                DomRepresentation result = new DomRepresentation(
-                        MediaType.APPLICATION_XML);
-                Document dom = result.getDocument();
-                Element email = dom.createElement("email");
-                dom.appendChild(email);
-
-                // Add the email header
-                Element head = dom.createElement("head");
-                email.appendChild(head);
-
-                if (message.getSubject() != null) {
-                    Element subject = dom.createElement("subject");
-                    subject.setTextContent(message.getSubject());
-                    head.appendChild(subject);
-                }
-
-                Address[] froms = message.getFrom();
-                if (froms != null) {
-                    for (Address fromAddress : froms) {
-                        Element from = dom.createElement("from");
-                        from.setTextContent(fromAddress.toString());
-                        head.appendChild(from);
-                    }
-                }
-
-                Address[] tos = message.getRecipients(Message.RecipientType.TO);
-                if (tos != null) {
-                    for (Address toAddress : tos) {
-                        Element to = dom.createElement("to");
-                        to.setTextContent(toAddress.toString());
-                        head.appendChild(to);
-                    }
-                }
-
-                Address[] ccs = message.getRecipients(Message.RecipientType.CC);
-                if (ccs != null) {
-                    for (Address ccAddress : ccs) {
-                        Element cc = dom.createElement("cc");
-                        cc.setTextContent(ccAddress.toString());
-                        head.appendChild(cc);
-                    }
-                }
-
-                Address[] bccs = message
-                        .getRecipients(Message.RecipientType.BCC);
-                if (bccs != null) {
-                    for (Address bccAddress : bccs) {
-                        Element bcc = dom.createElement("bcc");
-                        bcc.setTextContent(bccAddress.toString());
-                        head.appendChild(bcc);
-                    }
-                }
-
-                if (message.getReceivedDate() != null) {
-                    Element received = dom.createElement("received");
-                    received.setTextContent(DateUtils.format(message
-                            .getReceivedDate(), DateUtils.FORMAT_RFC_1123
-                            .get(0)));
-                    head.appendChild(received);
-                }
-
-                if (message.getSentDate() != null) {
-                    Element sent = dom.createElement("sent");
-                    sent.setTextContent(DateUtils.format(message.getSentDate(),
-                            DateUtils.FORMAT_RFC_1123.get(0)));
-                    head.appendChild(sent);
-                }
-
-                // Add the email body
-                if (message.getContentType() != null) {
-                    MediaType contentType = MediaType.valueOf(message
-                            .getContentType());
-
-                    if (MediaType.TEXT_PLAIN.equals(contentType)) {
-                        Representation content = new InputRepresentation(
-                                message.getInputStream(), contentType);
-
-                        Element body = dom.createElement("body");
-                        email.appendChild(head);
-
-                        CDATASection bodyContent = dom
-                                .createCDATASection(content.getText());
-                        body.appendChild(bodyContent);
-                    }
-                }
-
                 // Set the result document
-                response.setEntity(result);
+                response.setEntity(createRepresentation(message));
             }
         }
 
@@ -460,42 +392,8 @@ public class JavaMailClientHelper extends ClientHelper {
                         "Invalid SMTP host specified");
             }
 
-            // Parse the email to extract necessary info
-            DomRepresentation dom = new DomRepresentation(request.getEntity());
-            Document email = dom.getDocument();
-            Element root = (Element) email.getElementsByTagName("email")
-                    .item(0);
-            Element header = (Element) root.getElementsByTagName("head")
-                    .item(0);
-            String subject = header.getElementsByTagName("subject").item(0)
-                    .getTextContent();
-            String from = header.getElementsByTagName("from").item(0)
-                    .getTextContent();
-
-            NodeList toList = header.getElementsByTagName("to");
-            String[] to = new String[toList.getLength()];
-            for (int i = 0; i < toList.getLength(); i++) {
-                to[i] = toList.item(i).getTextContent();
-            }
-
-            NodeList ccList = header.getElementsByTagName("cc");
-            String[] cc = new String[ccList.getLength()];
-            for (int i = 0; i < ccList.getLength(); i++) {
-                cc[i] = ccList.item(i).getTextContent();
-            }
-
-            NodeList bccList = header.getElementsByTagName("bcc");
-            String[] bcc = new String[bccList.getLength()];
-            for (int i = 0; i < bccList.getLength(); i++) {
-                bcc[i] = bccList.item(i).getTextContent();
-            }
-
-            String text = root.getElementsByTagName("body").item(0)
-                    .getTextContent();
-
             // Check if authentication required
             boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
-
             String transport = null;
 
             if (Protocol.SMTP.equals(request.getProtocol())) {
@@ -534,32 +432,8 @@ public class JavaMailClientHelper extends ClientHelper {
                             .info(
                                     "JavaMail client connection successfully established. Attempting to send the message");
 
-                    // Create a new message
-                    Message msg = new MimeMessage(session);
-
-                    // Set the FROM and TO fields
-                    msg.setFrom(new InternetAddress(from));
-
-                    for (String element : to) {
-                        msg.addRecipient(Message.RecipientType.TO,
-                                new InternetAddress(element));
-                    }
-
-                    for (String element : cc) {
-                        msg.addRecipient(Message.RecipientType.CC,
-                                new InternetAddress(element));
-                    }
-
-                    for (String element : bcc) {
-                        msg.addRecipient(Message.RecipientType.BCC,
-                                new InternetAddress(element));
-                    }
-
-                    // Set the subject and content text
-                    msg.setSubject(subject);
-                    msg.setText(text);
-                    msg.setSentDate(new Date());
-                    msg.saveChanges();
+                    // Create the JavaMail message
+                    Message msg = createMessage(request.getEntity(), session);
 
                     // Send the message
                     tr.sendMessage(msg, msg.getAllRecipients());

@@ -43,6 +43,8 @@ import org.w3c.dom.Node;
  */
 public class JavaMailTestCase extends TestCase {
 
+    private static final String DEBUG = "false";
+
     private static final String GMAIL_ID = "XXX";
 
     private static final String GMAIL_LOGIN = GMAIL_ID + "@gmail.com";
@@ -82,7 +84,7 @@ public class JavaMailTestCase extends TestCase {
 
     private void sendMail(Protocol protocol, Request request, boolean startTls) {
         Client client = new Client(protocol);
-        client.getContext().getParameters().add("debug", "true");
+        client.getContext().getParameters().add("debug", DEBUG);
         client.getContext().getParameters().add("startTls",
                 Boolean.toString(startTls).toLowerCase());
 
@@ -103,7 +105,7 @@ public class JavaMailTestCase extends TestCase {
 
     public void testPop() {
         Client client = new Client(Protocol.POP);
-        client.getContext().getParameters().add("debug", "true");
+        client.getContext().getParameters().add("debug", DEBUG);
 
         Request request = new Request(Method.GET, "pop://pop.mail.yahoo.fr");
         request.setChallengeResponse(new ChallengeResponse(
@@ -115,7 +117,7 @@ public class JavaMailTestCase extends TestCase {
 
     public void testPops() throws IOException {
         Client client = new Client(Protocol.POPS);
-        // client.getContext().getParameters().add("debug", "true");
+        client.getContext().getParameters().add("debug", DEBUG);
 
         String baseUri = "pops://alaska.noelios.com";
         Request request = new Request(Method.GET, baseUri);

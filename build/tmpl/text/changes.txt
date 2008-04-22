@@ -59,6 +59,10 @@ Changes log
           Sponsored by RunMyProcess (http://www.runmyprocess.com).
         - The debugging mode of the JavaMail connector is now optional
           and can be changed with a connector parameter "debug".
+        - Refactored the JavaMail connector to separate the message 
+          parsing and formatting into three new classes: 
+          MessageRepresentation, MessagesRepresentation and 
+          RepresentationMessage. Suggested by Matthieu Hug.
     - Misc
     	- Updated Grizzly to 1.7.3.
     	- Improved logging consistency.
