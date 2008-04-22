@@ -237,6 +237,9 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
         assertPlatonic("platonicAndExts.abc", "abc.txt", TEXT_PLAIN, null,
                 response);
 
+        response = get("platonicAndExts.txt.abc", TEXT_HTML);
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+
         response = get("platonicAndExts.abc.html.txt", TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
 

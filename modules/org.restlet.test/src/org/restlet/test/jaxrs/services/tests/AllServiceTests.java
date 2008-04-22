@@ -31,6 +31,7 @@ public class AllServiceTests extends TestCase {
         TestSuite mySuite = new TestSuite();
         mySuite.setName("All service tests");
         mySuite.addTestSuite(AncestorTest.class);
+        mySuite.addTestSuite(AppPlusXmlTest.class);
         mySuite.addTestSuite(CarTest.class);
         mySuite.addTestSuite(ContextResolverTest.class);
         mySuite.addTestSuite(ContextsTest.class);

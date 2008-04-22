@@ -26,8 +26,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ContextResolver;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
@@ -60,11 +58,26 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                resource locator.
      * @param resourceClass
      *                the wrapped resource class.
+     * @param tlContext
+     *                the {@link ThreadLocalizedContext} of the
+     *                {@link JaxRsRouter}.
+     * @param entityProviders
+     *                all entity providers
+     * @param allCtxResolvers
+     *                all ContextResolvers
+     * @param logger
      * @throws IllegalPathOnMethodException
+     * @throws MissingAnnotationException
+     * @throws IllegalArgumentException
      */
     SubResourceLocator(Method javaMethod, Method annotatedMethod,
-            ResourceClass resourceClass) throws IllegalPathOnMethodException {
-        super(javaMethod, annotatedMethod, resourceClass);
+            ResourceClass resourceClass, ThreadLocalizedContext tlContext,
+            EntityProviders entityProviders,
+            Collection<ContextResolver<?>> allCtxResolvers, Logger logger)
+            throws IllegalPathOnMethodException, IllegalArgumentException,
+            MissingAnnotationException {
+        super(javaMethod, annotatedMethod, resourceClass, tlContext,
+                entityProviders, allCtxResolvers, false, logger);
     }
 
     /**
@@ -72,17 +85,8 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * 
      * @param resourceObject
      *                the wrapped resource object.
-     * @param tlContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * @param entityProvs
-     *                all available entity providers in the the
-     *                {@link JaxRsRouter}.
      * @param wrapperFactory
      *                factory to create wrappers.
-     * @param allResolvers
-     *                all available {@link ContextResolver}s.
      * @param logger
      *                The logger to use
      * @return Returns the wrapped sub resource object.
@@ -97,21 +101,17 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @throws ConvertPathParamException
      * @throws ConvertHeaderParamException
      * @throws ConvertRepresentationException
+     * @throws MissingAnnotationException
+     * @throws IllegalArgumentException
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
-            ThreadLocalizedContext tlContext, EntityProviders entityProvs,
-            WrapperFactory wrapperFactory,
-            Collection<ContextResolver<?>> allResolvers, Logger logger)
-            throws InvocationTargetException, MissingAnnotationException,
-            WebApplicationException, NoMessageBodyReaderException,
+            WrapperFactory wrapperFactory, Logger logger)
+            throws InvocationTargetException, WebApplicationException,
             InstantiateException, ConvertRepresentationException,
-            ConvertHeaderParamException, ConvertPathParamException,
-            ConvertMatrixParamException, ConvertQueryParamException,
-            ConvertCookieParamException {
+            IllegalArgumentException, MissingAnnotationException {
         Object subResObj;
         try {
-            subResObj = invoke(resourceObject, false, tlContext, entityProvs,
-                    allResolvers, logger);
+            subResObj = internalInvoke(resourceObject);
         } catch (IllegalArgumentException e) {
             throw new InstantiateException(executeMethod, e);
         } catch (IllegalAccessException e) {

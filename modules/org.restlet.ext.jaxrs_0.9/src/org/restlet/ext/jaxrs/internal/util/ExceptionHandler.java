@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs;
+package org.restlet.ext.jaxrs.internal.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -29,18 +29,13 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.restlet.data.Method;
+import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
 
 /**
@@ -57,88 +52,30 @@ import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
  * 
  * @author Stephan Koops
  */
-class ExceptionHandler {
+public class ExceptionHandler {
 
     private static final String HEADER_ALLOW = "Allow";
 
     private final Logger logger;
 
-    ExceptionHandler(Logger logger) {
+    /**
+     * Creates a new ExceptionHandler.
+     * 
+     * @param logger
+     *                the logger to use
+     */
+    public ExceptionHandler(Logger logger) {
         this.logger = logger;
     }
 
     /**
-     * @param cpe
+     * handles a {@link ConvertRepresentationException}
+     * 
+     * @param cre
+     * @return
      * @throws WebApplicationException
      */
-    RequestHandledException convertCookieParamExc(
-            ConvertCookieParamException cpe) throws WebApplicationException {
-        ResponseBuilder rb = Response
-                .status(org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST
-                        .getCode());
-        StringWriter stw = new StringWriter();
-        cpe.printStackTrace(new PrintWriter(stw));
-        rb.entity(stw.toString());
-        throw new WebApplicationException(cpe, rb.build());
-    }
-
-    /**
-     * @param cpe
-     * @throws WebApplicationException
-     */
-    RequestHandledException convertHeaderParamExc(
-            ConvertHeaderParamException cpe) throws WebApplicationException {
-        ResponseBuilder rb = Response.status(Status.BAD_REQUEST);
-        StringWriter stw = new StringWriter();
-        cpe.printStackTrace(new PrintWriter(stw));
-        rb.entity(stw.toString());
-        throw new WebApplicationException(cpe, rb.build());
-    }
-
-    /**
-     * @param cpe
-     * @throws WebApplicationException
-     */
-    RequestHandledException convertMatrixParamExc(
-            ConvertMatrixParamException cpe) throws WebApplicationException {
-        ResponseBuilder rb = Response.status(Status.NOT_FOUND);
-        StringWriter stw = new StringWriter();
-        cpe.printStackTrace(new PrintWriter(stw));
-        rb.entity(stw.toString());
-        throw new WebApplicationException(cpe, rb.build());
-    }
-
-    /**
-     * @param cpe
-     * @throws WebApplicationException
-     */
-    RequestHandledException convertPathParamExc(ConvertPathParamException cpe)
-            throws WebApplicationException {
-        ResponseBuilder rb = Response.status(Status.NOT_FOUND);
-        StringWriter stw = new StringWriter();
-        cpe.printStackTrace(new PrintWriter(stw));
-        rb.entity(stw.toString());
-        throw new WebApplicationException(cpe, rb.build());
-    }
-
-    /**
-     * @param cpe
-     * @throws WebApplicationException
-     */
-    RequestHandledException convertQueryParamExc(ConvertQueryParamException cpe)
-            throws WebApplicationException {
-        ResponseBuilder rb = Response.status(Status.BAD_REQUEST);
-        StringWriter stw = new StringWriter();
-        cpe.printStackTrace(new PrintWriter(stw));
-        rb.entity(stw.toString());
-        throw new WebApplicationException(cpe, rb.build());
-    }
-
-    /**
-     * @param cpe
-     * @throws WebApplicationException
-     */
-    RequestHandledException convertRepresentationExc(
+    public RequestHandledException convertRepresentationExc(
             ConvertRepresentationException cre) throws WebApplicationException {
         ResponseBuilder rb = Response.status(Status.BAD_REQUEST);
         StringWriter stw = new StringWriter();
@@ -159,12 +96,13 @@ class ExceptionHandler {
      *                {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
+     * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
      *                 throws this message to exit the method and indicate, that
      *                 the request was handled.
      * @throws RequestHandledException
      */
-    RequestHandledException instantiateExecption(
+    public RequestHandledException instantiateExecption(
             InstantiateException exception, CallContext callContext,
             String logMessage) throws RequestHandledException {
         callContext.getResponse().setStatus(
@@ -186,12 +124,13 @@ class ExceptionHandler {
      *                {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
+     * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
      *                 throws this message to exit the method and indicate, that
      *                 the request was handled.
      * @throws RequestHandledException
      */
-    RequestHandledException methodInvokeException(
+    public RequestHandledException methodInvokeException(
             MethodInvokeException exception, CallContext callContext,
             String logMessage) throws RequestHandledException {
         callContext.getResponse().setStatus(
@@ -202,11 +141,10 @@ class ExceptionHandler {
     }
 
     /**
-     * @param httpMethod
-     * @param resourceClass
-     * @param u
+     * @param allowedMethods
+     * @throws WebApplicationException
      */
-    void methodNotAllowed(Set<Method> allowedMethods)
+    public void methodNotAllowed(Set<Method> allowedMethods)
             throws WebApplicationException {
         ResponseBuilder rb = Response
                 .status(org.restlet.data.Status.CLIENT_ERROR_METHOD_NOT_ALLOWED
@@ -227,12 +165,13 @@ class ExceptionHandler {
      *                {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
+     * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
      *                 throws this message to exit the method and indicate, that
      *                 the request was handled.
      * @throws RequestHandledException
      */
-    RequestHandledException missingAnnotation(
+    public RequestHandledException missingAnnotation(
             MissingAnnotationException exception, CallContext callContext,
             String logMessage) throws RequestHandledException {
         callContext.getResponse().setStatus(
@@ -244,54 +183,60 @@ class ExceptionHandler {
     }
 
     /**
-     * see spec, section 4.3.1, item 5O
-     */
-    WebApplicationException noMessageBodyReader() {
-        throw new WebApplicationException(Status.UNSUPPORTED_MEDIA_TYPE);
-    }
-
-    /**
      * see spec, section 4.3.2, item 7
+     * 
+     * @return staticly to throw, if needed by compiler.
      */
-    RequestHandledException noMessageBodyWriter() {
+    public RequestHandledException noMessageBodyWriter() {
         // REQUESTED return supported MediaTypes as entity
         throw new WebApplicationException(Status.NOT_ACCEPTABLE);
     }
 
     /**
      * see spec, section 3.7.2, item 3(a).4
+     * 
+     * @throws WebApplicationException
      */
-    void noResourceMethodForAccMediaTypes() throws WebApplicationException {
-        // REQUESTED return supported MediaTypes as entity
-        throw new WebApplicationException(Status.NOT_ACCEPTABLE);
-    }
-
-    /**
-     * see spec, section 3.8, item 6
-     */
-    WebApplicationException notAcceptableWhileDetermineMediaType()
+    public void noResourceMethodForAccMediaTypes()
             throws WebApplicationException {
         // REQUESTED return supported MediaTypes as entity
         throw new WebApplicationException(Status.NOT_ACCEPTABLE);
     }
 
     /**
+     * see spec, section 3.8, item 6
+     * 
+     * @return staticly to throw, if needed by compiler.
+     * @throws WebApplicationException
      */
-    void resourceMethodNotFound() throws WebApplicationException {
+    public WebApplicationException notAcceptableWhileDetermineMediaType()
+            throws WebApplicationException {
+        // REQUESTED return supported MediaTypes as entity
+        throw new WebApplicationException(Status.NOT_ACCEPTABLE);
+    }
+
+    /**
+     * @throws WebApplicationException
+     */
+    public void resourceMethodNotFound() throws WebApplicationException {
         throw new WebApplicationException(Status.NOT_FOUND);
     }
 
     /**
      * see spec, section 3.7.2, item 2 (e)
+     * 
+     * @throws WebApplicationException
      */
-    void resourceNotFound() throws WebApplicationException {
+    public void resourceNotFound() throws WebApplicationException {
         throw new WebApplicationException(Status.NOT_FOUND);
     }
 
     /**
      * see spec, section 3.7.2, item 1 (d)
+     * 
+     * @throws WebApplicationException
      */
-    void rootResourceNotFound() throws WebApplicationException {
+    public void rootResourceNotFound() throws WebApplicationException {
         throw new WebApplicationException(Status.NOT_FOUND);
     }
 
@@ -310,12 +255,13 @@ class ExceptionHandler {
      *                {@link org.restlet.data.Response}.
      * @param logMessage
      * @param methodName
+     * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
      *                 throws this message to exit the method and indicate, that
      *                 the request was handled.
      * @throws RequestHandledException
      */
-    RequestHandledException runtimeExecption(RuntimeException exception,
+    public RequestHandledException runtimeExecption(RuntimeException exception,
             AbstractMethodWrapper jaxRsMethod, CallContext callContext,
             String logMessage) throws RequestHandledException {
         callContext.getResponse().setStatus(
@@ -329,8 +275,10 @@ class ExceptionHandler {
 
     /**
      * see spec, section 3.7.2, item 3 (a) .3
+     * 
+     * @throws WebApplicationException
      */
-    void unsupportedMediaType() throws WebApplicationException {
+    public void unsupportedMediaType() throws WebApplicationException {
         // REQUESTED return allowed Media types
         throw new WebApplicationException(Status.UNSUPPORTED_MEDIA_TYPE);
     }

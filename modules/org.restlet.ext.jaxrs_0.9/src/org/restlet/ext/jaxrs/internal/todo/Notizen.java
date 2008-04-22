@@ -33,13 +33,11 @@ public class Notizen {
 
     // REQUESTED @Context on type PathSegment ?
 
-    // TODO test again Jersey Implementation.
+    // LATER test again Jersey Implementation.
 
     // NICE Provider for File-Upload by a browser (multipart/form-data)
 
     // NICE warn if primitve on @*Param: perhaps null?
-
-    // LATER alle LATERs in Masterarbeit uebernehmen
 
     // NICE look for warnings in tests and put them away.
 

@@ -28,29 +28,19 @@ import javax.ws.rs.Encoded;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.ContextResolver;
 
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
-import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 
 /**
- * An abstract wrapper class. Contains some a static methods to use from
- * everywhere, otherwise not intended for public use
+ * An abstract wrapper class for resource methods, sub resource methods and sub
+ * resource locators.
  * 
  * @author Stephan Koops
  */
@@ -63,7 +53,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * 
      * @see #executeMethod
      */
-    Method annotatedMethod;
+    final Method annotatedMethod;
 
     /**
      * the Java method that should be called. This method could be different
@@ -72,19 +62,25 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * 
      * @see #annotatedMethod
      */
-    Method executeMethod;
+    final Method executeMethod;
 
     /**
      * is true, if the wrapped java method or its class is annotated with
      * &#64;Path.
      */
-    boolean leaveEncoded;
+    final boolean leaveEncoded;
 
-    ResourceClass resourceClass;
+    final ResourceClass resourceClass;
+
+    final ParameterList parameters;
 
     AbstractMethodWrapper(Method executeMethod, Method annotatedMethod,
-            ResourceClass resourceClass) throws IllegalPathOnMethodException,
-            IllegalArgumentException {
+            ResourceClass resourceClass, ThreadLocalizedContext tlContext,
+            EntityProviders entityProviders,
+            Collection<ContextResolver<?>> allCtxResolvers,
+            boolean entityAllowed, Logger logger)
+            throws IllegalPathOnMethodException, IllegalArgumentException,
+            MissingAnnotationException {
         super(PathRegExp.createForMethod(annotatedMethod));
         this.executeMethod = executeMethod;
         this.executeMethod.setAccessible(true);
@@ -96,6 +92,58 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             this.leaveEncoded = true;
         else
             this.leaveEncoded = false;
+        this.parameters = new ParameterList(executeMethod, annotatedMethod,
+                tlContext, this.leaveEncoded, entityProviders, allCtxResolvers,
+                entityAllowed, logger);
+    }
+
+    static class ContextHolder implements ParameterList.InjectObjectGetter {
+        private Object toInject;
+
+        ContextHolder(Object toInject) {
+            this.toInject = toInject;
+        }
+
+        /**
+         * @see ContextInjector.InjectObjectGetter#get
+         */
+        public Object getValue() {
+            return toInject;
+        }
+
+    }
+
+    static class EntityGetter extends
+            ParameterList.AbstractInjectObjectGetter implements
+            ParameterList.InjectObjectGetter {
+
+        private final Annotation[] annotations;
+
+        private final MessageBodyReaderSet mbrs;
+
+        private final Logger logger;
+
+        EntityGetter(Class<?> convToCl, Type convToGen,
+                ThreadLocalizedContext tlContext, MessageBodyReaderSet mbrs,
+                Annotation[] annotations, Logger logger) {
+            super(convToCl, convToGen, tlContext);
+            this.annotations = annotations;
+            this.mbrs = mbrs;
+            this.logger = logger;
+        }
+
+        /**
+         * @throws ConvertRepresentationException
+         * @throws WebApplicationException
+         * @throws NoMessageBodyReaderException
+         * @see IntoRrcInjector.AbstractInjectObjectGetter#getValue()
+         */
+        @Override
+        public Object getValue() throws InvocationTargetException,
+                ConvertRepresentationException {
+            return WrapperUtil.convertRepresentation(this.tlContext,
+                    this.convToCl, this.convToGen, annotations, mbrs, logger);
+        }
     }
 
     /**
@@ -160,60 +208,19 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * response.
      * 
      * @param resourceObject
-     * @param allowEntity
-     *                true, if the entity is allowed for this method, false if
-     *                not.
-     * @param tlContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * @param entityProvs
-     *                The Set of all available {@link MessageBodyReader}s in
-     *                the {@link JaxRsRouter}.
-     * @param allResolvers
-     *                all available {@link ContextResolver}s.
-     * @param logger
      * @return the unwrapped returned object by the wrapped method.
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
-     * @throws NoMessageBodyReaderException
-     * @throws MissingAnnotationException
-     * @throws ConvertCookieParamException
-     * @throws ConvertQueryParamException
-     * @throws ConvertMatrixParamException
-     * @throws ConvertPathParamException
-     * @throws ConvertHeaderParamException
+     * @throws WebApplicationException
      * @throws ConvertRepresentationException
      */
-    protected Object invoke(ResourceObject resourceObject, boolean allowEntity,
-            ThreadLocalizedContext tlContext, EntityProviders entityProvs,
-            Collection<ContextResolver<?>> allResolvers, Logger logger)
+    Object internalInvoke(ResourceObject resourceObject)
             throws IllegalArgumentException, IllegalAccessException,
-            InvocationTargetException, MissingAnnotationException,
-            NoMessageBodyReaderException, ConvertRepresentationException,
-            ConvertHeaderParamException, ConvertPathParamException,
-            ConvertMatrixParamException, ConvertQueryParamException,
-            ConvertCookieParamException, WebApplicationException {
-        Object[] args;
-        Class<?>[] parameterTypes = this.executeMethod.getParameterTypes();
-        if (parameterTypes.length == 0) {
-            args = new Object[0];
-        } else {
-            Type[] genParamTypes = executeMethod.getGenericParameterTypes();
-            Annotation[][] paramAnnos = annotatedMethod
-                    .getParameterAnnotations();
-            try {
-                args = WrapperUtil.getParameterValues(parameterTypes,
-                        genParamTypes, paramAnnos, allowEntity, false,
-                        leaveEncoded, tlContext, entityProvs, allResolvers,
-                        entityProvs, logger);
-            } catch (IllegalAnnotationException e) {
-                // should not be possible here
-                throw new ImplementationException(e);
-            }
-        }
+            InvocationTargetException, ConvertRepresentationException,
+            WebApplicationException {
+        Object[] args = this.parameters.get();
         Object jaxRsResourceObj = resourceObject.getJaxRsResourceObject();
         return executeMethod.invoke(jaxRsResourceObj, args);
     }

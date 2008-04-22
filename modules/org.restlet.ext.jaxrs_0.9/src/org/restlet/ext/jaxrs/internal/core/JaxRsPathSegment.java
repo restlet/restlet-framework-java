@@ -56,7 +56,6 @@ public class JaxRsPathSegment implements PathSegment {
         MultivaluedMapImpl<String, String> matrixParameters = new MultivaluedMapImpl<String, String>();
         if (matrParamString == null)
             return matrixParameters;
-        // LATER perhaps use Engine possibility to parse
         String[] paramsEncSpl = matrParamString.split(";");
         for (int i = 0; i < paramsEncSpl.length; i++) {
             String matrParamEnc = paramsEncSpl[i];

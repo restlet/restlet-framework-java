@@ -18,6 +18,8 @@
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 /**
  * This kind of exception is thrown, if a header parameter could not be
@@ -26,17 +28,15 @@ import javax.ws.rs.HeaderParam;
  * @author Stephan Koops
  * @see HeaderParam
  */
-public class ConvertHeaderParamException extends JaxRsException {
+public class ConvertHeaderParamException extends WebApplicationException {
 
     private static final long serialVersionUID = -2880948194279374251L;
-
-    // LATER WebAppExc(400) instead of ConvertHeaderParamException.
 
     /**
      * @param cpe
      */
     public ConvertHeaderParamException(ConvertParameterException cpe) {
-        super(cpe.getMessage(), cpe.getCause());
+        super(cpe.getCause(), Status.BAD_REQUEST);
         this.setStackTrace(cpe.getStackTrace());
     }
 }

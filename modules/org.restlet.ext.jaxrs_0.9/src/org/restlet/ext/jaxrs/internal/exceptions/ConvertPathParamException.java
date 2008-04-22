@@ -18,6 +18,8 @@
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 /**
  * This kind of exception is thrown, if a path parameter could not be converted.
@@ -25,17 +27,15 @@ import javax.ws.rs.PathParam;
  * @author Stephan Koops
  * @see PathParam
  */
-public class ConvertPathParamException extends JaxRsException {
+public class ConvertPathParamException extends WebApplicationException {
 
     private static final long serialVersionUID = 7259271064216490329L;
-
-    // LATER WebAppExc(404) instead of ConvertPathParamException.
 
     /**
      * @param cpe
      */
     public ConvertPathParamException(ConvertParameterException cpe) {
-        super(cpe.getMessage(), cpe.getCause());
+        super(cpe.getCause(), Status.NOT_FOUND);
         this.setStackTrace(cpe.getStackTrace());
     }
 }

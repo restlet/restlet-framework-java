@@ -24,23 +24,18 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.MessageBodyWorkers;
 
+import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
-import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
@@ -77,11 +72,7 @@ public class RootResourceClass extends ResourceClass {
 
     private final Constructor<?> constructor;
 
-    /**
-     * is true, if the constructor (or the root resource class) is annotated
-     * with &#64;Path. Is available after constructor was running.
-     */
-    private final boolean constructorLeaveEncoded;
+    private final ParameterList constructorParameters;
 
     private final IntoRrcInjector injectHelper;
 
@@ -90,9 +81,12 @@ public class RootResourceClass extends ResourceClass {
      * 
      * @param jaxRsClass
      *                the root resource class to wrap
-     * @param mbWorkers
+     * @param tlContext
+     *                the {@link ThreadLocalizedContext} of the
+     *                {@link JaxRsRouter}.
+     * @param entityProviders
      *                all entity providers.
-     * @param allResolvers
+     * @param allCtxResolvers
      *                all available {@link ContextResolver}s.
      * @param logger
      *                the logger to use.
@@ -105,69 +99,49 @@ public class RootResourceClass extends ResourceClass {
      * @throws MissingConstructorException
      *                 if no valid constructor could be found
      */
-    RootResourceClass(Class<?> jaxRsClass, MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers, Logger logger)
+    RootResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
+            EntityProviders entityProviders,
+            Collection<ContextResolver<?>> allCtxResolvers, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException,
             IllegalPathOnClassException, MissingConstructorException {
-        super(jaxRsClass, logger, logger);
+        super(jaxRsClass, tlContext, entityProviders, allCtxResolvers, logger,
+                logger);
         Util.checkClassConcrete(getJaxRsClass(), "root resource class");
         checkClassForPathAnnot(jaxRsClass, "root resource class");
-        this.injectHelper = new IntoRrcInjector(jaxRsClass, isLeaveEncoded(),
-                mbWorkers, allResolvers);
+        this.injectHelper = new IntoRrcInjector(jaxRsClass, tlContext,
+                isLeaveEncoded(), entityProviders, allCtxResolvers);
         this.constructor = WrapperUtil.findJaxRsConstructor(getJaxRsClass(),
                 "root resource class");
-        this.constructorLeaveEncoded = this.isLeaveEncoded()
+        boolean constructorLeaveEncoded = this.isLeaveEncoded()
                 || constructor.isAnnotationPresent(Encoded.class);
+        this.constructorParameters = new ParameterList(this.constructor,
+                tlContext, constructorLeaveEncoded, entityProviders,
+                allCtxResolvers, logger);
     }
 
     /**
      * Creates an instance of the root resource class.
      * 
-     * @param tlContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet
-     *                {@link org.restlet.data.Request} and the Restlet
-     *                {@link org.restlet.data.Response}.
-     * @param entityProviders
-     *                The available entity providers in the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRouter}.
-     * @param allResolvers
-     *                all available {@link ContextResolver}s.
-     * @param logger
-     *                The logger to use
      * @return
      * @throws InvocationTargetException
      * @throws InstantiateException
      * @throws MissingAnnotationException
-     * @throws NoMessageBodyReaderException
-     * @throws ConvertCookieParamException
-     * @throws ConvertQueryParamException
-     * @throws ConvertMatrixParamException
-     * @throws ConvertPathParamException
-     * @throws ConvertHeaderParamException
-     * @throws ConvertRepresentationException
+     * @throws WebApplicationException
      */
-    public ResourceObject createInstance(ThreadLocalizedContext tlContext,
-            EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allResolvers, Logger logger)
-            throws MissingAnnotationException, InstantiateException,
-            NoMessageBodyReaderException, InvocationTargetException,
-            ConvertRepresentationException, ConvertHeaderParamException,
-            ConvertPathParamException, ConvertMatrixParamException,
-            ConvertQueryParamException, ConvertCookieParamException {
+    public ResourceObject createInstance() throws InstantiateException,
+            InvocationTargetException {
         Constructor<?> constructor = this.constructor;
         Object instance;
         try {
-            instance = WrapperUtil.createInstance(constructor, false,
-                    constructorLeaveEncoded, tlContext, entityProviders,
-                    allResolvers, logger);
-        } catch (IllegalAnnotationException iae) {
-            // should not be possible here
-            throw new InstantiateException(iae);
+            instance = WrapperUtil.createInstance(constructor,
+                    constructorParameters.get());
+        } catch (ConvertRepresentationException e) {
+            // is not possible
+            throw new ImplementationException("Must not be possible", e);
         }
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {
-            this.injectHelper.inject(rootResourceObject, tlContext);
+            this.injectHelper.injectInto(instance);
         } catch (InjectException e) {
             throw new InstantiateException(e);
         }

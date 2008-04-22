@@ -26,7 +26,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,9 +36,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.Encoded;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.MatrixParam;
@@ -47,49 +44,33 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.MessageBodyWorkers;
 
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.JaxRsRouter;
-import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
-import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
-import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolverCollection;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ReturnNullContextResolver;
 import org.restlet.resource.Representation;
-import org.restlet.util.Series;
 
 /**
  * Utility methods for the wrappers.
@@ -140,8 +121,6 @@ public class WrapperUtil {
     private static final Short DEFAULT_SHORT = 0;
 
     private static final String JAX_RS_PACKAGE_PREFIX = "javax.ws.rs";
-
-    private static final Collection<Class<? extends Annotation>> VALID_ANNOTATIONS = createValidAnnotations();
 
     /**
      * Checks, if the given annotation is annotated with at least one JAX-RS
@@ -329,7 +308,7 @@ public class WrapperUtil {
 
     /**
      * @param paramClass
-     * @param paramGenericType
+     * @param convToGen
      * @param paramValueIter
      *                the values to use if multiples are required
      * @param paramValue
@@ -339,7 +318,7 @@ public class WrapperUtil {
      * @return
      * @throws ConvertParameterException
      */
-    private static Object convertParamValuesFromParam(Class<?> paramClass,
+    static Object convertParamValuesFromParam(Class<?> paramClass,
             Type paramGenericType, Iterator<String> paramValueIter,
             String paramValue, DefaultValue defaultValue, boolean leaveEncoded)
             throws ConvertParameterException {
@@ -465,7 +444,7 @@ public class WrapperUtil {
      * @param type
      * @return the created collection or null.
      */
-    private static <A> Collection<A> createColl(ParameterizedType type) {
+    static <A> Collection<A> createColl(ParameterizedType type) {
         Type rawType = type.getRawType();
         if (rawType.equals(List.class))
             return new ArrayList<A>(1);
@@ -530,60 +509,14 @@ public class WrapperUtil {
      * Creates an instance of the root resource class.
      * 
      * @param constructor
-     *                the constructor to create an instance with.
-     * @param onlyContextAnnot
-     *                if true, only the annotations &#64;{@link Context} is
-     *                allowed, especially &#64;*Param is not allowed. Otherwise
-     *                also &#64;*Param is allowed.
-     * @param leaveEncoded
-     *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
-     *                and {@link PathParam}s encoded.
-     * @param tlContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * @param ep
-     * @param allResolvers
-     *                all available {@link ContextResolver}s.
-     * @param logger
-     *                The logger to use
-     * @param mbrs
-     *                The Set of all available {@link MessageBodyReader}s in
-     *                the {@link JaxRsRouter}.
+     * @param args
      * @return
-     * @throws MissingAnnotationException
-     * @throws NoMessageBodyReaderException
-     * @throws InstantiateException
-     *                 if the class could not be instantiated.
      * @throws InvocationTargetException
-     * @throws ConvertCookieParamException
-     * @throws ConvertQueryParamException
-     * @throws ConvertMatrixParamException
-     * @throws ConvertPathParamException
-     * @throws ConvertHeaderParamException
-     * @throws ConvertRepresentationException
-     * @throws IllegalAnnotationException
+     * @throws InstantiateException
      */
     public static Object createInstance(Constructor<?> constructor,
-            boolean onlyContextAnnot, boolean leaveEncoded,
-            ThreadLocalizedContext tlContext, EntityProviders ep,
-            Collection<ContextResolver<?>> allResolvers, Logger logger)
-            throws MissingAnnotationException, NoMessageBodyReaderException,
-            InstantiateException, InvocationTargetException,
-            ConvertRepresentationException, ConvertHeaderParamException,
-            ConvertPathParamException, ConvertMatrixParamException,
-            ConvertQueryParamException, ConvertCookieParamException,
-            IllegalAnnotationException {
-        Object[] args;
-        if (constructor.getParameterTypes().length == 0) {
-            args = new Object[0];
-        } else {
-            args = getParameterValues(constructor.getParameterTypes(),
-                    constructor.getGenericParameterTypes(), constructor
-                            .getParameterAnnotations(), false,
-                    onlyContextAnnot, leaveEncoded, tlContext, ep,
-                    allResolvers, ep, logger);
-        }
+            Object[] args) throws InvocationTargetException,
+            InstantiateException {
         try {
             return constructor.newInstance(args);
         } catch (IllegalArgumentException e) {
@@ -596,13 +529,6 @@ public class WrapperUtil {
             throw new InstantiateException("Could not instantiate "
                     + constructor.getDeclaringClass(), e);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    static Collection<Class<? extends Annotation>> createValidAnnotations() {
-        return Arrays.asList(Context.class, HeaderParam.class,
-                MatrixParam.class, QueryParam.class, PathParam.class,
-                CookieParam.class);
     }
 
     /**
@@ -642,13 +568,13 @@ public class WrapperUtil {
      * 
      * @param genType
      *                generic type of field {@link ContextResolver}.
-     * @param allResolvers
+     * @param allCtxResolvers
      * @return
      * @throws RuntimeException
      */
     @SuppressWarnings("unchecked")
     static ContextResolver<?> getContextResolver(Type genType,
-            Collection<ContextResolver<?>> allResolvers) {
+            Collection<ContextResolver<?>> allCtxResolvers) {
         if (!(genType instanceof ParameterizedType))
             return ReturnNullContextResolver.get();
         Type t = ((ParameterizedType) genType).getActualTypeArguments()[0];
@@ -656,7 +582,7 @@ public class WrapperUtil {
             return ReturnNullContextResolver.get();
         Class crType = (Class) t;
         List<ContextResolver<?>> returnResolvers = new ArrayList<javax.ws.rs.ext.ContextResolver<?>>();
-        for (ContextResolver<?> cr : allResolvers) {
+        for (ContextResolver<?> cr : allCtxResolvers) {
             Class<?> crClaz = cr.getClass();
             Class<?> genClass = getCtxResGenClass(crClaz);
             if (genClass == null || !genClass.equals(crType))
@@ -685,6 +611,7 @@ public class WrapperUtil {
 
     /**
      * Returns the generic class of the given {@link ContextResolver} class.
+     * 
      * @param crClaz
      */
     private static Class<?> getCtxResGenClass(Class<?> crClaz) {
@@ -698,108 +625,6 @@ public class WrapperUtil {
             return (Class<?>) t;
         }
         return null;
-    }
-
-    /**
-     * Creates the value of a cookie as the given type.
-     * 
-     * @param paramClass
-     *                the class to convert to
-     * @param paramGenericType
-     *                the generic type to convert to
-     * @param cookieParam
-     *                the {@link CookieParam} annotation
-     * @param defaultValue
-     *                the default value
-     * @param callContext
-     *                the {@link CallContext}
-     * @param jaxRsRouter
-     * @return the cookie parameter, converted to type paramClass
-     * @throws ConvertCookieParamException
-     */
-    @SuppressWarnings("unchecked")
-    static Object getCookieParamValue(Class<?> paramClass,
-            Type paramGenericType, CookieParam cookieParam,
-            DefaultValue defaultValue, CallContext callContext)
-            throws ConvertCookieParamException {
-        String cookieName = cookieParam.value();
-        Collection<Cookie> coll = null;
-        boolean isCookie = false; // javax.ws.rs.core.Cookie requested
-        boolean toArray = false;
-        if (paramClass.equals(Cookie.class)) {
-            isCookie = true;
-        } else if (paramClass.isArray()) {
-            Class<?> paramClass2 = paramClass.getComponentType();
-            if (paramClass2.equals(Cookie.class)) {
-                coll = new ArrayList<Cookie>();
-                toArray = true;
-                isCookie = true;
-            }
-        } else if (paramGenericType instanceof ParameterizedType) {
-            ParameterizedType parametrizedType = (ParameterizedType) paramGenericType;
-            Type[] argTypes = parametrizedType.getActualTypeArguments();
-            if (argTypes.length == 1 && argTypes[0].equals(Cookie.class)) {
-                coll = createColl(parametrizedType);
-                if (coll != null)
-                    isCookie = true;
-            }
-        }
-        Series<org.restlet.data.Cookie> cookies;
-        cookies = callContext.getRequest().getCookies();
-        if (isCookie) {
-            for (org.restlet.data.Cookie rc : cookies) {
-                if (!rc.getName().equals(cookieName))
-                    continue;
-                Cookie cookie = Converter.toJaxRsCookie(rc);
-                if (coll == null) // no collection requested
-                    return cookie;
-                coll.add(cookie);
-            }
-            if (coll == null)
-                return null;
-            if (coll.isEmpty()) {
-                String value = defaultValue.value();
-                coll.add(new Cookie(cookieName, value));
-            }
-            if (toArray)
-                return Util.toArray(coll, Cookie.class);
-            return coll;
-        }
-        try {
-            return convertParamValuesFromParam(paramClass, paramGenericType,
-                    new ParamValueIter((Series) cookies.subList(cookieName)),
-                    getValue(cookies.getFirst(cookieName)), defaultValue, true);
-            // leaveEncoded = true -> not change
-        } catch (ConvertParameterException e) {
-            throw new ConvertCookieParamException(e);
-        }
-    }
-
-    /**
-     * @param paramClass
-     * @param paramGenericType
-     *                the generic type to convert to
-     * @param annotation
-     * @param defaultValue
-     * @param callContext
-     * @param jaxRsRouter
-     * @return
-     * @throws ConvertHeaderParamException
-     */
-    static Object getHeaderParamValue(Class<?> paramClass,
-            Type paramGenericType, HeaderParam annotation,
-            DefaultValue defaultValue, CallContext callContext)
-            throws ConvertHeaderParamException {
-        Form httpHeaders = Util.getHttpHeaders(callContext.getRequest());
-        String headerName = annotation.value();
-        try {
-            return convertParamValuesFromParam(paramClass, paramGenericType,
-                    new ParamValueIter(httpHeaders.subList(headerName, true)),
-                    getValue(httpHeaders.getFirst(headerName, true)),
-                    defaultValue, true);
-        } catch (ConvertParameterException e) {
-            throw new ConvertHeaderParamException(e);
-        }
     }
 
     /**
@@ -820,230 +645,6 @@ public class WrapperUtil {
             }
         }
         return null;
-    }
-
-    /**
-     * @param paramClass
-     * @param paramGenericType
-     *                the generic type to convert to
-     * @param matrixParam
-     * @param leaveEncoded
-     * @param defaultValue
-     * @param callContext
-     * @param jaxRsRouter
-     * @return
-     * @throws ConvertMatrixParamException
-     */
-    static Object getMatrixParamValue(Class<?> paramClass,
-            Type paramGenericType, MatrixParam matrixParam,
-            boolean leaveEncoded, DefaultValue defaultValue,
-            CallContext callContext) throws ConvertMatrixParamException {
-        String matrixParamValue = callContext
-                .getLastMatrixParamEnc(matrixParam);
-        Iterator<String> matrixParamValues = callContext
-                .matrixParamEncIter(matrixParam);
-        try {
-            return convertParamValuesFromParam(paramClass, paramGenericType,
-                    matrixParamValues, matrixParamValue, defaultValue,
-                    leaveEncoded);
-        } catch (ConvertParameterException e) {
-            throw new ConvertMatrixParamException(e);
-        }
-    }
-
-    /**
-     * Returns the parameter value for a parameter of a JAX-RS method or
-     * constructor.
-     * 
-     * @param paramAnnotations
-     *                annotations on the paramIter
-     * @param paramClass
-     *                the wished type
-     * @param onlyContextAnnot
-     *                if true, only the annotations &#64;{@link Context} is
-     *                allowed, especially &#64;*Param is not allowed. Otherwise
-     *                also &#64;*Param is allowed.
-     * @param mbWorkers
-     *                all entity providers.
-     * @param allResolvers
-     *                all available {@link ContextResolver}s.
-     * @param leaveEncoded
-     *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
-     *                and {@link PathParam}s encoded.
-     * @param indexForExcMessages
-     *                the index of the parameter, for exception messages.
-     * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * @param genericParamType
-     *                the generic type to convert to
-     * @param jaxRsRouter
-     * @return the parameter value
-     * @throws MissingAnnotationException
-     *                 Thrown, when no valid annotation was found. For
-     *                 (Sub)ResourceMethods this is one times allowed; than the
-     *                 given request entity should taken as parameter.
-     * @throws ConvertHeaderParamException
-     * @throws ConvertPathParamException
-     * @throws ConvertMatrixParamException
-     * @throws ConvertQueryParamException
-     * @throws ConvertCookieParamException
-     * @throws IllegalAnnotationException
-     */
-    private static Object getParameterValue(Annotation[] paramAnnotations,
-            Class<?> paramClass, Type paramGenericType,
-            boolean onlyContextAnnot, ThreadLocalizedContext tlContext,
-            MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers, Logger logger,
-            boolean leaveEncoded, int indexForExcMessages)
-            throws MissingAnnotationException, ConvertHeaderParamException,
-            ConvertPathParamException, ConvertMatrixParamException,
-            ConvertQueryParamException, ConvertCookieParamException,
-            IllegalAnnotationException {
-        DefaultValue defaultValue = null;
-        for (Annotation annot : paramAnnotations) {
-            Class<? extends Annotation> annotationType = annot.annotationType();
-            if (annotationType.equals(DefaultValue.class))
-                defaultValue = (DefaultValue) annot;
-            else if (!leaveEncoded && annotationType.equals(Encoded.class))
-                leaveEncoded = true;
-        }
-        for (Annotation annotation : paramAnnotations) {
-            Class<? extends Annotation> annoType = annotation.annotationType();
-            if (annoType.equals(Context.class)) {
-                if (paramClass.equals(MessageBodyWorkers.class))
-                    return mbWorkers;
-                if (paramClass.equals(ContextResolver.class))
-                    return getContextResolver(paramGenericType, allResolvers);
-                return tlContext;
-            }
-            if (annoType.equals(HeaderParam.class)) {
-                // LATER warn for @Encoded
-                if (onlyContextAnnot)
-                    throw new IllegalAnnotationException(annotation);
-                return getHeaderParamValue(paramClass, paramGenericType,
-                        (HeaderParam) annotation, defaultValue, tlContext.get());
-            }
-            if (annoType.equals(PathParam.class)) {
-                if (onlyContextAnnot)
-                    throw new IllegalAnnotationException(annotation);
-                return getPathParamValue(paramClass, paramGenericType,
-                        (PathParam) annotation, leaveEncoded, defaultValue,
-                        tlContext.get());
-            }
-            if (annoType.equals(MatrixParam.class)) {
-                if (onlyContextAnnot)
-                    throw new IllegalAnnotationException(annotation);
-                return getMatrixParamValue(paramClass, paramGenericType,
-                        (MatrixParam) annotation, leaveEncoded, defaultValue,
-                        tlContext.get());
-            }
-            if (annoType.equals(QueryParam.class)) {
-                if (onlyContextAnnot)
-                    throw new IllegalAnnotationException(annotation);
-                return getQueryParamValue(paramClass, paramGenericType,
-                        (QueryParam) annotation, leaveEncoded, defaultValue,
-                        tlContext.get(), logger);
-            }
-            if (annoType.equals(CookieParam.class)) {
-                // LATER warn for @Encoded
-                if (onlyContextAnnot)
-                    throw new IllegalAnnotationException(annotation);
-                return getCookieParamValue(paramClass, paramGenericType,
-                        (CookieParam) annotation, defaultValue, tlContext.get());
-            }
-        }
-        throw new MissingAnnotationException("The " + indexForExcMessages
-                + ". parameter requires one of the following annotations: "
-                + VALID_ANNOTATIONS);
-    }
-
-    /**
-     * Returns the parameter value array for a JAX-RS method or constructor.
-     * 
-     * @param paramTypes
-     *                the array of types for the method or constructor.
-     * @param paramGenericTypes
-     *                The generic {@link Type} to convert to.
-     * @param paramAnnotationss
-     *                the array of arrays of annotations for the method or
-     *                constructor.
-     * @param allowEntity
-     *                true, if the entity is allowed, or false if not.
-     * @param onlyContextAnnot
-     *                if true, only the annotations &#64;{@link Context} is
-     *                allowed, especially &#64;*Param is not allowed. Otherwise
-     *                also &#64;*Param is allowed.
-     * @param leaveEncoded
-     *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
-     *                and {@link PathParam}s encoded.
-     * @param tlContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * @param mbWorkers
-     *                all entity providers.
-     * @param allResolvers
-     *                all available {@link ContextResolver}s.
-     * @param mbrs
-     *                The Set of all available {@link MessageBodyReader}s in
-     *                the {@link JaxRsRouter}.
-     * @param logger
-     *                The logger to use
-     * @return the parameter array
-     * @throws MissingAnnotationException
-     * @throws NoMessageBodyReaderException
-     * @throws ConvertCookieParamException
-     * @throws ConvertQueryParamException
-     * @throws ConvertMatrixParamException
-     * @throws ConvertPathParamException
-     * @throws ConvertHeaderParamException
-     * @throws ConvertRepresentationException
-     * @throws IllegalAnnotationException
-     * @throws InvocationTargetException
-     *                 If the constructor of the entity subclass of
-     *                 {@link Representation} throws an exception.
-     * @throws WebApplicationException
-     */
-    static Object[] getParameterValues(Class<?>[] paramTypes,
-            Type[] paramGenericTypes, Annotation[][] paramAnnotationss,
-            boolean allowEntity, boolean onlyContextAnnot,
-            boolean leaveEncoded, ThreadLocalizedContext tlContext,
-            MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers,
-            MessageBodyReaderSet mbrs, Logger logger)
-            throws MissingAnnotationException, NoMessageBodyReaderException,
-            ConvertHeaderParamException, ConvertPathParamException,
-            ConvertMatrixParamException, ConvertQueryParamException,
-            ConvertCookieParamException, ConvertRepresentationException,
-            IllegalAnnotationException, InvocationTargetException,
-            WebApplicationException {
-        int paramNo = paramTypes.length;
-        if (paramNo == 0)
-            return new Object[0];
-        Object[] args = new Object[paramNo];
-        if (logger == null)
-            logger = Logger.getAnonymousLogger();
-        for (int i = 0; i < args.length; i++) {
-            Class<?> paramType = paramTypes[i];
-            Type paramGenericType = paramGenericTypes[i];
-            Object arg;
-            Annotation[] paramAnnotations = paramAnnotationss[i];
-            try {
-                arg = getParameterValue(paramAnnotations, paramType,
-                        paramGenericType, onlyContextAnnot, tlContext,
-                        mbWorkers, allResolvers, logger, leaveEncoded, i);
-            } catch (MissingAnnotationException ionae) {
-                if (!allowEntity)
-                    throw ionae;
-                allowEntity = false;
-                arg = convertRepresentation(tlContext, paramType,
-                        paramGenericType, paramAnnotations, mbrs, logger);
-            }
-            args[i] = arg;
-        }
-        return args;
     }
 
     /**
@@ -1119,70 +720,6 @@ public class WrapperUtil {
     }
 
     /**
-     * @param paramClass
-     * @param paramGenericType
-     *                the generic type to convert to
-     * @param pathParam
-     * @param leaveEncoded
-     * @param defaultValue
-     * @param callContext
-     * @param logger
-     * @return
-     * @throws ConvertPathParamException
-     */
-    static Object getPathParamValue(Class<?> paramClass, Type paramGenericType,
-            PathParam pathParam, boolean leaveEncoded,
-            DefaultValue defaultValue, CallContext callContext)
-            throws ConvertPathParamException {
-        // TESTEN Path-Param: List<String> (see PathParamTest.testGet3())
-        if (paramClass.equals(PathSegment.class)) {
-            throw new NotYetImplementedException(
-                    "Sorry, @PathParam(..) PathSegment is not yet supported");
-            // LATER @PathParam("x") PathSegment allowed.
-        }
-        String pathParamValue = callContext.getLastPathParamEnc(pathParam);
-        Iterator<String> ppvIter = callContext.pathParamEncIter(pathParam);
-        try {
-            return convertParamValuesFromParam(paramClass, paramGenericType,
-                    ppvIter, pathParamValue, defaultValue, leaveEncoded);
-        } catch (ConvertParameterException e) {
-            throw new ConvertPathParamException(e);
-        }
-    }
-
-    /**
-     * @param paramClass
-     * @param paramGenericType
-     *                the generic type to convert to
-     * @param queryParam
-     * @param leaveEncoded
-     * @param defaultValue
-     * @param callContext
-     * @param logger
-     * @return
-     * @throws ConvertQueryParamException
-     */
-    static Object getQueryParamValue(Class<?> paramClass,
-            Type paramGenericType, QueryParam queryParam, boolean leaveEncoded,
-            DefaultValue defaultValue, CallContext callContext, Logger logger)
-            throws ConvertQueryParamException {
-        Reference resourceRef = callContext.getRequest().getResourceRef();
-        String queryString = resourceRef.getQuery();
-        Form form = Converter.toFormEncoded(queryString, logger);
-        String paramName = queryParam.value();
-        List<Parameter> parameters = form.subList(paramName);
-        try {
-            String queryParamValue = getValue(form.getFirst(paramName));
-            ParamValueIter queryParamValueIter = new ParamValueIter(parameters);
-            return convertParamValuesFromParam(paramClass, paramGenericType,
-                    queryParamValueIter, queryParamValue, defaultValue,
-                    leaveEncoded);
-        } catch (ConvertParameterException e) {
-            throw new ConvertQueryParamException(e);
-        }
-    }
-
-    /**
      * Returns the value from the given Parameter. If the given parameter is
      * null, null will returned. If the parameter is not null, but it's value, ""
      * is returned.
@@ -1192,7 +729,7 @@ public class WrapperUtil {
      *         null, null will returned. If the parameter is not null, but it's
      *         value, "" is returned.
      */
-    private static String getValue(Parameter parameter) {
+    static String getValue(Parameter parameter) {
         if (parameter == null)
             return null;
         String paramValue = parameter.getValue();

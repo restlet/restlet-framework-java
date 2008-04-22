@@ -15,28 +15,23 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.exceptions;
+package org.restlet.test.jaxrs.services.resources;
 
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
+import static javax.ws.rs.core.MediaType.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.ProduceMime;
+
+import org.restlet.test.jaxrs.services.others.Person;
 
 /**
- * This kind of exception is thrown, if a query parameter could not be
- * converted.
- * 
  * @author Stephan Koops
- * @see QueryParam
  */
-public class ConvertQueryParamException extends WebApplicationException {
-
-    private static final long serialVersionUID = 131640120766355816L;
-
-    /**
-     * @param cpe
-     */
-    public ConvertQueryParamException(ConvertParameterException cpe) {
-        super(cpe.getCause(), Status.NOT_FOUND);
-        this.setStackTrace(cpe.getStackTrace());
+@Path("appPlusXml")
+public class AppPlusXmlResource {
+    @GET
+    @ProduceMime( { "application/Person+xml", APPLICATION_XML, TEXT_XML })
+    public Person getPerson() {
+        return new Person("Angela", "Merkel");
     }
 }

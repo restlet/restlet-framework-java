@@ -18,6 +18,8 @@
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 import javax.ws.rs.CookieParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 /**
  * This kind of exception is thrown, if a query parameter could not be
@@ -26,17 +28,17 @@ import javax.ws.rs.CookieParam;
  * @author Stephan Koops
  * @see CookieParam
  */
-public class ConvertCookieParamException extends JaxRsException {
+public class ConvertCookieParamException extends WebApplicationException {
 
     private static final long serialVersionUID = 9098614715395362234L;
-
-    // LATER WebAppExc(400) instead of ConvertCookieParamException.
+    
+    // REQUESTED allow subclass of WebAppExc in algorithms for special handling?
 
     /**
      * @param cpe
      */
     public ConvertCookieParamException(ConvertParameterException cpe) {
-        super(cpe.getMessage(), cpe.getCause());
+        super(cpe.getCause(), Status.BAD_REQUEST);
         this.setStackTrace(cpe.getStackTrace());
     }
 }

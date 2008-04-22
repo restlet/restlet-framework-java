@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs;
+package org.restlet.ext.jaxrs.internal.util;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,10 +27,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
-import org.restlet.ext.jaxrs.internal.util.MatchingResult;
-import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethodOrLocator;
 import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
@@ -41,7 +39,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.SubResourceLocator;
  * 
  * @author Stephan Koops
  */
-class AlgorithmUtil {
+public class AlgorithmUtil {
 
     private static enum ConsOrProdMime {
         /**
@@ -64,7 +62,7 @@ class AlgorithmUtil {
      *                from the called URI, the Restlet {@link Request} and the
      *                Restlet {@link Response}.
      */
-    static void addPathVarsToMap(MatchingResult matchResult,
+    public static void addPathVarsToMap(MatchingResult matchResult,
             CallContext callContext) {
         Map<String, String> variables = matchResult.getVariables();
         for (Map.Entry<String, String> varEntry : variables.entrySet()) {
@@ -169,7 +167,7 @@ class AlgorithmUtil {
      * @return Returns the method who best matches the given and accepted media
      *         type in the request, or null
      */
-    static ResourceMethod getBestMethod(
+    public static ResourceMethod getBestMethod(
             Collection<ResourceMethod> resourceMethods,
             MediaType givenMediaType, SortedMetadata<MediaType> accMediaTypes,
             Method httpMethod) {
@@ -258,7 +256,7 @@ class AlgorithmUtil {
      * @return the resource method or sub resource locator, or null, if the Map
      *         is null or empty.
      */
-    static ResourceMethodOrLocator getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
+    public static ResourceMethodOrLocator getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
             Collection<ResourceMethodOrLocator> eWithMethod) {
         if (eWithMethod == null || eWithMethod.isEmpty())
             return null;
@@ -309,7 +307,7 @@ class AlgorithmUtil {
      *                Collection of root resource classes
      * @return null, if the Map is null or empty
      */
-    static RootResourceClass getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
+    public static RootResourceClass getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
             Collection<RootResourceClass> rrcs) {
         if (rrcs == null || rrcs.isEmpty())
             return null;
@@ -343,7 +341,8 @@ class AlgorithmUtil {
     }
 
     /**
-     * Removes the ResourceMethods doesn't support the given method.
+     * Removes the {@link ResourceMethod}s from the collection, that do not
+     * support the given HTTP method.
      * 
      * @param resourceMethods
      *                the collection of {@link ResourceMethod}s.
@@ -354,7 +353,7 @@ class AlgorithmUtil {
      *                another HTTP method is required. It is intended to be used
      *                for HEAD requests.
      */
-    static void removeNotSupportedHttpMethod(
+    public static void removeNotSupportedHttpMethod(
             Collection<ResourceMethod> resourceMethods,
             org.restlet.data.Method httpMethod, boolean alsoGet) {
         Iterator<ResourceMethod> methodIter = resourceMethods.iterator();

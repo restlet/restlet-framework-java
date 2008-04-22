@@ -23,11 +23,13 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.MessageBodyWorkers;
 
+import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
 
 /**
  * A WrapperFactory creates and caches some of the wrapper objects.
@@ -38,24 +40,29 @@ public class WrapperFactory {
 
     private final Logger logger;
 
-    private final MessageBodyWorkers mbWorkers;
+    private final EntityProviders entityProviders;
 
-    private final Collection<ContextResolver<?>> allResolvers;
+    private final Collection<ContextResolver<?>> allCtxResolvers;
+
+    private final ThreadLocalizedContext tlContext;
 
     private final Map<Class<?>, ResourceClass> resourceClasses = new HashMap<Class<?>, ResourceClass>();
 
-    // LATER allow concurent access.
-
     /**
-     * @param mbWorkers 
-     * @param allResolvers 
+     * @param tlContext
+     *                the {@link ThreadLocalizedContext} of the
+     *                {@link JaxRsRouter}.
+     * @param entityProviders
+     * @param allCtxResolvers
      * @param logger
      *                the to log warnings and so on
      */
-    public WrapperFactory(MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers, Logger logger) {
-        this.mbWorkers = mbWorkers;
-        this.allResolvers = allResolvers;
+    public WrapperFactory(ThreadLocalizedContext tlContext,
+            EntityProviders entityProviders,
+            Collection<ContextResolver<?>> allCtxResolvers, Logger logger) {
+        this.tlContext = tlContext;
+        this.entityProviders = entityProviders;
+        this.allCtxResolvers = allCtxResolvers;
         this.logger = logger;
     }
 
@@ -64,11 +71,15 @@ public class WrapperFactory {
      * 
      * @param jaxRsResourceClass
      * @return
+     * @throws MissingAnnotationException
+     * @throws IllegalArgumentException
      */
-    ResourceClass getResourceClass(Class<?> jaxRsResourceClass) {
+    ResourceClass getResourceClass(Class<?> jaxRsResourceClass)
+            throws IllegalArgumentException, MissingAnnotationException {
         ResourceClass rc = resourceClasses.get(jaxRsResourceClass);
         if (rc == null) {
-            rc = new ResourceClass(jaxRsResourceClass, logger);
+            rc = new ResourceClass(jaxRsResourceClass, tlContext,
+                    entityProviders, allCtxResolvers, logger);
             resourceClasses.put(jaxRsResourceClass, rc);
         }
         return rc;
@@ -91,7 +102,7 @@ public class WrapperFactory {
             Class<?> jaxRsRootResourceClass) throws IllegalArgumentException,
             MissingAnnotationException, IllegalPathOnClassException,
             MissingConstructorException {
-        return new RootResourceClass(jaxRsRootResourceClass, mbWorkers,
-                allResolvers, logger);
+        return new RootResourceClass(jaxRsRootResourceClass, tlContext,
+                entityProviders, allCtxResolvers, logger);
     }
 }

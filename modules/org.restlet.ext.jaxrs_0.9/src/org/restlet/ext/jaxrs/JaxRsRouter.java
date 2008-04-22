@@ -17,11 +17,11 @@
  */
 package org.restlet.ext.jaxrs;
 
-import static org.restlet.ext.jaxrs.AlgorithmUtil.addPathVarsToMap;
-import static org.restlet.ext.jaxrs.AlgorithmUtil.getBestMethod;
-import static org.restlet.ext.jaxrs.AlgorithmUtil.getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups;
-import static org.restlet.ext.jaxrs.AlgorithmUtil.getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups;
-import static org.restlet.ext.jaxrs.AlgorithmUtil.removeNotSupportedHttpMethod;
+import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.addPathVarsToMap;
+import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.getBestMethod;
+import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups;
+import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups;
+import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.removeNotSupportedHttpMethod;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -52,20 +52,13 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
-import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.internal.provider.BufferedReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.ByteArrayProvider;
@@ -81,6 +74,7 @@ import org.restlet.ext.jaxrs.internal.provider.StreamingOutputProvider;
 import org.restlet.ext.jaxrs.internal.provider.StringProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormFormProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormMmapProvider;
+import org.restlet.ext.jaxrs.internal.util.ExceptionHandler;
 import org.restlet.ext.jaxrs.internal.util.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.internal.util.MatchingResult;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
@@ -207,8 +201,8 @@ public class JaxRsRouter extends Restlet {
     public JaxRsRouter(Context context, RoleChecker roleChecker) {
         super(context);
         this.excHandler = new ExceptionHandler(getLogger());
-        this.wrapperFactory = new WrapperFactory(this.entityProviders,
-                this.contextResolvers, getLogger());
+        this.wrapperFactory = new WrapperFactory(tlContext,
+                this.entityProviders, this.contextResolvers, getLogger());
         this.loadDefaultProviders();
         if (roleChecker != null)
             this.setRoleChecker(roleChecker);
@@ -337,14 +331,14 @@ public class JaxRsRouter extends Restlet {
         Provider<?> provider;
         try {
             provider = new Provider<Object>(jaxRsProviderClass, tlContext,
-                    this.entityProviders, contextResolvers);
+                    this.entityProviders, contextResolvers, getLogger());
         } catch (InstantiateException e) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
                     + "Could not instantiate the Provider, class "
                     + jaxRsProviderClass.getName();
             getLogger().log(Level.WARNING, msg, e);
             return false;
-        } catch (IllegalAnnotationException e) {
+        } catch (MissingAnnotationException e) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
                     + "Could not instantiate the Provider, class "
                     + jaxRsProviderClass.getName() + ", because "
@@ -513,35 +507,17 @@ public class JaxRsRouter extends Restlet {
             throws WebApplicationException, RequestHandledException {
         ResourceObject o;
         try {
-            o = rrc.createInstance(tlContext, entityProviders,
-                    contextResolvers, getLogger());
+            o = rrc.createInstance();
         } catch (WebApplicationException e) {
             throw e;
-        } catch (NoMessageBodyReaderException e) {
-            throw excHandler.noMessageBodyReader();
         } catch (RuntimeException e) {
             throw excHandler.runtimeExecption(e, null, tlContext.get(),
                     "Could not create new instance of root resource class");
-        } catch (MissingAnnotationException e) {
-            throw excHandler.missingAnnotation(e, tlContext.get(),
-                    "Could not create new instance of " + rrc);
         } catch (InstantiateException e) {
             throw excHandler.instantiateExecption(e, tlContext.get(),
                     "Could not create new instance of root resource class");
         } catch (InvocationTargetException e) {
             throw handleInvocationTargetExc(e);
-        } catch (ConvertRepresentationException e) {
-            throw excHandler.convertRepresentationExc(e);
-        } catch (ConvertHeaderParamException e) {
-            throw excHandler.convertHeaderParamExc(e);
-        } catch (ConvertPathParamException e) {
-            throw excHandler.convertPathParamExc(e);
-        } catch (ConvertMatrixParamException e) {
-            throw excHandler.convertMatrixParamExc(e);
-        } catch (ConvertQueryParamException e) {
-            throw excHandler.convertQueryParamExc(e);
-        } catch (ConvertCookieParamException e) {
-            throw excHandler.convertCookieParamExc(e);
         }
         return o;
     }
@@ -558,8 +534,7 @@ public class JaxRsRouter extends Restlet {
      */
     private ResObjAndRemPath obtainObject(
             RroRemPathAndMatchedPath rroRemPathAndMatchedPath)
-            throws WebApplicationException, RequestHandledException,
-            RuntimeException {
+            throws WebApplicationException, RequestHandledException {
         ResourceObject o = rroRemPathAndMatchedPath.rootResObj;
         RemainingPath u = rroRemPathAndMatchedPath.u;
         ResourceClass resClass = o.getResourceClass();
@@ -612,8 +587,7 @@ public class JaxRsRouter extends Restlet {
             u = matchingResult.getFinalCapturingGroup();
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
             try {
-                o = subResourceLocator.createSubResource(o, tlContext,
-                        this.entityProviders, wrapperFactory, contextResolvers,
+                o = subResourceLocator.createSubResource(o, wrapperFactory,
                         getLogger());
             } catch (WebApplicationException e) {
                 throw e;
@@ -629,20 +603,8 @@ public class JaxRsRouter extends Restlet {
                         "Could not create new instance of resource class");
             } catch (InvocationTargetException e) {
                 throw handleInvocationTargetExc(e);
-            } catch (NoMessageBodyReaderException nmbre) {
-                throw excHandler.noMessageBodyReader();
             } catch (ConvertRepresentationException e) {
                 throw excHandler.convertRepresentationExc(e);
-            } catch (ConvertHeaderParamException e) {
-                throw excHandler.convertHeaderParamExc(e);
-            } catch (ConvertPathParamException e) {
-                throw excHandler.convertPathParamExc(e);
-            } catch (ConvertMatrixParamException e) {
-                throw excHandler.convertMatrixParamExc(e);
-            } catch (ConvertQueryParamException e) {
-                throw excHandler.convertQueryParamExc(e);
-            } catch (ConvertCookieParamException e) {
-                throw excHandler.convertCookieParamExc(e);
             }
             resClass = o.getResourceClass();
             // (j) Go to step 2a (repeat for)
@@ -742,8 +704,7 @@ public class JaxRsRouter extends Restlet {
             RequestHandledException {
         Object result;
         try {
-            result = resourceMethod.invoke(resourceObject, tlContext,
-                    this.entityProviders, contextResolvers, getLogger());
+            result = resourceMethod.invoke(resourceObject);
         } catch (WebApplicationException e) {
             throw e;
         } catch (InvocationTargetException ite) {
@@ -754,23 +715,8 @@ public class JaxRsRouter extends Restlet {
         } catch (MethodInvokeException e) {
             throw excHandler.methodInvokeException(e, tlContext.get(),
                     "Can not invoke the resource method");
-        } catch (MissingAnnotationException e) {
-            throw excHandler.missingAnnotation(e, tlContext.get(),
-                    "Can not invoke the " + resourceMethod);
-        } catch (NoMessageBodyReaderException nmbre) {
-            throw excHandler.noMessageBodyReader();
         } catch (ConvertRepresentationException e) {
             throw excHandler.convertRepresentationExc(e);
-        } catch (ConvertHeaderParamException e) {
-            throw excHandler.convertHeaderParamExc(e);
-        } catch (ConvertPathParamException e) {
-            throw excHandler.convertPathParamExc(e);
-        } catch (ConvertMatrixParamException e) {
-            throw excHandler.convertMatrixParamExc(e);
-        } catch (ConvertQueryParamException e) {
-            throw excHandler.convertQueryParamExc(e);
-        } catch (ConvertCookieParamException e) {
-            throw excHandler.convertCookieParamExc(e);
         }
         return result;
     }

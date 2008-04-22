@@ -25,6 +25,7 @@ import javax.ws.rs.Path;
 
 import junit.framework.TestCase;
 
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
@@ -39,8 +40,9 @@ import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 @SuppressWarnings("all")
 public class WrapperClassesTests extends TestCase {
 
-    private static final WrapperFactory wrapperFactory = new WrapperFactory(null, null,
-            Logger.getAnonymousLogger());
+    private static final WrapperFactory wrapperFactory = new WrapperFactory(
+            new ThreadLocalizedContext(), null, null, Logger
+                    .getAnonymousLogger());
 
     /**
      * This root resource class contains an illegal path (matrix parameter)

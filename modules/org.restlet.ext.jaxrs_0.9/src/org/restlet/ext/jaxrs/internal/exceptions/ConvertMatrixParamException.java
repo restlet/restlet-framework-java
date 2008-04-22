@@ -18,6 +18,8 @@
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 import javax.ws.rs.MatrixParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 /**
  * This kind of exception is thrown, if a matrix parameter could not be
@@ -26,17 +28,15 @@ import javax.ws.rs.MatrixParam;
  * @author Stephan Koops
  * @see MatrixParam 
  */
-public class ConvertMatrixParamException extends JaxRsException {
+public class ConvertMatrixParamException extends WebApplicationException {
 
     private static final long serialVersionUID = 6704339151884788476L;
-
-    // LATER WebAppExc(404) instead of ConvertMatrixParamException.
 
     /**
      * @param cpe
      */
     public ConvertMatrixParamException(ConvertParameterException cpe) {
-        super(cpe.getMessage(), cpe.getCause());
+        super(cpe.getCause(), Status.NOT_FOUND);
         this.setStackTrace(cpe.getStackTrace());
     }
 }

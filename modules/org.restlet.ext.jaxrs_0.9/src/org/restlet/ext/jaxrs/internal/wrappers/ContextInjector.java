@@ -17,8 +17,8 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
-import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.isBeanSetter;
 import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getContextResolver;
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.isBeanSetter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -29,14 +29,10 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWorkers;
 
-import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
@@ -93,22 +89,22 @@ public class ContextInjector {
         }
     }
 
-    class InjectEverSame {
+    /**
+     * {@link Injector}, that injects the same object in every resource. Is is
+     * used for the &#64;{@link Context} objects.
+     */
+    private static class EverSameInjector implements Injector {
         private InjectionAim injectionAim;
 
         private Object injectable;
 
-        private InjectEverSame(InjectionAim injectionAim, Object injectable) {
+        private EverSameInjector(InjectionAim injectionAim, Object injectable) {
             this.injectionAim = injectionAim;
             this.injectable = injectable;
         }
 
         /**
-         * @param resource
-         * @throws InvocationTargetException
-         * @throws InjectException
-         * @throws IllegalArgumentException
-         * @see ContextInjector.InjectionAim#injectInto(Object, Object)
+         * @see Injector#injectInto(java.lang.Object)
          */
         public void injectInto(Object resource)
                 throws IllegalArgumentException, InjectException,
@@ -140,48 +136,58 @@ public class ContextInjector {
                 InvocationTargetException;
     }
 
-    /**
-     * This array contains the fields and bean setter in the managed in which
-     * are annotated to inject an {@link CallContext}.
-     * 
-     * @see UriInfo
-     * @see SecurityContext
-     * @see Request
-     * @see HttpHeaders
-     */
-    private final List<InjectionAim> requDependAims = new ArrayList<InjectionAim>();
+    static interface Injector {
+
+        /**
+         * @param resource
+         * @throws InvocationTargetException
+         * @throws InjectException
+         * @throws IllegalArgumentException
+         * @see ContextInjector.InjectionAim#injectInto(Object, Object)
+         */
+        public abstract void injectInto(Object resource)
+                throws IllegalArgumentException, InjectException,
+                InvocationTargetException;
+
+    }
 
     /**
-     * This array contains the fields in this class in which are annotated to
-     * inject an {@link CallContext}.
+     * This {@link List} contains the fields in this class which are annotated
+     * to inject ever the same object.
      * 
      * @see javax.ws.rs.ext.ContextResolver
      * @see MessageBodyWorkers
      */
-    private final List<InjectEverSame> injEverSameAims = new ArrayList<InjectEverSame>();
+    private final List<Injector> injEverSameAims = new ArrayList<Injector>();
 
     /**
      * @param jaxRsClass
+     * @param tlContext
      * @param mbWorkers
      *                all entity providers.
      * @param allResolvers
      *                all available {@link ContextResolver}s.
      * @throws ImplementationException
      */
-    public ContextInjector(Class<?> jaxRsClass, MessageBodyWorkers mbWorkers,
+    public ContextInjector(Class<?> jaxRsClass,
+            ThreadLocalizedContext tlContext, MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allResolvers) {
-        init(jaxRsClass, mbWorkers, allResolvers);
+        this.init(jaxRsClass, tlContext, mbWorkers, allResolvers);
     }
 
     /**
      * initiates the fields to cache the fields that needs injection.
      * 
+     * @param tlContext
+     *                the {@link ThreadLocalizedContext} of the
+     *                {@link JaxRsRouter}.
      * @param mbWorkers
      *                all entity providers.
      * @param allResolvers
      *                all available {@link ContextResolver}s.
      */
-    private void init(Class<?> jaxRsClass, MessageBodyWorkers mbWorkers,
+    private void init(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
+            MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allResolvers) {
         do {
             for (Field field : jaxRsClass.getDeclaredFields()) {
@@ -189,51 +195,54 @@ public class ContextInjector {
                 if (field.isAnnotationPresent(Context.class)) {
                     InjectionAim aim = new FieldWrapper(field);
                     Class<?> declaringClass = field.getType();
-                    if (declaringClass.equals(MessageBodyWorkers.class)) {
-                        addMbwsAim(aim, mbWorkers);
-                    } else if (declaringClass.equals(ContextResolver.class)) {
-                        Type genericType = field.getGenericType();
-                        addCtxRslvrAim(genericType, aim, allResolvers);
-                    } else {
-                        requDependAims.add(aim);
-                    }
+                    Type genericType = field.getGenericType();
+                    EverSameInjector injector = getInjector(tlContext,
+                            mbWorkers, allResolvers, aim, declaringClass,
+                            genericType);
+                    injEverSameAims.add(injector);
                 }
             }
             for (Method method : jaxRsClass.getDeclaredMethods()) {
                 if (isBeanSetter(method, Context.class)) {
                     BeanSetter aim = new BeanSetter(method);
                     Class<?> paramClass = method.getParameterTypes()[0];
-                    if (paramClass.equals(MessageBodyWorkers.class)) {
-                        addMbwsAim(aim, mbWorkers);
-                    } else if (paramClass.equals(ContextResolver.class)) {
-                        Type genericType = method.getGenericParameterTypes()[0];
-                        addCtxRslvrAim(genericType, aim, allResolvers);
-                    } else {
-                        requDependAims.add(aim);
-                    }
+                    Type genericType = method.getGenericParameterTypes()[0];
+                    EverSameInjector injector = getInjector(tlContext,
+                            mbWorkers, allResolvers, aim, paramClass,
+                            genericType);
+                    injEverSameAims.add(injector);
                 }
             }
             jaxRsClass = jaxRsClass.getSuperclass();
         } while (jaxRsClass != null);
     }
 
-    /**
-     * @param genericType
-     * @param aim
-     * @param allResolvers
-     */
-    private void addCtxRslvrAim(Type genericType, InjectionAim aim,
-            Collection<ContextResolver<?>> allResolvers) {
-        ContextResolver<?> cr = getContextResolver(genericType, allResolvers);
-        injEverSameAims.add(new InjectEverSame(aim, cr));
+    static EverSameInjector getInjector(ThreadLocalizedContext tlContext,
+            MessageBodyWorkers mbWorkers,
+            Collection<ContextResolver<?>> allResolvers, InjectionAim aim,
+            Class<?> declaringClass, Type genericType) {
+        return new EverSameInjector(aim, getInjectObject(tlContext, mbWorkers,
+                allResolvers, declaringClass, genericType));
     }
 
     /**
-     * @param aim
+     * @param tlContext
      * @param mbWorkers
+     * @param allCtxResolvers
+     * @param aim
+     * @param declaringClass
+     * @param genericType
+     * @return
      */
-    private void addMbwsAim(InjectionAim aim, MessageBodyWorkers mbWorkers) {
-        injEverSameAims.add(new InjectEverSame(aim, mbWorkers));
+    static Object getInjectObject(ThreadLocalizedContext tlContext,
+            MessageBodyWorkers mbWorkers,
+            Collection<ContextResolver<?>> allCtxResolvers,
+            Class<?> declaringClass, Type genericType) {
+        if (declaringClass.equals(MessageBodyWorkers.class))
+            return mbWorkers;
+        if (declaringClass.equals(ContextResolver.class))
+            return getContextResolver(genericType, allCtxResolvers);
+        return tlContext;
     }
 
     /**
@@ -241,24 +250,20 @@ public class ContextInjector {
      * of this class.
      * 
      * @param jaxRsResObj
-     * @param tlContext
-     *                The thread local wrapped CallContext to get the
-     *                dependencies from.
      * @throws InjectException
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
      * @throws InvocationTargetException
      *                 if a setter throws an exception
      */
-    public void inject(Object jaxRsResObj, ThreadLocalizedContext tlContext)
-            throws InjectException, InvocationTargetException {
-        if (tlContext == null)
-            throw new IllegalArgumentException("context must not be null");
-        for (InjectionAim contextAim : this.requDependAims) {
-            contextAim.injectInto(jaxRsResObj, tlContext);
-        }
-        for (InjectEverSame contextResolverAim : this.injEverSameAims) {
+    public void injectInto(Object jaxRsResObj) throws InjectException,
+            InvocationTargetException {
+        for (Injector contextResolverAim : this.injEverSameAims) {
             contextResolverAim.injectInto(jaxRsResObj);
         }
+    }
+
+    protected void add(Injector injector) {
+        this.injEverSameAims.add(injector);
     }
 }

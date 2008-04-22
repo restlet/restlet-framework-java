@@ -119,7 +119,7 @@ public class QueryParamTest extends JaxRsTestCase {
         assertEquals("1 2 99", response4.getEntity().getText());
 
         Response response6 = get("int?n1=1&n3=3");
-        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, response6.getStatus());
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response6.getStatus());
 
         Response response3 = get("int?n1=1&n2=2&n3");
         sysOutEntityIfError(response3);
@@ -152,7 +152,7 @@ public class QueryParamTest extends JaxRsTestCase {
         assertEquals("1 2 99", response4.getEntity().getText());
 
         Response response6 = get("Integer?n1=1&n3=3");
-        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, response6.getStatus());
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response6.getStatus());
 
         Response response3 = get("Integer?n1=1&n2=2&n3");
         sysOutEntityIfError(response3);

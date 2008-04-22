@@ -63,7 +63,6 @@ public class TunnelFilter extends Filter {
         boolean extensionsModified = false;
 
         extensionsModified = processExtensions(request);
-        // TODO only last extensions until not matchable
 
         if (extensionsModified) {
             request.getAttributes().put(TunnelService.ATTRIBUTE_ORIGINAL_REF,

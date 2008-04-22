@@ -30,8 +30,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
@@ -78,12 +76,26 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      *                the HTTP method of the Java method. It will be checked be
      *                the {@link JaxRsRouter}, so avoiding double work. It will
      *                be requested from the javaMethod.
+     * @param tlContext
+     *                the {@link ThreadLocalizedContext} of the
+     *                {@link JaxRsRouter}.
+     * @param entityProviders
+     *                all entity providers
+     * @param allCtxResolvers
+     *                all ContextResolvers
+     * @param logger
      * @throws IllegalPathOnMethodException
+     * @throws MissingAnnotationException
+     * @throws IllegalArgumentException
      */
     ResourceMethod(Method executeMethod, Method annotatedMethod,
-            ResourceClass resourceClass, org.restlet.data.Method httpMethod)
-            throws IllegalPathOnMethodException {
-        super(executeMethod, annotatedMethod, resourceClass);
+            ResourceClass resourceClass, org.restlet.data.Method httpMethod,
+            ThreadLocalizedContext tlContext, EntityProviders entityProviders,
+            Collection<ContextResolver<?>> allCtxResolvers, Logger logger)
+            throws IllegalPathOnMethodException, IllegalArgumentException,
+            MissingAnnotationException {
+        super(executeMethod, annotatedMethod, resourceClass, tlContext,
+                entityProviders, allCtxResolvers, true, logger);
         this.httpMethod = httpMethod;
     }
 
@@ -144,15 +156,6 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * response.
      * 
      * @param resourceObject
-     * @param tlContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
-     * @param entityProvs
-     *                all entity providers.
-     * @param allResolvers
-     *                all available {@link ContextResolver}s.
-     * @param logger
      * @return the unwrapped returned object by the wrapped method.
      * @throws MethodInvokeException
      * @throws InvocationTargetException
@@ -166,19 +169,12 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * @throws ConvertRepresentationException
      * @throws WebApplicationException
      */
-    public Object invoke(ResourceObject resourceObject,
-            ThreadLocalizedContext tlContext, EntityProviders entityProvs,
-            Collection<ContextResolver<?>> allResolvers, Logger logger)
+    public Object invoke(ResourceObject resourceObject)
             throws MethodInvokeException, InvocationTargetException,
-            MissingAnnotationException, NoMessageBodyReaderException,
-            ConvertRepresentationException, ConvertHeaderParamException,
-            ConvertPathParamException, ConvertMatrixParamException,
-            ConvertQueryParamException, ConvertCookieParamException,
-            WebApplicationException {
+            ConvertRepresentationException, WebApplicationException {
         // LATER cache access to the arguments of a resource method
         try {
-            return invoke(resourceObject, true, tlContext, entityProvs,
-                    allResolvers, logger);
+            return internalInvoke(resourceObject);
         } catch (IllegalArgumentException e) {
             throw new MethodInvokeException(
                     "Could not invoke " + executeMethod, e);

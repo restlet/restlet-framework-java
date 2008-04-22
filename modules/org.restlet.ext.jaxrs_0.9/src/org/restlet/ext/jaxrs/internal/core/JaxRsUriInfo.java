@@ -176,7 +176,7 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     private List<PathSegment> createPathSegments(boolean decode) {
-        List<String> segments = this.getReferenceOriginal().getRelativeRef()
+        List<String> segments = this.referenceOriginal.getRelativeRef()
                 .getSegments();
         int l = segments.size();
         List<PathSegment> pathSegments = new ArrayList<PathSegment>(l);
@@ -213,7 +213,7 @@ public class JaxRsUriInfo implements UriInfo {
      */
     public URI getAbsolutePath() {
         try {
-            return new URI(getReferenceOriginal().toString(false, false));
+            return new URI(referenceOriginal.toString(false, false));
         } catch (URISyntaxException e) {
             throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
         }
@@ -228,7 +228,7 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getAbsolutePathBuilder()
      */
     public UriBuilder getAbsolutePathBuilder() {
-        return createUriBuilder(getReferenceOriginal());
+        return createUriBuilder(referenceOriginal);
     }
 
     /**
@@ -372,7 +372,7 @@ public class JaxRsUriInfo implements UriInfo {
 
     private String getBaseUriStr() {
         if (this.baseUri == null) {
-            Reference baseRef = getReferenceCut().getBaseRef();
+            Reference baseRef = this.referenceCut.getBaseRef();
             if (baseRef != null)
                 this.baseUri = baseRef.toString(false, false);
         }
@@ -401,7 +401,7 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getPath(boolean)
      */
     public String getPath(boolean decode) {
-        String path = this.getReferenceOriginal().getRelativeRef().toString(
+        String path = this.referenceOriginal.getRelativeRef().toString(
                 true, true);
         if (!decode)
             return path;
@@ -550,7 +550,7 @@ public class JaxRsUriInfo implements UriInfo {
      * @see javax.ws.rs.core.UriInfo#getPlatonicRequestUriBuilder()
      */
     public UriBuilder getPlatonicRequestUriBuilder() {
-        return createUriBuilder(getReferenceCut());
+        return createUriBuilder(this.referenceCut);
     }
 
     /**
@@ -566,7 +566,7 @@ public class JaxRsUriInfo implements UriInfo {
     public MultivaluedMap<String, String> getQueryParameters() {
         if (queryParametersDecoded == null)
             queryParametersDecoded = UnmodifiableMultivaluedMap.getFromForm(
-                    getReferenceOriginal().getQueryAsForm(), false);
+                    referenceOriginal.getQueryAsForm(), false);
         return queryParametersDecoded;
     }
 
@@ -580,7 +580,7 @@ public class JaxRsUriInfo implements UriInfo {
         if (decode)
             return getQueryParameters();
         if (queryParametersEncoded == null) {
-            Form queryForm = Converter.toFormEncoded(getReferenceOriginal()
+            Form queryForm = Converter.toFormEncoded(referenceOriginal
                     .getQuery(), unexpectedLogger);
             queryParametersEncoded = UnmodifiableMultivaluedMap.getFromForm(
                     queryForm, false);
@@ -593,7 +593,7 @@ public class JaxRsUriInfo implements UriInfo {
      */
     public URI getRequestUri() {
         try {
-            return new URI(getReferenceOriginal().toString(true, true));
+            return new URI(referenceOriginal.toString(true, true));
         } catch (URISyntaxException e) {
             throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
         }
@@ -684,7 +684,7 @@ public class JaxRsUriInfo implements UriInfo {
 
     @Override
     public String toString() {
-        return this.getReferenceOriginal().toString(true, false);
+        return this.referenceOriginal.toString(true, false);
     }
 
     /**
@@ -709,19 +709,5 @@ public class JaxRsUriInfo implements UriInfo {
         logger.log(Level.WARNING, logMessage, exc);
         exc.printStackTrace();
         throw new WebApplicationException(exc, Status.INTERNAL_SERVER_ERROR);
-    }
-
-    /**
-     * @return the referenceOriginal
-     */
-    protected Reference getReferenceOriginal() {
-        return referenceOriginal;
-    }
-
-    /**
-     * @return the referenceCut
-     */
-    private Reference getReferenceCut() {
-        return this.referenceCut;
     }
 }

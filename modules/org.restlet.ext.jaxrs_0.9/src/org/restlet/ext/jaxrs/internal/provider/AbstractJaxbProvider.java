@@ -74,7 +74,7 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
     }
 
     private JAXBContext getJaxbContext(Class<?> type) throws JAXBException {
-        // LATER perhaps caching the JAXBContext
+        // NICE perhaps caching the JAXBContext
         JAXBContext jaxbContext = contextResolver.getContext(type);
         if(jaxbContext != null)
             return jaxbContext;

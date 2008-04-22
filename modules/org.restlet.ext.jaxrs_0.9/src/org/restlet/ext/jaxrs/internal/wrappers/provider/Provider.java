@@ -27,9 +27,11 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -46,7 +48,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -54,6 +55,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.ContextInjector;
+import org.restlet.ext.jaxrs.internal.wrappers.ParameterList;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
 
 /**
@@ -105,6 +107,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                all entity providers.
      * @param allResolvers
      *                all available {@link ContextResolver}s.
+     * @param logger
+     *                the logger to use.
      * @throws IllegalArgumentException
      *                 if the class is not a valid provider, may not be
      *                 instantiated or what ever.
@@ -112,8 +116,9 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                 if the constructor throws an Throwable
      * @throws MissingConstructorException
      *                 if no valid constructor could be found
-     * @throws IllegalAnnotationException
      * @throws InstantiateException
+     * @throws WebApplicationException
+     * @throws MissingAnnotationException
      * @see javax.ws.rs.ext.MessageBodyReader
      * @see javax.ws.rs.ext.MessageBodyWriter
      * @see javax.ws.rs.ext.ContextResolver
@@ -121,10 +126,10 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     @SuppressWarnings("unchecked")
     public Provider(Class<?> jaxRsProviderClass,
             ThreadLocalizedContext tlContext, EntityProviders mbWorkers,
-            Collection<ContextResolver<?>> allResolvers)
+            Collection<ContextResolver<?>> allResolvers, Logger logger)
             throws IllegalArgumentException, InvocationTargetException,
             MissingConstructorException, InstantiateException,
-            IllegalAnnotationException {
+            MissingAnnotationException, WebApplicationException {
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -132,7 +137,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         Constructor<?> providerConstructor = WrapperUtil.findJaxRsConstructor(
                 jaxRsProviderClass, "provider");
         this.jaxRsProvider = createInstance(providerConstructor,
-                jaxRsProviderClass, tlContext, mbWorkers, allResolvers);
+                jaxRsProviderClass, tlContext, mbWorkers, allResolvers, logger);
         boolean isProvider = false;
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyWriter) {
             this.writer = (javax.ws.rs.ext.MessageBodyWriter<T>) jaxRsProvider;
@@ -151,8 +156,10 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             isProvider = true;
         }
         if (!isProvider) {
-            throw new IllegalArgumentException(
-                    "The given JAX-RS Provider is neither a MessageBodyWriter nor a MessageBodyReader nor a ContextResolver");
+            logger
+                    .config("The provider "
+                            + jaxRsProviderClass.getClass()
+                            + " is neither a MessageBodyWriter nor a MessageBodyReader nor a ContextResolver nor an ExceptionMapper");
         }
     }
 
@@ -167,27 +174,27 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                all entity providers.
      * @param allResolvers
      *                all available {@link ContextResolver}s.
+     * @param logger
+     *                the logger to use
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      *                 if the constructor throws an Throwable
-     * @throws IllegalAnnotationException
      * @throws InstantiateException
-     * @throws NoMessageBodyReaderException
+     * @throws MissingAnnotationException
+     * @throws WebApplicationException
      */
     private Object createInstance(Constructor<?> providerConstructor,
             Class<?> jaxRsProviderClass, ThreadLocalizedContext tlContext,
             EntityProviders mbWorkers,
-            Collection<ContextResolver<?>> allResolvers)
+            Collection<ContextResolver<?>> allResolvers, Logger logger)
             throws IllegalArgumentException, InvocationTargetException,
-            InstantiateException, IllegalAnnotationException {
+            InstantiateException, MissingAnnotationException,
+            WebApplicationException {
+        ParameterList parameters = new ParameterList(providerConstructor,
+                tlContext, false, mbWorkers, allResolvers, logger);
         try {
-            return WrapperUtil.createInstance(providerConstructor, true, false,
-                    tlContext, mbWorkers, allResolvers, null);
-        } catch (MissingAnnotationException e) {
-            // should be not possible here
-            throw new IllegalArgumentException(
-                    "Could not instantiate the Provider, class "
-                            + jaxRsProviderClass.getName(), e);
+            Object[] args = parameters.get();
+            return WrapperUtil.createInstance(providerConstructor, args);
         } catch (NoMessageBodyReaderException e) {
             // should be not possible here
             throw new IllegalArgumentException(
@@ -364,9 +371,9 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             Collection<ContextResolver<?>> allResolvers)
             throws InjectException, InvocationTargetException {
         Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
-        ContextInjector iph = new ContextInjector(providerClass, mbWorkers,
-                allResolvers);
-        iph.inject(this.jaxRsProvider, tlContext);
+        ContextInjector iph = new ContextInjector(providerClass, tlContext,
+                mbWorkers, allResolvers);
+        iph.injectInto(this.jaxRsProvider);
     }
 
     /**

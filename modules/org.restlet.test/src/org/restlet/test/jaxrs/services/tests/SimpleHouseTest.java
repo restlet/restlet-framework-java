@@ -72,10 +72,4 @@ public class SimpleHouseTest extends JaxRsTestCase {
         assertEquals(SimpleHouse.RERP_PLAIN_TEXT, entity.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
     }
-    
-    public void testSubWithEntity() throws Exception {
-        Response response = get("subWithEntity");
-        assertTrue(response.getStatus().isServerError());
-        assertEquals(Status.SERVER_ERROR_INTERNAL, response.getStatus());
-    }
 }

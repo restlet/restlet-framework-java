@@ -17,6 +17,8 @@
  */
 package org.restlet.ext.jaxrs.internal.exceptions;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.MessageBodyReader;
 
 import org.restlet.data.MediaType;
@@ -27,7 +29,7 @@ import org.restlet.data.MediaType;
  * 
  * @author Stephan Koops
  */
-public class NoMessageBodyReaderException extends JaxRsException {
+public class NoMessageBodyReaderException extends WebApplicationException {
 
     private static final long serialVersionUID = 9177449724300611418L;
 
@@ -41,7 +43,8 @@ public class NoMessageBodyReaderException extends JaxRsException {
      * 
      */
     public NoMessageBodyReaderException(MediaType mediaType, Class<?> paramType) {
-        super("No MessageBodyReader found for "+mediaType+" and "+paramType);
+        super(Status.UNSUPPORTED_MEDIA_TYPE);
+        // NICE super("No MessageBodyReader found for "+mediaType+" and "+paramType);
         this.mediaType = mediaType;
         this.paramType = paramType;
     }

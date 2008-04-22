@@ -20,6 +20,7 @@ package org.restlet.ext.jaxrs.internal.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -948,6 +949,30 @@ public class Util {
                     + toInject.getClass() + " into field " + field
                     + " of object " + resource, e);
         }
+    }
+
+    /**
+     * Injects the given toInject in the resource field or the given bean
+     * setter.
+     * 
+     * @param resource
+     * @param fieldOrBeanSetter
+     * @param toInject
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
+     * @throws InjectException
+     */
+    public static void inject(Object resource,
+            AccessibleObject fieldOrBeanSetter, Object toInject)
+            throws InvocationTargetException, IllegalArgumentException,
+            InjectException {
+        if (fieldOrBeanSetter instanceof Field)
+            inject(resource, (Field) fieldOrBeanSetter, toInject);
+        else if (fieldOrBeanSetter instanceof Method)
+            inject(resource, (Method) fieldOrBeanSetter, toInject);
+        else
+            throw new IllegalArgumentException(
+                    "The fieldOrBeanSetter must be a java.lang.reflect.Field or a java.lang.reflect.Method");
     }
 
     /**

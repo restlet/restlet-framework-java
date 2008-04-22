@@ -56,9 +56,4 @@ public class SimpleHouse {
     public Object getNullWithMediaType() {
         return null;
     }
-    
-    @Path("subWithEntity")
-    public Object getSubWithEntity(String entity) {
-        return entity;
-    }
 }

@@ -45,8 +45,8 @@ import org.restlet.resource.Representation;
  * @see WwwFormMmapProvider
  */
 @Provider
-@ConsumeMime("application/x-www-form-urlencoded")
-@ProduceMime("application/x-www-form-urlencoded")
+@ConsumeMime(MediaType.APPLICATION_FORM_URLENCODED)
+@ProduceMime(MediaType.APPLICATION_FORM_URLENCODED)
 public class WwwFormFormProvider extends AbstractProvider<Form> {
 
     /**
