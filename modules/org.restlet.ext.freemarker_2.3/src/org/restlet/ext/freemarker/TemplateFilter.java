@@ -24,35 +24,75 @@ import org.restlet.Restlet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.util.Resolver;
 
 import freemarker.template.Configuration;
+import freemarker.template.TemplateHashModel;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
+import freemarker.template.TemplateScalarModel;
 
 /**
  * Filter response's entity and wrap it with a FreeMarker's template
- * representation.
+ * representation.<br>
+ * The data model is based on the Resolver model.<br>
+ * 
+ * @see org.restlet.util.Resolver
  * 
  * @author Thierry Boileau (contact@noelios.com)
  */
 public class TemplateFilter extends Filter {
 
+    /**
+     * Hash Model based on a Resolver instance.
+     */
+    private class ResolverHashModel implements TemplateHashModel {
+        private Resolver<String> resolver;
+
+        public ResolverHashModel(Resolver<String> resolver) {
+            super();
+            this.resolver = resolver;
+        }
+
+        /**
+         * Return a scalar model based on the value returned by the resolver
+         * according to the key.
+         */
+        public TemplateModel get(String key) throws TemplateModelException {
+            return new ScalarModel(resolver.resolve(key));
+        }
+
+        public boolean isEmpty() throws TemplateModelException {
+            return false;
+        }
+    }
+
+    /**
+     * Data model that gives access to a String value.
+     * 
+     */
+    private class ScalarModel implements TemplateScalarModel {
+        private String value;
+
+        public ScalarModel(String value) {
+            super();
+            this.value = value;
+        }
+
+        public String getAsString() throws TemplateModelException {
+            return value;
+        }
+    }
+
     /** The FreeMarker configuration. */
     private volatile Configuration configuration;
 
-    /** The template's data model. */
-    private volatile Object dataModel;
-
     /**
      * Constructor.
-     * 
-     * @param config
-     *                The FreeMarker configuration.
-     * @param dataModel
-     *                The template's data model.
      */
-    public TemplateFilter(Configuration config, Object dataModel) {
+    public TemplateFilter() {
         super();
-        this.configuration = config;
-        this.dataModel = dataModel;
+        this.configuration = new Configuration();
     }
 
     /**
@@ -60,16 +100,10 @@ public class TemplateFilter extends Filter {
      * 
      * @param context
      *                The context.
-     * @param config
-     *                The FreeMarker configuration.
-     * @param dataModel
-     *                The template's data model.
      */
-    public TemplateFilter(Context context, Configuration config,
-            Object dataModel) {
+    public TemplateFilter(Context context) {
         super(context);
-        this.configuration = config;
-        this.dataModel = dataModel;
+        this.configuration = new Configuration();
     }
 
     /**
@@ -79,16 +113,10 @@ public class TemplateFilter extends Filter {
      *                The context.
      * @param next
      *                The next Restlet.
-     * @param config
-     *                The FreeMarker configuration.
-     * @param dataModel
-     *                The template's data model.
      */
-    public TemplateFilter(Context context, Restlet next, Configuration config,
-            Object dataModel) {
+    public TemplateFilter(Context context, Restlet next) {
         super(context, next);
-        this.configuration = config;
-        this.dataModel = dataModel;
+        this.configuration = new Configuration();
     }
 
     @Override
@@ -97,8 +125,9 @@ public class TemplateFilter extends Filter {
                 && response.getEntity().getEncodings().contains(
                         Encoding.FREEMARKER)) {
             response.setEntity(new TemplateRepresentation(response.getEntity(),
-                    configuration, dataModel, response.getEntity()
-                            .getMediaType()));
+                    configuration, new ResolverHashModel(Resolver
+                            .createResolver(request, response)), response
+                            .getEntity().getMediaType()));
         }
     }
 
@@ -112,15 +141,6 @@ public class TemplateFilter extends Filter {
     }
 
     /**
-     * Returns the template's data model.
-     * 
-     * @return The template's data model.
-     */
-    public Object getDataModel() {
-        return dataModel;
-    }
-
-    /**
      * Sets the FreeMarker configuration.
      * 
      * @param config
@@ -128,15 +148,5 @@ public class TemplateFilter extends Filter {
      */
     public void setConfiguration(Configuration config) {
         this.configuration = config;
-    }
-
-    /**
-     * Sets the template's data model.
-     * 
-     * @param dataModel
-     *                The template's data model.
-     */
-    public void setDataModel(Object dataModel) {
-        this.dataModel = dataModel;
     }
 }

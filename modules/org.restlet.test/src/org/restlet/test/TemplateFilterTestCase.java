@@ -20,8 +20,6 @@ package org.restlet.test;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Map;
-import java.util.TreeMap;
 
 import junit.framework.TestCase;
 
@@ -35,8 +33,6 @@ import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.ext.freemarker.TemplateFilter;
-
-import freemarker.template.Configuration;
 
 /**
  * Test case for template filters.
@@ -56,14 +52,16 @@ public class TemplateFilterTestCase extends TestCase {
             testDir.mkdir();
 
             // Create temporary template files
+            // Will be templated
             File testFileFm1 = new File(testDir, "testFm1.txt.fmt");
             FileWriter fw = new FileWriter(testFileFm1);
-            fw.write("Value=${value}");
+            fw.write("Method=${m}/Path=${ra}");
             fw.close();
 
+            // Will not be templated
             File testFileFm2 = new File(testDir, "testFm2.txt");
             fw = new FileWriter(testFileFm2);
-            fw.write("Value=${value}");
+            fw.write("Method=${m}/Path=${ra}");
             fw.close();
 
             // Create a new component
@@ -86,13 +84,15 @@ public class TemplateFilterTestCase extends TestCase {
             Response response = client.get("http://localhost:8182/"
                     + testFileFm1.getName());
             if (response.isEntityAvailable()) {
-                assertEquals(response.getEntity().getText(), "Value=myValue");
+                assertEquals(response.getEntity().getText(),
+                        "Method=GET/Path=localhost:8182");
             }
             response = client.get("http://localhost:8182/"
                     + testFileFm2.getName());
             assertTrue(response.getStatus().isSuccess());
             if (response.isEntityAvailable()) {
-                assertEquals(response.getEntity().getText(), "Value=${value}");
+                assertEquals(response.getEntity().getText(),
+                        "Method=${m}/Path=${ra}");
             }
 
             // Now, let's stop the component!
@@ -145,13 +145,7 @@ public class TemplateFilterTestCase extends TestCase {
 
         @Override
         public Restlet createRoot() {
-            Configuration fmc = new Configuration();
-            Map<String, Object> map = new TreeMap<String, Object>();
-            map.put("value", "myValue");
-
-            TemplateFilter filter = new TemplateFilter(getContext(), directory,
-                    fmc, map);
-            return filter;
+            return new TemplateFilter(getContext(), directory);
         }
 
         public Directory getDirectory() {
