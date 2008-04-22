@@ -130,6 +130,7 @@ public class Guard extends Filter {
         super(context);
         this.rechallengeEnabled = true;
         this.secretResolver = new Resolver<char[]>() {
+            @Override
             public char[] resolve(String identifier) {
                 return getSecrets().get(identifier);
             }

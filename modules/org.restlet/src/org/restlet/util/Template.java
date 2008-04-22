@@ -19,7 +19,6 @@
 package org.restlet.util;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,528 +32,167 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * String template with a model is based on a request. Supports both formatting
- * and parsing. The template variables can be inserted using the "{name}" syntax
- * and described using the modifiable map of variable descriptors. When no
+ * String template with a pluggable model. Supports both formatting and parsing.
+ * The template variables can be inserted using the "{name}" syntax and
+ * described using the modifiable map of variable descriptors. When no
  * descriptor is found for a given variable, the template logic uses its default
  * variable property initialized using the default {@link Variable} constructor.<br>
  * <br>
  * Note that the variable descriptors can be changed before the first parsing or
- * matching call. After that point, changes won't be taken into account.
- * 
- * <table>
- * <tr>
- * <th>Model property</th>
- * <th>Variable name</th>
- * <th>Content type</th>
- * </tr>
- * <tr>
- * <td>request.confidential</td>
- * <td>c</td>
- * <td>boolean (true|false)</td>
- * </tr>
- * <tr>
- * <td>request.clientInfo.address</td>
- * <td>cia</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.clientInfo.agent</td>
- * <td>cig</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.challengeResponse.identifier</td>
- * <td>cri</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.challengeResponse.scheme</td>
- * <td>crs</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.date</td>
- * <td>d</td>
- * <td>Date (HTTP format)</td>
- * </tr>
- * <tr>
- * <td>request.entity.characterSet</td>
- * <td>ecs</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>response.entity.characterSet</td>
- * <td>ECS</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.entity.encoding</td>
- * <td>ee</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>response.entity.encoding</td>
- * <td>EE</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.entity.expirationDate</td>
- * <td>eed</td>
- * <td>Date (HTTP format)</td>
- * </tr>
- * <tr>
- * <td>response.entity.expirationDate</td>
- * <td>EED</td>
- * <td>Date (HTTP format)</td>
- * </tr>
- * <tr>
- * <td>request.entity.language</td>
- * <td>el</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>response.entity.language</td>
- * <td>EL</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.entity.modificationDate</td>
- * <td>emd</td>
- * <td>Date (HTTP format)</td>
- * </tr>
- * <tr>
- * <td>response.entity.modificationDate</td>
- * <td>EMD</td>
- * <td>Date (HTTP format)</td>
- * </tr>
- * <tr>
- * <td>request.entity.mediaType</td>
- * <td>emt</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>response.entity.mediaType</td>
- * <td>EMT</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.entity.size</td>
- * <td>es</td>
- * <td>Integer</td>
- * </tr>
- * <tr>
- * <td>response.entity.size</td>
- * <td>ES</td>
- * <td>Integer</td>
- * </tr>
- * <tr>
- * <td>request.entity.tag</td>
- * <td>et</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>response.entity.tag</td>
- * <td>ET</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.referrerRef</td>
- * <td>f*</td>
- * <td>Reference (see table below variable name sub-parts)</td>
- * </tr>
- * <tr>
- * <td>request.hostRef</td>
- * <td>h*</td>
- * <td>Reference (see table below variable name sub-parts)</td>
- * </tr>
- * <tr>
- * <td>request.method</td>
- * <td>m</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.rootRef</td>
- * <td>o*</td>
- * <td>Reference (see table below variable name sub-parts)</td>
- * </tr>
- * <tr>
- * <td>request.protocol</td>
- * <td>p</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>request.resourceRef</td>
- * <td>r*</td>
- * <td>Reference (see table below variable name sub-parts)</td>
- * </tr>
- * <tr>
- * <td>response.redirectRef</td>
- * <td>R*</td>
- * <td>Reference (see table below variable name sub-parts)</td>
- * </tr>
- * <tr>
- * <td>response.status</td>
- * <td>S</td>
- * <td>Integer</td>
- * </tr>
- * <tr>
- * <td>response.serverInfo.address</td>
- * <td>SIA</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>response.serverInfo.agent</td>
- * <td>SIG</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>response.serverInfo.port</td>
- * <td>SIP</td>
- * <td>Integer</td>
- * </tr>
- * </table> <br>
- * 
- * Below is the list of name sub-parts, for Reference variables, that can
- * replace the asterix in the variable names above:<br>
+ * matching call. After that point, changes won't be taken into account.<br>
  * <br>
+ * Format and parsing methods are specially available to deal with requests and
+ * response. See {@link #format(Request, Response)} and
+ * {@link #parse(String, Request)}.
  * 
- * <table>
- * <tr>
- * <th>Reference property</th>
- * <th>Sub-part name</th>
- * <th>Content type</th>
- * </tr>
- * <tr>
- * <td>authority</td>
- * <td>a</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>baseRef</td>
- * <td>b*</td>
- * <td>Reference</td>
- * </tr>
- * <tr>
- * <td>relativePart</td>
- * <td>e</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>fragment</td>
- * <td>f</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>hostIdentifier</td>
- * <td>h</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>identifier</td>
- * <td>i</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>path</td>
- * <td>p</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>query</td>
- * <td>q</td>
- * <td>String</td>
- * </tr>
- * <tr>
- * <td>remainingPart</td>
- * <td>r</td>
- * <td>String</td>
- * </tr>
- * </table>
- * 
+ * @see Resolver
  * @see <a href="http://bitworking.org/projects/URI-Templates/">URI Template
  *      specification</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Template {
 
-    /**
-     * Resolves variable values based on a request and a response.
-     * 
-     * @author Jerome Louvel (contact@noelios.com)
-     */
-    private class CallVariableResolver implements Resolver<String> {
-        /** The request to use as a model. */
-        private Request request;
-
-        /** The response to use as a model. */
-        private Response response;
-
-        /**
-         * Constructor.
-         * 
-         * @param request
-         *                The request to use as a model.
-         * @param response
-         *                The response to use as a model.
-         */
-        public CallVariableResolver(Request request, Response response) {
-            this.request = request;
-            this.response = response;
-        }
-
-        public String resolve(String variableName) {
-            String result = null;
-
-            Variable var = getVariables().get(variableName);
-            if (var == null)
-                var = getDefaultVariable();
-
-            // Check for a matching request attribute
-            if (request != null) {
-                Object variable = request.getAttributes().get(variableName);
-                if (variable != null) {
-                    result = variable.toString();
-                }
-            }
-
-            // Check for a matching response attribute
-            if ((result == null) && (response != null)
-                    && response.getAttributes().containsKey(variableName)) {
-                result = response.getAttributes().get(variableName).toString();
-            }
-
-            // Check for a matching request or response property
-            if (result == null) {
-                if (request != null) {
-                    if (variableName.equals("c")) {
-                        result = Boolean.toString(request.isConfidential());
-                    } else if (variableName.equals("cia")) {
-                        result = request.getClientInfo().getAddress();
-                    } else if (variableName.equals("cig")) {
-                        result = request.getClientInfo().getAgent();
-                    } else if (variableName.equals("cri")) {
-                        result = request.getChallengeResponse().getIdentifier();
-                    } else if (variableName.equals("crs")) {
-                        if (request.getChallengeResponse().getScheme() != null) {
-                            result = request.getChallengeResponse().getScheme()
-                                    .getTechnicalName();
-                        }
-                    } else if (variableName.equals("d")) {
-                        result = DateUtils.format(new Date(),
-                                DateUtils.FORMAT_RFC_1123.get(0));
-                    } else if (variableName.equals("ecs")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getCharacterSet() != null)) {
-                            result = request.getEntity().getCharacterSet()
-                                    .getName();
-                        }
-                    } else if (variableName.equals("ee")) {
-                        if ((request.getEntity() != null)
-                                && (!request.getEntity().getEncodings()
-                                        .isEmpty())) {
-                            StringBuilder value = new StringBuilder();
-                            for (int i = 0; i < request.getEntity()
-                                    .getEncodings().size(); i++) {
-                                if (i > 0)
-                                    value.append(", ");
-                                value.append(request.getEntity().getEncodings()
-                                        .get(i).getName());
-                            }
-                            result = value.toString();
-                        }
-                    } else if (variableName.equals("eed")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getExpirationDate() != null)) {
-                            result = DateUtils.format(request.getEntity()
-                                    .getExpirationDate(),
-                                    DateUtils.FORMAT_RFC_1123.get(0));
-                        }
-                    } else if (variableName.equals("el")) {
-                        if ((request.getEntity() != null)
-                                && (!request.getEntity().getLanguages()
-                                        .isEmpty())) {
-                            StringBuilder value = new StringBuilder();
-                            for (int i = 0; i < request.getEntity()
-                                    .getLanguages().size(); i++) {
-                                if (i > 0)
-                                    value.append(", ");
-                                value.append(request.getEntity().getLanguages()
-                                        .get(i).getName());
-                            }
-                            result = value.toString();
-                        }
-                    } else if (variableName.equals("emd")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getModificationDate() != null)) {
-                            result = DateUtils.format(request.getEntity()
-                                    .getModificationDate(),
-                                    DateUtils.FORMAT_RFC_1123.get(0));
-                        }
-                    } else if (variableName.equals("emt")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getMediaType() != null)) {
-                            result = request.getEntity().getMediaType()
-                                    .getName();
-                        }
-                    } else if (variableName.equals("es")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getSize() != -1)) {
-                            result = Long.toString(request.getEntity()
-                                    .getSize());
-                        }
-                    } else if (variableName.equals("et")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getTag() != null)) {
-                            result = request.getEntity().getTag().getName();
-                        }
-                    } else if (variableName.startsWith("f")) {
-                        result = getReferenceContent(variableName.substring(1),
-                                request.getReferrerRef());
-                    } else if (variableName.startsWith("h")) {
-                        result = getReferenceContent(variableName.substring(1),
-                                request.getHostRef());
-                    } else if (variableName.equals("m")) {
-                        if (request.getMethod() != null) {
-                            result = request.getMethod().getName();
-                        }
-                    } else if (variableName.startsWith("o")) {
-                        result = getReferenceContent(variableName.substring(1),
-                                request.getRootRef());
-                    } else if (variableName.equals("p")) {
-                        if (request.getProtocol() != null) {
-                            result = request.getProtocol().getName();
-                        }
-                    } else if (variableName.startsWith("r")) {
-                        result = getReferenceContent(variableName.substring(1),
-                                request.getResourceRef());
-                    }
-                }
-
-                if ((result == null) && (response != null)) {
-                    if (variableName.equals("ECS")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getCharacterSet() != null)) {
-                            result = response.getEntity().getCharacterSet()
-                                    .getName();
-                        }
-                    } else if (variableName.equals("EE")) {
-                        if ((response.getEntity() != null)
-                                && (!response.getEntity().getEncodings()
-                                        .isEmpty())) {
-                            StringBuilder value = new StringBuilder();
-                            for (int i = 0; i < response.getEntity()
-                                    .getEncodings().size(); i++) {
-                                if (i > 0)
-                                    value.append(", ");
-                                value.append(response.getEntity()
-                                        .getEncodings().get(i).getName());
-                            }
-                            result = value.toString();
-                        }
-                    } else if (variableName.equals("EED")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getExpirationDate() != null)) {
-                            result = DateUtils.format(response.getEntity()
-                                    .getExpirationDate(),
-                                    DateUtils.FORMAT_RFC_1123.get(0));
-                        }
-                    } else if (variableName.equals("EL")) {
-                        if ((response.getEntity() != null)
-                                && (!response.getEntity().getLanguages()
-                                        .isEmpty())) {
-                            StringBuilder value = new StringBuilder();
-                            for (int i = 0; i < response.getEntity()
-                                    .getLanguages().size(); i++) {
-                                if (i > 0)
-                                    value.append(", ");
-                                value.append(response.getEntity()
-                                        .getLanguages().get(i).getName());
-                            }
-                            result = value.toString();
-                        }
-                    } else if (variableName.equals("EMD")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getModificationDate() != null)) {
-                            result = DateUtils.format(response.getEntity()
-                                    .getModificationDate(),
-                                    DateUtils.FORMAT_RFC_1123.get(0));
-                        }
-                    } else if (variableName.equals("EMT")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getMediaType() != null)) {
-                            result = response.getEntity().getMediaType()
-                                    .getName();
-                        }
-                    } else if (variableName.equals("ES")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getSize() != -1)) {
-                            result = Long.toString(response.getEntity()
-                                    .getSize());
-                        }
-                    } else if (variableName.equals("ET")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getTag() != null)) {
-                            result = response.getEntity().getTag().getName();
-                        }
-                    } else if (variableName.startsWith("R")) {
-                        result = getReferenceContent(variableName.substring(1),
-                                response.getLocationRef());
-                    } else if (variableName.equals("S")) {
-                        if (response.getStatus() != null) {
-                            result = Integer.toString(response.getStatus()
-                                    .getCode());
-                        }
-                    } else if (variableName.equals("SIA")) {
-                        result = response.getServerInfo().getAddress();
-                    } else if (variableName.equals("SIG")) {
-                        result = response.getServerInfo().getAgent();
-                    } else if (variableName.equals("SIP")) {
-                        if (response.getServerInfo().getPort() != -1) {
-                            result = Integer.toString(response.getServerInfo()
-                                    .getPort());
-                        }
-                    }
-                }
-            }
-
-            if (result == null) {
-                // Use the default value instead
-                result = var.getDefaultValue();
-            }
-
-            return result;
-        }
-    }
-
-    /**
-     * Resolves variable values based on a map.
-     * 
-     * @author Jerome Louvel (contact@noelios.com)
-     */
-    private class MapVariableResolver implements Resolver<String> {
-        /** The variables to use when formatting. */
-        private Map<String, Object> map;
-
-        /**
-         * Constructor.
-         * 
-         * @param map
-         *                The variables to use when formatting.
-         */
-        public MapVariableResolver(Map<String, Object> map) {
-            this.map = map;
-        }
-
-        public String resolve(String variableName) {
-            Object value = this.map.get(variableName);
-            return (value == null) ? null : value.toString();
-        }
-    }
-
     public static final int MODE_EQUALS = 2;
 
     public static final int MODE_STARTS_WITH = 1;
+
+    /**
+     * Appends to a pattern a repeating group of a given content based on a
+     * class of characters.
+     * 
+     * @param pattern
+     *                The pattern to append to.
+     * @param content
+     *                The content of the group.
+     * @param required
+     *                Indicates if the group is required.
+     */
+    private static void appendClass(StringBuilder pattern, String content,
+            boolean required) {
+
+        pattern.append("(");
+
+        if (content.equals(".")) {
+            // Special case for the TYPE_ALL variable type because the
+            // dot looses its meaning inside a character class
+            pattern.append(content);
+        } else {
+            pattern.append("[").append(content).append(']');
+        }
+
+        if (required) {
+            pattern.append("+");
+        } else {
+            pattern.append("*");
+        }
+
+        pattern.append(")");
+    }
+
+    /**
+     * Appends to a pattern a repeating group of a given content based on a
+     * non-capturing group.
+     * 
+     * @param pattern
+     *                The pattern to append to.
+     * @param content
+     *                The content of the group.
+     * @param required
+     *                Indicates if the group is required.
+     */
+    private static void appendGroup(StringBuilder pattern, String content,
+            boolean required) {
+        pattern.append("((?:").append(content).append(')');
+
+        if (required) {
+            pattern.append("+");
+        } else {
+            pattern.append("*");
+        }
+
+        pattern.append(")");
+    }
+
+    /**
+     * Returns the Regex pattern string corresponding to a variable.
+     * 
+     * @param variable
+     *                The variable.
+     * @return The Regex pattern string corresponding to a variable.
+     */
+    private static String getVariableRegex(Variable variable) {
+        String result = null;
+
+        if (variable.isFixed()) {
+            result = Pattern.quote(variable.getDefaultValue());
+        } else {
+            // Expressions to create character classes
+            final String ALL = ".";
+            final String ALPHA = "a-zA-Z";
+            final String DIGIT = "0-9";
+            final String ALPHA_DIGIT = ALPHA + DIGIT;
+            final String HEXA = DIGIT + "ABCDEFabcdef";
+            final String URI_UNRESERVED = ALPHA_DIGIT + "\\-\\.\\_\\~";
+            final String URI_GEN_DELIMS = "\\:\\/\\?\\#\\[\\]\\@";
+            final String URI_SUB_DELIMS = "\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=";
+            final String URI_RESERVED = URI_GEN_DELIMS + URI_SUB_DELIMS;
+            final String WORD = "\\w";
+
+            // Expressions to create non-capturing groups
+            final String PCT_ENCODED = "\\%[" + HEXA + "][" + HEXA + "]";
+            // final String PCHAR = "[" + URI_UNRESERVED + "]|(?:" + PCT_ENCODED
+            // + ")|[" + URI_SUB_DELIMS + "]|\\:|\\@";
+            final String PCHAR = "[" + URI_UNRESERVED + URI_SUB_DELIMS
+                    + "\\:\\@]|(?:" + PCT_ENCODED + ")";
+            final String QUERY = PCHAR + "|\\/|\\?";
+            final String FRAGMENT = QUERY;
+            final String URI_PATH = PCHAR + "|\\/";
+            final String URI_ALL = "[" + URI_RESERVED + URI_UNRESERVED
+                    + "]|(?:" + PCT_ENCODED + ")";
+
+            StringBuilder coreRegex = new StringBuilder();
+
+            switch (variable.getType()) {
+            case Variable.TYPE_ALL:
+                appendClass(coreRegex, ALL, variable.isRequired());
+                break;
+            case Variable.TYPE_ALPHA:
+                appendClass(coreRegex, ALPHA, variable.isRequired());
+                break;
+            case Variable.TYPE_DIGIT:
+                appendClass(coreRegex, DIGIT, variable.isRequired());
+                break;
+            case Variable.TYPE_ALPHA_DIGIT:
+                appendClass(coreRegex, ALPHA_DIGIT, variable.isRequired());
+                break;
+            case Variable.TYPE_URI_ALL:
+                appendGroup(coreRegex, URI_ALL, variable.isRequired());
+                break;
+            case Variable.TYPE_URI_UNRESERVED:
+                appendClass(coreRegex, URI_UNRESERVED, variable.isRequired());
+                break;
+            case Variable.TYPE_WORD:
+                appendClass(coreRegex, WORD, variable.isRequired());
+                break;
+            case Variable.TYPE_URI_FRAGMENT:
+                appendGroup(coreRegex, FRAGMENT, variable.isRequired());
+                break;
+            case Variable.TYPE_URI_PATH:
+                appendGroup(coreRegex, URI_PATH, variable.isRequired());
+                break;
+            case Variable.TYPE_URI_QUERY:
+                appendGroup(coreRegex, QUERY, variable.isRequired());
+                break;
+            case Variable.TYPE_URI_SEGMENT:
+                appendGroup(coreRegex, PCHAR, variable.isRequired());
+                break;
+            }
+
+            result = coreRegex.toString();
+        }
+
+        return result;
+    }
 
     /** The default variable to use when no matching variable descriptor exists. */
     private volatile Variable defaultVariable;
@@ -693,84 +331,29 @@ public class Template {
     }
 
     /**
-     * Appends to a pattern a repeating group of a given content based on a
-     * class of characters.
+     * Creates a formatted string based on the given map of values.
      * 
-     * @param pattern
-     *                The pattern to append to.
-     * @param content
-     *                The content of the group.
-     * @param required
-     *                Indicates if the group is required.
-     */
-    private static void appendClass(StringBuilder pattern, String content,
-            boolean required) {
-
-        pattern.append("(");
-
-        if (content.equals(".")) {
-            // Special case for the TYPE_ALL variable type because the
-            // dot looses its meaning inside a character class
-            pattern.append(content);
-        } else {
-            pattern.append("[").append(content).append(']');
-        }
-
-        if (required) {
-            pattern.append("+");
-        } else {
-            pattern.append("*");
-        }
-
-        pattern.append(")");
-    }
-
-    /**
-     * Appends to a pattern a repeating group of a given content based on a
-     * non-capturing group.
-     * 
-     * @param pattern
-     *                The pattern to append to.
-     * @param content
-     *                The content of the group.
-     * @param required
-     *                Indicates if the group is required.
-     */
-    private static void appendGroup(StringBuilder pattern, String content,
-            boolean required) {
-        pattern.append("((?:").append(content).append(')');
-
-        if (required) {
-            pattern.append("+");
-        } else {
-            pattern.append("*");
-        }
-
-        pattern.append(")");
-    }
-
-    /**
-     * Creates a formatted string based on the given request.
-     * 
-     * @param variables
-     *                The variables to use when formatting.
+     * @param values
+     *                The values to use when formatting.
      * @return The formatted string.
+     * @see Resolver#createResolver(Map)
      */
-    public String format(Map<String, Object> variables) {
-        return format(new MapVariableResolver(variables));
+    public String format(Map<String, Object> values) {
+        return format(Resolver.createResolver(values));
     }
 
     /**
-     * Creates a formatted string based on the given request.
+     * Creates a formatted string based on the given request and response.
      * 
      * @param request
      *                The request to use as a model.
      * @param response
      *                The response to use as a model.
      * @return The formatted string.
+     * @see Resolver#createResolver(Request, Response)
      */
     public String format(Request request, Response response) {
-        return format(new CallVariableResolver(request, response));
+        return format(Resolver.createResolver(request, response));
     }
 
     /**
@@ -801,7 +384,22 @@ public class Template {
                                         + this.regexPattern);
                     } else {
                         String varName = varBuffer.toString();
-                        result.append(resolver.resolve(varName));
+                        String varValue = resolver.resolve(varName);
+
+                        // Use the default values instead
+                        if (varValue == null) {
+                            Variable var = getVariables().get(varName);
+
+                            if (var == null) {
+                                var = getDefaultVariable();
+                            }
+
+                            if (var != null) {
+                                varValue = var.getDefaultValue();
+                            }
+                        }
+
+                        result.append(varValue);
 
                         // Reset the variable name buffer
                         varBuffer = new StringBuilder();
@@ -862,45 +460,6 @@ public class Template {
      */
     public String getPattern() {
         return this.pattern;
-    }
-
-    /**
-     * Returns the content corresponding to a reference property.
-     * 
-     * @param partName
-     *                The variable sub-part name.
-     * @param reference
-     *                The reference to use as a model.
-     * @return The content corresponding to a reference property.
-     */
-    private static String getReferenceContent(String partName,
-            Reference reference) {
-        String result = null;
-
-        if (reference != null) {
-            if (partName.equals("a")) {
-                result = reference.getAuthority();
-            } else if (partName.startsWith("b")) {
-                result = getReferenceContent(partName.substring(1), reference
-                        .getBaseRef());
-            } else if (partName.equals("e")) {
-                result = reference.getRelativePart();
-            } else if (partName.equals("f")) {
-                result = reference.getFragment();
-            } else if (partName.equals("h")) {
-                result = reference.getHostIdentifier();
-            } else if (partName.equals("i")) {
-                result = reference.getIdentifier();
-            } else if (partName.equals("p")) {
-                result = reference.getPath();
-            } else if (partName.equals("q")) {
-                result = reference.getQuery();
-            } else if (partName.equals("r")) {
-                result = reference.getRemainingPart();
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -1046,87 +605,6 @@ public class Template {
                                     + this.pattern);
                 }
             }
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the Regex pattern string corresponding to a variable.
-     * 
-     * @param variable
-     *                The variable.
-     * @return The Regex pattern string corresponding to a variable.
-     */
-    private static String getVariableRegex(Variable variable) {
-        String result = null;
-
-        if (variable.isFixed()) {
-            result = Pattern.quote(variable.getDefaultValue());
-        } else {
-            // Expressions to create character classes
-            final String ALL = ".";
-            final String ALPHA = "a-zA-Z";
-            final String DIGIT = "0-9";
-            final String ALPHA_DIGIT = ALPHA + DIGIT;
-            final String HEXA = DIGIT + "ABCDEFabcdef";
-            final String URI_UNRESERVED = ALPHA_DIGIT + "\\-\\.\\_\\~";
-            final String URI_GEN_DELIMS = "\\:\\/\\?\\#\\[\\]\\@";
-            final String URI_SUB_DELIMS = "\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=";
-            final String URI_RESERVED = URI_GEN_DELIMS + URI_SUB_DELIMS;
-            final String WORD = "\\w";
-
-            // Expressions to create non-capturing groups
-            final String PCT_ENCODED = "\\%[" + HEXA + "][" + HEXA + "]";
-            // final String PCHAR = "[" + URI_UNRESERVED + "]|(?:" + PCT_ENCODED
-            // + ")|[" + URI_SUB_DELIMS + "]|\\:|\\@";
-            final String PCHAR = "[" + URI_UNRESERVED + URI_SUB_DELIMS
-                    + "\\:\\@]|(?:" + PCT_ENCODED + ")";
-            final String QUERY = PCHAR + "|\\/|\\?";
-            final String FRAGMENT = QUERY;
-            final String URI_PATH = PCHAR + "|\\/";
-            final String URI_ALL = "[" + URI_RESERVED + URI_UNRESERVED
-                    + "]|(?:" + PCT_ENCODED + ")";
-
-            StringBuilder coreRegex = new StringBuilder();
-
-            switch (variable.getType()) {
-            case Variable.TYPE_ALL:
-                appendClass(coreRegex, ALL, variable.isRequired());
-                break;
-            case Variable.TYPE_ALPHA:
-                appendClass(coreRegex, ALPHA, variable.isRequired());
-                break;
-            case Variable.TYPE_DIGIT:
-                appendClass(coreRegex, DIGIT, variable.isRequired());
-                break;
-            case Variable.TYPE_ALPHA_DIGIT:
-                appendClass(coreRegex, ALPHA_DIGIT, variable.isRequired());
-                break;
-            case Variable.TYPE_URI_ALL:
-                appendGroup(coreRegex, URI_ALL, variable.isRequired());
-                break;
-            case Variable.TYPE_URI_UNRESERVED:
-                appendClass(coreRegex, URI_UNRESERVED, variable.isRequired());
-                break;
-            case Variable.TYPE_WORD:
-                appendClass(coreRegex, WORD, variable.isRequired());
-                break;
-            case Variable.TYPE_URI_FRAGMENT:
-                appendGroup(coreRegex, FRAGMENT, variable.isRequired());
-                break;
-            case Variable.TYPE_URI_PATH:
-                appendGroup(coreRegex, URI_PATH, variable.isRequired());
-                break;
-            case Variable.TYPE_URI_QUERY:
-                appendGroup(coreRegex, QUERY, variable.isRequired());
-                break;
-            case Variable.TYPE_URI_SEGMENT:
-                appendGroup(coreRegex, PCHAR, variable.isRequired());
-                break;
-            }
-
-            result = coreRegex.toString();
         }
 
         return result;

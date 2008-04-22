@@ -47,7 +47,7 @@ import org.restlet.util.Template;
  */
 public class JaxRsUriBuilder extends UriBuilder {
 
-    private class IteratorVariableResolver implements Resolver<String> {
+    private class IteratorVariableResolver extends Resolver<String> {
         private int i = 0;
 
         private Map<String, String> retrievedValues = new HashMap<String, String>();
@@ -58,6 +58,7 @@ public class JaxRsUriBuilder extends UriBuilder {
             this.values = values;
         }
 
+        @Override
         public String resolve(String variableName) {
             String varValue = retrievedValues.get(variableName);
             if (varValue == null) {
@@ -86,6 +87,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      * throws an {@link UriBuilderException}, if a variable is requested.
      */
     private static final Resolver<String> NO_VAR_RESOLVER = new Resolver<String>() {
+        @Override
         public String resolve(String variableName) {
             throw new UriBuilderException(
                     "The UriBuilder must not contain any template parameter");
@@ -206,6 +208,7 @@ public class JaxRsUriBuilder extends UriBuilder {
             throws IllegalArgumentException, UriBuilderException {
         Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(new Resolver<String>() {
+            @Override
             public String resolve(String variableName) {
                 Object varValue = values.get(variableName);
                 if (varValue == null)
@@ -324,7 +327,9 @@ public class JaxRsUriBuilder extends UriBuilder {
     /**
      * Set the extension of the current final path segment to the supplied value
      * appending an initial "." if necessary.
-     * @param extension the extension
+     * 
+     * @param extension
+     *                the extension
      * @return the updated UriBuilder
      * @see UriInfo#getPathExtension
      * @see javax.ws.rs.core.UriBuilder#extension(java.lang.String)

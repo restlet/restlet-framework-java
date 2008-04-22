@@ -39,6 +39,7 @@ import org.restlet.util.Variable;
 public class PathRegExp {
 
     private static Resolver<String> EmptyStringVariableResolver = new Resolver<String>() {
+        @Override
         public String resolve(String variableName) {
             return "";
         }
