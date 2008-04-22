@@ -178,6 +178,21 @@ public class TemplateRepresentation extends OutputRepresentation {
      *                The FreeMarker template provided via a representation.
      * @param config
      *                The FreeMarker configuration.
+     * @param mediaType
+     *                The representation's media type.
+     */
+    public TemplateRepresentation(Representation templateRepresentation,
+            Configuration config, MediaType mediaType) {
+        this(getTemplate(templateRepresentation, config), mediaType);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param templateRepresentation
+     *                The FreeMarker template provided via a representation.
+     * @param config
+     *                The FreeMarker configuration.
      * @param dataModel
      *                The template's data model.
      * @param mediaType
@@ -191,16 +206,17 @@ public class TemplateRepresentation extends OutputRepresentation {
     /**
      * Constructor.
      * 
-     * @param templateRepresentation
-     *                The FreeMarker template provided via a representation.
+     * @param templateName
+     *                The FreeMarker template's name. The full path is resolved
+     *                by the configuration.
      * @param config
      *                The FreeMarker configuration.
      * @param mediaType
      *                The representation's media type.
      */
-    public TemplateRepresentation(Representation templateRepresentation,
-            Configuration config, MediaType mediaType) {
-        this(getTemplate(templateRepresentation, config), mediaType);
+    public TemplateRepresentation(String templateName, Configuration config,
+            MediaType mediaType) {
+        this(getTemplate(templateName, config), mediaType);
     }
 
     /**
@@ -224,17 +240,14 @@ public class TemplateRepresentation extends OutputRepresentation {
     /**
      * Constructor.
      * 
-     * @param templateName
-     *                The FreeMarker template's name. The full path is resolved
-     *                by the configuration.
-     * @param config
-     *                The FreeMarker configuration.
+     * @param template
+     *                The FreeMarker template.
      * @param mediaType
      *                The representation's media type.
      */
-    public TemplateRepresentation(String templateName, Configuration config,
-            MediaType mediaType) {
-        this(getTemplate(templateName, config), mediaType);
+    public TemplateRepresentation(Template template, MediaType mediaType) {
+        super(mediaType);
+        this.template = template;
     }
 
     /**
@@ -252,19 +265,6 @@ public class TemplateRepresentation extends OutputRepresentation {
         super(mediaType);
         this.template = template;
         this.dataModel = dataModel;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param template
-     *                The FreeMarker template.
-     * @param mediaType
-     *                The representation's media type.
-     */
-    public TemplateRepresentation(Template template, MediaType mediaType) {
-        super(mediaType);
-        this.template = template;
     }
 
     /**
