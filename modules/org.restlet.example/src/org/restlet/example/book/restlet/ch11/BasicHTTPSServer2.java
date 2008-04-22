@@ -19,7 +19,7 @@ public class BasicHttpsServer {
             }
         };
 
-        File keystoreFile = new File("d:\\temp\\certificats", "myKeystore");
+        File keystoreFile = new File("d:\\temp\\certificats", "myServerKeystore");
         // Component declaring only one HTTPS server connector.
         Component component = new Component();
         component.getServers().add(Protocol.HTTPS, 8182);

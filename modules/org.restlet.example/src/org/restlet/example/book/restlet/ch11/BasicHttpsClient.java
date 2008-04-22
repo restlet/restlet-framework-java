@@ -1,5 +1,6 @@
 package org.restlet.example.book.restlet.ch11;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.restlet.Client;
@@ -15,6 +16,11 @@ public class BasicHttpsClient {
         // Instantiates a request with a method and the resource's URI
         Request request = new Request(Method.GET,
                 "https://localhost:8182/helloWorld");
+
+        File keystoreFile = new File("d:\\temp\\certificats",
+                "myClientKeystore");
+        System.setProperty("javax.net.ssl.trustStore", keystoreFile
+                .getAbsolutePath());
 
         // Sends the request and gets the response
         Response response = client.handle(request);
