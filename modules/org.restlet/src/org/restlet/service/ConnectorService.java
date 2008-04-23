@@ -25,7 +25,7 @@ import org.restlet.data.Protocol;
 import org.restlet.resource.Representation;
 
 /**
- * Service providing client and server connectors.
+ * Service declaring client and server connectors.
  * 
  * Implementation note: the parent component will ensure that client connectors
  * won't automatically follow redirections. This will ensure a consistent

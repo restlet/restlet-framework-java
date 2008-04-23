@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: db4o object database engine
 Bundle-SymbolicName: com.db4o
-Bundle-Version: 7.2.31
+Bundle-Version: 7.2.39
 Bundle-ClassPath: com.db4o.jar,
  com.db4o.nativequery.jar,
  com.db4o.instrumentation.jar,
