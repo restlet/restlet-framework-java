@@ -166,6 +166,8 @@ public class JaxRsRouter extends Restlet {
     @SuppressWarnings("unchecked")
     private final ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
 
+    private volatile ObjectFactory objectFactory;
+
     /**
      * Creates a new JaxRsRouter with the given Context. Only the default
      * providers are loaded. If a resource class later wants to check if a user
@@ -330,8 +332,9 @@ public class JaxRsRouter extends Restlet {
         }
         Provider<?> provider;
         try {
-            provider = new Provider<Object>(jaxRsProviderClass, tlContext,
-                    this.entityProviders, contextResolvers, getLogger());
+            provider = new Provider<Object>(jaxRsProviderClass, objectFactory,
+                    tlContext, this.entityProviders, contextResolvers,
+                    getLogger());
         } catch (InstantiateException e) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
                     + "Could not instantiate the Provider, class "
@@ -507,7 +510,7 @@ public class JaxRsRouter extends Restlet {
             throws WebApplicationException, RequestHandledException {
         ResourceObject o;
         try {
-            o = rrc.createInstance();
+            o = rrc.createInstance(this.objectFactory);
         } catch (WebApplicationException e) {
             throw e;
         } catch (RuntimeException e) {
@@ -1077,5 +1080,28 @@ public class JaxRsRouter extends Restlet {
         for (RootResourceClass rrc : this.rootResourceClasses)
             uris.add(rrc.getPathRegExp().getPathPattern());
         return Collections.unmodifiableCollection(uris);
+    }
+
+    /**
+     * Returns the ObjectFactory for root resource class and provider
+     * instantiation, if given.
+     * 
+     * @return the ObjectFactory for root resource class and provider
+     *         instantiation, if given.
+     */
+    public ObjectFactory getObjectFactory() {
+        return this.objectFactory;
+    }
+
+    /**
+     * Sets the ObjectFactory for root resource class and provider
+     * instantiation.
+     * 
+     * @param objectFactory
+     *                the ObjectFactory for root resource class and provider
+     *                instantiation.
+     */
+    public void setObjectFactory(ObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
     }
 }

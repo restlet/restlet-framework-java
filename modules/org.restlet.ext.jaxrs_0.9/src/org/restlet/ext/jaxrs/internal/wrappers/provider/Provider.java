@@ -40,6 +40,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.MessageBodyWorkers;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.jaxrs.ObjectFactory;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
@@ -101,6 +102,9 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * 
      * @param jaxRsProviderClass
      *                the JAX-RS provider class.
+     * @param objectFactory
+     *                The object factory is responsible for the provider
+     *                instantiation, if given.
      * @param tlContext
      *                The tread local wrapped call context
      * @param mbWorkers
@@ -124,7 +128,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @see javax.ws.rs.ext.ContextResolver
      */
     @SuppressWarnings("unchecked")
-    public Provider(Class<?> jaxRsProviderClass,
+    public Provider(Class<?> jaxRsProviderClass, ObjectFactory objectFactory,
             ThreadLocalizedContext tlContext, EntityProviders mbWorkers,
             Collection<ContextResolver<?>> allResolvers, Logger logger)
             throws IllegalArgumentException, InvocationTargetException,
@@ -134,10 +138,15 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
         Util.checkClassConcrete(jaxRsProviderClass, "provider");
-        Constructor<?> providerConstructor = WrapperUtil.findJaxRsConstructor(
-                jaxRsProviderClass, "provider");
-        this.jaxRsProvider = createInstance(providerConstructor,
-                jaxRsProviderClass, tlContext, mbWorkers, allResolvers, logger);
+        if (objectFactory != null)
+            this.jaxRsProvider = objectFactory.getInstance(jaxRsProviderClass);
+        if (this.jaxRsProvider == null) {
+            Constructor<?> providerConstructor = WrapperUtil
+                    .findJaxRsConstructor(jaxRsProviderClass, "provider");
+            this.jaxRsProvider = createInstance(providerConstructor,
+                    jaxRsProviderClass, tlContext, mbWorkers, allResolvers,
+                    logger);
+        }
         boolean isProvider = false;
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyWriter) {
             this.writer = (javax.ws.rs.ext.MessageBodyWriter<T>) jaxRsProvider;

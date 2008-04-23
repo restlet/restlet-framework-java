@@ -28,6 +28,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.ext.jaxrs.JaxRsRouter;
+import org.restlet.ext.jaxrs.ObjectFactory;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
@@ -122,22 +123,28 @@ public class RootResourceClass extends ResourceClass {
     /**
      * Creates an instance of the root resource class.
      * 
+     * @param objectFactory
+     *                object responsible for instantiating the root resource
+     *                class. Optional, thus can be null.
      * @return
      * @throws InvocationTargetException
      * @throws InstantiateException
      * @throws MissingAnnotationException
      * @throws WebApplicationException
      */
-    public ResourceObject createInstance() throws InstantiateException,
-            InvocationTargetException {
-        Constructor<?> constructor = this.constructor;
-        Object instance;
-        try {
-            instance = WrapperUtil.createInstance(constructor,
-                    constructorParameters.get());
-        } catch (ConvertRepresentationException e) {
-            // is not possible
-            throw new ImplementationException("Must not be possible", e);
+    public ResourceObject createInstance(ObjectFactory objectFactory)
+            throws InstantiateException, InvocationTargetException {
+        Object instance = null;
+        if (objectFactory != null)
+            instance = objectFactory.getInstance(jaxRsClass);
+        if (instance == null) {
+            try {
+                Object[] args = constructorParameters.get();
+                instance = WrapperUtil.createInstance(constructor, args);
+            } catch (ConvertRepresentationException e) {
+                // is not possible
+                throw new ImplementationException("Must not be possible", e);
+            }
         }
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {

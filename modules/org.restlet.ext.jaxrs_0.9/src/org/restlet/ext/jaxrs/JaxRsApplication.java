@@ -73,7 +73,10 @@ import org.restlet.service.TunnelService;
  */
 public class JaxRsApplication extends Application {
 
-    /** the {@link Guard} to use. May be null. */
+    /** Indicates if any {@link ApplicationConfig} is attached yet */
+    private volatile boolean appConfigAttached = false;
+
+    /** The {@link Guard} to use. May be null. */
     private volatile Guard guard;
 
     /** The {@link JaxRsRouter} to use. */
@@ -81,9 +84,6 @@ public class JaxRsApplication extends Application {
 
     /** Indicates, if an {@link HtmlPreferer} should be used or not. */
     private volatile boolean preferHtml = true;
-
-    /** indicates if any {@link ApplicationConfig} is attached yet */
-    private volatile boolean appConfigAttached = false;
 
     /**
      * Creates an new JaxRsApplication. You should typically use one of the
@@ -249,6 +249,17 @@ public class JaxRsApplication extends Application {
     }
 
     /**
+     * Returns the ObjectFactory for root resource class and provider
+     * instantiation, if given.
+     * 
+     * @return the ObjectFactory for root resource class and provider
+     *         instantiation, if given.
+     */
+    public ObjectFactory getObjectFactory() {
+        return this.jaxRsRouter.getObjectFactory();
+    }
+
+    /**
      * Returns the current RoleChecker
      * 
      * @return the current RoleChecker
@@ -335,6 +346,18 @@ public class JaxRsApplication extends Application {
      */
     public void setGuard(Guard guard) {
         this.guard = guard;
+    }
+
+    /**
+     * Sets the ObjectFactory for root resource class and provider
+     * instantiation.
+     * 
+     * @param objectFactory
+     *                the ObjectFactory for root resource class and provider
+     *                instantiation.
+     */
+    public void setObjectFactory(ObjectFactory objectFactory) {
+        this.jaxRsRouter.setObjectFactory(objectFactory);
     }
 
     /**

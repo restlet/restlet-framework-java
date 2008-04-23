@@ -66,6 +66,8 @@ Changes log
           parsing and formatting into three new classes: 
           MessageRepresentation, MessagesRepresentation and 
           RepresentationMessage. Suggested by Matthieu Hug.
+        - Added an ObjectFactory to the JAX-RS extension for customized root
+          resource class and provider instantiation. Contributed by Bruno Dumon. 
     - Misc
     	- Updated Grizzly to 1.7.3.
     	- Improved logging consistency.
