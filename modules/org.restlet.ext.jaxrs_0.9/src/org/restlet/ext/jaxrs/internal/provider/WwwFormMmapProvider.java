@@ -51,7 +51,7 @@ import org.restlet.resource.Representation;
 public class WwwFormMmapProvider extends
         AbstractProvider<MultivaluedMap<String, String>> {
 
-    // LATER check what about decoding or not, also for Restlet Form provider.
+    // LATER de/encode: check what about decoding or not, also for Form provider
 
     /**
      * @see MessageBodyWriter#getSize(Object)

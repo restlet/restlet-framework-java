@@ -33,6 +33,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -106,8 +108,6 @@ import org.restlet.resource.ResourceException;
  * Typcally you should instantiate a {@link JaxRsApplication} to run JAX-RS
  * resource classes.
  * </p>
- * <!--p> NICE The class JaxRsRouter is not thread save while attach or detach
- * classes. </p-->
  * <p>
  * <i>The JAX-RS extension as well as the JAX-RS specification are currently
  * under development. You should use this extension only for experimental
@@ -124,9 +124,7 @@ public class JaxRsRouter extends Restlet {
      * This set must only changed by adding a root resource class to this
      * JaxRsRouter.
      */
-    private final Set<RootResourceClass> rootResourceClasses = new HashSet<RootResourceClass>();
-
-    // LATER allow concurent access.
+    private final Set<RootResourceClass> rootResourceClasses = new CopyOnWriteArraySet<RootResourceClass>();
 
     private volatile RoleChecker roleChecker;
 
@@ -137,7 +135,7 @@ public class JaxRsRouter extends Restlet {
      * {@link javax.ws.rs.ext.ContextResolver}s.<br>
      * This field is final, because it is shared with other objects.
      */
-    private final Collection<ContextResolver<?>> contextResolvers = new HashSet<ContextResolver<?>>();
+    private final Collection<ContextResolver<?>> contextResolvers = new CopyOnWriteArraySet<ContextResolver<?>>();
 
     private final WrapperFactory wrapperFactory;
 
@@ -158,7 +156,7 @@ public class JaxRsRouter extends Restlet {
     /**
      * Contains all providers.
      */
-    private final Collection<Provider<?>> allProviders = new ArrayList<Provider<?>>();
+    private final Collection<Provider<?>> allProviders = new CopyOnWriteArrayList<Provider<?>>();
 
     /**
      * Contains the thread localized {@link CallContext}.
@@ -278,7 +276,6 @@ public class JaxRsRouter extends Restlet {
                             + " has no valid constructor");
             return false;
         }
-        // NICE use CopyOnWriteList
         PathRegExp uriTempl = newRrc.getPathRegExp();
         for (RootResourceClass rrc : this.rootResourceClasses) {
             if (rrc.getJaxRsClass().equals(rootResourceClass)) {

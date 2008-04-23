@@ -330,7 +330,7 @@ public class ParameterList {
          */
         @Override
         public Object getParamValue() {
-            // LATER Encoded of field or bean setter
+            // LATER de/encode: Encoded of field or bean setter
             CallContext callContext = tlContext.get();
             String matrixParamValue = callContext
                     .getLastMatrixParamEnc(matrixParam);
@@ -429,7 +429,7 @@ public class ParameterList {
          */
         @Override
         public Object getParamValue() {
-            // LATER Encoded of field or bean setter
+            // LATER de/encode: Encoded of field or bean setter
             CallContext callContext = tlContext.get();
             // LATER Path-Param: List<String> (see PathParamTest.testGet3())
             if (convToCl.equals(PathSegment.class)) {
@@ -478,7 +478,7 @@ public class ParameterList {
          */
         @Override
         public Object getParamValue() {
-            // LATER Encoded of field or bean setter
+            // LATER de/encode: Encoded of field or bean setter
             Reference resourceRef = tlContext.get().getRequest()
                     .getResourceRef();
             String queryString = resourceRef.getQuery();

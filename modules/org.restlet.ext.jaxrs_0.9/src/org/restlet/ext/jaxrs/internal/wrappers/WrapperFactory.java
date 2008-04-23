@@ -76,11 +76,17 @@ public class WrapperFactory {
      */
     ResourceClass getResourceClass(Class<?> jaxRsResourceClass)
             throws IllegalArgumentException, MissingAnnotationException {
-        ResourceClass rc = resourceClasses.get(jaxRsResourceClass);
+        ResourceClass rc;
+        // NICE thread save Map access without synchronized?
+        synchronized (this.resourceClasses) {
+            rc = resourceClasses.get(jaxRsResourceClass);
+        }
         if (rc == null) {
             rc = new ResourceClass(jaxRsResourceClass, tlContext,
                     entityProviders, allCtxResolvers, logger);
-            resourceClasses.put(jaxRsResourceClass, rc);
+            synchronized (this.resourceClasses) {
+                resourceClasses.put(jaxRsResourceClass, rc);
+            }
         }
         return rc;
     }

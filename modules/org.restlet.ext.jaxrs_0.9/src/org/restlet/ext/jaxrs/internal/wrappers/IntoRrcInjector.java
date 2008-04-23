@@ -77,7 +77,8 @@ class IntoRrcInjector extends ContextInjector {
                 if (field.isAnnotationPresent(PathParam.class))
                     add(new PathParamInjector(field, tlContext, leaveEncoded));
                 else if (field.isAnnotationPresent(CookieParam.class))
-                    // LATER warn for @Encoded, also for @Header + bean setters
+                    // LATER de/encode: warn for @Encoded
+                    // also for @Header and bean setters
                     add(new CookieParamInjector(field, tlContext));
                 else if (field.isAnnotationPresent(HeaderParam.class))
                     add(new HeaderParamInjector(field, tlContext));

@@ -128,7 +128,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             Logger sameLogger) throws IllegalArgumentException,
             IllegalPathOnClassException, MissingAnnotationException {
         super(PathRegExp.createForClass(jaxRsClass));
-        this.leaveEncoded = false; // LATER leaveEncoded = false ?
+        this.leaveEncoded = false; // LATER de/encode: leaveEncoded = false ?
         this.jaxRsClass = jaxRsClass;
         this.initResourceMethodsAndLocators(tlContext, entityProviders,
                 allCtxResolvers, logger);

@@ -80,7 +80,7 @@ public class ListParamTest extends JaxRsTestCase {
         String m = entity[0];
         String mm = entity[1];
         try {
-            // LATER lexikalisch sortieren: -> Resources.Parameters
+            // LATER test: get in given direction -> Resources.Parameters
             assertEquals("m=m1", m);
         } catch (AssertionFailedError afe) {
             assertEquals("m=m2", m);
@@ -96,7 +96,7 @@ public class ListParamTest extends JaxRsTestCase {
      * @see ListParamService#getPath(String, java.util.SortedSet)
      */
     public void testPathParams() throws IOException {
-        if (true) // LATER support @Path("{p}/{p}")
+        if (true) // LATER test: support @Path("{p}/{p}")
             return;
         Response response = get("path/p1/p2/pp1/pp2");
         checkPathParam(response);

@@ -70,7 +70,7 @@ public class PathParamTest extends JaxRsTestCase {
         try {
             assertEquals("var1=\nabc\ndef", entity);
         } catch (AssertionFailedError afe) {
-            // LATER @PathParam bug for Array, colls; not yet for PathSegment
+            // LATER test: @PathParam bug for colls; not yet for PathSegment
             assertEquals("var1=\nabc\ndef\ndef", entity);
         }
     }

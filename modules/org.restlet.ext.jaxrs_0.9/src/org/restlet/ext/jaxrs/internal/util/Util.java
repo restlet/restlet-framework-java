@@ -866,7 +866,7 @@ public class Util {
      * @see Path#encode()
      */
     public static String getPathTemplate(Path path) throws IllegalPathException {
-        // LATER EncodeOrCheck.path(CharSequence)
+        // LATER de/encode: EncodeOrCheck.path(CharSequence)
         String pathTemplate = path.value();
         if (pathTemplate.contains(";"))
             throw new IllegalPathException(path,

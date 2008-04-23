@@ -126,7 +126,7 @@ public class CarListResource {
     @GET
     @ProduceMime("text/plain")
     public String getCarList() {
-        // LATER use URIs in response entity.
+        // LATER test: use URIs in response entity.
         return DUMMY_CAR_LIST;
     }
 

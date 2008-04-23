@@ -126,7 +126,7 @@ public class EncodeOrCheck {
     public static void checkForInvalidUriChars(CharSequence uriPart,
             int indexForErrMessage, String errMessName)
             throws IllegalArgumentException {
-        // LATER Characters in variables should not be checked.
+        // LATER de/encode: Characters in variables should not be checked.
         int l = uriPart.length();
         for (int i = 0; i < l; i++) {
             char c = uriPart.charAt(i);
@@ -387,8 +387,8 @@ public class EncodeOrCheck {
     public static CharSequence nameOrValue(CharSequence string, boolean encode,
             int indexForErrMessage, String nameForMessage)
             throws IllegalArgumentException {
-        // LATER matrixParam(..): hier gilt, was im pathSegment erlaubt ist,
-        // "=" und "&" und ";" nicht kodieren
+        // LATER de/encode: matrixParam(..): hier gilt, was im pathSegment
+        // erlaubt ist, "=" und "&" und ";" nicht kodieren
         if (string == null)
             throw throwIllegalArgExc(indexForErrMessage, nameForMessage,
                     string, " must not be null");
@@ -530,7 +530,7 @@ public class EncodeOrCheck {
                 toHexOrReject(c, stb, encode);
         }
         return stb;
-        // LATER userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
+        // LATER de/encode: userinfo = *(unreserved/pct-encoded/sub-delims/":")
     }
 
     /**

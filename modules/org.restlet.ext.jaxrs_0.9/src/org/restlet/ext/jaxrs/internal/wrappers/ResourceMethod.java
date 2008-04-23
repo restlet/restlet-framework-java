@@ -172,7 +172,6 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     public Object invoke(ResourceObject resourceObject)
             throws MethodInvokeException, InvocationTargetException,
             ConvertRepresentationException, WebApplicationException {
-        // LATER cache access to the arguments of a resource method
         try {
             return internalInvoke(resourceObject);
         } catch (IllegalArgumentException e) {

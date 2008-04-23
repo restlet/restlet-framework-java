@@ -304,6 +304,7 @@ public class JaxRsApplication extends Application {
     @SuppressWarnings("unused")
     private List<Route> getRoutes() {
         throw new NotYetImplementedException();
+        // NICE JaxRsApplication.getRoutes() : List<Route>
     }
 
     /**

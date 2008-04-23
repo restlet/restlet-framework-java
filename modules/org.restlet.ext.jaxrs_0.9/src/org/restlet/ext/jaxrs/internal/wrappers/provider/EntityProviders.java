@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.util.Converter;
@@ -105,9 +106,9 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
         }
     }
 
-    private final List<MessageBodyReader<?>> messageBodyReaders = new ArrayList<MessageBodyReader<?>>();
+    private final List<MessageBodyReader<?>> messageBodyReaders = new CopyOnWriteArrayList<MessageBodyReader<?>>();
 
-    private final List<MessageBodyWriter<?>> messageBodyWriters = new ArrayList<MessageBodyWriter<?>>();
+    private final List<MessageBodyWriter<?>> messageBodyWriters = new CopyOnWriteArrayList<MessageBodyWriter<?>>();
 
     /**
      * Adds the given provider to this EntityProviders. If the Provider is not
@@ -117,7 +118,6 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
      * @param defaultProvider
      */
     public void add(Provider<?> provider, boolean defaultProvider) {
-        // LATER allow concurrent access, also while adding
         if (provider.isWriter()) {
             if (defaultProvider)
                 this.messageBodyWriters.add(provider);

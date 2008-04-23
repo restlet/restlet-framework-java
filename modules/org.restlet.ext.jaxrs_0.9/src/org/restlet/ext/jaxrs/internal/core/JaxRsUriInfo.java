@@ -336,7 +336,7 @@ public class JaxRsUriInfo implements UriInfo {
                 .getAnonymousLogger()
                 .config(
                         "UriInfo.getAncestorResourceURIs() is not checked for coded or encoded.");
-        // LATER JaxRsUriBuilder.getAncestorResourceURIs(boolean decode).
+        // LATER de/encode: JaxRsUriBuilder.getAncestorResourceURIs(bool decode)
         if (decode && !decode)
             decode = false;
         return ancestorResourceURIsUnomd;
