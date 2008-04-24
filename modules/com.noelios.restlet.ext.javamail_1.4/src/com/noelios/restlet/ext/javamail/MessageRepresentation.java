@@ -23,6 +23,9 @@ import java.io.IOException;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Part;
+import javax.mail.internet.MimeBodyPart;
 
 import org.restlet.data.MediaType;
 import org.restlet.resource.DomRepresentation;
@@ -117,23 +120,64 @@ public class MessageRepresentation extends DomRepresentation {
                     DateUtils.FORMAT_RFC_1123.get(0)));
             head.appendChild(sent);
         }
+        email.appendChild(head);
 
-        // Add the email body
-        if (message.getContentType() != null) {
-            MediaType contentType = MediaType.valueOf(message.getContentType());
+        // Complete the XML representation with the text part of the message
+        Representation content = null;
+        if (message.getContent() instanceof Multipart) {
+            // Look for the text part of the mail.
+            Multipart multipart = (Multipart) message.getContent();
 
-            if (MediaType.TEXT_PLAIN.equals(contentType)) {
-                Representation content = new InputRepresentation(message
-                        .getInputStream(), contentType);
+            for (int i = 0, n = multipart.getCount(); i < n; i++) {
+                Part part = multipart.getBodyPart(i);
 
-                Element body = dom.createElement("body");
-                email.appendChild(head);
-
-                CDATASection bodyContent = dom.createCDATASection(content
-                        .getText());
-                body.appendChild(bodyContent);
+                String disposition = part.getDisposition();
+                if (disposition != null) {
+                    if (disposition.equals(Part.ATTACHMENT)
+                            || disposition.equals(Part.INLINE)) {
+                        // create a representation from part.getInputStream()
+                    }
+                } else {
+                    // Check if plain text
+                    MimeBodyPart mimeBodyPart = (MimeBodyPart) part;
+                    // Take care of getting the name of the media type, not its
+                    // parameters.
+                    // TODO to be enhanced in MediaType#valueOf?
+                    String[] tab = mimeBodyPart.getContentType().split(";");
+                    String mediaType = tab[0];
+                    MediaType contentType = MediaType.valueOf(mediaType);
+                    if (MediaType.TEXT_PLAIN.equals(contentType, true)) {
+                        content = new InputRepresentation(mimeBodyPart
+                                .getInputStream(), MediaType.TEXT_PLAIN);
+                        break;
+                    } else {
+                        // Special non-attachment cases here of
+                        // image/gif, text/html, ...
+                    }
+                }
+            }
+        } else {
+            // Add the email body
+            if (message.getContentType() != null) {
+                // Take care of getting the name of the media type, not its
+                // parameters.
+                // TODO to be enhanced in MediaType#valueOf?
+                String[] tab = message.getContentType().split(";");
+                String mediaType = tab[0];
+                MediaType contentType = MediaType.valueOf(mediaType);
+                if (MediaType.TEXT_PLAIN.equals(contentType, true)) {
+                    content = new InputRepresentation(message.getInputStream(),
+                            MediaType.TEXT_PLAIN);
+                }
             }
         }
-    }
+        if (content != null) {
+            Element body = dom.createElement("body");
 
+            CDATASection bodyContent = dom
+                    .createCDATASection(content.getText());
+            body.appendChild(bodyContent);
+            email.appendChild(body);
+        }
+    }
 }

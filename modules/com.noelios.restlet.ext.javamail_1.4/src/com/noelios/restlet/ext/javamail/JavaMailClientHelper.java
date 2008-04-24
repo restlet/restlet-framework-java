@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import javax.mail.FetchProfile;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -323,6 +324,10 @@ public class JavaMailClientHelper extends ClientHelper {
         props.put("mail." + transport + ".port", Integer.toString(popPort));
         props.put("mail." + transport + ".apop.enable", Boolean.toString(apop));
 
+        // States whether or not to update the folder by removing deleted
+        // messages.
+        boolean updateFolder = false;
+
         Session session = Session.getDefaultInstance(props);
         session.setDebug(isDebug());
         Store store = session.getStore(transport);
@@ -335,8 +340,15 @@ public class JavaMailClientHelper extends ClientHelper {
         inbox.fetch(messages, profile);
 
         if ((path == null) || path.equals("") || path.equals("/")) {
-            // Set the result document
-            response.setEntity(createRepresentation(messages, inbox));
+            if (Method.GET.equals(request.getMethod())
+                    || Method.HEAD.equals(request.getMethod())) {
+                // Set the result document
+                response.setEntity(createRepresentation(messages, inbox));
+            } else {
+                response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                response.getAllowedMethods().add(Method.GET);
+                response.getAllowedMethods().add(Method.HEAD);
+            }
         } else if (path.startsWith("/")) {
             // Retrieve the specified message
             String mailUid = path.substring(1);
@@ -355,11 +367,24 @@ public class JavaMailClientHelper extends ClientHelper {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
                         "No message matches the given UID: " + mailUid);
             } else {
-                // Set the result document
-                response.setEntity(createRepresentation(message));
+                if (Method.GET.equals(request.getMethod())
+                        || Method.HEAD.equals(request.getMethod())) {
+                    // Set the result document
+                    response.setEntity(createRepresentation(message));
+                } else if (Method.DELETE.equals(request.getMethod())) {
+                    message.setFlag(Flags.Flag.DELETED, true);
+                    updateFolder = true;
+                } else {
+                    response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                    response.getAllowedMethods().add(Method.GET);
+                    response.getAllowedMethods().add(Method.HEAD);
+                    response.getAllowedMethods().add(Method.DELETE);
+                }
             }
         }
 
+        inbox.close(updateFolder);
+        store.close();
     }
 
     /**
