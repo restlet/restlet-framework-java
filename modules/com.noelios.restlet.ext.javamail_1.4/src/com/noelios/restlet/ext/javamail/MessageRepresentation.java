@@ -37,6 +37,8 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.noelios.restlet.http.ContentType;
+
 /**
  * XML representation of a JavaMail message.
  * 
@@ -140,13 +142,10 @@ public class MessageRepresentation extends DomRepresentation {
                 } else {
                     // Check if plain text
                     MimeBodyPart mimeBodyPart = (MimeBodyPart) part;
-                    // Take care of getting the name of the media type, not its
-                    // parameters.
-                    // TODO to be enhanced in MediaType#valueOf?
-                    String[] tab = mimeBodyPart.getContentType().split(";");
-                    String mediaType = tab[0];
-                    MediaType contentType = MediaType.valueOf(mediaType);
-                    if (MediaType.TEXT_PLAIN.equals(contentType, true)) {
+                    ContentType contentType = new ContentType(mimeBodyPart
+                            .getContentType());
+                    if (MediaType.TEXT_PLAIN.equals(contentType.getMediaType(),
+                            true)) {
                         content = new InputRepresentation(mimeBodyPart
                                 .getInputStream(), MediaType.TEXT_PLAIN);
                         break;
@@ -159,13 +158,10 @@ public class MessageRepresentation extends DomRepresentation {
         } else {
             // Add the email body
             if (message.getContentType() != null) {
-                // Take care of getting the name of the media type, not its
-                // parameters.
-                // TODO to be enhanced in MediaType#valueOf?
-                String[] tab = message.getContentType().split(";");
-                String mediaType = tab[0];
-                MediaType contentType = MediaType.valueOf(mediaType);
-                if (MediaType.TEXT_PLAIN.equals(contentType, true)) {
+                ContentType contentType = new ContentType(message
+                        .getContentType());
+                if (MediaType.TEXT_PLAIN.equals(contentType.getMediaType(),
+                        true)) {
                     content = new InputRepresentation(message.getInputStream(),
                             MediaType.TEXT_PLAIN);
                 }
