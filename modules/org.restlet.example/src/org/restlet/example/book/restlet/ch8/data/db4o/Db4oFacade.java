@@ -36,7 +36,7 @@ public class Db4oFacade extends DataFacade {
     public Db4oFacade(String db4oFilePath) {
         super();
 
-        Configuration config = Db4o.configure();
+        Configuration config = Db4o.newConfiguration();
         config.updateDepth(2);
         config.activationDepth(10);
 
