@@ -24,15 +24,15 @@ import org.restlet.Restlet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.util.Resolver;
 
 import freemarker.template.Configuration;
 
 /**
  * Filter response's entity and wrap it with a FreeMarker's template
  * representation.<br>
- * The data model is based on the Resolver model.<br>
- * 
- * @see org.restlet.util.Resolver
+ * By default, the template representation provides a data model based on the
+ * request and response objects.<br>
  * 
  * @author Thierry Boileau (contact@noelios.com)
  */
@@ -40,6 +40,9 @@ public class TemplateFilter extends Filter {
 
     /** The FreeMarker configuration. */
     private volatile Configuration configuration;
+
+    /** The template's data model. */
+    private volatile Object dataModel;
 
     /**
      * Constructor.
@@ -73,6 +76,37 @@ public class TemplateFilter extends Filter {
         this.configuration = new Configuration();
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *                The context.
+     * @param next
+     *                The next Restlet.
+     * @param dataModel
+     *                The filter's data model.
+     */
+    public TemplateFilter(Context context, Restlet next, Object dataModel) {
+        this(context, next);
+        this.dataModel = dataModel;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *                The context.
+     * @param next
+     *                The next Restlet.
+     * @param dataModel
+     *                The filter's data model.
+     */
+    public TemplateFilter(Context context, Restlet next,
+            Resolver<Object> dataModel) {
+        this(context, next);
+        this.dataModel = dataModel;
+    }
+
     @Override
     protected void afterHandle(Request request, Response response) {
         if (response.isEntityAvailable()
@@ -81,7 +115,12 @@ public class TemplateFilter extends Filter {
             TemplateRepresentation representation = new TemplateRepresentation(
                     response.getEntity(), configuration, response.getEntity()
                             .getMediaType());
-            representation.setDataModel(request, response);
+
+            if (this.dataModel == null) {
+                representation.setDataModel(request, response);
+            } else {
+                representation.setDataModel(dataModel);
+            }
 
             response.setEntity(representation);
         }
@@ -105,4 +144,5 @@ public class TemplateFilter extends Filter {
     public void setConfiguration(Configuration config) {
         this.configuration = config;
     }
+
 }
