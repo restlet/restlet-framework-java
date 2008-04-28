@@ -19,6 +19,7 @@ package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.MediaType;
@@ -42,8 +44,10 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
+import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
  * This class wraps JAX-RS resource methods and sub resource methods.<br>
@@ -55,12 +59,18 @@ public class ResourceMethod extends AbstractMethodWrapper implements
         ResourceMethodOrLocator {
 
     /** @see ConsumeMime */
-    private List<MediaType> consumedMimes;
+    private volatile List<MediaType> consumedMimes;
 
-    private org.restlet.data.Method httpMethod;
+    private volatile org.restlet.data.Method httpMethod;
 
     /** @see ProduceMime */
-    private List<MediaType> producedMimes;
+    private volatile List<MediaType> producedMimes;
+
+    /**
+     * Contains the list of supported {@link Variant}s (lazy initialized by
+     * {@link #getSupportedVariants()}.
+     */
+    private volatile Collection<Variant> supportedVariants;
 
     /**
      * Creates a wrapper for a resource method.
@@ -83,19 +93,27 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      *                all entity providers
      * @param allCtxResolvers
      *                all ContextResolvers
+     * @param extensionBackwardMapping
+     *                the extension backward mapping
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws MissingAnnotationException
      * @throws IllegalArgumentException
      */
-    ResourceMethod(Method executeMethod, Method annotatedMethod,
-            ResourceClass resourceClass, org.restlet.data.Method httpMethod,
-            ThreadLocalizedContext tlContext, EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers, Logger logger)
-            throws IllegalPathOnMethodException, IllegalArgumentException,
-            MissingAnnotationException {
+    ResourceMethod(
+            Method executeMethod,
+            Method annotatedMethod,
+            ResourceClass resourceClass,
+            org.restlet.data.Method httpMethod,
+            ThreadLocalizedContext tlContext,
+            EntityProviders entityProviders,
+            Collection<ContextResolver<?>> allCtxResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping,
+            Logger logger) throws IllegalPathOnMethodException,
+            IllegalArgumentException, MissingAnnotationException {
         super(executeMethod, annotatedMethod, resourceClass, tlContext,
-                entityProviders, allCtxResolvers, true, logger);
+                entityProviders, allCtxResolvers, extensionBackwardMapping,
+                true, logger);
         this.httpMethod = httpMethod;
     }
 
@@ -268,5 +286,23 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     public String toString() {
         return this.getClass().getSimpleName() + "[" + executeMethod.toString()
                 + ", " + this.httpMethod + "]";
+    }
+
+    /**
+     * Returns the {@link Variant}s supported by this resource method.
+     * 
+     * @return the {@link Variant}s supported by this resource method.
+     */
+    public Collection<Variant> getSupportedVariants() {
+        if (this.supportedVariants == null) {
+            Collection<Variant> supportedVariants = new ArrayList<Variant>();
+            for (MediaType mediaType : this.getProducedMimes()) {
+                javax.ws.rs.core.MediaType mt;
+                mt = Converter.toJaxRsMediaType(mediaType);
+                supportedVariants.add(new Variant(mt, null, null));
+            }
+            this.supportedVariants = supportedVariants;
+        }
+        return this.supportedVariants;
     }
 }

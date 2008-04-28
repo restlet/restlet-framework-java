@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -95,12 +94,15 @@ import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExceptionMappers;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriterSubSet;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.Provider;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.WebAppExcMapper;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
+import org.restlet.service.MetadataService;
 
 /**
  * <p>
@@ -137,6 +139,8 @@ public class JaxRsRouter extends Restlet {
      */
     private final Collection<ContextResolver<?>> contextResolvers = new CopyOnWriteArraySet<ContextResolver<?>>();
 
+    private final ExtensionBackwardMapping extensionBackwardMapping;
+
     private final WrapperFactory wrapperFactory;
 
     /**
@@ -159,7 +163,7 @@ public class JaxRsRouter extends Restlet {
     private final Collection<Provider<?>> allProviders = new CopyOnWriteArrayList<Provider<?>>();
 
     /**
-     * Contains the thread localized {@link CallContext}.
+     * Contains the thread localized {@link CallContext}s.
      */
     @SuppressWarnings("unchecked")
     private final ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
@@ -172,16 +176,18 @@ public class JaxRsRouter extends Restlet {
      * has a role, the request is returned with HTTP status 500 (Internal Server
      * Error), see {@link SecurityContext#isUserInRole(String)}. You may set a
      * {@link RoleChecker} by using the constructor
-     * {@link JaxRsRouter#JaxRsRouter(Context, RoleChecker)} or method
-     * {@link #setRoleChecker(RoleChecker)}.
+     * {@link JaxRsRouter#JaxRsRouter(Context, RoleChecker, MetadataService)} or
+     * method {@link #setRoleChecker(RoleChecker)}.
      * 
      * @param context
      *                the context from the parent, see
      *                {@link Restlet#Restlet(Context)}.
-     * @see #JaxRsRouter(Context, RoleChecker)
+     * @param metadataService
+     *                the metadata service of the {@link JaxRsApplication}.
+     * @see #JaxRsRouter(Context, RoleChecker, MetadataService)
      */
-    public JaxRsRouter(Context context) {
-        this(context, null);
+    public JaxRsRouter(Context context, MetadataService metadataService) {
+        this(context, null, metadataService);
     }
 
     /**
@@ -196,13 +202,19 @@ public class JaxRsRouter extends Restlet {
      *                control, you can use the {@link RoleChecker#FORBID_ALL},
      *                the {@link RoleChecker#ALLOW_ALL} or the
      *                {@link RoleChecker#REJECT_WITH_ERROR}.
-     * @see #JaxRsRouter(Context)
+     * @param metadataService
+     *                the metadata service of the {@link JaxRsApplication}.
+     * @see #JaxRsRouter(Context, MetadataService)
      */
-    public JaxRsRouter(Context context, RoleChecker roleChecker) {
+    public JaxRsRouter(Context context, RoleChecker roleChecker,
+            MetadataService metadataService) {
         super(context);
+        this.extensionBackwardMapping = new ExtensionBackwardMapping(
+                metadataService);
         this.excHandler = new ExceptionHandler(getLogger());
         this.wrapperFactory = new WrapperFactory(tlContext,
-                this.entityProviders, this.contextResolvers, getLogger());
+                this.entityProviders, this.contextResolvers,
+                extensionBackwardMapping, getLogger());
         this.loadDefaultProviders();
         if (roleChecker != null)
             this.setRoleChecker(roleChecker);
@@ -225,6 +237,9 @@ public class JaxRsRouter extends Restlet {
         this.addProvider(WwwFormFormProvider.class, true);
         this.addProvider(WwwFormMmapProvider.class, true);
         this.addProvider(SourceProvider.class, true);
+
+        this.addProvider(ExceptionMappers.ServerErrorExcMapper.class, true);
+        this.addProvider(WebAppExcMapper.class, true);
     }
 
     /**
@@ -331,7 +346,7 @@ public class JaxRsRouter extends Restlet {
         try {
             provider = new Provider<Object>(jaxRsProviderClass, objectFactory,
                     tlContext, this.entityProviders, contextResolvers,
-                    getLogger());
+                    extensionBackwardMapping, getLogger());
         } catch (InstantiateException e) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
                     + "Could not instantiate the Provider, class "
@@ -374,7 +389,8 @@ public class JaxRsRouter extends Restlet {
     @SuppressWarnings("unchecked")
     public void start() throws Exception {
         for (Provider<?> provider : allProviders)
-            provider.init(tlContext, entityProviders, contextResolvers);
+            provider.init(tlContext, entityProviders, contextResolvers,
+                    extensionBackwardMapping);
         super.start();
     }
 
@@ -408,7 +424,7 @@ public class JaxRsRouter extends Restlet {
             } catch (WebApplicationException e) {
                 // the message of the Exception is not used in the
                 // WebApplicationException
-                jaxRsRespToRestletResp(e.getResponse(), null);
+                jaxRsRespToRestletResp(this.excMappers.convert(e), null);
                 return;
             }
         } catch (RequestHandledException e) {
@@ -426,8 +442,7 @@ public class JaxRsRouter extends Restlet {
      */
     private ResObjAndMeth requestMatching() throws RequestHandledException,
             WebApplicationException {
-        CallContext callContext = tlContext.get();
-        Request restletRequest = callContext.getRequest();
+        Request restletRequest = tlContext.get().getRequest();
         // Part 1
         RemainingPath u = new RemainingPath(restletRequest.getResourceRef()
                 .getRemainingPart());
@@ -495,13 +510,17 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Instantiates the root resource class and handle occuring exceptions.
+     * Instantiates the root resource class and handles thrown exceptions.
      * 
      * @param rrc
      *                the root resource class to instantiate
      * @return the instance of the root resource
      * @throws WebApplicationException
+     *                 if a WebApplicationException was thrown while creating
+     *                 the instance.
      * @throws RequestHandledException
+     *                 If an Exception was thrown and the request is already
+     *                 handeled.
      */
     private ResourceObject instantiateRrc(RootResourceClass rrc)
             throws WebApplicationException, RequestHandledException {
@@ -538,9 +557,8 @@ public class JaxRsRouter extends Restlet {
         ResourceObject o = rroRemPathAndMatchedPath.rootResObj;
         RemainingPath u = rroRemPathAndMatchedPath.u;
         ResourceClass resClass = o.getResourceClass();
-        Object jaxRsResObj1 = o.getJaxRsResourceObject();
         CallContext callContext = tlContext.get();
-        callContext.addForAncestor(jaxRsResObj1,
+        callContext.addForAncestor(o.getJaxRsResourceObject(),
                 rroRemPathAndMatchedPath.matchedUriPath);
         // Part 2
         for (;;) // (j)
@@ -567,7 +585,7 @@ public class JaxRsRouter extends Restlet {
             }
             // (e) If E is empty -> HTTP 404
             if (eWithMethod.isEmpty())
-                excHandler.resourceNotFound();
+                excHandler.resourceNotFound();// NICE (o.getClass(), u);
             // (f) and (g) sort E, use first member of E
             ResourceMethodOrLocator firstMeth = getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eWithMethod);
 
@@ -580,8 +598,8 @@ public class JaxRsRouter extends Restlet {
             if (firstMeth instanceof ResourceMethod)
                 return new ResObjAndRemPath(o, u);
             String matchedUriPart = matchingResult.getMatched();
-            Object jaxRsResObj2 = o.getJaxRsResourceObject();
-            callContext.addForAncestor(jaxRsResObj2, matchedUriPart);
+            Object jaxRsResObj = o.getJaxRsResourceObject();
+            callContext.addForAncestor(jaxRsResObj, matchedUriPart);
 
             // (g) and (i)
             u = matchingResult.getFinalCapturingGroup();
@@ -636,7 +654,7 @@ public class JaxRsRouter extends Restlet {
         Collection<ResourceMethod> resourceMethods = resourceClass
                 .getMethodsForPath(u);
         if (resourceMethods.isEmpty())
-            excHandler.resourceMethodNotFound();
+            excHandler.resourceMethodNotFound();// NICE (resourceClass, u);
         // (a) 2: remove methods not support the given method
         boolean alsoGet = httpMethod.equals(Method.HEAD);
         removeNotSupportedHttpMethod(resourceMethods, httpMethod, alsoGet);
@@ -651,26 +669,26 @@ public class JaxRsRouter extends Restlet {
         }
         // (a) 3
         if (givenMediaType != null) {
-            Iterator<ResourceMethod> methodIter = resourceMethods.iterator();
-            while (methodIter.hasNext()) {
-                ResourceMethod resourceMethod = methodIter.next();
-                if (!resourceMethod.isGivenMediaTypeSupported(givenMediaType))
-                    methodIter.remove();
+            Collection<ResourceMethod> supporting = resourceMethods;
+            resourceMethods = new ArrayList<ResourceMethod>();
+            for (ResourceMethod resourceMethod : supporting) {
+                if (resourceMethod.isGivenMediaTypeSupported(givenMediaType))
+                    resourceMethods.add(resourceMethod);
             }
             if (resourceMethods.isEmpty())
-                excHandler.unsupportedMediaType();
+                excHandler.unsupportedMediaType(supporting);
         }
         // (a) 4
         SortedMetadata<MediaType> accMediaTypes = callContext
                 .getAccMediaTypes();
-        Iterator<ResourceMethod> methodIter = resourceMethods.iterator();
-        while (methodIter.hasNext()) {
-            ResourceMethod resourceMethod = methodIter.next();
-            if (!resourceMethod.isAcceptedMediaTypeSupported(accMediaTypes))
-                methodIter.remove();
+        Collection<ResourceMethod> supporting = resourceMethods;
+        resourceMethods = new ArrayList<ResourceMethod>();
+        for (ResourceMethod resourceMethod : supporting) {
+            if (resourceMethod.isAcceptedMediaTypeSupported(accMediaTypes))
+                resourceMethods.add(resourceMethod);
         }
         if (resourceMethods.isEmpty()) {
-            excHandler.noResourceMethodForAccMediaTypes();
+            excHandler.noResourceMethodForAccMediaTypes(supporting);
         }
         // (b) and (c)
         ResourceMethod bestResourceMethod = getBestMethod(resourceMethods,
@@ -873,7 +891,8 @@ public class JaxRsRouter extends Restlet {
                 accMediaTypes);
         Response response = tlContext.get().getResponse();
         if (mbw == null)
-            excHandler.noMessageBodyWriter();
+            excHandler.noMessageBodyWriter();// NICE accMediaTypes,
+        // entityClass);
         MediaType mediaType;
         if (responseMediaType != null)
             mediaType = responseMediaType;

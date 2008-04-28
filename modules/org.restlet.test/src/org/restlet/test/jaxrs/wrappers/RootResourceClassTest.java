@@ -47,7 +47,7 @@ public class RootResourceClassTest extends TestCase {
 
     public void testEncodePath() throws Exception {
         WrapperFactory wrapperFactory = new WrapperFactory(
-                new ThreadLocalizedContext(), null, null, Logger
+                new ThreadLocalizedContext(), null, null, null, Logger
                         .getAnonymousLogger());
         try {
             wrapperFactory.getRootResourceClass(IllegalPathService1.class);

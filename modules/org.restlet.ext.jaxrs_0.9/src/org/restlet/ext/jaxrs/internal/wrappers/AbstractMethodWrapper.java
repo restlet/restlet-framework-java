@@ -36,6 +36,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 
 /**
@@ -78,6 +79,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             ResourceClass resourceClass, ThreadLocalizedContext tlContext,
             EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping,
             boolean entityAllowed, Logger logger)
             throws IllegalPathOnMethodException, IllegalArgumentException,
             MissingAnnotationException {
@@ -94,7 +96,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             this.leaveEncoded = false;
         this.parameters = new ParameterList(executeMethod, annotatedMethod,
                 tlContext, this.leaveEncoded, entityProviders, allCtxResolvers,
-                entityAllowed, logger);
+                extensionBackwardMapping, entityAllowed, logger);
     }
 
     static class ContextHolder implements ParameterList.InjectObjectGetter {
@@ -113,9 +115,8 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
 
     }
 
-    static class EntityGetter extends
-            ParameterList.AbstractInjectObjectGetter implements
-            ParameterList.InjectObjectGetter {
+    static class EntityGetter extends ParameterList.AbstractInjectObjectGetter
+            implements ParameterList.InjectObjectGetter {
 
         private final Annotation[] annotations;
 

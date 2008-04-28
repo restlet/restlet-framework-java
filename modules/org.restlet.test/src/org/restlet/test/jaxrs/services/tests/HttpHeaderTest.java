@@ -17,9 +17,19 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
+import static javax.ws.rs.core.MediaType.TEXT_HTML_TYPE;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.ws.rs.core.ApplicationConfig;
 
 import org.restlet.Restlet;
 import org.restlet.data.ClientInfo;
@@ -41,6 +51,38 @@ import org.restlet.test.jaxrs.services.resources.HttpHeaderTestService;
  */
 @SuppressWarnings("all")
 public class HttpHeaderTest extends JaxRsTestCase {
+
+    public static void main(String[] args) throws Exception {
+        new HttpHeaderTest().runServerUntilKeyPressed();
+    }
+
+    /**
+     * @return
+     */
+    protected ApplicationConfig getAppConfig() {
+        ApplicationConfig appConfig = new ApplicationConfig() {
+            @Override
+            public Set<Class<?>> getProviderClasses() {
+                return (Set) getProvClasses();
+            }
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getResourceClasses() {
+                return (Set) Collections.singleton(getRootResourceClass());
+            }
+
+            @Override
+            public Map<String, javax.ws.rs.core.MediaType> getMediaTypeMappings() {
+                Map<String, javax.ws.rs.core.MediaType> mediaTypeMapping = new HashMap<String, javax.ws.rs.core.MediaType>();
+                mediaTypeMapping.put("txt", TEXT_PLAIN_TYPE);
+                mediaTypeMapping.put("html", TEXT_HTML_TYPE);
+                mediaTypeMapping.put("xml", APPLICATION_XML_TYPE);
+                return mediaTypeMapping;
+            }
+        };
+        return appConfig;
+    }
 
     @Override
     protected Class<?> getRootResourceClass() {

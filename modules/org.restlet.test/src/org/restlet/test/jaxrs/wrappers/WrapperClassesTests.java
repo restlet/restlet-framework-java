@@ -41,7 +41,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 public class WrapperClassesTests extends TestCase {
 
     private static final WrapperFactory wrapperFactory = new WrapperFactory(
-            new ThreadLocalizedContext(), null, null, Logger
+            new ThreadLocalizedContext(), null, null, null, Logger
                     .getAnonymousLogger());
 
     /**

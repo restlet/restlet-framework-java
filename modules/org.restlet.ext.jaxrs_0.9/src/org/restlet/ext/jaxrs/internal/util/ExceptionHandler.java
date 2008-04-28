@@ -19,12 +19,15 @@ package org.restlet.ext.jaxrs.internal.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
@@ -35,8 +38,11 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.internal.exceptions.NotAcceptableWebAppException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
+import org.restlet.ext.jaxrs.internal.exceptions.UnsupportedMediaTypeWebAppException;
 import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 
 /**
  * <p>
@@ -55,6 +61,18 @@ import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
 public class ExceptionHandler {
 
     private static final String HEADER_ALLOW = "Allow";
+
+    /**
+     * @param supporting
+     * @return
+     */
+    private static Set<Variant> getSupportedVariants(
+            Collection<ResourceMethod> supporting) {
+        Set<Variant> supportedVariants = new HashSet<Variant>();
+        for (ResourceMethod resourceMethod : supporting)
+            supportedVariants.addAll(resourceMethod.getSupportedVariants());
+        return supportedVariants;
+    }
 
     private final Logger logger;
 
@@ -185,22 +203,29 @@ public class ExceptionHandler {
     /**
      * see spec, section 4.3.2, item 7
      * 
+     * @param accMediaTypes
+     * @param entityClass
+     * 
      * @return staticly to throw, if needed by compiler.
      */
-    public RequestHandledException noMessageBodyWriter() {
-        // REQUESTED return supported MediaTypes as entity
+    public WebApplicationException noMessageBodyWriter() {
+        // NICE return supported MediaTypes as entity
         throw new WebApplicationException(Status.NOT_ACCEPTABLE);
     }
 
     /**
      * see spec, section 3.7.2, item 3(a).4
      * 
+     * @param supporting
+     *                the methods supporting the requested resource and the
+     *                given HTTP method.
      * @throws WebApplicationException
      */
-    public void noResourceMethodForAccMediaTypes()
+    public void noResourceMethodForAccMediaTypes(
+            Collection<ResourceMethod> supporting)
             throws WebApplicationException {
-        // REQUESTED return supported MediaTypes as entity
-        throw new WebApplicationException(Status.NOT_ACCEPTABLE);
+        Set<Variant> supportedVariants = getSupportedVariants(supporting);
+        throw new NotAcceptableWebAppException(supportedVariants);
     }
 
     /**
@@ -211,7 +236,7 @@ public class ExceptionHandler {
      */
     public WebApplicationException notAcceptableWhileDetermineMediaType()
             throws WebApplicationException {
-        // REQUESTED return supported MediaTypes as entity
+        // NICE return supported MediaTypes as entity
         throw new WebApplicationException(Status.NOT_ACCEPTABLE);
     }
 
@@ -276,10 +301,14 @@ public class ExceptionHandler {
     /**
      * see spec, section 3.7.2, item 3 (a) .3
      * 
+     * @param accepting
+     *                resource methods for the requested resource and the given
+     *                HTTP method.
      * @throws WebApplicationException
      */
-    public void unsupportedMediaType() throws WebApplicationException {
-        // REQUESTED return allowed Media types
-        throw new WebApplicationException(Status.UNSUPPORTED_MEDIA_TYPE);
+    public void unsupportedMediaType(Collection<ResourceMethod> accepting)
+            throws WebApplicationException {
+        Set<Variant> acceptedVariants = getSupportedVariants(accepting);
+        throw new UnsupportedMediaTypeWebAppException(acceptedVariants);
     }
 }

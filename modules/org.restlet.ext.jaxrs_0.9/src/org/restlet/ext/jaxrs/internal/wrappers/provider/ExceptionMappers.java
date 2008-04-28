@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -38,9 +37,15 @@ import javax.ws.rs.ext.ExceptionMapper;
  */
 public class ExceptionMappers {
 
-    private static final ServerErrorExcMapper SERVER_ERROR_EXC_MAPPER = new ServerErrorExcMapper();
+    /**
+     * The {@link ExceptionMapper} used for {@link Throwable}s.
+     */
+    public static final ServerErrorExcMapper SERVER_ERROR_EXC_MAPPER = new ServerErrorExcMapper();
 
-    static class ServerErrorExcMapper implements ExceptionMapper<Throwable> {
+    /**
+     * The {@link ExceptionMapper} used for {@link Throwable}s.
+     */
+    public static class ServerErrorExcMapper implements ExceptionMapper<Throwable> {
 
         /**
          * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
@@ -53,18 +58,6 @@ public class ExceptionMappers {
         }
     }
 
-    static class WebAppExcMapper implements
-            ExceptionMapper<WebApplicationException> {
-        /**
-         * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
-         */
-        public Response toResponse(WebApplicationException wae) {
-            // NICE if 405 (unsupported MediaType) check for WebAppExc
-            // proprietary subclass and request the Variants
-            return wae.getResponse();
-        }
-    }
-
     private static final Logger localLogger = Logger
             .getLogger("ExceptionsMapper");
 
@@ -74,7 +67,6 @@ public class ExceptionMappers {
      * Creates a new ExceptionMapper
      */
     public ExceptionMappers() {
-        init();
     }
 
     /**
@@ -174,15 +166,5 @@ public class ExceptionMappers {
             // this.excMappers.put(superclass, mapper);
         }
         return mapper;
-    }
-
-    void init() {
-        this.add(SERVER_ERROR_EXC_MAPPER);
-        this.add(new WebAppExcMapper());
-    }
-
-    void reset() {
-        this.excMappers.clear();
-        init();
     }
 }

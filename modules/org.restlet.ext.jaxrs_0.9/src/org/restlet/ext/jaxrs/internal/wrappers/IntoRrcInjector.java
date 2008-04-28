@@ -37,6 +37,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.ParameterList.HeaderParamInjector
 import org.restlet.ext.jaxrs.internal.wrappers.ParameterList.MatrixParamInjector;
 import org.restlet.ext.jaxrs.internal.wrappers.ParameterList.PathParamInjector;
 import org.restlet.ext.jaxrs.internal.wrappers.ParameterList.QueryParamInjector;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
  * Helper class to inject into fields for &#64;*Param into root resource
@@ -54,11 +55,14 @@ class IntoRrcInjector extends ContextInjector {
      *                all entity providers.
      * @param allResolvers
      *                all available {@link ContextResolver}s.
+     * @param extensionBackwardMapping
      */
     IntoRrcInjector(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             boolean leaveEncoded, MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers) {
-        super(jaxRsClass, tlContext, mbWorkers, allResolvers);
+            Collection<ContextResolver<?>> allResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping) {
+        super(jaxRsClass, tlContext, mbWorkers, allResolvers,
+                extensionBackwardMapping);
         this.init(jaxRsClass, tlContext, leaveEncoded);
     }
 

@@ -37,8 +37,10 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * @author Stephan Koops
  */
 @Provider
-@ProduceMime( { "text/*", MediaType.APPLICATION_JSON })
-@ConsumeMime( { "text/*", MediaType.APPLICATION_JSON })
+@ProduceMime( { "text/*", MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_XML, "application/*+xml" })
+@ConsumeMime( { "text/*", MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_XML, "application/*+xml" })
 public class StringProvider extends AbstractProvider<CharSequence> {
 
     /**
@@ -78,6 +80,7 @@ public class StringProvider extends AbstractProvider<CharSequence> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
+        // NICE optimize by remove toString(), if useful
         byte[] array = cs.toString().getBytes();
         entityStream.write(array);
     }

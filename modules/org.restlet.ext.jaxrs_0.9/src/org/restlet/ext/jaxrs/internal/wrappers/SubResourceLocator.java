@@ -39,6 +39,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
  * A method of a resource class that is used to locate sub-resources of the
@@ -65,6 +66,8 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                all entity providers
      * @param allCtxResolvers
      *                all ContextResolvers
+     * @param extensionBackwardMapping
+     *                the extension backward mapping
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws MissingAnnotationException
@@ -73,11 +76,13 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
     SubResourceLocator(Method javaMethod, Method annotatedMethod,
             ResourceClass resourceClass, ThreadLocalizedContext tlContext,
             EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers, Logger logger)
+            Collection<ContextResolver<?>> allCtxResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalPathOnMethodException, IllegalArgumentException,
             MissingAnnotationException {
         super(javaMethod, annotatedMethod, resourceClass, tlContext,
-                entityProviders, allCtxResolvers, false, logger);
+                entityProviders, allCtxResolvers, extensionBackwardMapping,
+                false, logger);
     }
 
     /**

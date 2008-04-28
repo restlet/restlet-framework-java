@@ -37,6 +37,7 @@ import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
  * Helper class to inject into fields annotated with &#64;{@link Context}.
@@ -167,12 +168,16 @@ public class ContextInjector {
      *                all entity providers.
      * @param allResolvers
      *                all available {@link ContextResolver}s.
+     * @param extensionBackwardMapping
+     *                the extension backward mapping
      * @throws ImplementationException
      */
     public ContextInjector(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers) {
-        this.init(jaxRsClass, tlContext, mbWorkers, allResolvers);
+            Collection<ContextResolver<?>> allResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping) {
+        this.init(jaxRsClass, tlContext, mbWorkers, allResolvers,
+                extensionBackwardMapping);
     }
 
     /**
@@ -185,10 +190,13 @@ public class ContextInjector {
      *                all entity providers.
      * @param allResolvers
      *                all available {@link ContextResolver}s.
+     * @param extensionBackwardMapping
+     *                the extension backward mapping
      */
     private void init(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers) {
+            Collection<ContextResolver<?>> allResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping) {
         do {
             for (Field field : jaxRsClass.getDeclaredFields()) {
                 field.setAccessible(true);
@@ -196,9 +204,9 @@ public class ContextInjector {
                     InjectionAim aim = new FieldWrapper(field);
                     Class<?> declaringClass = field.getType();
                     Type genericType = field.getGenericType();
-                    EverSameInjector injector = getInjector(tlContext,
-                            mbWorkers, allResolvers, aim, declaringClass,
-                            genericType);
+                    EverSameInjector injector = getInjector(declaringClass,
+                            genericType, aim, tlContext, mbWorkers,
+                            allResolvers, extensionBackwardMapping);
                     injEverSameAims.add(injector);
                 }
             }
@@ -207,9 +215,9 @@ public class ContextInjector {
                     BeanSetter aim = new BeanSetter(method);
                     Class<?> paramClass = method.getParameterTypes()[0];
                     Type genericType = method.getGenericParameterTypes()[0];
-                    EverSameInjector injector = getInjector(tlContext,
-                            mbWorkers, allResolvers, aim, paramClass,
-                            genericType);
+                    EverSameInjector injector = getInjector(paramClass,
+                            genericType, aim, tlContext, mbWorkers,
+                            allResolvers, extensionBackwardMapping);
                     injEverSameAims.add(injector);
                 }
             }
@@ -217,31 +225,36 @@ public class ContextInjector {
         } while (jaxRsClass != null);
     }
 
-    static EverSameInjector getInjector(ThreadLocalizedContext tlContext,
-            MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers, InjectionAim aim,
-            Class<?> declaringClass, Type genericType) {
-        return new EverSameInjector(aim, getInjectObject(tlContext, mbWorkers,
-                allResolvers, declaringClass, genericType));
+    static EverSameInjector getInjector(Class<?> declaringClass,
+            Type genericType, InjectionAim aim,
+            ThreadLocalizedContext tlContext, MessageBodyWorkers mbWorkers,
+            Collection<ContextResolver<?>> allResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping) {
+        return new EverSameInjector(aim, getInjectObject(declaringClass,
+                genericType, tlContext, mbWorkers, allResolvers,
+                extensionBackwardMapping));
     }
 
     /**
+     * @param declaringClass
+     * @param genericType
      * @param tlContext
      * @param mbWorkers
      * @param allCtxResolvers
+     * @param extensionBackwardMapping
      * @param aim
-     * @param declaringClass
-     * @param genericType
      * @return
      */
-    static Object getInjectObject(ThreadLocalizedContext tlContext,
-            MessageBodyWorkers mbWorkers,
+    static Object getInjectObject(Class<?> declaringClass, Type genericType,
+            ThreadLocalizedContext tlContext, MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allCtxResolvers,
-            Class<?> declaringClass, Type genericType) {
+            ExtensionBackwardMapping extensionBackwardMapping) {
         if (declaringClass.equals(MessageBodyWorkers.class))
             return mbWorkers;
         if (declaringClass.equals(ContextResolver.class))
             return getContextResolver(genericType, allCtxResolvers);
+        if (declaringClass.equals(ExtensionBackwardMapping.class))
+            return extensionBackwardMapping;
         return tlContext;
     }
 

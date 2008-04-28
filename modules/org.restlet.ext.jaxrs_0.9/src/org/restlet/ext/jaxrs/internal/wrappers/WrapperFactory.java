@@ -30,6 +30,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
  * A WrapperFactory creates and caches some of the wrapper objects.
@@ -46,6 +47,8 @@ public class WrapperFactory {
 
     private final ThreadLocalizedContext tlContext;
 
+    private final ExtensionBackwardMapping extensionBackwardMapping;
+
     private final Map<Class<?>, ResourceClass> resourceClasses = new HashMap<Class<?>, ResourceClass>();
 
     /**
@@ -54,15 +57,19 @@ public class WrapperFactory {
      *                {@link JaxRsRouter}.
      * @param entityProviders
      * @param allCtxResolvers
+     * @param extensionBackwardMapping
+     *                the extension backward mapping
      * @param logger
      *                the to log warnings and so on
      */
     public WrapperFactory(ThreadLocalizedContext tlContext,
             EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers, Logger logger) {
+            Collection<ContextResolver<?>> allCtxResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger) {
         this.tlContext = tlContext;
         this.entityProviders = entityProviders;
         this.allCtxResolvers = allCtxResolvers;
+        this.extensionBackwardMapping = extensionBackwardMapping;
         this.logger = logger;
     }
 
@@ -83,7 +90,8 @@ public class WrapperFactory {
         }
         if (rc == null) {
             rc = new ResourceClass(jaxRsResourceClass, tlContext,
-                    entityProviders, allCtxResolvers, logger);
+                    entityProviders, allCtxResolvers, extensionBackwardMapping,
+                    logger);
             synchronized (this.resourceClasses) {
                 resourceClasses.put(jaxRsResourceClass, rc);
             }
@@ -109,6 +117,7 @@ public class WrapperFactory {
             MissingAnnotationException, IllegalPathOnClassException,
             MissingConstructorException {
         return new RootResourceClass(jaxRsRootResourceClass, tlContext,
-                entityProviders, allCtxResolvers, logger);
+                entityProviders, allCtxResolvers, extensionBackwardMapping,
+                logger);
     }
 }

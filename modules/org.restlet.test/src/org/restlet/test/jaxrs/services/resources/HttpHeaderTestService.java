@@ -50,6 +50,18 @@ public class HttpHeaderTestService {
     public static final String TEST_HEADER_NAME = "testHeader";
 
     @GET
+    @ProduceMime("text/plain")
+    public String getPlain() {
+        return "media type text/plain is supported\n";
+    }
+
+    @GET
+    @ProduceMime({"text/xml", MediaType.APPLICATION_XML})
+    public String getXML() {
+        return "<text>the media types text/xml and application/xml are supported</text>\n";
+    }
+
+    @GET
     @Path("HeaderParam")
     @ProduceMime("text/plain")
     public String getHeaderParam(
@@ -68,7 +80,7 @@ public class HttpHeaderTestService {
     @GET
     @Path("cookies/{cookieName}")
     @ProduceMime("text/plain")
-    public String getMediaTypes(@Context HttpHeaders headers,
+    public String getCookies(@Context HttpHeaders headers,
             @PathParam("cookieName") String cookieName) {
         Map<String, Cookie> cookies = headers.getCookies();
         try {
@@ -93,7 +105,7 @@ public class HttpHeaderTestService {
 
     @POST
     @Path("language")
-    @ProduceMime("text/plain")
+    @ProduceMime({"text/plain", "text/html"})
     public String getLanguage(@Context HttpHeaders headers) {
         return headers.getLanguage();
     }

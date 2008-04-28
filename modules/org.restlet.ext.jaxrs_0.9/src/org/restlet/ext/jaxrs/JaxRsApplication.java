@@ -49,7 +49,7 @@ import org.restlet.service.TunnelService;
  * </p>
  * <p>
  * To set up a JAX-RS runtime environment you should instantiate a
- * {@link JaxRsApplication}.
+ * {@link JaxRsApplication#JaxRsApplication(Context)}.
  * <ul>
  * <li>Attach your {@link ApplicationConfig}(s) by calling
  * {@link #attach(ApplicationConfig)}.</li>
@@ -109,7 +109,7 @@ public class JaxRsApplication extends Application {
     public JaxRsApplication(Context parentContext) {
         super(parentContext);
         this.getTunnelService().setExtensionsTunnel(false);
-        this.jaxRsRouter = new JaxRsRouter(getContext());
+        this.jaxRsRouter = new JaxRsRouter(getContext(), getMetadataService());
     }
 
     /**
@@ -144,7 +144,7 @@ public class JaxRsApplication extends Application {
      * <p>
      * Attaches an {@link ApplicationConfig} to this Application.<br>
      * The providers are available for all root resource classes provided to
-     * this JaxRsRouter. If you won't mix them, instantiate another
+     * this JaxRsApplication. If you won't mix them, instantiate another
      * JaxRsApplication.
      * </p>
      * <p>
@@ -155,26 +155,29 @@ public class JaxRsApplication extends Application {
      * 
      * @param appConfig
      *                Contains the classes to load as root resource classes and
-     *                as providers.
+     *                as providers. Invalid root resource classes and provider
+     *                classes are ignored, according to JAX-RS specification.
      * @return true, if all resource classes and providers could be added, or
      *         false if not.
      * @throws IllegalArgumentException
      *                 if the appConfig is null.
      * @see #attach(ApplicationConfig, boolean)
      */
-    public boolean attach(ApplicationConfig appConfig) {
+    public boolean attach(ApplicationConfig appConfig)
+            throws IllegalArgumentException {
         return attach(appConfig, true);
     }
 
     /**
      * Attaches an {@link ApplicationConfig} to this Application.<br>
      * The providers are available for all root resource classes provided to
-     * this JaxRsRouter. If you won't mix them, instantiate another
+     * this JaxRsApplication. If you won't mix them, instantiate another
      * JaxRsApplication.
      * 
      * @param appConfig
      *                Contains the classes to load as root resource classes and
-     *                as providers.
+     *                as providers. Invalid root resource classes and provider
+     *                classes are ignored, according to JAX-RS specification.
      * @param clearMetadataIfFirst
      *                If this flag is true and the given ApplicationConfig is
      *                the first attached ApplicationConfig, the default

@@ -41,6 +41,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
  * Instances represents a root resource class.
@@ -83,6 +84,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      *                all entity providers
      * @param allCtxResolvers
      *                all ContextResolvers
+     * @param extensionBackwardMapping
+     *                the extension backward mapping
      * @param logger
      *                The logger to log warnings, if the class is not valid.
      * @throws MissingAnnotationException
@@ -91,13 +94,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     ResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers, Logger logger)
+            Collection<ContextResolver<?>> allCtxResolvers, ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException {
         super();
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         this.jaxRsClass = jaxRsClass;
         this.initResourceMethodsAndLocators(tlContext, entityProviders,
-                allCtxResolvers, logger);
+                allCtxResolvers, extensionBackwardMapping, logger);
     }
 
     /**
@@ -111,6 +114,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      *                all entity providers
      * @param allCtxResolvers
      *                all ContextResolvers
+     * @param extensionBackwardMapping
+     *                the extension backward mapping
      * @param logger
      * @param sameLogger
      *                the subclass RootResourceClass must call this constructor.
@@ -123,15 +128,15 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     protected ResourceClass(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers, Logger logger,
-            @SuppressWarnings("unused")
+            Collection<ContextResolver<?>> allCtxResolvers, ExtensionBackwardMapping extensionBackwardMapping,
+            Logger logger, @SuppressWarnings("unused")
             Logger sameLogger) throws IllegalArgumentException,
             IllegalPathOnClassException, MissingAnnotationException {
         super(PathRegExp.createForClass(jaxRsClass));
         this.leaveEncoded = false; // LATER de/encode: leaveEncoded = false ?
         this.jaxRsClass = jaxRsClass;
         this.initResourceMethodsAndLocators(tlContext, entityProviders,
-                allCtxResolvers, logger);
+                allCtxResolvers, extensionBackwardMapping, logger);
     }
 
     /**
@@ -352,7 +357,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     private void initResourceMethodsAndLocators(
             ThreadLocalizedContext tlContext, EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers, Logger logger)
+            Collection<ContextResolver<?>> allCtxResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException {
         Collection<ResourceMethodOrLocator> srmls = new ArrayList<ResourceMethodOrLocator>();
         Collection<ResourceMethod> subRsesMeths = new ArrayList<ResourceMethod>();
@@ -371,7 +377,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                         continue;
                     ResourceMethod subResMeth = new ResourceMethod(execMethod,
                             annotatedMethod, this, httpMethod, tlContext,
-                            entityProviders, allCtxResolvers, logger);
+                            entityProviders, allCtxResolvers,
+                            extensionBackwardMapping, logger);
                     subRsesMeths.add(subResMeth);
                     srmls.add(subResMeth);
                     checkForPrimitiveParameters(execMethod, logger);
@@ -382,7 +389,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                             continue;
                         SubResourceLocator subResLoc = new SubResourceLocator(
                                 execMethod, annotatedMethod, this, tlContext,
-                                entityProviders, allCtxResolvers, logger);
+                                entityProviders, allCtxResolvers, extensionBackwardMapping, logger);
                         subResLocs.add(subResLoc);
                         srmls.add(subResLoc);
                         checkForPrimitiveParameters(execMethod, logger);

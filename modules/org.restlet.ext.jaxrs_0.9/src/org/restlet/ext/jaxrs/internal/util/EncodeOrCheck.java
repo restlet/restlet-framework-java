@@ -419,7 +419,7 @@ public class EncodeOrCheck {
 
     /**
      * @param path
-     *                must not be null.
+     *                the path to check; must not be null.
      * @param encode
      * @return
      */

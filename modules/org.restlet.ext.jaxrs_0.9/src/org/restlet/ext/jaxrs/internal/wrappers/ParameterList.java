@@ -65,6 +65,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.ContextInjector.Injector;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.ParamValueIter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 import org.restlet.util.Series;
 
 /**
@@ -80,13 +81,13 @@ public class ParameterList {
      */
     abstract static class AbstractInjectObjectGetter implements
             InjectObjectGetter {
-    
+
         protected final Class<?> convToCl;
-    
+
         protected final Type convToGen;
-    
+
         protected final ThreadLocalizedContext tlContext;
-    
+
         /**
          * Constructor, if you want to use {@link #injectInto(Object)}.
          */
@@ -106,7 +107,7 @@ public class ParameterList {
                         "The fieldOrBeanSetter must be a Field or a method");
             }
         }
-    
+
         /**
          * Constructor to be used, if only {@link #getParamValue()} is needed.
          */
@@ -116,7 +117,7 @@ public class ParameterList {
             this.convToCl = convToCl;
             this.convToGen = convToGen;
         }
-    
+
         /**
          * Returns the value for this param.
          * 
@@ -219,9 +220,9 @@ public class ParameterList {
      * and &#64;{@link QueryParam}).
      */
     abstract static class EncParamInjector extends ParamInjector {
-    
+
         protected final boolean leaveEncoded;
-    
+
         /**
          * Constructor, if you want to use {@link #injectInto(Object)}.
          */
@@ -230,7 +231,7 @@ public class ParameterList {
             super(fieldOrBeanSetter, tlContext);
             this.leaveEncoded = leaveEncoded;
         }
-    
+
         /**
          * Constructor to be used, if only {@link #getParamValue()} is needed.
          */
@@ -243,9 +244,9 @@ public class ParameterList {
     }
 
     static class HeaderParamInjector extends ParamInjector {
-    
+
         private final HeaderParam headerParam;
-    
+
         /**
          * Constructor, if you want to use {@link #injectInto(Object)}.
          */
@@ -255,7 +256,7 @@ public class ParameterList {
             this.headerParam = this.fieldOrBeanSetter
                     .getAnnotation(HeaderParam.class);
         }
-    
+
         /**
          * Constructor to be used, if only {@link #getParamValue()} is needed.
          */
@@ -265,7 +266,7 @@ public class ParameterList {
             super(defaultValue, convToCl, paramGenericType, tlContext);
             this.headerParam = headerParam;
         }
-    
+
         /**
          * @see org.restlet.ext.jaxrs.internal.wrappers.IntoRrcInjector.ParamInjector#getParamValue()
          */
@@ -288,7 +289,7 @@ public class ParameterList {
     }
 
     static interface InjectObjectGetter {
-    
+
         /**
          * Returns the value for this param.
          * 
@@ -302,9 +303,9 @@ public class ParameterList {
     }
 
     static class MatrixParamInjector extends EncParamInjector {
-    
+
         private final MatrixParam matrixParam;
-    
+
         /**
          * Constructor, if you want to use {@link #injectInto(Object)}.
          */
@@ -314,7 +315,7 @@ public class ParameterList {
             this.matrixParam = fieldOrBeanSetter
                     .getAnnotation(MatrixParam.class);
         }
-    
+
         /**
          * Constructor to be used, if only {@link #getParamValue()} is needed.
          */
@@ -324,7 +325,7 @@ public class ParameterList {
             super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
             this.matrixParam = matrixParam;
         }
-    
+
         /**
          * @see IntoRrcInjector.ParamInjector#getParamValue()
          */
@@ -351,11 +352,11 @@ public class ParameterList {
      */
     abstract static class ParamInjector extends AbstractInjectObjectGetter
             implements Injector, InjectObjectGetter {
-    
+
         protected final DefaultValue defaultValue;
-    
+
         protected final AccessibleObject fieldOrBeanSetter;
-    
+
         /**
          * Constructor, if you want to use {@link #injectInto(Object)}.
          * 
@@ -369,7 +370,7 @@ public class ParameterList {
             this.defaultValue = this.fieldOrBeanSetter
                     .getAnnotation(DefaultValue.class);
         }
-    
+
         /**
          * Constructor to be used, if only {@link #getParamValue()} is needed.
          * 
@@ -382,17 +383,17 @@ public class ParameterList {
             this.fieldOrBeanSetter = null;
             this.defaultValue = defaultValue;
         }
-    
+
         /**
          * @return
          */
         public abstract Object getParamValue();
-    
+
         @Override
         public Object getValue() {
             return getParamValue();
         }
-    
+
         public void injectInto(Object resource)
                 throws IllegalArgumentException, InjectException,
                 InvocationTargetException {
@@ -401,9 +402,9 @@ public class ParameterList {
     }
 
     static class PathParamInjector extends EncParamInjector {
-    
+
         private final PathParam pathParam;
-    
+
         /**
          * Constructor, if you want to use {@link #injectInto(Object)}.
          */
@@ -413,7 +414,7 @@ public class ParameterList {
             this.pathParam = this.fieldOrBeanSetter
                     .getAnnotation(PathParam.class);
         }
-    
+
         /**
          * Constructor to be used, if only {@link #getParamValue()} is needed.
          */
@@ -423,7 +424,7 @@ public class ParameterList {
             super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
             this.pathParam = pathParam;
         }
-    
+
         /**
          * @see ParameterList.ParamInjector#getParamValue()
          */
@@ -450,9 +451,9 @@ public class ParameterList {
     }
 
     static class QueryParamInjector extends EncParamInjector {
-    
+
         private final QueryParam queryParam;
-    
+
         /**
          * Constructor, if you want to use {@link #injectInto(Object)}.
          */
@@ -462,7 +463,7 @@ public class ParameterList {
             this.queryParam = this.fieldOrBeanSetter
                     .getAnnotation(QueryParam.class);
         }
-    
+
         /**
          * Constructor to be used, if only {@link #getParamValue()} is needed.
          */
@@ -472,7 +473,7 @@ public class ParameterList {
             super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
             this.queryParam = queryParam;
         }
-    
+
         /**
          * @see ParameterList.ParamInjector#getParamValue()
          */
@@ -555,6 +556,7 @@ public class ParameterList {
      * @param leaveEncoded
      * @param entityProviders
      * @param allCtxResolvers
+     * @param extensionBackwardMapping
      * @param paramsAllowed
      *                true, if &#64;*Params are allowed as parameter, otherwise
      *                false.
@@ -568,6 +570,7 @@ public class ParameterList {
             Annotation[][] paramAnnoss, ThreadLocalizedContext tlContext,
             boolean leaveEncoded, EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping,
             boolean paramsAllowed, boolean entityAllowed, Logger logger)
             throws MissingAnnotationException {
         this.paramCount = parameterTypes.length;
@@ -580,9 +583,9 @@ public class ParameterList {
             Context conntextAnno = getAnnos(paramAnnos, Context.class);
             if (conntextAnno != null) {
                 parameters[i] = new AbstractMethodWrapper.ContextHolder(
-                        ContextInjector.getInjectObject(tlContext,
-                                entityProviders, allCtxResolvers,
-                                parameterType, genParamType));
+                        ContextInjector.getInjectObject(parameterType,
+                                genParamType, tlContext, entityProviders,
+                                allCtxResolvers, extensionBackwardMapping));
                 continue;
             }
             if (paramsAllowed) {
@@ -599,9 +602,9 @@ public class ParameterList {
                 PathParam pathParam = getAnnos(paramAnnos, PathParam.class);
                 QueryParam queryParam = getAnnos(paramAnnos, QueryParam.class);
                 if (pathParam != null) {
-                    parameters[i] = new ParameterList.PathParamInjector(pathParam, defValue,
-                            parameterType, genParamType, tlContext,
-                            leaveEncoded);
+                    parameters[i] = new ParameterList.PathParamInjector(
+                            pathParam, defValue, parameterType, genParamType,
+                            tlContext, leaveEncoded);
                     continue;
                 }
                 if (cookieParam != null) {
@@ -610,20 +613,21 @@ public class ParameterList {
                     continue;
                 }
                 if (headerParam != null) {
-                    parameters[i] = new ParameterList.HeaderParamInjector(headerParam,
-                            defValue, parameterType, genParamType, tlContext);
+                    parameters[i] = new ParameterList.HeaderParamInjector(
+                            headerParam, defValue, parameterType, genParamType,
+                            tlContext);
                     continue;
                 }
                 if (matrixParam != null) {
-                    parameters[i] = new ParameterList.MatrixParamInjector(matrixParam,
-                            defValue, parameterType, genParamType, tlContext,
-                            leaveEncoded);
+                    parameters[i] = new ParameterList.MatrixParamInjector(
+                            matrixParam, defValue, parameterType, genParamType,
+                            tlContext, leaveEncoded);
                     continue;
                 }
                 if (queryParam != null) {
-                    parameters[i] = new ParameterList.QueryParamInjector(queryParam,
-                            defValue, parameterType, genParamType, tlContext,
-                            leaveEncoded);
+                    parameters[i] = new ParameterList.QueryParamInjector(
+                            queryParam, defValue, parameterType, genParamType,
+                            tlContext, leaveEncoded);
                     continue;
                 }
             }
@@ -652,17 +656,19 @@ public class ParameterList {
      * @param leaveEncoded
      * @param entityProviders
      * @param allCtxResolvers
+     * @param extensionBackwardMapping
      * @param logger
      * @throws MissingAnnotationException
      */
     public ParameterList(Constructor<?> constr,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
             EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers, Logger logger)
+            Collection<ContextResolver<?>> allCtxResolvers, ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws MissingAnnotationException {
         this(constr.getParameterTypes(), constr.getGenericParameterTypes(),
                 constr.getParameterAnnotations(), tlContext, leaveEncoded,
-                entityProviders, allCtxResolvers, true, false, logger);
+                entityProviders, allCtxResolvers, extensionBackwardMapping,
+                true, false, logger);
     }
 
     /**
@@ -672,6 +678,7 @@ public class ParameterList {
      * @param leaveEncoded
      * @param entityProviders
      * @param allCtxResolvers
+     * @param extensionBackwardMapping
      * @param entityAllowed
      * @param logger
      * @throws MissingAnnotationException
@@ -680,12 +687,13 @@ public class ParameterList {
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
             EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,
-            boolean entityAllowed, Logger logger)
+            ExtensionBackwardMapping extensionBackwardMapping, boolean entityAllowed, Logger logger)
             throws MissingAnnotationException {
         this(executeMethod.getParameterTypes(), executeMethod
                 .getGenericParameterTypes(), annotatedMethod
                 .getParameterAnnotations(), tlContext, leaveEncoded,
-                entityProviders, allCtxResolvers, true, entityAllowed, logger);
+                entityProviders, allCtxResolvers, extensionBackwardMapping,
+                true, entityAllowed, logger);
     }
 
     /**

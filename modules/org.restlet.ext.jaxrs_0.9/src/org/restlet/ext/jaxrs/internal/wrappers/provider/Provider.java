@@ -111,6 +111,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                all entity providers.
      * @param allResolvers
      *                all available {@link ContextResolver}s.
+     * @param extensionBackwardMapping
+     *                the extension backward mapping
      * @param logger
      *                the logger to use.
      * @throws IllegalArgumentException
@@ -130,7 +132,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     @SuppressWarnings("unchecked")
     public Provider(Class<?> jaxRsProviderClass, ObjectFactory objectFactory,
             ThreadLocalizedContext tlContext, EntityProviders mbWorkers,
-            Collection<ContextResolver<?>> allResolvers, Logger logger)
+            Collection<ContextResolver<?>> allResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, InvocationTargetException,
             MissingConstructorException, InstantiateException,
             MissingAnnotationException, WebApplicationException {
@@ -145,7 +148,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
                     .findJaxRsConstructor(jaxRsProviderClass, "provider");
             this.jaxRsProvider = createInstance(providerConstructor,
                     jaxRsProviderClass, tlContext, mbWorkers, allResolvers,
-                    logger);
+                    extensionBackwardMapping, logger);
         }
         boolean isProvider = false;
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyWriter) {
@@ -183,6 +186,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                all entity providers.
      * @param allResolvers
      *                all available {@link ContextResolver}s.
+     * @param extensionBackwardMapping
+     *                the extension backward mapping
      * @param logger
      *                the logger to use
      * @throws IllegalArgumentException
@@ -195,12 +200,14 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     private Object createInstance(Constructor<?> providerConstructor,
             Class<?> jaxRsProviderClass, ThreadLocalizedContext tlContext,
             EntityProviders mbWorkers,
-            Collection<ContextResolver<?>> allResolvers, Logger logger)
+            Collection<ContextResolver<?>> allResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, InvocationTargetException,
             InstantiateException, MissingAnnotationException,
             WebApplicationException {
         ParameterList parameters = new ParameterList(providerConstructor,
-                tlContext, false, mbWorkers, allResolvers, logger);
+                tlContext, false, mbWorkers, allResolvers,
+                extensionBackwardMapping, logger);
         try {
             Object[] args = parameters.get();
             return WrapperUtil.createInstance(providerConstructor, args);
@@ -351,15 +358,19 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                all entity providers.
      * @param allResolvers
      *                all available {@link ContextResolver}s.
+     * @param extensionBackwardMapping
+     *                the extension backward mapping
      * @throws InjectException
      * @throws InvocationTargetException
      *                 if a bean setter throws an exception
      */
     public void init(ThreadLocalizedContext tlContext,
             MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers)
+            Collection<ContextResolver<?>> allResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping)
             throws InjectException, InvocationTargetException {
-        injectContexts(tlContext, mbWorkers, allResolvers);
+        injectContexts(tlContext, mbWorkers, allResolvers,
+                extensionBackwardMapping);
     }
 
     /**
@@ -371,17 +382,20 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *                all entity providers.
      * @param allResolvers
      *                all available {@link ContextResolver}s.
+     * @param extensionBackwardMapping
+     *                the extension backward mapping
      * @throws InjectException
      * @throws InvocationTargetException
      *                 if a bean setter throws an exception
      */
     private void injectContexts(ThreadLocalizedContext tlContext,
             MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers)
+            Collection<ContextResolver<?>> allResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping)
             throws InjectException, InvocationTargetException {
         Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
         ContextInjector iph = new ContextInjector(providerClass, tlContext,
-                mbWorkers, allResolvers);
+                mbWorkers, allResolvers, extensionBackwardMapping);
         iph.injectInto(this.jaxRsProvider);
     }
 
