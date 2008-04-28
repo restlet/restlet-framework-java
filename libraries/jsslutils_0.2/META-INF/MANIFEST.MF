@@ -5,5 +5,5 @@ Bundle-SymbolicName: jsslutils
 Bundle-Version: 0.2
 Bundle-ClassPath: jsslutils.jar
 Bundle-Vendor: http://code.google.com/p/jsslutils/
-Export-Package: jsslutils.sslcontext,
- jsslutils.sslcontext.trustmanagers
+Export-Package: jsslutils.sslcontext;uses:="javax.net.ssl",
+ jsslutils.sslcontext.trustmanagers;uses:="jsslutils.sslcontext,javax.net.ssl"
