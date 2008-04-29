@@ -84,6 +84,7 @@ import org.restlet.util.Series;
  * @see org.restlet.Finder
  * @author Jerome Louvel (contact@noelios.com)
  * @author Thierry Boileau (thboileau@gmail.com)
+ * @author Konstantin Laufer (laufer@cs.luc.edu)
  */
 public class Resource extends Handler {
 
@@ -110,6 +111,18 @@ public class Resource extends Handler {
     private List<Variant> variants;
 
     /**
+     * Initializer block to ensure that the basic properties of the Resource are
+     * initialized consistently across constructors.
+     */
+    {
+        this.available = true;
+        this.modifiable = false;
+        this.negotiateContent = true;
+        this.readable = true;
+        this.variants = null;
+    }
+
+    /**
      * Special constructor used by IoC frameworks. Note that the init() method
      * MUST be invoked right after the creation of the handler in order to keep
      * a behavior consistent with the normal three arguments constructor.
@@ -130,11 +143,6 @@ public class Resource extends Handler {
      */
     public Resource(Context context, Request request, Response response) {
         super(context, request, response);
-        this.available = true;
-        this.modifiable = false;
-        this.negotiateContent = true;
-        this.readable = true;
-        this.variants = null;
     }
 
     /**
@@ -603,11 +611,6 @@ public class Resource extends Handler {
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        this.modifiable = false;
-        this.negotiateContent = true;
-        this.readable = true;
-        this.variants = null;
-        this.available = true;
     }
 
     /**

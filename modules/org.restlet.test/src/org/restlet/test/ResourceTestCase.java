@@ -26,17 +26,30 @@ import org.restlet.resource.Resource;
  * Resource test case.
  * 
  * @author Kevin Conaway
+ * @author Konstantin Laufer (laufer@cs.luc.edu)
  */
 public class ResourceTestCase extends TestCase {
 
     public void testIsAvailable() {
         Resource r = new Resource();
-        assertFalse(r.isAvailable());
+        assertTrue(r.isAvailable());
         r.init(null, null, null);
         assertTrue(r.isAvailable());
 
         r = new Resource(null, null, null);
         assertTrue(r.isAvailable());
+    }
+
+    public void testIsModifiable() {
+        Resource r = new Resource();
+        assertFalse(r.isModifiable());
+        r.setModifiable(true);
+        assertTrue(r.isModifiable());
+        r.init(null, null, null);
+        assertTrue(r.isModifiable());
+
+        r = new Resource(null, null, null);
+        assertFalse(r.isModifiable());
     }
 
 }

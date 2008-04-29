@@ -10,5 +10,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/com.noelios.restlet.ext.httpclient_3.1"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.commons.httpclient_3.1"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.noelios.restlet.ext.javamail_1.4"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.spring_2.5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

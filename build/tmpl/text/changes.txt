@@ -44,7 +44,9 @@ Changes log
         - Added APPLICATION_ALL_XML constant and proper changes to the
           MediaType.includes() to recognize those patterns. Contributed
           by Stephan Koops.
-    - NRE and Extension Enhancements
+        - Moved shared initialization logic of Resource constructor and 
+          init() method into initialization block.
+     - NRE and Extension Enhancements
         - Atom extension is now able to write Feed and Service XML
           documents and not just reading/parsing them. This can be used
           to return Atom feeds as representations.
@@ -66,8 +68,9 @@ Changes log
           parsing and formatting into three new classes: 
           MessageRepresentation, MessagesRepresentation and 
           RepresentationMessage. Suggested by Matthieu Hug.
-        - Added an ObjectFactory to the JAX-RS extension for customized root
-          resource class and provider instantiation. Contributed by Bruno Dumon. 
+        - Added an ObjectFactory to the JAX-RS extension for customized
+          root resource class and provider instantiation. Contributed by
+          Bruno Dumon.
     - Misc
     	- Updated Grizzly to 1.7.3.
     	- Improved logging consistency.
@@ -75,7 +78,8 @@ Changes log
     	  "Import-Package" instructions instead of "Required-Bundle".
     	  Suggested by Hendy Irawan.
     	- Updated db4o 7.2 to latest stable build.
-
+    	- Added Spring example based on REST book chapter 7. Contributed by  
+          Konstantin Läufer.
  - 1.1 Milestone 3 (2008-04-01)
     - Bugs fixed
         - Fixed setRedirectRef(String) method which wasn't supporting 
