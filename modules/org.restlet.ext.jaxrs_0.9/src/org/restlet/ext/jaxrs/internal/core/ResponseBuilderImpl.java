@@ -421,7 +421,8 @@ public class ResponseBuilderImpl extends ResponseBuilder {
             if (charset != null)
                 charsets.add(charset);
         }
-        Set<Dimension> dimensions = new HashSet<Dimension>();
+        Set<Dimension> dimensions;
+        dimensions = org.restlet.data.Response.getCurrent().getDimensions();
         if (encodings.size() > 1)
             dimensions.add(Dimension.ENCODING);
         if (languages.size() > 1)
