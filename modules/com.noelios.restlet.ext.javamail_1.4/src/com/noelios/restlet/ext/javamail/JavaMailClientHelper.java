@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2008 Noelios Consulting.
- * 
+ *
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- * 
+ *
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -62,7 +62,7 @@ import com.sun.mail.pop3.POP3Folder;
  * specify the {@link ChallengeScheme#SMTP_PLAIN} challenge scheme.<br>
  * <br>
  * Sample XML email:<br>
- * 
+ *
  * <pre>
  * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot; ?&gt;
  *  &lt;email&gt;
@@ -75,7 +75,7 @@ import com.sun.mail.pop3.POP3Folder;
  *  &lt;body&gt;&lt;![CDATA[Your account was sucessfully created!]]&gt;&lt;/body&gt;
  *  &lt;/email&gt;
  * </pre>
- * 
+ *
  * To receive the list of emails, send a GET request to a resource reference on
  * a POP or POPS URI, leaving the reference path empty. A POP URI has the
  * following syntax: pop://host[:port]<br>
@@ -87,20 +87,20 @@ import com.sun.mail.pop3.POP3Folder;
  * {@link ChallengeScheme#POP_DIGEST} challenge scheme.<br>
  * <br>
  * Sample XML list of emails:<br>
- * 
+ *
  * <pre>
  * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot; ?&gt;
- * &lt;emails&gt; 
- *    &lt;email href=’/1234’/&gt;
- *    &lt;email href=’/5678’/&gt;
- *    &lt;email href=’/9012’/&gt;
- *    &lt;email href=’/3456’/&gt;
+ * &lt;emails&gt;
+ *    &lt;email href="/1234"/&gt;
+ *    &lt;email href="/5678"/&gt;
+ *    &lt;email href="/9012"/&gt;
+ *    &lt;email href="/3456"/&gt;
  * &lt;/emails&gt;
  * </pre>
- * 
+ *
  * To retrieve an individual email, just add the href attribute at the end of
  * the POP URI, such as: pop://host/1234<br>
- * 
+ *
  * Here is the list of parameters that are supported: <table>
  * <tr>
  * <th>Parameter name</th>
@@ -122,14 +122,14 @@ import com.sun.mail.pop3.POP3Folder;
  * <td>If true, the connector will generate JavaMail debug messages.</td>
  * </tr>
  * </table>
- * 
- * 
+ *
+ *
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class JavaMailClientHelper extends ClientHelper {
     /**
      * Creates a high-level request.
-     * 
+     *
      * @param smtpURI
      *                The SMTP server's URI (ex: smtp://localhost).
      * @param email
@@ -148,7 +148,7 @@ public class JavaMailClientHelper extends ClientHelper {
 
     /**
      * Creates a high-level request.
-     * 
+     *
      * @param smtpURI
      *                The SMTP server's URI (ex: smtp://localhost).
      * @param email
@@ -171,7 +171,7 @@ public class JavaMailClientHelper extends ClientHelper {
 
     /**
      * Constructor.
-     * 
+     *
      * @param client
      *                The client to help.
      */
@@ -185,7 +185,7 @@ public class JavaMailClientHelper extends ClientHelper {
 
     /**
      * Creates a JavaMail message by parsing an XML representation.
-     * 
+     *
      * @param xmlMessage
      *                The XML message to parse.
      * @param session
@@ -202,7 +202,7 @@ public class JavaMailClientHelper extends ClientHelper {
 
     /**
      * Creates an XML representation based on a JavaMail message.
-     * 
+     *
      * @param message
      *                The JavaMail message to format.
      * @return The XML representation.
@@ -217,7 +217,7 @@ public class JavaMailClientHelper extends ClientHelper {
 
     /**
      * Creates an XML representation based on a list of JavaMail messages.
-     * 
+     *
      * @param messages
      *                The list of JavaMail messages to format.
      * @return The XML representation.
@@ -231,7 +231,7 @@ public class JavaMailClientHelper extends ClientHelper {
 
     /**
      * Returns the request login.
-     * 
+     *
      * @param request
      *                The high-level request.
      * @return The login.
@@ -242,7 +242,7 @@ public class JavaMailClientHelper extends ClientHelper {
 
     /**
      * Returns the request password.
-     * 
+     *
      * @param request
      *                The high-level request.
      * @return The password.
@@ -280,7 +280,7 @@ public class JavaMailClientHelper extends ClientHelper {
 
     /**
      * Handles a POP or POPS request.
-     * 
+     *
      * @param request
      *                The request to handle.
      * @param response
@@ -389,7 +389,7 @@ public class JavaMailClientHelper extends ClientHelper {
 
     /**
      * Handles a SMTP or SMTPS request.
-     * 
+     *
      * @param request
      *                The request to handle.
      * @param response
@@ -473,7 +473,7 @@ public class JavaMailClientHelper extends ClientHelper {
 
     /**
      * Indicates if the connector should generate JavaMail debug messages.
-     * 
+     *
      * @return True the connector should generate JavaMail debug messages.
      */
     public boolean isDebug() {
@@ -483,7 +483,7 @@ public class JavaMailClientHelper extends ClientHelper {
 
     /**
      * Indicates if the SMTP protocol should attempt to start a TLS tunnel.
-     * 
+     *
      * @return True if the SMTP protocol should attempt to start a TLS tunnel.
      */
     public boolean isStartTls() {
