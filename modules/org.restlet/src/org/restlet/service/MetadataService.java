@@ -93,7 +93,10 @@ public class MetadataService {
     private final List<MetadataExtension> mappings;
 
     /**
-     * Constructor.
+     * Constructor. Sets the default language to {@link Language#ENGLISH_US},
+     * the default encoding to {@link Encoding#IDENTITY} (no encoding) and the
+     * default media type to {@link MediaType#APPLICATION_OCTET_STREAM}. It
+     * also calls the {@link #addCommonExtensions()} method.
      */
     public MetadataService() {
         this.defaultEncoding = Encoding.IDENTITY;
@@ -160,20 +163,20 @@ public class MetadataService {
      * <li>sit: StuffIt compressed archive file</li>
      * <li>snd: Amiga sound</li>
      * <li>svg: Scalable Vector Graphics file</li>
-     * <li>swf: Flash file (Adobe Systems Inc.)</li>
+     * <li>swf: Adobe Flash file</li>
      * <li>tar: Tape Archive file</li>
      * <li>tex: Tex file</li>
      * <li>tif, tiff: Tagged Image Format File</li>
      * <li>txt: Plain text</li>
-     * <li>vm: Velocity encoding</li>
-     * <li>swf: Shockwave Flash object</li>
      * <li>ulw: MU-LAW (US telephony format)</li>
+     * <li>vm: Velocity encoding</li>
      * <li>vrml: Virtual Reality Modeling Language file</li>
      * <li>vxml: VoiceXML source file</li>
      * <li>wadl: Web Application Description Language document</li>
      * <li>wav: Waveform audio</li>
-     * <li>wrl: plain text VRML file </li>
+     * <li>wrl: Plain text VRML file </li>
      * <li>xht, xhtml: XHTML document</li>
+     * <li>xls: Microsoft Excel document</li>
      * <li>xml: XML document</li>
      * <li>xsd: W3C XML Schema document</li>
      * <li>xslt: XSL Transform file</li>
@@ -252,8 +255,8 @@ public class MetadataService {
         addExtension("vm", Encoding.VELOCITY);
         addExtension("vrml", MediaType.MODEL_VRML);
         addExtension("vxml", MediaType.APPLICATION_VOICEXML);
-        addExtension("wav", MediaType.AUDIO_WAV);
         addExtension("wadl", MediaType.APPLICATION_WADL_XML);
+        addExtension("wav", MediaType.AUDIO_WAV);
         addExtension("wrl", MediaType.MODEL_VRML);
         addExtension("xht", MediaType.APPLICATION_XHTML_XML);
         addExtension("xhtml", MediaType.APPLICATION_XHTML_XML);
