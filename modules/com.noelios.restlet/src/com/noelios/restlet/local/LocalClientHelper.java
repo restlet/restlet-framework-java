@@ -47,6 +47,13 @@ import com.noelios.restlet.ClientHelper;
  * <td>600</td>
  * <td>Time to live for a file representation before it expires (in seconds).</td>
  * </tr>
+ * <tr>
+ * <td>defaultLanguage</td>
+ * <td>String</td>
+ * <td>en-us</td>
+ * <td>When no metadata service is available (simple client connector with no
+ * parent application), falls back on this default language.</td>
+ * </tr>
  * </table>
  * 
  * @see org.restlet.data.LocalReference
@@ -66,6 +73,17 @@ public class LocalClientHelper extends ClientHelper {
     }
 
     /**
+     * Returns the default language. When no metadata service is available
+     * (simple client connector with no parent application), falls back on this
+     * default language.
+     * 
+     * @return The default language.
+     */
+    public String getDefaultLanguage() {
+        return getParameters().getFirstValue("defaultLanguage", "en-us");
+    }
+
+    /**
      * Returns the metadata service associated to a request.
      * 
      * @param request
@@ -81,9 +99,22 @@ public class LocalClientHelper extends ClientHelper {
             result = application.getMetadataService();
         } else {
             result = new MetadataService();
+            result.setDefaultLanguage(Language.valueOf(getDefaultLanguage()));
         }
 
         return result;
+    }
+
+    /**
+     * Returns the time to live for a file representation before it expires (in
+     * seconds).
+     * 
+     * @return The time to live for a file representation before it expires (in
+     *         seconds).
+     */
+    public int getTimeToLive() {
+        return Integer.parseInt(getParameters().getFirstValue("timeToLive",
+                "600"));
     }
 
     /**
@@ -134,27 +165,24 @@ public class LocalClientHelper extends ClientHelper {
 
             // If no language is defined, take the default one
             if (variant.getLanguages().isEmpty()) {
-                variant.getLanguages()
-                        .add(metadataService.getDefaultLanguage());
+                Language defaultLanguage = metadataService.getDefaultLanguage();
+
+                if ((defaultLanguage != null)
+                        && !defaultLanguage.equals(Language.ALL)) {
+                    variant.getLanguages().add(defaultLanguage);
+                }
             }
 
             // If no media type is defined, take the default one
             if (variant.getMediaType() == null) {
-                variant.setMediaType(metadataService.getDefaultMediaType());
+                MediaType defaultMediaType = metadataService
+                        .getDefaultMediaType();
+
+                if ((defaultMediaType != null)
+                        && !defaultMediaType.equals(MediaType.ALL)) {
+                    variant.setMediaType(defaultMediaType);
+                }
             }
         }
     }
-
-    /**
-     * Returns the time to live for a file representation before it expires (in
-     * seconds).
-     * 
-     * @return The time to live for a file representation before it expires (in
-     *         seconds).
-     */
-    public int getTimeToLive() {
-        return Integer.parseInt(getParameters().getFirstValue("timeToLive",
-                "600"));
-    }
-
 }

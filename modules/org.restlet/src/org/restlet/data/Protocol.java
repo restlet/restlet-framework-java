@@ -140,46 +140,46 @@ public final class Protocol extends Metadata {
      * Creates the protocol associated to a URI scheme name. If an existing
      * constant exists then it is returned, otherwise a new instance is created.
      * 
-     * @param schemeName
+     * @param name
      *                The scheme name.
      * @return The associated protocol.
      */
-    public static Protocol valueOf(final String schemeName) {
+    public static Protocol valueOf(final String name) {
         Protocol result = null;
 
-        if (schemeName != null) {
-            if (schemeName.equalsIgnoreCase(AJP.getSchemeName()))
+        if ((name != null) && !name.equals("")) {
+            if (name.equalsIgnoreCase(AJP.getSchemeName()))
                 result = AJP;
-            else if (schemeName.equalsIgnoreCase(CLAP.getSchemeName()))
+            else if (name.equalsIgnoreCase(CLAP.getSchemeName()))
                 result = CLAP;
-            else if (schemeName.equalsIgnoreCase(FILE.getSchemeName()))
+            else if (name.equalsIgnoreCase(FILE.getSchemeName()))
                 result = FILE;
-            else if (schemeName.equalsIgnoreCase(FTP.getSchemeName()))
+            else if (name.equalsIgnoreCase(FTP.getSchemeName()))
                 result = FTP;
-            else if (schemeName.equalsIgnoreCase(HTTP.getSchemeName()))
+            else if (name.equalsIgnoreCase(HTTP.getSchemeName()))
                 result = HTTP;
-            else if (schemeName.equalsIgnoreCase(HTTPS.getSchemeName()))
+            else if (name.equalsIgnoreCase(HTTPS.getSchemeName()))
                 result = HTTPS;
-            else if (schemeName.equalsIgnoreCase(JAR.getSchemeName()))
+            else if (name.equalsIgnoreCase(JAR.getSchemeName()))
                 result = JAR;
-            else if (schemeName.equalsIgnoreCase(JDBC.getSchemeName()))
+            else if (name.equalsIgnoreCase(JDBC.getSchemeName()))
                 result = JDBC;
-            else if (schemeName.equalsIgnoreCase(POP.getSchemeName()))
+            else if (name.equalsIgnoreCase(POP.getSchemeName()))
                 result = POP;
-            else if (schemeName.equalsIgnoreCase(POPS.getSchemeName()))
+            else if (name.equalsIgnoreCase(POPS.getSchemeName()))
                 result = POPS;
-            else if (schemeName.equalsIgnoreCase(RIAP.getSchemeName()))
+            else if (name.equalsIgnoreCase(RIAP.getSchemeName()))
                 result = RIAP;
-            else if (schemeName.equalsIgnoreCase(SMTP.getSchemeName()))
+            else if (name.equalsIgnoreCase(SMTP.getSchemeName()))
                 result = SMTP;
-            else if (schemeName.equalsIgnoreCase(SMTP_STARTTLS.getSchemeName()))
+            else if (name.equalsIgnoreCase(SMTP_STARTTLS.getSchemeName()))
                 result = SMTP_STARTTLS;
-            else if (schemeName.equalsIgnoreCase(SMTPS.getSchemeName()))
+            else if (name.equalsIgnoreCase(SMTPS.getSchemeName()))
                 result = SMTPS;
-            else if (schemeName.equalsIgnoreCase(WAR.getSchemeName()))
+            else if (name.equalsIgnoreCase(WAR.getSchemeName()))
                 result = WAR;
             else
-                result = new Protocol(schemeName);
+                result = new Protocol(name);
         }
 
         return result;

@@ -77,7 +77,7 @@ public final class ChallengeScheme extends Metadata {
     public static ChallengeScheme valueOf(final String name) {
         ChallengeScheme result = null;
 
-        if (name != null) {
+        if ((name != null) && !name.equals("")) {
             if (name.equalsIgnoreCase(CUSTOM.getName())) {
                 result = CUSTOM;
             } else if (name.equalsIgnoreCase(HTTP_AWS.getName())) {

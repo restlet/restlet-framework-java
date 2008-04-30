@@ -46,6 +46,7 @@ Changes log
           by Stephan Koops.
         - Moved shared initialization logic of Resource constructor and 
           init() method into initialization block.
+        - Static valueOf() methods now treat "" as null.
      - NRE and Extension Enhancements
         - Atom extension is now able to write Feed and Service XML
           documents and not just reading/parsing them. This can be used
@@ -71,6 +72,10 @@ Changes log
         - Added an ObjectFactory to the JAX-RS extension for customized
           root resource class and provider instantiation. Contributed by
           Bruno Dumon.
+        - The local connectors (FILE and CLAP connectors for now) have a
+          new "defaultLanguage" parameter that is uses when no parent
+          application is available (no MetadataService accessible).
+          Limitation reported by Jules Milner-Brage.
     - Misc
     	- Updated Grizzly to 1.7.3.
     	- Improved logging consistency.

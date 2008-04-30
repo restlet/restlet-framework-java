@@ -371,7 +371,7 @@ public final class MediaType extends Metadata {
     public static MediaType valueOf(String name) {
         MediaType result = null;
 
-        if (name != null) {
+        if ((name != null) && !name.equals("")) {
             result = getTypes().get(name);
             if (result == null) {
                 result = new MediaType(name);
