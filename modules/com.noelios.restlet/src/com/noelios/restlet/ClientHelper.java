@@ -28,18 +28,45 @@ import org.restlet.data.Response;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ClientHelper extends ConnectorHelper<Client> {
-    /**
-     * Constructor.
-     * 
-     * @param client
-     *                The client to help.
-     */
-    public ClientHelper(Client client) {
-        super(client);
-    }
 
-    @Override
-    public void handle(Request request, Response response) {
-    }
+	/**
+	 * The number of milliseconds the client should wait for a response before
+	 * aborting the request and setting its status to an error status.
+	 */
+	private int connectTimeout = 0;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param client
+	 *            The client to help.
+	 */
+	public ClientHelper(Client client) {
+		super(client);
+		this.connectTimeout = client.getConnectTimeout();
+	}
+
+	@Override
+	public void handle(Request request, Response response) {
+	}
+
+	/**
+	 * Returns the connection timeout.
+	 * 
+	 * @return The connection timeout.
+	 */
+	public int getConnectTimeout() {
+		return connectTimeout;
+	}
+
+	/**
+	 * Sets the connection timeout.
+	 * 
+	 * @param connectTimeout
+	 *            The connection timeout.
+	 */
+	public void setConnectTimeout(int connectTimeout) {
+		this.connectTimeout = connectTimeout;
+	}
 
 }
