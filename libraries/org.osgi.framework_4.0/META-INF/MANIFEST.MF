@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: API OSGI
+Bundle-SymbolicName: org.osgi.framework
+Bundle-Version: 4.0
+Bundle-Vendor: OSGI
+Bundle-ClassPath: org.osgi.framework.jar
+Export-Package: org.osgi.framework,
+ org.osgi.service.condpermadmin,
+ org.osgi.service.packageadmin,
+ org.osgi.service.permissionadmin,
+ org.osgi.service.startlevel,
+ org.osgi.service.url,
+ org.osgi.util.tracker

@@ -244,6 +244,7 @@
    <path id="mod-ri-path">
       <path refid="mod-api-path" />
       <pathelement path="${classes}/${mod-api-id}" />
+      <fileset dir="${lib}/${lib-osgi-id}" includes="*.jar" />
    </path>
 
    <path id="mod-ri-test-path">
