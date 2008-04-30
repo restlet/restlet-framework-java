@@ -35,113 +35,113 @@ import com.noelios.restlet.TemplateDispatcher;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ComponentClientDispatcher extends TemplateDispatcher {
-    /**
-     * Constructor.
-     * 
-     * @param componentContext
-     *                The component context.
-     */
-    public ComponentClientDispatcher(ComponentContext componentContext) {
-        super(componentContext);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param componentContext
+	 *            The component context.
+	 */
+	public ComponentClientDispatcher(ComponentContext componentContext) {
+		super(componentContext);
+	}
 
-    @Override
-    protected void doHandle(Request request, Response response) {
-        Protocol protocol = request.getProtocol();
+	@Override
+	protected void doHandle(Request request, Response response) {
+		Protocol protocol = request.getProtocol();
 
-        if (protocol.equals(Protocol.RIAP)) {
-            // Consider that the request is confidential
-            request.setConfidential(true);
+		if (protocol.equals(Protocol.RIAP)) {
+			// Consider that the request is confidential
+			request.setConfidential(true);
 
-            // Let's dispatch it
-            LocalReference cr = new LocalReference(request.getResourceRef());
-            Component component = getComponent();
+			// Let's dispatch it
+			LocalReference cr = new LocalReference(request.getResourceRef());
+			Component component = getComponent();
 
-            if (component != null) {
-                if (cr.getRiapAuthorityType() == LocalReference.RIAP_COMPONENT) {
-                    // This causes the baseRef of the resource reference to be
-                    // set
-                    // as if it had actually arrived from a server connector.
-                    request.getResourceRef().setBaseRef(
-                            request.getResourceRef().getHostIdentifier());
+			if (component != null) {
+				if (cr.getRiapAuthorityType() == LocalReference.RIAP_COMPONENT) {
+					// This causes the baseRef of the resource reference to be
+					// set as if it had actually arrived from a server
+					// connector.
+					request.getResourceRef().setBaseRef(
+							request.getResourceRef().getHostIdentifier());
 
-                    // Ask the private internal route to handle the call
-                    component.getInternalRouter().handle(request, response);
-                } else if (cr.getRiapAuthorityType() == LocalReference.RIAP_HOST) {
-                    VirtualHost host = null;
-                    VirtualHost currentHost = null;
-                    Integer hostHashCode = (Integer) request.getAttributes()
-                            .get("org.restlet.virtualHost.hashCode");
+					// Ask the private internal route to handle the call
+					component.getInternalRouter().handle(request, response);
+				} else if (cr.getRiapAuthorityType() == LocalReference.RIAP_HOST) {
+					VirtualHost host = null;
+					VirtualHost currentHost = null;
+					Integer hostHashCode = (Integer) request.getAttributes()
+							.get("org.restlet.virtualHost.hashCode");
 
-                    // Lookup the virtual host
-                    for (Iterator<VirtualHost> hostIter = getComponent()
-                            .getHosts().iterator(); (host == null)
-                            && hostIter.hasNext();) {
-                        currentHost = hostIter.next();
+					// Lookup the virtual host
+					for (Iterator<VirtualHost> hostIter = getComponent()
+							.getHosts().iterator(); (host == null)
+							&& hostIter.hasNext();) {
+						currentHost = hostIter.next();
 
-                        if (currentHost.hashCode() == hostHashCode) {
-                            host = currentHost;
-                        }
-                    }
+						if (currentHost.hashCode() == hostHashCode) {
+							host = currentHost;
+						}
+					}
 
-                    if ((host == null) && (component.getDefaultHost() != null)) {
-                        if (component.getDefaultHost().hashCode() == hostHashCode) {
-                            host = component.getDefaultHost();
-                        }
-                    }
+					if ((host == null) && (component.getDefaultHost() != null)) {
+						if (component.getDefaultHost().hashCode() == hostHashCode) {
+							host = component.getDefaultHost();
+						}
+					}
 
-                    if (host != null) {
-                        // This causes the baseRef of the resource reference to
-                        // be set as if it had actually arrived from a server
-                        // connector.
-                        request.getResourceRef().setBaseRef(
-                                request.getResourceRef().getHostIdentifier());
+					if (host != null) {
+						// This causes the baseRef of the resource reference to
+						// be set as if it had actually arrived from a server
+						// connector.
+						request.getResourceRef().setBaseRef(
+								request.getResourceRef().getHostIdentifier());
 
-                        // Ask the virtual host to handle the call
-                        host.handle(request, response);
-                    } else {
-                        getLogger()
-                                .warning(
-                                        "No virtual host is available to route the RIAP Host request.");
-                    }
-                } else {
-                    getLogger()
-                            .warning(
-                                    "Unknown RIAP authority. Only \"component\" is supported.");
-                }
-            } else {
-                getLogger().warning(
-                        "No compoent is available to route the RIAP request.");
-            }
-        } else {
-            getComponentContext().getComponentHelper().getClientRouter()
-                    .handle(request, response);
-        }
-    }
+						// Ask the virtual host to handle the call
+						host.handle(request, response);
+					} else {
+						getLogger()
+								.warning(
+										"No virtual host is available to route the RIAP Host request.");
+					}
+				} else {
+					getLogger()
+							.warning(
+									"Unknown RIAP authority. Only \"component\" is supported.");
+				}
+			} else {
+				getLogger().warning(
+						"No compoent is available to route the RIAP request.");
+			}
+		} else {
+			getComponentContext().getComponentHelper().getClientRouter()
+					.handle(request, response);
+		}
+	}
 
-    /**
-     * Returns the parent component.
-     * 
-     * @return The parent component.
-     */
-    private Component getComponent() {
-        Component result = null;
+	/**
+	 * Returns the parent component.
+	 * 
+	 * @return The parent component.
+	 */
+	private Component getComponent() {
+		Component result = null;
 
-        if ((getComponentContext() != null)
-                && (getComponentContext().getComponentHelper() != null)) {
-            result = getComponentContext().getComponentHelper().getHelped();
-        }
+		if ((getComponentContext() != null)
+				&& (getComponentContext().getComponentHelper() != null)) {
+			result = getComponentContext().getComponentHelper().getHelped();
+		}
 
-        return result;
+		return result;
 
-    }
+	}
 
-    /**
-     * Returns the component context.
-     * 
-     * @return The component context.
-     */
-    private ComponentContext getComponentContext() {
-        return (ComponentContext) getContext();
-    }
+	/**
+	 * Returns the component context.
+	 * 
+	 * @return The component context.
+	 */
+	private ComponentContext getComponentContext() {
+		return (ComponentContext) getContext();
+	}
 }
