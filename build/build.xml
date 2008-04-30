@@ -301,6 +301,8 @@
       <fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-lang-id}" includes="*.jar" />
+      <fileset dir="${lib}/${lib-spring-id}" includes="*.jar" />
+      <fileset dir="${lib}/${lib-spring-modules-db4o-id}" includes="*.jar" />
    </path>
 
    <path id="mod-fileupload-path">
