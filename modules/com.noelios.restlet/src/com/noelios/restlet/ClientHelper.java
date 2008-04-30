@@ -43,7 +43,9 @@ public class ClientHelper extends ConnectorHelper<Client> {
 	 */
 	public ClientHelper(Client client) {
 		super(client);
-		this.connectTimeout = client.getConnectTimeout();
+		if (client != null) {
+			this.connectTimeout = client.getConnectTimeout();
+		}
 	}
 
 	@Override
