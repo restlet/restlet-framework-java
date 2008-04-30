@@ -40,8 +40,12 @@ Export-Package: com.noelios.restlet;
    org.restlet.data,
    com.noelios.restlet",
  com.noelios.restlet.util;uses:="org.restlet.resource,org.restlet.util,org.restlet.data"
-Import-Package: org.restlet,
+Import-Package: javax.security.auth,
+ javax.security.auth.login,
+ org.osgi.framework,
+ org.restlet,
  org.restlet.data,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util
+Bundle-Activator: com.noelios.restlet.Activator

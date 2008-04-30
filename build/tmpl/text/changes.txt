@@ -84,7 +84,9 @@ Changes log
     	- Improved logging consistency.
     	- Expressed the Eclipse plugin dependencies using the
     	  "Import-Package" instructions instead of "Required-Bundle".
-    	  Suggested by Hendy Irawan.
+    	  The com.noelios.restlet bundle/JAR now has an OSGi activator,
+    	  registering the engine with the Restlet API bundle.
+    	  Suggested by Hendy Irawan, with help from Edward Yakop.
     	- Updated db4o 7.2 to latest stable build.
     	- Added Spring example based on REST book chapter 7. Contributed by  
           Konstantin Läufer.
