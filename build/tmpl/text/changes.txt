@@ -47,6 +47,9 @@ Changes log
         - Moved shared initialization logic of Resource constructor and 
           init() method into initialization block.
         - Static valueOf() methods now treat "" as null.
+        - Added connectTimeout attribute on both Client and 
+          ClientHelper classes. Reported by Avi Flax.
+        
      - NRE and Extension Enhancements
         - Atom extension is now able to write Feed and Service XML
           documents and not just reading/parsing them. This can be used
