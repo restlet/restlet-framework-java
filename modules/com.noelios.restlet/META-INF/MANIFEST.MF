@@ -48,4 +48,4 @@ Import-Package: javax.security.auth,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util
-Bundle-Activator: com.noelios.restlet.Activator
+Bundle-Activator: com.noelios.restlet.internal.Activator

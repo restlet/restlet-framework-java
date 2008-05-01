@@ -1000,7 +1000,7 @@ public class Engine extends org.restlet.util.Engine {
      * @param helper
      *                The authentication helper to register.
      */
-    public void registerAuthentication(AuthenticationHelper helper) {
+    public void registerAuthenticationHelper(AuthenticationHelper helper) {
         getRegisteredAuthentications().add(helper);
     }
 
@@ -1019,16 +1019,16 @@ public class Engine extends org.restlet.util.Engine {
      */
     @SuppressWarnings("deprecation")
     private void registerDefaultAuthentications() {
-        registerAuthentication(new HttpBasicHelper());
-        registerAuthentication(new HttpDigestHelper());
-        registerAuthentication(new SmtpPlainHelper());
-        registerAuthentication(new HttpAmazonS3Helper());
+        registerAuthenticationHelper(new HttpBasicHelper());
+        registerAuthenticationHelper(new HttpDigestHelper());
+        registerAuthenticationHelper(new SmtpPlainHelper());
+        registerAuthenticationHelper(new HttpAmazonS3Helper());
 
         // In order to support the deprecated AWS constant
         // we need to register another instance of S3 helper.
         AuthenticationHelper helper = new HttpAmazonS3Helper();
         helper.setChallengeScheme(ChallengeScheme.HTTP_AWS);
-        registerAuthentication(helper);
+        registerAuthenticationHelper(helper);
     }
 
     /**
