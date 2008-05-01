@@ -1372,7 +1372,7 @@
 
       <!-- Packages libraries -->
 <!-- disabled for now  <stageLibrary name="bouncycastle" /> -->
-      <stageLibrary name="antlr" />
+<!-- disabled for now  <stageLibrary name="antlr" /> -->
       <stageLibrary name="codec" />
       <stageLibrary name="collections" />
       <stageLibrary name="db4o" />
@@ -1380,7 +1380,7 @@
       <stageLibrary name="fileupload" />
       <stageLibrary name="freemarker" />
       <stageLibrary name="grizzly" />
-      <stageLibrary name="gwt" />
+<!-- disabled for now  <stageLibrary name="gwt" /> -->
       <stageLibrary name="httpclient" />
       <stageLibrary name="io" />
       <stageLibrary name="javamail" />
@@ -1389,13 +1389,13 @@
       <stageLibrary name="activation" />
       <stageLibrary name="jetty" />
       <stageLibrary name="jibx" />
-      <stageLibrary name="jline" />
+<!-- disabled for now  <stageLibrary name="jline" /> -->
       <stageLibrary name="json" />
 <!-- disabled for now  <stageLibrary name="jssl" /> -->
 <!-- disabled for now  <stageLibrary name="jxta" /> -->
       <stageLibrary name="lang" />
       <stageLibrary name="logging" />
-      <stageLibrary name="mina" />
+<!-- disabled for now  <stageLibrary name="mina" /> -->
       <stageLibrary name="oauth" />
       <stageLibrary name="pool" />
       <stageLibrary name="servlet" />
