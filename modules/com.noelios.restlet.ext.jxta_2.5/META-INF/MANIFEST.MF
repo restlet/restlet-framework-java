@@ -26,6 +26,7 @@ Import-Package: com.noelios.restlet,
  org.apache.commons.dbcp,
  org.apache.commons.pool,
  org.apache.commons.pool.impl,
+ org.osgi.framework,
  org.restlet,
  org.restlet.data,
  org.restlet.resource,
@@ -39,3 +40,4 @@ Export-Package: com.noelios.restlet.ext.jxta;
    net.jxta.ext.network,
    net.jxta.protocol,
    org.restlet.data"
+Bundle-Activator: com.noelios.restlet.ext.jxta.internal.Activator

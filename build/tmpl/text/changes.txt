@@ -49,7 +49,6 @@ Changes log
         - Static valueOf() methods now treat "" as null.
         - Added connectTimeout attribute on both Client and 
           ClientHelper classes. Reported by Avi Flax.
-        
      - NRE and Extension Enhancements
         - Atom extension is now able to write Feed and Service XML
           documents and not just reading/parsing them. This can be used
@@ -84,8 +83,9 @@ Changes log
     	- Improved logging consistency.
     	- Expressed the Eclipse plugin dependencies using the
     	  "Import-Package" instructions instead of "Required-Bundle".
-    	  The com.noelios.restlet bundle/JAR now has an OSGi activator,
-    	  registering the engine with the Restlet API bundle.
+    	- All connector and authentication modules now have OSGi activator
+    	  to automatically register themselves with the engine. The engine
+    	  module also registers itself with the API.
     	  Suggested by Hendy Irawan, with help from Edward Yakop.
     	- Updated db4o 7.2 to latest stable build.
     	- Added Spring example based on REST book chapter 7. Contributed by  

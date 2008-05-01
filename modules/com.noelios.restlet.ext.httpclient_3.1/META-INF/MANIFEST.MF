@@ -26,8 +26,10 @@ Import-Package: com.noelios.restlet,
  org.apache.commons.httpclient.params,
  org.apache.commons.httpclient.protocol,
  org.apache.commons.httpclient.util,
+ org.osgi.framework,
  org.restlet,
  org.restlet.data,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util
+Bundle-Activator: com.noelios.restlet.ext.httpclient.internal.Activator

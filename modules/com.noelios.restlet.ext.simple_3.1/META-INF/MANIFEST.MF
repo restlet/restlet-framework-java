@@ -18,6 +18,7 @@ Import-Package: com.noelios.restlet,
  com.noelios.restlet.http,
  com.noelios.restlet.local,
  com.noelios.restlet.util,
+ org.osgi.framework,
  org.restlet,
  org.restlet.data,
  org.restlet.resource,
@@ -25,3 +26,4 @@ Import-Package: com.noelios.restlet,
  org.restlet.util,
  simple.http,
  simple.http.connect
+Bundle-Activator: com.noelios.restlet.ext.simple.internal.Activator

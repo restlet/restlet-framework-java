@@ -29,8 +29,10 @@ Import-Package: com.noelios.restlet,
  org.mortbay.jetty.nio,
  org.mortbay.jetty.security,
  org.mortbay.thread,
+ org.osgi.framework,
  org.restlet,
  org.restlet.data,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util
+Bundle-Activator: com.noelios.restlet.ext.jetty.internal.Activator
