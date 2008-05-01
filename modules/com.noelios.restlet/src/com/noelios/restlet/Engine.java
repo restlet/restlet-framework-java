@@ -995,61 +995,31 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
-     * Registers an authentication helper.
-     * 
-     * @param helper
-     *                The authentication helper to register.
-     */
-    public void registerAuthenticationHelper(AuthenticationHelper helper) {
-        getRegisteredAuthentications().add(helper);
-    }
-
-    /**
-     * Registers a client helper.
-     * 
-     * @param helper
-     *                The client helper to register.
-     */
-    public void registerClientHelper(ClientHelper helper) {
-        getRegisteredClients().add(helper);
-    }
-
-    /**
      * Registers the default authentication helpers.
      */
     @SuppressWarnings("deprecation")
     private void registerDefaultAuthentications() {
-        registerAuthenticationHelper(new HttpBasicHelper());
-        registerAuthenticationHelper(new HttpDigestHelper());
-        registerAuthenticationHelper(new SmtpPlainHelper());
-        registerAuthenticationHelper(new HttpAmazonS3Helper());
+        getRegisteredAuthentications().add(new HttpBasicHelper());
+        getRegisteredAuthentications().add(new HttpDigestHelper());
+        getRegisteredAuthentications().add(new SmtpPlainHelper());
+        getRegisteredAuthentications().add(new HttpAmazonS3Helper());
 
         // In order to support the deprecated AWS constant
         // we need to register another instance of S3 helper.
         AuthenticationHelper helper = new HttpAmazonS3Helper();
         helper.setChallengeScheme(ChallengeScheme.HTTP_AWS);
-        registerAuthenticationHelper(helper);
+        getRegisteredAuthentications().add(helper);
     }
 
     /**
      * Registers the default client and server connectors.
      */
     private void registerDefaultConnectors() {
-        registerClientHelper(new StreamClientHelper(null));
-        registerClientHelper(new ClapClientHelper(null));
-        registerClientHelper(new FileClientHelper(null));
-        registerClientHelper(new WarClientHelper(null));
-        registerServerHelper(new StreamServerHelper(null));
-    }
-
-    /**
-     * Registers a server helper.
-     * 
-     * @param helper
-     *                The server helper to register.
-     */
-    public void registerServerHelper(ServerHelper helper) {
-        getRegisteredServers().add(helper);
+        getRegisteredClients().add(new StreamClientHelper(null));
+        getRegisteredClients().add(new ClapClientHelper(null));
+        getRegisteredClients().add(new FileClientHelper(null));
+        getRegisteredClients().add(new WarClientHelper(null));
+        getRegisteredServers().add(new StreamServerHelper(null));
     }
 
     /**
@@ -1106,28 +1076,6 @@ public class Engine extends org.restlet.util.Engine {
             }
 
         });
-    }
-
-    /**
-     * Register a list of client helpers
-     * 
-     * @param helpers
-     */
-    public void setClientHelpers(List<ClientHelper> helpers) {
-        for (ClientHelper helper : helpers) {
-            registerClientHelper(helper);
-        }
-    }
-
-    /**
-     * Register a list of server helpers
-     * 
-     * @param helpers
-     */
-    public void setServerHelpers(List<ServerHelper> helpers) {
-        for (ServerHelper helper : helpers) {
-            registerServerHelper(helper);
-        }
     }
 
     @Override
