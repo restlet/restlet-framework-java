@@ -15,87 +15,55 @@ import java.util.List;
  *      Tokens</a>
  */
 public class Product {
-    /** Product token. */
-    private String token;
-
-    /** Version number. */
-    private String version;
-
-    /** Comment. */
-    private String comment;
-
     /**
-     * Constructor.
+     * Parses a product formatted as defined by the HTTP standard.
      * 
-     * @param token
-     *                The product token.
-     * @param version
-     *                The version of the product.
-     * @param comment
-     *                Facultative comment.
+     * @param product
+     *                The product string.
+     * @return A new product instance.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.8">Product
+     *      Tokens</a>
      */
-    public Product(String token, String version, String comment) {
-        super();
-        this.token = token;
-        this.version = version;
-        this.comment = comment;
-    }
+    public static Product parse(final String product) {
+        Product result = null;
 
-    /**
-     * Returns the product token.
-     * 
-     * @return The product token.
-     */
-    public String getToken() {
-        return token;
-    }
+        String token = null;
+        String version = null;
+        String comment = null;
+        char[] tab = product.trim().toCharArray();
+        StringBuilder builder = new StringBuilder();
+        int index = 0;
+        // Find the token
+        for (index = 0; index < tab.length; index++) {
+            char c = tab[index];
+            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == ' ') {
+                builder.append(c);
+            } else {
+                break;
+            }
+        }
+        token = builder.toString().trim();
+        if (index < tab.length && tab[index] == '/') {
+            // Found a version
+            index++;
+            int spaceIndex = product.indexOf(" ", index);
+            if (spaceIndex > -1) {
+                // And a comment
+                version = product.substring(index, spaceIndex);
+                comment = product.substring(spaceIndex + 1);
+            } else {
+                version = product.substring(index);
+            }
+        } else {
+            if (index < tab.length) {
+                // Found a comment
+                comment = product.substring(index);
+            }
+        }
 
-    /**
-     * Sets the product token.
-     * 
-     * @param token
-     *                The product token.
-     */
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    /**
-     * Returns the version of the product.
-     * 
-     * @return The version of the product.
-     */
-    public String getVersion() {
-        return version;
-    }
-
-    /**
-     * Sets the version of the product.
-     * 
-     * @param version
-     *                The version of the product.
-     */
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    /**
-     * Returns the facultative comment.
-     * 
-     * @return The facultative comment.
-     */
-    public String getComment() {
-        return comment;
-    }
-
-    /**
-     * Sets the facultative comment.
-     * 
-     * @param comment
-     *                The facultative comment.
-     */
-    public void setComment(String comment) {
-        this.comment = comment;
+        result = new Product(token, version, comment);
+        return result;
     }
 
     /**
@@ -205,54 +173,86 @@ public class Product {
         return result;
     }
 
+    /** Comment. */
+    private String comment;
+
+    /** Product name. */
+    private String name;
+
+    /** Version number. */
+    private String version;
+
     /**
-     * Parses a product formatted as defined by the HTTP standard.
+     * Constructor.
      * 
-     * @param product
-     *                The product string.
-     * @return A new product instance.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.8">Product
-     *      Tokens</a>
+     * @param name
+     *                The product name.
+     * @param version
+     *                The version of the product.
+     * @param comment
+     *                Facultative comment.
      */
-    public static Product parse(final String product) {
-        Product result = null;
+    public Product(String name, String version, String comment) {
+        super();
+        this.name = name;
+        this.version = version;
+        this.comment = comment;
+    }
 
-        String token = null;
-        String version = null;
-        String comment = null;
-        char[] tab = product.trim().toCharArray();
-        StringBuilder builder = new StringBuilder();
-        int index = 0;
-        // Find the token
-        for (index = 0; index < tab.length; index++) {
-            char c = tab[index];
-            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == ' ') {
-                builder.append(c);
-            } else {
-                break;
-            }
-        }
-        token = builder.toString().trim();
-        if (index < tab.length && tab[index] == '/') {
-            // Found a version
-            index++;
-            int spaceIndex = product.indexOf(" ", index);
-            if (spaceIndex > -1) {
-                // And a comment
-                version = product.substring(index, spaceIndex);
-                comment = product.substring(spaceIndex + 1);
-            } else {
-                version = product.substring(index);
-            }
-        } else {
-            if (index < tab.length) {
-                // Found a comment
-                comment = product.substring(index);
-            }
-        }
+    /**
+     * Returns the facultative comment.
+     * 
+     * @return The facultative comment.
+     */
+    public String getComment() {
+        return comment;
+    }
 
-        result = new Product(token, version, comment);
-        return result;
+    /**
+     * Returns the product name.
+     * 
+     * @return The product name.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns the version of the product.
+     * 
+     * @return The version of the product.
+     */
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * Sets the facultative comment.
+     * 
+     * @param comment
+     *                The facultative comment.
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    /**
+     * Sets the product name.
+     * 
+     * @param name
+     *                The product name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Sets the version of the product.
+     * 
+     * @param version
+     *                The version of the product.
+     */
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

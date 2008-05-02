@@ -44,68 +44,68 @@ public class ProductTokenTestCase extends RestletTestCase {
         String userAgent6 = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1) Gecko/20061024 Iceweasel/2.0 (Debian-2.0+dfsg-1)";
 
         Product product = Product.parse(userAgent1);
-        assertEquals(product.getToken(), "Mozilla");
+        assertEquals(product.getName(), "Mozilla");
         assertEquals(product.getVersion(), "4.0");
         assertEquals(product.getComment(),
                 "(compatible; MSIE 6.0; America Online Browser 1.1; rev1.1; Windows NT 5.1;)");
 
         product = Product.parse(userAgent2);
-        assertEquals(product.getToken(), "Advanced Browser");
+        assertEquals(product.getName(), "Advanced Browser");
         assertNull(product.getVersion());
         assertEquals(product.getComment(), "(http://www.avantbrowser.com)");
 
         product = Product.parse(userAgent3);
-        assertEquals(product.getToken(), "Mozilla");
+        assertEquals(product.getName(), "Mozilla");
         assertEquals(product.getVersion(), "5.0");
         assertNull(product.getComment());
 
         product = Product.parse(userAgent4);
-        assertEquals(product.getToken(), "Mozilla");
+        assertEquals(product.getName(), "Mozilla");
         assertNull(product.getVersion());
         assertNull(product.getComment());
 
         List<Product> list = Product.parseUserAgent(userAgent1);
         assertEquals(list.size(), 1);
-        assertEquals(list.get(0).getToken(), "Mozilla");
+        assertEquals(list.get(0).getName(), "Mozilla");
         assertEquals(list.get(0).getVersion(), "4.0");
         assertEquals(list.get(0).getComment(),
                 "(compatible; MSIE 6.0; America Online Browser 1.1; rev1.1; Windows NT 5.1;)");
 
         list = Product.parseUserAgent(userAgent2);
         assertEquals(list.size(), 1);
-        assertEquals(list.get(0).getToken(), "Advanced Browser");
+        assertEquals(list.get(0).getName(), "Advanced Browser");
         assertNull(list.get(0).getVersion());
         assertEquals(list.get(0).getComment(), "(http://www.avantbrowser.com)");
 
         list = Product.parseUserAgent(userAgent3);
         assertEquals(list.size(), 1);
-        assertEquals(list.get(0).getToken(), "Mozilla");
+        assertEquals(list.get(0).getName(), "Mozilla");
         assertEquals(list.get(0).getVersion(), "5.0");
         assertNull(list.get(0).getComment());
 
         list = Product.parseUserAgent(userAgent5);
         assertEquals(list.size(), 3);
-        assertEquals(list.get(0).getToken(), "Mozilla");
+        assertEquals(list.get(0).getName(), "Mozilla");
         assertEquals(list.get(0).getVersion(), "5.0");
         assertEquals(list.get(0).getComment(),
                 "(Macintosh; U; PPC Mac OS X; en-US; rv:1.8)");
-        assertEquals(list.get(1).getToken(), "Gecko");
+        assertEquals(list.get(1).getName(), "Gecko");
         assertEquals(list.get(1).getVersion(), "20051107");
         assertNull(list.get(1).getComment());
-        assertEquals(list.get(2).getToken(), "Camino");
+        assertEquals(list.get(2).getName(), "Camino");
         assertEquals(list.get(2).getVersion(), "1.0b1");
         assertNull(list.get(2).getComment());
 
         list = Product.parseUserAgent(userAgent6);
         assertEquals(list.size(), 3);
-        assertEquals(list.get(0).getToken(), "Mozilla");
+        assertEquals(list.get(0).getName(), "Mozilla");
         assertEquals(list.get(0).getVersion(), "5.0");
         assertEquals(list.get(0).getComment(),
                 "(X11; U; Linux i686; en-US; rv:1.8.1)");
-        assertEquals(list.get(1).getToken(), "Gecko");
+        assertEquals(list.get(1).getName(), "Gecko");
         assertEquals(list.get(1).getVersion(), "20061024");
         assertNull(list.get(1).getComment());
-        assertEquals(list.get(2).getToken(), "Iceweasel");
+        assertEquals(list.get(2).getName(), "Iceweasel");
         assertEquals(list.get(2).getVersion(), "2.0");
         assertEquals(list.get(2).getComment(), "(Debian-2.0+dfsg-1)");
         
