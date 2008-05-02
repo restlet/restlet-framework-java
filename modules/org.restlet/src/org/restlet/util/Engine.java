@@ -43,6 +43,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
+import org.restlet.data.Product;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
@@ -481,6 +482,18 @@ public abstract class Engine {
             throws IllegalArgumentException;
 
     /**
+     * Parses the given user agent String to a list of Product instances.
+     * 
+     * @param userAgent
+     * @return the List of Product objects parsed from the String
+     * @throws IllegalArgumentException
+     *                 Thrown if the String can not be parsed as a list of
+     *                 Product instances.
+     */
+    public abstract List<Product> parseUserAgent(String userAgent)
+            throws IllegalArgumentException;
+
+    /**
      * Returns the MD5 digest of the target string. Target is decoded to bytes
      * using the US-ASCII charset. The returned hexidecimal String always
      * contains 32 lowercase alphanumeric characters. For example, if target is
@@ -491,4 +504,5 @@ public abstract class Engine {
      * @return The MD5 digest of the target string.
      */
     public abstract String toMd5(String target);
+
 }

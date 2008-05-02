@@ -21,6 +21,7 @@ package org.restlet.test;
 import java.util.List;
 
 import org.restlet.data.Product;
+import org.restlet.util.Engine;
 
 /**
  * Test {@link org.restlet.data.Product}.
@@ -43,32 +44,32 @@ public class ProductTokenTestCase extends RestletTestCase {
         String userAgent5 = "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-US; rv:1.8) Gecko/20051107 Camino/1.0b1";
         String userAgent6 = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1) Gecko/20061024 Iceweasel/2.0 (Debian-2.0+dfsg-1)";
 
-        List<Product> list = Product.parseUserAgent(userAgent1);
+        List<Product> list = Engine.getInstance().parseUserAgent(userAgent1);
         assertEquals(list.size(), 1);
         assertEquals(list.get(0).getName(), "Mozilla");
         assertEquals(list.get(0).getVersion(), "4.0");
         assertEquals(list.get(0).getComment(),
                 "(compatible; MSIE 6.0; America Online Browser 1.1; rev1.1; Windows NT 5.1;)");
 
-        list = Product.parseUserAgent(userAgent2);
+        list = Engine.getInstance().parseUserAgent(userAgent2);
         assertEquals(list.size(), 1);
         assertEquals(list.get(0).getName(), "Advanced Browser");
         assertNull(list.get(0).getVersion());
         assertEquals(list.get(0).getComment(), "(http://www.avantbrowser.com)");
 
-        list = Product.parseUserAgent(userAgent3);
+        list = Engine.getInstance().parseUserAgent(userAgent3);
         assertEquals(list.size(), 1);
         assertEquals(list.get(0).getName(), "Mozilla");
         assertEquals(list.get(0).getVersion(), "5.0");
         assertNull(list.get(0).getComment());
 
-        list = Product.parseUserAgent(userAgent4);
+        list = Engine.getInstance().parseUserAgent(userAgent4);
         assertEquals(list.size(), 1);
         assertEquals(list.get(0).getName(), "Mozilla");
         assertNull(list.get(0).getVersion());
         assertNull(list.get(0).getComment());
 
-        list = Product.parseUserAgent(userAgent5);
+        list = Engine.getInstance().parseUserAgent(userAgent5);
         assertEquals(list.size(), 3);
         assertEquals(list.get(0).getName(), "Mozilla");
         assertEquals(list.get(0).getVersion(), "5.0");
@@ -81,7 +82,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         assertEquals(list.get(2).getVersion(), "1.0b1");
         assertNull(list.get(2).getComment());
 
-        list = Product.parseUserAgent(userAgent6);
+        list = Engine.getInstance().parseUserAgent(userAgent6);
         assertEquals(list.size(), 3);
         assertEquals(list.get(0).getName(), "Mozilla");
         assertEquals(list.get(0).getVersion(), "5.0");

@@ -173,7 +173,8 @@ public final class ClientInfo {
      */
     public List<Product> getAgentProducts() {
         if (this.agentProducts == null) {
-            this.agentProducts = Product.parseUserAgent(getAgent());
+            this.agentProducts = Engine.getInstance()
+                    .parseUserAgent(getAgent());
         }
         return this.agentProducts;
     }
