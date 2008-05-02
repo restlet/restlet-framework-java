@@ -18,6 +18,8 @@
 
 package com.noelios.restlet.application;
 
+import java.util.List;
+
 import org.restlet.Application;
 import org.restlet.Filter;
 import org.restlet.data.CharacterSet;
@@ -28,12 +30,16 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
+import org.restlet.util.Series;
+
+import com.noelios.restlet.http.HttpConstants;
 
 /**
  * Filter tunnelling browser calls into full REST calls. The request method can
@@ -71,6 +77,10 @@ public class TunnelFilter extends Filter {
 
         if (getTunnelService().isExtensionsTunnel()) {
             extensionsModified = processExtensions(request);
+        }
+
+        if (getTunnelService().isUserAgentTunnel()) {
+            processUserAgent(request);
         }
 
         if (queryModified || extensionsModified) {
@@ -279,6 +289,91 @@ public class TunnelFilter extends Filter {
         }
 
         return queryModified;
+    }
+
+    /**
+     * Updates the client preferences based on user agent type.
+     * 
+     * @param request
+     *                The request to update.
+     */
+    private void processUserAgent(Request request) {
+        if (shouldTweakHtmlPreferences(request)) {
+            request.getClientInfo().setAcceptedMediaTypes(
+                    tweakHtmlPreference(request.getClientInfo()
+                            .getAcceptedMediaTypes()));
+        }
+    }
+
+    /**
+     * Returns true if the user agent is suspected to declare a higher
+     * preference for media types other than HTML.
+     * 
+     * @return True if the user agent is suspected to declare a higher
+     *         preference for media types other than HTML.
+     */
+    protected boolean shouldTweakHtmlPreferences(Request request) {
+        boolean result = false;
+
+        // Have XML mediatypes higher preference than HTML ones?
+        // Does the user agent have a preference for "*/*"?
+        boolean shouldTweak = false;
+        boolean allMediaTypesPreference = false;
+        boolean htmlFound = false;
+        boolean xmlFound = false;
+        List<Preference<MediaType>> preferences = request.getClientInfo()
+                .getAcceptedMediaTypes();
+        for (Preference<MediaType> preference : preferences) {
+            MediaType mediaType = preference.getMetadata();
+
+            if (MediaType.ALL.equals(mediaType)) {
+                allMediaTypesPreference = true;
+                break;
+            }
+
+            if (!htmlFound && mediaType.getName().toLowerCase().contains("htm")) {
+                // We have found html media type, stop the loop.
+                htmlFound = true;
+            } else if (!xmlFound) {
+                // Have we found xml media type?
+                xmlFound = mediaType.getName().toLowerCase().contains("xml");
+            }
+        }
+        shouldTweak = xmlFound && htmlFound;
+
+        if (shouldTweak || allMediaTypesPreference) {
+            // Ajax Clients does not need to tweak preferences.
+            Series<Parameter> requestHeaders = (Series<Parameter>) request
+                    .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
+            Parameter parameter = requestHeaders.getFirst("X-Request-With",
+                    true);
+            boolean ajaxClient = parameter != null
+                    && ("HTTP.Request".equalsIgnoreCase(parameter.getName()) || "XMLHttpRequest"
+                            .equalsIgnoreCase(parameter.getName()));
+
+            if (!ajaxClient) {
+                result = allMediaTypesPreference;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Alter the client's preferences in order to give HTML media types a higher
+     * preference.
+     * 
+     * @param preferences
+     *                The list of client's preferences.
+     * @return the updated list of preferences.
+     */
+    protected List<Preference<MediaType>> tweakHtmlPreference(
+            List<Preference<MediaType>> preferences) {
+        preferences.add(0, new Preference<MediaType>(MediaType.TEXT_HTML));
+        preferences.add(0, new Preference<MediaType>(
+                MediaType.APPLICATION_XHTML_XML));
+
+        return preferences;
     }
 
     /**
