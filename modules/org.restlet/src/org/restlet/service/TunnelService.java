@@ -128,12 +128,6 @@ public class TunnelService {
     private volatile boolean queryTunnel;
 
     /**
-     * Indicates if the method and client preferences can be tunnelled via the
-     * user agent type.
-     */
-    private volatile boolean userAgentTunnel;
-
-    /**
      * Constructor.
      * 
      * @param enabled
@@ -338,17 +332,6 @@ public class TunnelService {
     }
 
     /**
-     * Indicates if the method and client preferences can be tunnelled via the
-     * user agent type.
-     * 
-     * @return True if the method and client preferences can be tunnelled via
-     *         the user agent type.
-     */
-    public boolean isUserAgentTunnel() {
-        return userAgentTunnel;
-    }
-
-    /**
      * Sets the character set parameter name.
      * 
      * @param parameterName
@@ -506,17 +489,5 @@ public class TunnelService {
      */
     public void setQueryTunnel(boolean queryTunnel) {
         this.queryTunnel = queryTunnel;
-    }
-
-    /**
-     * Indicates if the method and client preferences can be tunnelled via the
-     * user agent type.
-     * 
-     * @param userAgentTunnel
-     *                True if the method and client preferences can be tunnelled
-     *                via the user agent type.
-     */
-    public void setUserAgentTunnel(boolean userAgentTunnel) {
-        this.userAgentTunnel = userAgentTunnel;
     }
 }
