@@ -7,7 +7,7 @@ import java.util.List;
  * Product tokens are used to allow communicating applications to identify
  * themselves by software name and version. .
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Thierry Boileau (contact@noelios.com)
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.43">User-Agent</a>
  * @see <a
@@ -16,13 +16,13 @@ import java.util.List;
  */
 public class Product {
     /** Product token. */
-    String token;
+    private String token;
 
     /** Version number. */
-    String version;
+    private String version;
 
     /** Comment. */
-    String comment;
+    private String comment;
 
     /**
      * Constructor.
