@@ -168,7 +168,6 @@ public class TunnelService {
         this.methodTunnel = methodTunnel;
         this.preferencesTunnel = preferencesTunnel;
         this.queryTunnel = queryTunnel;
-        this.userAgentTunnel = false;
 
         this.characterSetParameter = "charset";
         this.encodingParameter = "encoding";
