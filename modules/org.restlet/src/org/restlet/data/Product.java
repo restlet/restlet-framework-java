@@ -15,56 +15,6 @@ import java.util.List;
  *      Tokens</a>
  */
 public class Product {
-    /**
-     * Parses a product formatted as defined by the HTTP standard.
-     * 
-     * @param product
-     *                The product string.
-     * @return A new product instance.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.8">Product
-     *      Tokens</a>
-     */
-    public static Product parse(final String product) {
-        Product result = null;
-
-        String token = null;
-        String version = null;
-        String comment = null;
-        char[] tab = product.trim().toCharArray();
-        StringBuilder builder = new StringBuilder();
-        int index = 0;
-        // Find the token
-        for (index = 0; index < tab.length; index++) {
-            char c = tab[index];
-            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == ' ') {
-                builder.append(c);
-            } else {
-                break;
-            }
-        }
-        token = builder.toString().trim();
-        if (index < tab.length && tab[index] == '/') {
-            // Found a version
-            index++;
-            int spaceIndex = product.indexOf(" ", index);
-            if (spaceIndex > -1) {
-                // And a comment
-                version = product.substring(index, spaceIndex);
-                comment = product.substring(spaceIndex + 1);
-            } else {
-                version = product.substring(index);
-            }
-        } else {
-            if (index < tab.length) {
-                // Found a comment
-                comment = product.substring(index);
-            }
-        }
-
-        result = new Product(token, version, comment);
-        return result;
-    }
 
     /**
      * Parses a product formatted as defined by the HTTP standard.
@@ -188,9 +138,9 @@ public class Product {
      * @param name
      *                The product name.
      * @param version
-     *                The version of the product.
+     *                The product version.
      * @param comment
-     *                Facultative comment.
+     *                The product comment.
      */
     public Product(String name, String version, String comment) {
         super();

@@ -47,7 +47,7 @@ public final class ClientInfo {
     private volatile List<String> addresses;
 
     /** The list of product tokens taken from the agent name. */
-    private volatile List<Product> products;
+    private volatile List<Product> agentProducts;
 
     /** The agent name. */
     private volatile String agent;
@@ -66,7 +66,7 @@ public final class ClientInfo {
         this.acceptedEncodings = null;
         this.acceptedLanguages = null;
         this.acceptedMediaTypes = null;
-        this.products = null;
+        this.agentProducts = null;
     }
 
     /**
@@ -171,11 +171,11 @@ public final class ClientInfo {
      * 
      * @return The list of product tokens from the user agent name.
      */
-    public List<Product> getProducts() {
-        if (this.products == null) {
-            this.products = Product.parseUserAgent(getAgent());
+    public List<Product> getAgentProducts() {
+        if (this.agentProducts == null) {
+            this.agentProducts = Product.parseUserAgent(getAgent());
         }
-        return this.products;
+        return this.agentProducts;
     }
 
     /**
