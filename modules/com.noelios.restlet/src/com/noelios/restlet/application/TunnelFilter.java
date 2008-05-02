@@ -332,7 +332,7 @@ public class TunnelFilter extends Filter {
             }
 
             if (!htmlFound && mediaType.getName().toLowerCase().contains("htm")) {
-                // We have found html media type, stop the loop.
+                // We have found html media type.
                 htmlFound = true;
             } else if (!xmlFound) {
                 // Have we found xml media type?
