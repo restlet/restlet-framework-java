@@ -29,9 +29,6 @@ import org.restlet.util.Engine;
  * @author Thierry Boileau (contact@noelios.com)
  */
 public class ProductTokenTestCase extends RestletTestCase {
-    protected final static String DEFAULT_SCHEME = "http";
-
-    protected final static String DEFAULT_SCHEMEPART = "//";
 
     /**
      * Tests.
