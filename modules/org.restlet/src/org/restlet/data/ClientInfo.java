@@ -46,6 +46,9 @@ public final class ClientInfo {
     /** The IP addresses. */
     private volatile List<String> addresses;
 
+    /** The list of product tokens taken from the agent name. */
+    private volatile List<Product> products;
+
     /** The agent name. */
     private volatile String agent;
 
@@ -63,6 +66,7 @@ public final class ClientInfo {
         this.acceptedEncodings = null;
         this.acceptedLanguages = null;
         this.acceptedMediaTypes = null;
+        this.products = null;
     }
 
     /**
@@ -160,6 +164,18 @@ public final class ClientInfo {
      */
     public int getPort() {
         return this.port;
+    }
+
+    /**
+     * Returns the list of product tokens from the user agent name.
+     * 
+     * @return The list of product tokens from the user agent name.
+     */
+    public List<Product> getProducts() {
+        if (this.products == null) {
+            this.products = Product.parseUserAgent(getAgent());
+        }
+        return this.products;
     }
 
     /**
