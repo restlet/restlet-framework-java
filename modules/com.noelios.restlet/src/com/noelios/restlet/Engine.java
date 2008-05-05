@@ -79,7 +79,6 @@ import com.noelios.restlet.http.StreamServerHelper;
 import com.noelios.restlet.local.ClapClientHelper;
 import com.noelios.restlet.local.DirectoryResource;
 import com.noelios.restlet.local.FileClientHelper;
-import com.noelios.restlet.local.WarClientHelper;
 import com.noelios.restlet.util.CookieReader;
 import com.noelios.restlet.util.CookieUtils;
 import com.noelios.restlet.util.FormUtils;
@@ -1029,7 +1028,6 @@ public class Engine extends org.restlet.util.Engine {
                         } else if (c == '(' || c == '{') {
                             insideComment = true;
                             commentBuilder = new StringBuilder();
-                            comment = null;
                             commentBuilder.append(c);
                         }
                     }
@@ -1045,7 +1043,6 @@ public class Engine extends org.restlet.util.Engine {
                         if (c == '(' || c == '{') {
                             insideComment = true;
                             commentBuilder = new StringBuilder();
-                            comment = null;
                             commentBuilder.append(c);
                         } else {
                             if (insideComment) {
@@ -1120,7 +1117,6 @@ public class Engine extends org.restlet.util.Engine {
         getRegisteredClients().add(new StreamClientHelper(null));
         getRegisteredClients().add(new ClapClientHelper(null));
         getRegisteredClients().add(new FileClientHelper(null));
-        getRegisteredClients().add(new WarClientHelper(null));
         getRegisteredServers().add(new StreamServerHelper(null));
     }
 

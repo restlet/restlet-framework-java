@@ -83,14 +83,16 @@ Changes log
         - Improved logging consistency.
         - Expressed the Eclipse plugin dependencies using the
           "Import-Package" instructions instead of "Required-Bundle".
-        - All connector and authentication modules now have OSGi activator
-          to automatically register themselves with the engine. The engine
-          module also registers itself with the API.
+        - All connector and authentication modules now have OSGi 
+          activator to automatically register themselves with the 
+          engine. The engine module also registers itself with the API.
           Suggested by Hendy Irawan, with help from Edward Yakop.
         - Updated db4o 7.2 to latest stable build.
-        - Added Spring example based on REST book chapter 7. Contributed by  
-          Konstantin Läufer.
+        - Added Spring example based on REST book chapter 7. 
+          Contributed by Konstantin Läufer.
         - Removed unecessary libraries from distribution.
+        - The WAR client is now only available for Application deployed
+          using ServletServer or a subclass. 
 
  - 1.1 Milestone 3 (2008-04-01)
     - Bugs fixed
