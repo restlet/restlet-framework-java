@@ -572,6 +572,35 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     @Override
+    public String formatUserAgent(List<Product> products)
+            throws IllegalArgumentException {
+        StringBuilder builder = new StringBuilder();
+
+        for (Iterator<Product> iterator = products.iterator(); iterator
+                .hasNext();) {
+            Product product = iterator.next();
+            if (product.getName() == null && product.getName().length() == 0) {
+                throw new IllegalArgumentException(
+                        "Product name cannot be null.");
+            } else {
+                builder.append(product.getName());
+                if (product.getVersion() != null) {
+                    builder.append("/").append(product.getVersion());
+                }
+                if (product.getComment() != null) {
+                    builder.append(" (").append(product.getComment()).append(
+                            ")");
+                }
+            }
+            if (iterator.hasNext()) {
+                builder.append(" ");
+            }
+        }
+
+        return builder.toString();
+    }
+
+    @Override
     public Variant getPreferredVariant(ClientInfo client,
             List<Variant> variants, Language defaultLanguage) {
         if (variants == null) {

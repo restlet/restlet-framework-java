@@ -18,6 +18,7 @@
 
 package org.restlet.test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Product;
@@ -91,6 +92,20 @@ public class ProductTokenTestCase extends RestletTestCase {
         assertEquals(list.get(2).getName(), "Iceweasel");
         assertEquals(list.get(2).getVersion(), "2.0");
         assertEquals(list.get(2).getComment(), "Debian-2.0+dfsg-1");
+
+        List<Product> products = new ArrayList<Product>();
+        products.add(new Product("Product", "1.2", null));
+        products.add(new Product("Nre", "1.1m4", "This is a comment"));
+        
+        list = Engine.getInstance().parseUserAgent(
+                Engine.getInstance().formatUserAgent(products));
+        assertEquals(list.size(), 2);
+        assertEquals(list.get(0).getName(), "Product");
+        assertEquals(list.get(0).getVersion(), "1.2");
+        assertNull(list.get(0).getComment());
+        assertEquals(list.get(1).getName(), "Nre");
+        assertEquals(list.get(1).getVersion(), "1.1m4");
+        assertEquals(list.get(1).getComment(), "This is a comment");
 
     }
 

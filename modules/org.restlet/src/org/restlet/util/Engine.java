@@ -394,6 +394,18 @@ public abstract class Engine {
     public abstract String formatDimensions(Collection<Dimension> dimensions);
 
     /**
+     * Formats the given List of Products to a String.
+     * 
+     * @param products
+     *                The list of products to format.
+     * @return the List of Products as String.
+     * @throws IllegalArgumentException
+     *                 Thrown if the List of Products contains illegal values
+     */
+    public abstract String formatUserAgent(List<Product> products)
+            throws IllegalArgumentException;
+
+    /**
      * Returns the best variant representation for a given resource according
      * the the client preferences.<br>
      * A default language is provided in case the variants don't match the
