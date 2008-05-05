@@ -50,9 +50,10 @@ import com.noelios.restlet.ClientHelper;
  * <tr>
  * <td>defaultLanguage</td>
  * <td>String</td>
- * <td>en-us</td>
+ * <td></td>
  * <td>When no metadata service is available (simple client connector with no
- * parent application), falls back on this default language.</td>
+ * parent application), falls back on this default language. To indicate that no
+ * default language should be set, "*" or "" can be used.</td>
  * </tr>
  * </table>
  * 
@@ -80,7 +81,7 @@ public class LocalClientHelper extends ClientHelper {
      * @return The default language.
      */
     public String getDefaultLanguage() {
-        return getParameters().getFirstValue("defaultLanguage", "en-us");
+        return getParameters().getFirstValue("defaultLanguage", "");
     }
 
     /**
