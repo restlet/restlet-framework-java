@@ -1025,10 +1025,10 @@ public class Engine extends org.restlet.util.Engine {
                             insideVersion = true;
                             versionBuilder = new StringBuilder();
                             version = null;
-                        } else if (c == '(' || c == '{') {
+                        } else if (c == '(') {
                             insideComment = true;
                             commentBuilder = new StringBuilder();
-                            commentBuilder.append(c);
+                            comment = null;
                         }
                     }
                 } else {
@@ -1040,15 +1040,14 @@ public class Engine extends org.restlet.util.Engine {
                             version = versionBuilder.toString();
                         }
                     } else {
-                        if (c == '(' || c == '{') {
+                        if (c == '(') {
                             insideComment = true;
                             commentBuilder = new StringBuilder();
-                            commentBuilder.append(c);
+                            comment = null;
                         } else {
                             if (insideComment) {
-                                if (c == ')' || c == '}') {
+                                if (c == ')') {
                                     insideComment = false;
-                                    commentBuilder.append(c);
                                     comment = commentBuilder.toString();
                                     result.add(new Product(token, version,
                                             comment));

@@ -46,13 +46,13 @@ public class ProductTokenTestCase extends RestletTestCase {
         assertEquals(list.get(0).getName(), "Mozilla");
         assertEquals(list.get(0).getVersion(), "4.0");
         assertEquals(list.get(0).getComment(),
-                "(compatible; MSIE 6.0; America Online Browser 1.1; rev1.1; Windows NT 5.1;)");
+                "compatible; MSIE 6.0; America Online Browser 1.1; rev1.1; Windows NT 5.1;");
 
         list = Engine.getInstance().parseUserAgent(userAgent2);
         assertEquals(list.size(), 1);
         assertEquals(list.get(0).getName(), "Advanced Browser");
         assertNull(list.get(0).getVersion());
-        assertEquals(list.get(0).getComment(), "(http://www.avantbrowser.com)");
+        assertEquals(list.get(0).getComment(), "http://www.avantbrowser.com");
 
         list = Engine.getInstance().parseUserAgent(userAgent3);
         assertEquals(list.size(), 1);
@@ -71,7 +71,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         assertEquals(list.get(0).getName(), "Mozilla");
         assertEquals(list.get(0).getVersion(), "5.0");
         assertEquals(list.get(0).getComment(),
-                "(Macintosh; U; PPC Mac OS X; en-US; rv:1.8)");
+                "Macintosh; U; PPC Mac OS X; en-US; rv:1.8");
         assertEquals(list.get(1).getName(), "Gecko");
         assertEquals(list.get(1).getVersion(), "20051107");
         assertNull(list.get(1).getComment());
@@ -84,13 +84,13 @@ public class ProductTokenTestCase extends RestletTestCase {
         assertEquals(list.get(0).getName(), "Mozilla");
         assertEquals(list.get(0).getVersion(), "5.0");
         assertEquals(list.get(0).getComment(),
-                "(X11; U; Linux i686; en-US; rv:1.8.1)");
+                "X11; U; Linux i686; en-US; rv:1.8.1");
         assertEquals(list.get(1).getName(), "Gecko");
         assertEquals(list.get(1).getVersion(), "20061024");
         assertNull(list.get(1).getComment());
         assertEquals(list.get(2).getName(), "Iceweasel");
         assertEquals(list.get(2).getVersion(), "2.0");
-        assertEquals(list.get(2).getComment(), "(Debian-2.0+dfsg-1)");
+        assertEquals(list.get(2).getComment(), "Debian-2.0+dfsg-1");
 
     }
 
