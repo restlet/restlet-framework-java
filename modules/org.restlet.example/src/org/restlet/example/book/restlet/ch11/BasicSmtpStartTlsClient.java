@@ -13,7 +13,7 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
-public class BasicSmtpsClient {
+public class BasicSmtpStartTlsClient {
     private static final String MAIL = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>"
             + "<email>"
             + " <head>"
@@ -31,7 +31,7 @@ public class BasicSmtpsClient {
 
         // Sends the request and gets the response
         Request request = new Request(new Method("POST"),
-                "smtps://smtp.mail.yahoo.com", mail);
+                "smtp://smtp.mail.yahoo.com", mail);
         ChallengeResponse challengeResponse = new ChallengeResponse(
                 ChallengeScheme.SMTP_PLAIN, "restlet.testfr", "saya08");
         request.setChallengeResponse(challengeResponse);
@@ -43,6 +43,7 @@ public class BasicSmtpsClient {
 
         // Instantiates a client according to a protocol
         Client client = new Client(Protocol.SMTP);
+        client.getContext().getParameters().add("starttls", "true");
         // Sends the request
         Response response = client.handle(request);
 
