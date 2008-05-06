@@ -199,8 +199,8 @@ public final class ClientInfo {
                     Variable agentComment = new Variable(Variable.TYPE_COMMENT);
                     Variable agentCommentAttribute = new Variable(
                             Variable.TYPE_COMMENT_ATTRIBUTE);
-                    Variable facultativeData = new Variable(
-                            Variable.TYPE_ALL, null, false, false);
+                    Variable facultativeData = new Variable(Variable.TYPE_ALL,
+                            null, false, false);
                     String line = reader.readLine();
                     for (; line != null; line = reader.readLine()) {
                         if (line.trim().length() > 0
@@ -293,29 +293,15 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the major version numer of the user agent.
-     * 
-     * @return The major version number of the user agent.
-     */
-    public String getAgentMajorVersion() {
-        return null;
-    }
-
-    /**
-     * Returns the minor version numer of the user agent.
-     * 
-     * @return The minor version number of the user agent.
-     */
-    public String getAgentMinorVersion() {
-        return null;
-    }
-
-    /**
      * Returns the name of the user agent.
      * 
      * @return The name of the user agent.
      */
     public String getAgentName() {
+        if (getAgentMainProduct() != null) {
+            return getAgentMainProduct().getName();
+        }
+
         return null;
     }
 
@@ -338,7 +324,11 @@ public final class ClientInfo {
      * @return The version of the user agent.
      */
     public String getAgentVersion() {
+        if (getAgentMainProduct() != null) {
+            return getAgentMainProduct().getVersion();
+        }
         return null;
+
     }
 
     /**
