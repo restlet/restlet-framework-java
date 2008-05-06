@@ -226,7 +226,7 @@ public class JaxRsApplication extends Application {
 
         Restlet restlet = jaxRsRouter;
 
-        TunnelFilter tunnelFilter = new TunnelFilter(this);
+        TunnelFilter tunnelFilter = new TunnelFilter(getContext());
         tunnelFilter.setNext(restlet);
         restlet = tunnelFilter;
 

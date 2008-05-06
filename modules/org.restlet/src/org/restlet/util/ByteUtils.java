@@ -45,7 +45,6 @@ import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
-import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.WriterRepresentation;
 
@@ -520,17 +519,12 @@ public final class ByteUtils {
             final Representation representation) throws IOException {
         final Pipe pipe = Pipe.open();
         final Context context = Context.getCurrent();
-        final Response response = Response.getCurrent();
 
-        // Creates a thread that will handle the task of continuously
+        // Get a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        Thread writer = new Thread() {
-            @Override
+        Thread writer = context.getThread(new Runnable() {
             public void run() {
                 try {
-                    Context.setCurrent(context);
-                    Response.setCurrent(response);
-
                     WritableByteChannel wbc = pipe.sink();
                     representation.write(wbc);
                     wbc.close();
@@ -540,7 +534,7 @@ public final class ByteUtils {
                             "Error while writing to the piped channel.", ioe);
                 }
             }
-        };
+        });
         writer.setDaemon(false);
 
         // Starts the writer thread
@@ -581,17 +575,12 @@ public final class ByteUtils {
         final PipedWriter pipedWriter = new PipedWriter();
         final PipedReader pipedReader = new PipedReader(pipedWriter);
         final Context context = Context.getCurrent();
-        final Response response = Response.getCurrent();
 
-        // Creates a thread that will handle the task of continuously
+        // Gets a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        Thread writer = new Thread() {
-            @Override
+        Thread writer = context.getThread(new Runnable() {
             public void run() {
                 try {
-                    Context.setCurrent(context);
-                    Response.setCurrent(response);
-
                     representation.write(pipedWriter);
                 } catch (IOException ioe) {
                     Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
@@ -599,7 +588,7 @@ public final class ByteUtils {
                             "Error while writing to the piped reader.", ioe);
                 }
             }
-        };
+        });
         writer.setDaemon(false);
 
         // Starts the writer thread
@@ -652,17 +641,12 @@ public final class ByteUtils {
         if (representation != null) {
             final PipeStream pipe = new PipeStream();
             final Context context = Context.getCurrent();
-            final Response response = Response.getCurrent();
 
             // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
-            Thread writer = new Thread() {
-                @Override
+            Thread writer = context.getThread(new Runnable() {
                 public void run() {
                     try {
-                        Context.setCurrent(context);
-                        Response.setCurrent(response);
-
                         OutputStream os = pipe.getOutputStream();
                         representation.write(os);
                         os.write(-1);
@@ -676,7 +660,7 @@ public final class ByteUtils {
                                         ioe);
                     }
                 }
-            };
+            });
             writer.setDaemon(false);
 
             // Starts the writer thread

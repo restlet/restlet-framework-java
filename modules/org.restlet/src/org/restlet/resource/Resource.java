@@ -255,11 +255,10 @@ public class Resource extends Handler {
             Language language = null;
             // Compute the preferred variant. Get the default language
             // preference from the Application (if any).
-            Object app = getContext().getAttributes().get(Application.KEY);
+            Application app = Application.getCurrent();
 
-            if (app instanceof Application) {
-                language = ((Application) app).getMetadataService()
-                        .getDefaultLanguage();
+            if (app != null) {
+                language = app.getMetadataService().getDefaultLanguage();
             }
 
             result = getRequest().getClientInfo().getPreferredVariant(variants,

@@ -21,7 +21,6 @@ package com.noelios.restlet.application;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
-import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Uniform;
 
@@ -33,17 +32,28 @@ import org.restlet.Uniform;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ApplicationContext extends Context {
-    /** The WAR client. */
-    private volatile Client warClient;
+    /**
+     * Returns a non-null logger name.
+     * 
+     * @param application
+     *                The application.
+     * @return The logger name.
+     */
+    private static String getLoggerName(Application application) {
+        String result = application.getClass().getCanonicalName();
+        if (result == null)
+            result = "org.restlet.application";
+        return result;
+    }
 
     /** The application delegate. */
     private volatile Application application;
 
-    /** The parent context. */
-    private volatile Context parentContext;
-
     /** The client dispatcher. */
     private volatile ApplicationClientDispatcher clientDispatcher;
+
+    /** The parent context. */
+    private volatile Context parentContext;
 
     /** The server dispatcher. */
     private volatile Uniform serverDispatcher;
@@ -63,40 +73,10 @@ public class ApplicationContext extends Context {
         super(getLoggerName(application));
         this.application = application;
         this.parentContext = parentContext;
-        this.warClient = null;
         this.clientDispatcher = new ApplicationClientDispatcher(this);
         this.serverDispatcher = (getParentContext() != null) ? getParentContext()
                 .getServerDispatcher()
                 : null;
-        // this.warClient = new Client(Protocol.WAR);
-
-        // Set the application as an attribute for usage by other services
-        // like the ConnectorService
-        getAttributes().put(Application.KEY, application);
-    }
-
-    /**
-     * Returns a non-null logger name.
-     * 
-     * @param application
-     *                The application.
-     * @return The logger name.
-     */
-    private static String getLoggerName(Application application) {
-        String result = application.getClass().getCanonicalName();
-        if (result == null)
-            result = "org.restlet.application";
-        return result;
-    }
-
-    @Override
-    public ApplicationClientDispatcher getClientDispatcher() {
-        return this.clientDispatcher;
-    }
-
-    @Override
-    public Uniform getServerDispatcher() {
-        return this.serverDispatcher;
     }
 
     /**
@@ -109,23 +89,9 @@ public class ApplicationContext extends Context {
         return this.application;
     }
 
-    /**
-     * Returns the WAR client.
-     * 
-     * @return the WAR client.
-     */
-    protected Client getWarClient() {
-        return this.warClient;
-    }
-
-    /**
-     * Sets the WAR client.
-     * 
-     * @param warClient
-     *                the WAR client.
-     */
-    public void setWarClient(Client warClient) {
-        this.warClient = warClient;
+    @Override
+    public ApplicationClientDispatcher getClientDispatcher() {
+        return this.clientDispatcher;
     }
 
     /**
@@ -135,6 +101,11 @@ public class ApplicationContext extends Context {
      */
     protected Context getParentContext() {
         return this.parentContext;
+    }
+
+    @Override
+    public Uniform getServerDispatcher() {
+        return this.serverDispatcher;
     }
 
 }

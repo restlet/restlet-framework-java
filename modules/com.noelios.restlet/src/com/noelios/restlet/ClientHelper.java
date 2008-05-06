@@ -19,8 +19,6 @@
 package com.noelios.restlet;
 
 import org.restlet.Client;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
  * Client connector helper.
@@ -29,46 +27,42 @@ import org.restlet.data.Response;
  */
 public class ClientHelper extends ConnectorHelper<Client> {
 
-	/**
-	 * The number of milliseconds the client should wait for a response before
-	 * aborting the request and setting its status to an error status.
-	 */
-	private int connectTimeout = 0;
+    /**
+     * The number of milliseconds the client should wait for a response before
+     * aborting the request and setting its status to an error status.
+     */
+    private int connectTimeout = 0;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param client
-	 *            The client to help.
-	 */
-	public ClientHelper(Client client) {
-		super(client);
-		if (client != null) {
-			this.connectTimeout = client.getConnectTimeout();
-		}
-	}
+    /**
+     * Constructor.
+     * 
+     * @param client
+     *                The client to help.
+     */
+    public ClientHelper(Client client) {
+        super(client);
+        if (client != null) {
+            this.connectTimeout = client.getConnectTimeout();
+        }
+    }
 
-	@Override
-	public void handle(Request request, Response response) {
-	}
+    /**
+     * Returns the connection timeout.
+     * 
+     * @return The connection timeout.
+     */
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
 
-	/**
-	 * Returns the connection timeout.
-	 * 
-	 * @return The connection timeout.
-	 */
-	public int getConnectTimeout() {
-		return connectTimeout;
-	}
-
-	/**
-	 * Sets the connection timeout.
-	 * 
-	 * @param connectTimeout
-	 *            The connection timeout.
-	 */
-	public void setConnectTimeout(int connectTimeout) {
-		this.connectTimeout = connectTimeout;
-	}
+    /**
+     * Sets the connection timeout.
+     * 
+     * @param connectTimeout
+     *                The connection timeout.
+     */
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
 
 }

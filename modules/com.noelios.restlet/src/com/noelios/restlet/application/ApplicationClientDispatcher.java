@@ -18,7 +18,6 @@
 
 package com.noelios.restlet.application;
 
-import org.restlet.Application;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -53,17 +52,9 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
 
     @Override
     public void doHandle(Request request, Response response) {
-        // Add the application in request and response attributes
-        request.getAttributes().put(Application.KEY,
-                getApplicationContext().getApplication());
-        response.getAttributes().put(Application.KEY,
-                getApplicationContext().getApplication());
-
         Protocol protocol = request.getProtocol();
 
-        if (protocol.equals(Protocol.WAR)) {
-            getApplicationContext().getWarClient().handle(request, response);
-        } else if (protocol.equals(Protocol.RIAP)) {
+        if (protocol.equals(Protocol.RIAP)) {
             // Consider that the request is confidential
             request.setConfidential(true);
 

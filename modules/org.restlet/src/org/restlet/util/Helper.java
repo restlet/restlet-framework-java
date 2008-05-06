@@ -123,7 +123,13 @@ public abstract class Helper<T extends Restlet> {
      * @param response
      *                The response to update.
      */
-    public abstract void handle(Request request, Response response);
+    public void handle(Request request, Response response) {
+        // Associate the response to the current thread
+        Response.setCurrent(response);
+
+        // Associate the context to the current thread
+        Context.setCurrent(getContext());
+    }
 
     /**
      * Sets the helped Restlet.

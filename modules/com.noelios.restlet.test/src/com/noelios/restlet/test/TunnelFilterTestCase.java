@@ -207,7 +207,9 @@ public class TunnelFilterTestCase extends TestCase {
 
     @Override
     public void setUp() {
-        this.tunnelFilter = new TunnelFilter(new Application(new Context()));
+        Application app = new Application(new Context());
+        Application.setCurrent(app);
+        this.tunnelFilter = new TunnelFilter(app.getContext());
         this.tunnelFilter.getApplication().getTunnelService()
                 .setExtensionsTunnel(true);
     }

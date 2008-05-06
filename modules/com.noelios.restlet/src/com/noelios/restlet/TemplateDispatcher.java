@@ -56,7 +56,7 @@ public abstract class TemplateDispatcher extends Uniform {
      *                The response to update.
      */
     protected abstract void doHandle(Request request, Response response);
-    
+
     /**
      * Returns the parent context.
      * 
@@ -68,14 +68,18 @@ public abstract class TemplateDispatcher extends Uniform {
 
     /**
      * Returns the context's logger.
+     * 
      * @return The context's logger.
      */
-    public Logger getLogger(){
+    public Logger getLogger() {
         return getContext().getLogger();
     }
 
     @Override
     public void handle(Request request, Response response) {
+        // Associate the response to the current thread
+        Response.setCurrent(response);
+
         Protocol protocol = request.getProtocol();
 
         if (protocol == null) {

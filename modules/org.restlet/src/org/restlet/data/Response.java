@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.restlet.Restlet;
 import org.restlet.util.Series;
 
 /**
@@ -75,11 +76,14 @@ public class Response extends Message {
     private static final ThreadLocal<Response> CURRENT = new ThreadLocal<Response>();
 
     /**
-     * Returns the response associated to the current thread. This variable is
-     * stored internally as a thread local variable and updated when the request
-     * is handled by a Component or an Application.
+     * Returns the response associated to the current thread.
      * 
-     * @return The thread's response.
+     * This variable is stored internally as a thread local variable and updated
+     * each time a call is handled by a Restlet via the
+     * {@link Restlet#handle(org.restlet.data.Request, org.restlet.data.Response)}
+     * method.
+     * 
+     * @return The current context.
      */
     public static Response getCurrent() {
         return CURRENT.get();

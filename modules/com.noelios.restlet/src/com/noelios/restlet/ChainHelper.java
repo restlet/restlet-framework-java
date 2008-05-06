@@ -134,6 +134,8 @@ public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
 
     @Override
     public void handle(Request request, Response response) {
+        super.handle(request, response);
+
         if (getFirst() != null) {
             getFirst().handle(request, response);
         } else {

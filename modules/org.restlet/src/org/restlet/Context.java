@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
+import org.restlet.data.Response;
 import org.restlet.util.Series;
 
 /**
@@ -113,9 +114,12 @@ public class Context {
      * Returns the parent application if it exists, or null.
      * 
      * @return The parent application if it exists, or null.
+     * @deprecated Use the {@link Application#getCurrent()} static method
+     *             instead.
      */
+    @Deprecated
     public Application getApplication() {
-        return (Application) getAttributes().get(Application.KEY);
+        return Application.getCurrent();
     }
 
     /**
@@ -211,6 +215,41 @@ public class Context {
      */
     public Uniform getServerDispatcher() {
         return null;
+    }
+
+    /**
+     * Returns a thread to run the given task. The thread returned can either be
+     * a new one or an existing one that is part of a thread pool depending on
+     * the implementation.
+     * 
+     * In addition to allowing pooling, this method will ensure that the
+     * returned thread has the thread local variable properly copied from the
+     * calling thread.
+     * 
+     * @param task
+     *                The runnable task.
+     * @return A thread to run the given task.
+     */
+    public Thread getThread(final Runnable task) {
+        final Application currentApplication = Application.getCurrent();
+        final Context currentContext = Context.getCurrent();
+        final Integer currentVirtualHost = VirtualHost.getCurrent();
+        final Response currentResponse = Response.getCurrent();
+
+        Thread result = new Thread(new Runnable() {
+            public void run() {
+                // Copy the thread local variables
+                Response.setCurrent(currentResponse);
+                Context.setCurrent(currentContext);
+                VirtualHost.setCurrent(currentVirtualHost);
+                Application.setCurrent(currentApplication);
+
+                // Run the user task
+                task.run();
+            }
+        });
+
+        return result;
     }
 
     /**

@@ -171,8 +171,7 @@ public abstract class HttpCall {
      */
     public ConnectorService getConnectorService(Request request) {
         ConnectorService result = null;
-        Application application = (Application) request.getAttributes().get(
-                Application.KEY);
+        Application application = Application.getCurrent();
 
         if (application != null) {
             result = application.getConnectorService();

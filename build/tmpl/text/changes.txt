@@ -49,6 +49,13 @@ Changes log
         - Static valueOf() methods now treat "" as null.
         - Added connectTimeout attribute on both Client and 
           ClientHelper classes. Reported by Avi Flax.
+        - Added static "current" property on Application and VirtualHost 
+          returning the instance associated with the current thread.
+        - Added Context.getThread(Runnable) method to centralize usage
+          of thread (potentially doing some pooling and currently 
+          copying the thread local variables).
+        - Deprecated Context.getApplication(). Use static method
+          Application.getCurrent() instead.
      - NRE and Extension Enhancements
         - Atom extension is now able to write Feed and Service XML
           documents and not just reading/parsing them. This can be used
@@ -78,7 +85,7 @@ Changes log
           new "defaultLanguage" parameter that is uses when no parent
           application is available (no MetadataService accessible).
           Limitation reported by Jules Milner-Brage.
-    - Misc
+    - Misc 
         - Updated Grizzly to 1.7.3.
         - Improved logging consistency.
         - Expressed the Eclipse plugin dependencies using the

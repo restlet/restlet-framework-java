@@ -32,9 +32,6 @@ import com.noelios.restlet.StatusFilter;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ApplicationStatusFilter extends StatusFilter {
-    /** The application. */
-    private volatile Application application;
-
     /**
      * Constructor.
      * 
@@ -45,16 +42,6 @@ public class ApplicationStatusFilter extends StatusFilter {
         super(application.getContext(), application.getStatusService()
                 .isOverwrite(), application.getStatusService()
                 .getContactEmail(), "/");
-        this.application = application;
-    }
-
-    /**
-     * Returns the application.
-     * 
-     * @return The application.
-     */
-    public Application getApplication() {
-        return this.application;
     }
 
     @Override

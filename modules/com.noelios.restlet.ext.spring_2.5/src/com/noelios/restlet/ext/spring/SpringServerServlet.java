@@ -29,7 +29,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.noelios.restlet.application.ApplicationContext;
 import com.noelios.restlet.ext.servlet.ServerServlet;
 import com.noelios.restlet.ext.servlet.ServletContextAdapter;
-import com.noelios.restlet.ext.servlet.ServletWarClient;
 
 /**
  * Spring specific ServerServlet adapter. This class is similar to the
@@ -84,11 +83,6 @@ public class SpringServerServlet extends ServerServlet {
             application.setContext(new ApplicationContext(application,
                     new ServletContextAdapter(this, context),
                     applicationContext.getLogger()));
-
-            // Set the special WAR client
-            applicationContext.setWarClient(new ServletWarClient(
-                    applicationContext, this.getServletConfig()
-                            .getServletContext()));
 
             // Copy all the servlet parameters into the context
             String initParam;

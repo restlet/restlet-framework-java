@@ -46,34 +46,34 @@ import org.restlet.util.Helper;
  * <li>"tunnelService" to tunnel method names or client preferences via query
  * parameters.</li>
  * </ul>
- * <br>
- * If you need to retrieve the reference to an Application from one of its
- * contained Restlets, you can use the {@link #KEY} constant to lookup the
- * Context.attributes property.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Application extends Restlet {
+    private static final ThreadLocal<Application> CURRENT = new ThreadLocal<Application>();
+
     /**
-     * Name of the attribute key containing a reference to the current
-     * application.
+     * This variable is stored internally as a thread local variable and updated
+     * each time a call enters an application.
+     * 
+     * @return The current context.
      */
-    public static final String KEY = "org.restlet.application";
+    public static Application getCurrent() {
+        return CURRENT.get();
+    }
 
-    /** The display name. */
-    private volatile String name;
-
-    /** The description. */
-    private volatile String description;
+    /**
+     * Sets the context to associated with the current thread.
+     * 
+     * @param application
+     *                The thread's context.
+     */
+    public static void setCurrent(Application application) {
+        CURRENT.set(application);
+    }
 
     /** The author(s). */
     private volatile String author;
-
-    /** The owner(s). */
-    private volatile String owner;
-
-    /** The root Restlet. */
-    private volatile Restlet root;
 
     /** The connector service. */
     private volatile ConnectorService connectorService;
@@ -91,17 +91,29 @@ public class Application extends Restlet {
     /** The decoder service. */
     private volatile DecoderService decoderService;
 
+    /** The description. */
+    private volatile String description;
+
+    /** The helper provided by the implementation. */
+    private volatile Helper<Application> helper;
+
     /** The local service. */
     private volatile MetadataService metadataService;
+
+    /** The display name. */
+    private volatile String name;
+
+    /** The owner(s). */
+    private volatile String owner;
+
+    /** The root Restlet. */
+    private volatile Restlet root;
 
     /** The status service. */
     private volatile StatusService statusService;
 
     /** The tunnel service. */
     private volatile TunnelService tunnelService;
-
-    /** The helper provided by the implementation. */
-    private volatile Helper<Application> helper;
 
     /**
      * Constructor. Note that usage of this constructor is not recommended as
@@ -304,54 +316,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the description.
-     * 
-     * @param description
-     *                The description.
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * Sets the display name.
-     * 
-     * @param name
-     *                The display name.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Sets the owner(s).
-     * 
-     * @param owner
-     *                The owner(s).
-     */
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    @Override
-    public synchronized void start() throws Exception {
-        if (isStopped()) {
-            super.start();
-            if (getHelper() != null)
-                getHelper().start();
-        }
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        if (isStarted()) {
-            if (getHelper() != null)
-                getHelper().stop();
-            super.stop();
-        }
-    }
-
-    /**
      * Sets the connector service.
      * 
      * @param connectorService
@@ -387,6 +351,16 @@ public class Application extends Restlet {
     }
 
     /**
+     * Sets the description.
+     * 
+     * @param description
+     *                The description.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
      * Sets the metadata service.
      * 
      * @param metadataService
@@ -394,6 +368,26 @@ public class Application extends Restlet {
      */
     public void setMetadataService(MetadataService metadataService) {
         this.metadataService = metadataService;
+    }
+
+    /**
+     * Sets the display name.
+     * 
+     * @param name
+     *                The display name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Sets the owner(s).
+     * 
+     * @param owner
+     *                The owner(s).
+     */
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     /**
@@ -424,6 +418,24 @@ public class Application extends Restlet {
      */
     public void setTunnelService(TunnelService tunnelService) {
         this.tunnelService = tunnelService;
+    }
+
+    @Override
+    public synchronized void start() throws Exception {
+        if (isStopped()) {
+            super.start();
+            if (getHelper() != null)
+                getHelper().start();
+        }
+    }
+
+    @Override
+    public synchronized void stop() throws Exception {
+        if (isStarted()) {
+            if (getHelper() != null)
+                getHelper().stop();
+            super.stop();
+        }
     }
 
 }

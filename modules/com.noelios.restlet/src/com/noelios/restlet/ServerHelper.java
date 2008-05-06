@@ -55,6 +55,7 @@ public class ServerHelper extends ConnectorHelper<Server> {
      */
     @Override
     public void handle(Request request, Response response) {
+        super.handle(request, response);
         getHelped().handle(request, response);
     }
 

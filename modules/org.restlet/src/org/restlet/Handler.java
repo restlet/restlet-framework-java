@@ -169,7 +169,7 @@ public abstract class Handler {
      * @return The parent application if it exists, or null.
      */
     public Application getApplication() {
-        return getContext().getApplication();
+        return Application.getCurrent();
     }
 
     /**

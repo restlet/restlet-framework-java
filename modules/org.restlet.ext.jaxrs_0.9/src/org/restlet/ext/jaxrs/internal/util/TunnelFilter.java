@@ -18,7 +18,7 @@
 
 package org.restlet.ext.jaxrs.internal.util;
 
-import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
@@ -42,18 +42,14 @@ import org.restlet.service.TunnelService;
  */
 public class TunnelFilter extends Filter {
 
-    /** The application. */
-    private volatile Application application;
-
     /**
      * Constructor.
      * 
-     * @param application
-     *                The parent application.
+     * @param context
+     *                The parent context.
      */
-    public TunnelFilter(Application application) {
-        super(application.getContext());
-        this.application = application;
+    public TunnelFilter(Context context) {
+        super(context);
     }
 
     @Override
@@ -70,15 +66,6 @@ public class TunnelFilter extends Filter {
         }
 
         return CONTINUE;
-    }
-
-    /**
-     * Returns the application.
-     * 
-     * @return The application.
-     */
-    public Application getApplication() {
-        return this.application;
     }
 
     /**

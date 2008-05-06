@@ -54,6 +54,20 @@ import org.restlet.data.Response;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class VirtualHost extends Router {
+    private static final ThreadLocal<Integer> CURRENT = new ThreadLocal<Integer>();
+
+    /**
+     * Returns the virtual host code associated to the current thread.
+     * 
+     * This variable is stored internally as a thread local variable and updated
+     * each time a call is routed by a virtual host.
+     * 
+     * @return The current context.
+     */
+    public static Integer getCurrent() {
+        return CURRENT.get();
+    }
+
     /**
      * Returns the IP address of a given domain name.
      * 
@@ -104,8 +118,15 @@ public class VirtualHost extends Router {
         return result;
     }
 
-    /** The display name. */
-    private volatile String name;
+    /**
+     * Sets the virtual host code associated with the current thread.
+     * 
+     * @param code
+     *                The thread's virtual host code.
+     */
+    public static void setCurrent(Integer code) {
+        CURRENT.set(code);
+    }
 
     /** The hostRef host domain pattern to match. */
     private volatile String hostDomain;
@@ -115,6 +136,9 @@ public class VirtualHost extends Router {
 
     /** The hostRef scheme pattern to match. */
     private volatile String hostScheme;
+
+    /** The display name. */
+    private volatile String name;
 
     /** The resourceRef host domain pattern to match. */
     private volatile String resourceDomain;
@@ -199,9 +223,8 @@ public class VirtualHost extends Router {
                 // Set the request's root reference
                 request.setRootRef(request.getResourceRef().getBaseRef());
 
-                // Save the current virtual host in the request attributes
-                request.getAttributes().put("org.restlet.virtualHost.hashCode",
-                        this.hashCode());
+                // Save the hash code of the current host
+                setCurrent(hashCode());
 
                 return result;
             }

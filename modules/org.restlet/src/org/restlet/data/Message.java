@@ -128,8 +128,7 @@ public abstract class Message {
     @Deprecated
     private org.restlet.service.ConverterService getConverterService() {
         org.restlet.service.ConverterService result = null;
-        Application application = (Application) getAttributes().get(
-                Application.KEY);
+        Application application = Application.getCurrent();
 
         if (application != null) {
             result = application.getConverterService();

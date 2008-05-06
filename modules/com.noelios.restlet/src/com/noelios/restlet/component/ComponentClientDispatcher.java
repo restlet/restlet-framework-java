@@ -70,8 +70,7 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
                 } else if (cr.getRiapAuthorityType() == LocalReference.RIAP_HOST) {
                     VirtualHost host = null;
                     VirtualHost currentHost = null;
-                    Integer hostHashCode = (Integer) request.getAttributes()
-                            .get("org.restlet.virtualHost.hashCode");
+                    Integer hostHashCode = VirtualHost.getCurrent();
 
                     // Lookup the virtual host
                     for (Iterator<VirtualHost> hostIter = getComponent()

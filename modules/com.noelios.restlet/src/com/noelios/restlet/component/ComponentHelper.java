@@ -31,7 +31,7 @@ import org.restlet.Server;
 import org.restlet.VirtualHost;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.ContextHelper;
+import com.noelios.restlet.ChainHelper;
 import com.noelios.restlet.StatusFilter;
 
 /**
@@ -39,7 +39,7 @@ import com.noelios.restlet.StatusFilter;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ComponentHelper extends ContextHelper<Component> {
+public class ComponentHelper extends ChainHelper<Component> {
     /** The internal client router. */
     private volatile ClientRouter clientRouter;
 

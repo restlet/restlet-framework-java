@@ -96,6 +96,12 @@ public class ServerServlet extends HttpServlet {
      * Name of the attribute key containing a reference to the current
      * application.
      */
+    private static final String APPLICATION_KEY = "org.restlet.application";
+
+    /**
+     * Name of the attribute key containing a reference to the current
+     * component.
+     */
     private static final String COMPONENT_KEY = "org.restlet.component";
 
     /**
@@ -163,7 +169,7 @@ public class ServerServlet extends HttpServlet {
 
         // Try to instantiate a new target application
         // First, find the application class name
-        String applicationClassName = getInitParameter(Application.KEY, null);
+        String applicationClassName = getInitParameter(APPLICATION_KEY, null);
 
         // Load the application class using the given class name
         if (applicationClassName != null) {
@@ -221,10 +227,6 @@ public class ServerServlet extends HttpServlet {
             ApplicationContext applicationContext = (ApplicationContext) application
                     .getContext();
 
-            // Set the special WAR client
-            applicationContext.setWarClient(createWarClient(applicationContext,
-                    this.getServletConfig()));
-
             // Copy all the servlet parameters into the context
             String initParam;
 
@@ -270,13 +272,12 @@ public class ServerServlet extends HttpServlet {
      * Creates a new client for the WAR protocol.
      * 
      * @param context
-     *                The Application context.
+     *                The parent context.
      * @param config
      *                The Servlet config.
      * @return The new WAR client instance.
      */
-    protected Client createWarClient(ApplicationContext context,
-            ServletConfig config) {
+    protected Client createWarClient(Context context, ServletConfig config) {
         return new ServletWarClient(context, config.getServletContext());
     }
 
@@ -347,8 +348,15 @@ public class ServerServlet extends HttpServlet {
             }
         } else {
             component = new Component();
+
             // The status service is disabled by default.
             component.getStatusService().setEnabled(false);
+
+            // Add the WAR client
+            component.getClients()
+                    .add(
+                            createWarClient(component.getContext(),
+                                    getServletConfig()));
         }
 
         return component;

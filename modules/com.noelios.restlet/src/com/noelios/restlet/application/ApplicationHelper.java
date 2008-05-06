@@ -26,14 +26,14 @@ import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-import com.noelios.restlet.ContextHelper;
+import com.noelios.restlet.ChainHelper;
 
 /**
  * Application implementation.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ApplicationHelper extends ContextHelper<Application> {
+public class ApplicationHelper extends ChainHelper<Application> {
     /**
      * Constructor.
      * 
@@ -77,12 +77,12 @@ public class ApplicationHelper extends ContextHelper<Application> {
     /**
      * Creates a new tunnel filter. Allows overriding.
      * 
-     * @param application
-     *                The parent application.
+     * @param context
+     *                The parent context.
      * @return The new tunnel filter.
      */
-    protected Filter createTunnelFilter(Application application) {
-        return new TunnelFilter(application);
+    protected Filter createTunnelFilter(Context context) {
+        return new TunnelFilter(context);
     }
 
     /**
@@ -96,9 +96,8 @@ public class ApplicationHelper extends ContextHelper<Application> {
      */
     @Override
     public void handle(Request request, Response response) {
-        // Add the application in request and response attributes
-        request.getAttributes().put(Application.KEY, getHelped());
-        response.getAttributes().put(Application.KEY, getHelped());
+        // Save the current application
+        Application.setCurrent(getHelped());
 
         // Actually handle call
         super.handle(request, response);
@@ -109,7 +108,7 @@ public class ApplicationHelper extends ContextHelper<Application> {
     public synchronized void start() throws Exception {
         // Addition of tunnel filter
         if (getHelped().getTunnelService().isEnabled()) {
-            addFilter(createTunnelFilter(getHelped()));
+            addFilter(createTunnelFilter(getContext()));
         }
 
         // Addition of status pages

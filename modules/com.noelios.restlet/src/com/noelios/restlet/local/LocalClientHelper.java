@@ -93,8 +93,7 @@ public class LocalClientHelper extends ClientHelper {
      */
     public MetadataService getMetadataService(Request request) {
         MetadataService result = null;
-        Application application = (Application) request.getAttributes().get(
-                Application.KEY);
+        Application application = Application.getCurrent();
 
         if (application != null) {
             result = application.getMetadataService();

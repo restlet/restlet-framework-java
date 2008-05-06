@@ -77,6 +77,15 @@ public class Restlet extends Uniform {
     }
 
     /**
+     * Returns the parent application if it exists, or null.
+     * 
+     * @return The parent application if it exists, or null.
+     */
+    public Application getApplication() {
+        return Application.getCurrent();
+    }
+
+    /**
      * Returns the context.
      * 
      * @return The context.
@@ -131,6 +140,12 @@ public class Restlet extends Uniform {
      */
     @Deprecated
     protected synchronized void init(Request request, Response response) {
+        // Associate the response to the current thread
+        Response.setCurrent(response);
+
+        // Associate the context to the current thread
+        Context.setCurrent(getContext());
+
         // Check if the Restlet was started
         if (isStopped()) {
             try {

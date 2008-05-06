@@ -135,6 +135,12 @@ public abstract class Filter extends Restlet {
 
         if (getNext() != null) {
             getNext().handle(request, response);
+
+            // Re-associate the response to the current thread
+            Response.setCurrent(response);
+
+            // Associate the context to the current thread
+            Context.setCurrent(getContext());
         } else {
             response.setStatus(Status.SERVER_ERROR_INTERNAL);
             getLogger()
