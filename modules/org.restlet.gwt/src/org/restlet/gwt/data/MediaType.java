@@ -501,9 +501,16 @@ public final class MediaType extends Metadata {
      * @return The list of parameters.
      */
     public Series<Parameter> getParameters() {
-        if (this.parameters == null)
-            this.parameters = new Form();
-        return this.parameters;
+        // Lazy initialization with double-check.
+        Series<Parameter> p = this.parameters;
+        if (p == null) {
+            synchronized (this) {
+                p = this.parameters;
+                if (p == null)
+                    this.parameters = p = new Form();
+            }
+        }
+        return p;
     }
 
     /**

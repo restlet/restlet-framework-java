@@ -97,9 +97,16 @@ public class Entry {
      * @return The authors of the entry.
      */
     public List<Person> getAuthors() {
-        if (this.authors == null)
-            this.authors = new ArrayList<Person>();
-        return this.authors;
+        // Lazy initialization with double-check.
+        List<Person> a = this.authors;
+        if (a == null) {
+            synchronized (this) {
+                a = this.authors;
+                if (a == null)
+                    this.authors = a = new ArrayList<Person>();
+            }
+        }
+        return a;
     }
 
     /**
@@ -108,9 +115,16 @@ public class Entry {
      * @return The categories associated with the entry.
      */
     public List<Category> getCategories() {
-        if (this.categories == null)
-            this.categories = new ArrayList<Category>();
-        return this.categories;
+        // Lazy initialization with double-check.
+        List<Category> c = this.categories;
+        if (c == null) {
+            synchronized (this) {
+                c = this.categories;
+                if (c == null)
+                    this.categories = c = new ArrayList<Category>();
+            }
+        }
+        return c;
     }
 
     /**
@@ -128,9 +142,16 @@ public class Entry {
      * @return The contributors to the entry.
      */
     public List<Person> getContributors() {
-        if (this.contributors == null)
-            this.contributors = new ArrayList<Person>();
-        return this.contributors;
+        // Lazy initialization with double-check.
+        List<Person> c = this.contributors;
+        if (c == null) {
+            synchronized (this) {
+                c = this.contributors;
+                if (c == null)
+                    this.contributors = c = new ArrayList<Person>();
+            }
+        }
+        return c;
     }
 
     /**
@@ -171,9 +192,16 @@ public class Entry {
      * @return The references from the entry to Web resources.
      */
     public List<Link> getLinks() {
-        if (this.links == null)
-            this.links = new ArrayList<Link>();
-        return this.links;
+        // Lazy initialization with double-check.
+        List<Link> l = this.links;
+        if (l == null) {
+            synchronized (this) {
+                l = this.links;
+                if (l == null)
+                    this.links = l = new ArrayList<Link>();
+            }
+        }
+        return l;
     }
 
     /**

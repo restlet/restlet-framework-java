@@ -96,9 +96,16 @@ public final class Preference<T extends Metadata> {
      * @return The modifiable list of parameters.
      */
     public Series<Parameter> getParameters() {
-        if (this.parameters == null)
-            this.parameters = new Form();
-        return this.parameters;
+        // Lazy initialization with double-check.
+        Series<Parameter> p = this.parameters;
+        if (p == null) {
+            synchronized (this) {
+                p = this.parameters;
+                if (p == null)
+                    this.parameters = p = new Form();
+            }
+        }
+        return p;
     }
 
     /**

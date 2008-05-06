@@ -184,8 +184,8 @@ public class Form extends Series<Parameter> {
     public Series<Parameter> createSeries(List<Parameter> delegate) {
         if (delegate != null)
             return new Form(delegate);
-        else
-            return new Form();
+
+        return new Form();
     }
 
     /**

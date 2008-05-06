@@ -87,9 +87,16 @@ public final class ClientInfo {
      * @return The character set preferences.
      */
     public List<Preference<CharacterSet>> getAcceptedCharacterSets() {
-        if (this.acceptedCharacterSets == null)
-            this.acceptedCharacterSets = new ArrayList<Preference<CharacterSet>>();
-        return this.acceptedCharacterSets;
+        // Lazy initialization with double-check.
+        List<Preference<CharacterSet>> a = this.acceptedCharacterSets;
+        if (a == null) {
+            synchronized (this) {
+                a = this.acceptedCharacterSets;
+                if (a == null)
+                    this.acceptedCharacterSets = a = new ArrayList<Preference<CharacterSet>>();
+            }
+        }
+        return a;
     }
 
     /**
@@ -99,9 +106,16 @@ public final class ClientInfo {
      * @return The encoding preferences.
      */
     public List<Preference<Encoding>> getAcceptedEncodings() {
-        if (this.acceptedEncodings == null)
-            this.acceptedEncodings = new ArrayList<Preference<Encoding>>();
-        return this.acceptedEncodings;
+        // Lazy initialization with double-check.
+        List<Preference<Encoding>> a = this.acceptedEncodings;
+        if (a == null) {
+            synchronized (this) {
+                a = this.acceptedEncodings;
+                if (a == null)
+                    this.acceptedEncodings = a = new ArrayList<Preference<Encoding>>();
+            }
+        }
+        return a;
     }
 
     /**
@@ -111,9 +125,16 @@ public final class ClientInfo {
      * @return The language preferences.
      */
     public List<Preference<Language>> getAcceptedLanguages() {
-        if (this.acceptedLanguages == null)
-            this.acceptedLanguages = new ArrayList<Preference<Language>>();
-        return this.acceptedLanguages;
+        // Lazy initialization with double-check.
+        List<Preference<Language>> a = this.acceptedLanguages;
+        if (a == null) {
+            synchronized (this) {
+                a = this.acceptedLanguages;
+                if (a == null)
+                    this.acceptedLanguages = a = new ArrayList<Preference<Language>>();
+            }
+        }
+        return a;
     }
 
     /**
@@ -123,9 +144,16 @@ public final class ClientInfo {
      * @return The media type preferences.
      */
     public List<Preference<MediaType>> getAcceptedMediaTypes() {
-        if (this.acceptedMediaTypes == null)
-            this.acceptedMediaTypes = new ArrayList<Preference<MediaType>>();
-        return this.acceptedMediaTypes;
+        // Lazy initialization with double-check.
+        List<Preference<MediaType>> a = this.acceptedMediaTypes;
+        if (a == null) {
+            synchronized (this) {
+                a = this.acceptedMediaTypes;
+                if (a == null)
+                    this.acceptedMediaTypes = a = new ArrayList<Preference<MediaType>>();
+            }
+        }
+        return a;
     }
 
     /**
@@ -153,9 +181,16 @@ public final class ClientInfo {
      * @return The client IP addresses.
      */
     public List<String> getAddresses() {
-        if (this.addresses == null)
-            this.addresses = new ArrayList<String>();
-        return this.addresses;
+        // Lazy initialization with double-check.
+        List<String> a = this.addresses;
+        if (a == null) {
+            synchronized (this) {
+                a = this.addresses;
+                if (a == null)
+                    this.addresses = a = new ArrayList<String>();
+            }
+        }
+        return a;
     }
 
     /**

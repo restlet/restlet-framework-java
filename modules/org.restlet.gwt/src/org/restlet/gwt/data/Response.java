@@ -90,8 +90,8 @@ public class Response extends Message {
         public Series<CookieSetting> createSeries(List<CookieSetting> delegate) {
             if (delegate != null)
                 return new CookieSettingSeries(delegate);
-            else
-                return new CookieSettingSeries();
+
+            return new CookieSettingSeries();
         }
     }
 
@@ -145,9 +145,16 @@ public class Response extends Message {
      * @return The list of allowed methods.
      */
     public Set<Method> getAllowedMethods() {
-        if (this.allowedMethods == null)
-            this.allowedMethods = new HashSet<Method>();
-        return this.allowedMethods;
+        // Lazy initialization with double-check.
+        Set<Method> a = this.allowedMethods;
+        if (a == null) {
+            synchronized (this) {
+                a = this.allowedMethods;
+                if (a == null)
+                    this.allowedMethods = a = new HashSet<Method>();
+            }
+        }
+        return a;
     }
 
     /**
@@ -166,9 +173,16 @@ public class Response extends Message {
      * @return The cookie settings provided by the server.
      */
     public Series<CookieSetting> getCookieSettings() {
-        if (this.cookieSettings == null)
-            this.cookieSettings = new CookieSettingSeries();
-        return this.cookieSettings;
+        // Lazy initialization with double-check.
+        Series<CookieSetting> c = this.cookieSettings;
+        if (c == null) {
+            synchronized (this) {
+                c = this.cookieSettings;
+                if (c == null)
+                    this.cookieSettings = c = new CookieSettingSeries();
+            }
+        }
+        return c;
     }
 
     /**
@@ -211,9 +225,16 @@ public class Response extends Message {
      * @return The server-specific information.
      */
     public ServerInfo getServerInfo() {
-        if (this.serverInfo == null)
-            this.serverInfo = new ServerInfo();
-        return this.serverInfo;
+        // Lazy initialization with double-check.
+        ServerInfo s = this.serverInfo;
+        if (s == null) {
+            synchronized (this) {
+                s = this.serverInfo;
+                if (s == null)
+                    this.serverInfo = s = new ServerInfo();
+            }
+        }
+        return s;
     }
 
     /**

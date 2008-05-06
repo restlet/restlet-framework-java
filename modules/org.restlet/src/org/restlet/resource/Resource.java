@@ -108,7 +108,7 @@ public class Resource extends Handler {
     private boolean readable;
 
     /** The modifiable list of variants. */
-    private List<Variant> variants;
+    private volatile List<Variant> variants;
 
     /**
      * Initializer block to ensure that the basic properties of the Resource are
@@ -323,9 +323,16 @@ public class Resource extends Handler {
      * @see #getRepresentation(Variant)
      */
     public List<Variant> getVariants() {
-        if (this.variants == null)
-            this.variants = new ArrayList<Variant>();
-        return this.variants;
+        // Lazy initialization with double-check.
+        List<Variant> v = this.variants;
+        if (v == null) {
+            synchronized (this) {
+                v = this.variants;
+                if (v == null)
+                    this.variants = v = new ArrayList<Variant>();
+            }
+        }
+        return v;
     }
 
     /**

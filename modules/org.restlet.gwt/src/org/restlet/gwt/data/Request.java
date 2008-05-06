@@ -67,8 +67,8 @@ public class Request extends Message {
         public Series<Cookie> createSeries(List<Cookie> delegate) {
             if (delegate != null)
                 return new CookieSeries(delegate);
-            else
-                return new CookieSeries();
+
+            return new CookieSeries();
         }
     }
 
@@ -190,9 +190,16 @@ public class Request extends Message {
      * @return The client-specific information.
      */
     public ClientInfo getClientInfo() {
-        if (this.clientInfo == null)
-            this.clientInfo = new ClientInfo();
-        return this.clientInfo;
+        // Lazy initialization with double-check.
+        ClientInfo c = this.clientInfo;
+        if (c == null) {
+            synchronized (this) {
+                c = this.clientInfo;
+                if (c == null)
+                    this.clientInfo = c = new ClientInfo();
+            }
+        }
+        return c;
     }
 
     /**
@@ -202,9 +209,16 @@ public class Request extends Message {
      * @return The conditions applying to this call.
      */
     public Conditions getConditions() {
-        if (this.conditions == null)
-            this.conditions = new Conditions();
-        return this.conditions;
+        // Lazy initialization with double-check.
+        Conditions c = this.conditions;
+        if (c == null) {
+            synchronized (this) {
+                c = this.conditions;
+                if (c == null)
+                    this.conditions = c = new Conditions();
+            }
+        }
+        return c;
     }
 
     /**
@@ -214,9 +228,16 @@ public class Request extends Message {
      * @return The cookies provided by the client.
      */
     public Series<Cookie> getCookies() {
-        if (this.cookies == null)
-            this.cookies = new CookieSeries();
-        return this.cookies;
+        // Lazy initialization with double-check.
+        Series<Cookie> c = this.cookies;
+        if (c == null) {
+            synchronized (this) {
+                c = this.cookies;
+                if (c == null)
+                    this.cookies = c = new CookieSeries();
+            }
+        }
+        return c;
     }
 
     /**
@@ -309,9 +330,9 @@ public class Request extends Message {
         if (getMethod().equals(Method.GET) || getMethod().equals(Method.HEAD)
                 || getMethod().equals(Method.DELETE)) {
             return false;
-        } else {
-            return super.isEntityAvailable();
         }
+
+        return super.isEntityAvailable();
     }
 
     /**

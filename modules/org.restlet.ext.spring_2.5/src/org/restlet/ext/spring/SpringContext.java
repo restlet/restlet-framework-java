@@ -91,9 +91,16 @@ public class SpringContext extends GenericApplicationContext {
      * @return The modifiable list of configuration URIs.
      */
     public List<String> getPropertyConfigRefs() {
-        if (this.propertyConfigRefs == null)
-            this.propertyConfigRefs = new ArrayList<String>();
-        return this.propertyConfigRefs;
+        // Lazy initialization with double-check.
+        List<String> p = this.propertyConfigRefs;
+        if (p == null) {
+            synchronized (this) {
+                p = this.propertyConfigRefs;
+                if (p == null)
+                    this.propertyConfigRefs = p = new ArrayList<String>();
+            }
+        }
+        return p;
     }
 
     /**
@@ -103,9 +110,16 @@ public class SpringContext extends GenericApplicationContext {
      * @return The modifiable list of configuration URIs.
      */
     public List<String> getXmlConfigRefs() {
-        if (this.xmlConfigRefs == null)
-            this.xmlConfigRefs = new ArrayList<String>();
-        return this.xmlConfigRefs;
+        // Lazy initialization with double-check.
+        List<String> x = this.xmlConfigRefs;
+        if (x == null) {
+            synchronized (this) {
+                x = this.xmlConfigRefs;
+                if (x == null)
+                    this.xmlConfigRefs = x = new ArrayList<String>();
+            }
+        }
+        return x;
     }
 
     @Override

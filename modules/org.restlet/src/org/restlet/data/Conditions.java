@@ -67,9 +67,16 @@ public final class Conditions {
      * @return The "if-match" condition.
      */
     public List<Tag> getMatch() {
-        if (this.match == null)
-            this.match = new ArrayList<Tag>();
-        return this.match;
+        // Lazy initialization with double-check.
+        List<Tag> m = this.match;
+        if (m == null) {
+            synchronized (this) {
+                m = this.match;
+                if (m == null)
+                    this.match = m = new ArrayList<Tag>();
+            }
+        }
+        return m;
     }
 
     /**
@@ -88,9 +95,16 @@ public final class Conditions {
      * @return The "if-none-match" condition.
      */
     public List<Tag> getNoneMatch() {
-        if (this.noneMatch == null)
-            this.noneMatch = new ArrayList<Tag>();
-        return this.noneMatch;
+        // Lazy initialization with double-check.
+        List<Tag> n = this.noneMatch;
+        if (n == null) {
+            synchronized (this) {
+                n = this.noneMatch;
+                if (n == null)
+                    this.noneMatch = n = new ArrayList<Tag>();
+            }
+        }
+        return n;
     }
 
     /**
