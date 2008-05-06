@@ -394,7 +394,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     public List<MediaType> getAcceptableMediaTypes() {
         if (this.acceptedMediaTypes == null) {
             List<MediaType> accMediaTypes = new ArrayList<MediaType>();
-            for(org.restlet.data.MediaType mediaType : this.accMediaTypes)
+            for (org.restlet.data.MediaType mediaType : this.accMediaTypes)
                 accMediaTypes.add(Converter.toJaxRsMediaType(mediaType));
             this.acceptedMediaTypes = Collections
                     .unmodifiableList(accMediaTypes);
@@ -686,6 +686,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
             dimensions.add(Dimension.LANGUAGE);
         if (bestRestlVar.getMediaType() != null)
             dimensions.add(Dimension.MEDIA_TYPE);
+        // LATER add also to JAX-RS-Response, which is possibly not yet
+        // generated.
         return bestVariant;
     }
 

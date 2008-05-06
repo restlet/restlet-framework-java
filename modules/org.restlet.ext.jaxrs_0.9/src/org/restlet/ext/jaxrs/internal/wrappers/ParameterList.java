@@ -435,7 +435,7 @@ public class ParameterList {
             // LATER Path-Param: List<String> (see PathParamTest.testGet3())
             if (convToCl.equals(PathSegment.class)) {
                 throw new NotYetImplementedException(
-                        "Sorry, @PathParam(..) PathSegment is not yet supported");
+                        "Sorry, @PathParam(..) PathSegment is not yet supported. You may use the non default @Context PathSegment to return the last of the available path segments (decoded), or UriInfo.getPathSegments(boolean)");
                 // LATER @PathParam("x") PathSegment allowed.
             }
             String pathParamValue = callContext.getLastPathParamEnc(pathParam);
@@ -566,7 +566,7 @@ public class ParameterList {
      * @param logger
      * @throws MissingAnnotationException
      */
-    public ParameterList(Class<?>[] parameterTypes, Type[] genParamTypes,
+    private ParameterList(Class<?>[] parameterTypes, Type[] genParamTypes,
             Annotation[][] paramAnnoss, ThreadLocalizedContext tlContext,
             boolean leaveEncoded, EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,

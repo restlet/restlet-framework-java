@@ -27,8 +27,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWorkers;
 
@@ -69,6 +72,30 @@ public class ContextInjector {
 
     }
 
+    /**
+     * {@link Injector}, that injects the same object in every resource. Is is
+     * used for the &#64;{@link Context} objects.
+     */
+    private static class EverSameInjector implements Injector {
+        private Object injectable;
+
+        private InjectionAim injectionAim;
+
+        private EverSameInjector(InjectionAim injectionAim, Object injectable) {
+            this.injectionAim = injectionAim;
+            this.injectable = injectable;
+        }
+
+        /**
+         * @see Injector#injectInto(java.lang.Object)
+         */
+        public void injectInto(Object resource)
+                throws IllegalArgumentException, InjectException,
+                InvocationTargetException {
+            injectionAim.injectInto(resource, injectable);
+        }
+    }
+
     static class FieldWrapper implements InjectionAim {
 
         private Field field;
@@ -90,27 +117,31 @@ public class ContextInjector {
         }
     }
 
-    /**
-     * {@link Injector}, that injects the same object in every resource. Is is
-     * used for the &#64;{@link Context} objects.
-     */
-    private static class EverSameInjector implements Injector {
-        private InjectionAim injectionAim;
+    private static class GetLastPathSegment implements PathSegment {
 
-        private Object injectable;
+        private ThreadLocalizedContext tlContext;
 
-        private EverSameInjector(InjectionAim injectionAim, Object injectable) {
-            this.injectionAim = injectionAim;
-            this.injectable = injectable;
+        GetLastPathSegment(ThreadLocalizedContext tlContext) {
+            this.tlContext = tlContext;
+        }
+
+        private PathSegment getLast() {
+            List<PathSegment> pss = tlContext.getPathSegments();
+            return pss.get(pss.size() - 1);
         }
 
         /**
-         * @see Injector#injectInto(java.lang.Object)
+         * @see javax.ws.rs.core.PathSegment#getMatrixParameters()
          */
-        public void injectInto(Object resource)
-                throws IllegalArgumentException, InjectException,
-                InvocationTargetException {
-            injectionAim.injectInto(resource, injectable);
+        public MultivaluedMap<String, String> getMatrixParameters() {
+            return getLast().getMatrixParameters();
+        }
+
+        /**
+         * @see javax.ws.rs.core.PathSegment#getPath()
+         */
+        public String getPath() {
+            return getLast().getPath();
         }
     }
 
@@ -152,6 +183,46 @@ public class ContextInjector {
 
     }
 
+    private static Logger logger = Logger.getAnonymousLogger();
+
+    /**
+     * @param declaringClass
+     * @param genericType
+     * @param tlContext
+     * @param mbWorkers
+     * @param allCtxResolvers
+     * @param extensionBackwardMapping
+     * @param aim
+     * @return
+     */
+    static Object getInjectObject(Class<?> declaringClass, Type genericType,
+            ThreadLocalizedContext tlContext, MessageBodyWorkers mbWorkers,
+            Collection<ContextResolver<?>> allCtxResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping) {
+        if (declaringClass.equals(MessageBodyWorkers.class))
+            return mbWorkers;
+        if (declaringClass.equals(ContextResolver.class))
+            return getContextResolver(genericType, allCtxResolvers);
+        if (declaringClass.equals(ExtensionBackwardMapping.class))
+            return extensionBackwardMapping;
+        if (declaringClass.equals(PathSegment.class)) {
+            String msg = "The use of PathSegment annotated with @Context is not standard.";
+            logger.config(msg);
+            return new GetLastPathSegment(tlContext);
+        }
+        return tlContext;
+    }
+
+    static EverSameInjector getInjector(Class<?> declaringClass,
+            Type genericType, InjectionAim aim,
+            ThreadLocalizedContext tlContext, MessageBodyWorkers mbWorkers,
+            Collection<ContextResolver<?>> allResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping) {
+        return new EverSameInjector(aim, getInjectObject(declaringClass,
+                genericType, tlContext, mbWorkers, allResolvers,
+                extensionBackwardMapping));
+    }
+
     /**
      * This {@link List} contains the fields in this class which are annotated
      * to inject ever the same object.
@@ -178,6 +249,10 @@ public class ContextInjector {
             ExtensionBackwardMapping extensionBackwardMapping) {
         this.init(jaxRsClass, tlContext, mbWorkers, allResolvers,
                 extensionBackwardMapping);
+    }
+
+    protected void add(Injector injector) {
+        this.injEverSameAims.add(injector);
     }
 
     /**
@@ -225,39 +300,6 @@ public class ContextInjector {
         } while (jaxRsClass != null);
     }
 
-    static EverSameInjector getInjector(Class<?> declaringClass,
-            Type genericType, InjectionAim aim,
-            ThreadLocalizedContext tlContext, MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping) {
-        return new EverSameInjector(aim, getInjectObject(declaringClass,
-                genericType, tlContext, mbWorkers, allResolvers,
-                extensionBackwardMapping));
-    }
-
-    /**
-     * @param declaringClass
-     * @param genericType
-     * @param tlContext
-     * @param mbWorkers
-     * @param allCtxResolvers
-     * @param extensionBackwardMapping
-     * @param aim
-     * @return
-     */
-    static Object getInjectObject(Class<?> declaringClass, Type genericType,
-            ThreadLocalizedContext tlContext, MessageBodyWorkers mbWorkers,
-            Collection<ContextResolver<?>> allCtxResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping) {
-        if (declaringClass.equals(MessageBodyWorkers.class))
-            return mbWorkers;
-        if (declaringClass.equals(ContextResolver.class))
-            return getContextResolver(genericType, allCtxResolvers);
-        if (declaringClass.equals(ExtensionBackwardMapping.class))
-            return extensionBackwardMapping;
-        return tlContext;
-    }
-
     /**
      * Injects all the supported dependencies into the the given resource object
      * of this class.
@@ -274,9 +316,5 @@ public class ContextInjector {
         for (Injector contextResolverAim : this.injEverSameAims) {
             contextResolverAim.injectInto(jaxRsResObj);
         }
-    }
-
-    protected void add(Injector injector) {
-        this.injEverSameAims.add(injector);
     }
 }

@@ -17,10 +17,16 @@
  */
 package org.restlet.test.jaxrs.services.resources;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWorkers;
@@ -58,7 +64,8 @@ public class ContextsTestService {
     @ProduceMime("text/plain")
     @Path("params")
     public String getResources(@Context UriInfo uriInfo,
-            @Context MessageBodyWorkers messageBodyWorkers, @Context ContextResolver<Integer> contextResolver) {
+            @Context MessageBodyWorkers messageBodyWorkers,
+            @Context ContextResolver<Integer> contextResolver) {
         StringBuilder stb = new StringBuilder();
         if(messageBodyWorkers != null)
             stb.append("messageBodyWorkers\n");
@@ -66,6 +73,18 @@ public class ContextsTestService {
             stb.append("contextResolver\n");
         if(uriInfo != null)
             stb.append("uriInfo\n");
+        return stb.toString();
+    }
+    
+    @GET
+    @ProduceMime("text/plain")
+    @Path("lastPathSegm")
+    public String getPathSegm(@Context PathSegment lastPathSegment) {
+        Set<Entry<String, List<String>>> entries;
+        entries = lastPathSegment.getMatrixParameters().entrySet();
+        StringBuilder stb = new StringBuilder();
+        for(Map.Entry<String, List<String>> entry : entries)
+            stb.append(entry.getKey()+" : "+entry.getValue()+"\n");
         return stb.toString();
     }
 }
