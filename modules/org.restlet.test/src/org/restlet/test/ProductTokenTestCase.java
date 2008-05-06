@@ -20,6 +20,8 @@ package org.restlet.test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Product;
@@ -119,12 +121,12 @@ public class ProductTokenTestCase extends RestletTestCase {
         String userAgent4 = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1) Gecko/20061024 Iceweasel/2.0 (Debian-2.0+dfsg-1)";
         String userAgent5 = "Mozilla/5.0 (compatible; Konqueror/3.5; Linux 2.6.15-1.2054_FC5; X11; i686; en_US) KHTML/3.5.4 (like Gecko)";
         String userAgent6 = "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)";
-        String userAgent7 = "Mozilla/4.0 (compatible; MSIE 6.0; MSN 2.5; Windows 98)";
+        String userAgent7 = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)";
         String userAgent8 = "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/521.25 (KHTML, like Gecko) Safari/521.24";
         String userAgent9 = "Opera/9.00 (Macintosh; PPC Mac OS X; U; en)";
         String userAgent10 = "Wget/1.9";
         String userAgent11 = "Noelios-Restlet-Engine/1.9-SNAPSHOT";
-        
+
         ClientInfo clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent1);
         Product product = clientInfo.getAgentMainProduct();
@@ -173,24 +175,31 @@ public class ProductTokenTestCase extends RestletTestCase {
         product = clientInfo.getAgentMainProduct();
         assertEquals("Safari", product.getName());
         assertEquals("521.24", product.getVersion());
-        
+
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent9);
         product = clientInfo.getAgentMainProduct();
         assertEquals("Opera", product.getName());
         assertEquals("9.00", product.getVersion());
-        
+
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent10);
         product = clientInfo.getAgentMainProduct();
         assertEquals("Wget", product.getName());
         assertEquals("1.9", product.getVersion());
-        
+
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent11);
         product = clientInfo.getAgentMainProduct();
         assertEquals("Noelios-Restlet-Engine", product.getName());
         assertEquals("1.9-SNAPSHOT", product.getVersion());
+
+        clientInfo = new ClientInfo();
+        clientInfo.setAgent(userAgent7);
+        Map<String, Object> map = clientInfo.getAgentAttributes();
+        for (Entry<String, Object> entry : map.entrySet()) {
+            System.out.println(entry);
+        }
     }
 
 }

@@ -37,6 +37,9 @@ public final class Variable {
     /** Matches any TEXT excluding "(" and ")". */
     public static final int TYPE_COMMENT = 14;
 
+    /** Matches any TEXT inside a comment excluding ";". */
+    public static final int TYPE_COMMENT_ATTRIBUTE = 15;
+    
     /** Matches all digital characters. */
     public static final int TYPE_DIGIT = 4;
 

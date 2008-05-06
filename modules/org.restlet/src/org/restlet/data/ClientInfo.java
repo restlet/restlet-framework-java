@@ -21,7 +21,6 @@ package org.restlet.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -169,6 +168,131 @@ public final class ClientInfo {
     }
 
     /**
+     * Returns a list of attributes taken from the name of the user agent.
+     * 
+     * @return A list of attributes taken from the name of the user agent.
+     */
+    public Map<String, Object> getAgentAttributes() {
+        Map<String, Object> result = new HashMap<String, Object>();
+
+        if (this.agentMainProduct == null) {
+            // Loop on a list of user-agent templates until a template match
+            // the current user-agent string. The list of templates is
+            // located in a file named "agent.properties" available on
+            // the classpath.
+            // Soem defined variables are used in order to catch the name,
+            // version and facultative comment. Respectively, these
+            // variables are called "agentName", "agentVersion" and
+            // "agentComment".
+            URL userAgentPropertiesUrl = Engine.getClassLoader().getResource(
+                    "agent.properties");
+            if (userAgentPropertiesUrl != null) {
+                BufferedReader reader;
+                try {
+                    reader = new BufferedReader(new InputStreamReader(
+                            userAgentPropertiesUrl.openStream(),
+                            CharacterSet.UTF_8.getName()));
+                    Template template = null;
+                    // Predefined variables.
+                    Variable agentName = new Variable(Variable.TYPE_TOKEN);
+                    Variable agentVersion = new Variable(Variable.TYPE_TOKEN);
+                    Variable agentComment = new Variable(Variable.TYPE_COMMENT);
+                    Variable agentCommentAttribute = new Variable(
+                            Variable.TYPE_COMMENT_ATTRIBUTE);
+                    Variable facultativeData = new Variable(
+                            Variable.TYPE_ALL, null, false, false);
+                    String line = reader.readLine();
+                    for (; line != null; line = reader.readLine()) {
+                        if (line.trim().length() > 0
+                                && !line.trim().startsWith("#")) {
+                            template = new Template(line, Template.MODE_EQUALS);
+                            // Update the predefined variables.
+                            template.getVariables().put("agentName", agentName);
+                            template.getVariables().put("agentVersion",
+                                    agentVersion);
+                            template.getVariables().put("agentComment",
+                                    agentComment);
+                            template.getVariables().put("agentOs",
+                                    agentCommentAttribute);
+                            template.getVariables().put("commentAttribute",
+                                    agentCommentAttribute);
+                            template.getVariables().put("facultativeData",
+                                    facultativeData);
+                            // Parse the template
+                            if (template.parse(getAgent(), result) > -1) {
+                                break;
+                            }
+
+                        }
+                    }
+                } catch (IOException e) {
+                    return result;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a Product object based on the name of the user agent.
+     * 
+     * @return A Product object based on name of the user agent.
+     */
+    public Product getAgentMainProduct() {
+        if (this.agentMainProduct == null) {
+            // Loop on a list of user-agent templates until a template match
+            // the current user-agent string. The list of templates is
+            // located in a file named "agent.properties" available on
+            // the classpath.
+            // Soem defined variables are used in order to catch the name,
+            // version and facultative comment. Respectively, these
+            // variables are called "agentName", "agentVersion" and
+            // "agentComment".
+            URL userAgentPropertiesUrl = Engine.getClassLoader().getResource(
+                    "agent.properties");
+            if (userAgentPropertiesUrl != null) {
+                BufferedReader reader;
+                try {
+                    reader = new BufferedReader(new InputStreamReader(
+                            userAgentPropertiesUrl.openStream(),
+                            CharacterSet.UTF_8.getName()));
+                    Template template = null;
+                    // Predefined variables.
+                    Variable agentName = new Variable(Variable.TYPE_TOKEN);
+                    Variable agentVersion = new Variable(Variable.TYPE_TOKEN);
+                    Variable agentComment = new Variable(Variable.TYPE_COMMENT);
+                    String line = reader.readLine();
+                    for (; line != null; line = reader.readLine()) {
+                        if (line.trim().length() > 0
+                                && !line.trim().startsWith("#")) {
+                            template = new Template(line, Template.MODE_EQUALS);
+                            // Update the predefined variables.
+                            template.getVariables().put("agentName", agentName);
+                            template.getVariables().put("agentVersion",
+                                    agentVersion);
+                            template.getVariables().put("agentComment",
+                                    agentComment);
+                            Map<String, Object> map = new HashMap<String, Object>();
+                            if (template.parse(getAgent(), map) > -1) {
+                                this.agentMainProduct = new Product(
+                                        (String) map.get("agentName"),
+                                        (String) map.get("agentVersion"),
+                                        (String) map.get("agentComment"));
+                                break;
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    return this.agentMainProduct;
+                }
+            }
+        }
+
+        return this.agentMainProduct;
+    }
+
+    /**
      * Returns the major version numer of the user agent.
      * 
      * @return The major version number of the user agent.
@@ -215,68 +339,6 @@ public final class ClientInfo {
      */
     public String getAgentVersion() {
         return null;
-    }
-
-    /**
-     * Returns the name of the user agent.
-     * 
-     * @return The name of the user agent.
-     */
-    public Product getAgentMainProduct() {
-        if (this.agentMainProduct == null) {
-            try {
-                // Loop on a list of user-agent templates until a template match
-                // the current user-agent string. The list of templates is
-                // located in a file named "user-agent.properties" available on
-                // the classpath.
-                // Soem defined variables are used in order to catch the name,
-                // version and facultative comment. Respectively, these
-                // variables are called "userAgentName", "userAgentVersion" and
-                // "userAgentComment".
-                URL userAgentPropertiesUrl = Engine.getClassLoader()
-                        .getResource("user-agent.properties");
-                if (userAgentPropertiesUrl != null) {
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(userAgentPropertiesUrl
-                                    .openStream(), CharacterSet.UTF_8.getName()));
-                    Template template = null;
-                    // Predefined variables.
-                    Variable userAgentName = new Variable(Variable.TYPE_TOKEN);
-                    Variable userAgentVersion = new Variable(
-                            Variable.TYPE_TOKEN);
-                    Variable userAgentComment = new Variable(
-                            Variable.TYPE_COMMENT);
-                    String line = reader.readLine();
-                    for (; line != null; line = reader.readLine()) {
-                        if (line.trim().length() > 0
-                                && !line.trim().startsWith("#")) {
-                            template = new Template(line, Template.MODE_EQUALS);
-                            // Update the predefined variables.
-                            template.getVariables().put("userAgentName",
-                                    userAgentName);
-                            template.getVariables().put("userAgentVersion",
-                                    userAgentVersion);
-                            template.getVariables().put("userAgentComment",
-                                    userAgentComment);
-                            Map<String, Object> map = new HashMap<String, Object>();
-                            if (template.parse(getAgent(), map) > -1) {
-                                this.agentMainProduct = new Product(
-                                        (String) map.get("userAgentName"),
-                                        (String) map.get("userAgentVersion"),
-                                        (String) map.get("userAgentComment"));
-                                break;
-                            }
-                        }
-                    }
-                }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return this.agentMainProduct;
     }
 
     /**
