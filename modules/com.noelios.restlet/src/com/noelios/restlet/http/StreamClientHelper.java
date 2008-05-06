@@ -22,6 +22,8 @@ import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 
+import com.noelios.restlet.Engine;
+
 /**
  * HTTP client helper based on BIO sockets.
  * 
@@ -41,6 +43,7 @@ public class StreamClientHelper extends HttpClientHelper {
 
     @Override
     public HttpClientCall create(Request request) {
+        request.getClientInfo().setAgent(Engine.VERSION_HEADER);
         return new StreamClientCall(this, request);
     }
 

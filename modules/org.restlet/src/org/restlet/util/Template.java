@@ -138,6 +138,12 @@ public class Template {
             final String URI_RESERVED = URI_GEN_DELIMS + URI_SUB_DELIMS;
             final String WORD = "\\w";
 
+            final String CRLF = "\\r\\n";
+            final String CTL = "\\p{Cntrl}";
+            final String LWS = CRLF + "\\ \\t";
+            final String SEPARATOR = "\\(\\)\\<\\>\\@\\,\\;\\:\\[\\]\"\\/\\\\?\\=\\{\\}\\ \\t";
+            final String TOKEN = "[^" + SEPARATOR + "]";
+            final String COMMENT = "[^" + CTL + "]" + "[^\\(\\)]" + LWS;
             // Expressions to create non-capturing groups
             final String PCT_ENCODED = "\\%[" + HEXA + "][" + HEXA + "]";
             // final String PCHAR = "[" + URI_UNRESERVED + "]|(?:" + PCT_ENCODED
@@ -185,6 +191,12 @@ public class Template {
                 break;
             case Variable.TYPE_URI_SEGMENT:
                 appendGroup(coreRegex, PCHAR, variable.isRequired());
+                break;
+            case Variable.TYPE_TOKEN:
+                appendClass(coreRegex, TOKEN, variable.isRequired());
+                break;
+            case Variable.TYPE_COMMENT:
+                appendClass(coreRegex, COMMENT, variable.isRequired());
                 break;
             }
 

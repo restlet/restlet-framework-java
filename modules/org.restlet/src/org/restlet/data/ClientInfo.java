@@ -18,12 +18,21 @@
 
 package org.restlet.data;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 import org.restlet.util.Engine;
+import org.restlet.util.Template;
+import org.restlet.util.Variable;
 
 /**
  * Client specific data related to a call.
@@ -46,11 +55,14 @@ public final class ClientInfo {
     /** The IP addresses. */
     private volatile List<String> addresses;
 
-    /** The list of product tokens taken from the agent name. */
-    private volatile List<Product> agentProducts;
-
     /** The agent name. */
     private volatile String agent;
+
+    /** The main product data taken from the agent name. */
+    private volatile Product agentMainProduct;
+
+    /** The list of product tokens taken from the agent name. */
+    private volatile List<Product> agentProducts;
 
     /** The port number. */
     private volatile int port;
@@ -157,13 +169,30 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the port number which sent the call. If no port is specified, -1
-     * is returned.
+     * Returns the major version numer of the user agent.
      * 
-     * @return The port number which sent the call.
+     * @return The major version number of the user agent.
      */
-    public int getPort() {
-        return this.port;
+    public String getAgentMajorVersion() {
+        return null;
+    }
+
+    /**
+     * Returns the minor version numer of the user agent.
+     * 
+     * @return The minor version number of the user agent.
+     */
+    public String getAgentMinorVersion() {
+        return null;
+    }
+
+    /**
+     * Returns the name of the user agent.
+     * 
+     * @return The name of the user agent.
+     */
+    public String getAgentName() {
+        return null;
     }
 
     /**
@@ -177,6 +206,87 @@ public final class ClientInfo {
                     .parseUserAgent(getAgent());
         }
         return this.agentProducts;
+    }
+
+    /**
+     * Returns the version of the user agent.
+     * 
+     * @return The version of the user agent.
+     */
+    public String getAgentVersion() {
+        return null;
+    }
+
+    /**
+     * Returns the name of the user agent.
+     * 
+     * @return The name of the user agent.
+     */
+    public Product getAgentMainProduct() {
+        if (this.agentMainProduct == null) {
+            try {
+                // Loop on a list of user-agent templates until a template match
+                // the current user-agent string. The list of templates is
+                // located in a file named "user-agent.properties" available on
+                // the classpath.
+                // Soem defined variables are used in order to catch the name,
+                // version and facultative comment. Respectively, these
+                // variables are called "userAgentName", "userAgentVersion" and
+                // "userAgentComment".
+                URL userAgentPropertiesUrl = Engine.getClassLoader()
+                        .getResource("user-agent.properties");
+                if (userAgentPropertiesUrl != null) {
+                    BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(userAgentPropertiesUrl
+                                    .openStream(), CharacterSet.UTF_8.getName()));
+                    Template template = null;
+                    // Predefined variables.
+                    Variable userAgentName = new Variable(Variable.TYPE_TOKEN);
+                    Variable userAgentVersion = new Variable(
+                            Variable.TYPE_TOKEN);
+                    Variable userAgentComment = new Variable(
+                            Variable.TYPE_COMMENT);
+                    String line = reader.readLine();
+                    for (; line != null; line = reader.readLine()) {
+                        if (line.trim().length() > 0
+                                && !line.trim().startsWith("#")) {
+                            template = new Template(line, Template.MODE_EQUALS);
+                            // Update the predefined variables.
+                            template.getVariables().put("userAgentName",
+                                    userAgentName);
+                            template.getVariables().put("userAgentVersion",
+                                    userAgentVersion);
+                            template.getVariables().put("userAgentComment",
+                                    userAgentComment);
+                            Map<String, Object> map = new HashMap<String, Object>();
+                            if (template.parse(getAgent(), map) > -1) {
+                                this.agentMainProduct = new Product(
+                                        (String) map.get("userAgentName"),
+                                        (String) map.get("userAgentVersion"),
+                                        (String) map.get("userAgentComment"));
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return this.agentMainProduct;
+    }
+
+    /**
+     * Returns the port number which sent the call. If no port is specified, -1
+     * is returned.
+     * 
+     * @return The port number which sent the call.
+     */
+    public int getPort() {
+        return this.port;
     }
 
     /**
