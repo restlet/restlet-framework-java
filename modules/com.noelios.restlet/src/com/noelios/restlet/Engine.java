@@ -582,16 +582,16 @@ public class Engine extends org.restlet.util.Engine {
             if (product.getName() == null && product.getName().length() == 0) {
                 throw new IllegalArgumentException(
                         "Product name cannot be null.");
-            } else {
-                builder.append(product.getName());
-                if (product.getVersion() != null) {
-                    builder.append("/").append(product.getVersion());
-                }
-                if (product.getComment() != null) {
-                    builder.append(" (").append(product.getComment()).append(
-                            ")");
-                }
             }
+
+            builder.append(product.getName());
+            if (product.getVersion() != null) {
+                builder.append("/").append(product.getVersion());
+            }
+            if (product.getComment() != null) {
+                builder.append(" (").append(product.getComment()).append(")");
+            }
+
             if (iterator.hasNext()) {
                 builder.append(" ");
             }
@@ -605,196 +605,193 @@ public class Engine extends org.restlet.util.Engine {
             List<Variant> variants, Language defaultLanguage) {
         if (variants == null) {
             return null;
+        }
+        List<Language> variantLanguages = null;
+        MediaType variantMediaType = null;
+
+        boolean compatibleLanguage = false;
+        boolean compatibleMediaType = false;
+
+        Variant currentVariant = null;
+        Variant bestVariant = null;
+
+        Preference<Language> currentLanguagePref = null;
+        Preference<Language> bestLanguagePref = null;
+        Preference<MediaType> currentMediaTypePref = null;
+        Preference<MediaType> bestMediaTypePref = null;
+
+        float bestQuality = 0;
+        float bestLanguageScore = 0;
+        float bestMediaTypeScore = 0;
+
+        // If no language preference is defined or even none matches, we
+        // want to make sure that at least a variant can be returned.
+        // Based on experience, it appears that browsers are often
+        // misconfigured and don't expose all the languages actually
+        // understood by end users.
+        // Thus, a few other preferences are added to the user's ones:
+        // - primary languages inferred from and sorted according to the
+        // user's preferences with quality between 0.005 and 0.006
+        // - default language (if any) with quality 0.003
+        // - primary language of the default language (if available) with
+        // quality 0.002
+        // - all languages with quality 0.001
+        List<Preference<Language>> languagePrefs = client
+                .getAcceptedLanguages();
+        List<Preference<Language>> primaryLanguagePrefs = new ArrayList<Preference<Language>>();
+        // A default language preference is defined with a better weight
+        // than the "All languages" preference
+        Preference<Language> defaultLanguagePref = ((defaultLanguage == null) ? null
+                : new Preference<Language>(defaultLanguage, 0.003f));
+        Preference<Language> allLanguagesPref = new Preference<Language>(
+                Language.ALL, 0.001f);
+
+        if (languagePrefs.isEmpty()) {
+            // All languages accepted.
+            languagePrefs.add(new Preference<Language>(Language.ALL));
         } else {
-            List<Language> variantLanguages = null;
-            MediaType variantMediaType = null;
-
-            boolean compatibleLanguage = false;
-            boolean compatibleMediaType = false;
-
-            Variant currentVariant = null;
-            Variant bestVariant = null;
-
-            Preference<Language> currentLanguagePref = null;
-            Preference<Language> bestLanguagePref = null;
-            Preference<MediaType> currentMediaTypePref = null;
-            Preference<MediaType> bestMediaTypePref = null;
-
-            float bestQuality = 0;
-            float bestLanguageScore = 0;
-            float bestMediaTypeScore = 0;
-
-            // If no language preference is defined or even none matches, we
-            // want to make sure that at least a variant can be returned.
-            // Based on experience, it appears that browsers are often
-            // misconfigured and don't expose all the languages actually
-            // understood by end users.
-            // Thus, a few other preferences are added to the user's ones:
-            // - primary languages inferred from and sorted according to the
-            // user's preferences with quality between 0.005 and 0.006
-            // - default language (if any) with quality 0.003
-            // - primary language of the default language (if available) with
-            // quality 0.002
-            // - all languages with quality 0.001
-            List<Preference<Language>> languagePrefs = client
-                    .getAcceptedLanguages();
-            List<Preference<Language>> primaryLanguagePrefs = new ArrayList<Preference<Language>>();
-            // A default language preference is defined with a better weight
-            // than the "All languages" preference
-            Preference<Language> defaultLanguagePref = ((defaultLanguage == null) ? null
-                    : new Preference<Language>(defaultLanguage, 0.003f));
-            Preference<Language> allLanguagesPref = new Preference<Language>(
-                    Language.ALL, 0.001f);
-
-            if (languagePrefs.isEmpty()) {
-                // All languages accepted.
-                languagePrefs.add(new Preference<Language>(Language.ALL));
-            } else {
-                // Get the primary language preferences that are not currently
-                // accepted by the client
-                List<String> list = new ArrayList<String>();
-                for (Preference<Language> preference : languagePrefs) {
-                    Language language = preference.getMetadata();
-                    if (!language.getSubTags().isEmpty()) {
-                        if (!list.contains(language.getPrimaryTag())) {
-                            list.add(language.getPrimaryTag());
-                            primaryLanguagePrefs
-                                    .add(new Preference<Language>(new Language(
-                                            language.getPrimaryTag()),
-                                            0.005f + (0.001f * preference
-                                                    .getQuality())));
-                        }
-                    }
-                }
-                // If the default language is a "primary" language but is not
-                // present in the list of all primary languages, add it.
-                if (defaultLanguage != null
-                        && !defaultLanguage.getSubTags().isEmpty()) {
-                    if (!list.contains(defaultLanguage.getPrimaryTag())) {
+            // Get the primary language preferences that are not currently
+            // accepted by the client
+            List<String> list = new ArrayList<String>();
+            for (Preference<Language> preference : languagePrefs) {
+                Language language = preference.getMetadata();
+                if (!language.getSubTags().isEmpty()) {
+                    if (!list.contains(language.getPrimaryTag())) {
+                        list.add(language.getPrimaryTag());
                         primaryLanguagePrefs.add(new Preference<Language>(
-                                new Language(defaultLanguage.getPrimaryTag()),
-                                0.002f));
+                                new Language(language.getPrimaryTag()),
+                                0.005f + (0.001f * preference.getQuality())));
                     }
                 }
-
+            }
+            // If the default language is a "primary" language but is not
+            // present in the list of all primary languages, add it.
+            if (defaultLanguage != null
+                    && !defaultLanguage.getSubTags().isEmpty()) {
+                if (!list.contains(defaultLanguage.getPrimaryTag())) {
+                    primaryLanguagePrefs.add(new Preference<Language>(
+                            new Language(defaultLanguage.getPrimaryTag()),
+                            0.002f));
+                }
             }
 
-            // Client preferences are altered
-            languagePrefs.addAll(primaryLanguagePrefs);
-            if (defaultLanguagePref != null) {
-                languagePrefs.add(defaultLanguagePref);
-                // In this case, if the client adds the "all languages"
-                // preference, the latter is removed, in order to support the
-                // default preference defined by the server
-                List<Preference<Language>> list = new ArrayList<Preference<Language>>();
-                for (Preference<Language> preference : languagePrefs) {
-                    Language language = preference.getMetadata();
-                    if (!language.equals(Language.ALL)) {
-                        list.add(preference);
-                    }
+        }
+
+        // Client preferences are altered
+        languagePrefs.addAll(primaryLanguagePrefs);
+        if (defaultLanguagePref != null) {
+            languagePrefs.add(defaultLanguagePref);
+            // In this case, if the client adds the "all languages"
+            // preference, the latter is removed, in order to support the
+            // default preference defined by the server
+            List<Preference<Language>> list = new ArrayList<Preference<Language>>();
+            for (Preference<Language> preference : languagePrefs) {
+                Language language = preference.getMetadata();
+                if (!language.equals(Language.ALL)) {
+                    list.add(preference);
                 }
-                languagePrefs = list;
             }
-            languagePrefs.add(allLanguagesPref);
+            languagePrefs = list;
+        }
+        languagePrefs.add(allLanguagesPref);
 
-            // For each available variant, we will compute the negotiation score
-            // which is dependant on the language score and on the media type
-            // score
-            for (Iterator<Variant> iter1 = variants.iterator(); iter1.hasNext();) {
-                currentVariant = iter1.next();
-                variantLanguages = currentVariant.getLanguages();
-                variantMediaType = currentVariant.getMediaType();
+        // For each available variant, we will compute the negotiation score
+        // which is dependant on the language score and on the media type
+        // score
+        for (Iterator<Variant> iter1 = variants.iterator(); iter1.hasNext();) {
+            currentVariant = iter1.next();
+            variantLanguages = currentVariant.getLanguages();
+            variantMediaType = currentVariant.getMediaType();
 
-                // All languages of the current variant are scored.
-                for (Language variantLanguage : variantLanguages) {
-                    // For each language preference defined in the call
-                    // Calculate the score and remember the best scoring
-                    // preference
-                    for (Iterator<Preference<Language>> iter2 = languagePrefs
-                            .iterator(); (variantLanguage != null)
-                            && iter2.hasNext();) {
-                        currentLanguagePref = iter2.next();
-                        float currentScore = getScore(variantLanguage,
-                                currentLanguagePref.getMetadata());
-                        boolean compatiblePref = (currentScore != -1.0f);
-                        // 3) Do we have a better preference?
-                        // currentScore *= currentPref.getQuality();
-                        if (compatiblePref
-                                && ((bestLanguagePref == null) || (currentScore > bestLanguageScore))) {
-                            bestLanguagePref = currentLanguagePref;
-                            bestLanguageScore = currentScore;
-                        }
-                    }
-                }
-
-                // Are the preferences compatible with the current variant
-                // language?
-                compatibleLanguage = (variantLanguages.isEmpty())
-                        || (bestLanguagePref != null);
-
-                // If no media type preference is defined, assume that all media
-                // types are acceptable
-                List<Preference<MediaType>> mediaTypePrefs = client
-                        .getAcceptedMediaTypes();
-                if (mediaTypePrefs.size() == 0)
-                    mediaTypePrefs
-                            .add(new Preference<MediaType>(MediaType.ALL));
-
-                // For each media range preference defined in the call
-                // Calculate the score and remember the best scoring preference
-                for (Iterator<Preference<MediaType>> iter2 = mediaTypePrefs
-                        .iterator(); compatibleLanguage && iter2.hasNext();) {
-                    currentMediaTypePref = iter2.next();
-                    float currentScore = getScore(variantMediaType,
-                            currentMediaTypePref.getMetadata());
+            // All languages of the current variant are scored.
+            for (Language variantLanguage : variantLanguages) {
+                // For each language preference defined in the call
+                // Calculate the score and remember the best scoring
+                // preference
+                for (Iterator<Preference<Language>> iter2 = languagePrefs
+                        .iterator(); (variantLanguage != null)
+                        && iter2.hasNext();) {
+                    currentLanguagePref = iter2.next();
+                    float currentScore = getScore(variantLanguage,
+                            currentLanguagePref.getMetadata());
                     boolean compatiblePref = (currentScore != -1.0f);
                     // 3) Do we have a better preference?
                     // currentScore *= currentPref.getQuality();
                     if (compatiblePref
-                            && ((bestMediaTypePref == null) || (currentScore > bestMediaTypeScore))) {
-                        bestMediaTypePref = currentMediaTypePref;
-                        bestMediaTypeScore = currentScore;
-                    }
-
-                }
-
-                // Are the preferences compatible with the current media type?
-                compatibleMediaType = (variantMediaType == null)
-                        || (bestMediaTypePref != null);
-
-                if (compatibleLanguage && compatibleMediaType) {
-                    // Do we have a compatible media type?
-                    float currentQuality = 0;
-                    if (bestLanguagePref != null) {
-                        currentQuality += (bestLanguagePref.getQuality() * 10F);
-                    } else if (!variantLanguages.isEmpty()) {
-                        currentQuality += 0.1F * 10F;
-                    }
-
-                    if (bestMediaTypePref != null) {
-                        // So, let's conclude on the current variant, its
-                        // quality
-                        currentQuality += bestMediaTypePref.getQuality();
-                    }
-
-                    if (bestVariant == null) {
-                        bestVariant = currentVariant;
-                        bestQuality = currentQuality;
-                    } else if (currentQuality > bestQuality) {
-                        bestVariant = currentVariant;
-                        bestQuality = currentQuality;
+                            && ((bestLanguagePref == null) || (currentScore > bestLanguageScore))) {
+                        bestLanguagePref = currentLanguagePref;
+                        bestLanguageScore = currentScore;
                     }
                 }
-
-                // Reset the preference variables
-                bestLanguagePref = null;
-                bestLanguageScore = 0;
-                bestMediaTypePref = null;
-                bestMediaTypeScore = 0;
             }
 
-            return bestVariant;
+            // Are the preferences compatible with the current variant
+            // language?
+            compatibleLanguage = (variantLanguages.isEmpty())
+                    || (bestLanguagePref != null);
+
+            // If no media type preference is defined, assume that all media
+            // types are acceptable
+            List<Preference<MediaType>> mediaTypePrefs = client
+                    .getAcceptedMediaTypes();
+            if (mediaTypePrefs.size() == 0)
+                mediaTypePrefs.add(new Preference<MediaType>(MediaType.ALL));
+
+            // For each media range preference defined in the call
+            // Calculate the score and remember the best scoring preference
+            for (Iterator<Preference<MediaType>> iter2 = mediaTypePrefs
+                    .iterator(); compatibleLanguage && iter2.hasNext();) {
+                currentMediaTypePref = iter2.next();
+                float currentScore = getScore(variantMediaType,
+                        currentMediaTypePref.getMetadata());
+                boolean compatiblePref = (currentScore != -1.0f);
+                // 3) Do we have a better preference?
+                // currentScore *= currentPref.getQuality();
+                if (compatiblePref
+                        && ((bestMediaTypePref == null) || (currentScore > bestMediaTypeScore))) {
+                    bestMediaTypePref = currentMediaTypePref;
+                    bestMediaTypeScore = currentScore;
+                }
+
+            }
+
+            // Are the preferences compatible with the current media type?
+            compatibleMediaType = (variantMediaType == null)
+                    || (bestMediaTypePref != null);
+
+            if (compatibleLanguage && compatibleMediaType) {
+                // Do we have a compatible media type?
+                float currentQuality = 0;
+                if (bestLanguagePref != null) {
+                    currentQuality += (bestLanguagePref.getQuality() * 10F);
+                } else if (!variantLanguages.isEmpty()) {
+                    currentQuality += 0.1F * 10F;
+                }
+
+                if (bestMediaTypePref != null) {
+                    // So, let's conclude on the current variant, its
+                    // quality
+                    currentQuality += bestMediaTypePref.getQuality();
+                }
+
+                if (bestVariant == null) {
+                    bestVariant = currentVariant;
+                    bestQuality = currentQuality;
+                } else if (currentQuality > bestQuality) {
+                    bestVariant = currentVariant;
+                    bestQuality = currentQuality;
+                }
+            }
+
+            // Reset the preference variables
+            bestLanguagePref = null;
+            bestLanguageScore = 0;
+            bestMediaTypePref = null;
+            bestMediaTypeScore = 0;
         }
+
+        return bestVariant;
+
     }
 
     /**
@@ -1053,11 +1050,9 @@ public class Engine extends org.restlet.util.Engine {
                         if (c == '/') {
                             insideVersion = true;
                             versionBuilder = new StringBuilder();
-                            version = null;
                         } else if (c == '(') {
                             insideComment = true;
                             commentBuilder = new StringBuilder();
-                            comment = null;
                         }
                     }
                 } else {
@@ -1072,7 +1067,6 @@ public class Engine extends org.restlet.util.Engine {
                         if (c == '(') {
                             insideComment = true;
                             commentBuilder = new StringBuilder();
-                            comment = null;
                         } else {
                             if (insideComment) {
                                 if (c == ')') {
@@ -1080,21 +1074,18 @@ public class Engine extends org.restlet.util.Engine {
                                     comment = commentBuilder.toString();
                                     result.add(new Product(token, version,
                                             comment));
-                                    comment = null;
                                     insideToken = true;
                                     tokenBuilder = new StringBuilder();
-                                    token = null;
                                 } else {
                                     commentBuilder.append(c);
                                 }
                             } else {
                                 result
                                         .add(new Product(token, version,
-                                                comment));
+                                                null));
                                 insideToken = true;
                                 tokenBuilder = new StringBuilder();
                                 tokenBuilder.append(c);
-                                token = null;
                             }
                         }
                     }
