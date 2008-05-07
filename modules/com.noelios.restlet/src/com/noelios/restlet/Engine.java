@@ -696,8 +696,7 @@ public class Engine extends org.restlet.util.Engine {
         languagePrefs.add(allLanguagesPref);
 
         // For each available variant, we will compute the negotiation score
-        // which is dependant on the language score and on the media type
-        // score
+        // which depends on both language and media type scores.
         for (Iterator<Variant> iter1 = variants.iterator(); iter1.hasNext();) {
             currentVariant = iter1.next();
             variantLanguages = currentVariant.getLanguages();
