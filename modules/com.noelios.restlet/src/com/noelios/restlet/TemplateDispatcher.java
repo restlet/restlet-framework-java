@@ -85,30 +85,29 @@ public abstract class TemplateDispatcher extends Uniform {
         if (protocol == null) {
             throw new UnsupportedOperationException(
                     "Unable to determine the protocol to use for this call.");
-        } else {
-            String targetUri = request.getResourceRef().toString(true, false);
+        }
+        String targetUri = request.getResourceRef().toString(true, false);
 
-            if (targetUri.contains("{")) {
-                // Template URI detected, create the template
-                Template template = new Template(getContext().getLogger(),
-                        targetUri);
+        if (targetUri.contains("{")) {
+            // Template URI detected, create the template
+            Template template = new Template(getContext().getLogger(),
+                    targetUri);
 
-                // Set the formatted target URI
-                request.setResourceRef(template.format(request, response));
-            }
+            // Set the formatted target URI
+            request.setResourceRef(template.format(request, response));
+        }
 
-            // Actually handle the formatted URI
-            doHandle(request, response);
+        // Actually handle the formatted URI
+        doHandle(request, response);
 
-            // If the response entity comes back with no identifier,
-            // automatically set the request's resource reference's identifier.
-            // This is very useful to resolve relative references in XSLT for
-            // example.
-            if ((response.getEntity() != null)
-                    && (response.getEntity().getIdentifier() == null)) {
-                response.getEntity().setIdentifier(
-                        request.getResourceRef().toString());
-            }
+        // If the response entity comes back with no identifier,
+        // automatically set the request's resource reference's identifier.
+        // This is very useful to resolve relative references in XSLT for
+        // example.
+        if ((response.getEntity() != null)
+                && (response.getEntity().getIdentifier() == null)) {
+            response.getEntity().setIdentifier(
+                    request.getResourceRef().toString());
         }
     }
 }
