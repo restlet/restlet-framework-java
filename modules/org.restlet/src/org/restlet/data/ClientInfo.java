@@ -60,6 +60,9 @@ public final class ClientInfo {
     /** The main product data taken from the agent name. */
     private volatile Product agentMainProduct;
 
+    /** The attributes data taken from the agent name. */
+    private volatile Map<String, Object> agentAttributes;
+
     /** The list of product tokens taken from the agent name. */
     private volatile List<Product> agentProducts;
 
@@ -194,7 +197,7 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the agent name (ex: "Noelios Restlet Engine/1.1").
+     * Returns the agent name (ex: "Noelios-Restlet-Engine/1.1").
      * 
      * @return The agent name.
      */
@@ -208,9 +211,10 @@ public final class ClientInfo {
      * @return A list of attributes taken from the name of the user agent.
      */
     public Map<String, Object> getAgentAttributes() {
-        Map<String, Object> result = new HashMap<String, Object>();
 
-        if (this.agentMainProduct == null) {
+        if (this.agentAttributes == null) {
+            agentAttributes = new HashMap<String, Object>();
+
             // Loop on a list of user-agent templates until a template match
             // the current user-agent string. The list of templates is
             // located in a file named "agent.properties" available on
@@ -254,19 +258,19 @@ public final class ClientInfo {
                             template.getVariables().put("facultativeData",
                                     facultativeData);
                             // Parse the template
-                            if (template.parse(getAgent(), result) > -1) {
+                            if (template.parse(getAgent(), agentAttributes) > -1) {
                                 break;
                             }
-
                         }
                     }
+                    reader.close();
                 } catch (IOException e) {
-                    return result;
+                    return agentAttributes;
                 }
             }
         }
 
-        return result;
+        return agentAttributes;
     }
 
     /**
@@ -276,51 +280,11 @@ public final class ClientInfo {
      */
     public Product getAgentMainProduct() {
         if (this.agentMainProduct == null) {
-            // Loop on a list of user-agent templates until a template match
-            // the current user-agent string. The list of templates is
-            // located in a file named "agent.properties" available on
-            // the classpath.
-            // Soem defined variables are used in order to catch the name,
-            // version and facultative comment. Respectively, these
-            // variables are called "agentName", "agentVersion" and
-            // "agentComment".
-            URL userAgentPropertiesUrl = Engine.getClassLoader().getResource(
-                    "agent.properties");
-            if (userAgentPropertiesUrl != null) {
-                BufferedReader reader;
-                try {
-                    reader = new BufferedReader(new InputStreamReader(
-                            userAgentPropertiesUrl.openStream(),
-                            CharacterSet.UTF_8.getName()));
-                    Template template = null;
-                    // Predefined variables.
-                    Variable agentName = new Variable(Variable.TYPE_TOKEN);
-                    Variable agentVersion = new Variable(Variable.TYPE_TOKEN);
-                    Variable agentComment = new Variable(Variable.TYPE_COMMENT);
-                    String line = reader.readLine();
-                    for (; line != null; line = reader.readLine()) {
-                        if (line.trim().length() > 0
-                                && !line.trim().startsWith("#")) {
-                            template = new Template(line, Template.MODE_EQUALS);
-                            // Update the predefined variables.
-                            template.getVariables().put("agentName", agentName);
-                            template.getVariables().put("agentVersion",
-                                    agentVersion);
-                            template.getVariables().put("agentComment",
-                                    agentComment);
-                            Map<String, Object> map = new HashMap<String, Object>();
-                            if (template.parse(getAgent(), map) > -1) {
-                                this.agentMainProduct = new Product(
-                                        (String) map.get("agentName"),
-                                        (String) map.get("agentVersion"),
-                                        (String) map.get("agentComment"));
-                                break;
-                            }
-                        }
-                    }
-                } catch (IOException e) {
-                    return this.agentMainProduct;
-                }
+            if (getAgentAttributes() != null) {
+                this.agentMainProduct = new Product(
+                        (String) getAgentAttributes().get("agentName"),
+                        (String) getAgentAttributes().get("agentVersion"),
+                        (String) getAgentAttributes().get("agentComment"));
             }
         }
 
@@ -333,8 +297,9 @@ public final class ClientInfo {
      * @return The name of the user agent.
      */
     public String getAgentName() {
-        if (getAgentMainProduct() != null) {
-            return getAgentMainProduct().getName();
+        Product product = getAgentMainProduct();
+        if (product != null) {
+            return product.getName();
         }
 
         return null;
@@ -359,8 +324,9 @@ public final class ClientInfo {
      * @return The version of the user agent.
      */
     public String getAgentVersion() {
-        if (getAgentMainProduct() != null) {
-            return getAgentMainProduct().getVersion();
+        Product product = getAgentMainProduct();
+        if (product != null) {
+            return product.getVersion();
         }
         return null;
 

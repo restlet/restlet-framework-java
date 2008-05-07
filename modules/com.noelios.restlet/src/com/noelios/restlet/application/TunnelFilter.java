@@ -18,6 +18,12 @@
 
 package com.noelios.restlet.application;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Map;
+
 import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.data.CharacterSet;
@@ -34,6 +40,9 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
+import org.restlet.util.Engine;
+
+import com.noelios.restlet.util.PreferenceUtils;
 
 /**
  * Filter tunnelling browser calls into full REST calls. The request method can
@@ -69,12 +78,78 @@ public class TunnelFilter extends Filter {
             extensionsModified = processExtensions(request);
         }
 
+        if (getTunnelService().isUserAgentTunnel()) {
+            processUserAgent(request);
+        }
+
         if (queryModified || extensionsModified) {
             request.getAttributes().put(TunnelService.ATTRIBUTE_ORIGINAL_REF,
                     originalRef);
         }
 
         return CONTINUE;
+    }
+
+    /**
+     * Updates the client preferences according to the user agent properties
+     * (name, version, etc.). The list of new media type preferences is loaded
+     * from a property file called "accept.proterties" located in the classpath.
+     * 
+     * @param request
+     *                the request to update.
+     */
+    private void processUserAgent(Request request) {
+        Map<String, Object> agentAttributes = request.getClientInfo()
+                .getAgentAttributes();
+        if (agentAttributes != null) {
+            URL userAgentPropertiesUrl = Engine.getClassLoader().getResource(
+                    "accept.properties");
+            if (userAgentPropertiesUrl != null) {
+                BufferedReader reader;
+                try {
+                    reader = new BufferedReader(new InputStreamReader(
+                            userAgentPropertiesUrl.openStream(),
+                            CharacterSet.UTF_8.getName()));
+
+                    boolean processAcceptHeader = true;
+
+                    String line = reader.readLine();
+                    for (; line != null; line = reader.readLine()) {
+                        if (!line.startsWith("#")) {
+                            String[] keyValue = line.split(":");
+                            if (keyValue.length == 2) {
+                                String key = keyValue[0].trim();
+                                String value = keyValue[1].trim();
+                                if ("accept".equalsIgnoreCase(key)) {
+                                    if (processAcceptHeader) {
+                                        ClientInfo clientInfo = new ClientInfo();
+                                        PreferenceUtils.parseMediaTypes(value,
+                                                clientInfo);
+                                        request
+                                                .getClientInfo()
+                                                .setAcceptedMediaTypes(
+                                                        clientInfo
+                                                                .getAcceptedMediaTypes());
+                                        break;
+                                    }
+                                    processAcceptHeader = true;
+                                } else {
+                                    if (processAcceptHeader) {
+                                        String attribute = (String) agentAttributes
+                                                .get(key);
+                                        processAcceptHeader = attribute != null
+                                                && attribute
+                                                        .equalsIgnoreCase(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    reader.close();
+                } catch (IOException e) {
+                }
+            }
+        }
     }
 
     /**

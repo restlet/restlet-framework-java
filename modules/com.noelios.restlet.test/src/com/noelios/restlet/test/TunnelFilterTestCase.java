@@ -46,19 +46,13 @@ import com.noelios.restlet.application.TunnelFilter;
  */
 public class TunnelFilterTestCase extends TestCase {
 
-    /**
-     * 
-     */
+    /** . */
     private static final String EFFECTED = "http://example.org/adf.asdf/af.html";
 
-    /**
-     * 
-     */
+    /** . */
     private static final String START_REF_FOR_PATH_TEST = "http://www.example.com/abc/def/";
 
-    /**
-     * 
-     */
+    /** . */
     private static final String UNEFFECTED = "http://example.org/abc.def/af.ab";
 
     private List<Preference<CharacterSet>> accCharsets;
