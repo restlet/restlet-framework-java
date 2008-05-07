@@ -1,14 +1,14 @@
 /*
  * Copyright 2005-2007 Noelios Consulting.
- *
+ * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
  * compliance with the License.
- *
+ * 
  * You can obtain a copy of the license at
  * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing Covered Code, include this CDDL HEADER in each file and
  * include the License file at http://www.opensource.org/licenses/cddl1.txt If
  * applicable, add the following below this CDDL HEADER, with the fields
@@ -18,14 +18,8 @@
 
 package com.noelios.restlet.ext.xdb;
 
-import com.noelios.restlet.application.ApplicationContext;
-import com.noelios.restlet.ext.servlet.ServerServlet;
-import com.noelios.restlet.http.HttpServerCall;
-import com.noelios.restlet.http.HttpServerHelper;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -34,7 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-
 import java.util.ArrayList;
 
 import javax.servlet.ServletConfig;
@@ -45,16 +38,21 @@ import javax.servlet.http.HttpServletResponse;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.util.Engine;
+
+import com.noelios.restlet.ext.servlet.ServerServlet;
+import com.noelios.restlet.http.HttpServerCall;
+import com.noelios.restlet.http.HttpServerHelper;
 
 /**
  * Servlet acting like an HTTP server connector. See <a
  * href="/documentation/1.0/faq#02">Developper FAQ #2</a> for details on how to
  * integrate a Restlet application into a servlet container.<br/> Here is a
  * sample configuration for your Restlet webapp:
- *
+ * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
  * &lt;!DOCTYPE web-app PUBLIC
@@ -62,8 +60,8 @@ import org.restlet.util.Engine;
  *       &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
  * &lt;web-app&gt;
  *         &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- *
- *
+ * 
+ * 
  *       &lt;!-- Restlet adapter --&gt;
  *       &lt;servlet&gt;
  *        &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
@@ -90,7 +88,7 @@ import org.restlet.util.Engine;
  *            &lt;/description&gt;
  *          &lt;/init-param&gt;
  *       &lt;/servlet&gt;
- *
+ * 
  *       &lt;!-- Catch all requests --&gt;
  *       &lt;servlet-mapping&gt;
  *         &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
@@ -98,12 +96,12 @@ import org.restlet.util.Engine;
  *       &lt;/servlet-mapping&gt;
  * &lt;/web-app&gt;
  * </pre>
- *
+ * 
  * The enumeration of initParameters of your Servlet will be copied to the
  * "context.parameters" property of your application. This way, you can pass
  * additional initialization parameters to your Restlet application, and share
  * them with existing Servlets.
- *
+ * 
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
@@ -111,16 +109,16 @@ public class XdbServerServlet extends ServerServlet {
     /** Serial version identifier. */
     private static final long serialVersionUID = 1L;
 
-   /**
+    /**
      * Closes JDBC resources
-     *
+     * 
      * @param statement
      *                Any statement.
      * @param resultSet
      *                Any result set.
      */
     protected static void closeDbResources(final Statement statement,
-                                           final ResultSet resultSet) {
+            final ResultSet resultSet) {
         if (resultSet != null) {
             try {
                 resultSet.close();
@@ -139,7 +137,7 @@ public class XdbServerServlet extends ServerServlet {
 
     /**
      * Returns a JDBC connection. Works inside or outside the OJVM.
-     *
+     * 
      * @return A JDBC connection.
      * @throws ServletException
      */
@@ -227,7 +225,7 @@ public class XdbServerServlet extends ServerServlet {
 
     /**
      * Returns a configuration parameter.
-     *
+     * 
      * @return An String object within the /home/'||USER||'/restlet/app.xml
      *         XMLDB file.
      */
@@ -241,10 +239,9 @@ public class XdbServerServlet extends ServerServlet {
 
         try {
             preparedstatement = conn
-                    .prepareStatement(
-         "select extractValue(res,'/res:Resource/res:Contents/restlet-app/'||?,"
-         + "'xmlns:res=http://xmlns.oracle.com/xdb/XDBResource.xsd') from\n"
-         + "resource_view where equals_path(res,'/home/'||USER||?)=1");
+                    .prepareStatement("select extractValue(res,'/res:Resource/res:Contents/restlet-app/'||?,"
+                            + "'xmlns:res=http://xmlns.oracle.com/xdb/XDBResource.xsd') from\n"
+                            + "resource_view where equals_path(res,'/home/'||USER||?)=1");
             preparedstatement.setString(1, name);
             preparedstatement.setString(2, "/restlet/" + app + ".xml");
             resultset = preparedstatement.executeQuery();
@@ -254,8 +251,8 @@ public class XdbServerServlet extends ServerServlet {
         } catch (SQLException sqe) {
             log(sqe.getLocalizedMessage(), sqe);
             throw new RuntimeException(
-              ".getConfigParameter:  error from XMLDB loading '/home/'||USER||'"
-                         + "/restlet/" + app + ".xml", sqe);
+                    ".getConfigParameter:  error from XMLDB loading '/home/'||USER||'"
+                            + "/restlet/" + app + ".xml", sqe);
         } finally {
             closeDbResources(preparedstatement, resultset);
         }
@@ -292,7 +289,7 @@ public class XdbServerServlet extends ServerServlet {
         try {
             int endPoint = 1;
             preparedstatement = conn
-                 .prepareCall("{ call dbms_xdb.getListenerEndPoint(1,?,?,?) }");
+                    .prepareCall("{ call dbms_xdb.getListenerEndPoint(1,?,?,?) }");
             preparedstatement.registerOutParameter(1, Types.VARCHAR);
             preparedstatement.registerOutParameter(2, Types.INTEGER);
             preparedstatement.registerOutParameter(3, Types.INTEGER);
@@ -317,7 +314,7 @@ public class XdbServerServlet extends ServerServlet {
         try {
             if (remoteDebugging) {
                 preparedstatement = conn
-                      .prepareCall("{ call dbms_debug_jdwp.connect_tcp(?,?) }");
+                        .prepareCall("{ call dbms_debug_jdwp.connect_tcp(?,?) }");
                 preparedstatement.setString(1, "localhost");
                 preparedstatement.setInt(2, 4000);
                 preparedstatement.execute();
@@ -344,8 +341,7 @@ public class XdbServerServlet extends ServerServlet {
     }
 
     @Override
-    protected Class<?> getClass(String className)
-        throws ClassNotFoundException {
+    protected Class<?> getClass(String className) throws ClassNotFoundException {
         int doubleDotPos = className.indexOf(':');
         Class<?> targetClass;
 
@@ -365,17 +361,17 @@ public class XdbServerServlet extends ServerServlet {
                         cName, sch });
             } catch (NoSuchMethodException nse) {
                 log(
-       "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
+                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, nse);
                 targetClass = Engine.classForName(className);
             } catch (IllegalAccessException iae) {
                 log(
-       "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
+                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, iae);
                 targetClass = Engine.classForName(className);
             } catch (InvocationTargetException ite) {
                 log(
-       "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
+                        "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, ite);
                 targetClass = Engine.classForName(className);
             }
@@ -385,8 +381,7 @@ public class XdbServerServlet extends ServerServlet {
     }
 
     @Override
-    protected Client createWarClient(ApplicationContext appCtx,
-                                  ServletConfig config) {
+    protected Client createWarClient(Context appCtx, ServletConfig config) {
         return new XdbServletWarClient(appCtx, config, conn);
     }
 }
