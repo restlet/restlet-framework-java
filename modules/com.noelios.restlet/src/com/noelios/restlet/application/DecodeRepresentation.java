@@ -94,9 +94,9 @@ public class DecodeRepresentation extends WrapperRepresentation {
     public ReadableByteChannel getChannel() throws IOException {
         if (canDecode()) {
             return ByteUtils.getChannel(getStream());
-        } else {
-            return getWrappedRepresentation().getChannel();
         }
+
+        return getWrappedRepresentation().getChannel();
     }
 
     /**
@@ -135,9 +135,9 @@ public class DecodeRepresentation extends WrapperRepresentation {
     public List<Encoding> getEncodings() {
         if (canDecode()) {
             return new ArrayList<Encoding>();
-        } else {
-            return wrappedEncodings;
         }
+
+        return wrappedEncodings;
     }
 
     /**

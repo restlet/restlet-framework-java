@@ -97,9 +97,9 @@ public class EncodeRepresentation extends WrapperRepresentation {
     public ReadableByteChannel getChannel() throws IOException {
         if (canEncode()) {
             return ByteUtils.getChannel(getStream());
-        } else {
-            return getWrappedRepresentation().getChannel();
         }
+
+        return getWrappedRepresentation().getChannel();
     }
 
     /**
@@ -117,9 +117,9 @@ public class EncodeRepresentation extends WrapperRepresentation {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.add(element);
                     }
+
+                    return super.add(element);
                 }
 
                 @Override
@@ -127,9 +127,9 @@ public class EncodeRepresentation extends WrapperRepresentation {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        super.add(index, element);
                     }
+
+                    super.add(index, element);
                 }
 
                 @Override
@@ -144,9 +144,9 @@ public class EncodeRepresentation extends WrapperRepresentation {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.addAll(elements);
                     }
+
+                    return super.addAll(elements);
                 }
 
                 @Override
@@ -162,9 +162,9 @@ public class EncodeRepresentation extends WrapperRepresentation {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.addAll(index, elements);
                     }
+
+                    return super.addAll(index, elements);
                 }
             };
             encodings.addAll(getWrappedRepresentation().getEncodings());
@@ -205,9 +205,9 @@ public class EncodeRepresentation extends WrapperRepresentation {
     public InputStream getStream() throws IOException {
         if (canEncode()) {
             return ByteUtils.getStream(this);
-        } else {
-            return getWrappedRepresentation().getStream();
         }
+
+        return getWrappedRepresentation().getStream();
     }
 
     /**
