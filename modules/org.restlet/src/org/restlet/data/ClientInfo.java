@@ -61,7 +61,7 @@ public final class ClientInfo {
     private volatile Product agentMainProduct;
 
     /** The attributes data taken from the agent name. */
-    private volatile Map<String, Object> agentAttributes;
+    private volatile Map<String, String> agentAttributes;
 
     /** The list of product tokens taken from the agent name. */
     private volatile List<Product> agentProducts;
@@ -210,10 +210,11 @@ public final class ClientInfo {
      * 
      * @return A list of attributes taken from the name of the user agent.
      */
-    public Map<String, Object> getAgentAttributes() {
+    public Map<String, String> getAgentAttributes() {
 
         if (this.agentAttributes == null) {
-            agentAttributes = new HashMap<String, Object>();
+            this.agentAttributes = new HashMap<String, String>();
+            Map<String, Object> map = new HashMap<String, Object>();
 
             // Loop on a list of user-agent templates until a template match
             // the current user-agent string. The list of templates is
@@ -258,19 +259,23 @@ public final class ClientInfo {
                             template.getVariables().put("facultativeData",
                                     facultativeData);
                             // Parse the template
-                            if (template.parse(getAgent(), agentAttributes) > -1) {
+                            if (template.parse(getAgent(), map) > -1) {
+                                for (String key : map.keySet()) {
+                                    this.agentAttributes.put(key, (String) map
+                                            .get(key));
+                                }
                                 break;
                             }
                         }
                     }
                     reader.close();
                 } catch (IOException e) {
-                    return agentAttributes;
+                    return this.agentAttributes;
                 }
             }
         }
 
-        return agentAttributes;
+        return this.agentAttributes;
     }
 
     /**
@@ -278,13 +283,12 @@ public final class ClientInfo {
      * 
      * @return A Product object based on name of the user agent.
      */
-    public Product getAgentMainProduct() {
+    public Product getMainAgentProduct() {
         if (this.agentMainProduct == null) {
             if (getAgentAttributes() != null) {
-                this.agentMainProduct = new Product(
-                        (String) getAgentAttributes().get("agentName"),
-                        (String) getAgentAttributes().get("agentVersion"),
-                        (String) getAgentAttributes().get("agentComment"));
+                this.agentMainProduct = new Product(getAgentAttributes().get(
+                        "agentName"), getAgentAttributes().get("agentVersion"),
+                        getAgentAttributes().get("agentComment"));
             }
         }
 
@@ -297,7 +301,7 @@ public final class ClientInfo {
      * @return The name of the user agent.
      */
     public String getAgentName() {
-        Product product = getAgentMainProduct();
+        Product product = getMainAgentProduct();
         if (product != null) {
             return product.getName();
         }
@@ -324,7 +328,7 @@ public final class ClientInfo {
      * @return The version of the user agent.
      */
     public String getAgentVersion() {
-        Product product = getAgentMainProduct();
+        Product product = getMainAgentProduct();
         if (product != null) {
             return product.getVersion();
         }

@@ -129,68 +129,68 @@ public class ProductTokenTestCase extends RestletTestCase {
 
         ClientInfo clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent1);
-        Product product = clientInfo.getAgentMainProduct();
+        Product product = clientInfo.getMainAgentProduct();
         assertEquals("MSIE", product.getName());
         assertEquals("6.0", product.getVersion());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent2);
-        product = clientInfo.getAgentMainProduct();
+        product = clientInfo.getMainAgentProduct();
         assertEquals("Camino", product.getName());
         assertEquals("1.0b1", product.getVersion());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent3);
-        product = clientInfo.getAgentMainProduct();
+        product = clientInfo.getMainAgentProduct();
         assertEquals("Netscape6", product.getName());
         assertEquals("6.1", product.getVersion());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent4);
-        product = clientInfo.getAgentMainProduct();
+        product = clientInfo.getMainAgentProduct();
         assertEquals("Iceweasel", product.getName());
         assertEquals("2.0", product.getVersion());
         assertEquals("Debian-2.0+dfsg-1", product.getComment());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent5);
-        product = clientInfo.getAgentMainProduct();
+        product = clientInfo.getMainAgentProduct();
         assertEquals("Konqueror", product.getName());
         assertEquals("3.5.4", product.getVersion());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent6);
-        product = clientInfo.getAgentMainProduct();
+        product = clientInfo.getMainAgentProduct();
         assertEquals("MSIE", product.getName());
         assertEquals("5.5", product.getVersion());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent7);
-        product = clientInfo.getAgentMainProduct();
+        product = clientInfo.getMainAgentProduct();
         assertEquals("MSIE", product.getName());
         assertEquals("6.0", product.getVersion());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent8);
-        product = clientInfo.getAgentMainProduct();
+        product = clientInfo.getMainAgentProduct();
         assertEquals("Safari", product.getName());
         assertEquals("521.24", product.getVersion());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent9);
-        product = clientInfo.getAgentMainProduct();
+        product = clientInfo.getMainAgentProduct();
         assertEquals("Opera", product.getName());
         assertEquals("9.00", product.getVersion());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent10);
-        product = clientInfo.getAgentMainProduct();
+        product = clientInfo.getMainAgentProduct();
         assertEquals("Wget", product.getName());
         assertEquals("1.9", product.getVersion());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent11);
-        product = clientInfo.getAgentMainProduct();
+        product = clientInfo.getMainAgentProduct();
         assertEquals("Noelios-Restlet-Engine", product.getName());
         assertEquals("1.9-SNAPSHOT", product.getVersion());
 

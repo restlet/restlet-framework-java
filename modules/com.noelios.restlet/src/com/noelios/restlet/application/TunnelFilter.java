@@ -99,7 +99,7 @@ public class TunnelFilter extends Filter {
      *                the request to update.
      */
     private void processUserAgent(Request request) {
-        Map<String, Object> agentAttributes = request.getClientInfo()
+        Map<String, String> agentAttributes = request.getClientInfo()
                 .getAgentAttributes();
         if (agentAttributes != null) {
             URL userAgentPropertiesUrl = Engine.getClassLoader().getResource(
@@ -135,7 +135,7 @@ public class TunnelFilter extends Filter {
                                     processAcceptHeader = true;
                                 } else {
                                     if (processAcceptHeader) {
-                                        String attribute = (String) agentAttributes
+                                        String attribute = agentAttributes
                                                 .get(key);
                                         processAcceptHeader = attribute != null
                                                 && attribute
