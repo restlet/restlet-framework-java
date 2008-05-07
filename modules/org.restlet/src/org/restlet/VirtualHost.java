@@ -224,7 +224,7 @@ public class VirtualHost extends Router {
                 request.setRootRef(request.getResourceRef().getBaseRef());
 
                 // Save the hash code of the current host
-                setCurrent(hashCode());
+                setCurrent(VirtualHost.this.hashCode());
 
                 return result;
             }
