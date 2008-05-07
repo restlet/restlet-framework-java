@@ -90,7 +90,7 @@ public class Response extends Message {
     }
 
     /**
-     * Sets the respone associated with the current thread.
+     * Sets the response associated with the current thread.
      * 
      * @param response
      *                The thread's response.
