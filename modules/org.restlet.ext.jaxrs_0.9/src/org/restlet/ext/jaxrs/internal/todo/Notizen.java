@@ -31,8 +31,6 @@ public class Notizen {
 
     // REQUESTED rename @DefaultValue to @Default? it's shorter
 
-    // REQUESTED @Context on type PathSegment ?
-
     // LATER test again Jersey Implementation.
 
     // NICE Provider for File-Upload by a browser (multipart/form-data)

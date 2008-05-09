@@ -17,22 +17,27 @@
  */
 package org.restlet.example.jaxrs;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.MediaType;
+
+import org.restlet.example.jaxrs.employees.EmployeesResource;
 
 /**
  * An {@link ApplicationConfig} contains the root resource classes and the
  * providers for an JAX-RS application.<br>
  * This example application configuration contains two root resource classes ({@link EasyRootResource}
- * and {@link PersonsRootResource}, see {@link #getResourceClasses()}) and no
+ * and {@link EmployeesResource}, see {@link #getResourceClasses()}) and no
  * provider (default, would be returned by
  * {@link ApplicationConfig#getProviderClasses()}.
  * 
  * @author Stephan Koops
  * @see EasyRootResource
- * @see PersonsRootResource
+ * @see EmployeesResource
  * @see ExampleServer
  * @see GuardedExample
  */
@@ -51,7 +56,16 @@ public class ExampleAppConfig extends ApplicationConfig {
     public Set<Class<?>> getResourceClasses() {
         Set<Class<?>> rrcs = new HashSet<Class<?>>();
         rrcs.add(EasyRootResource.class);
-        rrcs.add(PersonsRootResource.class);
+        rrcs.add(EmployeesResource.class);
         return rrcs;
+    }
+
+    @Override
+    public Map<String, MediaType> getMediaTypeMappings() {
+        Map<String, MediaType> map = new HashMap<String, MediaType>();
+        map.put("html", MediaType.TEXT_HTML_TYPE);
+        map.put("xml", MediaType.APPLICATION_XML_TYPE);
+        map.put("json", MediaType.APPLICATION_JSON_TYPE);
+        return map;
     }
 }

@@ -686,7 +686,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
             dimensions.add(Dimension.LANGUAGE);
         if (bestRestlVar.getMediaType() != null)
             dimensions.add(Dimension.MEDIA_TYPE);
-        // LATER add also to JAX-RS-Response, which is possibly not yet
+        // NICE add also to JAX-RS-Response, which is possibly not yet
         // generated.
         return bestVariant;
     }

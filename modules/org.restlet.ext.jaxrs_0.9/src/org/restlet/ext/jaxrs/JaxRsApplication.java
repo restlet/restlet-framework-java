@@ -37,7 +37,6 @@ import org.restlet.Router;
 import org.restlet.data.Language;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
-import org.restlet.ext.jaxrs.internal.util.HtmlPreferer;
 import org.restlet.ext.jaxrs.internal.util.TunnelFilter;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
@@ -56,8 +55,6 @@ import org.restlet.service.TunnelService;
  * <li> If you need authentication, set a {@link Guard} and perhaps an
  * {@link RoleChecker}, see {@link #setGuard(Guard)} or
  * {@link #setAuthentication(Guard, RoleChecker)}.</li>
- * <li>If you do not need preferation of HTML before XML, switch it off by
- * calling {@link #setPreferHtml(boolean) #setUseHtmlPreferer(false)}.</li>
  * </ul>
  * At least add the JaxRsApplication to a {@link Component}.
  * </p>
@@ -81,9 +78,6 @@ public class JaxRsApplication extends Application {
 
     /** The {@link JaxRsRouter} to use. */
     private volatile JaxRsRouter jaxRsRouter;
-
-    /** Indicates, if an {@link HtmlPreferer} should be used or not. */
-    private volatile boolean preferHtml = true;
 
     /**
      * Creates an new JaxRsApplication. You should typically use one of the
@@ -235,10 +229,6 @@ public class JaxRsApplication extends Application {
             restlet = this.guard;
         }
 
-        if (preferHtml) {
-            restlet = new HtmlPreferer(getContext(), restlet);
-        }
-
         return restlet;
     }
 
@@ -311,17 +301,6 @@ public class JaxRsApplication extends Application {
     }
 
     /**
-     * Returns the state, if a {@link HtmlPreferer} should be used or not.<br>
-     * The default value is true for now, but may change later.
-     * 
-     * @return the state, if a {@link HtmlPreferer} should be used or not.
-     * @see #setPreferHtml(boolean)
-     */
-    public boolean isPreferHtml() {
-        return this.preferHtml;
-    }
-
-    /**
      * Sets the objects to check the authentication. The {@link Guard} checks
      * the username and password (e.g.), the {@link RoleChecker} manages the
      * role management for the JAX-RS extension.
@@ -362,26 +341,6 @@ public class JaxRsApplication extends Application {
      */
     public void setObjectFactory(ObjectFactory objectFactory) {
         this.jaxRsRouter.setObjectFactory(objectFactory);
-    }
-
-    /**
-     * Some browsers (e.g. Internet Explorer 7.0 and Firefox 2.0) sends as
-     * accepted media type XML with a higher quality than HTML. The consequence
-     * is, that a HTTP server sends XML instead of HTML, if it could produce
-     * XML. To avoid this, set this property to true, or false, if you want
-     * default behaviour.<br>
-     * This setting is ignored after creation of the root (see
-     * {@link #createRoot()}.<br>
-     * The default value is true for now, but may change later.
-     * 
-     * @param preferHtml
-     *                if true, a {@link HtmlPreferer} is used, if false then
-     *                not.
-     * @see #isPreferHtml()
-     * @see HtmlPreferer
-     */
-    public void setPreferHtml(boolean preferHtml) {
-        this.preferHtml = preferHtml;
     }
 
     /**

@@ -34,7 +34,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.EncodeOrCheck;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.util.Resolver;
@@ -339,8 +338,9 @@ public class JaxRsUriBuilder extends UriBuilder {
     public UriBuilder extension(String extension) {
         StringBuilder path = getPath();
         if (extension == null) {
-            throw new NotYetImplementedException(
-                    "unset of an extension is not yet implemented");
+            int lastSegmSt = path.lastIndexOf(".");
+            if(lastSegmSt > 0)
+                path.delete(lastSegmSt, Integer.MAX_VALUE);
             // REQUEST what does "unset an existing" exactly mean? remove one
             // extension? all extensions?
         } else {

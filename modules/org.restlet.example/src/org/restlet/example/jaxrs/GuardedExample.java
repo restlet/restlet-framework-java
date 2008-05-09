@@ -35,8 +35,8 @@ import org.restlet.ext.jaxrs.JaxRsApplication;
  * </p>
  * <p>
  * Start this class, open a browser and click <a
- * href="http://localhost:8182/easy">easy</a> or <a
- * href="http://localhost:8182/persons">persons</a> with one of the following
+ * href="http://localhost/easy">easy</a> or <a
+ * href="http://localhost/persons">persons</a> with one of the following
  * user / password combinations:
  * <ul>
  * <li>admin / adminPW</li>
@@ -79,7 +79,7 @@ public class GuardedExample {
     public static void main(String[] args) throws Exception {
         // create Component (as ever for Restlet)
         Component comp = new Component();
-        Server server = comp.getServers().add(Protocol.HTTP, 8182);
+        Server server = comp.getServers().add(Protocol.HTTP, 80);
 
         // create JAX-RS runtime environment
         JaxRsApplication application = new JaxRsApplication(comp.getContext());
@@ -99,9 +99,6 @@ public class GuardedExample {
 
         // attach ApplicationConfig
         application.attach(new ExampleAppConfig());
-
-       // prefer html befor XML, if both is allowed by the request. (optional)
-        application.setPreferHtml(true);
 
         // Attach the application to the component and start it
         comp.getDefaultHost().attach(application);
