@@ -167,11 +167,11 @@ public final class DateUtils {
         if ((baseDate == null) || (afterDate == null)) {
             throw new IllegalArgumentException(
                     "Can't compare the dates, at least one of them is null");
-        } else {
-            long baseTime = baseDate.getTime() / 1000;
-            long afterTime = afterDate.getTime() / 1000;
-            return baseTime < afterTime;
         }
+
+        long baseTime = baseDate.getTime() / 1000;
+        long afterTime = afterDate.getTime() / 1000;
+        return baseTime < afterTime;
     }
 
     /**
@@ -187,11 +187,11 @@ public final class DateUtils {
         if ((baseDate == null) || (beforeDate == null)) {
             throw new IllegalArgumentException(
                     "Can't compare the dates, at least one of them is null");
-        } else {
-            long baseTime = baseDate.getTime() / 1000;
-            long beforeTime = beforeDate.getTime() / 1000;
-            return beforeTime < baseTime;
         }
+        
+        long baseTime = baseDate.getTime() / 1000;
+        long beforeTime = beforeDate.getTime() / 1000;
+        return beforeTime < baseTime;
     }
 
     /**
@@ -207,11 +207,11 @@ public final class DateUtils {
         if ((baseDate == null) || (otherDate == null)) {
             throw new IllegalArgumentException(
                     "Can't compare the dates, at least one of them is null");
-        } else {
-            long baseTime = baseDate.getTime() / 1000;
-            long otherTime = otherDate.getTime() / 1000;
-            return otherTime == baseTime;
         }
+        
+        long baseTime = baseDate.getTime() / 1000;
+        long otherTime = otherDate.getTime() / 1000;
+        return otherTime == baseTime;
     }
 
     /**
@@ -226,11 +226,11 @@ public final class DateUtils {
     public static String format(final Date date, final String format) {
         if (date == null) {
             throw new IllegalArgumentException("Date is null");
-        } else {
-            SimpleDateFormat formatter = new SimpleDateFormat(format, Locale.US);
-            formatter.setTimeZone(TIMEZONE_GMT);
-            return formatter.format(date);
         }
+        
+        SimpleDateFormat formatter = new SimpleDateFormat(format, Locale.US);
+        formatter.setTimeZone(TIMEZONE_GMT);
+        return formatter.format(date);
     }
 
     /**
@@ -247,20 +247,19 @@ public final class DateUtils {
 
         if (date == null) {
             throw new IllegalArgumentException("Date is null");
-        } else {
-            String format = null;
-            final int formatsSize = formats.size();
-            for (int i = 0; (result == null) && (i < formatsSize); i++) {
-                format = formats.get(i);
-                SimpleDateFormat parser = new SimpleDateFormat(format,
-                        Locale.US);
-                parser.setTimeZone(TIMEZONE_GMT);
+        }
 
-                try {
-                    result = parser.parse(date);
-                } catch (ParseException e) {
-                    // Ignores error as the next format may work better
-                }
+        String format = null;
+        final int formatsSize = formats.size();
+        for (int i = 0; (result == null) && (i < formatsSize); i++) {
+            format = formats.get(i);
+            SimpleDateFormat parser = new SimpleDateFormat(format, Locale.US);
+            parser.setTimeZone(TIMEZONE_GMT);
+
+            try {
+                result = parser.parse(date);
+            } catch (ParseException e) {
+                // Ignores error as the next format may work better
             }
         }
 

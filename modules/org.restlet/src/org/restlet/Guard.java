@@ -141,10 +141,10 @@ public class Guard extends Filter {
         if ((scheme == null)) {
             throw new IllegalArgumentException(
                     "Please specify an authentication scheme. Use the 'None' challenge if no authentication is required.");
-        } else {
-            this.scheme = scheme;
-            this.realm = realm;
         }
+        
+        this.scheme = scheme;
+        this.realm = realm;
     }
 
     /**

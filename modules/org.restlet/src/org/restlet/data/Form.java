@@ -182,10 +182,11 @@ public class Form extends Series<Parameter> {
 
     @Override
     public Series<Parameter> createSeries(List<Parameter> delegate) {
-        if (delegate != null)
+        if (delegate != null) {
             return new Form(delegate);
-        else
-            return new Form();
+        }
+
+        return new Form();
     }
 
     /**

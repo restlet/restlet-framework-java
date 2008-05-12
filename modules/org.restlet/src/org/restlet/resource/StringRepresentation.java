@@ -125,12 +125,12 @@ public class StringRepresentation extends StreamRepresentation {
             if (getCharacterSet() != null) {
                 return new ByteArrayInputStream(getText().getBytes(
                         getCharacterSet().getName()));
-            } else {
-                return new ByteArrayInputStream(getText().getBytes());
             }
-        } else {
-            return null;
+
+            return new ByteArrayInputStream(getText().getBytes());
         }
+        
+        return null;
     }
 
     @Override

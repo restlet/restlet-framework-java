@@ -125,9 +125,9 @@ public final class Language extends Metadata {
 
         if (separator == -1) {
             return getName();
-        } else {
-            return getName().substring(0, separator);
         }
+
+        return getName().substring(0, separator);
     }
 
     /**

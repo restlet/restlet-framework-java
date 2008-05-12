@@ -166,12 +166,12 @@ public final class Tag extends Metadata {
     public String format() {
         if (getName().equals("*")) {
             return "*";
-        } else {
-            StringBuilder sb = new StringBuilder();
-            if (isWeak())
-                sb.append("W/");
-            return sb.append('"').append(getName()).append('"').toString();
         }
+
+        StringBuilder sb = new StringBuilder();
+        if (isWeak())
+            sb.append("W/");
+        return sb.append('"').append(getName()).append('"').toString();
     }
 
     /**

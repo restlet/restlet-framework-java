@@ -51,9 +51,9 @@ public class FileRepresentation extends Representation {
     private static File createFile(String path) {
         if (path.startsWith("file://")) {
             return new LocalReference(path).getFile();
-        } else {
-            return new File(path);
         }
+
+        return new File(path);
     }
 
     /** The file handle. */
@@ -159,9 +159,9 @@ public class FileRepresentation extends Representation {
     public long getSize() {
         if (super.getSize() != UNKNOWN_SIZE) {
             return super.getSize();
-        } else {
-            return this.file.length();
         }
+
+        return this.file.length();
     }
 
     @Override

@@ -556,9 +556,8 @@ public final class ByteUtils {
             throws IOException {
         if (characterSet != null) {
             return new InputStreamReader(stream, characterSet.getName());
-        } else {
-            return new InputStreamReader(stream);
         }
+        return new InputStreamReader(stream);
     }
 
     /**
@@ -638,37 +637,35 @@ public final class ByteUtils {
     @SuppressWarnings("unused")
     public static InputStream getStream(final Representation representation)
             throws IOException {
-        if (representation != null) {
-            final PipeStream pipe = new PipeStream();
-            final Context context = Context.getCurrent();
-
-            // Creates a thread that will handle the task of continuously
-            // writing the representation into the input side of the pipe
-            Thread writer = context.getThread(new Runnable() {
-                public void run() {
-                    try {
-                        OutputStream os = pipe.getOutputStream();
-                        representation.write(os);
-                        os.write(-1);
-                        os.close();
-                    } catch (IOException ioe) {
-                        Logger
-                                .getLogger(ByteUtils.class.getCanonicalName())
-                                .log(
-                                        Level.FINE,
-                                        "Error while writing to the piped input stream.",
-                                        ioe);
-                    }
-                }
-            });
-            writer.setDaemon(false);
-
-            // Starts the writer thread
-            writer.start();
-            return pipe.getInputStream();
-        } else {
+        if (representation == null) {
             return null;
         }
+
+        final PipeStream pipe = new PipeStream();
+        final Context context = Context.getCurrent();
+
+        // Creates a thread that will handle the task of continuously
+        // writing the representation into the input side of the pipe
+        Thread writer = context.getThread(new Runnable() {
+            public void run() {
+                try {
+                    OutputStream os = pipe.getOutputStream();
+                    representation.write(os);
+                    os.write(-1);
+                    os.close();
+                } catch (IOException ioe) {
+                    Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
+                            Level.FINE,
+                            "Error while writing to the piped input stream.",
+                            ioe);
+                }
+            }
+        });
+        writer.setDaemon(false);
+
+        // Starts the writer thread
+        writer.start();
+        return pipe.getInputStream();
     }
 
     /**

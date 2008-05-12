@@ -134,9 +134,9 @@ public class Variant {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.add(element);
                     }
+
+                    return super.add(element);
                 }
 
                 @Override
@@ -144,9 +144,9 @@ public class Variant {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        super.add(index, element);
                     }
+
+                    super.add(index, element);
                 }
 
                 @Override
@@ -161,9 +161,9 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.addAll(elements);
                     }
+
+                    return super.addAll(elements);
                 }
 
                 @Override
@@ -179,9 +179,9 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.addAll(index, elements);
                     }
+
+                    return super.addAll(index, elements);
                 }
             };
         }
@@ -229,9 +229,9 @@ public class Variant {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        super.add(index, element);
                     }
+
+                    super.add(index, element);
                 }
 
                 @Override
@@ -239,9 +239,9 @@ public class Variant {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        return super.add(element);
                     }
+
+                    return super.add(element);
                 }
 
                 @Override
@@ -256,9 +256,9 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        return super.addAll(elements);
                     }
+
+                    return super.addAll(elements);
                 }
 
                 @Override
@@ -274,9 +274,9 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        return super.addAll(index, elements);
                     }
+
+                    return super.addAll(index, elements);
                 }
 
             };
