@@ -196,8 +196,8 @@ public class ProductTokenTestCase extends RestletTestCase {
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent7);
-        Map<String, Object> map = clientInfo.getAgentAttributes();
-        for (Entry<String, Object> entry : map.entrySet()) {
+        Map<String, String> map = clientInfo.getAgentAttributes();
+        for (Entry<String, String> entry : map.entrySet()) {
             System.out.println(entry);
         }
     }
