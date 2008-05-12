@@ -11,6 +11,9 @@ Changes log
    according to its Maven's groupId. Reported by Konstantin Laüfer.
  - Fixed potential bug when PUT requests are made to a directory 
    without trailing slash character.
+ - Directory did not transmit its negotiation content attribute to the 
+   DirectoryResource instance in findTarget method. Reported by Mark 
+   Derricutt.
    
 [Enhancements]
  - Updated Jetty to version 6.1.9

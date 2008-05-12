@@ -46,8 +46,9 @@ import org.restlet.util.Engine;
  * case, you just need to set the "modifiable" property to true. The currently
  * supported methods are PUT and DELETE.
  * 
- * @see <a href="http://www.restlet.org/documentation/1.0/tutorial#part06">Tutorial: Serving
- *      static files</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.0/tutorial#part06">Tutorial:
+ *      Serving static files</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Directory extends Finder {
@@ -138,14 +139,17 @@ public class Directory extends Finder {
 	 */
 	@Override
 	public Resource findTarget(Request request, Response response) {
+		Resource target = null;
 		try {
-			return Engine.getInstance().createDirectoryResource(this, request,
-					response);
+			target = Engine.getInstance().createDirectoryResource(this,
+					request, response);
+			target.setNegotiateContent(isNegotiateContent());
 		} catch (IOException ioe) {
 			getLogger().log(Level.WARNING,
 					"Unable to find the directory's resource", ioe);
-			return null;
 		}
+
+		return target;
 	}
 
 	/**
