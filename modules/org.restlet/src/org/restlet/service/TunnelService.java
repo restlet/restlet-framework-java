@@ -76,7 +76,22 @@ import org.restlet.data.Request;
  * several extensions to be present, in any particular order: e.g.
  * "/path/foo.fr.txt"). This mechanism relies on the mapping between an
  * extension and a metadata (e.g. "txt" => "text/plain") declared by the
- * {@link MetadataService}.
+ * {@link MetadataService}.<br>
+ * The client preferences can also be updated according to the user agent
+ * properties (its name, version, operating system, or other) available via the
+ * {@link ClientInfo#getAgentAttributes()} method. The feature is based on a
+ * property-like file called "accept.properties" and loaded from the classpath.
+ * Here is an excerpt of such file :
+ * 
+ * <code>
+ * agentName: firefox
+ * accept: application/xhtml+xml,text/html,text/xml;q=0.9,application/xml;q=0.9
+ * </code>
+ * 
+ * It allows to specify a complete "accept" header string for a set of
+ * (key:value) pairs. The header value is given with the "accept" key, and the
+ * set of (key:value) pairs is the simple list of key:value just above the
+ * "accept" line.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
