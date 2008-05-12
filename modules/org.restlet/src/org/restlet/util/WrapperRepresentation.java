@@ -69,6 +69,11 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
+    public String getDownloadName() {
+        return getWrappedRepresentation().getDownloadName();
+    }
+
+    @Override
     public List<Encoding> getEncodings() {
         return getWrappedRepresentation().getEncodings();
     }
@@ -138,6 +143,11 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
+    public boolean isDownloadable() {
+        return getWrappedRepresentation().isDownloadable();
+    }
+
+    @Override
     public boolean isTransient() {
         return getWrappedRepresentation().isTransient();
     }
@@ -155,6 +165,16 @@ public class WrapperRepresentation extends Representation {
     @Override
     public void setCharacterSet(CharacterSet characterSet) {
         getWrappedRepresentation().setCharacterSet(characterSet);
+    }
+
+    @Override
+    public void setDownloadable(boolean downloadable) {
+        getWrappedRepresentation().setDownloadable(downloadable);
+    }
+
+    @Override
+    public void setDownloadName(String fileName) {
+        getWrappedRepresentation().setDownloadName(fileName);
     }
 
     @Override
