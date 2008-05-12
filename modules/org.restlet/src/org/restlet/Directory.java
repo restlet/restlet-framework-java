@@ -31,6 +31,7 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 import org.restlet.util.Engine;
 
@@ -55,8 +56,9 @@ import org.restlet.util.Engine;
  * href="http://www.davekoelle.com/alphanum.html">Alphanum Algorithm from David
  * Koelle</a>.
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part06">Tutorial: Serving
- *      static files</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part06">Tutorial:
+ *      Serving static files</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Directory extends Finder {
@@ -154,8 +156,10 @@ public class Directory extends Finder {
     @Override
     public Handler findTarget(Request request, Response response) {
         try {
-            return Engine.getInstance().createDirectoryResource(this, request,
-                    response);
+            Resource resource = Engine.getInstance().createDirectoryResource(
+                    this, request, response);
+            resource.setNegotiateContent(isNegotiateContent());
+            return resource;
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING,
                     "Unable to find the directory's resource", ioe);
@@ -384,18 +388,15 @@ public class Directory extends Finder {
 
             if (bRep0Null && bRep1Null) {
                 return 0;
-            } else {
-                if (bRep0Null) {
-                    return -1;
-                } else {
-                    if (bRep1Null) {
-                        return 1;
-                    } else {
-                        return compare(rep0.toString(false, false), rep1
-                                .toString(false, false));
-                    }
-                }
             }
+            if (bRep0Null) {
+                return -1;
+            }
+            if (bRep1Null) {
+                return 1;
+            }
+            return compare(rep0.toString(false, false), rep1.toString(false,
+                    false));
         }
 
         public int compare(final String uri0, final String uri1) {
