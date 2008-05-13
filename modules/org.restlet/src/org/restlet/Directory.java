@@ -139,17 +139,16 @@ public class Directory extends Finder {
 	 */
 	@Override
 	public Resource findTarget(Request request, Response response) {
-		Resource target = null;
+
 		try {
-			target = Engine.getInstance().createDirectoryResource(this,
-					request, response);
-			target.setNegotiateContent(isNegotiateContent());
+			return Engine.getInstance().createDirectoryResource(this, request,
+					response);
 		} catch (IOException ioe) {
 			getLogger().log(Level.WARNING,
 					"Unable to find the directory's resource", ioe);
 		}
 
-		return target;
+		return null;
 	}
 
 	/**
