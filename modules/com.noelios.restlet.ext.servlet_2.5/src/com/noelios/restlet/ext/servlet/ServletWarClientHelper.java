@@ -50,7 +50,8 @@ import com.noelios.restlet.local.WarClientHelper;
  * You can note that there is no authority which is denoted by the sequence of
  * three "/" characters. This connector is designed to be used inside a context
  * (e.g. inside a servlet based application) and subconsequently does not
- * require the use of a authority. <br>
+ * require the use of a authority. Such URI are "relative" to the root of the
+ * servlet context.<br>
  * Here is a sample code excerpt that illustrates the way to use this connector:
  * <code>Response response = getContext().getClientDispatcher().get("war:///myDir/test.txt");
  if (response.isEntityAvailable()) {
