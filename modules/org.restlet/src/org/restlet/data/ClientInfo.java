@@ -72,7 +72,7 @@ import org.restlet.util.Variable;
  *  Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1) Gecko/20060918 Firefox/2.0
  * </pre>
  * 
- * At this time, four predefined variables are used:<br>
+ * At this time, six predefined variables are used:<br>
  * <table>
  * <tr>
  * <th>Name</th>
@@ -92,7 +92,16 @@ import org.restlet.util.Variable;
  * </tr>
  * <tr>
  * <td>agentComment</td>
- * <td>Comment string</td>
+ * <td>Comment string, that is to say a sequence of characters enclosed "(", or
+ * ")"</td>
+ * </tr>
+ * <tr>
+ * <td>commentAttribute</td>
+ * <td>A sequence of characters enclosed by ";", "(", or ")"</td>
+ * </tr>
+ * <tr>
+ * <td>facultativeData</td>
+ * <td>A sequence of characters that can be empty</td>
  * </tr>
  * </table><br>
  * These variables are used to generate a {@link Product} instance with the main
