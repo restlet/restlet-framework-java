@@ -85,6 +85,9 @@ Changes log
           new "defaultLanguage" parameter that is uses when no parent
           application is available (no MetadataService accessible).
           Limitation reported by Jules Milner-Brage.
+        - Added SslContextFactory and DefaultSslContextFactory to the
+          com.noelios.restlet.util package. Contributed by Bruno 
+          Harbulot.
     - Misc 
         - Updated Grizzly to 1.7.3.
         - Improved logging consistency.

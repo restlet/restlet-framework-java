@@ -34,4 +34,4 @@ public class UserAgentTestResource extends Resource {
 
         return null;
     }
-};
+}
