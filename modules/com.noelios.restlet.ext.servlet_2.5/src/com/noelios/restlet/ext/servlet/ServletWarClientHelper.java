@@ -51,7 +51,7 @@ import com.noelios.restlet.local.WarClientHelper;
  * three "/" characters. This connector is designed to be used inside a context
  * (e.g. inside a servlet based application) and subconsequently does not
  * require the use of a authority. <br>
- * Here is a sample code excerpt that illustrate the way to use this connector:
+ * Here is a sample code excerpt that illustrates the way to use this connector:
  * <code>Response response = getContext().getClientDispatcher().get("war:///myDir/test.txt");
  if (response.isEntityAvailable()) {
  //Do what you want to do.
