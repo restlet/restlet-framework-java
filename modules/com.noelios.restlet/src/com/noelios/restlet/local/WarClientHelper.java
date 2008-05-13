@@ -24,15 +24,13 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Connector to the WAR resources. Here is the list of parameters that are
- * supported: <table>
- * <tr>
- * <td>warPath</td>
- * <td>String</td>
- * <td>${user.home}/restlet.war</td>
- * <td>Path to the Web Application WAR file or directory.</td>
- * </tr>
- * </table>
+ * Connector to resources packaged as a WAR container. The WAR container can be
+ * under the form of a single compressed file or as a uncompressed directory.
+ * Here is a sample URI:<br>
+ * 
+ * <pre>
+ * war:///path/to/my/resource/entry.txt
+ * </pre>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

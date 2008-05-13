@@ -40,7 +40,23 @@ import com.noelios.restlet.local.WarClientHelper;
 
 /**
  * Local client connector based on a Servlet context (JEE Web application
- * context).
+ * context). Here is a sample resource URI:<br>
+ * 
+ * <pre>
+ * war:///path/to/my/resource/entry.txt
+ * </pre>
+ * 
+ * <br>
+ * You can note that there is no authority which is denoted by the sequence of
+ * three "/" characters. This connector is designed to be used inside a context
+ * (e.g. inside a servlet based application) and subconsequently does not
+ * require the use of a authority. <br>
+ * Here is a sample code excerpt that illustrate the way to use this connector:
+ * <code>Response response = getContext().getClientDispatcher().get("war:///myDir/test.txt");
+ if (response.isEntityAvailable()) {
+ //Do what you want to do.
+ }
+ </code>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -122,7 +138,11 @@ public class ServletWarClientHelper extends WarClientHelper {
             }
 
             response.setEntity(output);
-            response.setStatus(Status.SUCCESS_OK);
+            if (output != null) {
+                response.setStatus(Status.SUCCESS_OK);
+            } else {
+                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            }
         } else {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             response.getAllowedMethods().add(Method.GET);
