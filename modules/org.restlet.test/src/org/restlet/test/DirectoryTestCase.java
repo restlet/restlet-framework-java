@@ -257,7 +257,8 @@ public class DirectoryTestCase extends TestCase {
 
         response = handle(application, webSiteURL, baseFileUrlFr, Method.HEAD,
                 null, "7c-2");
-        if (application.getTunnelService().isExtensionsTunnel()) {
+        if (directory.isNegotiateContent()
+                && application.getTunnelService().isExtensionsTunnel()) {
             assertEquals(Status.SUCCESS_OK, response.getStatus());
         } else {
             assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
@@ -265,7 +266,8 @@ public class DirectoryTestCase extends TestCase {
 
         response = handle(application, webSiteURL, baseFileUrlFrBis,
                 Method.HEAD, null, "7c-3");
-        if (application.getTunnelService().isExtensionsTunnel()) {
+        if (directory.isNegotiateContent()
+                && application.getTunnelService().isExtensionsTunnel()) {
             assertEquals(Status.SUCCESS_OK, response.getStatus());
         } else {
             assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());

@@ -139,6 +139,7 @@ public class DirectoryResource extends Resource {
         this.directory = directory;
         this.relativePart = request.getResourceRef().getRemainingPart();
         setModifiable(this.directory.isModifiable());
+        setNegotiateContent(this.directory.isNegotiateContent());
 
         // Restore the original URI in case the call has been tunnelled.
         if (getApplication() != null
@@ -255,7 +256,8 @@ public class DirectoryResource extends Resource {
 
         // In case the request does not target a directory and the file has not
         // been found, try with the tunnelled URI
-        if (!targetDirectory && !targetFile && originalRef != null) {
+        if (isNegotiateContent() && !targetDirectory && !targetFile
+                && originalRef != null) {
             this.relativePart = request.getResourceRef().getRemainingPart();
 
             // The target uri does not take into account the query and fragment
@@ -455,6 +457,10 @@ public class DirectoryResource extends Resource {
     public List<Variant> getVariants() {
         List<Variant> results = super.getVariants();
 
+        if (!results.isEmpty()) {
+            return results;
+        }
+
         getLogger().info("Getting variants for : " + getTargetUri());
 
         if ((this.directoryContent != null)
@@ -553,20 +559,17 @@ public class DirectoryResource extends Resource {
 
                 if (bRep0Null && bRep1Null) {
                     return 0;
-                } else {
-                    if (bRep0Null) {
-                        return -1;
-                    } else {
-                        if (bRep1Null) {
-                            return 1;
-                        } else {
-                            return rep0.getIdentifier().getLastSegment()
-                                    .compareTo(
-                                            rep1.getIdentifier()
-                                                    .getLastSegment());
-                        }
-                    }
                 }
+                if (bRep0Null) {
+                    return -1;
+                }
+
+                if (bRep1Null) {
+                    return 1;
+                }
+
+                return rep0.getIdentifier().getLastSegment().compareTo(
+                        rep1.getIdentifier().getLastSegment());
             }
         };
         return identifiersComparator;

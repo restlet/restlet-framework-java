@@ -183,6 +183,40 @@ public class FileClientHelper extends LocalClientHelper {
                                 .getDefaultMediaType(), getTimeToLive());
                         updateMetadata(metadataService, file.getName(), output);
                     }
+                } else {
+                    // We look for the possible variant which has the same
+                    // extensions in a distinct order.
+                    // 1- set up base name as the longest part of the name
+                    // without known extensions (beginning from the left)
+                    String baseName = getBaseName(file, metadataService);
+                    Set<String> extensions = getExtensions(file,
+                            metadataService);
+                    // 2- loooking for resources with the same base name
+                    File[] files = file.getParentFile().listFiles();
+                    File uniqueVariant = null;
+
+                    if (files != null) {
+                        for (File entry : files) {
+                            if (entry.getName().startsWith(baseName)) {
+                                Set<String> entryExtensions = getExtensions(
+                                        entry, metadataService);
+                                if (entryExtensions.containsAll(extensions)
+                                        && extensions
+                                                .containsAll(entryExtensions)) {
+                                    // The right representation has been found.
+                                    uniqueVariant = entry;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (uniqueVariant != null) {
+                        // Return the file content
+                        output = new FileRepresentation(uniqueVariant,
+                                metadataService.getDefaultMediaType(),
+                                getTimeToLive());
+                        updateMetadata(metadataService, file.getName(), output);
+                    }
                 }
             }
 
@@ -668,13 +702,13 @@ public class FileClientHelper extends LocalClientHelper {
         if (stop) {
             return encodedFileName.substring(0, j)
                     + decodedVariantFileName.substring(i - 1);
-        } else {
-            if (j == encodedFileName.length()) {
-                return encodedFileName.substring(0, j)
-                        + decodedVariantFileName.substring(i);
-            } else {
-                return encodedFileName.substring(0, j);
-            }
         }
+
+        if (j == encodedFileName.length()) {
+            return encodedFileName.substring(0, j)
+                    + decodedVariantFileName.substring(i);
+        }
+
+        return encodedFileName.substring(0, j);
     }
 }
