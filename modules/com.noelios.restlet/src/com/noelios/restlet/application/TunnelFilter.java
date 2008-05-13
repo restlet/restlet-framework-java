@@ -70,16 +70,16 @@ public class TunnelFilter extends Filter {
         boolean queryModified = false;
         boolean extensionsModified = false;
 
-        if (getTunnelService().isQueryTunnel()) {
-            queryModified = processQuery(request);
+        if (getTunnelService().isUserAgentTunnel()) {
+            processUserAgent(request);
         }
 
         if (getTunnelService().isExtensionsTunnel()) {
             extensionsModified = processExtensions(request);
         }
 
-        if (getTunnelService().isUserAgentTunnel()) {
-            processUserAgent(request);
+        if (getTunnelService().isQueryTunnel()) {
+            queryModified = processQuery(request);
         }
 
         if (queryModified || extensionsModified) {
@@ -88,68 +88,6 @@ public class TunnelFilter extends Filter {
         }
 
         return CONTINUE;
-    }
-
-    /**
-     * Updates the client preferences according to the user agent properties
-     * (name, version, etc.). The list of new media type preferences is loaded
-     * from a property file called "accept.proterties" located in the classpath.
-     * 
-     * @param request
-     *                the request to update.
-     */
-    private void processUserAgent(Request request) {
-        Map<String, String> agentAttributes = request.getClientInfo()
-                .getAgentAttributes();
-        if (agentAttributes != null) {
-            URL userAgentPropertiesUrl = Engine.getClassLoader().getResource(
-                    "accept.properties");
-            if (userAgentPropertiesUrl != null) {
-                BufferedReader reader;
-                try {
-                    reader = new BufferedReader(new InputStreamReader(
-                            userAgentPropertiesUrl.openStream(),
-                            CharacterSet.UTF_8.getName()));
-
-                    boolean processAcceptHeader = true;
-
-                    String line = reader.readLine();
-                    for (; line != null; line = reader.readLine()) {
-                        if (!line.startsWith("#")) {
-                            String[] keyValue = line.split(":");
-                            if (keyValue.length == 2) {
-                                String key = keyValue[0].trim();
-                                String value = keyValue[1].trim();
-                                if ("accept".equalsIgnoreCase(key)) {
-                                    if (processAcceptHeader) {
-                                        ClientInfo clientInfo = new ClientInfo();
-                                        PreferenceUtils.parseMediaTypes(value,
-                                                clientInfo);
-                                        request
-                                                .getClientInfo()
-                                                .setAcceptedMediaTypes(
-                                                        clientInfo
-                                                                .getAcceptedMediaTypes());
-                                        break;
-                                    }
-                                    processAcceptHeader = true;
-                                } else {
-                                    if (processAcceptHeader) {
-                                        String attribute = agentAttributes
-                                                .get(key);
-                                        processAcceptHeader = attribute != null
-                                                && attribute
-                                                        .equalsIgnoreCase(value);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    reader.close();
-                } catch (IOException e) {
-                }
-            }
-        }
     }
 
     /**
@@ -313,24 +251,28 @@ public class TunnelFilter extends Filter {
                 if (metadata instanceof CharacterSet) {
                     updateMetadata(clientInfo, metadata);
                     query.removeFirst(charSetParameter);
+                    queryModified = true;
                 }
 
                 metadata = getMetadata(acceptedEncoding);
                 if (metadata instanceof Encoding) {
                     updateMetadata(clientInfo, metadata);
                     query.removeFirst(encodingParameter);
+                    queryModified = true;
                 }
 
                 metadata = getMetadata(acceptedLanguage);
                 if (metadata instanceof Language) {
                     updateMetadata(clientInfo, metadata);
                     query.removeFirst(languageParameter);
+                    queryModified = true;
                 }
 
                 metadata = getMetadata(acceptedMediaType);
                 if (metadata instanceof MediaType) {
                     updateMetadata(clientInfo, metadata);
                     query.removeFirst(mediaTypeParameter);
+                    queryModified = true;
                 }
             }
 
@@ -341,6 +283,69 @@ public class TunnelFilter extends Filter {
         }
 
         return queryModified;
+    }
+
+    /**
+     * Updates the client preferences according to the user agent properties
+     * (name, version, etc.). The list of new media type preferences is loaded
+     * from a property file called "accept.proterties" located in the classpath
+     * in the sub directory "org/restlet/service".
+     * 
+     * @param request
+     *                the request to update.
+     */
+    private void processUserAgent(Request request) {
+        Map<String, String> agentAttributes = request.getClientInfo()
+                .getAgentAttributes();
+        if (agentAttributes != null) {
+            URL userAgentPropertiesUrl = Engine.getClassLoader().getResource(
+                    "org/restlet/service/accept.properties");
+            if (userAgentPropertiesUrl != null) {
+                BufferedReader reader;
+                try {
+                    reader = new BufferedReader(new InputStreamReader(
+                            userAgentPropertiesUrl.openStream(),
+                            CharacterSet.UTF_8.getName()));
+
+                    boolean processAcceptHeader = true;
+
+                    String line = reader.readLine();
+                    for (; line != null; line = reader.readLine()) {
+                        if (!line.startsWith("#")) {
+                            String[] keyValue = line.split(":");
+                            if (keyValue.length == 2) {
+                                String key = keyValue[0].trim();
+                                String value = keyValue[1].trim();
+                                if ("accept".equalsIgnoreCase(key)) {
+                                    if (processAcceptHeader) {
+                                        ClientInfo clientInfo = new ClientInfo();
+                                        PreferenceUtils.parseMediaTypes(value,
+                                                clientInfo);
+                                        request
+                                                .getClientInfo()
+                                                .setAcceptedMediaTypes(
+                                                        clientInfo
+                                                                .getAcceptedMediaTypes());
+                                        break;
+                                    }
+                                    processAcceptHeader = true;
+                                } else {
+                                    if (processAcceptHeader) {
+                                        String attribute = agentAttributes
+                                                .get(key);
+                                        processAcceptHeader = attribute != null
+                                                && attribute
+                                                        .equalsIgnoreCase(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    reader.close();
+                } catch (IOException e) {
+                }
+            }
+        }
     }
 
     /**

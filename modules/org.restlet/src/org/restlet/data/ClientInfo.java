@@ -51,9 +51,10 @@ import org.restlet.util.Variable;
  * IE, etc), version, operating system, Restlet users has the ability to define
  * their own way to extract data from the "user-agent" header. It is based on a
  * list of templates declared in a file called "agent.properties" and located in
- * the classpath. Each template describes a typical user-agent string and allows
- * to use predefined variables that help to retrieve the content of the agent
- * name, version, operating system.<br>
+ * the classpath in the sub directory "org/restlet/data". Each template
+ * describes a typical user-agent string and allows to use predefined variables
+ * that help to retrieve the content of the agent name, version, operating
+ * system.<br>
  * The "user-agent" string is confronted to the each template from the beginning
  * of the property file to the end. The loop stops at the first matched
  * template.<br>
@@ -289,7 +290,7 @@ public final class ClientInfo {
             // variables are called "agentName", "agentVersion" and
             // "agentComment".
             URL userAgentPropertiesUrl = Engine.getClassLoader().getResource(
-                    "agent.properties");
+                    "org/restlet/data/agent.properties");
             if (userAgentPropertiesUrl != null) {
                 BufferedReader reader;
                 try {
