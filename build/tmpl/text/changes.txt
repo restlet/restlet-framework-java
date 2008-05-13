@@ -14,6 +14,7 @@ Changes log
  - Directory did not transmit its negotiation content attribute to the 
    DirectoryResource instance in findTarget method. Reported by Mark 
    Derricutt.
+ - Fixed bug with ZIP encoding. Reported by Surjendu Kuila.
    
 [Enhancements]
  - Updated Jetty to version 6.1.9

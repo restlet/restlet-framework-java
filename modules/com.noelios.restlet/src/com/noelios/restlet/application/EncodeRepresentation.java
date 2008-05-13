@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.restlet.data.Encoding;
@@ -231,7 +232,9 @@ public class EncodeRepresentation extends WrapperRepresentation {
 			} else if (this.encoding.equals(Encoding.DEFLATE)) {
 				encoderOutputStream = new DeflaterOutputStream(outputStream);
 			} else if (this.encoding.equals(Encoding.ZIP)) {
-				encoderOutputStream = new ZipOutputStream(outputStream);
+				ZipOutputStream stream = new ZipOutputStream(outputStream);
+				stream.putNextEntry(new ZipEntry("entry"));
+				encoderOutputStream = stream;
 			} else if (this.encoding.equals(Encoding.IDENTITY)) {
 				// Encoder unecessary for identity encoding
 			}

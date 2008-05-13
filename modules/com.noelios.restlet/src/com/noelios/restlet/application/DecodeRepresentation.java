@@ -142,7 +142,10 @@ public class DecodeRepresentation extends WrapperRepresentation {
 		} else if (encoding.equals(Encoding.DEFLATE)) {
 			result = new InflaterInputStream(encodedStream);
 		} else if (encoding.equals(Encoding.ZIP)) {
-			result = new ZipInputStream(encodedStream);
+			ZipInputStream stream = new ZipInputStream(encodedStream);
+			if (stream.getNextEntry() != null) {
+				result = stream;
+			}
 		} else if (encoding.equals(Encoding.IDENTITY)) {
 			throw new IOException("Decoder unecessary for identity decoding");
 		}
