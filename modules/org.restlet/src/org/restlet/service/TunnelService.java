@@ -142,7 +142,10 @@ public class TunnelService {
      */
     private volatile boolean queryTunnel;
 
-    /** Indicates if the client preferences can be tunnelled via the user agent. */
+    /**
+     * Indicates if the client preferences can be tunnelled via the user agent
+     * string.
+     */
     private volatile boolean userAgentTunnel;
 
     /**
@@ -153,12 +156,13 @@ public class TunnelService {
      * @param methodTunnel
      *                Indicates if the method name can be tunnelled.
      * @param preferencesTunnel
-     *                Indicates if the client preferences for a GET request can
-     *                be tunnelled by query parameters and file "extensions".
+     *                Indicates if the client preferences can be tunnelled by
+     *                query parameters or file-like extensions or user agent
+     *                string.
      */
     public TunnelService(boolean enabled, boolean methodTunnel,
             boolean preferencesTunnel) {
-        this(enabled, methodTunnel, preferencesTunnel, true, true);
+        this(enabled, methodTunnel, preferencesTunnel, true, false);
     }
 
     /**
@@ -171,7 +175,8 @@ public class TunnelService {
      *                parameter.
      * @param preferencesTunnel
      *                Indicates if the client preferences can be tunnelled using
-     *                query parameters or file-like extensions.
+     *                query parameters or file-like extensions or user agent
+     *                string.
      * @param queryTunnel
      *                Indicates if tunneling can use query parameters.
      * @param extensionsTunnel
@@ -180,13 +185,39 @@ public class TunnelService {
     public TunnelService(boolean enabled, boolean methodTunnel,
             boolean preferencesTunnel, boolean queryTunnel,
             boolean extensionsTunnel) {
+        this(enabled, methodTunnel, preferencesTunnel, true, extensionsTunnel,
+                false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param enabled
+     *                True if the service has been enabled.
+     * @param methodTunnel
+     *                Indicates if the method can be tunnelled using a query
+     *                parameter.
+     * @param preferencesTunnel
+     *                Indicates if the client preferences can be tunnelled using
+     *                query parameters or file-like extensions or user agent
+     *                string.
+     * @param queryTunnel
+     *                Indicates if tunneling can use query parameters.
+     * @param extensionsTunnel
+     *                Indicates if tunneling can use file-like extensions.
+     * @param userAgentTunnel
+     *                Indicates if tunneling can use user agent string.
+     */
+    public TunnelService(boolean enabled, boolean methodTunnel,
+            boolean preferencesTunnel, boolean queryTunnel,
+            boolean extensionsTunnel, boolean userAgentTunnel) {
         this.enabled = enabled;
 
         this.extensionsTunnel = extensionsTunnel;
         this.methodTunnel = methodTunnel;
         this.preferencesTunnel = preferencesTunnel;
         this.queryTunnel = queryTunnel;
-        this.userAgentTunnel = false;
+        this.userAgentTunnel = userAgentTunnel;
 
         this.characterSetParameter = "charset";
         this.encodingParameter = "encoding";
