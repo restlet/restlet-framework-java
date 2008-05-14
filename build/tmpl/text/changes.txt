@@ -103,6 +103,8 @@ Changes log
         - Removed unecessary libraries from distribution.
         - The WAR client is now only available for Application deployed
           using ServletServer or a subclass. 
+        - Made javax.servlet.* dependencies optional for the fileupload
+          extension. Reported by Hendy Irawan.
 
  - 1.1 Milestone 3 (2008-04-01)
     - Bugs fixed
