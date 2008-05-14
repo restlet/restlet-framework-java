@@ -102,8 +102,15 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
     private void parentHandle(Request request, Response response) {
         if (getApplicationContext() != null) {
             if (getApplicationContext().getParentContext() != null) {
-                getApplicationContext().getParentContext()
-                        .getClientDispatcher().handle(request, response);
+                if (getApplicationContext().getParentContext()
+                        .getClientDispatcher() != null) {
+                    getApplicationContext().getParentContext()
+                            .getClientDispatcher().handle(request, response);
+                } else {
+                    getLogger()
+                            .warning(
+                                    "The parent context doesn't have a client dispatcher available. Unable to handle call.");
+                }
             } else {
                 getLogger()
                         .warning(

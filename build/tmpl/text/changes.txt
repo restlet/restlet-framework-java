@@ -11,6 +11,8 @@ Changes log
           was not fully set (missing properties like the method).
         - Fixed issues with chunked encoding and socket closing. 
           Contributed by Kevin Conaway.
+        - Fixed potential NPE in ApplicationClientDispatcher. Reported
+          by Alex Milowski.
     - API Enhancements
         - Matrix parameters are now fully supported by the Reference 
           and the Form classes. Added many new methods, similar to the
