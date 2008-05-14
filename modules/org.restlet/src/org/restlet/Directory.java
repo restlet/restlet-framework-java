@@ -51,9 +51,10 @@ import org.restlet.util.Engine;
  * {@link #getIndexRepresentation(Variant, ReferenceList)} method, unless the
  * "listingAllowed" property is turned off. You can even customize the way the
  * index entries are sorted by using the {@link #setComparator(Comparator)}
- * method. The default sorting uses the friendly <a
- * href="http://www.davekoelle.com/alphanum.html">Alphanum Algorithm from David
- * Koelle</a>.
+ * method. The default sorting uses the friendly Alphanum algorithm based on
+ * David Koelle's <a href="http://www.davekoelle.com/alphanum.html">original
+ * idea</a>, using a different and faster implementation contributed by Rob
+ * Heittman.
  * 
  * @see <a
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part06">Tutorial:
