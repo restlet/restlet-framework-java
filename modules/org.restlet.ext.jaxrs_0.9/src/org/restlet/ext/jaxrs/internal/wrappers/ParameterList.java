@@ -546,7 +546,7 @@ public class ParameterList {
 
     private final int paramCount;
 
-    private final ParameterList.InjectObjectGetter[] parameters;
+    private final InjectObjectGetter[] parameters;
 
     /**
      * @param parameterTypes
@@ -574,7 +574,7 @@ public class ParameterList {
             boolean paramsAllowed, boolean entityAllowed, Logger logger)
             throws MissingAnnotationException {
         this.paramCount = parameterTypes.length;
-        this.parameters = new ParameterList.InjectObjectGetter[paramCount];
+        this.parameters = new InjectObjectGetter[paramCount];
         boolean entityAlreadyRequired = false;
         for (int i = 0; i < paramCount; i++) {
             Class<?> parameterType = parameterTypes[i];
@@ -592,7 +592,7 @@ public class ParameterList {
                 DefaultValue defValue;
                 defValue = getAnnos(paramAnnos, DefaultValue.class);
                 if (!leaveEncoded)
-                    leaveEncoded = ParameterList.getLeaveEncoded(paramAnnos);
+                    leaveEncoded = getLeaveEncoded(paramAnnos);
                 CookieParam cookieParam = getAnnos(paramAnnos,
                         CookieParam.class);
                 HeaderParam headerParam = getAnnos(paramAnnos,
@@ -602,7 +602,7 @@ public class ParameterList {
                 PathParam pathParam = getAnnos(paramAnnos, PathParam.class);
                 QueryParam queryParam = getAnnos(paramAnnos, QueryParam.class);
                 if (pathParam != null) {
-                    parameters[i] = new ParameterList.PathParamInjector(
+                    parameters[i] = new PathParamInjector(
                             pathParam, defValue, parameterType, genParamType,
                             tlContext, leaveEncoded);
                     continue;
@@ -613,19 +613,19 @@ public class ParameterList {
                     continue;
                 }
                 if (headerParam != null) {
-                    parameters[i] = new ParameterList.HeaderParamInjector(
+                    parameters[i] = new HeaderParamInjector(
                             headerParam, defValue, parameterType, genParamType,
                             tlContext);
                     continue;
                 }
                 if (matrixParam != null) {
-                    parameters[i] = new ParameterList.MatrixParamInjector(
+                    parameters[i] = new MatrixParamInjector(
                             matrixParam, defValue, parameterType, genParamType,
                             tlContext, leaveEncoded);
                     continue;
                 }
                 if (queryParam != null) {
-                    parameters[i] = new ParameterList.QueryParamInjector(
+                    parameters[i] = new QueryParamInjector(
                             queryParam, defValue, parameterType, genParamType,
                             tlContext, leaveEncoded);
                     continue;

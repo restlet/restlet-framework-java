@@ -326,28 +326,30 @@ public class JaxRsUriBuilder extends UriBuilder {
 
     /**
      * Set the extension of the current final path segment to the supplied value
-     * appending an initial "." if necessary.
+     * appending an initial "." if necessary. The extension is everything
+     * following the first "." in the current final path segment of the URI
+     * excluding any matrix parameters that might be present after the extension
      * 
      * @param extension
-     *                the extension
+     *                the extension, a null value will unset any existing
+     *                extension including a trailing "." if necessary
      * @return the updated UriBuilder
-     * @see UriInfo#getPathExtension
+     * @see UriInfo#getPathExtension()
      * @see javax.ws.rs.core.UriBuilder#extension(java.lang.String)
      */
     @Override
     public UriBuilder extension(String extension) {
         StringBuilder path = getPath();
-        if (extension == null) {
-            int lastSegmSt = path.lastIndexOf(".");
-            if(lastSegmSt > 0)
-                path.delete(lastSegmSt, Integer.MAX_VALUE);
-            // REQUEST what does "unset an existing" exactly mean? remove one
-            // extension? all extensions?
-        } else {
-            CharSequence e = EncodeOrCheck.pathSegmentWithMatrix(extension, encode);
-            if (e.charAt(0) != '.')
+        int lastPathSt = path.lastIndexOf("/");
+        int lastSegmSt = path.indexOf(".", lastPathSt);
+        if (lastSegmSt > 0)
+            path.delete(lastSegmSt, Integer.MAX_VALUE);
+        if (extension != null) {
+            CharSequence ext;
+            ext = EncodeOrCheck.pathSegmentWithMatrix(extension, encode);
+            if (ext.length() == 0 || ext.charAt(0) != '.')
                 path.append('.');
-            path.append(e);
+            path.append(ext);
         }
         return this;
     }

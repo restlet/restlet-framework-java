@@ -362,6 +362,36 @@ public class JaxRsUriBuilderTest extends TestCase {
      * Test method for
      * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#fragment(java.lang.String)}.
      */
+    public void testExtension() throws Exception {
+        if(uriBuilder1Enc instanceof JaxRsUriBuilder) {
+            String path = getPath((JaxRsUriBuilder)uriBuilder1Enc);
+            String lastSegm = path.substring(path.lastIndexOf('/')+1);
+            assertFalse(lastSegm.contains("/")); // lastSegm is only last segmen
+            assertFalse(lastSegm.contains(".")); // no "." in it
+        }
+        uriBuilder1Enc.extension("abc");
+        assertEqualsURI(URI_1 + ".abc", uriBuilder1Enc);
+
+        uriBuilder1Enc.extension(null);
+        assertEqualsURI(URI_1.toString(), uriBuilder1Enc);
+
+        uriBuilder1Enc.extension("");
+        assertEqualsURI(URI_1 + ".", uriBuilder1Enc);
+
+        uriBuilder1Enc.extension(null);
+        assertEqualsURI(URI_1.toString(), uriBuilder1Enc);
+
+        uriBuilder1Enc.extension("abc.def");
+        assertEqualsURI(URI_1 + ".abc.def", uriBuilder1Enc);
+
+        uriBuilder1Enc.extension(null);
+        assertEqualsURI(URI_1.toString(), uriBuilder1Enc);
+    }
+
+    /**
+     * Test method for
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#fragment(java.lang.String)}.
+     */
     public void testFragmentEnc() throws Exception {
         uriBuilder1Enc.fragment(String.valueOf((char) 9));
         assertEqualsURI(URI_1 + "#%09", uriBuilder1Enc);

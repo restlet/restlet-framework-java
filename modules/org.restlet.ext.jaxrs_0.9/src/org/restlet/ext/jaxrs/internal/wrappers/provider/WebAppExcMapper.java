@@ -122,7 +122,6 @@ public class WebAppExcMapper implements
         if (acceptedVariants != null && acceptedVariants.isEmpty())
             acceptedVariants = null;
         ResponseBuilder rb = Response.fromResponse(response);
-        // REQUEST HttpHeaders.getAccepted*: explicit define "not null"
         StringBuilder stb = new StringBuilder();
 
         // NICE speed optimization possible by using a Reader or InputStream,
@@ -159,7 +158,6 @@ public class WebAppExcMapper implements
         if (supportedVariants != null && supportedVariants.isEmpty())
             supportedVariants = null;
         ResponseBuilder rb = Response.fromResponse(response);
-        // REQUEST HttpHeaders.getAccepted*: explicit define "not null"
         boolean xhtml = false;
         boolean html = httpHeaders.getAcceptableMediaTypes().contains(
                 MediaType.TEXT_HTML_TYPE);
